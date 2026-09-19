@@ -19,10 +19,16 @@ Aufklärungs-Runde desselben Tages. Das ist der vorgesehene Zeitpunkt
 Phase einen Ort braucht — in der Regel mit dem Ergebnis der ersten Aufklärung"; GELESEN,
 CC, 2026-09-19).
 
-**STAND NACH DER AUFKLÄRUNG (2026-09-19):** EIN Vermerk (P11.6-1) · ZWEI bindende
-Entscheidungen (P11.6-1, P11.6-2) · FÜNF offene Designfragen · ZWEI Vorrats-Einträge ·
+**STAND NACH DER DESIGNRUNDE (2026-09-19, zweite Runde des Tages):** EIN Vermerk
+(P11.6-1) · **FÜNF** bindende Entscheidungen (P11.6-1 bis P11.6-5) · die fünf
+Designfragen sind **BEANTWORTET** und tragen je ihren Zeiger · ZWEI Vorrats-Einträge ·
 KEIN Hebungs-Kandidat. **KEINE Scheibe zugeschnitten, KEINE Zeile Code geschrieben.** Der
 Marker der Roadmap-Zeile 11.6 steht auf `[ ]`.
+**WAS NACH DER DESIGNRUNDE NOCH OFFEN IST, steht NICHT mehr in Abschnitt 5**, sondern im
+Zuschnitt der ersten Bau-Scheibe: Ablage und Längengrenzen, die Persistenz der
+Ereigniszeile, der Weg des Schlüssels `custom` in die Schlüsselmenge, der Feuerpfad ohne
+Meta, die Gestalt der Kapselung, der Lader, die nachgeholte Einwilligung, das Verhalten in
+der Vorschau, die Byte-Gleichheit und die Oberfläche.
 
 **DIE NUMMERNFORM IST `P11.6-n`** und wird hier weder neu entschieden noch neu begründet:
 Sie ist seit dem 2026-09-17 Bauform JEDER Standdatei (docs/arbeitsweise.md, Die
@@ -162,6 +168,14 @@ formuliert, und ein Snippet ist kein Wert. Wer sie ungeprüft anwendet, maskiert
 und macht ihn unausführbar; wer sie ungeprüft übergeht, lässt ein `</script>` jeden
 umgebenden Block verlassen. Die Datei `src/lib/script-embed.ts` trägt die Kontext-Grenze
 in ihrem Docblock.
+**BEANTWORTET AM 2026-09-19 — DER ABSATZ DARÜBER BLEIBT WÖRTLICH STEHEN, SEIN "IST OFFEN"
+TRIFFT NICHT MEHR ZU:** Entscheidung P11.6-5, Teil (3), setzt, dass der Betreiber-Code als
+STRING über `embedInScript` reist und erst am Zielort gekapselt ausgeführt wird. **DIE
+REGEL GREIFT ALSO** — und die Sorge "maskiert den Code und macht ihn unausführbar" ist
+ausgeräumt: Das Escape lebt im QUELLTEXT des Blocks, der zur Laufzeit gelesene String
+trägt wieder das echte Zeichen. Was dieser Absatz weiterhin richtig sagt, ist die zweite
+Hälfte: Ein roh eingesetztes `</script>` verliesse jeden umgebenden Block — genau deshalb
+gibt es den Transport als Wert.
 
 **(B4) EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY.**
 docs/immer-beachten.md, gleichnamige Regel, und ihre Folge "EIN NEUES FAN-OUT-ZIEL LÄUFT
@@ -249,6 +263,10 @@ die es vorher nicht hatte.
 **WAS SIE AUSDRÜCKLICH NICHT ENTSCHEIDET — UND WAS DESHALB EINE DESIGNRUNDE BRAUCHT:**
 **WELCHE Gruppe** ("Messung" oder "Werbung", `CONSENT_GROUP_KEYS` in
 `src/lib/tracking/consent-choice.ts`) und **WELCHER Schlüssel**. Beides ist offen.
+**DIE DESIGNRUNDE IST AM 2026-09-19 GELAUFEN — DER SATZ DARÜBER BLEIBT WÖRTLICH STEHEN,
+SEIN "Beides ist offen" TRIFFT NICHT MEHR ZU:** Entscheidung P11.6-5, Teil (2), setzt den
+Schlüssel `custom` und die Gruppe "Werbung", beides FEST. Die drei Auflagen darunter
+gelten unverändert und sind damit nicht erledigt, sondern FÄLLIG.
 
 **WAS BEIM BAUEN UNAUSWEICHLICH IST, SOBALD DIE DESIGNRUNDE ENTSCHEIDET** (GEMESSEN am
 Code, CC, 2026-09-19; kein Vorgriff auf die Entscheidung, sondern die Auflage, die JEDE
@@ -266,13 +284,254 @@ Antwort trägt):
 **PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-19**, übermittelt über den Prompt dieser Runde;
 am Repo nicht anderweitig belegt. Die drei Auflagen sind GEMESSEN am Code (CC, 2026-09-19).
 
+### ENTSCHEIDUNG P11.6-3 — DIE SNIPPET-EINGABE IST FREI, NICHT KURATIERT
+
+**DIE ENTSCHEIDUNG:** **EIN Feld, beliebiger Basis-Code, beliebig viele Netzwerke darin.**
+Keine Auswahlliste, keine Kennungs-Felder je Anbieter.
+
+**DER GRUND, ZWEI HÄLFTEN:** **keine Limitierung** — der Betreiber bringt mit, was er
+mitbringt, auch ein Netzwerk, das wir nie gesehen haben; und **keine Nachpflege je
+Netzwerk** — ein kuratiertes Feld verlangt, dass wir das Snippet jenes Anbieters kennen,
+erzeugen und bei jeder Änderung seiner Seite nachziehen.
+
+**DIE RICHTUNG IST DIE EIGENTLICHE AUSSAGE: KURATIERTE FELDER SIND SPÄTER ADDITIV
+MÖGLICH, UMGEKEHRT NICHT.** Ein freies Feld nachträglich zu entfernen, weil kuratierte
+Felder es ersetzen sollen, trifft jede Seite, die es schon benutzt — und ein
+ausgeliefertes Artefakt erreicht kein Deploy (docs/immer-beachten.md, "WAS EINMAL IM
+AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE"). Die Reihenfolge ist damit nicht
+Geschmack, sondern die einzige, die sich revidieren lässt.
+
+**SIE BEANTWORTET DESIGNFRAGE (F1) ZUGUNSTEN DES NOTAUSGANGS** — und der Bestand hat
+diese Gestalt bereits benannt und mit einer Auflage versehen, die HIER WEITERGILT:
+docs/claude-history/future-roadmap.md, ARCHITEKTUR-EINORDNUNG, "**Die Tür wird als Tür
+geführt, nicht als dritte gleichrangige Option.** Wer sie im UI gleichrangig neben die
+kuratierten Felder stellt, verwischt genau den Unterschied, der ihre Existenz
+rechtfertigt." Heute gibt es keine kuratierten Felder daneben; die Auflage wird scharf,
+sobald es sie gibt.
+
+**WAS SIE NICHT ENTSCHEIDET:** die Längengrenze, die Ablage-Form und die Oberfläche.
+
+**PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-19**, übermittelt über den Prompt dieser Runde;
+am Repo nicht anderweitig belegt. Die Auflage aus der future-roadmap ist GELESEN (CC,
+2026-09-19).
+
+### ENTSCHEIDUNG P11.6-4 — DAS CONVERSION-EREIGNIS HÄNGT AN DER AKTION, NICHT AM PROJEKT
+
+**DIE ENTSCHEIDUNG:** An der **Track-Aktion** steht ein **optionales Feld "eigener Code"**.
+Was dort steht, wird beim Klick auf genau dieses Element ausgeführt.
+
+**DER GRUND IST DER KERN-LOOP, NICHT DIE TECHNIK:** Click&Connect soll **ohne
+Programmierkenntnis** bedienbar bleiben. Der Betreiber kopiert die Ereigniszeile aus der
+Dokumentation seines Netzwerks an die Aktion, die sie auslösen soll — er muss nicht
+wissen, wie Ereignisse verteilt werden, und er braucht keine Bedingung über Elemente zu
+formulieren.
+
+**DER PREIS WIRD MITGENANNT UND IST AUSDRÜCKLICH IN KAUF GENOMMEN:** Bei mehreren Knöpfen
+mit demselben Ereignis steht dieselbe Zeile mehrfach da. **Copy-Paste je Aktion ist
+gewollt, kein Mangel** — wer das später "aufräumt", indem er Ereignisse projektweit
+zuordnet, nimmt dem Betreiber die Fähigkeit, zwei Knöpfe verschieden zu behandeln, und
+baut genau die Konfigurationstiefe, die "Marketer-Mindset: Geschwindigkeit und 1 Klick
+über Konfig-Tiefe" (CLAUDE.md) ausschliesst.
+
+**SIE BEANTWORTET DESIGNFRAGE (F4) AUF DER ORTS-ACHSE UND NUR DORT:** Die Zeile hängt an
+der Aktion. WAS sie zur Laufzeit sehen kann — Ereignisname, Wert, Währung, die geteilte
+Ereignis-Kennung — ist damit nicht entschieden und gehört in den Zuschnitt.
+
+**PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-19**, übermittelt über den Prompt dieser Runde;
+am Repo nicht anderweitig belegt.
+
+### ENTSCHEIDUNG P11.6-5 — VIER SETZUNGEN, DIE DEN ZUSCHNITT BINDEN
+
+**DIE ENTSCHEIDUNG, VIER TEILE. Sie gehören zusammen, weil jede einzeln für sich
+plausibel ist und erst zusammen den Zuschnitt festlegen.**
+
+**(1) EIN SNIPPET-FELD JE PROJEKT; BEIDE A/B-VARIANTEN TEILEN ES. Die EREIGNISZEILEN
+hängen je Aktion — und damit je Variante.** Das ist keine Inkonsequenz, sondern folgt der
+bestehenden Naht: Der Einstellungs-Blob ist **projektweit** und wird von BEIDEN
+Speicherwegen geschrieben (`saveProject` und `saveVariantB` tragen beide `settings` im
+Payload, GEMESSEN am Code, CC, 2026-09-19 — `saveVariantB` begründet das ausdrücklich:
+"das Einstellungs-Panel … ist variant-UNABHAENGIG sichtbar und editierbar"), während
+`mappings` und `mappings_b` **getrennte Spalten** sind. Der Basis-Code eines Netzwerks ist
+projektweit; welches Ereignis ein Knopf auslöst, ist es nicht.
+**DIE FOLGE, DIE MITMUSS:** Wer in Variante B eine Track-Aktion anlegt, bekommt ihre
+Ereigniszeile NICHT automatisch in Variante A. Das ist dieselbe Trennung, die für
+Ereignisname und Wert schon heute gilt.
+
+**(2) DER EINWILLIGUNGS-SCHLÜSSEL HEISST `custom` UND LIEGT FEST IN DER GRUPPE
+"WERBUNG".** Er beantwortet Designfrage (F3) und löst den Schlüssel ein, den
+docs/claude-history/future-roadmap.md als "beschlossen" führt und der nie gebaut wurde
+(Ausgangslage (d)).
+**"FEST" HEISST: DIE ZUGEHÖRIGKEIT IST ENTSCHIEDEN UND BEZEUGT — ES HEISST AUSDRÜCKLICH
+NICHT, DASS EINE ZWEITE LISTE ENTSTEHT.** Die Unterscheidung ist tragend, weil die
+naheliegende Lesart gegen eine ältere bindende Entscheidung liefe: Entscheidung (4) der
+Phase 11.5 setzt, dass `CONSENT_GROUP_KEYS` **AUS `ALL_CONSENT_KEYS` ABGELEITET wird, NIE
+AUS EINER ZWEITEN LISTE** (`src/lib/tracking/consent-choice.ts`, Docblock; GELESEN, CC,
+2026-09-19). **DIE ABLEITUNG BLEIBT.**
+Was die Entscheidung leistet, ist das, wofür jene Ableitung ihren Wächter hat: Die Gruppe
+"Werbung" ist die Ableitung "alles ausser `analytics`" — ein neuer Schlüssel landete dort
+STILL. **G0 in `src/lib/tracking/consent-bar.test.ts` hält beide Gruppen LITERAL und wird
+dabei absichtlich ROT.** Er zwingt die Frage "in welche Gruppe gehört der neue Schlüssel?"
+und diese Entscheidung ist ihre Antwort; nachgezogen wird der WÄCHTER, nicht die
+Ableitung. Er tut genau das, wofür er gebaut ist.
+**WER STATTDESSEN EINE LITERALE GRUPPENLISTE BAUT, HEBT EINE BINDENDE ENTSCHEIDUNG DER
+VORPHASE AUF** — und zwar an der Stelle, die jene Phase ausdrücklich gegen eine zweite
+Wahrheit gesichert hat.
+**DIE SCHREIBWEISE IST EINE EINBAHNSTRASSE** (P11.6-2, dritte Auflage).
+
+**(3) BETREIBER-CODE KOMMT NIE ROH IN UNSEREN CODE.** Er reist als **String über
+`embedInScript`** (`src/lib/script-embed.ts`) und wird zur Laufzeit **GEKAPSELT**
+ausgeführt — so, dass ein Fehler im Betreiber-Code **weder den Redirect noch das
+Meta-Fire derselben Aktion mitreisst**.
+**DAS BEANTWORTET DESIGNFRAGE (F5), UND ZWAR IN BEIDE RICHTUNGEN:** Die Dauerregel "JEDER
+BETREIBER-WERT, DER IN SCRIPT-ROHTEXT GEHT, LÄUFT ÜBER DEN EINBETTUNGS-HELFER" GREIFT —
+weil der Code auf dem Transportweg **ein Wert ist** und erst am Zielort wieder Code wird.
+Die Sorge aus (F5), das Escape mache den Code unausführbar, trifft nicht zu: Das
+Unicode-Escape lebt im **Quelltext** des Script-Blocks; der String, den die Laufzeit
+daraus liest, trägt wieder das echte Zeichen. **Damit gibt es keinen Fall, in dem ein
+`</script>` des Betreibers den umgebenden Block verlässt.**
+**DIE GESTALT DER KAPSELUNG IST NICHT ENTSCHEIDEN** — sie gehört in den Zuschnitt.
+
+**(4) GEBAUT WIRD IM CLIENT-ERZEUGER.** `generateFunctional` (`src/lib/generate.ts`),
+nicht `injectPageViewEmitter`. **DER GRUND IST DER EXPORT:** Nur was der Client-Erzeuger
+baut, steht auch in einer heruntergeladenen oder kopierten Seite (Ausgangslage (e)).
+**DER PREIS WIRD MITGENANNT:** Damit steht der Custom-Baustein im Dokument **VOR** den
+server-injizierten Blöcken — Wiederherstellung, Dialog, Setzer stehen dahinter (GEMESSEN
+an der Einfügearithmetik, CC, 2026-09-19: `generateFunctional` hängt seine Blöcke als
+LETZTE Kinder an `body`, `injectPageViewEmitter` setzt seinen Block davor an
+`lastIndexOf("</body>")` und landet damit DAHINTER). Für den heutigen Bestand ist das
+folgenlos, weil das Wiring nur auf KLICK urteilt; **für einen Baustein, der beim LADEN
+urteilt, ist es der zentrale Zwang des Zuschnitts.**
+
+**PROVENIENZ: ARCHITEKT-SETZUNG mit OWNER-ZUSTIMMUNG 2026-09-19**, übermittelt über den
+Prompt dieser Runde; am Repo nicht anderweitig belegt. Die vier Stützbefunde — die zwei
+Speicherwege, die Gruppen-Ableitung, die Kontext-Grenze des Einbettungs-Helfers und die
+Einfügearithmetik — sind GEMESSEN am Repo (CC, 2026-09-19).
+
+### ENTSCHEIDUNG P11.6-6 — DIE SIEBEN NACHSCHÄRFUNGEN DES PLAN-REVIEWS
+
+**SIE ENTSTEHEN AM PLAN DER SCHEIBE 11.6a UND BINDEN ÜBER SIE HINAUS.** Jede beantwortet
+eine Frage, die der Plan offengelassen oder zu weich entschieden hatte; sie stehen
+gesammelt, weil sie zusammen die Bauform des Custom-Bausteins festlegen.
+
+**(a) DIE EREIGNISZEILE STEHT UNTER DERSELBEN EINWILLIGUNG WIE DER BASIS-CODE.** Mit
+eingeschaltetem Dialog läuft sie NUR bei `custom === true`; ohne gesetzten Hook läuft sie
+immer.
+**WARUM DAS EIGENS ENTSCHIEDEN WIRD, obwohl es selbstverständlich klingt:** Der Plan
+hatte die Einwilligung nur für den LADER benannt. Ein ungegateter Aufruf bei geladenem
+Basis-Code wäre folgenlos gewesen (ohne Basis-Code kein Empfänger) — aber ein Betreiber
+kann in die Zeile auch einen eigenen `fetch` schreiben, und der ginge dann ohne
+Einwilligung hinaus. **Die Zeile ist ein eigener Sender, nicht nur eine Bedienung des
+Laders.** Sie bekommt deshalb ihre eigene Prüfung, nicht die des Laders geerbt.
+
+**(b) NACHVERSUCH BEIM KLICK: VOR DER EREIGNISZEILE LÄDT DER BASIS-CODE, falls er noch
+nicht geladen ist UND `custom` jetzt erlaubt ist.**
+**DER GRUND IST EIN FREMDES CMP.** Der Lader urteilt bei `DOMContentLoaded`; ein fremdes
+Consent-Management setzt `window.pagesmithConsent` häufig ERST DANACH, nach einer eigenen
+Netzanfrage oder nach der Besucher-Entscheidung. Ohne Nachversuch bliebe der Basis-Code
+für die ganze Sitzung ungeladen, obwohl der Besucher zugestimmt hat — und die
+Ereigniszeile liefe ins Leere, weil ihr Empfänger fehlt. **DER BRUCH WÄRE STILL:** kein
+Fehler, keine Meldung, nur fehlende Conversions.
+**DER NACHVERSUCH IST NICHT DERSELBE WEG WIE `__psCustomLoad`:** Jener deckt den Fall, in
+dem UNSER Dialog eine Zustimmung entgegennimmt (`write` ruft ihn). Dieser deckt den Fall,
+in dem ein FREMDES CMP den Hook setzt, ohne dass `write` je läuft. **Beide sind nötig; der
+eine ersetzt den anderen nicht.**
+
+**(c) SEQUENZIELLES LADEN. Bei einem `<script src>` wird auf `load` oder `error`
+gewartet, bevor der nächste Knoten eingefügt wird; ein `error` führt WEITER, es bricht
+nicht ab.**
+**DER GRUND IST DIE BAUFORM ECHTER SNIPPETS:** Sie bestehen regelmässig aus einem
+Bibliotheks-Script mit `src` und einem Inline-Script dahinter, das die Bibliothek
+benutzt. Werden beide in einem Zug eingefügt, läuft das Inline-Script SOFORT und die
+Bibliothek ist noch nicht da — es wirft, und der Betreiber sieht ein Snippet, das
+"manchmal" funktioniert.
+**WARUM `error` WEITERFÜHRT:** Ein Adblocker blockt regelmässig genau das erste Script.
+Ein Abbruch nähme dem Betreiber auch die Netzwerke, die nicht geblockt sind. **Die
+Fehlerklasse ist die von `DRITTANBIETER-SCRIPT-LADEPRÜFUNG` (docs/immer-beachten.md): Der
+Ladezustand ist am `load`/`error` des Elements ablesbar, nicht an einem globalen Stub.**
+
+**(d) DER CUSTOM-BAUSTEIN ENTSTEHT NUR IN `mode === "export"`. In der Vorschau gibt es
+WEDER Lader NOCH Ereigniszeile.**
+**DAS IST EINE ABWEICHUNG VOM BESTAND UND WIRD ALS SOLCHE BENANNT:** Die Vorschau feuert
+heute echtes `fbq` (s. Vorrat P11.6-3). Der Custom-Baustein folgt dem NICHT — und der
+Grund ist nicht Konsistenz, sondern Wirkung: Der Basis-Code eines Netzwerks setzt beim
+Laden Cookies und schickt einen Seitenaufruf, und der Rahmen baut sich bei jeder Tipp-Pause
+neu auf. **Es entstünden Ereignisse aus der ARBEIT des Betreibers, nicht aus dem Verhalten
+seiner Besucher — bei jedem Zeichen, das er tippt.**
+**DAZU KOMMT, DASS DIE VORSCHAU ALS TESTINSTRUMENT OHNEHIN NICHTS BELEGT** (GEMESSEN, CC,
+2026-09-19): Im Rahmen laufen `document.cookie`, `localStorage` und `sessionStorage` über
+den Kompatibilitäts-Riegel (`src/lib/preview-storage-shim.ts`, Speicher im Arbeitsspeicher),
+und Netzanfragen tragen den Ursprung `null` (offener Punkt "NETZANFRAGEN MIT URSPRUNG
+`null` SIND IN DER VORSCHAU NICHT LÖSBAR"). Ein Fremd-Snippet verhält sich dort
+nachweislich anders als live.
+**FOLGE, DIE MITMUSS:** Der Betreiber kann seinen Custom-Pixel im Editor NICHT prüfen. Das
+ist der Preis, und er ist bewusst bezahlt.
+
+**(e) DIE EREIGNISZEILE BEKOMMT KEINE PARAMETER. Die geteilte Ereignis-Kennung bleibt
+innen.**
+**DER GRUND IST DIE DEDUPLIZIERUNGS-NAHT:** `eid` wird in `__psMetaFire` GENAU EINMAL
+erzeugt und von drei Verbrauchern geteilt (Pixel, Beacon, Bestätigung); `tracking/meta.ts`
+sagt dazu, zwei Erzeugungsstellen brächen "Metas Deduplizierung UND den
+Verlustraten-Join — lautlos, weil beide Werte für sich gültig aussehen". Sie nach aussen
+zu geben, machte fremden Code zum vierten Verbraucher eines Wertes, dessen Bedeutung
+niemand ihm erklärt hat.
+**UND EINE ZWEITE HÄLFTE, DIE SCHWERER WIEGT: EIN PARAMETER IST EIN KONTRAKT.** Was die
+Zeile einmal sehen darf, bekommen wir nicht mehr zurück (Einbahnstrasse). **Nachlegen geht
+— ein Parameter, den ein echter Betreiber verlangt, lässt sich später ergänzen.**
+**WAS DIE ZEILE STATTDESSEN HAT:** den globalen Geltungsbereich, in dem der Basis-Code
+seine eigenen Namen abgelegt hat. Mehr braucht ein Netzwerk-Aufruf nicht.
+
+**(f) EINE ÜBERLANGE EREIGNISZEILE: `publishProject` BRICHT LAUT AB; im EXPORT wird sie
+NICHT EINGEBAUT.**
+**ZWEI ORTE, WEIL ES ZWEI AUSLIEFERWEGE GIBT** und der Export nicht über den Server läuft
+(Ausgangslage (e)). Der Abbruch im Publish folgt der Dauerregel "EIN UNBEKANNTER
+KONFIGURATIONSWERT BRICHT LAUT AB, STATT STILL AUF EINEN VORGABEWERT ZURÜCKZUFALLEN" und
+steht an derselben Stelle wie die vier Consent-Abbrüche — dort gibt es einen Rückkanal
+zum Betreiber. Im Export gibt es keinen; dort bleibt nur, die Zeile nicht einzubauen.
+**DIE ASYMMETRIE IST BENANNT UND NICHT BEHOBEN:** Der Export schweigt. Das ist derselbe
+Mangel, den der offene Punkt "DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT
+ERFASST" führt, und diese Scheibe löst ihn nicht.
+
+**(g) DIE ZWEI ZAHLEN UND DER NEUE GLOBALE NAME — ihre Provenienz, ausdrücklich.**
+**16 000 CODEPUNKTE (Snippet) und 2 000 (Ereigniszeile) sind ARCHITEKT-SETZUNGEN OHNE
+MESSUNG.** Was gemessen ist, ist nur der Rahmen (Upload-Grenze 2 MB, Ablage im
+`settings`-jsonb). Wer sie ändert, ändert eine Setzung, keinen Befund.
+**`window.__psCustomLoad` IST EIN NEUER GLOBALER NAME — INTERN.** Er ist `__ps`-namespaced
+wie `__psPageView` und `__psConsentStore`, steht in keiner Betreiber-Dokumentation und
+verletzt P11.6-1 ("KEIN neuer globaler Name") deshalb nicht: Jene Setzung zielt auf einen
+Namen, den ein BETREIBER aufrufen soll.
+**DER PREIS WIRD TROTZDEM BENANNT, weil er echt ist:** Auch ein interner Name ist eine
+EINBAHNSTRASSE — er steht ab dem ersten Publish in fremden Seiten. Und die
+Existenzprüfung in `write` macht einen späteren Bruch UNSICHTBAR: fehlt der Name, passiert
+nichts, und niemand sieht es. **Wer ihn je umbenennt, bricht die Nachhol-Kette still.**
+
+**PROVENIENZ: ARCHITEKT, Plan-Review 2026-09-19**, übermittelt über den Prompt der
+Bau-Runde; am Repo nicht anderweitig belegt. Die Stützbefunde — der Vorschau-Riegel, der
+Ursprung `null`, die Einmal-Erzeugung der Kennung, die zwei Ausgabewege — sind GEMESSEN am
+Repo (CC, 2026-09-19).
+
 ---
 
 ## Die offenen Designfragen
 
-**DIES SIND FRAGEN, KEINE WEGE.** Sie stehen OHNE Rangfolge und OHNE Empfehlung; die
-Reihenfolge der Aufzählung ist keine Wertung. **KEINE ist entschieden.**
+**ALLE FÜNF SIND AM 2026-09-19 BEANTWORTET** (Designrunde, zweite Runde des Tages). Je
+Frage steht die Antwort als Zeiger auf die Entscheidung, die sie trägt.
 
+**DER FRAGETEXT BLEIBT WÖRTLICH STEHEN UND WIRD NICHT GESTRICHEN**, und der Grund ist
+nicht Pietät: Er trägt die Befunde und die Abgrenzungen, aus denen die Antwort entstanden
+ist — die zwei Mechanismen der future-roadmap, die Abgrenzung der Instanz-Achse, die
+Kontext-Grenze des Einbettungs-Helfers. Wer nur die Entscheidung liest, hat den Grund
+nicht. Der Satz "KEINE ist entschieden" von heute Vormittag ist damit ÜBERHOLT und steht
+unten nicht mehr.
+
+**WAS NACH DIESEM ABSCHNITT NOCH OFFEN IST, STEHT NICHT MEHR HIER.** Die Designfragen
+sind erledigt; die verbliebenen Fragen sind BAU-Fragen und gehören in den Zuschnitt der
+ersten Scheibe (Ablage, Längengrenzen, Persistenz der Ereigniszeile, der Weg des
+Schlüssels in die Schlüsselmenge, Feuerpfad, Kapselungs-Gestalt, Lader, nachgeholte
+Einwilligung, Vorschau, Byte-Gleichheit, Oberfläche). **Wer sie hierher zurückschreibt,
+macht aus einer beantworteten Frage eine offene.**
+
+**(F1) — BEANTWORTET durch Entscheidung P11.6-3: FREI, NICHT KURATIERT. Die Auflage "Die
+Tür wird als Tür geführt" gilt weiter.**
 **(F1) FREIES SNIPPET-FELD ODER KURATIERTE FELDER JE NETZWERK?** Der Bestand kennt die
 Unterscheidung bereits und nennt sie ZWEI MECHANISMEN, nicht drei Varianten
 (docs/claude-history/future-roadmap.md, ARCHITEKTUR-EINORDNUNG): KURATIERT (Kennungs-Feld,
@@ -281,20 +540,33 @@ sauber") gegen NOTAUSGANG (beliebiger fremder Code — "wir können ihn erst NAC
 einfügen, aber wir können nicht prüfen, was er tut"). Jene Stelle setzt zusätzlich: "Die
 Tür wird als Tür geführt, nicht als dritte gleichrangige Option."
 
+**(F2) — BEANTWORTET durch Entscheidung P11.6-5, Teil (1): EIN Feld je Projekt, von beiden
+A/B-Varianten geteilt; die Ereigniszeilen hängen je Aktion und damit je Variante.**
 **(F2) EIN SNIPPET JE PROJEKT ODER MEHRERE?** Berührt die Ablage-Form im
 Einstellungs-Blob. **NICHT zu verwechseln mit der Instanz-Achse der Geheimnis-Tabelle** —
 ein Client-Snippet trägt kein Zugangsdatum und legt keine Zeile in `project_secrets` an;
 die Eindeutigkeit `(project_id, target)` ist davon unberührt (s. Vorrat P11.6-1).
 
+**(F3) — BEANTWORTET durch Entscheidung P11.6-5, Teil (2): der Schlüssel heisst `custom`
+und liegt FEST in der Gruppe "Werbung"; der Wächter G0 wird dabei absichtlich rot.**
 **(F3) SCHLÜSSEL UND GRUPPE DER EINWILLIGUNG.** Offen gelassen von Entscheidung P11.6-2;
 die drei Auflagen, die jede Antwort tragen muss, stehen dort.
 
+**(F4) — BEANTWORTET durch Entscheidung P11.6-4 auf der ORTS-Achse: ein optionales Feld
+"eigener Code" an der Track-Aktion. WAS die Zeile zur Laufzeit sehen kann, ist damit
+NICHT entschieden und gehört in den Zuschnitt — das ist kein Rest der Designfrage,
+sondern eine Bau-Frage.**
 **(F4) DIE FORM DER EREIGNISZEILE JE AKTION.** Was die Zeile bekommt — Ereignisname,
 `isCustom`, Wert, Währung, die geteilte Ereignis-Kennung — und in welcher Gestalt. Der
 heutige Klick-Pfad hält alles davon als LOKALE Werte in `__psMetaFire`
 (`src/lib/tracking/meta.ts`); `TrackConfig` (`src/lib/mappings.ts`) trägt
 `event`, `isCustom?`, `value?`, `currency?`.
 
+**(F5) — BEANTWORTET durch Entscheidung P11.6-5, Teil (3): als STRING über
+`embedInScript`, Ausführung GEKAPSELT. Die Regel GREIFT — der Code ist auf dem
+Transportweg ein Wert und wird erst am Zielort wieder Code; das Escape lebt im Quelltext,
+der gelesene String trägt wieder das echte Zeichen. Die Sorge unten, das Escape mache den
+Code unausführbar, ist damit ausgeräumt.**
 **(F5) WIE KOMMT DER BETREIBER-CODE IN DEN AUSGELIEFERTEN TEXT? — DIE SCHWERSTE DER FÜNF.**
 **Er ist CODE, kein Wert in einem String.** Ein `</script>` darin verlässt den umgebenden
 Block; `<!--<script>` verschluckt zusätzlich das NÄCHSTE Script-Element, ohne einen
@@ -408,6 +680,67 @@ im Kommentar "MELDEN, NICHT BAUEN".
 
 **NICHTS ZU TUN IN DIESER PHASE.** Der Eintrag steht hier ausschliesslich, damit die
 nächste Runde nicht zum dritten Mal denselben Befund neu erhebt.
+
+### VORRAT P11.6-3 — DIE VORSCHAU FEUERT ECHTE EREIGNISSE: EINE HÄLFTE IST GEFÜHRT, DIE ANDERE NICHT
+
+**GEPRÜFT VOR DEM ANLEGEN (GEMESSEN am Repo, CC, 2026-09-19, vier Achsen mit
+Positivkontrolle):** Der Befund ist **zur Hälfte bereits geführt**, und für diese Hälfte
+steht hier NUR EIN ZEIGER, kein zweiter Eintrag.
+
+**DIE GEFÜHRTE HÄLFTE — `fbq`:** docs/claude-history/phase-4-mapping-codegen-export.md sagt
+wörtlich: *"Die Vorschau feuert bereits bei Linksklick echtes fbq (akzeptierte
+Marketer-eigene-Vorschau-Verschmutzung)"*. Es ist also **kein neuer Befund und kein
+Defekt, sondern eine ausdrücklich akzeptierte Folge** — festgehalten beim Bau des
+auxclick-Listeners, als begründet wurde, warum jener export-only bleibt.
+
+**DIE NICHT GEFÜHRTE HÄLFTE — DER `/api/e`-BEACON:** Dass die Vorschau **auch einen echten
+Server-Beacon schickt**, steht nirgends (Achse: `Vorschau` neben `Beacon` bzw. `api/e`
+über alle Doku-Dateien — NULL Treffer; Positivkontrolle: `Vorschau` trifft in
+backlog-polish.md fünfmal und in offene-punkte.md elfmal). **Das ist erklärbar und
+trotzdem eine Lücke:** Jener Satz stammt aus Phase 4; den CAPI-Beacon gibt es erst seit
+Phase 6 (Scheibe 2b-ii), und seit Phase 11 Scheibe 8 hängt er nicht einmal mehr an der
+Pixel-ID. **Die akzeptierte Verschmutzung ist also seither GRÖSSER, als der Satz sagt, der
+sie akzeptiert** — sie erreicht heute die eigene `events`-Tabelle und damit die
+Analytics-Zahlen des Betreibers.
+
+**WAS DAS MIT DIESER SCHEIBE ZU TUN HAT:** Entscheidung P11.6-6 (d) nimmt den
+Custom-Baustein aus der Vorschau heraus und weicht damit vom Bestand ab. **Dieser Eintrag
+ist der Beleg dafür, dass der Bestand an dieser Stelle nicht sauber ist, sondern
+gewachsen** — die Abweichung ist also keine Inkonsequenz.
+
+**KEINE EMPFEHLUNG**, ob Meta und der Beacon in der Vorschau bleiben sollen. **KEIN
+TRIGGER** — der Zustand geht nicht still kaputt, er ist seit Phase 4 bekannt und bewusst.
+
+### VORRAT P11.6-4 — DREI SÄTZE FÜR DIE BETREIBER-DOKUMENTATION, DIE SONST NIEMAND SCHREIBT
+
+**Drei Eigenschaften des Custom-Pixels, die ein Betreiber NICHT erraten kann und die ihm
+heute nichts sagt:**
+
+**(1) `<noscript>` IST AUF DIESEM PFAD TOT.** Viele Snippets tragen einen
+`<noscript><img …></noscript>`-Rückfall. Unser Lader fügt ihn ein, aber der INHALT eines
+`<noscript>` wird nur geparst, wenn Skripting AUS ist — und dann läuft der Lader gar nicht.
+**Das ist nicht reparierbar**, es ist eine Eigenschaft des Formats. Ein Betreiber, der den
+Rückfall für wirksam hält, zählt Besucher ohne JavaScript fälschlich als erfasst.
+
+**(2) AUF BEREITS VERÖFFENTLICHTEN SEITEN IST `custom` ABGELEHNT, bis der Besucher neu
+entscheidet.** Ein gespeicherter `ps1:`-Wert bleibt gültig — ein neuer Schlüssel macht ihn
+nicht ungültig —, führt den neuen Schlüssel aber in keiner der beiden Listen, und
+`hookFrom` setzt ihn dann auf `false` (`src/lib/tracking/consent-store.ts`, GELESEN). Für
+Besucher mit gespeicherter Entscheidung lädt der Basis-Code also NICHT, obwohl der
+Betreiber ihn eingetragen hat. **Fail-closed und richtig — aber unerklärt sieht es aus wie
+ein Defekt.**
+
+**(3) EINE CSP OHNE `unsafe-eval` AUF DER KUNDENSEITE LEGT DIE EREIGNISZEILE STILL.** Die
+Zeile läuft über `new Function`; eine `<meta http-equiv="Content-Security-Policy">` im
+importierten HTML des Betreibers kann das verbieten. **Der Ausfall ist gefangen und damit
+lautlos** — die Zeile tut dann einfach nichts. Der Basis-Code selbst ist davon NICHT
+betroffen (er läuft als echtes Script-Element). Wir liefern selbst keine CSP aus
+(GEMESSEN, CC, 2026-09-19: null Treffer über `src/` und `next.config.ts`).
+
+**WOHIN SIE GEHÖREN:** an den bestehenden offenen Punkt "BETREIBER-DOKUMENTATION FEHLT —
+DREI PUNKTE" (docs/offene-punkte.md), dessen Trigger "vor dem öffentlichen Launch" lautet.
+**HIER NICHT ERGÄNZT** — das wäre eine Änderung an einem Posten ausserhalb dieser Scheibe.
+**KEINE EMPFEHLUNG**, wie die Sätze lauten sollen.
 
 ---
 

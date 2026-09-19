@@ -713,14 +713,67 @@ TRIGGER** — der Zustand geht nicht still kaputt, er ist seit Phase 4 bekannt u
 
 ### VORRAT P11.6-4 — DREI SÄTZE FÜR DIE BETREIBER-DOKUMENTATION, DIE SONST NIEMAND SCHREIBT
 
-**Drei Eigenschaften des Custom-Pixels, die ein Betreiber NICHT erraten kann und die ihm
+**Fünf Eigenschaften des Custom-Pixels, die ein Betreiber NICHT erraten kann und die ihm
 heute nichts sagt:**
 
-**(1) `<noscript>` IST AUF DIESEM PFAD TOT.** Viele Snippets tragen einen
-`<noscript><img …></noscript>`-Rückfall. Unser Lader fügt ihn ein, aber der INHALT eines
-`<noscript>` wird nur geparst, wenn Skripting AUS ist — und dann läuft der Lader gar nicht.
-**Das ist nicht reparierbar**, es ist eine Eigenschaft des Formats. Ein Betreiber, der den
-Rückfall für wirksam hält, zählt Besucher ohne JavaScript fälschlich als erfasst.
+**(1) EIN `<noscript>`-RÜCKFALL ERREICHT DIE ZIELSEITE NICHT — WEDER DAS ELEMENT NOCH SEIN
+`<img>`.**
+**ZWEIMAL ERSETZT AM 2026-09-19, und beide Vorfassungen bleiben als Weg lesbar, weil der
+Unterschied zwischen ihnen die Sache ist:** Die erste sagte „`<noscript>` IST AUF DIESEM
+PFAD TOT — unser Lader fügt ihn ein" (falsch, sobald der Lader ihn übersprang). Die zweite
+sagte „wird übersprungen — und das löst das Problem nur zur Hälfte" (richtig für den
+damaligen Stand, überholt seit dem Body-Kontext). **Heute ist es eine ZUSAGE, keine
+halbe.**
+
+**DREI STUFEN, jede mit eigenem Grund, alle drei gebaut:**
+**(a) DER BODY-KONTEXT** — geparst wird `"<body>" + code`. **GEMESSEN (CC, 2026-09-19,
+jsdom 27):** Im Kopf-Kontext schliesst der Parser bei ausgeschaltetem Skripting das
+`<noscript>` VOR dem `<img>` und hebt das Bild in den Body (`head.innerHTML` war
+`<noscript></noscript>`); im Body-Kontext bleibt `<noscript>` ein gewöhnliches Element
+**mit** Kindern (`noscript.kinder = 1`, erstes Kind `IMG`). Die Einfügemodi sind „in head
+noscript" gegen „in body". **Ohne (a) greifen (b) und (c) ins Leere.**
+**(b) JEDES `<noscript>` WIRD AUS DEM GEPARSTEN DOKUMENT ENTFERNT**, auch ein
+verschachteltes — nötig, weil `importNode(…, true)` tief klont. **Das Dokument ist INERT**
+(DOMParser, kein Browsing-Kontext, an keiner Seite): Es wird kein fremder Knoten berührt.
+**(c) DIE ÜBERSPRING-ZEILE IN DER SCHLEIFE BLEIBT** als zweite Sicherung — nach (b)
+rechnerisch unerreichbar, kostet nichts, fängt jeden Parser, der ein `<noscript>` erzeugt,
+das (b) nicht gefunden hat.
+
+**WAS GESICHERT IST UND WODURCH:** T17d hält (a) — ohne Body-Kontext wird genau er rot
+(Mutation M6, Einzelstück). T17e hält (b) — ohne das Entfernen wird genau er rot (M7,
+Einzelstück). Beide tragen ihre Positivkontrolle im selben Lauf.
+**WAS OFFEN BLEIBT:** Ob der Parser eines **echten Browsers** im Body-Kontext dasselbe tut,
+ist **ungemessen** — Live-Test-Achse. Die Ableitung stützt sich auf die Einfügemodi der
+Spezifikation und auf jsdom.
+**WAS DER BETREIBER WISSEN MUSS:** Ein Rückfall für Besucher ohne JavaScript **kann auf
+diesem Pfad nie wirken** — er greift nur bei ausgeschaltetem Skripting, und dann läuft der
+Lader gar nicht. Wer ihn für wirksam hält, zählt jene Besucher fälschlich als erfasst.
+**DAS IST KEIN VERLUST GEGENÜBER HEUTE, sondern die Abwesenheit einer Doppelzählung.**
+
+**(1a) DIE REIHENFOLGE ÜBERLEBT DEN BODY-KONTEXT — und ist seither strukturell statt
+zufällig.** GEMESSEN (CC, 2026-09-19): Im Kopf-Kontext verteilte der Parser `link`, `meta`
+und `script` nach `head` und das `<img>` nach `body`; der Lader hängte beide Listen
+aneinander und traf die Quellreihenfolge **zufällig**. Im Body-Kontext liegen alle Knoten
+in EINEM Container, die Folge ist dieselbe (`LINK > META > SCRIPT > SCRIPT > IMG`) und
+jetzt **strukturell** die Quellreihenfolge. Wächter: T17f.
+
+**(1b) VERSCHACHTELTE `<script>`-ELEMENTE LAUFEN NICHT.** Der Lader baut ein frisches
+Script-Element nur für die Knoten der OBERSTEN Ebene; ein `<script>` innerhalb eines
+`<div>` kommt über `importNode` als geklonter Knoten in die Seite — und ein per DOM
+eingefügter Klon eines Script-Elements **wird nicht ausgeführt**. Ein Betreiber, der sein
+Snippet in einen Container wickelt, bekommt es damit still nicht ausgeführt.
+**ABLEITUNG AUS DER SPEZIFIKATION, in diesem Projekt NICHT gemessen** — auch das ist eine
+Live-Test-Achse.
+
+**(1c) BEI EINEM KNOPF MIT REDIRECT IST OFFEN, OB DIE ANFRAGE DES NETZWERKS DIE NAVIGATION
+ÜBERLEBT.** Die Ereigniszeile läuft garantiert VOR der Weiterleitung (T4) — aber was sie
+auslöst, ist die Sache des Betreiber-Codes: Ein `fetch` ohne `keepalive` oder ein
+Bild-Pixel kann beim Seitenwechsel abgebrochen werden. Unser eigener Beacon löst das über
+`sendBeacon` bzw. `keepalive` (docs/immer-beachten.md, „BEACON-keepalive PFLICHT"); auf
+fremden Code haben wir diesen Zugriff nicht.
+**DAS IST EINE LIVE-TEST-ACHSE UND AUSDRÜCKLICH KEIN UMBAU DES REDIRECTS IN DIESER
+SCHEIBE.** Ob der Redirect je verzögert wird, ist hier NICHT entschieden; die bestehende
+Bauform („kein Navigations-Defer", `src/lib/generate.ts`) bleibt unangetastet.
 
 **(2) AUF BEREITS VERÖFFENTLICHTEN SEITEN IST `custom` ABGELEHNT, bis der Besucher neu
 entscheidet.** Ein gespeicherter `ps1:`-Wert bleibt gültig — ein neuer Schlüssel macht ihn

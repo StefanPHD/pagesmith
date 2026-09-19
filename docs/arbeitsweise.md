@@ -138,8 +138,11 @@ dienen als Scope-Beleg („welche Dateien, und welche ausdrücklich nicht"), nic
 als Korrektheitsbeweis.
 
 **Abbruchkriterien — bei einem davon anhalten und Stefan entscheiden lassen:**
-- Eine Doku-Runde braucht mehr als zwei Korrekturschleifen. Dann war die Vorgabe
-  unklar, nicht CCs Ausführung: neu formulieren statt weiter nachbessern.
+- Eine Doku-Runde bekommt höchstens eine Korrekturschleife — und nur, wenn ein Stub,
+  Zeiger oder Verweis fehlt oder falsch sitzt, sodass eine spätere Instanz einen
+  Zusammenhang nicht herstellen könnte. Formulierung, Satzbau, Zahlen im Fliesstext und
+  Überschriften sind kein Anlass. Plan-, Bau- und Aufklärungsrunden sind davon nicht
+  begrenzt.
 - Eine Vorlage würde angefordert, um eine Zahl zu prüfen, die kein Verhalten
   ändert.
 - Eine Runde beschäftigt sich mit dem Zustand der Doku, ohne dass jemand danach
@@ -228,6 +231,11 @@ Live-Ergebnis nachzutragen.
 **Ausnahme:** Reine Doku-Commits laufen einstufig — ein Prompt, ein Diff, ein GO.
 Dort ist der Diff das Artefakt; ein Plan-Review prüfte dieselbe Sache zweimal.
 Zweistufig gilt für Bau-Scheiben.
+**Der Commit einer Doku-Runde kann im Prompt vorab freigegeben werden** — dann
+committet und pusht CC am Ende der Runde selbst, ohne Rückfrage; das GO ist vorweg
+gegeben, nicht entfallen. Angehalten wird er durch die **Stopp-Bedingungen im Prompt**:
+Greift eine, wird vorgelegt statt committet. Ohne ausdrückliche Vorab-Freigabe bleibt es
+bei „STOPP, kein Commit vor meiner Bestätigung" (s. „Prompt-Bauform für CC").
 
 **Beim Abschluss-Vermerk wird der Zuschnitt verdichtet.** Ein Zuschnitt trägt
 zweierlei: Anweisungen für seine Scheibe, die mit dem Protokoll ablaufen, und
@@ -757,7 +765,8 @@ Lesen des CC-Berichts mitprüfen kann statt nur weiterzureichen.
 
 ### Commit-Konventionen
 
-Du schreibst die Messages, Stefan committet.
+Du schreibst die Messages, Stefan committet — **es sei denn, der Commit ist im Prompt
+vorab freigegeben; dann committet und pusht CC selbst** (s. Kadenz, „Ausnahme").
 
 - **Conventional Commits:** `feat(scope):`, `fix(scope):`, `docs(claude):`,
   `docs(db):`, `docs(backlog):`, `refactor:`, `chore(scope):`. Ein Commit
@@ -845,9 +854,13 @@ hebelt die Regel dort aus, wo sie am billigsten greifen würde.
 - **CCs eigene Flags sind die Landkarte.** Genau dort hinsehen, wo CC selbst
   Unsicherheit oder eine Abweichung meldet — nicht pauschal alles nachrechnen.
   Misstrauen ist ein Instrument, kein Ritual.
-- **Doku-Diffs:** Volltext nur bei Regeln und Security-Manifest — dort ist das
-  Risiko nicht „mechanisch falsch", sondern „leise abgeschwächt", und das
-  verschluckt jede Zusammenfassung. Alles andere: Zusammenfassung.
+- **Doku-Runden:** Kein Volltext. Was aus dem Chat in die Doku wandert, bekommt klare
+  Vorgaben, was festzuhalten ist; CC formuliert. Zurück kommen eine Zusammenfassung je
+  Auftrag und der Nachweis, dass Stubs, Zeiger und Verweise sitzen. Volltext bleibt, wo
+  Information aus dem Repo zum Architekten fliesst: Aufklärung, Plan, Code. Einzige
+  Ausnahme: Wird eine bestehende Dauerregel oder ein Eintrag des Security-Manifests im
+  Wortlaut geändert oder gestrichen, kommt nur diese Passage alt/neu — eine still
+  abgeschwächte Regel lenkt jede spätere Instanz.
 - **Der Live-Test ist der Korrektheitsbeweis, nicht das Diff-Lesen.**
 - **Liste schlägt Zahl.** Nennt ein Bericht dieselbe Menge zweimal — einmal als
   Zahl, einmal als Liste —, ist die Liste maßgeblich. Weicht die Zahl ab, wird
@@ -859,15 +872,17 @@ Ressource.** Ein Diff über tausend Zeilen verbraucht Kontext, der danach für D
 und Entscheiden fehlt — der Preis fällt nicht beim Lesen an, sondern zwei Runden
 später, wenn die Sitzung gewechselt werden muss. Volltext bleibt Pflicht für
 Migrations-SQL, RLS, Ingest- und Serve-Pfad und für den einzelnen Hunk, an dem eine
-benannte Invariante hängt — und unverändert für die Doku-Ausnahme oben: Regeln und
-Security-Manifest. **Bei Doku-Runden ist er die Ausnahme, nicht die
-Vorlage.** Was dort trägt: `git diff --stat` als Scope-Beleg, die ersetzten
-Passagen als Zitat im Bericht, additive Teile als Überschrift plus Provenienzzeile.
+benannte Invariante hängt — und für die Ausnahme unter „Doku-Runden" oben: die im
+Wortlaut geänderte oder gestrichene Passage einer bestehenden Dauerregel oder eines
+Manifest-Eintrags, alt und neu. **Bei Doku-Runden ist er die Ausnahme, nicht die
+Vorlage.** Was dort trägt: `git diff --stat` als Scope-Beleg, eine Zusammenfassung je
+Auftrag und der Nachweis, dass Stubs, Zeiger und Verweise sitzen.
 
 **Für Sachkorrekturen gibt es ein billigeres Instrument als das Diff.** In die Datei
-kommt allein der heutige Stand; der ersetzte Wortlaut steht **im Bericht**, alt und
-neu nebeneinander. Ein gezielter Vergleich gegen `git show HEAD:<pfad>` prüft dieselbe
-Frage in vier Zeilen statt in vierhundert.
+kommt allein der heutige Stand; der ersetzte Wortlaut steht **im Bericht** — bei einer
+bestehenden Dauerregel oder einem Manifest-Eintrag alt und neu nebeneinander, sonst als
+Zusammenfassung (s. „Doku-Runden" oben). Ein gezielter Vergleich gegen
+`git show HEAD:<pfad>` prüft dieselbe Frage in vier Zeilen statt in vierhundert.
 
 ---
 

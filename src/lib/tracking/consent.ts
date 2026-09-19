@@ -48,6 +48,35 @@ export const META_CONSENT_TARGET = "meta";
 export const ANALYTICS_CONSENT_TARGET = "analytics";
 
 /**
+ * Der Ziel-Schluessel fuer den BETREIBER-SNIPPET (Phase 11.6, Scheibe 11.6a;
+ * Entscheidung P11.6-5, Teil (2)).
+ *
+ * ER LOEST EINEN BESCHLUSS EIN, DER NIE GEBAUT WURDE: docs/claude-history/future-roadmap.md
+ * fuehrt den Schluessel "custom" unter "DREI OFFENE FRAGEN", Punkt 2, als "als EIN
+ * Schluessel beschlossen" — und merkt im selben Atemzug an, ein Feld fuer BELIEBIGEN Code
+ * falle "dort nicht selbstverstaendlich hinein". P11.6-5 entscheidet genau das: er faellt
+ * hinein, und zwar in die Gruppe "Werbung".
+ *
+ * ER IST KEIN `TrackingTarget`, und das ist der ganze Punkt. Er hat keinen Adapter, keine
+ * Zeile in project_secrets und KEINEN Server-Forward. Damit ist der Namensraum seit dieser
+ * Scheibe BREITER als der Fan-Out — genau die Folge, die jene Datei unter Punkt 1
+ * vorhergesagt und bewusst nicht festgelegt hat.
+ *
+ * ER DARF NIE IN DIE ZIEL-LISTE VON buildMetaRuntime GERATEN (Invariante I7): Jene Liste
+ * speist die Oder-Kette der Wache 4 UND das Draht-Feld `cns`, und der Leser im Ingest
+ * schlaegt ausschliesslich ueber CONSENT_KEY_BY_TARGET nach. Ein Schluessel dort waere
+ * sofort im Draht. Der Custom-Baustein fragt DESHALB mit einem EIGENEN __psConsent-Aufruf.
+ *
+ * SCHREIBWEISE snake_case/klein wie bei den beiden darueber, und aus demselben Grund eine
+ * EINBAHNSTRASSE: Ab dieser Scheibe steht der Name in AUSGELIEFERTEM Code und in fremden
+ * Betreiber-Konfigurationen. Eine spaetere Umbenennung schaltet deren Custom-Pixel AB,
+ * ohne sichtbaren Fehler — das Gate ist fail-closed.
+ * DER ORT IST AUS DEMSELBEN GRUND DIESER: keine server-only-Datei, damit der Wert in
+ * erzeugten Browser-Code eingesetzt werden kann.
+ */
+export const CUSTOM_CONSENT_TARGET = "custom";
+
+/**
  * Der Laufzeit-Text des Gates. Setzt window.__psConsent(target) -> boolean.
  *
  * DIESE AUFZAEHLUNG IST DIE VERBINDLICHE FASSUNG DESSEN, WAS GESCHIEHT. Sie steht

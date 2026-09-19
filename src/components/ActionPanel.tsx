@@ -550,6 +550,9 @@ function TrackActions({
   const [currency, setCurrency] = useState(
     trackMapping?.config.currency ?? "EUR"
   );
+  // DIE EREIGNISZEILE (Phase 11.6, Scheibe 11.6a). Gleiche Bauform wie die vier
+  // Zustaende darueber: Seed aus dem bestehenden Mapping, reseed beim Abbrechen.
+  const [code, setCode] = useState(trackMapping?.config.code ?? "");
 
   const valid = event.trim() !== "";
   // value/currency nur bei wert-tragenden Standard-Events ODER Custom (freie Wahl).
@@ -562,6 +565,7 @@ function TrackActions({
       trackMapping?.config.value != null ? String(trackMapping.config.value) : ""
     );
     setCurrency(trackMapping?.config.currency ?? "EUR");
+    setCode(trackMapping?.config.code ?? "");
   }
 
   function handleSubmit() {
@@ -576,6 +580,11 @@ function TrackActions({
         config.currency = currency;
       }
     }
+    // NUR MITSCHICKEN, WENN NICHT LEER — dieselbe Bauform wie bei isCustom darueber.
+    // GETRIMMT WIRD NUR FUER DIE FRAGE "ist hier ueberhaupt etwas?"; gespeichert und
+    // ausgeliefert wird der ROHE Wert, damit die Einrueckung des Betreibers erhalten
+    // bleibt (dieselbe Auflage wie beim Sachtext des Einwilligungs-Dialogs).
+    if (code.trim() !== "") config.code = code;
     onSave(config);
     setIsEditing(false);
   }
@@ -594,6 +603,7 @@ function TrackActions({
         currency={currency}
         showValue={showValue}
         valid={valid}
+        code={code}
         onSelectChange={(v) => {
           if (v === CUSTOM_EVENT) {
             setIsCustom(true);
@@ -606,6 +616,7 @@ function TrackActions({
         onEventChange={setEvent}
         onValueChange={setValue}
         onCurrencyChange={setCurrency}
+        onCodeChange={setCode}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
       />
@@ -705,10 +716,12 @@ function TrackForm({
   currency,
   showValue,
   valid,
+  code,
   onSelectChange,
   onEventChange,
   onValueChange,
   onCurrencyChange,
+  onCodeChange,
   onSubmit,
   onCancel,
 }: {
@@ -718,10 +731,13 @@ function TrackForm({
   currency: string;
   showValue: boolean;
   valid: boolean;
+  // DIE EREIGNISZEILE (Phase 11.6, Scheibe 11.6a; Entscheidung P11.6-4).
+  code: string;
   onSelectChange: (v: string) => void;
   onEventChange: (v: string) => void;
   onValueChange: (v: string) => void;
   onCurrencyChange: (v: string) => void;
+  onCodeChange: (v: string) => void;
   onSubmit: () => void;
   onCancel: () => void;
 }) {
@@ -794,6 +810,31 @@ function TrackForm({
           </label>
         </div>
       )}
+
+      {/* EIGENER TRACKING-CODE JE AKTION (Phase 11.6, Scheibe 11.6a; Entscheidung
+          P11.6-4). OPTIONAL und IMMER sichtbar — nicht an isCustom oder showValue
+          gehaengt: Ein Betreiber kann auch zu einem Standard-Event eine eigene Zeile
+          seines Netzwerks setzen wollen, und eine Bedingung hier waere eine Aussage
+          ueber sein Netzwerk, die wir nicht treffen koennen.
+
+          DIE ZEILE BEKOMMT KEINE PARAMETER (P11.6-6, Teil (e)) — der Hinweistext sagt
+          es, damit niemand eine Variable erwartet, die es nicht gibt. */}
+      <label className="flex flex-col gap-1 text-sm">
+        <span className="font-medium text-gray-700">
+          Eigener Tracking-Code (optional)
+          <span className="block text-xs font-normal text-gray-400">
+            Läuft bei Klick auf dieses Element. Keine Variablen von uns.
+          </span>
+        </span>
+        <textarea
+          value={code}
+          onChange={(e) => onCodeChange(e.target.value)}
+          rows={3}
+          spellCheck={false}
+          placeholder="z.B. ttq.track('CompletePayment')"
+          className="rounded-md border border-gray-300 px-3 py-2 font-mono text-xs text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+        />
+      </label>
 
       <div className="flex gap-2">
         <button

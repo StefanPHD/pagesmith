@@ -22,6 +22,7 @@
 
 import { PAGEVIEW_SEND_API } from "@/lib/analytics/events";
 import { ALL_CONSENT_KEYS } from "@/lib/tracking/consent-targets";
+import { CUSTOM_LOAD_API } from "@/lib/tracking/custom-pixel";
 
 /**
  * Kennung des Blocks, `__ps_`-namespaced wie `__ps_cns` und `__ps_pve`.
@@ -126,6 +127,17 @@ export const CONSENT_STORE_API = "__psConsentStore";
  * N6/7 in analytics/pageview-emitter.resend.test.ts sowie R9, die R10-Positivkontrolle und
  * R13 in consent-store.test.ts, alle mit derselben Fehlerklasse.
  *
+ * DER NACHGEHOLTE CUSTOM-PIXEL-LADER (Phase 11.6, Scheibe 11.6a): Nach dem PageView-Aufruf
+ * ruft `write` denselben Weg fuer CUSTOM_LOAD_API — GLEICHE Bauform, gleiche
+ * Existenzpruefung, gleicher Grund. Ohne ihn lüde der Basis-Code des Betreibers erst beim
+ * naechsten Seitenaufruf, obwohl der Besucher gerade zugestimmt hat.
+ * DIE RICHTUNG IST HIER UMGEKEHRT UND DIE PRUEFUNG TROTZDEM NOETIG: Der Lader steht in
+ * einem FRUEHEREN Block (dem client-erzeugten Wiring), nicht in einem spaeteren. Er fehlt
+ * aber auf jeder Seite OHNE Custom-Pixel, und dort wuerfe ein direkter Aufruf.
+ * ER IST NICHT DER EINZIGE WEG: Der Lader versucht es zusaetzlich beim KLICK erneut
+ * (P11.6-6, Teil (b)) — fuer den Fall, dass ein FREMDES CMP den Hook setzt und `write`
+ * nie laeuft. Keiner der beiden ersetzt den anderen.
+ *
  * DER HOOK WIRD IN BEIDEN WEGEN SCHLUESSEL FUER SCHLUESSEL AUS ALL_CONSENT_KEYS GEBAUT,
  * NIE ROH AUS DEM SPEICHER: Ein Schluessel, den der Wert nicht fuehrt, wird false, und ein
  * gespeichertes literales `true` kann gar nicht erst durchgereicht werden.
@@ -196,6 +208,7 @@ export function buildConsentRestoreScript(): string {
     } catch (e) { return false; }
     window.pagesmithConsent = hookFrom(g);
     if (typeof ${PAGEVIEW_SEND_API} === "function") ${PAGEVIEW_SEND_API}();
+    if (typeof ${CUSTOM_LOAD_API} === "function") ${CUSTOM_LOAD_API}();
     return true;
   }
   window.${CONSENT_STORE_API} = { read: read, write: write };

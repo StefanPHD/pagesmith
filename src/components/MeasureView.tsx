@@ -84,6 +84,8 @@ export default function MeasureView({
   rulesTargets,
   conversionRuleFor,
   onConversionRuleChange,
+  customPixelCode,
+  onCustomPixelCodeChange,
   eventCounts,
   adblockLoss,
   variantCounts,
@@ -189,6 +191,12 @@ export default function MeasureView({
     event: string,
     value: string
   ) => void;
+  // --- Eigener Tracking-Code (Phase 11.6, Scheibe 11.6a) ---
+  // EIN SKALAR UND EIN RUECKRUF, wie bei den Pixel-Kennungen darueber: Die Ansicht
+  // bekommt den ROHEN Wert und gibt Schreibzugriffe zurueck an den Container — der
+  // bleibt der EINZIGE Schreiber des Einstellungs-Blobs. Kein settings-Blob hier.
+  customPixelCode: string;
+  onCustomPixelCodeChange: (value: string) => void;
   // --- Statistik ---
   eventCounts: EventCount[];
   adblockLoss: AdblockLoss | null;
@@ -327,6 +335,49 @@ export default function MeasureView({
             onTestModeChanged={onTestModeChanged}
           />
         ))}
+      </div>
+
+      {/* EIGENER TRACKING-CODE (Phase 11.6, Scheibe 11.6a; Entscheidung P11.6-3).
+          EIN Feld, beliebiger Basis-Code, beliebig viele Netzwerke darin.
+
+          WARUM HIER UND NICHT IM BEREICH VEROEFFENTLICHEN: Dieser Bereich traegt
+          alles, was TRACKING konfiguriert — die Ziel-Karten daruber und die
+          Ereignis-Achse darunter. Der Einwilligungs-Dialog liegt im anderen
+          Bereich, weil er die AUSLIEFERUNG betrifft.
+
+          DIE TUER WIRD ALS TUER GEFUEHRT (docs/claude-history/future-roadmap.md,
+          ARCHITEKTUR-EINORDNUNG): Der Hinweistext sagt, dass wir diesen Code nicht
+          pruefen. Heute steht er allein; sobald kuratierte Felder je Netzwerk
+          danebentreten, darf er NICHT gleichrangig neben ihnen stehen.
+
+          MINIMAL UND ABSICHTLICH SCHMUCKLOS: kein Zeichenzaehler, keine
+          Syntax-Anzeige, keine Vorschau. Ein Redesign ist eine eigene Runde. */}
+      <div className="mt-4 border-t border-gray-200 pt-4">
+        <h2 className="mb-1 text-sm font-medium text-gray-700">
+          Eigener Tracking-Code
+        </h2>
+        <p className="mb-3 text-xs text-gray-500">
+          Basis-Code deiner Netzwerke, so wie du ihn dort kopierst. Er wird auf
+          der veröffentlichten Seite geladen — nach Einwilligung, wenn du einen
+          Einwilligungs-Dialog nutzt. Wir prüfen diesen Code nicht.
+        </p>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium text-gray-700">
+            Code
+            <span className="block text-xs font-normal text-gray-400">
+              Läuft nur auf der veröffentlichten oder exportierten Seite, nicht in
+              der Vorschau
+            </span>
+          </span>
+          <textarea
+            value={customPixelCode}
+            onChange={(e) => onCustomPixelCodeChange(e.target.value)}
+            rows={6}
+            spellCheck={false}
+            placeholder={"<script>…</" + "script>"}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-xs text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </label>
       </div>
 
       {/* VERWENDETE EVENTS (Phase 11.1b). Zwischen den Ziel-Karten und der

@@ -68,8 +68,8 @@ const MODAL_HOST = "pagesmith-modal";
 const HTML = "<html><body><h1>nur Text</h1></body></html>";
 const KEY = "tk-revoke-11-5e-2";
 const STORE_KEY = "__ps_consent";
-const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics|";
-const NUR_MESSUNG = "ps1:analytics|meta,pinterest,tiktok,linkedin,google";
+const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics,custom|";
+const NUR_MESSUNG = "ps1:analytics|meta,pinterest,tiktok,linkedin,google,custom";
 // FREIGABE G6 (Owner 2026-09-16), woertlich und umlautfrei wie der Quelltext.
 const WARNUNG =
   "pagesmithConsentRevoke: Es liegt keine gespeicherte Entscheidung vor, die zu widerrufen waere. Steht der Dialog gerade offen, entscheide dort.";
@@ -631,6 +631,7 @@ describe("11.5e-2 — die Invarianten am Widerruf-Block", () => {
       linkedin: false,
       google: false,
       analytics: true,
+      custom: false,
     });
   });
 

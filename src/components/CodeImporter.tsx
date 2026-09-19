@@ -56,6 +56,9 @@ import {
   getHostingLabel,
   getPixelId,
   getTrackingKey,
+  getCustomPixelCode,
+  getCustomPixelCodeRaw,
+  setCustomPixelCode,
   isTargetDeliverable,
   setCapiState,
   setConversionRule,
@@ -1862,6 +1865,17 @@ export default function CodeImporter({
   // also laesst sich das Dokument der INAKTIVEN Variante erzeugen, OHNE dass der
   // Editor auf sie umschaltet. Die options sind projektweit (Pixel/trackingKey/
   // Proxy) und darum fuer beide Varianten identisch.
+  // DER AUSGELIEFERTE SNIPPET-WERT — EINMAL GELESEN, von beiden Auslieferwegen benutzt
+  // (Phase 11.6, Scheibe 11.6a). Eine gewoehnliche Ableitung ohne Memo: dieselbe Lage wie
+  // bei buildDocumentFor darunter, die den laufenden Render liest.
+  // "none" UND "unknown" ERGEBEN BEIDE "" — aber aus verschiedenen Gruenden, und nur
+  // "unknown" bricht auf dem Publish-Weg zusaetzlich ab. Das ist KEIN Rueckfall im Sinne
+  // der Dauerregel: Der Leser hat bereits geurteilt, und hier wird sein Urteil nur in die
+  // Form gebracht, die die reine Engine annimmt.
+  const customPixelRead = getCustomPixelCode(settings);
+  const customPixelDelivered =
+    customPixelRead.kind === "ok" ? customPixelRead.code : "";
+
   function buildDocumentFor(
     html: string,
     docMappings: Mapping[],
@@ -1875,6 +1889,11 @@ export default function CodeImporter({
       trackingKey,
       capiProxyUrl,
       consentTargets,
+      // EIGENER TRACKING-CODE (Phase 11.6, Scheibe 11.6a). DER GEPRUEFTE Wert, nicht
+      // der rohe: Ein unbrauchbarer Wert ("unknown") wird NICHT eingebaut. Auf dem
+      // Publish-Weg bricht publishProject zusaetzlich laut ab; auf dem EXPORT-Weg gibt
+      // es keinen Rueckkanal, und dort bleibt nur, ihn wegzulassen (P11.6-6, Teil (f)).
+      customPixelCode: customPixelDelivered,
     });
   }
 
@@ -2732,6 +2751,15 @@ export default function CodeImporter({
                 setSettings((prev) =>
                   setConversionRule(prev, target, event, value)
                 )
+              }
+              // EIGENER TRACKING-CODE (Phase 11.6, Scheibe 11.6a). Roher Wert hinein,
+              // Rueckruf heraus — dieselbe Bauform wie bei den Pixel-Kennungen. Der
+              // Container bleibt der EINZIGE Schreiber des Einstellungs-Blobs.
+              // KEIN savedSettings-Gegenstueck wie bei savedPixelIdFor: Jenes traegt die
+              // Aussage, ob ein ZIEL beliefert wird; hier gibt es keine solche Aussage.
+              customPixelCode={getCustomPixelCodeRaw(settings) ?? ""}
+              onCustomPixelCodeChange={(value) =>
+                setSettings((prev) => setCustomPixelCode(prev, value))
               }
               eventCounts={eventCounts}
               adblockLoss={adblockLoss}

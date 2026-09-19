@@ -27,6 +27,10 @@ import {
   getConsentDialog,
   getConsentTheme,
   isTrackingTarget,
+  getCustomPixelCode,
+  trackCodeProblem,
+  CUSTOM_PIXEL_CODE_INVALID_MESSAGE,
+  TRACK_CODE_INVALID_MESSAGE,
   setCapiState,
   setHostingState,
   type ConsentAppearance,
@@ -1680,6 +1684,41 @@ export async function publishProject(
   const consentLanguage = getConsentLanguage(snapshot.settings);
   if (consentDialog !== "off" && consentLanguage === "unknown")
     return { ok: false, error: CONSENT_LANGUAGE_UNKNOWN_MESSAGE };
+
+  // DAS TOR DES CUSTOM-PIXELS (Phase 11.6, Scheibe 11.6a; Entscheidung P11.6-6, Teil (f)).
+  // Ans Ende der Kette gesetzt, bleibt die bestehende unveraendert — derselbe rein
+  // additive Eingriff wie bei den vier Consent-Toren darueber.
+  //
+  // OHNE TOR AN DER FORM DES DIALOGS, und das ist der Unterschied zu jenen vier: Der
+  // Snippet wird ausgeliefert, sobald er gesetzt ist — unabhaengig davon, ob ein
+  // Einwilligungs-Dialog existiert. Es gibt also keinen Zustand, in dem ein ungueltiger
+  // Wert keine ausgelieferte Zeile erreichen koennte.
+  //
+  // DIE ASYMMETRIE ZUM EXPORT IST BENANNT UND NICHT BEHOBEN: Download und Kopieren laufen
+  // NICHT ueber diese Funktion. Dort baut der Erzeuger die Zeile schlicht nicht ein (der
+  // Leser liefert "unknown"), und der Betreiber bekommt KEINE Meldung — es gibt auf jenem
+  // Weg keinen Rueckkanal. Derselbe Mangel, den der offene Punkt "DER EXPORT-PFAD IST VOM
+  // EINWILLIGUNGS-SCHALTER NICHT ERFASST" fuehrt; diese Scheibe loest ihn nicht.
+  const customPixel = getCustomPixelCode(snapshot.settings);
+  if (customPixel.kind === "unknown")
+    return { ok: false, error: CUSTOM_PIXEL_CODE_INVALID_MESSAGE };
+
+  // DIE EREIGNISZEILEN — GEPRUEFT WIRD UEBER BEIDE VARIANTEN, und das ist keine
+  // Vorsicht, sondern eine Folge des Datenflusses: EIN Publish schreibt BEIDE Varianten
+  // in EINEM atomaren Write (Scheibe 9a). Eine ungueltige Zeile in Variante B ginge sonst
+  // mit hinaus, obwohl der Betreiber gerade A bearbeitet.
+  // `undefined` IST KEIN FEHLER — das Feld ist optional und fehlt im Normalfall; geprueft
+  // wird nur ein VORHANDENER Wert.
+  const alleMappings = variantB
+    ? [...snapshot.mappings, ...variantB.mappings]
+    : snapshot.mappings;
+  const zeileKaputt = alleMappings.some(
+    (m) =>
+      m.type === "track" &&
+      m.config.code !== undefined &&
+      trackCodeProblem(m.config.code) !== null
+  );
+  if (zeileKaputt) return { ok: false, error: TRACK_CODE_INVALID_MESSAGE };
 
   // DER PLATZHALTER BEI "off" — dieselbe Bauform und derselbe Grund wie bei
   // deliveredAppearance darunter: Nach dem Abbruch ist "unknown" nur noch bei "off"

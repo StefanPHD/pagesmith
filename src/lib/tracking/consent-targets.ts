@@ -20,6 +20,7 @@
 import { TRACKING_TARGETS, type TrackingTarget } from "@/lib/settings";
 import {
   ANALYTICS_CONSENT_TARGET,
+  CUSTOM_CONSENT_TARGET,
   META_CONSENT_TARGET,
 } from "@/lib/tracking/consent";
 
@@ -197,8 +198,24 @@ export const LEGACY_CONSENT_ROLE: Record<TrackingTarget, boolean> = {
  * DIE REIHENFOLGE IST STABIL (Ziel-Reihenfolge aus TRACKING_TARGETS, der
  * Analytics-Schluessel zuletzt): Der ausgelieferte Text wird daraus gebaut, und eine
  * wechselnde Reihenfolge machte jeden Byte-Vergleich wertlos.
+ *
+ * SEIT DER SCHEIBE 11.6a TRAEGT SIE EINEN SIEBTEN WERT — den BETREIBER-SNIPPET
+ * (CUSTOM_CONSENT_TARGET, Entscheidung P11.6-5 Teil (2)). Der Satz darueber bleibt
+ * woertlich und gilt unveraendert; was sich aendert, ist die Zahl.
+ * DAMIT IST DIESE MENGE SEITHER BREITER ALS DER FAN-OUT, und das ist genau die Folge,
+ * die docs/claude-history/future-roadmap.md unter "DREI OFFENE FRAGEN", Punkt 1,
+ * vorhergesagt und bewusst nicht festgelegt hat: "der Namensraum ist dann breiter als
+ * der Fan-Out". `custom` ist KEIN TrackingTarget und kann aus der Ziel-Ableitung nicht
+ * entstehen — er tritt als EIGENER Term daneben, so wie `analytics` es tut.
+ * ER STEHT ANS ENDE ANGEHAENGT, und das ist keine Wahl, sondern die Auflage der
+ * Reihenfolge-Stabilitaet: Vor `analytics` gesetzt, verschoebe er einen bestehenden
+ * Wert und machte jeden frueheren Byte-Vergleich wertlos.
+ *
+ * DIE ZWEI NICHT-ZIEL-SCHLUESSEL WERDEN IMPORTIERT, NICHT ABGESCHRIEBEN — derselbe
+ * Grund wie beim Meta-Wert oben.
  */
 export const ALL_CONSENT_KEYS: readonly string[] = [
   ...TRACKING_TARGETS.map((t) => CONSENT_KEY_BY_TARGET[t]),
   ANALYTICS_CONSENT_TARGET,
+  CUSTOM_CONSENT_TARGET,
 ];

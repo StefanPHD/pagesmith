@@ -257,6 +257,29 @@ export type ProjectSettings = {
     // der Blob ist ungeprueftes Client-Eingabegut, und der einzige Leser prueft.
     language?: unknown;
   };
+  // DER BETREIBER-SNIPPET (Phase 11.6, Scheibe 11.6a; Entscheidungen P11.6-3 und
+  // P11.6-5 Teil (1)). EIN Feld je Projekt, beliebiger Basis-Code, beliebig viele
+  // Netzwerke darin.
+  //
+  // WARUM EIN EIGENES TOP-LEVEL-MITGLIED UND NICHT UNTER `pixels`: `pixels` ist
+  // `Partial<Record<TrackingTarget, …>>`. Ein Custom-Pixel ist KEIN TrackingTarget —
+  // es hat keinen Adapter, keine Zeile in project_secrets und keinen Server-Forward.
+  // Ein Eintrag dort waere ein Typfehler UND die Vermischung zweier Vokabulare, gegen
+  // die tracking/consent-targets.ts in ihrem Kopf ausdruecklich steht.
+  // Die Klasse ist die von `capi`, `hosting` und `consent`: plattform-agnostisch NEBEN
+  // `pixels`.
+  //
+  // UNTEROBJEKT STATT FLACH, und das ist die Gegenrichtung zu P11.13-19 (dort wurden
+  // Farben und Sachtext bewusst FLACHE Nachbarn unter `consent`): Dort gab es das
+  // Unterobjekt bereits. Hier entsteht ein neues Thema, und ein spaeterer Schalter
+  // ("Snippet vorerst aus") braeuchte sonst ein ZWEITES Top-Level-Mitglied.
+  //
+  // `code` IST `unknown`, aus demselben Grund wie `consent.theme`: Der Blob ist
+  // ungeprueftes Client-Eingabegut, und der einzige Leser prueft.
+  // DER FELDNAME IST EINE EINBAHNSTRASSE: ein Blob, der ihn traegt, traegt ihn weiter.
+  customPixel?: {
+    code?: unknown;
+  };
 };
 
 // Die getrimmte Pixel-ID EINES Ziels oder "" (nicht gesetzt).
@@ -794,6 +817,18 @@ export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
     // P11.13-1 als KLASSE fuehrt; dieser Term loest ihn fuer die Sprache, nicht fuer die
     // Klasse.
     getConsentLanguage(a) === getConsentLanguage(b) &&
+    // DER SNIPPET-TERM (Phase 11.6, Scheibe 11.6a; Entscheidung P11.6-3).
+    // EIN SKALARER TERM, KEIN OBJEKTVERGLEICH — dieselbe Bauform und derselbe gemessene
+    // Grund wie bei den Farb- und dem Sprach-Term darueber. Verglichen wird DESHALB
+    // getCustomPixelCodeRaw und NICHT getCustomPixelCode: jener liefert ein Objekt, und
+    // `===` darauf vergliche Referenzen.
+    // OHNE IHN GINGE DER WERT STILL VERLOREN: dirty bliebe false, es gaebe keinen Text
+    // "Ungespeicherte Aenderungen", keinen beforeunload-Waechter und kein confirm beim
+    // Projektwechsel — der eingetippte Tracking-Code waere beim naechsten Projektwechsel
+    // weg, ohne Warnung. DAS IST DER EINGETRETENE TRIGGER des offenen Punktes
+    // "settingsEqual IST EINE ALLOWLIST"; dieser Term loest ihn fuer DIESES Mitglied,
+    // nicht fuer die Klasse.
+    getCustomPixelCodeRaw(a) === getCustomPixelCodeRaw(b) &&
     TRACKING_TARGETS.every(
       (t) =>
         getPixelId(a, t) === getPixelId(b, t) &&
@@ -1188,6 +1223,26 @@ export const CONSENT_TEXT_MAX_LENGTH = 300;
  * sichtbare Seite des Tors.
  */
 export function consentTextLength(value: string): number {
+  return codepointLength(value);
+}
+
+/**
+ * DIE LAENGE IN UNICODE-CODEPUNKTEN — DER EINE ZAEHLER (Phase 11.6, Scheibe 11.6a).
+ *
+ * WARUM ER AUS consentTextLength HERAUSGEZOGEN IST UND NICHT DANEBEN NEU GESCHRIEBEN:
+ * Die Scheibe 11.6a braucht dieselbe Zaehlung fuer den Betreiber-Snippet und die
+ * Ereigniszeile. Ein zweiter Zaehler mit demselben Rumpf waere die zweite Wahrheit, die
+ * dieses Projekt an mehreren Stellen als Fehlerklasse fuehrt; ein Aufruf des
+ * consent-BENANNTEN Zaehlers aus dem Custom-Pixel waere eine Namensluege.
+ *
+ * consentTextLength BLEIBT ALS NAME BESTEHEN und ruft ihn nur — sein Docblock begruendet,
+ * warum das Tor und der Zaehler der Oberflaeche DIESELBE Funktion rufen muessen, und
+ * jene Begruendung wird hier NICHT verdoppelt.
+ *
+ * DAS VERHALTEN IST UNVERAENDERT: derselbe Rumpf, nur an einem Ort. `"…".length` zaehlt
+ * UTF-16-EINHEITEN und waere fuer ein Emoji ZWEI, obwohl der Mensch EINS sieht.
+ */
+export function codepointLength(value: string): number {
   return [...value].length;
 }
 
@@ -1453,3 +1508,177 @@ export type ConsentPresentation = {
   readonly text: ConsentTextArg;
   readonly language: ConsentLanguage;
 };
+
+/* -------------------------------------------------------------------------- *
+ * CUSTOM-PIXEL (Phase 11.6, Scheibe 11.6a)
+ * -------------------------------------------------------------------------- */
+
+/**
+ * DIE OBERGRENZE DES BETREIBER-SNIPPETS, in Unicode-Codepunkten.
+ *
+ * SIE IST EINE ARCHITEKT-SETZUNG OHNE MESSUNG (Entscheidung P11.6-6, Teil (g)), und das
+ * steht hier, damit sie niemand fuer einen Befund haelt. Was GEMESSEN ist, ist nur der
+ * Rahmen: Der Wert liegt im `settings`-jsonb und reist bei JEDEM Speichern mit; der
+ * HTML-Upload desselben Projekts ist auf 2 MB begrenzt (MAX_UPLOAD_BYTES in lib/upload.ts).
+ * 16 000 ist ~0,8 % davon und traegt ein Meta-Basis-Snippet (~1 kB) etwa zehnmal —
+ * P11.6-3 laesst ausdruecklich "beliebig viele Netzwerke darin" zu.
+ *
+ * WER SIE AENDERT, AENDERT EINE SETZUNG, KEINEN BEFUND. Ein Senken trifft bereits
+ * ausgelieferte Seiten NICHT (ihr Text ist geschrieben); ein Heben ist frei.
+ */
+export const CUSTOM_PIXEL_CODE_MAX_LENGTH = 16000;
+
+/**
+ * DIE OBERGRENZE EINER EREIGNISZEILE, in Unicode-Codepunkten. Ebenfalls eine
+ * ARCHITEKT-SETZUNG OHNE MESSUNG (P11.6-6, Teil (g)).
+ *
+ * DER GRUND FUER EINE GRENZE UEBERHAUPT IST NICHT DER SPEICHER, SONDERN DER HOTSPOT:
+ * Die Zeile geht in den ausgelieferten Text JEDER Seite, und sie steht JE AKTION
+ * (P11.6-4) — bei zwanzig Knoepfen zwanzigmal. 2 000 traegt einen Aufruf mit grossem
+ * Objektliteral; ein Programm soll hier nicht stehen.
+ */
+export const TRACK_CODE_MAX_LENGTH = 2000;
+
+/** Warum ein Snippet-Wert unbrauchbar ist — oder `null`, wenn er es nicht ist. */
+export type CustomPixelProblem = "kein_string" | "leer" | "laenge";
+
+/**
+ * DAS TOR DES BETREIBER-SNIPPETS.
+ *
+ * ES PRUEFT DEN INHALT NICHT UND SOLL ES NICHT (Entscheidung P11.6-3, NOTAUSGANG): Was
+ * der Betreiber eintraegt, ist fremder Code, und wir koennen nicht wissen, was er tut.
+ * Geprueft werden AUSSCHLIESSLICH Typ, Anwesenheit und Laenge.
+ *
+ * KEIN ZEICHEN-TOR wie beim Sachtext (consentTextProblem): Dort sind Zeilenumbruch und
+ * Tabulator VERBOTEN, weil ein Sachtext sie nicht braucht. HIER SIND SIE DER NORMALFALL —
+ * ein Snippet besteht aus mehreren Zeilen. Wer das Zeichen-Tor hierher kopiert, weist
+ * jedes echte Snippet ab.
+ *
+ * `trim` IST AUSSCHLIESSLICH DAS MITTEL FUER "IST HIER UEBERHAUPT ETWAS?" — ausgeliefert
+ * wird der ROHE Wert zeichengleich, und die Laenge wird am rohen gemessen. Dieselbe
+ * Auflage wie bei consentTextProblem (P11.13-14: "Ein Wert, der nur nach Umformung
+ * passte, wird abgewiesen, nicht zurechtgebogen").
+ */
+export function customPixelCodeProblem(raw: unknown): CustomPixelProblem | null {
+  if (typeof raw !== "string") return "kein_string";
+  if (raw.trim() === "") return "leer";
+  if (codepointLength(raw) > CUSTOM_PIXEL_CODE_MAX_LENGTH) return "laenge";
+  return null;
+}
+
+/**
+ * DAS TOR EINER EREIGNISZEILE. Gleiche Bauform, andere Grenze.
+ *
+ * ES IST KEIN SYNTAX-CHECK: Ob die Zeile laeuft, entscheidet erst `new Function` zur
+ * Laufzeit — und ein Fehler dort ist gefangen (Invariante I3). Hier faellt nur die
+ * Entscheidung, ob die Zeile ueberhaupt in den ausgelieferten Text darf.
+ */
+export function trackCodeProblem(raw: unknown): CustomPixelProblem | null {
+  if (typeof raw !== "string") return "kein_string";
+  if (raw.trim() === "") return "leer";
+  if (codepointLength(raw) > TRACK_CODE_MAX_LENGTH) return "laenge";
+  return null;
+}
+
+/**
+ * ERGEBNIS DES LESERS — EINE DISKRIMINIERTE UNION, KEIN SENTINEL-STRING.
+ *
+ * WARUM NICHT `string | "unknown"` WIE BEIM SACHTEXT: Dort ist der gepruefte Wert ein
+ * OPAKER Marken-Typ, ein roher `string` ist ihm nicht zuweisbar, und "unknown" kann
+ * deshalb nicht mit einem gueltigen Wert kollidieren. HIER IST DER WERT EIN ROHER
+ * STRING — ein Betreiber KANN woertlich `unknown` eintragen, und der Sentinel waere dann
+ * von einem echten Snippet nicht zu unterscheiden.
+ *
+ * "none" IST NICHT "unknown": nichts gesetzt ist der NORMALFALL (kein Custom-Pixel) und
+ * kein Fehlzustand; ein ungueltiger Wert ist einer und bricht laut ab.
+ */
+export type CustomPixelCodeRead =
+  | { readonly kind: "none" }
+  | { readonly kind: "ok"; readonly code: string }
+  | { readonly kind: "unknown"; readonly problem: CustomPixelProblem };
+
+/**
+ * DER LESER DES BETREIBER-SNIPPETS.
+ *
+ * EIN UNGUELTIGER WERT WIRD NIE AUF "nicht gesetzt" ABGEBILDET (Dauerregel "EIN
+ * UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB, STATT STILL AUF EINEN VORGABEWERT
+ * ZURUECKZUFALLEN"): Sonst saehe die abbrechende Stelle in publishProject ihn nie, und
+ * der Abbruch waere toter Code.
+ * DIE ASYMMETRIE, DIE DIE REGEL TRAEGT, GILT HIER WOERTLICH: Der Preis des Abbruchs
+ * trifft den BETREIBER an seinem Rechner, sofort und sichtbar; der Preis eines stillen
+ * Rueckfalls traefe den BESUCHER auf der Live-Seite.
+ *
+ * FEHLT DAS FELD GANZ, IST DAS "none" — kein Custom-Pixel ist der Normalfall.
+ */
+export function getCustomPixelCode(
+  settings: ProjectSettings
+): CustomPixelCodeRead {
+  const raw = settings.customPixel?.code;
+  if (raw === undefined) return { kind: "none" };
+  const problem = customPixelCodeProblem(raw);
+  if (problem === "leer") return { kind: "none" };
+  if (problem !== null) return { kind: "unknown", problem };
+  return { kind: "ok", code: raw as string };
+}
+
+/**
+ * DER ROHE WERT FUER DIE OBERFLAECHE UND FUER settingsEqual — NORMALISIERT AUF EINEN
+ * SKALAR.
+ *
+ * WARUM NICHT getCustomPixelCode IN settingsEqual: Jener liefert ein OBJEKT, und ein
+ * `===` darauf vergliche REFERENZEN. Nach jedem setSettings entstuende eine neue
+ * Referenz und der Vergleich meldete dauerhaft dirty — die Begruendung steht woertlich
+ * an den zwei Farb-Termen in settingsEqual und wird hier nicht verdoppelt.
+ *
+ * EIN NICHT-STRING WIRD ZU `undefined`: Damit sind zwei Blobs mit verschiedenen
+ * Nicht-String-Werten fuer dirty gleich. Das ist bewusst — dirty verfolgt EINGABEN des
+ * Betreibers, und die Oberflaeche kann nur Strings erzeugen. Dieselbe Normalisierung
+ * leisten getConsentTheme und die Farb-Leser.
+ */
+export function getCustomPixelCodeRaw(
+  settings: ProjectSettings
+): string | undefined {
+  const raw = settings.customPixel?.code;
+  return typeof raw === "string" ? raw : undefined;
+}
+
+/**
+ * Immutabel + nest-erhaltend: schreibt `customPixel.code`, ohne `pixels`, `capi`,
+ * `hosting` oder `consent` anzutasten. Dieselbe Bauform wie setCapiState/setHostingState.
+ * EIN LEERER STRING ENTFERNT DAS FELD, statt es zu leeren — so entsteht kein
+ * gespeicherter Leerwert, den der Leser als "leer" abweisen muesste (dieselbe Auflage,
+ * die die Oberflaeche beim Sachtext traegt).
+ */
+export function setCustomPixelCode(
+  settings: ProjectSettings,
+  code: string
+): ProjectSettings {
+  if (code === "") {
+    // DAS FELD WIRD ENTFERNT, NICHT GELEERT — sonst stuende ein gespeicherter Leerwert
+    // im Blob, den der Leser als "leer" abweisen muesste. Ein Rest-Objekt ohne den
+    // Schluessel ist die einzige Form, die "nichts gesetzt" wirklich bedeutet.
+    const rest = { ...settings };
+    delete rest.customPixel;
+    return rest;
+  }
+  return { ...settings, customPixel: { ...settings.customPixel, code } };
+}
+
+/**
+ * Die Meldung, mit der publishProject bei einem unbrauchbaren SNIPPET abbricht.
+ * Sie nennt die Achse und den Ort, an dem der Betreiber handeln kann — nicht den
+ * internen Namen des Problems.
+ */
+export const CUSTOM_PIXEL_CODE_INVALID_MESSAGE =
+  "Der eigene Tracking-Code ist ungueltig (Text erwartet, hoechstens " +
+  `${CUSTOM_PIXEL_CODE_MAX_LENGTH} Zeichen). Bereich "Messen".`;
+
+/**
+ * Die Meldung, mit der publishProject bei einer unbrauchbaren EREIGNISZEILE abbricht
+ * (Entscheidung P11.6-6, Teil (f)).
+ * SIE NENNT KEIN ELEMENT: Der Server kennt die Beschriftung des Knopfes nicht, und eine
+ * erfundene Zuordnung waere schlimmer als keine.
+ */
+export const TRACK_CODE_INVALID_MESSAGE =
+  "Eine Ereigniszeile am eigenen Tracking-Code ist ungueltig (Text erwartet, " +
+  `hoechstens ${TRACK_CODE_MAX_LENGTH} Zeichen).`;

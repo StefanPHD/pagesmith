@@ -126,7 +126,7 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
   });
 });
 
-describe("11.5a — die Sechser-Ableitung", () => {
+describe("11.5a — die Schluessel-Ableitung", () => {
   // T3. DIE ERWARTUNG STAMMT AUS DER ENTSCHEIDUNG, NICHT AUS DEM CODE.
   // Sie ist hier AUSGESCHRIEBEN und wird NIE aus ALL_CONSENT_KEYS abgeleitet — eine
   // Erwartung aus dem Pruefling machte diesen Test zu einem SPIEGEL, der jeden
@@ -136,23 +136,27 @@ describe("11.5a — die Sechser-Ableitung", () => {
   // Schluessel im Setzer und bliebe still abgelehnt — auf jeder Seite, ohne dass
   // irgendwo etwas rot wird. WER IHN "REPARIERT", INDEM ER DIE LISTE AUS DEM CODE
   // ZIEHT, SCHAFFT GENAU DIESEN ZWANG AB.
-  const ERWARTETE_SECHS = [
+  const ERWARTETE_SCHLUESSEL = [
     "meta",
     "pinterest",
     "tiktok",
     "linkedin",
     "google",
     "analytics",
+    // DER SIEBTE (Phase 11.6, Scheibe 11.6a): der Betreiber-Snippet. Er ist KEIN
+    // Fan-Out-Ziel und kommt deshalb nicht aus TRACKING_TARGETS — er tritt als eigener
+    // Term neben "analytics" (Entscheidung P11.6-5, Teil (2)).
+    "custom",
   ];
 
-  it("T3: der Setzer belegt GENAU sechs Schluessel, jeden mit false", () => {
+  it("T3: der Setzer belegt GENAU sieben Schluessel, jeden mit false", () => {
     const script = buildConsentDenyScript();
-    for (const key of ERWARTETE_SECHS) {
+    for (const key of ERWARTETE_SCHLUESSEL) {
       expect(script).toContain(`"${key}": false`);
     }
-    // GENAU sechs, nicht mindestens sechs: die Zahl der Zuweisungen wird gezaehlt.
-    expect(script.split(": false").length - 1).toBe(ERWARTETE_SECHS.length);
-    expect(ALL_CONSENT_KEYS.length).toBe(ERWARTETE_SECHS.length);
+    // GENAU so viele, nicht mindestens so viele: die Zahl der Zuweisungen wird gezaehlt.
+    expect(script.split(": false").length - 1).toBe(ERWARTETE_SCHLUESSEL.length);
+    expect(ALL_CONSENT_KEYS.length).toBe(ERWARTETE_SCHLUESSEL.length);
   });
 
   it("T3b: kein Schluessel steht auf true, und der Block traegt keine Serialisierungs-Falle", () => {
@@ -209,7 +213,7 @@ describe("11.5a — das Praedikat des Setzers", () => {
   // T5. SETZER UND KONSUMENT SIND KOMPLEMENTAER — und nur dieser Test prueft das
   // GEGEN DEN ECHTEN KONSUMENTEN statt gegen eine nachgebaute Erwartung. Faellt er
   // allein, ist die Schreibweise eines Schluessels neben die des Lesers gerutscht.
-  it("T5: nach dem Setzer liefert __psConsent fuer JEDEN der sechs Schluessel false", () => {
+  it("T5: nach dem Setzer liefert __psConsent fuer JEDEN der sieben Schluessel false", () => {
     delete (window as unknown as Record<string, unknown>).pagesmithConsent;
     window.eval(buildConsentRuntimes());
     laufe();

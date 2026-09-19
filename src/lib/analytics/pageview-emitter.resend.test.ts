@@ -44,8 +44,8 @@ const praes = (
 
 const HTML = "<html><body><h1>nur Text</h1></body></html>";
 const KEY = "tk-resend-11-5c";
-const SECHS = ["meta", "pinterest", "tiktok", "linkedin", "google", "analytics"];
-const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics|";
+const SIEBEN = ["meta", "pinterest", "tiktok", "linkedin", "google", "analytics", "custom"];
+const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics,custom|";
 const GLOBALS = [
   "__ps_pv",
   "__psConsent",
@@ -125,7 +125,7 @@ describe("11.5c — der nachgeholte Seitenaufruf, am echten Text", () => {
     expect(beacon).not.toHaveBeenCalled();
     expect(w.__ps_pv).toBeUndefined();
 
-    expect(store().write(SECHS)).toBe(true);
+    expect(store().write(SIEBEN)).toBe(true);
 
     // POSITIVKONTROLLE der Abwesenheit oben, im selben Lauf.
     expect(beacon).toHaveBeenCalledTimes(1);
@@ -151,7 +151,7 @@ describe("11.5c — der nachgeholte Seitenaufruf, am echten Text", () => {
     const guard = w.__ps_pv;
     expect(guard).toBe((await payloadOf(beacon, 0)).eventID);
 
-    expect(store().write(SECHS)).toBe(true);
+    expect(store().write(SIEBEN)).toBe(true);
     expect(beacon).toHaveBeenCalledTimes(1);
     expect(w.__ps_pv).toBe(guard);
   });
@@ -159,11 +159,11 @@ describe("11.5c — der nachgeholte Seitenaufruf, am echten Text", () => {
   it("N3: KEIN DOPPEL — ein zweites write() nach dem nachgesendeten loest keinen weiteren aus", () => {
     const beacon = mount();
     expect(beacon).not.toHaveBeenCalled();
-    expect(store().write(SECHS)).toBe(true);
+    expect(store().write(SIEBEN)).toBe(true);
     // POSITIVKONTROLLE: das erste write() sendet.
     expect(beacon).toHaveBeenCalledTimes(1);
 
-    expect(store().write(SECHS)).toBe(true);
+    expect(store().write(SIEBEN)).toBe(true);
     expect(beacon).toHaveBeenCalledTimes(1);
   });
 
@@ -183,12 +183,12 @@ describe("11.5c — der nachgeholte Seitenaufruf, am echten Text", () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("QuotaExceededError");
     });
-    expect(store().write(SECHS)).toBe(false);
+    expect(store().write(SIEBEN)).toBe(false);
     expect(beacon).not.toHaveBeenCalled();
 
     // POSITIVKONTROLLE im selben Lauf: ohne den Wurf sendet derselbe Aufruf.
     vi.restoreAllMocks();
-    expect(store().write(SECHS)).toBe(true);
+    expect(store().write(SIEBEN)).toBe(true);
     expect(beacon).toHaveBeenCalledTimes(1);
   });
 
@@ -206,7 +206,7 @@ describe("11.5c — der nachgeholte Seitenaufruf, am echten Text", () => {
 
     let result: boolean | undefined;
     expect(() => {
-      result = store().write(SECHS);
+      result = store().write(SIEBEN);
     }).not.toThrow();
     expect(result).toBe(true);
     expect(w.__psPageView).toBeUndefined();

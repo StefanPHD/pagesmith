@@ -75,9 +75,9 @@ const BAR_ID = 'id="__ps_clb"';
 const HTML = "<html><body><h1>nur Text</h1></body></html>";
 const KEY = "tk-bar-11-5d";
 const STORE_KEY = "__ps_consent";
-const SECHS = ["meta", "pinterest", "tiktok", "linkedin", "google", "analytics"];
-const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics|";
-const ALLE_ABGELEHNT = "ps1:|meta,pinterest,tiktok,linkedin,google,analytics";
+const SIEBEN = ["meta", "pinterest", "tiktok", "linkedin", "google", "analytics", "custom"];
+const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics,custom|";
+const ALLE_ABGELEHNT = "ps1:|meta,pinterest,tiktok,linkedin,google,analytics,custom";
 const GLOBALS = [
   "__ps_pv",
   "__psConsent",
@@ -95,7 +95,7 @@ type BeaconSpy = ReturnType<typeof vi.fn>;
 const w = window as unknown as Mutable & { eval: (code: string) => unknown };
 
 function hookAus(wert: boolean): Record<string, boolean> {
-  return Object.fromEntries(SECHS.map((k) => [k, wert]));
+  return Object.fromEntries(SIEBEN.map((k) => [k, wert]));
 }
 
 function installBeacon(): BeaconSpy {
@@ -403,7 +403,7 @@ describe("11.5d — wann die Leiste erscheint", () => {
 });
 
 describe("11.5d — die zwei Knoepfe", () => {
-  it("L9: 'Alle akzeptieren' -> alle sechs gespeichert, Hook frei, genau ein Seitenaufruf, Leiste weg", async () => {
+  it("L9: 'Alle akzeptieren' -> alle sieben gespeichert, Hook frei, genau ein Seitenaufruf, Leiste weg", async () => {
     const beacon = mount();
     expect(beacon).not.toHaveBeenCalled();
 
@@ -418,7 +418,7 @@ describe("11.5d — die zwei Knoepfe", () => {
     expect(hosts()).toHaveLength(0);
   });
 
-  it("L10: 'Ablehnen' -> alle sechs abgelehnt gespeichert, Hook abgelehnt, nichts gesendet, Leiste weg", () => {
+  it("L10: 'Ablehnen' -> alle sieben abgelehnt gespeichert, Hook abgelehnt, nichts gesendet, Leiste weg", () => {
     const beacon = mount();
     expect(hosts()).toHaveLength(1);
 
@@ -587,12 +587,12 @@ describe("11.5d — der Sachtext der Leiste", () => {
 // Die Speicherwerte folgen der Gestalt `ps1:<zugestimmt>|<abgelehnt>` in der Reihenfolge der
 // sechs Schluessel. M16 bis M19 in consent-modal.test.ts spiegeln L15 bis L18.
 
-const NUR_MESSUNG = "ps1:analytics|meta,pinterest,tiktok,linkedin,google";
-const NUR_WERBUNG = "ps1:meta,pinterest,tiktok,linkedin,google|analytics";
-const WERBUNG = ["meta", "pinterest", "tiktok", "linkedin", "google"];
+const NUR_MESSUNG = "ps1:analytics|meta,pinterest,tiktok,linkedin,google,custom";
+const NUR_WERBUNG = "ps1:meta,pinterest,tiktok,linkedin,google,custom|analytics";
+const WERBUNG = ["meta", "pinterest", "tiktok", "linkedin", "google", "custom"];
 
 function hookMit(erlaubt: string[]): Record<string, boolean> {
-  return Object.fromEntries(SECHS.map((k) => [k, erlaubt.includes(k)]));
+  return Object.fromEntries(SIEBEN.map((k) => [k, erlaubt.includes(k)]));
 }
 
 describe("11.5e-1 — die zwei Gruppen", () => {
@@ -600,11 +600,11 @@ describe("11.5e-1 — die zwei Gruppen", () => {
   // Ableitung in consent-choice.ts schoebe einen neuen Schluessel still in „Werbung";
   // Entscheidung (25) verlangt, dass wer einen Schluessel hinzufuegt, prueft, in welche Gruppe
   // er gehoert. EINZELSTUECK: der einzige Test, der die Zuordnung ohne DOM haelt.
-  it("G0: Messung traegt genau analytics, Werbung genau die fuenf Ziel-Schluessel — disjunkt, zusammen die sechs", () => {
+  it("G0: Messung traegt genau analytics, Werbung genau die fuenf Ziel-Schluessel plus custom — disjunkt, zusammen die sieben", () => {
     expect(CONSENT_GROUP_KEYS.measure).toEqual(["analytics"]);
     expect(CONSENT_GROUP_KEYS.ads).toEqual(WERBUNG);
     expect([...CONSENT_GROUP_KEYS.measure, ...CONSENT_GROUP_KEYS.ads].sort()).toEqual(
-      [...SECHS].sort()
+      [...SIEBEN].sort()
     );
   });
 });
@@ -703,7 +703,7 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
     ["keine", [], ALLE_ABGELEHNT, [], 0],
     ["nur Messung", ["Messung"], NUR_MESSUNG, ["analytics"], 1],
     ["nur Werbung", ["Werbung"], NUR_WERBUNG, WERBUNG, 0],
-    ["beide", ["Messung", "Werbung"], ALLE_ZUGESTIMMT, SECHS, 1],
+    ["beide", ["Messung", "Werbung"], ALLE_ZUGESTIMMT, SIEBEN, 1],
   ];
   for (const [fall, klicks, speicher, erlaubt, beacons] of AUSWAHL) {
     it(`L16: '${fall}' + 'Auswahl speichern' -> Speicherwert und Hook je Schluessel, ${beacons} Seitenaufruf(e), Leiste weg`, async () => {

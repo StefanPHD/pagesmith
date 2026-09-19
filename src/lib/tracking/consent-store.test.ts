@@ -29,14 +29,14 @@ const praes = (
 
 // Scheibe 11.5b. DIE ERWARTUNGEN STAMMEN AUS DEN BINDENDEN ENTSCHEIDUNGEN (7) BIS (10) DER
 // PHASE 11.5 UND AUS DER ARCHITEKT-ENTSCHEIDUNG VOM 2026-09-14, DASS write() AUCH DEN HOOK
-// DER LAUFENDEN SEITE SETZT — NIE AUS DEM CODE: die sechs Schluessel
+// DER LAUFENDEN SEITE SETZT — NIE AUS DEM CODE: die sieben Schluessel
 // stehen hier als Literal, und der Vergleichswert des Setzers ist VOR der ersten
 // Aenderung erhoben worden.
 
-const SECHS = ["meta", "pinterest", "tiktok", "linkedin", "google", "analytics"];
-const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics|";
-const NUR_META = "ps1:meta|pinterest,tiktok,linkedin,google,analytics";
-const ALLE_ABGELEHNT = "ps1:|meta,pinterest,tiktok,linkedin,google,analytics";
+const SIEBEN = ["meta", "pinterest", "tiktok", "linkedin", "google", "analytics", "custom"];
+const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics,custom|";
+const NUR_META = "ps1:meta|pinterest,tiktok,linkedin,google,analytics,custom";
+const ALLE_ABGELEHNT = "ps1:|meta,pinterest,tiktok,linkedin,google,analytics,custom";
 
 type Win = Record<string, unknown> & {
   localStorage: Storage;
@@ -96,12 +96,39 @@ describe("11.5b — Injektion", () => {
   // R3. DER VERGLEICHSWERT WURDE VOR JEDER AENDERUNG AUF HEAD 928172e ERHOBEN (CC,
   // 2026-09-14), mit zwei Instrumenten: node:crypto im Lauf und sha256sum/wc ueber das
   // gespeicherte Artefakt. WER IHN ROT VORFINDET, REGENERIERT IHN NICHT.
-  it("R3: der Setzer-Block ist byte-gleich zu vor der Scheibe und steht exakt im Text", () => {
+  // NACHGEZOGEN 2026-09-19 (Phase 11.6, Scheibe 11.6a) — AUS DER BYTE-GLEICHHEIT IST EIN
+  // DIFFERENZ-NACHWEIS GEWORDEN. Der Setzer traegt seit 11.6a einen SIEBTEN Schluessel
+  // ("custom", Entscheidung P11.6-5 Teil (2)); die Byte-Gleichheit ist damit BEWUSST
+  // aufgegeben, und an ihre Stelle tritt die Aussage: DER NEUE BLOCK IST DER ALTE PLUS
+  // GENAU DIE BENANNTE EINSETZUNG — SONST KEIN ZEICHEN (docs/immer-beachten.md, "WO EINE
+  // BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE
+  // STELLE").
+  // DER VORHER-WERT IST NICHT REGENERIERT, SONDERN DERSELBE wie zuvor (244 / 9ae9ab26…),
+  // VOR dem ersten Eingriff dieser Scheibe erneut erhoben (CC, 2026-09-19). Die Auflage
+  // "WER IHN ROT VORFINDET, REGENERIERT IHN NICHT" gilt unveraendert — er steht jetzt auf
+  // der ENTFERNTEN Seite des Nachweises und ist damit staerker verankert als zuvor.
+  // WODURCH ROT: wenn der Block an IRGENDEINER anderen Stelle als der Einsetzung
+  // abweicht — auch um ein Leerzeichen.
+  it("R3: der Setzer-Block ist der von vor 11.6a PLUS genau eine Einsetzung — Differenz-Nachweis", () => {
     const setter = buildConsentDenyScript();
-    expect(Buffer.byteLength(setter, "utf8")).toBe(244);
+    // (1)+(2) NACHHER, an derselben Form erhoben wie der Vorher-Wert.
+    expect(Buffer.byteLength(setter, "utf8")).toBe(261);
     expect(createHash("sha256").update(setter, "utf8").digest("hex")).toBe(
+      "045ca34825c8dadad2cac335767573572f536ac43da0b4d092675c607d024d3b"
+    );
+    // (3) DIE EINSETZUNG WIRD GEZAEHLT, und die erwartete Zahl steht VOR der Zaehlung.
+    const einsetzung = ', "custom": false';
+    expect(setter.split(einsetzung).length - 1).toBe(1);
+    // (4) ENTFERNT -> der VORHER-Wert, in Bytes UND sha256.
+    const ohne = setter.split(einsetzung).join("");
+    expect(Buffer.byteLength(ohne, "utf8")).toBe(244);
+    expect(createHash("sha256").update(ohne, "utf8").digest("hex")).toBe(
       "9ae9ab2650187876aad75da2cb84cde5c125622e1842ede5a40a059a4a843acd"
     );
+    // (5) POSITIVKONTROLLE: OHNE die Entfernung bestuende ein Unterschied. Ohne sie waere
+    // ein Nachweis, dessen Entfernung nichts findet, von einem erfolgreichen nicht zu
+    // unterscheiden.
+    expect(ohne).not.toBe(setter);
     const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", praes({ theme: "light" }, "standard"));
     expect(out).toContain(setter);
   });
@@ -150,7 +177,7 @@ describe("11.5b — Wiederherstellung", () => {
     expect(typeof w.pagesmithConsent).toBe("object");
   });
 
-  it("R5: gespeichert nur meta -> Hook exakt meta true, die uebrigen fuenf false", () => {
+  it("R5: gespeichert nur meta -> Hook exakt meta true, die uebrigen sechs false", () => {
     w.localStorage.setItem(CONSENT_STORE_KEY, NUR_META);
     runRestore();
     expect(w.pagesmithConsent).toEqual({
@@ -160,18 +187,19 @@ describe("11.5b — Wiederherstellung", () => {
       linkedin: false,
       google: false,
       analytics: false,
+      custom: false,
     });
   });
 
   // R6. EIN WERT VOR EINEM NEUEN ZIEL fuehrt dessen Schluessel in keiner Liste — er ist
   // gueltig, und der Hook traegt trotzdem alle sechs, den fehlenden als false.
-  it("R6: der Hook traegt genau die sechs Schluessel, auch bei einem Wert ohne alle Listen", () => {
+  it("R6: der Hook traegt genau die sieben Schluessel, auch bei einem Wert ohne alle Listen", () => {
     w.localStorage.setItem(CONSENT_STORE_KEY, "ps1:meta|");
     runRestore();
     const hook = w.pagesmithConsent as Record<string, unknown>;
-    expect(Object.keys(hook).sort()).toEqual([...SECHS].sort());
+    expect(Object.keys(hook).sort()).toEqual([...SIEBEN].sort());
     expect(hook.meta).toBe(true);
-    for (const k of SECHS.filter((k) => k !== "meta")) expect(hook[k]).toBe(false);
+    for (const k of SIEBEN.filter((k) => k !== "meta")) expect(hook[k]).toBe(false);
   });
 
   const UNGUELTIG: Array<[string, string]> = [
@@ -196,13 +224,13 @@ describe("11.5b — Wiederherstellung", () => {
       expect(w.pagesmithConsent).toBeUndefined();
       runSetter();
       const hook = w.pagesmithConsent as Record<string, unknown>;
-      for (const k of SECHS) expect(hook[k]).toBe(false);
+      for (const k of SIEBEN) expect(hook[k]).toBe(false);
     });
   }
   it("R7: gueltiger Wert -> entschieden (Positivkontrolle)", () => {
     w.localStorage.setItem(CONSENT_STORE_KEY, ALLE_ABGELEHNT);
     runRestore();
-    expect(store().read()).toEqual({ state: "decided", granted: [], denied: SECHS });
+    expect(store().read()).toEqual({ state: "decided", granted: [], denied: SIEBEN });
   });
 
   it("R8: ein werfender Zugriff auf localStorage heisst nie gefragt, und nichts wirft", () => {
@@ -273,12 +301,12 @@ describe("11.5b — Schnittstelle", () => {
     runRestore();
     expect(store().write(["analytics", "meta"])).toBe(true);
     expect(w.localStorage.getItem(CONSENT_STORE_KEY)).toBe(
-      "ps1:meta,analytics|pinterest,tiktok,linkedin,google"
+      "ps1:meta,analytics|pinterest,tiktok,linkedin,google,custom"
     );
     expect(store().read()).toEqual({
       state: "decided",
       granted: ["meta", "analytics"],
-      denied: ["pinterest", "tiktok", "linkedin", "google"],
+      denied: ["pinterest", "tiktok", "linkedin", "google", "custom"],
     });
   });
 
@@ -290,9 +318,9 @@ describe("11.5b — Schnittstelle", () => {
     runRestore();
     runSetter();
     // POSITIVKONTROLLE: vor dem Aufruf ist alles abgelehnt.
-    for (const k of SECHS) expect(ask(k)).toBe(false);
+    for (const k of SIEBEN) expect(ask(k)).toBe(false);
     expect(store().write(["meta", "analytics"])).toBe(true);
-    for (const k of SECHS) expect(ask(k)).toBe(k === "meta" || k === "analytics");
+    for (const k of SIEBEN) expect(ask(k)).toBe(k === "meta" || k === "analytics");
   });
 
   // R14. DER EINZIGE TEST, DER DIE REIHENFOLGE IN write() FAENGT: erst speichern, dann
@@ -306,12 +334,12 @@ describe("11.5b — Schnittstelle", () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("QuotaExceededError");
     });
-    expect(store().write(SECHS)).toBe(false);
+    expect(store().write(SIEBEN)).toBe(false);
     expect(w.pagesmithConsent).toBe(vorher);
     vi.restoreAllMocks();
 
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue("ps1:|");
-    expect(store().write(SECHS)).toBe(false);
+    expect(store().write(SIEBEN)).toBe(false);
     expect(w.pagesmithConsent).toBe(vorher);
   });
 });
@@ -325,14 +353,14 @@ describe("11.5b — Ende zu Ende gegen den echten Konsumenten", () => {
     runRuntimes();
     runRestore();
     runSetter();
-    for (const k of SECHS) expect(ALL(SECHS)[k]).toBe(true);
+    for (const k of SIEBEN) expect(ALL(SIEBEN)[k]).toBe(true);
     expect(ask("analytics")).toBe(true);
   });
   it("R11: nichts gespeichert -> der Konsument verbietet alle sechs (Gegenfall)", () => {
     runRuntimes();
     runRestore();
     runSetter();
-    for (const k of SECHS) expect(ALL(SECHS)[k]).toBe(false);
+    for (const k of SIEBEN) expect(ALL(SIEBEN)[k]).toBe(false);
   });
   it("R11: Fremd-CMP vorab gesetzt -> seine Antwort gilt, trotz gespeicherter Zustimmung", () => {
     w.localStorage.setItem(CONSENT_STORE_KEY, ALLE_ZUGESTIMMT);

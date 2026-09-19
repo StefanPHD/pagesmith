@@ -79,9 +79,9 @@ const MODAL_ID = 'id="__ps_cmo"';
 const HTML = "<html><body><h1>nur Text</h1></body></html>";
 const KEY = "tk-modal-11-5d-2";
 const STORE_KEY = "__ps_consent";
-const SECHS = ["meta", "pinterest", "tiktok", "linkedin", "google", "analytics"];
-const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics|";
-const ALLE_ABGELEHNT = "ps1:|meta,pinterest,tiktok,linkedin,google,analytics";
+const SIEBEN = ["meta", "pinterest", "tiktok", "linkedin", "google", "analytics", "custom"];
+const ALLE_ZUGESTIMMT = "ps1:meta,pinterest,tiktok,linkedin,google,analytics,custom|";
+const ALLE_ABGELEHNT = "ps1:|meta,pinterest,tiktok,linkedin,google,analytics,custom";
 const SATZ =
   "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.";
 const GLOBALS = [
@@ -101,7 +101,7 @@ type BeaconSpy = ReturnType<typeof vi.fn>;
 const w = window as unknown as Mutable & { eval: (code: string) => unknown };
 
 function hookAus(wert: boolean): Record<string, boolean> {
-  return Object.fromEntries(SECHS.map((k) => [k, wert]));
+  return Object.fromEntries(SIEBEN.map((k) => [k, wert]));
 }
 
 function installBeacon(): BeaconSpy {
@@ -409,7 +409,7 @@ describe("11.5d-2 — wann das Modal erscheint", () => {
 });
 
 describe("11.5d-2 — die zwei Knoepfe", () => {
-  it("M9: 'Alle akzeptieren' -> alle sechs gespeichert, Hook frei, genau ein Seitenaufruf, Modal weg", async () => {
+  it("M9: 'Alle akzeptieren' -> alle sieben gespeichert, Hook frei, genau ein Seitenaufruf, Modal weg", async () => {
     const beacon = mount();
     expect(beacon).not.toHaveBeenCalled();
 
@@ -424,7 +424,7 @@ describe("11.5d-2 — die zwei Knoepfe", () => {
     expect(hosts()).toHaveLength(0);
   });
 
-  it("M10: 'Ablehnen' -> alle sechs abgelehnt gespeichert, Hook abgelehnt, nichts gesendet, Modal weg", () => {
+  it("M10: 'Ablehnen' -> alle sieben abgelehnt gespeichert, Hook abgelehnt, nichts gesendet, Modal weg", () => {
     const beacon = mount();
     expect(hosts()).toHaveLength(1);
 
@@ -786,12 +786,12 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
 // Setzungen des Zuschnitts der Scheibe 11.5e-1 und den Freigaben F1 bis F6 vom 2026-09-15 —
 // als Literal, nie aus dem Code.
 
-const NUR_MESSUNG = "ps1:analytics|meta,pinterest,tiktok,linkedin,google";
-const NUR_WERBUNG = "ps1:meta,pinterest,tiktok,linkedin,google|analytics";
-const WERBUNG = ["meta", "pinterest", "tiktok", "linkedin", "google"];
+const NUR_MESSUNG = "ps1:analytics|meta,pinterest,tiktok,linkedin,google,custom";
+const NUR_WERBUNG = "ps1:meta,pinterest,tiktok,linkedin,google,custom|analytics";
+const WERBUNG = ["meta", "pinterest", "tiktok", "linkedin", "google", "custom"];
 
 function hookMit(erlaubt: string[]): Record<string, boolean> {
-  return Object.fromEntries(SECHS.map((k) => [k, erlaubt.includes(k)]));
+  return Object.fromEntries(SIEBEN.map((k) => [k, erlaubt.includes(k)]));
 }
 
 describe("11.5e-1 — die Schalter des Modals", () => {
@@ -822,7 +822,7 @@ describe("11.5e-1 — die Schalter des Modals", () => {
     ["keine", [], ALLE_ABGELEHNT, [], 0],
     ["nur Messung", ["Messung"], NUR_MESSUNG, ["analytics"], 1],
     ["nur Werbung", ["Werbung"], NUR_WERBUNG, WERBUNG, 0],
-    ["beide", ["Messung", "Werbung"], ALLE_ZUGESTIMMT, SECHS, 1],
+    ["beide", ["Messung", "Werbung"], ALLE_ZUGESTIMMT, SIEBEN, 1],
   ];
   for (const [fall, klicks, speicher, erlaubt, beacons] of AUSWAHL) {
     it(`M17: '${fall}' + 'Auswahl speichern' -> Speicherwert und Hook je Schluessel, ${beacons} Seitenaufruf(e), Modal weg`, async () => {

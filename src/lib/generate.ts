@@ -9,6 +9,10 @@
 import type { Mapping } from "./mappings";
 import { buildMetaRuntime, metaTrackStatement } from "./tracking/meta";
 import { buildConsentRuntimes, CONSENT_SCRIPT_ID } from "./tracking/consent";
+import {
+  buildCustomPixelRuntime,
+  customTrackStatement,
+} from "./tracking/custom-pixel";
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 
@@ -66,7 +70,14 @@ function buildWiringScript(
   metaPixelId: string,
   capiTrackingKey: string,
   capiProxyUrl: string,
-  consentTargets: readonly string[]
+  consentTargets: readonly string[],
+  // CUSTOM-PIXEL (Phase 11.6, Scheibe 11.6a). ZWEI Angaben, KEIN Vorgabewert — diese
+  // Funktion ist nicht exportiert und hat genau einen Aufrufer; ohne Vorgabewert muss
+  // jener entscheiden, und der Compiler fragt.
+  // customCode ist bereits MODUS-GEGATET (P11.6-6, Teil (d): nur "export"); diese
+  // Funktion kennt den Grund nicht und soll ihn nicht kennen.
+  customCode: string,
+  customHasEventLine: boolean
 ): string {
   const hasPixel = metaPixelId !== "";
   // PHASE 11, ACHTE SCHEIBE — DIE VORBEDINGUNG IST GEFALLEN.
@@ -93,8 +104,26 @@ function buildWiringScript(
   // werden), und ob ein Pixel gesetzt ist (dann entfaellt die Warnung). Seit dieser
   // Scheibe fallen die beiden NICHT mehr zusammen — genau das ist ihr Zweck.
   const trackStmt = metaTrackStatement(metaRuntime !== "", hasPixel);
+  // CUSTOM-PIXEL (Scheibe 11.6a). Der Baustein steht VOR dem Meta-Block und ist von ihm
+  // vollstaendig unabhaengig: Er entsteht auch ohne Pixel-ID und ohne Tracking-Schluessel
+  // (Invariante I4 der Scheibe), und er liegt NICHT in __psMetaFire — also auch nicht
+  // hinter dessen Wache 4, die ueber die ZIEL-Schluessel urteilt.
+  // OHNE SNIPPET UND OHNE EREIGNISZEILE LIEFERN BEIDE "" — der erzeugte Text ist dann
+  // zeichengleich zu dem vor dieser Scheibe (Invariante I5, Test T9).
+  const customRuntime = buildCustomPixelRuntime(customCode, customHasEventLine);
+  const customStmt = customTrackStatement(customCode !== "", customHasEventLine);
+  // DIE ZWEI ANWEISUNGEN DES TRACK-ZWEIGS, ZUSAMMENGEFUEGT. Meta zuerst, Custom danach:
+  // Der etablierte Pfad bleibt damit die erste Anweisung, und bei leerem customStmt ist
+  // der Ausdruck zeichengleich zu trackStmt.
+  const trackAll =
+    customStmt === ""
+      ? trackStmt
+      : trackStmt === ""
+        ? customStmt
+        : `${trackStmt}
+            ${customStmt}`;
   return `(function () {
-  var MODE = ${JSON.stringify(mode)};${metaRuntime}
+  var MODE = ${JSON.stringify(mode)};${customRuntime}${metaRuntime}
   var dataEl = document.getElementById("${MAPPINGS_SCRIPT_ID}");
   if (!dataEl) return;
   var table;
@@ -143,7 +172,7 @@ function buildWiringScript(
         for (var j = 0; j < actions.length; j++) {
           var a = actions[j];
           if (a.type === "track") {
-            ${trackStmt}
+            ${trackAll}
           } else if (a.type === "redirect") {
             redirect = a;
           }
@@ -198,7 +227,7 @@ function buildWiringScript(
         for (var j = 0; j < actions.length; j++) {
           var a = actions[j];
           if (a.type === "track") {
-            ${trackStmt}
+            ${trackAll}
           }
         }
       },
@@ -279,11 +308,17 @@ export function generateFunctional(
   // Datenmodell (dieselbe Trennung wie bei capiProxyUrl, das die Engine auch nie
   // selbst aus env liest). FEHLT ODER LEER -> der erzeugte Text ist WOERTLICH der
   // von vor dieser Haelfte, samt Einzel-Ziehung und Einzel-Schluessel im Draht.
+  // options.customPixelCode (Phase 11.6, Scheibe 11.6a): der GEPRUEFTE Basis-Code des
+  // Betreibers. Vom AUFRUFER gelesen und geprueft (getCustomPixelCode) — die REINE
+  // Engine lernt kein Datenmodell, dieselbe Trennung wie bei consentTargets und
+  // capiProxyUrl. LEER ODER ABSENT -> der erzeugte Text ist zeichengleich der von vor
+  // dieser Scheibe.
   options?: {
     metaPixelId?: string;
     trackingKey?: string;
     capiProxyUrl?: string;
     consentTargets?: readonly string[];
+    customPixelCode?: string;
   }
 ): string {
   if (!html || !html.trim()) return "";
@@ -359,10 +394,34 @@ export function generateFunctional(
       return true; // preview
     });
 
+    // CUSTOM-PIXEL (Phase 11.6, Scheibe 11.6a) — DIE MODUS-GATUNG STEHT HIER UND NUR
+    // HIER (Entscheidung P11.6-6, Teil (d)): Der Baustein entsteht AUSSCHLIESSLICH in
+    // "export". In der Vorschau gibt es WEDER Lader NOCH Ereigniszeile.
+    // DER GRUND IST WIRKUNG, NICHT KONSISTENZ: Der Basis-Code eines Netzwerks setzt beim
+    // Laden Cookies und schickt einen Seitenaufruf, und der Vorschau-Rahmen baut sich bei
+    // jeder Tipp-Pause neu auf — es entstuenden Ereignisse aus der ARBEIT des Betreibers.
+    // DASS DER BESTAND IN DER VORSCHAU SEHR WOHL ECHTES fbq FEUERT, IST BEKANNT UND
+    // BEWUSST (docs/claude-history/phase-4-mapping-codegen-export.md: "akzeptierte
+    // Marketer-eigene-Vorschau-Verschmutzung"); der Custom-Baustein folgt dem NICHT.
+    // DER PREIS: Der Betreiber kann seinen Custom-Pixel im Editor nicht pruefen.
+    const customPixelCode =
+      mode === "export" ? (options?.customPixelCode ?? "") : "";
+    // Traegt IRGENDEINE verdrahtete Aktion eine Ereigniszeile? Gefragt wird die
+    // GEFILTERTE Tabelle und nicht die rohen Mappings: ein verwaistes Mapping wird nicht
+    // verdrahtet, seine Zeile duerfte also auch keinen Baustein erzeugen.
+    const customHasEventLine =
+      mode === "export" &&
+      table.some((m) => m.type === "track" && !!m.config.code);
+
     // Script-Injektion nur, wenn noetig: im Export ohne Laufzeit-Mappings (z.B.
     // reine-Text-Seite) bleibt das Output reines statisches HTML — KEIN Datenblock,
     // KEIN Wiring. preview (Containment) + edit injizieren weiterhin immer.
-    const injectScripts = mode !== "export" || table.length > 0;
+    // SEIT 11.6a EIN DRITTER TERM, UND ER IST REIN ADDITIV: Ein Projekt MIT Snippet, aber
+    // OHNE jedes Laufzeit-Mapping bekaeme sonst gar kein Script — der Basis-Code wuerde
+    // nie geladen, lautlos. Ausserhalb von "export" ist customPixelCode immer "", der
+    // Term also folgenlos; die zwei bestehenden Terme sind unangetastet.
+    const injectScripts =
+      mode !== "export" || table.length > 0 || customPixelCode !== "";
     if (injectScripts) {
       // Datenblock (JSON), sicher kodiert: jedes "<" als Unicode-Escape maskiert
       // verhindert den "</script>"-Ausbruch und schuetzt zugleich URLs mit "<".
@@ -378,7 +437,9 @@ export function generateFunctional(
         options?.metaPixelId ?? "",
         options?.trackingKey ?? "",
         options?.capiProxyUrl ?? "",
-        options?.consentTargets ?? []
+        options?.consentTargets ?? [],
+        customPixelCode,
+        customHasEventLine
       );
 
       // GETEILTES CONSENT-GATE (Phase 11, zweite Scheibe): der Block wird erzeugt,

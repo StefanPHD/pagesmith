@@ -1584,3 +1584,78 @@ describe("publishProject — die Darstellung (Scheibe 11.13b)", () => {
     expect(html).not.toContain("Alle akzeptieren");
   });
 });
+
+// ---------------------------------------------------------------------------
+// SCHEIBE 11.6a — DIE ZWEI TORE DES CUSTOM-PIXELS (Entscheidung P11.6-6, Teil (f)).
+//
+// SIE STEHEN AN DERSELBEN STELLE UND IN DERSELBEN FORM wie die vier Consent-Tore:
+// lesen, bei "unknown" laut abbrechen, VOR jedem Schreibzugriff. Die Meldungen sind
+// LITERALE der Entscheidung, nicht aus dem Code gezogen.
+//
+// DIE ASYMMETRIE ZUM EXPORT IST BENANNT UND WIRD HIER NICHT GEPRUEFT: Download und
+// Kopieren laufen nicht ueber publishProject; dort bleibt nur, den Wert nicht
+// einzubauen. Das deckt T12 in lib/tracking/custom-pixel.test.ts.
+// ---------------------------------------------------------------------------
+describe("publishProject — Custom-Pixel-Tore (Scheibe 11.6a)", () => {
+  it("T12d: ein unbrauchbarer Snippet bricht laut ab — KEIN Write", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "Shop", settings: {} }, error: null },
+    });
+    // DER WERT STEHT IM SNAPSHOT, NICHT IN DER ZEILE — und das ist die Sache, nicht die
+    // Kulisse: Veroeffentlicht wird, was der CLIENT mitbringt; genau den liest das Tor,
+    // wie die vier Consent-Tore auch.
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+      ...snapshot,
+      settings: { customPixel: { code: "x".repeat(16001) } },
+    });
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.error).toContain("eigene Tracking-Code");
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+  });
+
+  it("T12e: eine ueberlange Ereigniszeile in VARIANTE B bricht ab — obwohl A sauber ist", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "Shop", settings: {}, html_b: "<h1>B</h1>" },
+        error: null,
+      },
+    });
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", snapshot, {
+      functionalHtml: "<h1>B</h1>",
+      mappings: [
+        {
+          elementId: "b1",
+          type: "track",
+          config: { event: "Purchase", code: "x".repeat(2001) },
+        },
+      ],
+    });
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.error).toContain("Ereigniszeile");
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("T12f: POSITIVKONTROLLE — gueltiger Snippet und gueltige Zeile lassen den Publish durch", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "Shop", settings: {} },
+        error: null,
+      },
+    });
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+      ...snapshot,
+      settings: { customPixel: { code: "<scr" + "ipt>1;</scr" + "ipt>" } },
+      mappings: [
+        { elementId: "b1", type: "track", config: { event: "Purchase", code: "foo();" } },
+      ],
+    });
+    expect(res.ok).toBe(true);
+    expect(rec.updatePatch).not.toBeNull();
+  });
+});

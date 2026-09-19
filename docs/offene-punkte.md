@@ -1258,6 +1258,89 @@ aufeinander; sie liegen alle hier und finden einander.
   Negativkontrolle sind GEMESSEN am Repo (CC, 2026-09-18). Dass (h) und (l) nur bis zum Ende
   des Verzeichnisses tragen, ist eine ABLEITUNG aus diesen Messungen und dem Wortlaut ihrer
   Fragen, keine zweite Beobachtung.
+
+  NACHGETRAGEN 2026-09-19 — DIE SECHSTE LADE-PROBE, DIE ERSTE MIT DER ENDE-ACHSE ALS
+  VORGEFUNDENER PFLICHT. Alles darüber bleibt wörtlich stehen; seine Angaben sind datierte
+  Messungen und werden hier gelesen, nicht ersetzt. Die Buchstaben laufen weiter, damit ein
+  Verweis auf einen Teil dieses Postens eindeutig bleibt.
+
+  (n) DIE PROBE IST BEI 232 300 ZEICHEN GEFAHREN UND BESTANDEN — DREI VON DREI —, UND SIE IST
+  DIE ERSTE, BEI DER DIE TRENNSCHÄRFE AN EINER EINZIGEN FRAGE HÄNGT. Frische CC-Sitzung am
+  2026-09-19, NACH der Hebung des Phasenendes 11.6 und nach der Richtigstellung der
+  jsdom-Angabe; die antwortende Instanz sah Commit 4c21c53 als Stand. Dass die Antworten VOR
+  jedem Werkzeugaufruf standen, ist OWNER-ANGABE — wie bei (l) und (m) der Ablauf jener
+  Sitzung und am Repo nicht prüfbar.
+  ACHTUNG BEI DEN NUMMERN: Diese Probe hat EIGENE Fragen, die NICHT die von (b) sind. Sie
+  heissen hier F1 bis F3; die Nummern (1) bis (4) bleiben den Fragen von (b) vorbehalten.
+  SIE HAT DREI FRAGEN GESTELLT UND NICHT FÜNF, UND DAS IST EINE ABWEICHUNG VON (b): Von den
+  vier Kopf-Fragen dort sind nur (4) — die Marke — und (2) — die letzte Regelüberschrift —
+  gestellt worden; (1) die Zahl der Verzeichnis-Einträge und (3) ein Eintrag aus der MITTE des
+  Verzeichnisses fehlen. Die ENDE-ACHSE ist voll bedient. Die Probe trägt damit die KOPF-Achse
+  schwächer als (l) und (m) und die ENDE-Achse gleich stark.
+  DIE DREI FRAGEN IM WORTLAUT: "1. Welche Marke steht in Zeile 1 von docs/immer-beachten.md?
+  2. Wie beginnt die Überschrift der letzten Regel jener Datei — die ersten sechs Wörter?
+  3. Die allerletzte Zeile jener Datei ist eine Provenienz-Angabe. Sie ordnet drei Aussagen
+  drei verschiedenen Herkunftsarten zu und nennt am Schluss eine Herleitung. Nenne die drei
+  Zuordnungen und die Herleitung." Rahmen: ohne Werkzeug, ohne eine Datei zu lesen, und
+  "nicht im Kontext" statt zu raten.
+  DIE DREI ANTWORTEN UND IHRE FUNDSTELLEN (GEMESSEN am Dateitext, CC, 2026-09-19):
+  · F1 "IB-GELADEN" — Zeile 1.
+  · F2 "EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING" — Regelanfang in Zeile
+    2 935, gekappter Verzeichnis-Eintrag in Zeile 208.
+  · F3 die drei Zuordnungen — Parser-Befund auf GEMESSEN (CC, 2026-09-19), die Folge für den
+    Live-Baum auf ABLEITUNG, der Chrome-Lauf auf OWNER-ANGABE — und die Herleitung "das Archiv
+    der Phase 11.6": Zeilen 2 968 und 2 969, die letzten zwei Zeilen der Datei.
+  Alle drei stimmen mit dem Dateitext überein; gegengeprüft mit Werkzeug ERST NACH der
+  Antwort.
+  ES TRÄGT ALLEIN F3. Die Alleinstellung ist gemessen, wie (b) es seit dem 2026-09-18 verlangt
+  (GEMESSEN, CC, 2026-09-19): Die Nadel "der Chrome-Lauf eine OWNER-ANGABE" hat im ganzen Repo
+  GENAU EIN Vorkommen — Achse über md/ts/tsx/sql ohne node_modules —, und es ist Zeile 2 969
+  der Regeldatei selbst. CLAUDE.md und MEMORY.md tragen NULL Treffer. POSITIVKONTROLLE im
+  selben Lauf (CLAUDE.md Zeile 1, MEMORY.md Zeile 1, docs/immer-beachten.md Zeile 1 — je
+  Treffer), NEGATIVKONTROLLE mit einer erfundenen Zeichenkette (null Treffer in allen drei
+  Dateien), Instrument `grep -n -F`, GNU grep 3.0. Die Null ist damit keine Werkzeug-Null.
+  F1 UND F2 TRENNEN NICHTS, UND DAS IST HIER NICHT ABGESCHRIEBEN, SONDERN AM HEUTIGEN BESTAND
+  GEMESSEN: Die Marke steht auch in CLAUDE.md (Zeile 1 002), und die letzte Regelüberschrift
+  steht ein zweites Mal im VERZEICHNIS derselben Datei (Zeile 208). DIE FRAGE NACH DEN ERSTEN
+  SECHS WÖRTERN IST AUS DER GEKAPPTEN VERZEICHNISZEILE VOLLSTÄNDIG BEANTWORTBAR — die Kappung
+  setzt erst hinter "WER KNOTEN" ein. Damit bestätigt diese Probe den Befund von (m) an einem
+  NEUEN Bestand: Der Kopf der Datei ist eine Kopie ihres Endes, und nur eine Rumpf-Frage
+  trennt.
+  DER JSDOM-FUND DER VORBEREITUNG GEHÖRT DAZU, WEIL ER EINEN ANKER GEKOSTET HAT: Als
+  Ende-Achse lag die Versionsangabe im Rumpf der letzten Regel nahe — eine Zahl, und Zahlen
+  sind nach (b) tauglich. Die Vorbereitung fand dort "jsdom 27", während das Repo 29.1.1
+  installiert und in package.json gepinnt führt; die Angabe ist richtiggestellt worden (Commit
+  4c21c53) und als Anker VERWORFEN — ein Anker, der in derselben Runde erst hergestellt wird,
+  belegt die Richtigstellung und nicht die Ladung.
+  DIE GRÖSSEN AM 2026-09-19 (GEMESSEN am Repo, CC): docs/immer-beachten.md 235 655 Bytes /
+  232 300 Zeichen / 2 969 Zeilen, reines LF (`git ls-files --eol`: i/lf w/lf), kein BOM (die
+  ersten drei Bytes sind 49 42 2d), null CR, null NUL; Zeichen gezählt als Unicode-Codepoints,
+  CR und NUL über `tr` bzw. `od`, ausdrücklich nicht über `grep`. CLAUDE.md 109 125 Bytes.
+  Datiert, also alt und nicht falsch; wer den heutigen Wert braucht, misst ihn.
+  DER BESTAND IST UM 6 785 ZEICHEN GRÖSSER ALS BEI (m) — eine Rechnung aus zwei datierten
+  Messungen, keine dritte Beobachtung. Die Differenz trägt die Hebung des Phasenendes 11.6
+  (Commit f75624c, GEMESSEN am Diff, CC, 2026-09-19: vier angefügte Zeilen mit Regelanfang, je
+  zwei im Verzeichnis und im Rumpf) und daneben die eine Zeile aus 4c21c53. Die Zahlen fügen
+  sich: (m) zählte 121 zu 121, 121 + 2 = 123, und heute stehen 123 Verzeichnis-Einträge UND
+  123 Regeln (GEMESSEN, CC, 2026-09-19).
+  DIE GRENZE DIESER PROBE, unverändert aus (a), (f), (h), (l) und (m): Sie sagt, dass die
+  Datei an DIESEM Tag bei DIESER Grösse bis in ihre letzte Zeile ankam. Sie sagt NICHT, wo
+  eine Obergrenze liegt, und NICHT, dass das Werkzeug die gemeldete Grenze nie durchsetzt.
+  /context IST FÜR DIESE PROBE NICHT ERHOBEN — wie bei (m) gibt es für diesen Tag keine
+  Ablesung der Speicherdateien, keinen Token-Wert und keinen Wortlaut der Warnung.
+  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). WIE AM
+  2026-09-11, AM 2026-09-17 UND AM 2026-09-18 IST SEINE FRAGE NACHTRÄGLICH BEANTWORTET: Die
+  Hebung des Phasenendes 11.6 (Commit f75624c) stand bereits, als die Probe lief, und die
+  Archivierung (78547c4) ebenfalls.
+  PROVENIENZ: Die drei Fragen und ihr Rahmen stehen im Auftrag jener Sitzung; DASS DIE
+  ANTWORTEN VOR JEDEM WERKZEUGAUFRUF STANDEN, IST OWNER-ANGABE und am Repo nicht prüfbar. Die
+  drei Antworten stammen aus der Sitzung selbst. Die Gegenprüfung am Dateitext, die Grössen,
+  die Fundstellen 1 · 208 · 1 002 · 2 935 · 2 968 · 2 969, die Zählung 123 zu 123, der Diff
+  von f75624c, die jsdom-Angaben aus package.json und dem Dateitext und die Suchen in
+  CLAUDE.md und MEMORY.md samt Positiv- und Negativkontrolle sind GEMESSEN am Repo (CC,
+  2026-09-19). DASS DIE VERSIONSANGABE ALS ANKER ERWOGEN UND VERWORFEN WURDE, IST
+  OWNER-ANGABE aus dem Auftrag dieser Runde; am Repo steht davon nur die Richtigstellung
+  selbst.
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.

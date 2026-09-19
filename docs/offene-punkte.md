@@ -303,7 +303,9 @@ aufeinander; sie liegen alle hier und finden einander.
   SEINEM ALTEN WORTLAUT NIE MEHR ANSCHLAGEN KANN. Er lautete: "die Custom-Pixel-Vorfrage
   fällt zugunsten eines SERVER-Empfängers mit kundeneigenem Endpunkt". DIE VORFRAGE IST
   GEFALLEN, UND ZWAR ZUGUNSTEN VON (a), DEM CLIENT-SNIPPET (OWNER-ENTSCHEIDUNG 2026-09-19;
-  docs/roadmap.md, Roadmap-Zeile 11.6, und docs/aktiver-stand.md, Entscheidung P11.6-1).
+  docs/roadmap.md, Roadmap-Zeile 11.6, und docs/claude-history/phase-11.6-custom-pixel.md,
+  Entscheidung P11.6-1 — der Standdatei jener Phase, die bis zum Phasenende am 2026-09-19
+  docs/aktiver-stand.md hiess; der Zeiger ist im selben Zug nachgezogen).
   Ein Trigger, dessen Bedingung entgegengesetzt eingetreten ist, ist kein wartender
   Trigger mehr, sondern eine tote Zeile — und eine tote Zeile in einer Trigger-Liste sieht
   aus wie ein wachender Posten.
@@ -326,7 +328,11 @@ aufeinander; sie liegen alle hier und finden einander.
   jeden Zeiger auf ihn tot. Dieselbe Abwägung ist in docs/immer-beachten.md an der Regel
   "MEHRERE KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL (PROJEKT, ZIEL) NICHT" bereits
   getroffen und begründet. OB DIESER POSTEN DIE RICHTIGSTELLUNG BEKOMMT, IST HIER NICHT
-  ENTSCHIEDEN und steht als Vorrat P11.6-1 in docs/aktiver-stand.md; KEINE EMPFEHLUNG.
+  ENTSCHIEDEN. Der Punkt ist am 2026-09-19 mit dem Phasenende 11.6 nach
+  docs/claude-history/backlog-polish.md gehoben, Abschnitt "Aus Phase 11.6 gehoben
+  (2026-09-19)", Eintrag P11.6-1; seine Herkunft ist der Vorrat der Standdatei jener Phase,
+  die seit demselben Tag docs/claude-history/phase-11.6-custom-pixel.md heisst. KEINE
+  EMPFEHLUNG.
   PROVENIENZ DIESER ERSETZUNG: OWNER-ENTSCHEIDUNG 2026-09-19; der Stub in CLAUDE.md,
   "## Offene Punkte", trägt den neuen Trigger-Wortlaut im SELBEN Zug und wörtlich gleich.
 - DREI WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE — RANG OFFEN,

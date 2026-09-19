@@ -1,4 +1,78 @@
-# Phase 11.6 — Custom-Pixel: DER AKTIVE STAND
+# Phase 11.6 — Custom-Pixel: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 11.6 — das, was jeweils galt, nicht
+das, was geworden ist. **Sie hiess bis zum Phasenende `docs/aktiver-stand.md`** und war das
+Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der Phase arbeitete.
+
+**ZEITRAUM UND UMFANG:** angelegt am 2026-09-19, archiviert am 2026-09-19 — **die Phase hat
+einen Tag gedauert.** EINE Scheibe (11.6a, der Basis-Code und die Ereigniszeile), ihr voraus
+eine Aufklärungs-Runde und eine Designrunde ohne Scheibe, ihr nach eine Korrektur-Runde und
+eine zweite Korrektur am Lader. ZWEI Vermerke, SECHS bindende Entscheidungen, VIER
+Vorrats-Einträge, KEIN Hebungs-Kandidat. Bau-Commit `bc001f4`, mit bestätigtem Live-Test.
+
+**DER MESSWERT NACH docs/arbeitsweise.md, ABSCHNITT 2b** (GEMESSEN am Repo, CC, 2026-09-19,
+`git log --numstat` seit dem ersten Commit der Phase, `7be1e9a^..`): **1058 geänderte
+Zeilen in `docs/`, 1713 in `src/`, 5 in `CLAUDE.md`** — über FÜNF Commits. Die Zahlen sind
+Summen aus Einfügungen und Löschungen; `src/lib/mappings.ts` zählt darin mit NULL, weil git
+sie wegen ihres NUL-Bytes als binär führt (Vorbestand, am HEAD wie jetzt gemessen).
+
+**WIE SIE ENDETE:** Ihr Marker steht auf `[x]`, und das heisst **BAU-FERTIG** — nicht "der
+Custom-Pixel ist fertig". Was am Haken hängt, steht an der Roadmap-Zeile 11.6
+(docs/roadmap.md) und wird hier NICHT verdoppelt: Firefox und WebKit sind ungemessen, echte
+Netzwerk-Snippets ungetestet, die Weiterleitungs-Frage offen, und die Betreiber-Hinweise
+fehlen in der Oberfläche.
+
+**DAS PROTOKOLL DER HEBUNG — 2026-09-19, EIN COMMIT (`f75624c`).** An jeder gehobenen
+Stelle steht ein Zeiger; ohne ihn wäre ein umgezogener Eintrag von einem nie dagewesenen
+nicht zu unterscheiden.
+- **VORRAT — VIER EINTRÄGE, 1 / 2 / 1.** Als offener Punkt gehoben: **P11.6-4**, nach
+  docs/offene-punkte.md — seine fünf Sätze als **Punkt (4)** am bestehenden Posten
+  "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE", NICHT als eigener Posten. Ins Backlog:
+  **P11.6-1** und **P11.6-3**, nach docs/claude-history/backlog-polish.md, Abschnitt "Aus
+  Phase 11.6 gehoben (2026-09-19) — zwei Vorrats-Einträge"; beide tragen ausdrücklich
+  KEINEN Trigger, und genau das ist der Grund für ihren Ort. **GESTRICHEN: P11.6-2** — sein
+  Gegenstand steht bereits ZWEIMAL im Backlog; Titel und Beleg bleiben, der Rumpf ist weg.
+  DAS KRITERIUM WAR ZWEITEILIG (benennbarer Trigger UND "geht sonst still kaputt") und hat
+  hier scharf getrennt.
+- **EIN POSTEN KOMMT NICHT AUS DEM VORRAT, SONDERN AUS EINER OWNER-VORGABE** (2026-09-19):
+  "CUSTOM-PIXEL: QA UND BETREIBER-HINWEISE VOR DEM LAUNCH" bündelt die zwei MESSLÜCKEN des
+  Live-Tests — Firefox/WebKit und echte Netzwerk-Snippets samt der Weiterleitungs-Frage —,
+  die in KEINEM Vorrats-Eintrag standen; sie stammen aus den GRENZEN des Vermerks P11.6-2.
+  **Wer nur den Vorrat sichtet, findet sie nicht.** Sein dritter Teil zeigt auf den
+  Betreiber-Posten zurück, damit derselbe Gegenstand nicht zweimal geführt wird.
+- **HEBUNGS-KANDIDATEN — KEINE.**
+- **ENTSCHEIDUNGEN — SECHS, KEINE GEHOBEN.** Der Sammelvermerk steht am Kopf ihres
+  Abschnitts, mit Grund: Sie beschreiben, WIE der Code dieser Phase gebaut ist. **ZWEI
+  DESTILLATE SIND TROTZDEM ENTSTANDEN** und stehen als Dauerregeln in
+  docs/immer-beachten.md — "BETREIBER-CODE IM AUSGELIEFERTEN TEXT REIST ALS WERT UND WIRD
+  GEKAPSELT AUSGEFÜHRT — EINE MASKIERUNG ALLEIN REICHT NICHT" (aus P11.6-5 Teil (3) und
+  P11.6-6 Teil (a)) und "EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING — WER
+  KNOTEN DARAUS IN EINE LEBENDE SEITE ÜBERNIMMT, ÜBERNIMMT EINEN ANDEREN BAUM, ALS DER
+  BROWSER GEBAUT HÄTTE" (aus dem Bau des Laders und P11.6-6). Beide Entscheidungen stehen
+  hier wörtlich weiter, je mit einem Zeiger "→ GEHOBEN 2026-09-19"; **die Regel ist das
+  Destillat, nicht ihr Ersatz.**
+- **EIN BESTEHENDER POSTEN IST NACHGETRAGEN, NICHT GEHOBEN:** "`settingsEqual` IST EINE
+  ALLOWLIST" — sein Trigger ist mit dieser Phase ein SECHSTES Mal eingetreten und im selben
+  Commit abgearbeitet (der Term für `customPixel`); **die Klasse bleibt offen.**
+
+**ALTE ZEIGER AUF `docs/aktiver-stand.md` MEINEN NICHT DIESE DATEI**, sondern eine frühere
+Standdatei — der Pfad trug je Phase eine andere (docs/immer-beachten.md, EINE ABLAGE MIT
+HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE). **AUS DIESER PHASE GIBT ES IN `src/`
+KEINEN EINZIGEN SOLCHEN ZEIGER** (GEMESSEN, CC, 2026-09-19): Alle neuen Verweise aus `src/`
+nennen eine NUMMER ohne Pfad (`Entscheidung P11.6-4`, `P11.6-6, Teil (f)` und so fort), und
+die löst über die Phasennummer auf — genau dafür gibt es die Form `P<Phase>-n`. Der EINE
+Pfad-Zeiger in `src/lib/tracking/credential-state.ts` stammt aus Phase 11.3 (in dieser
+Phase nicht angefasst, am `git log` geprüft) und ist im offenen Punkt "ZEIGER AUF
+docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI" bereits geführt. **Ein chore-Commit
+war deshalb nicht nötig.**
+
+**DER SATZ IM KOPF DES RUMPFES, DASS SIE "DIESEN NAMEN BIS ZUM PHASENENDE" BEHÄLT, BLEIBT
+STEHEN.** Er ist ein Zeitdokument und war richtig, als er geschrieben wurde; sonst ist am
+Rumpf nichts umformuliert.
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **WAS DIESE DATEI IST:** der steuernde Stand der laufenden Phase 11.6 — das, was jeweils
 gilt, nicht das, was geworden ist. Sie heisst `docs/aktiver-stand.md` und behält diesen

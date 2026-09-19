@@ -1571,7 +1571,52 @@ liegen beide hier und finden einander.
         null. Sie ist nicht verboten, sie ist erwogen und mit Grund verworfen.
       PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-11. Die Befunde GEMESSEN bzw. GELESEN wie
       je Stelle angegeben; Prüfung am Dateitext und am Code durch CC, 2026-09-11.
-- [ ] Phase 11.6 — Custom-Pixel: DIE VORFRAGE IST ENTSCHIEDEN — ES IST LESART
+- [x] Phase 11.6 — Custom-Pixel: ABGESCHLOSSEN (2026-09-19, an EINEM Tag).
+      Der Betreiber hinterlegt den Basis-Code seiner Netzwerke in EINEM Feld je
+      Projekt und je Track-Aktion optional eine Ereigniszeile; die Seite lädt den
+      Code nach Einwilligung und führt die Zeile beim Klick aus. EINE Scheibe
+      (11.6a), Bau-Commit `bc001f4`, mit bestätigtem Live-Test. Volle
+      Herleitung, die zwei Vermerke und die SECHS bindenden Entscheidungen:
+      docs/claude-history/phase-11.6-custom-pixel.md.
+
+      WAS ZUM ZEITPUNKT DES HAKENS OFFEN IST — der Haken heisst BAU-FERTIG, nicht
+      "der Custom-Pixel ist fertig". Das Kriterium und seine Auflage stehen in
+      CLAUDE.md, "## Roadmap & aktueller Stand", unter "WANN [x] GESETZT WIRD —
+      DAS KRITERIUM"; sie werden hier NICHT wiederholt, sondern eingelöst. VIER
+      GRENZEN, je GEMESSEN bzw. ausdrücklich ungemessen:
+      · FIREFOX UND SAFARI/WEBKIT SIND UNGEMESSEN. Der Live-Test lief
+        ausschliesslich in Chrome. Betroffen ist jede Achse, zwei besonders: die
+        Doppelzählungs-Frage am `<noscript>`-Rückfall und das Nachladen bei
+        später Einwilligung. Beides scheitert LAUTLOS — falsche Zahlen bzw.
+        fehlende Conversions, kein Fehlerbild.
+      · ECHTE NETZWERK-SNIPPETS SIND UNGETESTET. Geprüft wurde mit `lodash` und
+        `console.log`, nicht mit einem Meta-, TikTok- oder Hotjar-Snippet.
+      · OB DIE ANFRAGE EINES NETZWERKS EINE WEITERLEITUNG ÜBERLEBT, IST OFFEN.
+        Die Ereigniszeile läuft garantiert VOR der Navigation (Wächter T4), aber
+        was sie auslöst, ist Betreiber-Code; ein `fetch` ohne `keepalive` kann
+        beim Seitenwechsel abbrechen. Der Redirect ist in dieser Phase
+        ausdrücklich NICHT umgebaut worden.
+      · DIE BETREIBER-HINWEISE FEHLEN IN DER OBERFLÄCHE — fünf Eigenschaften, die
+        ein Betreiber nicht erraten kann und die ihm heute nichts sagt.
+      ALLE VIER SIND GEHOBEN, NICHT ABGEWARTET: die ersten drei als Posten
+      "CUSTOM-PIXEL: QA UND BETREIBER-HINWEISE VOR DEM LAUNCH", der vierte als
+      Punkt (4) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" (beide
+      docs/offene-punkte.md, Trigger: vor dem öffentlichen Launch).
+
+      ZWEI DAUERREGELN SIND AUS DIESER PHASE ENTSTANDEN und stehen in
+      docs/immer-beachten.md: "BETREIBER-CODE IM AUSGELIEFERTEN TEXT REIST ALS
+      WERT UND WIRD GEKAPSELT AUSGEFÜHRT — EINE MASKIERUNG ALLEIN REICHT NICHT"
+      und "EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING — WER
+      KNOTEN DARAUS IN EINE LEBENDE SEITE ÜBERNIMMT, ÜBERNIMMT EINEN ANDEREN
+      BAUM, ALS DER BROWSER GEBAUT HÄTTE".
+
+      DER TEXT DIESER ZEILE VOR DEM ABHAKEN BLEIBT DARUNTER WÖRTLICH STEHEN und
+      ist ein ZEITDOKUMENT. Sein Satz "Der Marker bleibt `[ ]`: entschieden ist
+      die Vorfrage, gebaut ist nichts" trifft seit dem Bau-Commit nicht mehr zu;
+      sein Zeiger auf docs/aktiver-stand.md meint die Standdatei dieser Phase,
+      die seit dem Phasenende docs/claude-history/phase-11.6-custom-pixel.md
+      heisst. Alles übrige daran bleibt richtig:
+      "Phase 11.6 — Custom-Pixel: DIE VORFRAGE IST ENTSCHIEDEN — ES IST LESART
       (a), DAS CLIENT-SEITIGE SNIPPET (OWNER-ENTSCHEIDUNG 2026-09-19). Der
       Marker bleibt `[ ]`: entschieden ist die Vorfrage, gebaut ist nichts.
       WAS ENTSCHIEDEN IST: Pagesmith LÄDT den Basis-Code des Betreibers und
@@ -1615,7 +1660,8 @@ liegen beide hier und finden einander.
       project_secrets ist seit 0025 die einspaltige id; was (b) bräche, ist die
       EINDEUTIGKEIT, die seither im UNIQUE-Constraint
       project_secrets_project_id_target_key liegt (GEMESSEN am Migrationstext und
-      an docs/db-stand.md, CC, 2026-09-19).
+      an docs/db-stand.md, CC, 2026-09-19)."
+      — ENDE DES ZEITDOKUMENTS.
 - [x] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP):
       ABGESCHLOSSEN (2026-09-12 bis 2026-09-16). Pagesmith liefert einen eigenen
       Einwilligungs-Dialog mit; ein fremdes CMP bleibt einbindbar. SIEBEN Scheiben —

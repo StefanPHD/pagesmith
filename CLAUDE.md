@@ -156,7 +156,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.8 — Autorisierungsschicht
 - [x] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
 - [-] Phase 11.4 — Der Testknopf
-- [ ] Phase 11.6 — Custom-Pixel
+- [x] Phase 11.6 — Custom-Pixel
 - [x] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
@@ -1314,6 +1314,30 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   die Regel ist das Destillat, nicht ihr Ersatz. BEIDE HEBUNGS-KANDIDATEN sind ebenfalls
   Dauerregeln geworden — einer als ERWEITERUNG der bestehenden Werkzeug-Regel zu sed -i,
   einer als eigene Regel über die Umdeutung eines Escapes auf dem Schreibweg.
+- docs/claude-history/phase-11.6-custom-pixel.md — GESAMTE gebaute Phase 11.6
+  (Custom-Pixel, 2026-09-19, an EINEM Tag): die Aufklärungs-Runde zur VORFRAGE, EINE
+  Scheibe (11.6a, der Basis-Code je Projekt und die Ereigniszeile je Track-Aktion) mit
+  ZWEI Vermerken, SECHS bindende Entscheidungen, VIER Vorrats-Einträge. Sie ist ZUGLEICH
+  der steuernde Stand und die Historie; sie hiess bis zum Phasenende docs/aktiver-stand.md.
+  IHR KOPF TRÄGT DAS PROTOKOLL DER HEBUNG (Commit `f75624c`) und den Messwert aus
+  docs/arbeitsweise.md, Abschnitt 2b.
+  HIER NACHSEHEN, WER AM CUSTOM-PIXEL, AM LADER ODER AM BETREIBER-CODE IM AUSGELIEFERTEN
+  TEXT ARBEITET: ALLE SECHS Entscheidungen stehen NUR hier — KEINE ist als Dauerregel
+  gehoben, und das ist eine Entscheidung mit Grund: sie beschreiben, WIE der Code DIESER
+  Phase gebaut ist, projektweit ist davon nichts. Darunter die Entscheidung der VORFRAGE
+  zugunsten der Lesart (a) und die Verweisung der Lesart (b) an die Phase 13, EIN
+  Snippet-Feld je PROJEKT im Einstellungs-Blob (beide A/B-Varianten teilen es, während die
+  Ereigniszeilen je VARIANTE hängen), der eigene Einwilligungs-Schlüssel `custom` NEBEN den
+  Fan-Out-Zielen (er gelangt NIE ins cns-Feld und damit nie auf den Server), das Urteil des
+  Laders erst bei `DOMContentLoaded` samt den
+  zwei Nachlade-Wegen, und die Ausführung der Ereigniszeile INNERHALB des eigenen
+  Klick-Codes statt über einen neuen globalen Namen.
+  ZWEI DESTILLATE SIND TROTZDEM ENTSTANDEN und stehen als Dauerregeln in
+  docs/immer-beachten.md: aus P11.6-5 Teil (3) zusammen mit P11.6-6 Teil (a) die Regel über
+  BETREIBER-CODE im ausgelieferten Text, aus dem Bau des Laders und P11.6-6 die Regel über
+  das `DOMParser`-Dokument mit ausgeschaltetem Skripting. BEIDE QUELLEN STEHEN IM ARCHIV
+  WÖRTLICH WEITER, je mit einem Zeiger "→ GEHOBEN 2026-09-19" — die Regel ist das
+  Destillat, nicht ihr Ersatz.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

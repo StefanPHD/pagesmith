@@ -19,16 +19,33 @@ Aufklärungs-Runde desselben Tages. Das ist der vorgesehene Zeitpunkt
 Phase einen Ort braucht — in der Regel mit dem Ergebnis der ersten Aufklärung"; GELESEN,
 CC, 2026-09-19).
 
-**STAND NACH DER DESIGNRUNDE (2026-09-19, zweite Runde des Tages):** EIN Vermerk
-(P11.6-1) · **FÜNF** bindende Entscheidungen (P11.6-1 bis P11.6-5) · die fünf
-Designfragen sind **BEANTWORTET** und tragen je ihren Zeiger · ZWEI Vorrats-Einträge ·
-KEIN Hebungs-Kandidat. **KEINE Scheibe zugeschnitten, KEINE Zeile Code geschrieben.** Der
-Marker der Roadmap-Zeile 11.6 steht auf `[ ]`.
-**WAS NACH DER DESIGNRUNDE NOCH OFFEN IST, steht NICHT mehr in Abschnitt 5**, sondern im
-Zuschnitt der ersten Bau-Scheibe: Ablage und Längengrenzen, die Persistenz der
-Ereigniszeile, der Weg des Schlüssels `custom` in die Schlüsselmenge, der Feuerpfad ohne
-Meta, die Gestalt der Kapselung, der Lader, die nachgeholte Einwilligung, das Verhalten in
-der Vorschau, die Byte-Gleichheit und die Oberfläche.
+**STAND NACH DER SCHEIBE 11.6a (2026-09-19):** ZWEI Vermerke (P11.6-1 Aufklärung,
+P11.6-2 die gebaute Scheibe) · **SECHS** bindende Entscheidungen (P11.6-1 bis P11.6-6) ·
+die fünf Designfragen sind **BEANTWORTET** und tragen je ihren Zeiger · VIER
+Vorrats-Einträge · KEIN Hebungs-Kandidat.
+**GEBAUT UND LIVE BESTÄTIGT IST DIE SCHEIBE 11.6a** (Bau-Commit `bc001f4`); der Marker der
+Roadmap-Zeile 11.6 steht weiterhin auf `[ ]` — er gehört zum Phasenende, nicht zur
+Scheibe.
+
+**WAS ABGELAUFEN IST — VERDICHTET AM 2026-09-19.** Hier stand die Liste der Fragen, die
+die Designrunde offengelassen und an den Zuschnitt der ersten Bau-Scheibe weitergereicht
+hat. **ALLE ELF SIND MIT `bc001f4` ENTSCHIEDEN UND GEBAUT**, die Liste hat damit keinen
+Gegenstand mehr. Sie lautete, wörtlich und ohne Marke: „Ablage und Längengrenzen, die
+Persistenz der Ereigniszeile, der Weg des Schlüssels `custom` in die Schlüsselmenge, der
+Feuerpfad ohne Meta, die Gestalt der Kapselung, der Lader, die nachgeholte Einwilligung,
+das Verhalten in der Vorschau, die Byte-Gleichheit und die Oberfläche."
+**WO DIE ANTWORTEN JETZT STEHEN:** die bindenden in den Entscheidungen P11.6-5 und
+P11.6-6, die übrigen im Code und in seinen Wächtern — und zwar dort, wo sie wirken, nicht
+hier. **Der Satz „KEINE Scheibe zugeschnitten, KEINE Zeile Code geschrieben" ist mit
+demselben Commit falsch geworden und ist gestrichen.**
+
+**EINEN ABSCHNITT „Zuschnitt der Scheibe 11.6a" HAT DIESE DATEI NIE GETRAGEN, und das
+gehört hierher statt in einen Bericht, der niemanden mehr erreicht:** Der Zuschnitt stand
+ausschliesslich in den Prompts der Bau-Runden. Was über die Scheibe hinaus bindet, ist von
+dort in die Entscheidungen P11.6-5 und P11.6-6 gehoben worden, BEVOR gebaut wurde; was nur
+jene Scheibe anwies, ist mit ihr abgelaufen und in keiner Datei verlorengegangen, weil es
+nie in einer stand. **WER BEIM PHASENENDE EINEN ABGELAUFENEN ZUSCHNITT SUCHT, SUCHT HIER
+VERGEBENS** — und das ist ein Befund über diese Phase, keine Auslassung.
 
 **DIE NUMMERNFORM IST `P11.6-n`** und wird hier weder neu entschieden noch neu begründet:
 Sie ist seit dem 2026-09-17 Bauform JEDER Standdatei (docs/arbeitsweise.md, Die
@@ -640,6 +657,63 @@ Achsen.**
 **PROVENIENZ:** die Messungen GEMESSEN am Repo (CC, 2026-09-19); der Verfahrens-Befund
 ebenfalls, am eigenen Lauf. **KEIN Commit** — die Runde hat nichts geschrieben.
 
+### VERMERK P11.6-2 — SCHEIBE 11.6a: DER BASIS-CODE UND DIE EREIGNISZEILE (2026-09-19)
+
+**GEBAUT UND LIVE BESTÄTIGT.**
+**BAU-COMMIT `bc001f4`** — 19 Dateien, 1643 Einfügungen, 70 Löschungen; zwei neue Dateien
+(`src/lib/tracking/custom-pixel.ts`, `src/lib/tracking/custom-pixel.test.ts`).
+**DOKU-COMMIT `670c1b3`** (Vorrat, noscript-Befund und Lader-Grenzen), dazu `2a16703`
+(Plan-Review, Entscheidungen P11.6-3 bis -6) und `7be1e9a` (Anlage dieser Datei).
+Pipeline vier von vier grün, **1946 Tests** (vorher 1906; +40 in einer neuen Testdatei).
+Sechs Pflicht-Mutationen, jede mit VOR dem Lauf genannter Fehlerklasse, jede getroffen.
+
+**DER LIVE-TEST — 2026-09-19, FÜNF TEILE, ALLE BESTANDEN. OWNER-ANGABEN; CC hat nichts
+davon selbst gesehen.**
+
+**(1) REGRESSION.** Ein Projekt OHNE Custom-Pixel verhält sich unverändert: Redirect und
+Meta wie zuvor. Das ist die Live-Seite von Invariante I5, die im Code T9 als
+Byte-Gleichheit hält.
+
+**(2) DIALOG AUS.** Beim Laden erscheint `PS-BASE function` — **das belegt das
+sequenzielle Laden**: Das Inline-Script sieht die Bibliothek des vorangehenden
+`src`-Scripts, also hat der Lader auf dessen `load` gewartet. **KEINE Anfrage an die
+Adresse des `noscript`-Bildes** — das ist die **ERSTE MESSUNG DER DOPPELZÄHLUNGS-FRAGE IN
+EINEM ECHTEN BROWSER** (Chrome) und schliesst die Lücke, die die Korrektur-Runde
+ausdrücklich offengelassen hatte. Aktion A feuert; Aktion B leitet **trotz kaputter
+Ereigniszeile** weiter, **ohne ungefangenen Fehler**; die Zeile von Aktion C läuft vor der
+Navigation.
+
+**(3) DIALOG AN.** Vor einer Entscheidung und bei „nur Messung": **weder Basis-Code noch
+Zeile**, der Redirect läuft trotzdem. Nach „Alle akzeptieren" lädt der Basis-Code **ohne
+Neuladen** nach — das ist der `write`-Pfad über `__psCustomLoad`; nach einem Neuladen lädt
+er beim Laden. Damit sind beide Nachhol-Wege der Entscheidung P11.6-6 (b) live getrennt
+belegt.
+
+**(4) VORSCHAU: NICHTS.** Weder Lader noch Zeile — Entscheidung P11.6-6 (d) live bestätigt.
+
+**(5) EXPORT, LOKAL GEÖFFNET:** Basis-Code und Ereigniszeile laufen. Der Client-Erzeuger
+trägt also, was Entscheidung P11.6-5 (4) von ihm verlangt.
+
+**EIN NEBENBEFUND, DER MEHR WERT IST ALS DER LAUF, IN DEM ER ANFIEL:** Das Testprojekt
+trug **keinen Meta-Pixel** — die Konsole zeigte durchgehend „Meta-Pixel nicht
+konfiguriert". **DER FALL „CUSTOM OHNE META" IST DAMIT LIVE BELEGT**, nicht nur durch T1
+und T2. Genau dieser Fall war der Grund, den Custom-Baustein NICHT in `__psMetaFire` zu
+legen.
+
+**DIE GRENZEN — JE AUSDRÜCKLICH, UND KEINE IST DURCH DEN LAUF GESCHLOSSEN:**
+- **KEIN ECHTES NETZWERK-SNIPPET.** Getestet wurde mit `lodash` als Bibliothek und
+  `console.log` als Ereigniszeile. Ob ein reales Snippet (Meta, TikTok, Hotjar) durch den
+  Lader kommt, ist **ungemessen**.
+- **OB DIE NETZWERK-ANFRAGE EINE WEITERLEITUNG ÜBERLEBT, IST UNGEMESSEN.** `console.log`
+  schickt nichts; ein `fetch` ohne `keepalive` kann beim Seitenwechsel abbrechen. Steht als
+  Vorrat P11.6-4 (1c).
+- **NUR CHROME.** Firefox und WebKit sind an **jeder** Achse dieses Laufs ungemessen —
+  insbesondere am `noscript`-Befund, dessen Ableitung aus den Einfügemodi damit für genau
+  einen Parser belegt ist.
+- **„C VOR NAVIGATION" IST EINE OWNER-ANGABE**, keine Messung mit Zeitstempel. Im Code
+  sichert sie T4, der die Reihenfolge über die Zuweisungs-Folge belegt statt über eine
+  Beobachtung.
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -718,37 +792,21 @@ heute nichts sagt:**
 
 **(1) EIN `<noscript>`-RÜCKFALL ERREICHT DIE ZIELSEITE NICHT — WEDER DAS ELEMENT NOCH SEIN
 `<img>`.**
-**ZWEIMAL ERSETZT AM 2026-09-19, und beide Vorfassungen bleiben als Weg lesbar, weil der
-Unterschied zwischen ihnen die Sache ist:** Die erste sagte „`<noscript>` IST AUF DIESEM
-PFAD TOT — unser Lader fügt ihn ein" (falsch, sobald der Lader ihn übersprang). Die zweite
-sagte „wird übersprungen — und das löst das Problem nur zur Hälfte" (richtig für den
-damaligen Stand, überholt seit dem Body-Kontext). **Heute ist es eine ZUSAGE, keine
-halbe.**
+**GEKÜRZT AM 2026-09-19 — DIE BAU-FRAGE IST ERLEDIGT, DER BETREIBER-SATZ NICHT.** Hier
+standen die drei Stufen des Laders (Body-Kontext, Entfernen im geparsten Dokument,
+Überspring-Zeile), ihre jsdom-Messung und die offene Frage, ob ein echter Browser dasselbe
+tut. **DER BELEG DER ERLEDIGUNG:** Bau-Commit `bc001f4`, gehalten von T17d (Stufe (a),
+Einzelstück gegen Mutation M6) und T17e (Stufe (b), Einzelstück gegen M7); die volle
+Begründung steht am Ort der Handlung, im Kopfkommentar von
+`src/lib/tracking/custom-pixel.ts`, Punkt (6). **DIE BROWSER-FRAGE IST FÜR CHROME
+BEANTWORTET** — der Live-Test vom 2026-09-19 zeigte KEINE Anfrage an die Adresse des
+`noscript`-Bildes (VERMERK P11.6-2, Teil (2)); **Firefox und WebKit bleiben ungemessen.**
 
-**DREI STUFEN, jede mit eigenem Grund, alle drei gebaut:**
-**(a) DER BODY-KONTEXT** — geparst wird `"<body>" + code`. **GEMESSEN (CC, 2026-09-19,
-jsdom 27):** Im Kopf-Kontext schliesst der Parser bei ausgeschaltetem Skripting das
-`<noscript>` VOR dem `<img>` und hebt das Bild in den Body (`head.innerHTML` war
-`<noscript></noscript>`); im Body-Kontext bleibt `<noscript>` ein gewöhnliches Element
-**mit** Kindern (`noscript.kinder = 1`, erstes Kind `IMG`). Die Einfügemodi sind „in head
-noscript" gegen „in body". **Ohne (a) greifen (b) und (c) ins Leere.**
-**(b) JEDES `<noscript>` WIRD AUS DEM GEPARSTEN DOKUMENT ENTFERNT**, auch ein
-verschachteltes — nötig, weil `importNode(…, true)` tief klont. **Das Dokument ist INERT**
-(DOMParser, kein Browsing-Kontext, an keiner Seite): Es wird kein fremder Knoten berührt.
-**(c) DIE ÜBERSPRING-ZEILE IN DER SCHLEIFE BLEIBT** als zweite Sicherung — nach (b)
-rechnerisch unerreichbar, kostet nichts, fängt jeden Parser, der ein `<noscript>` erzeugt,
-das (b) nicht gefunden hat.
-
-**WAS GESICHERT IST UND WODURCH:** T17d hält (a) — ohne Body-Kontext wird genau er rot
-(Mutation M6, Einzelstück). T17e hält (b) — ohne das Entfernen wird genau er rot (M7,
-Einzelstück). Beide tragen ihre Positivkontrolle im selben Lauf.
-**WAS OFFEN BLEIBT:** Ob der Parser eines **echten Browsers** im Body-Kontext dasselbe tut,
-ist **ungemessen** — Live-Test-Achse. Die Ableitung stützt sich auf die Einfügemodi der
-Spezifikation und auf jsdom.
-**WAS DER BETREIBER WISSEN MUSS:** Ein Rückfall für Besucher ohne JavaScript **kann auf
-diesem Pfad nie wirken** — er greift nur bei ausgeschaltetem Skripting, und dann läuft der
-Lader gar nicht. Wer ihn für wirksam hält, zählt jene Besucher fälschlich als erfasst.
-**DAS IST KEIN VERLUST GEGENÜBER HEUTE, sondern die Abwesenheit einer Doppelzählung.**
+**WAS ALS BETREIBER-SATZ STEHENBLEIBT, weil der Kürzung nur die Bau-Frage zum Opfer
+fällt:** Ein `<noscript>`-Rückfall für Besucher ohne JavaScript **kann auf diesem Pfad nie
+wirken** — er greift nur bei ausgeschaltetem Skripting, und dann läuft der Lader gar nicht.
+Wer ihn für wirksam hält, zählt jene Besucher fälschlich als erfasst. **Das ist kein
+Verlust gegenüber heute, sondern die Abwesenheit einer Doppelzählung.**
 
 **(1a) DIE REIHENFOLGE ÜBERLEBT DEN BODY-KONTEXT — und ist seither strukturell statt
 zufällig.** GEMESSEN (CC, 2026-09-19): Im Kopf-Kontext verteilte der Parser `link`, `meta`

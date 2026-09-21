@@ -30,6 +30,16 @@ Entscheidung (P11.11-2) · FÜNF offene Designfragen (D1 bis D5) · VIER Vorrats
 KEIN Hebungs-Kandidat. **KEINE Scheibe zugeschnitten, KEINE Zeile Code geschrieben.** Der
 Marker der Roadmap-Zeile 11.11 steht auf `[ ]`.
 
+**FORTGESCHRIEBEN AM 2026-09-21, ZWEITE RUNDE DESSELBEN TAGES — DIE ZEILE DARÜBER IST DER
+STAND DER ERSTEN RUNDE und wird nicht überschrieben, weil beide dasselbe Datum tragen und
+eine ersetzte Zahl dann nicht mehr von einer falschen zu unterscheiden wäre.** STAND JETZT:
+EIN Vermerk (P11.11-1) · **SECHS** bindende Entscheidungen (P11.11-2 bis P11.11-7) · die
+fünf Designfragen D1 bis D5 sind **BEANTWORTET** und tragen je einen Zeiger auf ihre
+Entscheidung · VIER Vorrats-Einträge · KEIN Hebungs-Kandidat. **DREI SCHEIBEN SIND
+ZUGESCHNITTEN (11.11a, 11.11b, 11.11c), der Schnitt 11.11a im Detail** — Abschnitt 9.
+**NOCH IMMER KEINE ZEILE CODE**, und der Marker der Roadmap-Zeile 11.11 steht unverändert
+auf `[ ]`.
+
 **DIE NUMMERNFORM IST `P11.11-n`** und wird hier weder neu entschieden noch neu begründet:
 Sie ist seit dem 2026-09-17 Bauform JEDER Standdatei (docs/arbeitsweise.md, Die
 Standdatei: "Jede Nummer trägt das Präfix ihrer Phase: `P<Phase>-n`, Buchstabe vorn";
@@ -55,6 +65,12 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 6. Vermerke
 7. Vorrat — gemeldet, nicht gebaut
 8. Hebungs-Kandidaten
+9. Zuschnitt — die drei Scheiben
+
+**DER NEUNTE EINTRAG STEHT HINTEN UND NICHT AN SEINEM SACHLICHEN PLATZ**, und das ist
+Absicht: Eine Einfügung in der Mitte verschiebt jede Nummer darunter, und jeder Zeiger der
+Form "Abschnitt 5" zeigte danach auf etwas anderes. Dieselbe Bauform wie in
+docs/immer-beachten.md ("Eine neue Regel wird HINTEN angefügt … Nichts wird umsortiert").
 
 ---
 
@@ -78,6 +94,12 @@ der Zeile ist der gültige**, diese Datei führt keine zweite Fassung davon.
 ---
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
+
+**ZUR NUMMERIERUNG, damit niemand eine Lücke sucht, die keine ist:** Die
+Entscheidungs-Zählung dieser Phase beginnt bei **2** — P11.11-1 ist beim Anlegen der Datei
+an den Vermerk gegangen. Sie wird ab hier **lückenlos fortgeführt** (P11.11-3 und folgende)
+statt auf 1 zurückgesetzt; eine Rücksetzung erzeugte zwei Einträge mit derselben Nummer,
+und ein Zeiger "Entscheidung P11.11-2" träfe dann zwei Stellen.
 
 ### ENTSCHEIDUNG P11.11-2 — DIE ZUORDNUNG DES BACKLOG-EINTRAGS: DIE ERKENNUNG GEHÖRT ZU 11.11, DIE SICHERHEITS-ACHSE BLEIBT IM BACKLOG
 
@@ -124,11 +146,160 @@ Verweise GEMESSEN am Dateitext (CC, 2026-09-21), Achsen `11\.11` und
 `import-bereinigung` über alle verfolgten Dateien, mit Positivkontrolle auf `11\.10` und
 `11\.12`.
 
+### ENTSCHEIDUNG P11.11-3 — DIE REICHWEITE: JEDES SCRIPT WIRD ANGEZEIGT, ENTFERNEN GIBT ES NUR BEI BEKANNTEN PIXELN
+
+**DIE ENTSCHEIDUNG (OWNER, 2026-09-21) — sie beantwortet D3 und legt drei Klassen fest:**
+- **ANGEZEIGT WIRD JEDES `<script>` IM IMPORTIERTEN TEXT.** Nicht nur die bekannten.
+- **BEKANNTE WERDEN MARKIERT** — als Pixel oder als CMP.
+- **ENTFERNEN WIRD NUR BEI EINEM BEKANNTEN PIXEL ANGEBOTEN.** Ein CMP bekommt einen
+  ANBINDUNGS-HINWEIS und **kein** Entfernen. Ein unbekanntes Script wird **angezeigt, ohne
+  jede Handlung**.
+
+**DER GRUND, und er ist der eigentliche Inhalt dieser Entscheidung:** Eine Erkennungsliste
+altert (so die Roadmap-Zeile 11.11 unter (e)). **WER NUR BEKANNTES ANZEIGT, LÄSST SIE STILL
+ALTERN** — ein Tracker, den die Liste nicht kennt, erscheint dann nirgends, und niemand
+erfährt je, dass die Liste veraltet ist. Wer JEDES Script anzeigt, macht das Veralten
+SICHTBAR: der unbekannte Tracker steht in der Liste, nur ohne Marke. **UND DIE
+GEGENRICHTUNG trägt die dritte Klasse:** Ein unbekanntes Script kann Teil der Seite selbst
+sein — ein Slider, ein Formular, eine Animation. Ihm eine Entfernen-Handlung anzubieten
+hiesse, einen Klick auf etwas anzubieten, das niemand gemeint hat.
+
+**DIE SIGNAL-GRENZE (ARCHITEKT, 2026-09-21), und ohne sie kippt die erste Hälfte in ihr
+Gegenteil:** **NUR FUNDE MIT EINER HANDLUNG DÜRFEN LEUCHTEN** — ein bekanntes Pixel und die
+Kollision aus P11.11-4. **EIN UNBEKANNTES SCRIPT LEUCHTET NIE.** Grund: die Dauerregel EIN
+SIGNAL LEUCHTET NUR, WENN DER NUTZER JETZT ETWAS TUN KANN (docs/immer-beachten.md). Jede
+importierte Seite trägt Scripte; ein Signal, das bei jeder Seite leuchtet, ist
+Signal-Ermüdung und damit wertlos für den Fall, der zählt. **ANZEIGEN UND LEUCHTEN SIND
+ZWEI VERSCHIEDENE DINGE** — wer sie zusammenzieht, baut entweder eine blinde Liste oder
+eine Dauerwarnung.
+
+**WEN SIE BINDET:** den Zuschnitt der Scheibe 11.11b (was in der Liste steht) und der
+Scheibe 11.11c (was eine Handlung bekommt), und jede spätere Runde, die der Erkennung eine
+Klasse hinzufügt.
+
+**PROVENIENZ:** Die drei Klassen sind OWNER-ENTSCHEIDUNG 2026-09-21. Die Signal-Grenze ist
+ARCHITEKT-ENTSCHEIDUNG desselben Tages; die Dauerregel, auf die sie sich stützt, GELESEN
+(CC, 2026-09-21).
+
+### ENTSCHEIDUNG P11.11-4 — DIE KOLLISION EIGENER DIALOG GEGEN FREMDES CMP WIRD ANGEZEIGT, NICHT GELÖST
+
+**DIE ENTSCHEIDUNG (OWNER, 2026-09-21):** Die Scheibe 11.11b zeigt an, wenn **beides
+zugleich** zutrifft — der eigene Einwilligungs-Dialog ist eingeschaltet **UND** im
+importierten HTML steht ein fremdes CMP.
+
+**ES IST EIN SIGNAL, KEINE LÖSUNG, und dieser Satz ist die ganze Grenze der Entscheidung:**
+Der offene Punkt UNSER EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP ÜBERFAHREN — ZWEI WEGE,
+DIE GETRENNT BLEIBEN (docs/offene-punkte.md) **BLEIBT OFFEN**. Er wird hier **benannt, nicht
+geändert**, und diese Phase löst ihn NICHT ein. Wer die Anzeige für die Behebung hält,
+streicht einen Posten, der weiter besteht — die zwei Wege jenes Postens (der asynchron
+gesetzte Fremd-Hook und `write()`, das einem gesetzten Fremd-Hook nicht ausweicht) sind von
+einer Anzeige im Editor unberührt.
+
+**WARUM SIE TROTZDEM ETWAS WERT IST:** Der Betreiber ist heute der Einzige, der beides
+sehen kann — den Schalter in seinen Einstellungen und das CMP in seinem HTML —, und niemand
+zeigt ihm, dass die zwei zusammen ein Problem ergeben. Die Anzeige verlegt das Wissen
+dorthin, wo die Handlung liegt.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-21. Dass der offene Punkt aus Vorrat (2) und
+(12) der Phase 11.5 stammt und einen anderen Gegenstand hat als die Kollisionsanzeige,
+GELESEN an docs/offene-punkte.md (CC, 2026-09-21).
+
+### ENTSCHEIDUNG P11.11-5 — ORT UND LEBENSDAUER: IM BROWSER, REIN LESEND, ABGELEITET STATT GESPEICHERT
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21) — sie beantwortet D2 und D5 gemeinsam, weil die
+zwei Fragen dieselbe Antwort haben:**
+- **DER ORT:** Die Erkennung läuft **im Browser**, **rein lesend**, im **bereits zerlegten
+  Dokument des Import-Pfads** — also an dem `DOMParser`-Dokument, das `annotateAndDetect`
+  (`src/lib/detect.ts`) ohnehin erzeugt. Kein zweiter Parse, kein Server-Weg.
+- **DIE LEBENSDAUER:** Ein Fund wird **ABGELEITET, NIE GESPEICHERT.** **KEINE Migration,
+  KEINE Server-Action, KEIN Mitglied im Einstellungs-Blob.**
+
+**DREI GRÜNDE, in dieser Reihenfolge:**
+- **KEIN SERVER-SEITIGES HTML-PARSING** — Dauerregel (docs/immer-beachten.md); die
+  server-seitige Injektion ist eine reine String-Op und soll es bleiben.
+- **DAS DOKUMENT IST INERT.** Ein `DOMParser`-Dokument führt nichts aus; eine Erkennung
+  darin kann fremden Code lesen, ohne ihn laufen zu lassen. **DIE KEHRSEITE GEHÖRT DAZU und
+  bindet die Scheibe 11.11c:** In einem inerten Dokument ist `<noscript>` ein gewöhnliches
+  Element mit Kindern (Dauerregel EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM
+  SKRIPTING …).
+- **DIE ERKENNUNG SIEHT DEN AKTUELLEN CODE, NICHT DEN IMPORT-MOMENT.** Ein gespeicherter
+  Fund veraltete, sobald der Betreiber den Text ändert — und zwar still. Ein abgeleiteter
+  Fund kann das nicht: Er entsteht bei jedem Lauf neu aus dem, was gerade dasteht.
+
+**WAS DAMIT AUSGESCHLOSSEN IST, und es ist mehr als eine Ablage-Frage:** Ohne Persistenz
+gibt es keinen Fund-Zustand, der beim Projektwechsel leaken könnte (Dauerregel ABLEITEN
+STATT LÖSCHEN), kein neues Mitglied, das für `dirty` unsichtbar wäre (offener Punkt
+`settingsEqual` IST EINE ALLOWLIST), und keinen server-vergebenen Wert in einem
+client-besessenen Blob.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Dass `annotateAndDetect` ein
+`DOMParser`-Dokument erzeugt und der Import-Pfad keinen Server-Parse kennt, ist GEMESSEN am
+Code (Vermerk P11.11-1, Stationen (b) und (e)).
+
+### ENTSCHEIDUNG P11.11-6 — D4 IST OHNE MESSUNG GESCHLOSSEN, UND `settings.customPixel` WIRD NIE ALS CMP-ORT ANGEBOTEN
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Die Frage D4 — ob `settings.customPixel` ein
+fremdes CMP tragen kann — wird **GESCHLOSSEN, OHNE sie zu messen.**
+
+**DER GRUND IST EIN VERFAHRENS-GRUND UND KEIN SACHURTEIL:** Die Frage trug **nur** die
+Begründung der Entscheidung (c) der Roadmap-Zeile 11.11 — und **die trägt seit `b57d9a6`
+ohne sie.** Dort steht seither: Ein automatisches Entfernen beim Import nähme jedem
+Betreiber, der sein CMP heute im importierten Text stehen hat, genau dieses CMP; das gilt,
+**ob es daneben einen zweiten Weg gibt oder nicht**. Eine Frage, an der keine Entscheidung
+mehr hängt, wird nicht gemessen, nur weil sie interessant ist.
+
+**DIE FOLGE FÜR DAS PRODUKT, und sie ist der bindende Teil: 11.11 SCHLÄGT
+`settings.customPixel` NIE ALS ORT FÜR EIN CMP VOR.** Kein Hinweistext, kein Vorschlag,
+keine Handlung, die dorthin führt.
+
+**DER GRUND DAFÜR IST EINE ABLEITUNG UND AUSDRÜCKLICH KEINE MESSUNG:** Das Feld läuft hinter
+seinem eigenen Einwilligungs-Schlüssel — `buildCustomPixelRuntime` fragt `__psCustomOk`,
+und das fragt `__psConsent("custom")` (GEMESSEN am Code, s. D4). **Ein CMP dort SÄSSE HINTER
+DER EINWILLIGUNG, DIE ES ERST EINHOLEN SOLL.** Ob das in der Praxis bricht, ist NICHT
+gemessen; für einen Vorschlag reicht die Ableitung aus, für eine Behauptung über das
+Verhalten nicht.
+
+**WAS OFFEN BLEIBT:** Ob ein Betreiber ein CMP dort HINEINSCHREIBEN kann, ist damit weder
+verneint noch bejaht. Diese Phase führt ihn nur nicht dorthin.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Der Wortlaut der Roadmap-Zeile seit
+`b57d9a6` GELESEN (CC, 2026-09-21); der Einwilligungs-Schlüssel und der Aufrufweg GEMESSEN
+am Code (CC, 2026-09-21).
+
+### ENTSCHEIDUNG P11.11-7 — DIE ERKENNUNGSBASIS IST EINE VERSIONIERTE SIGNATURLISTE IN EINER REINEN DATEI MIT EIGENEN TESTS
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21) — sie beantwortet D1:** Erkannt wird über eine
+**versionierte Liste bekannter Signaturen** — Script-Adressen und typische Inline-Aufrufe —,
+abgelegt in einer **REINEN Datei** (kein React, kein Server, keine IO) **mit eigenen
+Tests**.
+
+**WARUM EINE LISTE TROTZ DES BEKANNTEN EINWANDS:** Die Roadmap-Zeile 11.11 hält unter (e)
+fest, dass eine Liste altert. **DAS BLEIBT WAHR — UND P11.11-3 NIMMT IHM DIE SPITZE:** Weil
+JEDES Script angezeigt wird, macht das Veralten der Liste sich als **fehlende Marke**
+bemerkbar und nicht als Abwesenheit. **Die Liste entscheidet dann über die MARKIERUNG und
+über die HANDLUNG, nicht mehr über die SICHTBARKEIT** — und genau das war der Einwand.
+
+**WARUM EINE REINE DATEI MIT EIGENEN TESTS:** Eine Signatur ist ein WORTLAUT, und ein
+Wortlaut-Wächter bekommt seine Erwartung aus der Entscheidung, nie aus dem Code (Dauerregel
+EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE). In einer reinen
+Datei ist das prüfbar; in eine Komponente eingestreut wäre es das nicht.
+
+**WAS HIER NICHT ENTSCHIEDEN IST:** welche Signaturen die Liste beim ersten Bau trägt, und
+in welcher Form eine Signatur geschrieben wird. Das entscheidet der Zuschnitt der Scheibe
+11.11b.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21; der Einwand gegen Listen GELESEN an der
+Roadmap-Zeile 11.11, (e) (CC, 2026-09-21).
+
 ---
 
 ## Die offenen Designfragen
 
-**KEINE DAVON IST ENTSCHIEDEN, UND KEINE TRÄGT EINE EMPFEHLUNG.** Sie stehen hier, damit
+**ALLE FÜNF SIND AM 2026-09-21 ENTSCHIEDEN — der Fragetext bleibt trotzdem stehen, und das
+ist Absicht:** Er sagt, WAS offen war und WARUM, und ohne ihn liest sich eine Entscheidung
+wie eine Selbstverständlichkeit. Je Frage steht unten ein Zeiger auf die Entscheidung, die
+sie schliesst. **BIS ZU DIESER RUNDE STAND HIER: "KEINE DAVON IST ENTSCHIEDEN, UND KEINE
+TRÄGT EINE EMPFEHLUNG."** Sie stehen hier, damit
 ein Zuschnitt sie nicht unbemerkt mitentscheidet. D1 und D2 sind aus der Roadmap-Zeile
 11.11, Punkt (e), übernommen — dort sind sie ausdrücklich als offen ausgewiesen; D3 bis D5
 sind am 2026-09-21 hinzugekommen.
@@ -137,6 +308,10 @@ sind am 2026-09-21 hinzugekommen.
 Namen und Adressen ist eine Liste, die altert, und ein Fehltreffer bietet fremden Code zum
 Entfernen an, den niemand gemeint hat — ein Klick darauf entfernt ihn. DAS ENTSCHEIDET DER
 ZUSCHNITT, nicht diese Zeile." (GELESEN, CC, 2026-09-21.)
+**ENTSCHIEDEN 2026-09-21 → Entscheidung P11.11-7:** eine versionierte Signaturliste
+(Script-Adressen, typische Inline-Aufrufe) in einer REINEN Datei mit eigenen Tests. Der
+Einwand gegen Listen bleibt wahr; P11.11-3 nimmt ihm die Spitze, weil die Liste über die
+MARKIERUNG entscheidet und nicht über die SICHTBARKEIT.
 
 **D2 — WANN UND WO DIE ERKENNUNG LÄUFT.** Roadmap-Zeile 11.11, (e), zweiter Punkt: "beim
 Import, beim Speichern oder beim Veröffentlichen … IN DER RUNDE, DIE DIESE ZEILE ANLEGT,
@@ -144,11 +319,18 @@ NICHT ERHOBEN." **DER BESTAND DAZU IST INZWISCHEN ERHOBEN und steht im Vermerk P
 die fünf Stationen, ihre Symbole, und die Stelle, an der der Text noch unverändert
 vorliegt. **Die FRAGE bleibt trotzdem offen:** Der Bestand sagt, WO eine Erkennung sitzen
 KÖNNTE, nicht, wo sie sitzen SOLL.
+**ENTSCHIEDEN 2026-09-21 → Entscheidung P11.11-5:** im Browser, rein lesend, im bereits
+zerlegten Dokument des Import-Pfads (`annotateAndDetect`). Kein zweiter Parse, kein
+Server-Weg.
 
 **D3 — DIE REICHWEITE.** Nur bekannte Pixel und CMPs (so der Gegenstand (a) der
 Roadmap-Zeile), oder jedes `<script>` mit einer Kennzeichnung der bekannten (so die
 Reichweite des Backlog-Eintrags, "beliebige Skripte"). **Die beiden Mengen fallen
 auseinander**, und die Entscheidung P11.11-2 stellt das fest, ohne es zu entscheiden.
+**ENTSCHIEDEN 2026-09-21 → Entscheidung P11.11-3:** angezeigt wird JEDES Script, bekannte
+werden markiert, Entfernen gibt es NUR bei einem bekannten Pixel, ein CMP bekommt einen
+Anbindungs-Hinweis, ein unbekanntes Script keine Handlung — und nur Funde MIT Handlung
+dürfen leuchten.
 
 **D4 — KANN `settings.customPixel` EIN FREMDES CMP TRAGEN?** **UNGEKLÄRT, am Code zu
 messen.** Die Frage entsteht, weil das Feld seit Phase 11.6 existiert und Betreiber-Code
@@ -166,12 +348,21 @@ die Frage überhaupt zu einer** (GEMESSEN am Code, CC, 2026-09-21):
 **WAS DARAUS FOLGT, IST NICHT ERHOBEN UND WIRD HIER NICHT BEHAUPTET** — weder, dass ein CMP
 in diesem Feld funktionieren würde, noch, dass es das nicht täte. Die Frage gehört an einen
 Zuschnitt, der sie MISST.
+**ENTSCHIEDEN 2026-09-21 → Entscheidung P11.11-6, und zwar OHNE MESSUNG:** Die Frage trug
+nur die Begründung der Entscheidung (c) der Roadmap-Zeile, und die trägt seit `b57d9a6`
+ohne sie. **Der Satz darüber — "Die Frage gehört an einen Zuschnitt, der sie MISST" — ist
+damit überholt und bleibt als Zeitdokument stehen:** Gemessen wird sie nicht, weil keine
+Entscheidung mehr an ihr hängt. Die Folge fürs Produkt: 11.11 schlägt
+`settings.customPixel` NIE als Ort für ein CMP vor.
 
 **D5 — IST EIN FUND EIN ABGELEITETER ZUSTAND ODER WIRD ER PERSISTIERT?** Beide Wege sind
 im Bestand vorgezeichnet und tragen verschiedene Auflagen: Ein abgeleiteter Zustand fällt
 unter die Dauerregel ABLEITEN STATT LÖSCHEN (projekt-spezifischer View-State), ein
 persistierter unter SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB und unter
 den offenen Punkt `settingsEqual` IST EINE ALLOWLIST. **KEINE Auswahl.**
+**ENTSCHIEDEN 2026-09-21 → Entscheidung P11.11-5:** ABGELEITET, nie gespeichert — keine
+Migration, keine Server-Action, kein Mitglied im Einstellungs-Blob. Damit fallen beide oben
+genannten Auflagen weg, weil es den Zustand nicht gibt, an dem sie hingen.
 
 ---
 
@@ -368,6 +559,11 @@ steht dem nicht entgegen; sie nennt Attribute ausdrücklich als prüfbar.
 **KANDIDAT FÜR EINE SCHEIBE DIESER PHASE** — GEMELDET, NICHT ZUGESCHNITTEN. Der Gegenstand
 grenzt an 11.11, weil die Vorschau eine der fünf Stationen ist; ob er in diese Phase
 gehört oder daneben, ist nicht entschieden.
+**ZUGESCHNITTEN AM 2026-09-21 ALS SCHEIBE 11.11a** (Abschnitt 9). **DER EINTRAG BLEIBT
+OFFEN UND WIRD NICHT GESTRICHEN:** Ein Zuschnitt ist kein Bau. Erledigt ist er erst mit dem
+Bau-Commit der Scheibe und seinem Vermerk; bis dahin ruht der Schutz weiter allein auf
+Kommentaren. Der Satz "ob er in diese Phase gehört oder daneben" ist mit dem Zuschnitt
+beantwortet — er gehört in diese Phase.
 
 ### VORRAT P11.11-2 — DIE DREI EINGANGSWEGE SIND UNGETESTET
 
@@ -404,3 +600,64 @@ HTML-String unverändert in die Spalte geht. GEMESSEN (CC, 2026-09-21).
 **KEINE.** Aus der Aufklärung vom 2026-09-21 ist nichts hervorgegangen, das eine Dauerregel
 oder eine Änderung an docs/arbeitsweise.md tragen würde. Der Satz steht hier, damit die
 Abwesenheit eine Aussage ist und keine Lücke.
+
+---
+
+## Zuschnitt — die drei Scheiben
+
+**DIE PHASE ZERFÄLLT IN DREI SCHEIBEN, und die Trennlinie ist, WAS SIE ANFASSEN:**
+
+- **11.11a — SANDBOX-WÄCHTER.** Ein ADDITIVER Test, der die Dauerregel Importierter
+  User-Code läuft NUR im sandboxed iframe an jedem Rahmen festnagelt. **KEIN
+  Produktivcode.** Sie steht VORAN, weil sie die einzige Scheibe ist, die einen
+  bestehenden Schutz sichert, statt einen neuen zu bauen — und weil ihr Gegenstand
+  (Vorrat P11.11-1) ohne sie weiter allein auf Kommentaren ruht.
+- **11.11b — ERKENNUNG UND ANZEIGE.** **NUR LESEND. Der gespeicherte Text bleibt
+  unverändert.** Sie baut die Signaturliste (P11.11-7), die drei Klassen (P11.11-3), die
+  Kollisionsanzeige (P11.11-4) und die Ableitung am Import-Dokument (P11.11-5).
+- **11.11c — HANDLUNGEN.** Entfernen auf Klick bei einem bekannten Pixel; der
+  Anbindungs-Hinweis beim CMP. **DIE EINZIGE SCHEIBE, DIE DEN GESPEICHERTEN TEXT
+  VERÄNDERT** — und deshalb die einzige, an der die Roadmap-Auflage "keine Veränderung des
+  gespeicherten importierten Texts ohne seinen Klick" überhaupt greifen kann.
+
+**ZWEI PRÜFSTEINE FÜR DEN PLAN DER SCHEIBE 11.11c, und sie stehen SCHON HIER, weil beide
+den Zuschnitt entscheiden und nicht erst den Bau:**
+1. **EIN ENTFERNEN ÜBER EINEN `DOMParser`-DURCHLAUF NORMALISIERT DEN GANZEN EDITOR-TEXT,
+   NICHT NUR DIE FUNDSTELLE.** Der Round-Trip schreibt Doctype, Tag-Schreibung und
+   Attribut-Quoting neu; der Betreiber bekäme eine Datei zurück, die an tausend Stellen
+   anders aussieht, obwohl er ein Script entfernt hat. **Wer das erst im Bau merkt, hat die
+   Scheibe falsch geschnitten.**
+2. **EIN META-PIXEL TRÄGT EIN `<noscript>`-GEGENSTÜCK**, und im inerten Dokument ist
+   `<noscript>` ein gewöhnliches Element MIT KINDERN (Dauerregel EIN `DOMParser`-DOKUMENT
+   PARST MIT AUSGESCHALTETEM SKRIPTING — WER KNOTEN DARAUS IN EINE LEBENDE SEITE ÜBERNIMMT
+   …). Ein Entfernen, das nur das `<script>` nimmt, lässt das Rückfall-Bild stehen — und das
+   zählt weiter.
+
+**DIE REIHENFOLGE a → b → c IST NICHT BELIEBIG**, aber auch nicht zwingend: a ist von b und
+c unabhängig und könnte jederzeit laufen; **c setzt b voraus**, weil es ohne Fund nichts zu
+entfernen gibt. Wann gebaut wird, ist hier NICHT entschieden.
+
+### ZUSCHNITT DER SCHEIBE 11.11a — DER SANDBOX-WÄCHTER
+
+**WAS SIE BAUT:** Einen Wächter, der für JEDEN Rahmen, der importierten oder erzeugten
+Kundencode rendert, drei Dinge zusichert — das Attribut `sandbox` EXISTIERT, `allow-scripts`
+ist vorhanden, und `allow-same-origin` FEHLT.
+
+**IHRE INVARIANTEN:**
+- **NUR TESTDATEIEN. KEIN PRODUKTIVCODE** — auch nicht "nur schnell" ein Attribut oder ein
+  Kommentar. `src/components/CodeImporter.tsx` bleibt BYTE-GLEICH.
+- **DER WÄCHTER PRÜFT DAS GERENDERTE ATTRIBUT, NICHT DEN QUELLTEXT.** Ein Wächter über
+  Quelltext sieht Zeichen, nicht Bedeutung (Dauerregel); er träfe hier ausserdem die
+  Kommentare, die dasselbe Attribut in Prosa nennen — GEMESSEN (CC, 2026-09-21): Der Text
+  `sandbox=` steht im Produktivcode an DREI Stellen, und nur ZWEI davon sind Attribute.
+- **VERGLICHEN WIRD OHNE RÜCKSICHT AUF GROSS-/KLEINSCHREIBUNG.** GRUND: `sandbox`-Werte
+  sind im Browser ASCII-case-insensitiv. **DAS IST EINE ABLEITUNG AUS DER SPEZIFIKATION UND
+  NICHT GEMESSEN** — der Satz gehört dazu, sonst liest ihn die nächste Runde als Messwert.
+- **VERGLICHEN WIRD ÜBER GETRENNTE WERTE, NICHT ÜBER EINE TEILZEICHENKETTE.** Ein
+  Teilstring-Test auf `allow-same-origin` wäre zugleich zu eng und zu weit; die Werte sind
+  eine an Leerraum getrennte Liste.
+
+**WAS SIE AUSDRÜCKLICH NICHT TUT:** Sie ändert keinen Rahmen, sie fügt keinen hinzu, und sie
+sagt nichts über das Verhalten im echten Browser — sie prüft, was im Test gerendert wird.
+
+---

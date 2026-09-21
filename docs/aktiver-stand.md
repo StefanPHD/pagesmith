@@ -50,6 +50,18 @@ gekürzt · KEIN Hebungs-Kandidat. **DIE SCHEIBE 11.11a IST GEBAUT UND LIVE BEST
 Marker der Roadmap-Zeile 11.11 steht weiterhin auf `[ ]` — er gehört zum Phasenende, nicht
 zur Scheibe.
 
+**AB DER VIERTEN RUNDE DESSELBEN TAGES TRÄGT DIESER KOPF KEINE ZÄHLZEILE MEHR
+(ARCHITEKT-VORGABE, 2026-09-21).** Die drei Zeilen darüber bleiben wörtlich stehen — sie
+sind datiert und damit **alt und nicht falsch**. **DER GRUND FÜR DEN ABBRUCH DER BAUFORM IST
+AN DIESER DATEI EINGETRETEN UND NICHT VORSORGLICH:** Seit der dritten Runde sind die
+Entscheidungen P11.11-10 bis P11.11-12, P11.11-14 und P11.11-15, die Vermerke P11.11-13 und
+P11.11-16 und der Vorrats-Eintrag P11.11-5 hinzugekommen, **ohne dass eine der drei Zeilen
+nachgezogen worden wäre** — eine Zählzeile hält sich nur, solange jemand hinter ihr
+herläuft, und der Nachzug ist selbst eine Änderung (docs/immer-beachten.md, EINE DATEI, DIE
+IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF AUS NACHZÜGEN). **WER DEN STAND
+BRAUCHT, LIEST DIE ABSCHNITTE ODER MISST IHN** — die `###`-Überschriften je Gattung sind die
+Achse. **WAS EINE RUNDE GETAN HAT, STEHT IN IHREM VERMERK**, nicht hier.
+
 **DIE NUMMERNFORM IST `P11.11-n`** und wird hier weder neu entschieden noch neu begründet:
 Sie ist seit dem 2026-09-17 Bauform JEDER Standdatei (docs/arbeitsweise.md, Die
 Standdatei: "Jede Nummer trägt das Präfix ihrer Phase: `P<Phase>-n`, Buchstabe vorn";
@@ -513,6 +525,186 @@ BENANNT statt geraten.**
 
 **PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21; die Begründung stützt sich auf
 Entscheidung P11.11-3 und die Roadmap-Zeile 11.11, (e), beide GELESEN (CC, 2026-09-21).
+
+### ENTSCHEIDUNG P11.11-18 — EIN URTEIL, OHNE PARSER: EIN REINES PRÄDIKAT ÜBER DEN TEXT
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Die Frage "enthält dieser Text
+Pagesmith-Bausteine?" wird von **EINEM** Prädikat beantwortet — einer **reinen
+String-Prüfung in einer reinen Datei**, ohne Parser.
+
+**VIER VERBRAUCHER, EIN URTEIL:** die Anzeige · die `disabled`-Bedingung des
+Veröffentlichen-Knopfes · der Server-Riegel in `publishProject` · der Export-/Kopier-Riegel.
+
+**DER GRUND, zweiteilig:**
+- **DER SERVER ZERLEGT KEIN HTML** — Dauerregel KEIN SERVER-SEITIGES HTML-PARSING
+  (docs/immer-beachten.md). Ein Prädikat, das der Server braucht, kann also kein
+  DOM-Prädikat sein.
+- **ZWEI VERFAHREN FÜR EINE FRAGE LAUFEN AUSEINANDER.** Ein DOM-Urteil im Client neben einem
+  String-Urteil auf dem Server wäre genau die Konstellation "kein drittes Urteil", die der
+  Leer-Riegel bereits vermeidet.
+
+**PRÄZEDENZ: `emptyPublishVariant`** (`src/lib/hosting/variant.ts`) — reines Prädikat, reine
+Datei, von Server UND Client benutzt, Meldungen am selben Ort, weil `actions.ts`
+`"use server"` trägt (Vermerk P11.11-17, Punkt (i)). Diese Entscheidung baut dieselbe Form
+ein zweites Mal und erfindet nichts Neues.
+
+**DIE MERKMALE:** die `id`-Werte unserer Blöcke · die zwei Host-Tags · und für das
+Wiring-Script, das **KEINE `id` trägt**, der Aufruf `getElementById("pagesmith-mappings")`.
+
+**DIE MERKMALE SIND VOLLSTÄNDIG, UND DAS IST GEMESSEN, NICHT ANGENOMMEN:** Der ausgelieferte
+Text trägt GENAU ACHT `<script>`-Knoten, sieben mit `id`, einer ohne — Vermerk P11.11-17,
+Punkt (f). Es gibt keinen neunten Knoten, den ein Merkmal verfehlen könnte.
+
+**DIE ZWEI HOST-TAGS BLEIBEN IN DER MERKMALS-LISTE, OBWOHL SIE IM AUSGELIEFERTEN TEXT KEIN
+ELEMENT SIND** (Vermerk P11.11-17, Punkt (g)): Sie sind billig, sie sind eindeutig, und der
+Fall, in dem ein Betreiber einen LAUFZEIT-Baum importiert, ist ausdrücklich ungemessen
+statt ausgeschlossen. **Wer sie streicht, streicht eine Absicherung gegen einen Zustand, den
+niemand vermessen hat.**
+
+**DIE QUELLE IST EINE: DAS PRÄDIKAT BEZIEHT DIE MERKMALE AUS DEN PRODUKTIV-KONSTANTEN.** Ein
+zweites Literal neben der Konstante wäre die zweite Wahrheit, die bei der nächsten
+Umbenennung still auseinanderläuft.
+
+**DIE ERWARTUNG IM TEST WIRD DAGEGEN AUS DIESER ENTSCHEIDUNG GETIPPT, NIE AUS DEM CODE
+ABGELESEN** — Dauerregel EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS
+DEM CODE. Ein Import machte den Wächter zum SPIEGEL, der jeden Tippfehler bestätigt.
+
+**DIE FOLGE FÜR DEN ZUSCHNITT:** Das Grundgerüst der Erkennung **am zerlegten Dokument**
+(ENTSCHEIDUNG P11.11-12, Satz 1: eine reine Funktion auf dem Dokument vor `stabilizeDoc`)
+entsteht **NICHT in 11.11d, sondern mit 11.11b.** 11.11d braucht es nicht: ihr Gegenstand
+sind die EIGENEN Bausteine, und die sind am Text erkennbar. Der Eintrag 11.11d in Abschnitt
+9 ist entsprechend richtiggestellt.
+
+**WAS HIER NICHT ENTSCHIEDEN IST:** ob das Prädikat zusätzlich eine LISTE der Fundstellen
+liefert oder nur einen Wahrheitswert. Die Nachbedingung aus ENTSCHEIDUNG P11.11-19 verlangt
+eine Fundstelle in der Meldung; welche Gestalt das Prädikat dafür bekommt, entscheidet der
+Plan.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Die Vollständigkeit der Merkmale und die
+fehlende `id` des Wiring-Scripts GEMESSEN (CC, 2026-09-21, Vermerk P11.11-17); die Präzedenz
+GELESEN am Code (CC, 2026-09-21); die zwei Dauerregeln GELESEN (CC, 2026-09-21).
+
+### ENTSCHEIDUNG P11.11-19 — DAS ENTFERNEN: PER DOM, MIT DEM LEERRAUM, UND MIT EINER NACHBEDINGUNG
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21), vier Sätze:**
+
+1. **ES LÄUFT PER DOM-DURCHLAUF.** Mit jedem Block wird ein unmittelbar vorangehender
+   **reiner Leerraum-Textknoten** mitgenommen. **KOMMENTARE BLEIBEN.**
+2. **ES ÄNDERT NUR DEN EDITOR-TEXT.** Gespeichert wird erst beim Speichern — der Klick
+   entfernt, er schreibt nicht in die Datenbank.
+3. **AM ROHEN TEXT NORMALISIERT ES**, wie Speichern und Zuweisen es ohnehin tun.
+4. **NACHBEDINGUNG:** Danach meldet das Prädikat aus ENTSCHEIDUNG P11.11-18 **nichts mehr.**
+   Kann es das nicht, **nennt die Meldung die verbleibende Fundstelle.**
+
+**ZU (1) — DER LEERRAUM IST GEMESSEN UND KOSTET FAST NICHTS:** Von acht Knoten trägt GENAU
+EINER einen vorangehenden reinen Leerraum-Textknoten, 5 Bytes (Vermerk P11.11-17, Punkt
+(d)). **DIE REGEL BLEIBT TROTZDEM, und der Grund ist nicht die Byte-Zahl:** Sie hängt an der
+STELLUNG des Blocks, nicht an seiner Zahl. Ein künftiger Erzeuger, der seinen Block anders
+einhängt, produziert mehr davon; eine Regel, die erst dann eingeführt wird, kommt zu spät.
+
+**ZU (1) — WARUM KOMMENTARE BLEIBEN:** Ein Kommentar ist Text des Betreibers, solange nichts
+das Gegenteil beweist. Ihn mitzunehmen hiesse, auf einen Klick "entferne UNSERE Bausteine"
+fremden Text zu löschen.
+
+**ZU (3) — DAS IST GEMESSEN UND KEIN VERSPRECHEN:** Der erste Round-Trip über einen rohen
+Import ändert den Text (2 959 B -> 2 939 B an der Fixture), jeder weitere nicht mehr; und
+`stabilizeIds` ist an allen drei Proben idempotent (Vermerk P11.11-17, Punkte (a) und (b)).
+**Der Betreiber bekommt die Normalisierung also genau einmal, und er bekäme sie ohnehin beim
+nächsten Speichern.** Das ist der Prüfstein 1 aus Abschnitt 9, beantwortet: Der Einwand ist
+richtig, sein Preis ist einmalig und fällt sowieso an.
+
+**ZU (3) — DIE ÄNDERUNG AM RESTTEXT IST GEMESSEN NULL:** Das Ergebnis des Entfernens war
+BYTE-GLEICH zu "derselbe Text minus genau die `outerHTML` der Knoten", Byte-Differenz 27 043
+gegen Blocksumme 27 043 (Vermerk P11.11-17, Punkt (c)). **Ausser den Blöcken ändert sich
+nichts.**
+
+**ZU (4) — DER GRUND IST DER GANZE SATZ: EIN RIEGEL, DEN KEIN KNOPF LÖSEN KANN, IST EIN
+TOTER ZUSTAND.** Verweigert das Veröffentlichen, solange das Prädikat meldet, und meldet das
+Prädikat nach dem Entfernen weiter, dann ist das Projekt unveröffentlichbar und der einzige
+angebotene Ausweg wirkungslos. **DER FALL IST GEMESSEN UND NICHT ERFUNDEN:** Eine Kennung in
+einem KOMMENTAR überlebt den DOM-Durchlauf, und das Prädikat findet sie weiter (Vermerk
+P11.11-17, Punkt (e)). Deshalb nennt die Meldung dann die Fundstelle — der Betreiber kann
+sie von Hand entfernen, und er weiss wo.
+
+**WEN SIE BINDET:** den Plan der Scheibe 11.11d und jede spätere Runde, die dem
+ausgelieferten Text einen Baustein hinzufügt — sie erbt die Nachbedingung.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Die vier Messungen, auf die sie sich
+stützt, sind GEMESSEN an der Sonde (CC, 2026-09-21, Vermerk P11.11-17).
+
+### ENTSCHEIDUNG P11.11-20 — DER RIEGEL PRÜFT DEN QUELLTEXT BEIDER VARIANTEN, UND ER ERFASST AUCH DEN EXPORT
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21), drei Sätze:**
+
+1. **ER PRÜFT DEN QUELLTEXT BEIDER VARIANTEN.** Der Server bekommt dafür den **Quelltext von
+   B mit, symmetrisch zu A.**
+2. **EIN ZÄHLEN AM FUNKTIONALEN DOKUMENT IST VERWORFEN.**
+3. **EXPORT UND KOPIEREN WERDEN MIT DERSELBEN MELDUNG VERWEIGERT.**
+
+**ZU (1) — WARUM DER QUELLTEXT UND NICHT DAS ERZEUGTE DOKUMENT:** Das erzeugte Dokument
+trägt unsere Blöcke IMMER — es ist der Erzeuger, der sie einbaut. Die Frage "hat der
+Betreiber ALTE Blöcke im Text?" lässt sich daran gar nicht stellen.
+
+**ZU (1) — DIE HEUTIGE LÜCKE IST GEMESSEN:** `snapshot.html` trägt den Quelltext der
+Variante A; für B reisen NUR `functionalHtml` und `mappings` (Vermerk P11.11-17, Punkt (h)).
+**Ohne die Erweiterung prüfte der Server B gar nicht** — und ein Publish schreibt BEIDE
+Varianten in EINEM atomaren Write.
+
+**ZU (2) — DER GRUND IST EINE MESSUNG, KEINE ERWÄGUNG:** In Zustand 1 der Re-Import-Messung
+stand **jeder alte Block GENAU EINMAL** da (`pagesmith-mappings` 1, `pagesmith-consent` 1,
+`__ps_pve` 1 — VERMERK P11.11-16). Ein Riegel, der "mehr als einmal" zählt, hätte dort
+NICHTS gemeldet — und genau dort fielen die Conversions ins falsche Projekt. **Die Zählung
+ist also nicht bloss unscharf, sie verfehlt den gemessenen Schadensfall vollständig.**
+
+**ZU (3) — DAS IST EINE ERWEITERUNG DER OWNER-ENTSCHEIDUNG P11.11-10 AUF DEN EXPORT, UND SIE
+IST ARCHITEKT; DER OWNER KANN WIDERSPRECHEN.** P11.11-10 spricht vom Veröffentlichen. **DER
+GRUND FÜR DIE ERWEITERUNG:** Der Export erzeugt über GENAU DENSELBEN Weg dasselbe Dokument
+(Vermerk P11.11-17, Grenzen) — er verdoppelt also identisch. Ein Riegel nur am Publish
+liesse den Weg offen, der den Schadensfall der Messung überhaupt erst hergestellt hat: Der
+Aufbau in VERMERK P11.11-16 beginnt mit **"Sein Export wird heruntergeladen"**.
+
+**ZU (3) — DER PREIS IST BENANNT:** `handleExportDownload` hat heute KEINEN Fehlerkanal
+(Vermerk P11.11-17, Grenzen). Der Riegel braucht dort einen; ihn zu bauen ist Teil der
+Scheibe und kein Nebenbei.
+
+**WAS DIESE ENTSCHEIDUNG NICHT TUT:** Sie ändert am Leer-Riegel nichts. Sie tritt DANEBEN,
+mit derselben Bauform und an derselben Stelle der Kette — vor dem Label-Block, damit eine
+Ablehnung nichts schreibt.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Die Signatur und die fehlende B-Hälfte
+GELESEN am Code (CC, 2026-09-21); die Zählwerte aus Zustand 1 sind OWNER-MESSUNGEN (LIVE,
+2026-09-21, VERMERK P11.11-16) und von CC nicht geprüft.
+
+### ENTSCHEIDUNG P11.11-21 — DIE OBERFLÄCHE: WARNUNG UND EIN KNOPF IM BEREICH BAUEN, ROT OHNE `truncate`
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):**
+- **Warnung im Bereich BAUEN, unter dem Import-Feld.**
+- **EIN Knopf: "Pagesmith-Bausteine entfernen".**
+- **Roter Text OHNE die Klasse `truncate`.**
+- **KEIN Signal in der Reiterzeile.**
+
+**DIE KLASSE `truncate` IST AUSGESCHLOSSEN, UND DAS IST KEINE GESTALTUNGSFRAGE:** Der
+Selektor `span.truncate.text-red-600` bezeichnet in
+`src/components/CodeImporter.test.tsx` den ZENTRALEN Fehlerkanal — einmal als
+Abwesenheits-Zusicherung, einmal als Positiv-Zusicherung, bei der `querySelector` den ERSTEN
+Treffer in Dokumentreihenfolge liefert (Vermerk P11.11-17, Punkt (k)). **Ein roter Text mit
+beiden Klassen bräche beide Läufe, und der zweite bräche STILL — er bekäme einfach den
+falschen Satz.**
+
+**KEIN SIGNAL IN DER REITERZEILE:** Die Reiterzeile trägt heute GENAU EIN Signal
+(`measureSignal`); ein zweites wäre Signal-Ermüdung. Das ist Satz 10 der ENTSCHEIDUNG
+P11.11-12, hier unverändert übernommen und nicht neu begründet.
+
+**WAS HIER NICHT ENTSCHIEDEN IST UND DER PLAN ENTSCHEIDEN MUSS:** ob die Warnung INNERHALB
+des einklappbaren Code-Eingabe-Blocks steht oder DARUNTER, ausserhalb. Der Block wird vom
+Zen-Modus per `display:none` versteckt; eine Warnung darin wäre im eingeklappten Zustand
+unsichtbar — **und der Zen-Modus klappt bei einem Import-Ereignis automatisch ein, also
+genau in dem Moment, in dem die Warnung entsteht.** Die Testumgebung wertet kein CSS aus
+(Dauerregel), ein Test würde den Unterschied also NICHT sehen.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Die Test-Falle GELESEN am Code (CC,
+2026-09-21); das eine Signal der Reiterzeile ist die Angabe aus ENTSCHEIDUNG P11.11-12 und
+in dieser Runde nicht neu erhoben; das Zen-Verhalten GELESEN am Code (CC, 2026-09-21).
 
 ---
 
@@ -1007,6 +1199,128 @@ P11.11-5 war eine Ableitung; er ist jetzt an der eigenen Ablage belegt.
 2026-09-21)**; die vier Deutungssätze sind **ARCHITEKT-ABLEITUNGEN desselben Tages**. **KEIN
 Bau-Commit.**
 
+### VERMERK P11.11-17 — AUFKLÄRUNG 11.11d (2026-09-21)
+
+**KEIN BAU-COMMIT — GRUND: AUFKLÄRUNG.** Die Runde hat gemessen und festgehalten; es ist
+keine Zeile Produktivcode entstanden. Alles Folgende ist **GEMESSEN am Repo bzw. an einer
+Sonde mit dem ECHTEN `src/lib/detect.ts` und der Projekt-jsdom** (CC, 2026-09-21); die Sonde
+lag in einem Wegwerf-Verzeichnis AUSSERHALB des Repos.
+
+**(a) `stabilizeIds` IST IDEMPOTENT — DREI PROBEN, ALLE BYTE-GLEICH.**
+`stabilizeIds(stabilizeIds(x))` ergab in allen drei Fällen denselben sha256 und dieselbe
+Bytezahl wie `stabilizeIds(x)`:
+- die Fixture `src/lib/__fixtures__/sample-landingpage.html` (roh 2 959 B) -> 3 809 B;
+- ein von `generateFunctional(…, "export")` ERZEUGTES Dokument, nicht nachgebaut -> 16 899 B;
+- dasselbe Dokument mit Kommentaren und Leerraum zwischen den eigenen Blöcken -> 16 972 B.
+
+**(b) DER RUNDLAUF OHNE EINGRIFF IST BYTE-GLEICH — ABER ERST AB DEM ZWEITEN.** Ein
+publish-naher Text (Export plus `injectPageViewEmitter`, Dialog "bar") kam durch
+Parse-plus-Serialisierung BYTE-GLEICH zurück (30 864 B, gleicher sha256), und ein zweiter
+Rundlauf ebenso. **DER ROHE IMPORT DAGEGEN NICHT:** die Fixture ging als 2 959 B hinein und
+als 2 939 B heraus; der ZWEITE Rundlauf war dann byte-gleich. **Das ist der Prüfstein 1 des
+Zuschnitts, gemessen:** Der erste Round-Trip normalisiert, jeder weitere nicht mehr.
+
+**(c) EIN ENTFERNEN PER DOM ÄNDERT AUSSER DEN BLÖCKEN NICHTS.** Aus dem normalisierten Text
+wurden die eigenen Knoten entfernt und das Ergebnis gegen "derselbe Text MINUS genau die
+`outerHTML`-Zeichenketten der Knoten" gehalten: **BYTE-GLEICH**, gleicher sha256. Die
+Byte-Differenz betrug **27 043** und die Summe der acht Block-`outerHTML` ebenfalls
+**27 043**.
+
+**(d) ZURÜCK BLEIBT LEERRAUM — UND ZWAR WENIGER, ALS MAN ERWARTET.** Von den ACHT Knoten
+trägt **GENAU EINER** einen unmittelbar vorangehenden reinen Leerraum-Textknoten
+(`pagesmith-consent`, `"\n  \n\n"`, 5 B); die übrigen sieben folgen direkt auf einen
+Element-Knoten. Variante "Block plus Leerraum davor" ergab 3 816 B gegen 3 821 B, also
+**5 Bytes Unterschied**. Beide Ergebnisse sind rundlauf-stabil und `stabilizeIds`-stabil.
+
+**(e) DIE NACHBEDINGUNG IST IM NORMALFALL ERFÜLLBAR UND IM KOMMENTAR-FALL NICHT.** Nach dem
+Entfernen meldete eine reine String-Prüfung über die Merkmale NICHTS mehr. Wurde vorher
+`<!-- id="pagesmith-mappings" alter Rest -->` in den Text gesetzt, meldete sie danach
+`id="pagesmith-mappings"` weiter — der Kommentar bleibt stehen, und der DOM-Durchlauf
+erreicht ihn nicht.
+
+**(f) DER AUSGELIEFERTE TEXT TRÄGT GENAU ACHT `<script>`-KNOTEN UND KEIN EINZIGES
+`<script src=…>`.** SIEBEN tragen eine `id` — `pagesmith-consent`, `pagesmith-mappings`,
+`__ps_cnr`, `__ps_clb`, `__ps_crv`, `__ps_cns`, `__ps_pve` —, **EINER trägt keine: das
+Wiring-Script.** Das ist die gemessene Grundlage dafür, dass die Merkmale aus
+ENTSCHEIDUNG P11.11-18 vollständig sind: Jeder eigene Baustein im ausgelieferten Text IST
+einer dieser acht Knoten.
+
+**(g) LAUFZEIT-KNOTEN SIND IM AUSGELIEFERTEN TEXT NICHT ALS EIGEN ERKENNBAR — UND DIE
+DIALOG-HOSTS AUCH NICHT.** Im selben Dokument kommt `<pagesmith-bar` **NULL** mal vor;
+`pagesmith-bar` steht ZWEIMAL, beide Male als Zeichenkette INNERHALB von `__ps_clb`.
+`connect.facebook.net` steht zweimal und `__psCustomLoad` zweimal, ebenfalls nur als
+Zeichenketten in unseren eigenen Scripten. **DIE FOLGE, und sie weicht vom berichteten Stand
+ab:** Das Meta-Script, der Custom-Pixel-Knoten UND der Dialog-Host entstehen alle erst zur
+LAUFZEIT per `createElement`. Sie sind im ausgelieferten Text keine eigenen Knoten und
+brauchen deshalb weder ein Merkmal noch ein Entfernen — was der Betreiber re-importiert,
+ist der QUELLTEXT, nicht der Laufzeit-Baum. **GRENZE:** Ob ein Betreiber über ein Werkzeug
+an den LAUFZEIT-Baum kommt (etwa ein "Speichern unter", das den gerenderten Stand
+serialisiert), ist NICHT gemessen; die Dauerregel EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT
+MISST IM GELADENEN DOKUMENT führt für Chrome den gegenteiligen Befund, und er ist hier nicht
+nachgeprüft.
+
+**(h) `publishProject` BEKOMMT DEN QUELLTEXT DER VARIANTE A, FÜR B NICHT.** Die Signatur
+(`src/app/projects/actions.ts`) lautet
+`publishProject(projectId, functionalHtml, snapshot: { html, mappings, settings }, variantB?: { functionalHtml, mappings })`.
+Der EINZIGE Produktiv-Aufrufer ist `handlePublish` (`src/components/CodeImporter.tsx`) und
+gibt `{ html: pairA.html, mappings: pairA.mappings, settings }` mit — `pairA.html` ist der
+Editor-Quelltext. **Für B reist NUR das erzeugte Dokument und die Mapping-Liste.**
+
+**(i) DER LEER-RIEGEL SITZT IN `emptyPublishVariant` (`src/lib/hosting/variant.ts`) UND IST
+DER PRÄZEDENZFALL.** Er ist ein reines Prädikat in einer reinen Datei ohne `server-only`,
+wird vom SERVER (in `publishProject`, VOR dem Label-Block, damit eine Ablehnung nichts
+schreibt) UND vom CLIENT (`emptyPublishTarget` in `CodeImporter.tsx`, von dort als Prop an
+`PublishView`, wo es den Knopf sperrt) benutzt, und seine drei Meldungen
+(`EMPTY_PUBLISH_MESSAGE`, `EMPTY_VARIANT_A_MESSAGE`, `EMPTY_VARIANT_B_MESSAGE`) liegen in
+DERSELBEN reinen Datei — ausdrücklich, weil `actions.ts` `"use server"` trägt und dort keine
+Konstante exportiert werden darf. Die Auswahl der Meldung trifft der Aufrufer, nicht das
+Prädikat.
+
+**(j) DIE KENNUNG DES MAPPING-BLOCKS HIESS NIE ANDERS.** `MAPPINGS_SCRIPT_ID` steht seit
+seiner Einführung am 2026-06-23 (Commit `380d9be`) unverändert auf `"pagesmith-mappings"` —
+über alle VIERZEHN Commits, die `src/lib/generate.ts` berühren, je am committeten Objekt
+abgelesen. **METHODE:** `git log -p --all` über die Datei, Achse `MAPPINGS_SCRIPT_ID =`, mit
+Kontextzeile; sie findet GENAU EINE hinzufügende Zeile und KEINE entfernende.
+**POSITIVKONTROLLE im selben Lauf:** Dieselbe Methode über `src/lib/hosting/host.ts` mit der
+Achse `pgsm\.site|publayer\.net` zeigt in Commit `e4602f1` die entfernende Zeile
+`-const SERVING_SUFFIXES = [".pgsm.site", ".lvh.me"];` — die Methode erkennt eine Umbenennung
+also. Ohne sie wäre ein echter Nicht-Treffer von einem untauglichen Instrument nicht zu
+unterscheiden.
+
+**(k) DIE TEST-FALLE STEHT ZWEIMAL IN `src/components/CodeImporter.test.tsx`, UND SIE HAT
+ZWEI RICHTUNGEN.** Der Selektor `span.truncate.text-red-600` bezeichnet den ZENTRALEN
+Fehlerkanal in der Preview-Kopfzeile:
+- im Lauf "WAECHTER zweite Render-Stelle: createVariantB-Fehler ist OHNE Variante B sichtbar"
+  als ABWESENHEITS-Zusicherung (`…).toBeNull()`) — ein NEUER roter Text mit beiden Klassen
+  macht ihn rot;
+- im Lauf "TEST 2 (Invariante ii): ein SPEICHERN-Fehler bleibt im zentralen Kanal" als
+  POSITIV-Zusicherung — `querySelector` liefert den ERSTEN Treffer in Dokumentreihenfolge,
+  ein zweites passendes Element davor liesse `textContent` den falschen Satz tragen.
+
+**DIE GRENZEN DIESER AUFKLÄRUNG — sie stehen im Wortlaut, weil sie beim nächsten Lesen sonst
+zur Vollständigkeit werden:**
+- **DIE FOLGE DER ERZEUGER-GESTALTEN ÜBER DIE HISTORIE IST NUR FÜR DIE MAPPING-KENNUNG
+  ERHOBEN.** Für die übrigen sechs `id`-Werte und die zwei Host-Tags ist NICHT gemessen, ob
+  sie je anders hiessen. Ein re-importierter Export aus einer früheren Fassung könnte eine
+  Kennung tragen, die das heutige Prädikat nicht kennt.
+- **GEMESSEN IST EINE SONDE, KEINE ECHTE KUNDENSEITE.** Grundlage ist die Projekt-Fixture
+  plus die eigenen Erzeuger, in jsdom. Was eine reale, von einem KI-Werkzeug erzeugte Seite
+  beim Rundlauf tut, ist damit nicht erhoben.
+- **DER EXPORT-PFAD IST AM CODE BESTÄTIGT, NICHT LIVE.** `handleExportDownload` und
+  `handleExportCopy` rufen beide `buildExportDocument()` -> `buildDocumentFor` ->
+  `generateFunctional(html, mappings, "export", …)`; der EINZIGE Unterschied zum Publish ist
+  `capiProxyUrl` (absolut gegen relativ), und `generateFunctional` erzeugt Consent-Gate,
+  Datenblock und Wiring-Script UNBEDINGT. **Der Export verdoppelt damit wie der Publish** —
+  das ist am Code abgelesen, nicht an einer heruntergeladenen Datei gemessen.
+- **`handleExportDownload` HAT HEUTE KEINEN FEHLERKANAL.** `handleExportCopy` hat einen
+  (`copyStatus`, Werte "copied" und "error"); der Download hat keinen. Das ist der Grund,
+  warum ENTSCHEIDUNG P11.11-20 den Export-Riegel nicht einfach an einen bestehenden Kanal
+  hängen kann.
+
+**PROVENIENZ:** (a) bis (g) GEMESSEN an der Sonde (CC, 2026-09-21), (h), (i) und (k) GELESEN
+am Code (CC, 2026-09-21), (j) GEMESSEN an der Git-Historie mit Positivkontrolle (CC,
+2026-09-21). **KEIN Bau-Commit.**
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -1203,9 +1517,17 @@ Angabe** — die Angabe steht in diesem Satz.
   UNSERE Konstanten; **Warnen**; **Entfernen auf Klick**; **Veröffentlichen verweigern**,
   solange eigene Bausteine im Text stehen (Entscheidung P11.11-10, deren Auflage mit
   VERMERK P11.11-16 erfüllt ist).
-  **SIE LEGT ZUGLEICH DAS GRUNDGERÜST DER ERKENNUNG** nach Entscheidung P11.11-12 — die
-  reine Funktion am Dokument vor `stabilizeDoc` und den eigenen Fehlerfang —, **vorerst
-  aber NUR mit der Klasse `eigen`.** Die drei fremden Klassen kommen mit 11.11b dazu.
+  **RICHTIGGESTELLT AM 2026-09-21 — HIER STAND:** "SIE LEGT ZUGLEICH DAS GRUNDGERÜST DER
+  ERKENNUNG nach Entscheidung P11.11-12 — die reine Funktion am Dokument vor `stabilizeDoc`
+  und den eigenen Fehlerfang —, vorerst aber NUR mit der Klasse `eigen`. Die drei fremden
+  Klassen kommen mit 11.11b dazu."
+  **DAS GILT NICHT MEHR: DAS GRUNDGERÜST AM ZERLEGTEN DOKUMENT ENTSTEHT MIT 11.11b, NICHT
+  HIER** — ENTSCHEIDUNG P11.11-18. 11.11d braucht es nicht: ihr Gegenstand sind die EIGENEN
+  Bausteine, und die werden von EINEM reinen String-Prädikat gefunden, das ohnehin vier
+  Verbraucher bedienen muss — darunter den Server, der kein HTML zerlegen darf.
+  **RICHTIGGESTELLT UND NICHT GESTEMPELT**, weil dieser Eintrag ein ZUSCHNITT ist und damit
+  ein Maßstab: Wer ihm folgte, baute in 11.11d ein Grundgerüst, das dort niemand braucht,
+  und in 11.11b ein zweites daneben.
   **REIHENFOLGE: 11.11d STEHT VOR CRAWL 2 UND VOR 11.11b.** **Die Buchstaben tragen keine
   Reihenfolge** — wer sie als Abfolge liest, dreht den Bau um.
   **DER GRUND, zweiteilig:** Sie braucht **KEINE fremde Signatur** — unsere eigenen

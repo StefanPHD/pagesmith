@@ -1276,6 +1276,77 @@ weil die Knöpfe an den erkannten Funden hängen und die Bündelung darunter lie
 Seiten-/Theme-Code) und der Digistore-Pfad sind **OWNER-ANGABEN aus der angezeigten Liste**,
 von CC nicht geprüft.
 
+### ENTSCHEIDUNG P11.11-38 — EIN AUFRUF IN SEITEN-CODE WIRD NICHT ENTFERNT; ENTFERNBAR IST NUR, WAS DIE LADE-ADRESSE TRÄGT
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Ein **Inline-Script** ist nur dann
+entfernbar, wenn **sein Rumpf eine bekannte ADRESSE seines Anbieters enthält** — dann ist
+es der Basiscode, der das Script des Anbieters lädt. **Wird es NUR über einen NAMEN
+erkannt, ist es ein AUFRUF IN SEITEN-CODE:** kein Knopf, von Hand zu löschen.
+
+**DER GRUND IST DIE FEHLERKLASSE VON P11.11-35, Satz (b), EINE EBENE GRÖSSER:** KI-erzeugte
+Seiten bündeln Formular- und Menülogik oft in **EINEM** Script, in dem irgendwo ein
+`fbq('track', …)` steht. **Ein Klick auf "Meta" hätte diese Logik gelöscht.** Dort war es
+ein Attribut, das auch Code des Betreibers trägt; hier ist es ein ganzes Script. Der
+Unterschied ist die Grösse des Schadens, nicht seine Art.
+
+**DIE FOLGE FÜR GOOGLE, und sie ist gewollt:** Der **Konfigurations-Schnipsel**
+(`window.dataLayer = …; function gtag(){…}; gtag('js', …); gtag('config', …)`) trägt keine
+Adresse und wird damit zum **Aufruf**. Entfernbar ist allein das **Lade-Script**
+(`<script async src="…/gtag/js?id=…">`). **OHNE LADE-SCRIPT WIRKT DER SCHNIPSEL NICHT** —
+er ruft eine Funktion, die niemand mehr definiert nachlädt; der Betreiber kann den Rest von
+Hand wegnehmen, und bis dahin schadet er nicht.
+
+**DIE GRENZE, OHNE DIE DIE REGEL MEHR VERSPRICHT ALS SIE HÄLT: Ein Script, das Basiscode
+UND eigene Logik MISCHT, wird GANZ entfernt.** Es trägt die Adresse, also gilt es als
+Basiscode — und seine mitgeschriebene Logik geht mit. **Das ist bewusst so und nicht
+abgefangen:** Wer Anbieter-Basiscode und eigene Logik in einen Knoten legt, hat sie
+untrennbar gemacht; ein Werkzeug, das das auseinanderschnitte, bearbeitete fremden Text.
+
+**DER BEFUND AUS DER VORMESSUNG (V1), GELESEN an docs/ziel-befunde.md, CC, 2026-09-21 —
+gezielt nach ENTSCHEIDUNG P11.11-14, Achse `connect\.facebook\.net|s\.pinimg\.com|
+analytics\.tiktok\.com|snap\.licdn\.com|googletagmanager\.com`, Positivkontrolle
+`Browser-Tag-Lesung 2026-09-21` mit fünf Treffern:**
+- **meta — JA.** `https://connect.facebook.net/en_US/fbevents.js` steht im Basiscode als
+  Argument `v` und wird zur Laufzeit per `insertBefore` eingehängt (Meta-Abschnitt, Teil
+  (g), Punkt (a)).
+- **tiktok — JA.** `https://analytics.tiktok.com/i18n/pixel/events.js` ist im Basiscode der
+  Variablen `i` zugewiesen (TikTok-Abschnitt, Teil (i), Punkt (a)).
+- **pinterest — JA.** `https://s.pinimg.com/ct/core.js` wird im Basiscode als Argument der
+  sofort ausgeführten Funktion übergeben (Pinterest-Abschnitt, Teil (ab), Punkt (a)).
+- **linkedin — JA.** `https://snap.licdn.com/li.lms-analytics/insight.min.js` steht als
+  `b.src = "…"` im Basiscode (LinkedIn-Abschnitt, Teil (am), Punkt (a)).
+- **google — JA, WIE ERWARTET GETRENNT.** Die Adresse steht im **Lade-Script** als
+  `<script async src="https://www.googletagmanager.com/gtag/js?id=TAG_ID">`; der
+  **Konfigurations-Schnipsel** trägt nur `window.dataLayer`, `function gtag(){…}`,
+  `gtag('js', …)` und `gtag('config', …)` — **keine Adresse** (Google-Abschnitt, Teil (cs),
+  Punkte (a) und (b)).
+**ALLE VIER BASISCODES TRAGEN IHRE LADE-ADRESSE IM RUMPF. KEINE ABWEICHUNG, KEIN STOPP.**
+
+**ZWEI FOLGEN, DIE AUS DEMSELBEN BEFUND KOMMEN UND NICHT VERSCHWIEGEN WERDEN:**
+- **DER ERSTE VON LINKEDINS ZWEI SCRIPT-BLÖCKEN TRÄGT KEINE ADRESSE** — er setzt
+  `_linkedin_partner_id` und `window._linkedin_data_partner_ids` (Teil (am), Punkt (b)).
+  **Er gilt damit als AUFRUF und bleibt stehen**, während der Lade-Block entfernt wird.
+- **EREIGNISZEILEN BLEIBEN EBENFALLS STEHEN.** Ein `fbq('track','Lead')` in einem eigenen
+  Inline-Script trägt keine Adresse. **Das ist der gewollte Ausgang** — genau so eine Zeile
+  steht in KI-Seiten mitten in fremder Logik —, und der gemeinsame Hinweis sagt es dem
+  Betreiber.
+
+**DER HINWEIS AM FUND WIRD ZUSAMMENGELEGT:** Handler und Aufruf tragen ab jetzt **denselben**
+Satz. **DER GRUND:** Es ist dieselbe Auskunft — hier steckt ein Aufruf in Code, der auch
+anderes enthalten kann, und er wird nicht automatisch entfernt. Zwei Wortlaute für eine
+Aussage liefen auseinander. **WORTLAUT, OWNER-FREIGABE 2026-09-21** (der Owner reicht den
+Prompt weiter): *„Dieser Aufruf steckt in Code der Seite, der auch anderes enthalten kann,
+und wird nicht automatisch entfernt. Bitte von Hand löschen."*
+
+**WEN SIE BINDET:** den Bau der Scheibe 11.11c und jede spätere Runde, die der Erkennung
+einen Träger oder einer Signatur einen Namen hinzufügt.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21, der Wortlaut OWNER-FREIGABE desselben
+Tages. Der V1-Befund ist GELESEN an docs/ziel-befunde.md (CC, 2026-09-21), Fundstellen je
+Anbieter wie genannt; **nichts davon ist an einer echten Seite gemessen.** Dass KI-Seiten
+ihre Logik in einem Script bündeln, ist die Begründung der Entscheidung und **keine
+Messung**.
+
 ---
 
 ## Die offenen Designfragen

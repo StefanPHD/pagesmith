@@ -1089,6 +1089,100 @@ Tages. Die Messungen zum Modulgraphen, zur Testabdeckung des alten Satzes und zu
 Wortlaut-Kollision sind GEMESSEN am Repo (CC, 2026-09-21); die Mehrprodukt-Eigenschaft des
 Google-Tags ist GELESEN (docs/ziel-befunde.md, Google-Abschnitt, Teil (cs)).
 
+### ENTSCHEIDUNG P11.11-34 — DER GOOGLE-TAG WIRD ZUM ENTFERNEN ANGEBOTEN, MIT EINEM HINWEIS AUF SEINE WEITEREN PRODUKTE
+
+**DIE ENTSCHEIDUNG (OWNER, 2026-09-21):** Der Google-Tag (`gtag.js`) bleibt die Klasse
+`pixel` und bekommt in der Scheibe 11.11c ein **Entfernen-Angebot wie jedes andere bekannte
+Pixel** — **mit einem Hinweis am Knopf, dass derselbe Tag auch Google Analytics und weitere
+Google-Produkte tragen kann.**
+
+**SIE SCHLIESST DEN PRÜFSTEIN 6 DER SCHEIBE 11.11c** (Abschnitt 9), der die Frage
+ausdrücklich als OWNER-ENTSCHEIDUNG vor dem Bau ausgewiesen hat; dort steht der Zeiger. Sie
+ändert an ENTSCHEIDUNG P11.11-3 nichts — ein bekanntes Pixel bekommt ein Entfernen-Angebot,
+und der Google-Tag ist eines.
+
+**ZWEI WEGE SIND VERWORFEN, je mit ihrem Grund:**
+- **"NIE ENTFERNEN"** — dann bliebe ein Tag stehen, der **doppelt zählende Ads-Conversions**
+  erzeugt, und der Betreiber hätte für genau den Fall, um dessentwillen diese Phase gebaut
+  wird, keine Handlung. Der Schaden, gegen den 11.11 antritt, bliebe unberührt.
+- **"NUR BEI AUSSCHLIESSLICH WERBE-KENNUNGEN ENTFERNEN"** — verlangt eine **DEUTUNG DER
+  KENNUNGEN** (`AW-`, `G-`, `DC-`, `GT-` und was sonst noch) **und einen weiteren Crawl**,
+  um sie zu belegen. Beides ist Arbeit, die diese Scheibe nicht trägt; und eine Deutung, die
+  falsch liegt, verweigert dem Betreiber die Handlung stillschweigend.
+
+**DER HINWEIS IST DER PREIS DIESER WAHL UND KEIN SCHMUCK:** Die Doku des Anbieters nennt für
+`gtag.js` ausdrücklich Google Ads, Analytics, Campaign Manager, Display & Video 360 und
+Search Ads 360 (docs/ziel-befunde.md, Google-Abschnitt, Teil (cs)). **Ein Klick kann dem
+Betreiber also mehr nehmen als unser Ziel.** Der Hinweis verlegt die Entscheidung dorthin,
+wo sie hingehört — zu dem, der weiss, was sein Tag trägt. **Er behauptet nichts über DIESEN
+Tag**, weil die Kennung nicht gedeutet wird; er sagt, was der Tag tragen KANN.
+
+**WAS SIE NICHT BERÜHRT:** ENTSCHEIDUNG P11.11-27. Der **Tag Manager** (`gtm.js`) ist ein
+CONTAINER und bleibt vom Entfernen ausgeschlossen. **Die zwei Bausteine tragen denselben
+Host und verschiedene Pfade** (VERMERK P11.11-25); wer sie zusammenzieht, bietet einen
+Container zum Entfernen an.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-21. Die Mehrprodukt-Eigenschaft des Google-Tags
+ist GELESEN (docs/ziel-befunde.md, Google-Abschnitt, Teil (cs)); dass eine Deutung der
+Kennungen im Repo nicht belegt ist, ist der Stand des Crawls 2 (VERMERK P11.11-25) und keine
+neue Messung.
+
+### ENTSCHEIDUNG P11.11-35 — DIE BAUFORM DES ENTFERNENS IN DER SCHEIBE 11.11c, FÜNF SÄTZE
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21).** Jeder Satz bindet den Plan 11.11c.
+
+**(a) EIN KLICK ENTFERNT EINEN GANZEN FUND, ALSO ALLE SEINE FUNDSTELLEN** — Script,
+Rückfall-Bild, Rückfall-iframe. **CONTAINER UND CMP BEKOMMEN NIE EINEN KNOPF** (ENTSCHEIDUNG
+P11.11-3 für das CMP, ENTSCHEIDUNG P11.11-27 für den Container). **GRUND:** Die Anzeige
+gruppiert einen bekannten Anbieter als EINEN Fund mit der Zahl seiner Fundstellen
+(ENTSCHEIDUNG P11.11-32, Punkt (c)); ein Knopf, der nur eine davon nähme, liesse ein
+Rückfall-Bild stehen, **und das zählt weiter** (Prüfstein 2 der Scheibe, Abschnitt 9).
+
+**(b) ENTFERNT WERDEN NUR GANZE KNOTEN, NIE TEILE EINES TEXTES. INLINE-HANDLER BLEIBEN
+UNBERÜHRT** und werden als von Hand zu löschen genannt. **GRUND: EIN ATTRIBUT TRÄGT OFT AUCH
+CODE DES BETREIBERS** — ein `onclick`, das `fbq(` ruft, ruft daneben meist noch etwas
+anderes. Aus ihm den Anbieter-Aufruf herauszuschneiden hiesse, **fremden Text zu
+bearbeiten**, und das ist genau der Fehltreffer, vor dem die Roadmap-Zeile 11.11 unter (e)
+warnt.
+
+**(c) DAS ENTFERNEN NUTZT DIESELBE ZUORDNUNG KNOTEN → FUND WIE DIE ANZEIGE — EINE QUELLE.**
+**GRUND:** Sonst verschwindet beim Klick auf einen Fund etwas anderes, als angezeigt war.
+**DIESELBE FIGUR WIE ENTSCHEIDUNG P11.11-26** (eigen vor fremd mit DERSELBEN Knotenauswahl)
+und wie ENTSCHEIDUNG P11.11-18 (ein Urteil, nicht zwei) — eine zweite Suche wäre die zweite
+Wahrheit, die bei der nächsten Signatur still auseinanderläuft.
+
+**(d) DER KNOPF TRÄGT EINEN NAMEN, DER "aus dem Code" ENTHÄLT.** **GRUND:** "Entfernen",
+"Meta entfernen" und "Ja, Meta entfernen" bezeichnen im Einstellungsbereich bereits das
+Entfernen der EIGENEN Pixel-Konfiguration; **derselbe Name für eine andere Wirkung** ist die
+Dauerregel ZWEI BEDIENELEMENTE MIT
+GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG SIND EIN OBERFLÄCHEN-PROBLEM, KEIN TESTPROBLEM
+(docs/immer-beachten.md). **Der Name wird also in der OBERFLÄCHE unterschieden, nicht per
+`aria-label` in der Abfrage** — jene Regel verbietet genau das.
+
+**(e) WIE IN 11.11d: DAS ENTFERNEN ÄNDERT NUR DEN EDITOR-TEXT; GESPEICHERT WIRD BEIM
+SPEICHERN.** **NACH DEM ENTFERNEN WIRD AUS DEM AKTUELLEN TEXT NEU ERKANNT** (ENTSCHEIDUNG
+P11.11-24), **und was bleibt, wird genannt.** **GRUND:** Satz 2 von ENTSCHEIDUNG P11.11-19
+für die erste Hälfte; für die zweite der gemessene Befund K2 der Scheibe 11.11d — eine
+Meldung, die als fertiger Satz im State liegt, überlebt jedes Entfernen von Hand und steht
+veraltet neben einer abgeleiteten Anzeige derselben Sache.
+
+**WAS HIER NICHT ENTSCHIEDEN IST:** der Umgang mit dem zurückbleibenden `<noscript>`
+(Prüfstein 3), das Entfernen-Angebot an einem Bild-Tag OHNE Script (Prüfstein 2, dort
+ausdrücklich offen), der Klick auf einen Knoten mit MEHREREN Anbietern (Prüfstein 4) und die
+Frage, ob GEPARKTE Pixel wie laufende entfernt werden. **Das entscheidet der Plan 11.11c.**
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Die vier zitierten Entscheidungen und die
+Dauerregel GELESEN (CC, 2026-09-21); der K2-Befund ist GEMESSEN (VERMERK P11.11-23).
+**DIE NAMENSKOLLISION IST IN DIESER RUNDE NEU AM CODE GEMESSEN** (CC, 2026-09-21):
+`src/components/TargetCard.tsx` rendert `` `${config.name} entfernen` `` und
+`` `Ja, ${config.name} entfernen` ``, mit `name: "Meta"` bzw. `"Google"` aus
+`src/lib/tracking/target-cards.ts`; `src/components/DomainManager.tsx` rendert ausserdem ein
+blosses "Entfernen" je Domain-Zeile. **DER AUFTRAG DIESER RUNDE ZEIGTE DAFÜR AUF VERMERK
+P11.11-17 — DORT STEHT ES NICHT** (aufgeschlagen, CC, 2026-09-21: jener Vermerk führt unter
+(k) die `span.truncate`-Falle, keine Knopfnamen). Der Zeiger ist deshalb durch die Messung
+ERSETZT und nicht übernommen (docs/immer-beachten.md, EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE
+KANN AUS PLAUSIBILITÄT ENTSTEHEN STATT AUS NACHSEHEN).
+
 ---
 
 ## Die offenen Designfragen
@@ -2499,6 +2593,11 @@ den Zuschnitt entscheiden und nicht erst den Bau:**
    Betreiber möglicherweise seine Analytics mit, nicht nur unser Ziel.** In 11.11b war das
    folgenlos — die Klasse setzte allein das Etikett. **IN 11.11c IST ES EINE
    OWNER-ENTSCHEIDUNG und keine Code-Frage**, und sie fällt VOR dem Bau.
+   **ENTSCHIEDEN AM 2026-09-21 → ENTSCHEIDUNG P11.11-34: Der Google-Tag WIRD zum Entfernen
+   angeboten, mit einem Hinweis am Knopf, dass derselbe Tag auch Google Analytics und
+   weitere Google-Produkte tragen kann.** Der Fragetext bleibt stehen, weil er den Grund
+   trägt; ohne ihn liest sich das Angebot wie eine Selbstverständlichkeit. **Der Tag
+   Manager ist davon NICHT berührt** (ENTSCHEIDUNG P11.11-27).
 
 **HIER STAND "ZWEI PRÜFSTEINE", UND DIE ÜBERSCHRIFT DES ABSATZES BLEIBT SO** — sie wird
 zitiert, und eine Umbenennung machte jedes Zitat halb falsch (docs/immer-beachten.md, EIN

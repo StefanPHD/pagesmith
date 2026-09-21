@@ -805,6 +805,54 @@ Sollwerts**; ein nachgezogener Sollwert wäre genau der Spiegel, den P11.11-18 v
 2026-09-21, die Kollisionsprüfung GEMESSEN am Repo (CC, 2026-09-21); (g) GEMESSEN an der
 Sonde (CC, 2026-09-21).
 
+### ENTSCHEIDUNG P11.11-24 — EINE MELDUNG ÜBER EINEN TEXT WIRD AUS DEM AKTUELLEN TEXT ABGELEITET; EIN GESPEICHERTER ZUSTAND SAGT HÖCHSTENS "ES GAB EINEN VERSUCH"
+
+**HERKUNFT:** Sie stand nicht im Zuschnitt der Scheibe 11.11d, sondern ist im Review jener
+Scheibe als Korrektur K2 entstanden. Sie bindet über die Scheibe hinaus und steht deshalb
+hier statt am Zuschnitt (docs/arbeitsweise.md, "Beim Abschluss-Vermerk wird der Zuschnitt
+verdichtet").
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21), drei Sätze:**
+1. **Eine Meldung, die eine Aussage über den TEXT macht, wird aus dem AKTUELLEN Text
+   abgeleitet** — nie aus einem Zustand, den ein Handler einmal gesetzt hat.
+2. **Ein gespeicherter Zustand darf höchstens sagen "ein Versuch hat stattgefunden", nie
+   "das Problem besteht".**
+3. **Behauptet eine Meldung etwas über einen VERGANGENEN Versuch, braucht sie zusätzlich
+   einen Anker, der sagt, ob jener Versuch noch DIESEN Text meint.**
+
+**DER BEFUND IST GEMESSEN, NICHT ERWOGEN** (CC, 2026-09-21): Die erste Fassung der Scheibe
+11.11d hielt die zwei Meldungen als fertige Sätze im State. Sie überlebten damit jedes
+Entfernen VON HAND im Editor — die zwei Läufe U9 und U10 waren vor der Korrektur ROT, nach
+ihr grün. **Die WARNUNG daneben war vom ersten Tag an richtig, weil sie abgeleitet war;
+derselbe Bildschirm zeigte also gleichzeitig eine korrekte und eine veraltete Aussage über
+denselben Text.**
+
+**ZU (3) — WARUM EIN BLOSSES FLAG DORT ZU SCHWACH IST:** Der Satz "Nicht alles liess sich
+automatisch entfernen" ist eine Aussage über einen Versuch. Nach einem GEGLÜCKTEN Entfernen
+und einem NEU eingefügten Export behauptete ein blosses Flag einen Fehlschlag, den es nie
+gab. Gebaut ist deshalb ein Vergleich gegen den Text, den jener Versuch ERZEUGT hat; die
+Export-Meldung braucht das nicht, weil sie eine Aussage über den JETZIGEN Zustand ist und
+mit dem Prädikat immer wahr ist, wenn sie steht.
+
+**WEN SIE BINDET:** jede spätere Runde, die dem Editor eine Meldung über seinen Inhalt gibt
+— die Scheiben 11.11b und 11.11c ausdrücklich eingeschlossen, deren Listen und Hinweise
+denselben Gegenstand haben.
+
+**SIE IST DIE ANWENDUNG EINER DAUERREGEL, KEINE NEUE:** ABLEITEN STATT LÖSCHEN
+(docs/immer-beachten.md) sagt dasselbe für projekt-spezifischen View-State. **NEU IST DER
+DRITTE SATZ** — jene Regel kennt den Fall nicht, dass eine Meldung ausdrücklich über einen
+vergangenen Versuch spricht und deshalb weder rein abgeleitet noch rein gespeichert sein
+kann.
+
+**DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT:** Sie entfällt,
+sobald ein Gate eine Meldung, die einen Zustand behauptet, gegen ihre Quelle prüft. Ein
+solches gibt es nicht — gefangen hat den Fall ein Review, und danach zwei eigens dafür
+geschriebene Läufe.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21 im Review der Scheibe 11.11d. Der Befund
+GEMESSEN am eigenen Lauf (CC, 2026-09-21): U9 und U10 vor der Korrektur rot, danach grün;
+die Mutationen M7a und M7b machen je genau einen der beiden wieder rot.
+
 ---
 
 ## Die offenen Designfragen
@@ -1420,6 +1468,127 @@ zur Vollständigkeit werden:**
 am Code (CC, 2026-09-21), (j) GEMESSEN an der Git-Historie mit Positivkontrolle (CC,
 2026-09-21). **KEIN Bau-Commit.**
 
+### VERMERK P11.11-23 — SCHEIBE 11.11d: EIGENE BAUSTEINE (2026-09-21)
+
+**GEBAUT UND LIVE BESTÄTIGT. BAU-COMMIT `0b9bd7f`** — ZWÖLF Dateien, 1 659 Einfügungen,
+FÜNF Löschungen; fünf Dateien neu (`src/lib/own-blocks.ts`, `own-blocks-strip.ts` und die
+drei Testdateien `own-blocks.test.ts`, `own-blocks-strip.test.ts`,
+`own-blocks-waechter.test.ts`).
+
+**WAS GEBAUT IST, in einem Satz je Schritt:** ein reines String-Prädikat über zwölf
+Merkmale aus den Produktiv-Konstanten (`hasOwnBlocks`, `ownBlockFindings`,
+`ownBlocksPublishTarget`) · ein DOM-Durchlauf, der alle Vorkommen samt vorangehendem reinen
+Leerraum-Textknoten entfernt und die Nachbedingung selbst prüft (`stripOwnBlocks`) · der
+Server-Riegel in `publishProject`, ans Ende der Tor-Kette und VOR den Label-Block gesetzt ·
+der Export- und Kopier-Riegel · die Warnung samt Knopf im Bereich BAUEN, ausserhalb des
+einklappbaren Code-Blocks.
+
+**DIE ZWEI GESCHÜTZTEN ERZEUGER SIND MIT JE EINEM WORT BERÜHRT** — `export` an
+`MAPPINGS_SCRIPT_ID` und an `SCRIPT_ID`, `git diff --numstat` je `1 1`, Zeilenzahl und
+Kopfkommentare unverändert (Entscheidung P11.11-22, Punkt (a)).
+
+**TESTZAHL: 1954 VORHER, 1996 NACHHER**, 88 Dateien vorher, 91 nachher, alle grün.
+Differenz **+42** — 12 in `own-blocks.test.ts`, 9 in `own-blocks-strip.test.ts`, 4 im
+Byte-Wächter, +12 in `CodeImporter.test.tsx`, +5 in `publish.test.ts`.
+
+**DIE VIER GATES, alle grün** (CC, 2026-09-21): `tsc --noEmit` exit 0 · `eslint` 0 errors /
+1 Warnung (dieselbe vorbestehende in `consent.test.ts`, ausserhalb dieser Scheibe) ·
+`vitest run` 91 Dateien und 1996 Tests · `next build` exit 0.
+
+**DER BYTE-WÄCHTER: VORHER = NACHHER.** Der vor der ersten Zeile Produktivcode erhobene
+Sollwert (Entscheidung P11.11-22, Punkt (g)) steht unverändert — `generateFunctional("export")`
+13 250 B / sha256 `b6ee842b…33a471e6`, danach `injectPageViewEmitter` 27 158 B / sha256
+`70a86db8…8ef1a89d46`. **Die zwei `export`-Wörter fassen den ausgelieferten Text also nicht
+an, und das ist gemessen statt behauptet.**
+
+**SIEBEN PFLICHT-MUTATIONEN, JEDE ROT UND JEDE GENAU WIE VORHERGESAGT.** Die Vorhersagen
+standen VOR dem jeweiligen Lauf und sind gegen den dann aktuellen Bestand neu abgeleitet
+worden (docs/immer-beachten.md, EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF GEGEN DEN
+AKTUELLEN TESTBESTAND AKTUALISIERT). **M5 UND M7 SIND GETEILT GEFAHREN** — eine Mutation,
+die zwei Achsen zugleich bewegt, sagt nicht, welche gedeckt ist:
+- **M1** (Wiring-Token aus der Nadel-Liste) -> P1 + P5. **P2 und P3 blieben GRÜN**, weil ein
+  ECHTES Dokument die übrigen acht Merkmale mitführt. **Das ist selbst der Befund:** Das
+  Wiring-Merkmal ist allein von einer synthetischen Fixture gedeckt und in keinem realen
+  Dokument isolierbar; der Satz steht im Kommentar an P1.
+- **M2** (Server-Riegel prüft nur A) -> R2 + R2b.
+- **M3** (Entfernen ohne die Leerraum-Regel) -> **nur S2**, ein Einzelstück; benannt im
+  Kommentar an S2.
+- **M4** (`rest` ungeprüft leer) -> S5 + U8. **S4 blieb grün**, weil `rest` im Normalfall
+  ohnehin leer ist.
+- **M5a/M5b** (Download- bzw. Kopier-Riegel weg) -> nur U5 bzw. nur U6.
+- **M6** (zurück auf `getElementById`) -> **nur S9**, ein Einzelstück.
+- **M7a/M7b** (Export- bzw. Rest-Meldung wieder am gespeicherten Zustand) -> nur U9 bzw.
+  nur U10.
+**KEINE Mutation blieb grün, KEINE traf mehr als vorhergesagt, KEIN Bestandstest fiel.**
+
+**ZWEI FEHLER FIELEN ERST IM REVIEW AUF, und sie gehören hierher, weil der Bau sie beide
+für fertig hielt:**
+- **K1 — `collectOwnNodes` holte je Kennung nur das ERSTE Element** (`getElementById`). Ein
+  Quelltext, der einen Block DOPPELT trägt — der Re-Import eines Re-Imports —, behielt das
+  zweite. Die Nachbedingung meldete es zwar, aber als Handarbeit, obwohl der Knopf es hätte
+  entfernen können. **Ein Ausweg, der den Betreiber zur Handarbeit schickt, ist kein
+  Ausweg.** Korrigiert über einen Durchlauf über `[id]` gegen die Konstanten; Wächter ist
+  S9, die Mutation M6 macht ihn wieder rot.
+- **K2 — DIE ZWEI MELDUNGEN VERALTETEN, UND DAS IST GEMESSEN:** Export-Meldung und
+  Rest-Meldung lagen als fertige Sätze im State und überlebten jedes Entfernen VON HAND.
+  **U9 und U10 waren vor der Korrektur ROT** — der Befund steht damit nicht als Ableitung
+  da. Am Code war die Ursache je Symbol ablesbar: `ownBlocksInActive` war abgeleitet, die
+  zwei anderen waren States, gesetzt allein in den Handlern und geleert allein in
+  `applyZenForLoadedCode`; **kein Pfad hing an einer Textänderung.** Die bindende Folge
+  steht als ENTSCHEIDUNG P11.11-24.
+
+**DER LIVE-NACHWEIS (OWNER-ANGABEN, 2026-09-21, Chrome, Vercel-Status "Ready") — von CC
+nicht prüfbar:**
+- **REGRESSION BESTANDEN.** Sauberes Projekt: keine Warnung, Export und Kopieren laufen, und
+  die Anfragen tragen nur den eigenen `trackingKey`.
+- **DER ALTFALL, Projekt B mit re-importiertem Export:** Die Warnung ist sichtbar **bei
+  eingeklapptem Code-Block** — damit ist die Platzierung aus Entscheidung P11.11-22, Punkt
+  (b), an der Wirkung belegt und nicht nur am Argument. Veröffentlichen ist gesperrt und
+  nennt den Grund; Export und Kopieren werden mit der Export-Meldung verweigert. **Nach
+  "Pagesmith-Bausteine entfernen" sind alle drei Sperren weg.**
+- **NACH SPEICHERN UND VERÖFFENTLICHEN:** im ausgelieferten Text `pagesmith-mappings` **1**,
+  `pagesmith-consent` **1**, `__ps_pve` **1**. Ein Klick erzeugt **ZWEI** Anfragen, beide mit
+  `trackingKey a3a76b35-36ce-4662-83bd-06c50f2e19ad` (**Projekt B**) und beide mit
+  `eventID b232145b-853f-4c9a-81ca-09a25f3ff1eb`; die zweite trägt `obs "__ps_browser"`.
+  **Der Schlüssel von Projekt A (`454ef50a-…`) kommt nicht mehr vor.**
+
+**WAS DAMIT GEMESSEN IST, WAS VERMERK P11.11-16 NOCH ALS ABLEITUNG FÜHRTE:** Jener Vermerk
+deutete das Paar mit gleicher `eventID` als Conversion plus Adblocker-Bestätigung und
+kennzeichnete den Satz ausdrücklich als ARCHITEKT-ABLEITUNG. **Er ist jetzt belegt, und
+zwar am Kennzeichen:** Die zweite Anfrage trägt `obs "__ps_browser"`. **VERMERK P11.11-16
+WIRD NICHT UMGESCHRIEBEN** — er ist als Aussage seiner Runde richtig, und dieser Satz tritt
+DANEBEN.
+
+**BEOBACHTET, NICHT KAUSAL BELEGT:** Vor dem Entfernen fehlte die Bestätigung für Projekt B,
+danach ist sie da. Das passt zur Deutung über den `foreign`-Zweig in `__psMetaInit` (Vermerk
+P11.11-16) — **belegt ist der Zusammenhang damit nicht**, nur die Beobachtung.
+
+**DIE GRENZEN DIESES NACHWEISES — sie stehen im Wortlaut, weil sie beim nächsten Lesen
+sonst zur Vollständigkeit werden:**
+- **NUR CHROME.** Die übrigen Browser sind UNGEMESSEN. Der Editor läuft im Browser des
+  Betreibers.
+- **BAUSTEINE IN VARIANTE B UND DAS ENTFERNEN VON HAND SIND NUR DURCH TESTS GEDECKT, NICHT
+  LIVE** — R2, R2b und U4c für die Variante, U9 und U10 für die Handarbeit.
+- **DIE HISTORIE DER ÜBRIGEN KENNUNGEN IST NICHT ERHOBEN** (Entscheidung P11.11-22, Punkt
+  (f)). Erhoben ist allein die Mapping-Kennung.
+
+**WAS BEWUSST NICHT NACHGEHOLT WIRD, mit Grund:** der Live-Nachweis für Variante B und für
+das Entfernen von Hand. **Beides ist durch Tests gedeckt, und an einem Live-Wert dazu hängt
+keine spätere Handlung** — es gäbe nichts, was eine Zahl von dort entscheiden würde. Ein
+Nachweis ohne Konsequenz ist Arbeit, kein Beleg.
+
+**EIN WERKZEUG-FEHLER IM LAUF, protokolliert statt verschwiegen:** An
+`src/components/PublishView.tsx` ist versehentlich `perl -i` angesetzt worden — ein
+Ganz-Datei-Schreiber, den die Werkzeug-Regel verbietet. **`git diff` war dafür BLIND** (kein
+Inhalts-Diff); sichtbar wurde es allein an `git ls-files --eol` (`w/lf` -> `w/crlf`). Die
+Datei ist aus der Versionsverwaltung wiederhergestellt (sha256 identisch zum HEAD-Objekt,
+CR 0) und die Änderung danach mit dem Editier-Werkzeug neu eingetragen; **im Commit ist
+davon nichts gelandet.**
+
+**PROVENIENZ:** Bau-Commit, Dateiumfang, Testzahlen, Gates, Byte-Wächter und die sieben
+Mutationsergebnisse GEMESSEN am eigenen Lauf (CC, 2026-09-21); der K2-Befund ebenso (U9/U10
+vor der Korrektur rot). Der Live-Nachweis und der Browser sind OWNER-ANGABEN vom 2026-09-21.
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -1472,58 +1641,28 @@ HTML-String unverändert in die Spalte geht. GEMESSEN (CC, 2026-09-21).
 
 ### VORRAT P11.11-5 — EIN WIEDER IMPORTIERTER EXPORT TRÜGE DIE EIGENEN BLÖCKE DOPPELT, UND DAS BRICHT EINE TRAGENDE ENTSCHEIDUNG
 
-**DER BEFUND, GEMESSEN am Code (CC, 2026-09-21):** `generateFunctional`
-(`src/lib/generate.ts`) erzeugt Consent-Gate, Mapping-Datenblock und Wiring-Script
-**unbedingt** — es prüft nicht, ob sie schon dastehen. **Einen Riegel hat GENAU EIN Block:**
-`injectPageViewEmitter` (`src/lib/analytics/pageview-emitter.ts`) fragt `hasConsentScript`
-(`src/lib/tracking/consent.ts`) und lässt das Gate weg, wenn es bereits im Text steht. Für
-Datenblock, Wiring-Script, PageView-Emitter, Setzer und Leiste/Fenster/Widerruf gibt es
-nichts dergleichen. Der Import-Pfad entfernt nichts (Vermerk P11.11-1).
+**ERLEDIGT AM 2026-09-21 MIT DER SCHEIBE 11.11d** — Bau-Commit `0b9bd7f`, Nachweis in
+VERMERK P11.11-23, die bindenden Folgen in den ENTSCHEIDUNGEN P11.11-18, P11.11-19,
+P11.11-20 und P11.11-24. Seither findet ein reines String-Prädikat die eigenen Bausteine,
+ein Knopf entfernt sie, und Veröffentlichen wie Export verweigern, solange der Quelltext sie
+trägt. **Titel und Beleg bleiben stehen, der Rumpf ist gekürzt** — was ihn trug, ist an drei
+Orten erhalten: die Code-Messung am unbedingten Erzeuger in VERMERK P11.11-1, die
+Live-Messung des Verdoppelns in VERMERK P11.11-16 und der Live-Nachweis der Behebung in
+VERMERK P11.11-23.
 
-**DIE FOLGE IST EINE ABLEITUNG UND AN KEINER SEITE GEMESSEN — beide Punkte:**
-- **DOPPELTE CONVERSIONS MIT VERSCHIEDENEN EREIGNIS-KENNUNGEN.** Zwei Wiring-Scripte
-  verdrahten denselben Klick zweimal, und jede Feuerung erzeugt ihre eigene Kennung — die
-  Deduplizierung beim Anbieter greift also gerade nicht. **GEGENBEISPIEL, das mitmuss:** Der
-  PageView-Emitter trägt einen Laufzeit-Riegel (`window.__ps_pv`), ein doppelter Emitter
-  zählt deshalb **einmal** (GEMESSEN am Kommentar und am erzeugten Text). Die Ableitung gilt
-  den KLICK-Ereignissen, nicht dem Seitenaufruf.
-- **DIE ALTEN BLÖCKE TRAGEN TRACKING-SCHLÜSSEL UND PIXEL-ID DES URSPRUNGSPROJEKTS.** Beide
-  werden zur Erzeugungszeit in den Text gebacken (GEMESSEN am Code: `buildWiringScript` und
-  `buildPageViewScript` nehmen sie als Parameter). **Conversions könnten damit dem ALTEN
-  Projekt zufallen** — das ist die Ableitung, und sie ist die unangenehmere der beiden.
+**DIE PLAN-FRAGE DES RUMPFES IST BEANTWORTET:** Das Wiring-Script trägt weiterhin KEINE
+`id`; erkannt wird es über ein INHALTSMERKMAL — den Aufruf `getElementById("…")` auf den
+Datenblock, aus der Kennungs-Konstante zusammengesetzt. **Eine neue `id` ist damit nicht
+nötig gewesen, und der Differenz-Nachweis am ausgelieferten Text entfiel** (der Byte-Wächter
+belegt, dass er byte-gleich blieb).
 
-**WAS DADURCH BRICHT, und deshalb ist der Eintrag mehr als ein Schönheitsfehler:** Die
-tragende Entscheidung **"Idempotenz aus dem Datenfluss, nicht aus Bereinigung"**
-(docs/arbeitsweise.md, Abschnitt 4b) begründet sich wörtlich mit „`published_content`
-entsteht bei jedem Publish frisch aus dem Client-HTML — der Client erzeugt den Emitter nie,
-also gibt es nichts zu bereinigen". **NACH EINEM RE-IMPORT ERZEUGT DER CLIENT IHN NICHT,
-ABER ER BRINGT IHN MIT — und damit ist die Prämisse falsch, nicht die Entscheidung.**
-GELESEN (CC, 2026-09-21). Ihr Herleitungs-Zeiger nennt `phase-8-analytics.md`; das Wort
-"Idempotenz" kommt dort NICHT vor (GEMESSEN, null Treffer) — der Zeiger meint die Datei,
-nicht eine Fundstelle.
-
-**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md FOLGT ERST NACH DER MESSUNG.** Hier wird er
-nur BENANNT. Dasselbe gilt für den Publish-Riegel: Die Auflage an ENTSCHEIDUNG P11.11-10
-bindet ihn an eine Live-Messung des Verdoppelns.
-
-**EINE ZWEITE, KLEINERE FRAGE HÄNGT DARAN: DAS WIRING-SCRIPT TRÄGT KEINE KENNUNG**
-(GEMESSEN, CC, 2026-09-21) — es ist der einzige unserer Blöcke ohne `id`. **Ob ein
-INHALTSMERKMAL oder eine NEUE `id` es erkennbar macht, ist eine PLAN-FRAGE und hier nicht
-entschieden.** Eine neue `id` ändert den ausgelieferten Text und verlangt damit den
-Differenz-Nachweis (docs/immer-beachten.md, WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD,
-TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE).
-
-**KEIN TRIGGER benannt** — der Fall verlangt eine Handlung des Betreibers (Export
-herunterladen, wieder importieren), und ob sie je stattgefunden hat, steht in keiner Datei.
-
-**AM 2026-09-21 GEMESSEN — DER EINTRAG BLEIBT OFFEN UND WIRD NICHT GESTRICHEN.** Die Folgen,
-die hier als ABLEITUNG stehen, sind live belegt (VERMERK P11.11-16): Die re-importierte
-Seite schreibt ihre Conversions in das Ursprungsprojekt, und mit eigener Verdrahtung zählt
-ein Klick in beiden Projekten. **Was der Eintrag beschreibt, ist damit kein Verdacht mehr,
-sondern ein Befund** — offen bleibt er, weil nichts davon BEHOBEN ist. Gebaut wird die
-Abhilfe in der Scheibe 11.11d (Abschnitt 9). **Eine Einschränkung aus der Messung gehört
-hierher:** Die Ableitung "doppelte Conversions mit verschiedenen Ereignis-Kennungen" ist für
-die EIGENE Ablage belegt; **ob META doppelt zählt, bleibt UNGEMESSEN.**
+**ZWEI SÄTZE DES ALTEN RUMPFES SIND MIT IHM NICHT ERLEDIGT und stehen deshalb hier weiter:**
+- **OB META DOPPELT ZÄHLT, BLEIBT UNGEMESSEN.** Belegt ist die EIGENE Ablage; die Zahlen des
+  Anbieters sind in keinem Lauf erhoben worden.
+- **DER ÄNDERUNGSANTRAG AN docs/arbeitsweise.md, Abschnitt 4b, IST ANGENOMMEN**
+  (OWNER, 2026-09-21) und wird im unmittelbar folgenden Commit vollzogen: Die Prämisse "der
+  Client erzeugt den Emitter nie" war durch den Re-Import widerlegt; der Punkt sagt seither,
+  dass die Idempotenz auf dem Riegel aus 11.11d ruht statt auf der Annahme allein.
 
 ---
 
@@ -1612,31 +1751,37 @@ Angabe** — die Angabe steht in diesem Satz.
   SCHEIBE, DIE DEN GESPEICHERTEN TEXT VERÄNDERT" gilt seit der Teilung NICHT MEHR
   ausschliesslich** — 11.11d verändert ihn ebenfalls, und die Roadmap-Auflage greift dort
   genauso.
-- **11.11d — EIGENE BAUSTEINE** (ARCHITEKT, 2026-09-21). Erkennen der Klasse `eigen` über
-  UNSERE Konstanten; **Warnen**; **Entfernen auf Klick**; **Veröffentlichen verweigern**,
-  solange eigene Bausteine im Text stehen (Entscheidung P11.11-10, deren Auflage mit
-  VERMERK P11.11-16 erfüllt ist).
-  **RICHTIGGESTELLT AM 2026-09-21 — HIER STAND:** "SIE LEGT ZUGLEICH DAS GRUNDGERÜST DER
-  ERKENNUNG nach Entscheidung P11.11-12 — die reine Funktion am Dokument vor `stabilizeDoc`
-  und den eigenen Fehlerfang —, vorerst aber NUR mit der Klasse `eigen`. Die drei fremden
-  Klassen kommen mit 11.11b dazu."
-  **DAS GILT NICHT MEHR: DAS GRUNDGERÜST AM ZERLEGTEN DOKUMENT ENTSTEHT MIT 11.11b, NICHT
-  HIER** — ENTSCHEIDUNG P11.11-18. 11.11d braucht es nicht: ihr Gegenstand sind die EIGENEN
-  Bausteine, und die werden von EINEM reinen String-Prädikat gefunden, das ohnehin vier
-  Verbraucher bedienen muss — darunter den Server, der kein HTML zerlegen darf.
-  **RICHTIGGESTELLT UND NICHT GESTEMPELT**, weil dieser Eintrag ein ZUSCHNITT ist und damit
-  ein Maßstab: Wer ihm folgte, baute in 11.11d ein Grundgerüst, das dort niemand braucht,
-  und in 11.11b ein zweites daneben.
-  **REIHENFOLGE: 11.11d STEHT VOR CRAWL 2 UND VOR 11.11b.** **Die Buchstaben tragen keine
-  Reihenfolge** — wer sie als Abfolge liest, dreht den Bau um.
-  **DER GRUND, zweiteilig:** Sie braucht **KEINE fremde Signatur** — unsere eigenen
-  Kennungen stehen im Repo —, und ihr Gegenstand ist **ein GEMESSENER Datenfehler**
-  (VERMERK P11.11-16), nicht eine Ableitung. Alles andere in dieser Phase wartet auf Belege,
-  die es noch nicht gibt.
-  **DIE ZWEI PRÜFSTEINE UNTEN GELTEN AUCH HIER**, und zwar beide: Ein Entfernen über einen
-  `DOMParser`-Durchlauf normalisiert den ganzen Editor-Text, und ein Meta-Pixel trägt ein
-  `<noscript>`-Gegenstück. Sie stehen dort unter 11.11c; **dieser Zeiger zieht sie
-  herüber**, damit der Plan 11.11d sie nicht übersieht.
+- **11.11d — EIGENE BAUSTEINE** (ARCHITEKT, 2026-09-21). **GEBAUT UND LIVE BESTÄTIGT;
+  VERDICHTET AM 2026-09-21 MIT DEM ABSCHLUSS-VERMERK P11.11-23** (docs/arbeitsweise.md,
+  "Beim Abschluss-Vermerk wird der Zuschnitt verdichtet"). Was hier stand und wohin es
+  gegangen ist — die Titel ohne Marke zitiert, damit eine Überschriften-Suche sie nicht
+  trifft:
+  - **Der Gegenstand** — Erkennen der Klasse `eigen` über UNSERE Konstanten, Warnen,
+    Entfernen auf Klick, Veröffentlichen verweigern. **ABGELAUFEN:** gebaut, Bau-Commit
+    `0b9bd7f`, Umfang und Live-Nachweis in VERMERK P11.11-23.
+  - **Die Richtigstellung vom 2026-09-21** ("DAS GRUNDGERÜST AM ZERLEGTEN DOKUMENT ENTSTEHT
+    MIT 11.11b, NICHT HIER"). **BLEIBT**, und zwar als Anweisung: Sie bindet die Scheibe
+    11.11b, die aussteht. Ihre Begründung steht in ENTSCHEIDUNG P11.11-18.
+  - **"REIHENFOLGE: 11.11d STEHT VOR CRAWL 2 UND VOR 11.11b"** samt dem Satz, dass die
+    Buchstaben keine Reihenfolge tragen. **BLEIBT** — die erste Hälfte ist eingelöst, die
+    zweite gilt der ganzen Phase.
+  - **"DER GRUND, zweiteilig"** (keine fremde Signatur nötig; ein GEMESSENER Datenfehler
+    statt einer Ableitung). **ABGELAUFEN ALS BEGRÜNDUNG DER VORZIEHUNG** — sie ist
+    vollzogen. Der gemessene Datenfehler selbst steht in VERMERK P11.11-16.
+  - **Der Zeiger auf die zwei Prüfsteine der Scheibe 11.11c.** **ABGELAUFEN, ABER NUR ZUR
+    HÄLFTE, und die andere Hälfte ist der Befund:** Prüfstein 1 (der Round-Trip normalisiert
+    den ganzen Editor-Text) ist eingelöst und gemessen — die Normalisierung tritt genau
+    einmal ein und fiele beim nächsten Speichern ohnehin an (VERMERK P11.11-17, Punkte (a)
+    und (b)). **PRÜFSTEIN 2 (`<noscript>`-Gegenstück) HAT IN 11.11d GAR NICHT GEGRIFFEN**,
+    weil KEINER unserer eigenen Blöcke ein Rückfall-Element trägt. **Er gilt unverändert
+    für 11.11c**, wo fremde Pixel entfernt werden, und ist dort NICHT erledigt.
+
+  **WAS ÜBER DIE SCHEIBE HINAUS BINDET, IST HERAUSGELÖST UND STEHT NICHT MEHR HIER:** das
+  eine Urteil ohne Parser (**ENTSCHEIDUNG P11.11-18**), die Bauform des Entfernens samt
+  Nachbedingung (**P11.11-19**), der Riegel auf dem Quelltext BEIDER Varianten und am Export
+  (**P11.11-20**), die Oberfläche (**P11.11-21**), die sieben Freigaben zum Plan
+  (**P11.11-22**) und die Ableitung der Meldungen aus dem aktuellen Text (**P11.11-24**, im
+  Review entstanden und in keinem Zuschnitt vorgesehen gewesen).
 
 **ZWEI PRÜFSTEINE FÜR DEN PLAN DER SCHEIBE 11.11c, und sie stehen SCHON HIER, weil beide
 den Zuschnitt entscheiden und nicht erst den Bau:**

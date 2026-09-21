@@ -2498,6 +2498,151 @@ neun geschützten Dateien und die elf Mutationsergebnisse GEMESSEN am eigenen La
 2026-09-21); der K1-Befund ebenso (S20 und S21 fallen unter M11). Der Live-Nachweis, der
 Browser und der Vercel-Status sind OWNER-ANGABEN vom 2026-09-21.
 
+### VERMERK P11.11-39 — SCHEIBE 11.11c: FREMDE PIXEL AUF KLICK ENTFERNEN (2026-09-21)
+
+**GEBAUT UND LIVE BESTÄTIGT. BAU-COMMIT `bcd3c5a`** — ACHT Dateien, 2 243 Einfügungen,
+106 Löschungen; vier Dateien neu (`src/lib/foreign-strip.ts`, `foreign-strip.test.ts`,
+`foreign-strip-wurf.test.ts` und die Fixture
+`src/lib/__fixtures__/foreign-tags-testseite.html`).
+
+**WAS GEBAUT IST, in einem Satz je Schritt:** der Durchlauf von `foreign-scan.ts` ist
+GEHALBIERT — `collectForeignHits` liest, `scanForeignTags` verdichtet, `stripForeignGroup`
+entfernt, und alle drei sehen DIESELBEN Knoten (ENTSCHEIDUNG P11.11-35, Satz (c)) · der
+Fund trägt drei neue Felder (`schluessel`, `traeger`, `entfernbar`), der Gruppenschlüssel
+eine dritte Achse · je entfernbarem Fund ein Knopf in der Fundliste, dazu der
+Google-Hinweis, der Handarbeits-Hinweis und die Rest-Meldung.
+
+**DIE ZEHN GESCHÜTZTEN DATEIEN UND `detect.ts` SIND VORHER GLEICH NACHHER** (sha256, nach
+JEDER Mutations-Rücknahme einzeln geprüft, nicht nur am Ende): `ingest.ts f93bd615…` ·
+`resolve.ts 061552cc…` · `proxy.ts 8a4bca17…` · `app-serve/route.ts 2e02abb9…` ·
+`generate.ts 7e5c26f1…` · `pageview-emitter.ts b26cb778…` · `actions.ts 87741fa8…` ·
+`own-blocks.ts e92898ca…` · `own-blocks-strip.ts 7b0bbb3c…` · `foreign-signatures.ts
+b9b9651d…` · `detect.ts 1ae5855d…`. **DIESE SCHEIBE HAT KEINE EINZIGE HEBUNG GEBRAUCHT** —
+anders als 11.11d (zwei Wörter) und 11.11b (ein Wort).
+
+**TESTZAHL: 2 038 VORHER, 2 086 NACHHER**, 94 Dateien vorher, 96 nachher, alle grün.
+
+**DIE VIER GATES, alle grün** (CC, 2026-09-21): `tsc --noEmit` exit 0 · `eslint` 0 errors /
+1 Warnung (dieselbe vorbestehende in `consent.test.ts`, ausserhalb dieser Scheibe) ·
+`vitest run` 96 Dateien und 2 086 Tests · `next build` exit 0. **DER BYTE-WÄCHTER W1–W4 IST
+GRÜN** gegen den Sollwert aus ENTSCHEIDUNG P11.11-22, Punkt (g); **ein zweiter Sollwert ist
+NICHT angelegt worden.**
+
+**ELF PFLICHT-MUTATIONEN IN DER LETZTEN RUNDE, JEDE ROT.** Die Vorhersagen standen VOR dem
+jeweiligen Lauf und sind gegen den dann aktuellen Bestand NEU abgeleitet worden
+(docs/immer-beachten.md, EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF GEGEN DEN AKTUELLEN
+TESTBESTAND AKTUALISIERT):
+- **M9** (Rumpf-Adresse zählt nicht für die Erkennung) -> 7, exakt vorhergesagt.
+- **M1** (eigen-Riegel fällt) -> S1 + F8. **DER KRITISCHE LAUF DIESER SCHEIBE:** Unser
+  Wiring trägt `connect.facebook.net` im Rumpf und würde ohne den Vorrang aus
+  ENTSCHEIDUNG P11.11-26 zum fremden Meta-Pixel MIT Knopf.
+- **M8** (Träger immer "knoten") -> 12 statt 11, der Zusatztreffer in derselben Klasse.
+- **M2** (`entfernbar` ignoriert die Klassen) -> 5, exakt vorhergesagt.
+- **M3b** (Strip bildet seinen Schlüssel selbst) -> nur F20.
+- **M4** (Riegel gegen Nicht-Knoten fällt) -> 3, exakt vorhergesagt.
+- **M5a** (Bild ohne `<noscript>` übersprungen) -> 7 statt 8; F23 fiel nicht, sein Bild
+  sitzt in einer body-`<noscript>` und gehört der anderen Achse.
+- **M5b** (Bild mit `<noscript>` übersprungen) -> 3 statt 1.
+- **M6** und **M6b** (Hinweis-Zuordnung geleert bzw. Schlüssel umbenannt) -> je 2.
+- **M7** (Rest-Meldung ohne Anker) -> nur SK19.
+**KEINE Mutation blieb grün. KEIN Bestandstest fiel ohne Mutation.**
+
+**ZWEI BEFUNDE AUS DEN MUTATIONEN, DIE KEINE CODE-FEHLER WAREN, SONDERN TEST-BEFUNDE — und
+sie gehören hierher, weil beide eine Zusicherung betrafen, die AUS DEM FALSCHEN GRUND grün
+war:**
+- **F7 UND DIE FÜNFTE ZEILE VON S24 PRÜFTEN DIE KLASSEN-REGEL NICHT MEHR.** Ihre Fixtures
+  waren durch den dritten Träger zu "aufruf" geworden; `entfernbar === false` kam damit
+  schon vom TRÄGER, und `every` statt `some` war ungedeckt. GEMESSEN an M2, unter der F7
+  als einziger der fünf vorhergesagten Läufe nicht mehr fiel. Beide Fixtures sind ersetzt
+  (Dauerregel EIN GRÜNER TEST IST KEIN BELEG, DASS DER GRUND SEINER GRÜNHEIT DERSELBE
+  GEBLIEBEN IST).
+- **F10 WAR EIN EINZELSTÜCK UND IST KEINES MEHR.** Unter M5b fiel zunächst nur er; seit die
+  Testseite LinkedIns Rückfall-Bild in einer body-`<noscript>` trägt, fallen drei. Sein
+  Kommentar ist richtiggestellt.
+
+**DIE ZWEI KORREKTUREN AUS DEM REVIEW — JE MIT DEM SCHADEN, DEN SIE VERHINDERN. SIE SIND
+DER EIGENTLICHE ERTRAG DIESER SCHEIBE:**
+
+**(1) AUFRUF IN SEITEN-CODE (ENTSCHEIDUNG P11.11-38).** Ein Inline-Script ist nur entfernbar,
+wenn sein Rumpf eine bekannte LADE-Adresse trägt; wird es nur über einen NAMEN erkannt, ist
+es ein Aufruf in Seiten-Code und bekommt keinen Knopf. **DER SCHADEN, DEN DAS VERHINDERT:**
+KI-erzeugte Seiten bündeln Formular- und Menülogik oft in EINEM Script, in dem irgendwo ein
+`fbq('track', …)` steht. **EIN KLICK AUF „META" HÄTTE DIESE LOGIK GELÖSCHT.** Es ist die
+Fehlerklasse von P11.11-35, Satz (b), eine Ebene grösser: dort ein Attribut, hier ein ganzes
+Script.
+
+**(2) EINE ADRESSE IM RUMPF ZÄHLT SCHON FÜR DIE ERKENNUNG** (Ergänzung an ENTSCHEIDUNG
+P11.11-38, auf dem GEMESSENEN Befund V2). **DER SCHADEN, DEN DAS VERHINDERT:** LinkedIns
+LADE-Block setzt `window.lintrk` als Zuweisung und übergibt es als Argument — `lintrk(` mit
+Klammer steht dort nirgends, `_linkedin_partner_id` steht im ANDEREN Block. **ER WAR
+UNERKANNT**, erschien als „Inline-Skript" ohne Marke und ohne Knopf, und **ein Klick auf
+„LinkedIn" hätte nur das Rückfall-Bild genommen — sein Pixel liefe weiter.**
+
+**DIE LINKEDIN-LÜCKE BESTAND IN DER ANZEIGE SEIT DEM BAU-COMMIT VON 11.11b (`6d6ab42`).**
+Sie ist kein Fehler dieser Scheibe, sondern einer, den erst das Entfernen SICHTBAR gemacht
+hat: Solange nichts zu klicken war, kostete ein unerkannter Lader nur eine fehlende Marke.
+**VERMERK P11.11-33 WIRD NICHT UMGESCHRIEBEN** — er ist als Aussage seiner Runde richtig,
+und dieser Satz tritt DANEBEN.
+
+**DIE REST-MELDUNG HÄNGT AM GEKLICKTEN FUND, und sie ist allein über die FEHLERAUSGÄNGE von
+`stripForeignGroup` erreichbar.** Auf dem geglückten Weg kann sie nicht erscheinen: Die
+Funktion nimmt ALLE Knoten ihres Schlüssels (GEMESSEN, Lauf F16, für JEDEN entfernbaren Fund
+der Testseite). **DIE VERLEGUNG AN DEN NACHBARN IST ZURÜCKGENOMMEN** — dort steht bereits
+der Handarbeits-Hinweis mit derselben Aufforderung.
+
+**EINE RICHTIGSTELLUNG AM `rest`-WERT GEHÖRT DAZU, und sie war ein Kommentar-Fehler im
+eigenen Code:** Der Kopf von `foreign-strip.ts` sagte von Anfang an, `rest` sei auf allen
+Fehlerausgängen das, was auf der EINGABE gefunden wird — **implementiert war ein festes
+`rest: 0`.** Gebaut ist jetzt EIN Ausgang: `rest` wird immer auf dem Text gezählt, DEN DIE
+FUNKTION ZURÜCKGIBT. **DIE EINE AUSNAHME IST BENANNT:** Wirft die Knotenauswahl selbst, kann
+auch nicht gezählt werden; dort heisst die 0 „nicht zählbar" und nicht „sauber" (Läufe W-A
+und W-B).
+
+**DER LIVE-NACHWEIS (OWNER-ANGABEN, 2026-09-21, Chrome, Vercel-Status „Ready") — von CC
+nicht prüfbar:**
+- **REGRESSION BESTANDEN.** Sauberes Projekt: „Skripte und Tags im Code (0)", kein Knopf;
+  Speichern, Vorschau und Export unverändert.
+- **RE-IMPORT DES EXPORTS VON PROJEKT A:** die 11.11d-Warnung steht, **kein Meta-Fund, kein
+  Knopf.** Das ist der Live-Beleg für ENTSCHEIDUNG P11.11-26 unter der neuen Regel — genau
+  die Achse, die M1 prüft.
+- **DIE TESTSEITE: „Skripte und Tags im Code (12)"** — ELF bekannte Funde und EIN unbekanntes
+  Inline-Skript, **genau VIER Entfernen-Knöpfe** (Meta, Google-Tag, LinkedIn, Pinterest),
+  alle Hinweise wie festgelegt, **`application/ld+json` nicht gelistet, kein Rot, kein Signal
+  in der Reiterzeile.**
+- **DIE VIER KLICKS, jeweils auf frisch eingefügter Testseite:**
+  · **Meta** -> Basiscode weg; **das Seiten-Script mit `menue-offen` unverändert**;
+    Aufruf- und Handler-Zeile bleiben stehen.
+  · **Google-Tag** -> Lade-Script weg; die Konfigurations-Zeile und BEIDE
+    Tag-Manager-Zeilen bleiben.
+  · **LinkedIn** -> Lade-Block weg, Partner-Block bleibt, `snap.licdn.com` nicht mehr im
+    Code.
+  · **Pinterest** -> Bild weg.
+- **HANDLER VON HAND GELÖSCHT** -> seine Zeile verschwindet von selbst. Das ist die
+  abgeleitete Hälfte aus ENTSCHEIDUNG P11.11-24 an der Wirkung.
+- **SPEICHERN UND VERÖFFENTLICHEN OHNE SPERRE, die Live-Seite lädt.**
+
+**DIE GRENZEN DIESES NACHWEISES — sie stehen im Wortlaut, weil sie beim nächsten Lesen sonst
+zur Vollständigkeit werden:**
+- **NUR CHROME.** Die übrigen Browser sind UNGEMESSEN. Der Editor läuft im Browser des
+  Betreibers.
+- **DIE V2-BLÖCKE UND DIE TESTSEITE SIND AUS DEN BELEGEN NACHGEBAUT.** docs/ziel-befunde.md
+  zitiert die Basiscodes nicht wörtlich, sondern zerlegt sie in die Teile (a) und (b).
+  **KEIN ECHTER ANBIETER-SCHNIPSEL IST GEMESSEN**; gemessen ist der Bau aus den belegten
+  Bestandteilen.
+- **DIE REST-MELDUNG UND DIE FEHLERAUSGÄNGE SIND NUR IM TEST GEDECKT** — live ist der
+  Zustand nicht herstellbar.
+- **EIN SCRIPT, DAS BASISCODE UND EIGENE LOGIK MISCHT, WIRD GANZ ENTFERNT.** Das ist die
+  Grenze aus ENTSCHEIDUNG P11.11-38 und kein Mangel: Wer beides in einen Knoten legt, hat es
+  untrennbar gemacht. **DIE REGEL KANN EINEN LADER NICHT VON EINER BLOSSEN ERWÄHNUNG DER
+  LADE-ADRESSE TRENNEN** — wer die Adresse als Text führt, bekommt das Etikett und einen
+  Knopf.
+
+**PROVENIENZ:** Bau-Commit, Dateiumfang, Testzahlen, Gates, Byte-Wächter, die sha256 der zehn
+geschützten Dateien und die elf Mutationsergebnisse GEMESSEN am eigenen Lauf (CC,
+2026-09-21); der V2-Befund GEMESSEN an einer Wegwerf-Probe desselben Tages, die nach dem Lauf
+gelöscht worden ist. Der Live-Nachweis, der Browser und der Vercel-Status sind OWNER-ANGABEN
+vom 2026-09-21.
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -2738,24 +2883,34 @@ Angabe** — die Angabe steht in diesem Satz.
   falscher Kommentar. **Beide stehen am Ort der Handlung** — im Docblock von `adressenVon`
   bzw. von `FOREIGN_LIST_HEADING` — und im Abschluss-Vermerk; **ein Test ist der stärkere
   Anker als eine Regel** (S20, S21 und die Mutation M11).
-- **11.11c — HANDLUNGEN.** Entfernen auf Klick bei einem bekannten Pixel; der
-  Anbindungs-Hinweis beim CMP; **dazu das Entfernen EIGENER Bausteine auf Klick und der
-  RIEGEL, der das Veröffentlichen verweigert, solange sie im Text stehen** (Entscheidung
-  P11.11-10). **DER RIEGEL TRÄGT EINE AUFLAGE: er wird erst gebaut, wenn eine Live-Messung
-  das Verdoppeln bestätigt** — der Befund dazu ist eine ABLEITUNG (Vorrat P11.11-5), und
-  die härteste Handlung dieser Phase darf nicht auf einer Ableitung ruhen.
-  **DIE EINZIGE SCHEIBE, DIE DEN GESPEICHERTEN TEXT
-  VERÄNDERT** — und deshalb die einzige, an der die Roadmap-Auflage "keine Veränderung des
-  gespeicherten importierten Texts ohne seinen Klick" überhaupt greifen kann.
-  **AUFLÖSUNGS-SATZ, 2026-09-21: IHR ANTEIL AN DEN EIGENEN BAUSTEINEN IST NACH 11.11d
-  GEWANDERT** — das Entfernen eigener Bausteine und der Publish-Riegel werden DORT gebaut.
-  Der Text darüber ist NICHT umgeschrieben; wer ihm folgt, landet richtig, nur eine Station
-  weiter (docs/immer-beachten.md, EINE ZITIERTE EINHEIT ZU TEILEN MACHT JEDEN ZEIGER AUF SIE
-  HALB FALSCH …, Gegenform (1)). **Was bei 11.11c bleibt:** das Entfernen bei einem
-  bekannten FREMDEN Pixel und der Anbindungs-Hinweis beim CMP. **Der Satz "DIE EINZIGE
-  SCHEIBE, DIE DEN GESPEICHERTEN TEXT VERÄNDERT" gilt seit der Teilung NICHT MEHR
-  ausschliesslich** — 11.11d verändert ihn ebenfalls, und die Roadmap-Auflage greift dort
-  genauso.
+- **11.11c — HANDLUNGEN. GEBAUT UND LIVE BESTÄTIGT; VERDICHTET AM 2026-09-21 MIT DEM
+  ABSCHLUSS-VERMERK P11.11-39** (docs/arbeitsweise.md, "Beim Abschluss-Vermerk wird der
+  Zuschnitt verdichtet"). Was hier stand und wohin es gegangen ist — die Titel ohne Marke
+  zitiert, damit eine Überschriften-Suche sie nicht trifft:
+  - **Der Gegenstand** — Entfernen auf Klick bei einem bekannten Pixel, der
+    Anbindungs-Hinweis beim CMP. **ABGELAUFEN:** gebaut, Bau-Commit `bcd3c5a`, Umfang und
+    Live-Nachweis in VERMERK P11.11-39.
+  - **Der Teil über die EIGENEN Bausteine und den Publish-Riegel** samt der Auflage, ihn
+    erst nach einer Live-Messung zu bauen. **ABGELAUFEN:** Er ist mit dem Auflösungs-Satz
+    nach 11.11d gewandert, dort gebaut (`0b9bd7f`), und die Auflage ist mit VERMERK
+    P11.11-16 eingelöst.
+  - **"DIE EINZIGE SCHEIBE, DIE DEN GESPEICHERTEN TEXT VERÄNDERT"** samt dem Satz, dass er
+    seit der Teilung nicht mehr ausschliesslich gilt. **BLEIBT ALS SACHVERHALT, ABGELAUFEN
+    ALS ABGRENZUNG:** Es sind jetzt ZWEI Scheiben, 11.11c und 11.11d, und die
+    Roadmap-Auflage "keine Veränderung des gespeicherten importierten Texts ohne seinen
+    Klick" greift bei beiden. **Eingelöst ist sie in 11.11c dadurch, dass der Klick nur den
+    EDITOR-Text ändert** (ENTSCHEIDUNG P11.11-35, Satz (e)).
+  - **Der Auflösungs-Satz vom 2026-09-21** ("IHR ANTEIL AN DEN EIGENEN BAUSTEINEN IST NACH
+    11.11d GEWANDERT"). **BLEIBT** — er löst die Zeiger auf, die den alten Umfang meinen,
+    und stirbt nicht mit dem Bau.
+
+  **WAS ÜBER DIE SCHEIBE HINAUS BINDET, IST HERAUSGELÖST UND STEHT NICHT MEHR HIER:** die
+  Bauform des Entfernens in fünf Sätzen (**ENTSCHEIDUNG P11.11-35**), die sechs Freigaben
+  zum Plan (**P11.11-36**), der Google-Tag mit seinem Hinweis (**P11.11-34**) und der
+  Aufruf in Seiten-Code samt der Regel, dass eine Lade-Adresse im Rumpf schon für die
+  Erkennung zählt (**P11.11-38**). **DIE ZWEI REVIEW-KORREKTUREN K1 UND K2 DER BAU-RUNDE
+  SIND DAGEGEN ENTSCHEIDUNGEN GEWORDEN** — anders als in 11.11b, wo beide am Ort der
+  Handlung blieben: Sie ändern, WAS entfernt wird, und nicht nur, wie es geschrieben ist.
 - **11.11d — EIGENE BAUSTEINE** (ARCHITEKT, 2026-09-21). **GEBAUT UND LIVE BESTÄTIGT;
   VERDICHTET AM 2026-09-21 MIT DEM ABSCHLUSS-VERMERK P11.11-23** (docs/arbeitsweise.md,
   "Beim Abschluss-Vermerk wird der Zuschnitt verdichtet"). Was hier stand und wohin es
@@ -2799,6 +2954,24 @@ Angabe** — die Angabe steht in diesem Satz.
   setzt 11.11c voraus, weil die Knöpfe an den erkannten Funden hängen und die Bündelung
   darunter liegt.
 
+  **ZWEI KANDIDATEN FÜR DEN PLAN 11.11e, AUSDRÜCKLICH NICHT ENTSCHIEDEN.** Beide kommen aus
+  dem Live-Test der Scheibe 11.11c (OWNER, 2026-09-21) und sind **KEINE Aufträge und KEINE
+  Empfehlungen**; sie stehen hier, damit der Plan sie nicht unbemerkt mitentscheidet. **DIE
+  TEXTE SIND OWNER-SACHE**, hier steht nur der Gegenstand.
+  · **EINE AUFRUF- UND EINE HANDLER-ZEILE TRAGEN KEINEN ORTSHINWEIS.** Auf der Testseite
+    stehen ZWEI Zeilen "Meta · Fremdes Pixel · 1 Fundstelle" untereinander, und sie sehen
+    **gleich aus** — die eine ist das Seiten-Script, die andere der `onclick`. Beide sagen
+    dem Betreiber, er solle von Hand löschen, **und keine sagt ihm WO.** Denkbar wäre ein
+    kurzer Ausschnitt wie beim unbekannten Inline-Skript (`ausschnittVon`, achtzig
+    Codepunkte). **NICHT ENTSCHIEDEN**, auch nicht, ob ein Ausschnitt an einem BEKANNTEN
+    Fund dieselbe Auflage trägt wie am unbekannten (er ist Text des Betreibers und kann
+    jede der vier dokumentweiten Nadeln tragen — ENTSCHEIDUNG P11.11-32, Punkt (f)).
+  · **ZEILEN DESSELBEN ANBIETERS STEHEN VERSTREUT.** Die Liste folgt der Code-Reihenfolge;
+    auf der Testseite liegen zwischen den drei Meta-Zeilen und zwischen den zwei
+    Google-Zeilen jeweils fremde Funde. Denkbar wäre eine Ordnung nach Anbieter.
+    **NICHT ENTSCHIEDEN** — und sie berührt die Bündelung aus ENTSCHEIDUNG P11.11-37, weil
+    beide dieselbe Liste sortieren.
+
 **ZWEI PRÜFSTEINE FÜR DEN PLAN DER SCHEIBE 11.11c, und sie stehen SCHON HIER, weil beide
 den Zuschnitt entscheiden und nicht erst den Bau:**
 1. **EIN ENTFERNEN ÜBER EINEN `DOMParser`-DURCHLAUF NORMALISIERT DEN GANZEN EDITOR-TEXT,
@@ -2836,6 +3009,15 @@ den Zuschnitt entscheiden und nicht erst den Bau:**
    Google mitnimmt, ist genau der Fehltreffer, vor dem die Roadmap-Zeile 11.11 unter (e)
    warnt.** Wie 11.11c damit umgeht — den Knoten gar nicht anbieten, warnen, oder eine
    andere Form —, ist hier NICHT entschieden.
+   **ENTSCHIEDEN AM 2026-09-21 → ENTSCHEIDUNG P11.11-35, Satz (d), UND P11.11-38:** Der
+   Knopf **NENNT ALLE** beteiligten Anbieter ("Meta und Google-Tag aus dem Code
+   entfernen") — damit ist der Klick keine Willkür mehr, sondern sagt, was er tut. **UND
+   DER FALL AUS DEM FRAGETEXT KOMMT SEIT P11.11-38 GAR NICHT MEHR VOR:** Ein Inline-Script,
+   das `fbq(` UND `gtag(` ruft, trägt keine Lade-Adresse, ist ein AUFRUF und bekommt
+   überhaupt keinen Knopf. Mehrere Anbieter an EINEM Knopf gibt es nur noch, wo ZWEI
+   Lade-Adressen in einem Script stehen — dort ist es die Grenze aus P11.11-38 und gewollt.
+   Der Fragetext bleibt stehen, weil er den Fehltreffer benennt, gegen den beides gebaut
+   ist.
 
 5. **EIN CONTAINER WIRD NIE ZUM ENTFERNEN ANGEBOTEN** (ENTSCHEIDUNG P11.11-27). **ER STEHT
    HIER, WEIL DIE MUTATION, DIE IHN PRÜFEN WÜRDE, IN 11.11b NICHT FAHRBAR WAR:** M5b
@@ -2844,6 +3026,10 @@ den Zuschnitt entscheiden und nicht erst den Bau:**
    hierher weitergereicht (VERMERK P11.11-33). **11.11c IST DIE ERSTE SCHEIBE, IN DER SIE
    FAHRBAR IST, und sie ist dort PFLICHT:** Bis dahin ist die Zusicherung "kein Entfernen
    am Container" von KEINEM Lauf gedeckt, der rot werden könnte.
+   **ERLEDIGT AM 2026-09-21 → VERMERK P11.11-39:** Die Mutation ist als **M2** gefahren und
+   **ROT** geworden — fünf Läufe, darunter der Bestandslauf `SK4` aus 11.11b, der genau
+   diese Zusicherung trägt. Die Regel selbst liegt seither als `entfernbar` in
+   `foreign-scan.ts` (ENTSCHEIDUNG P11.11-36, Punkt (F1)-Umfeld) und nicht im JSX.
 6. **DIE OWNER-FRAGE ZUM GOOGLE-TAG GEHÖRT IN DEN PLAN 11.11c, NICHT IN DEN BAU**
    (ENTSCHEIDUNG P11.11-32, Punkt (b)). Der Google-Tag trägt die Klasse `pixel`, und ein
    Pixel bekommt nach ENTSCHEIDUNG P11.11-3 ein Entfernen-Angebot. **DERSELBE TAG BEDIENT

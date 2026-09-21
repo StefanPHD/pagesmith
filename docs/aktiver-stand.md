@@ -1589,6 +1589,241 @@ davon nichts gelandet.**
 Mutationsergebnisse GEMESSEN am eigenen Lauf (CC, 2026-09-21); der K2-Befund ebenso (U9/U10
 vor der Korrektur rot). Der Live-Nachweis und der Browser sind OWNER-ANGABEN vom 2026-09-21.
 
+### VERMERK P11.11-25 — CRAWL 2: DIE FÜNF BROWSER-TAGS UND DREI WEITERE CMPs (2026-09-21)
+
+**KEIN BAU-COMMIT — GRUND: CRAWL.** Die Runde hat fremde Dokumentation gelesen und keine
+Zeile Code erzeugt. Sie hat GENAU ZWEI Dateien geändert, beide Doku:
+docs/ziel-befunde.md und diese hier.
+
+**DER VORRANG IST EINGEHALTEN UND DAS IST DER WICHTIGSTE SATZ DIESES VERMERKS: DIE FÜNF
+BROWSER-TAGS SIND SAUBER ZU ENDE GELESEN**, bevor ein CMP angefasst wurde. Von den
+NACHGEORDNETEN drei sind ZWEI zu Ende gelesen (CookieYes, consentmanager) und einer bleibt
+unvollständig (OneTrust).
+
+**WO DIE ZIEL-BEFUNDE STEHEN — JE ZIEL EIN ZEIGER, der Volltext steht dort und wird hier
+NICHT verdoppelt** (so Entscheidung P11.11-15, Ablage). Alle fünf in docs/ziel-befunde.md,
+je ein NEUER Teil im bestehenden Abschnitt des Ziels, Überschrift jeweils
+"Browser-Tag-Lesung 2026-09-21 (Crawl 2 der Phase 11.11)":
+- **meta** → Abschnitt "Meta (Conversions API)", Teil **(g)**.
+- **pinterest** → Abschnitt "Pinterest (Conversions API)", Teil **(ab)**.
+- **tiktok** → Abschnitt "TikTok (Events API 2.0)", Teil **(i)**.
+- **linkedin** → Abschnitt "LinkedIn (Conversions API)", Teil **(am)**.
+- **google** → Abschnitt "Google (Google Ads Conversions · GA4)", Teile **(cs)** und
+  **(ct)**.
+
+**GOOGLE HAT ZWEI BUCHSTABEN BEKOMMEN UND NICHT EINEN, UND DAS IST EIN BEFUND UND KEINE
+ABLAGE-LAUNE:** Der Anbieter liefert für dasselbe Ziel ZWEI Browser-Bausteine mit
+verschiedenen Pfaden, verschiedenen charakteristischen Aufrufen und verschiedenem
+Rückfall-Element — Google-Tag (`/gtag/js`, kein Rückfall gefunden) gegen Tag Manager
+(`/gtm.js`, Rückfall als `<iframe>`). **Der HOST ist bei beiden derselbe
+(`www.googletagmanager.com`); eine Signatur allein auf den Host könnte sie nicht
+unterscheiden.**
+
+**DREI BEFUNDE ÜBER DIE FÜNF ZIELE, DIE DEN ZUSCHNITT DER SCHEIBE 11.11b BERÜHREN und
+deshalb hier stehen statt nur in der Befund-Datei:**
+- **ZWEI ZIELE HABEN IM GELESENEN UMFANG KEINEN `noscript`-RÜCKFALL** — der Google-Tag
+  (gtag) und TikTok, beide als Nicht-Treffer mit benannter Achse. **KEINE ENTWARNUNG:** Die
+  Reichweite ist je zwei gelesene Seiten. Satz 6 der ENTSCHEIDUNG P11.11-12 ("Rückfall-
+  Elemente zählen zum Anbieter, erkannt über ihre ADRESSE") bleibt davon unberührt — er
+  wird nur bei diesen beiden Zielen nichts zu tun haben.
+- **DER RÜCKFALL IST NICHT IMMER EIN `<img>`.** Der Tag Manager benutzt ein `<iframe>` auf
+  `…/ns.html?id=GTM-…`. Wer den Rückfall nur als Bild-Element sucht, übersieht ihn.
+- **BEI META UND PINTEREST IST DAS BILD-TAG EIN EIGENER, VOM ANBIETER DOKUMENTIERTER
+  EINBAUWEG OHNE JEDES `<script>`.** Pinterest sagt es wörtlich ("if you choose you can
+  include only the image tag event code without JavaScript. In this case you do not need
+  the base code"), Meta ebenso ("Das Pixel mit einem IMG-Tag installieren"). **FOLGE FÜR
+  11.11b: Eine Seite kann ein Ziel tragen, ohne ein einziges Script dafür zu haben** — eine
+  Erkennung allein über `<script>`-Knoten sähe sie nicht. **DAS IST HIER NUR FESTGESTELLT;
+  ob 11.11b `<img>`-Knoten überhaupt untersucht, ist NICHT entschieden.**
+
+**DIE CMP-BEFUNDE — HIER IM VOLLTEXT, weil Entscheidung P11.11-15 sie in die Vermerke
+dieser Datei legt.** Alles GELESEN an der jeweils genannten Quelle am 2026-09-21, sofern
+nicht ausdrücklich anders gekennzeichnet; **nichts davon ist gemessen**, mit der einen
+benannten Ausnahme bei OneTrust.
+
+**CookieYes — (a) bis (e):**
+- **(a)** **KEINE VOLLSTÄNDIGE ADRESSE IN DER DOKU.** Zwei Bruchstücke, aus zwei Seiten:
+  der HOST aus der CSP-Seite (`*.cookieyes.com` und `cdn.cookieyes.com` im FLIESSTEXT,
+  `cdn-cookieyes.com` in der Direktiven-TABELLE und im Beispiel-`<meta>`) und das
+  PFAD-MUSTER `client_data/(.*)/script.js` aus der WP-Rocket-Seite (FLIESSTEXT, als
+  Ausschluss-Eintrag). **DIE DOKU WIDERSPRICHT SICH BEIM HOST** — einmal mit PUNKT
+  (`cdn.cookieyes.com`), einmal mit BINDESTRICH (`cdn-cookieyes.com`), auf derselben Seite.
+  **DAS IST NICHT AUFGELÖST.** Die beiden Bruchstücke zu einer URL zusammenzusetzen wäre
+  eine FOLGERUNG und ist hier ausdrücklich NICHT getan.
+- **(b)** `getCkyConsent()` bzw. `window.getCkyConsent` (FLIESSTEXT und Beispiel), mit dem
+  Rückgabeobjekt `{activeLaw, categories{necessary,functional,analytics,performance,
+  advertisement}, isUserActionCompleted, consentID, languageCode}`. Ereignisse am
+  `document`: `cookieyes_banner_load` und `cookieyes_consent_update` (Beispiel),
+  `cookieyes_banner_loaded` (FLIESSTEXT). Dazu zwei Zeichenfolgen aus der WP-Rocket-Seite:
+  `cookie-law-info` und `_ckyGcm`.
+- **(c)** **nicht gefunden**; Reichweite: die sechs gelesenen Seiten.
+- **(d)** **DIE ABWEICHUNG VON ALLEN ANDEREN GELESENEN CMPs, UND SIE IST DER TRAGENDE
+  BEFUND ZU DIESEM ANBIETER:** Geparkt wird über das ATTRIBUT
+  `data-cookieyes="cookieyes-analytics"` (bzw. `-performance`, `-functional`) — **EIN
+  `type="text/plain"` WIRD NICHT GENANNT, UND DIE ADRESSE BLEIBT IN `src`.** Das Beispiel
+  der Doku zeigt ein unverändertes `<script async data-cookieyes="cookieyes-analytics"
+  src="https://www.googletagmanager.com/gtag/js?id=…">`. FLIESSTEXT, Beispiel bestätigt.
+  Daneben ein Weg ohne jede Codeänderung ("Script URL Pattern" im Dashboard) und ein
+  ereignisgesteuerter Weg über die zwei Ereignisse aus (b). Die Kategorien heissen
+  ausweislich des Fliesstextes `functional`, `performance`, `analytics`, `advertisement`.
+  `__tcfapi` **nicht gefunden**, obwohl die TCF-Seite im Umfang liegt und CookieYes sich
+  dort als IAB-zertifizierte CMP bezeichnet; Reichweite: die sechs gelesenen Seiten.
+- **(e)** Script-Tag im `<head>`; **der Code selbst steht NICHT in der Doku**, sondern ist
+  aus dem Dashboard zu holen ("Advanced Settings"). Daneben CMS- und Shop-Wege (WordPress,
+  Shopify, Wix, Squarespace, …) und Google Tag Manager.
+- **QUELLE:** www.cookieyes.com/documentation/cookie-banner-on-an-html-website/ ·
+  /documentation/add-cookie-banner-to-website/ · /documentation/implement-prior-consent-
+  using-cookieyes/ · /documentation/content-security-policy/ · /documentation/exclude-
+  cookieyes-script-from-wp-rocket-plugin/ · /documentation/retrieving-consent-data-using-
+  api-getckyconsent/ · /documentation/iab-tcf-v2-2-compliance-with-cookieyes/, alle
+  2026-09-21.
+
+**consentmanager — (a) bis (e):**
+- **(a)** ZWEI Hosts mit je eigenem Pfad, beide aus dem abgedruckten Stub-Code:
+  `https://delivery.consentmanager.net/delivery/cmp.php?id=<cmp_id>&h=<href>&<cmp_params>
+  &l=<lang>&o=<zeitstempel>` und
+  `https://cdn.consentmanager.net/delivery/cmp_<lang>.min.js`. Die Hosts stehen als
+  `window.cmp_host` und `window.cmp_cdn` im Code und sind damit **im Quelltext einer
+  Kundenseite änderbar** — der Anbieter bietet ausdrücklich White-Label-Adressen an.
+  **NUR IM BEISPIEL.**
+- **(b)** Sehr viele, und sie sind alle im Stub sichtbar: `window.cmp_id` ·
+  `window.cmp_params` · `window.cmp_host` · `window.cmp_cdn` · `window.gdprAppliesGlobally`
+  · `cmp_getlang` · `window.cmp_setlang` · `window.cmp_addFrame` · `window.cmp_rc` ·
+  `window.cmp_stub` · `window.cmp_msghandler` · `window.cmp_setStub`. Dazu die drei
+  Stub-Namen `__cmp`, `__tcfapi`, `__uspapi` und die drei unsichtbaren Rahmen
+  `__cmpLocator`, `__uspapiLocator`, `__tcfapiLocator`. Die eigenen Scripte tragen
+  `data-cmp-ab="1"`. **NUR IM BEISPIEL.**
+- **(c)** **nicht gefunden**; Reichweite: die fünf gelesenen Seiten.
+- **(d)** `type="text/plain"` **UND** `class="cmplazyload"` **UND** `data-cmp-src="…"` —
+  **die Adresse WANDERT aus `src` heraus**, wie bei Klaro und anders als bei Cookiebot und
+  Usercentrics. Kategorie/Zweck über `data-cmp-vendor="<id>"` und/oder
+  `data-cmp-purpose="<id>"`, beide kommagetrennt und beide mit dem Sonderwert `*`. Bei
+  einem `<iframe>` kommt `src="about:blank"` hinzu; bei `<link>` heisst das Attribut
+  `data-cmp-href`. Ausdrücklich ebenso anwendbar auf `picture`, `video`, `source`,
+  `object`, `embed`. Dazu ein ganzer Satz weiterer Attribute (`data-cmp-hide`,
+  `data-cmp-preview…`, `data-cmp-ab`, `data-cmp-block`). FLIESSTEXT, Beispiele bestätigen.
+  **`__tcfapi` WIRD BEREITGESTELLT — ALS EINZIGES DER VIER BISHER GELESENEN CMPs
+  BELEGT:** `window.cmp_setStub("__tcfapi")` steht im Stub, mit dem Kommentar "remove this
+  line to remove IAB TCF v2 support".
+- **(e)** Script-Tag direkt in der Seite — beim MANUELLEN Blockieren "directly after the
+  `<body>` element", beim AUTOMATISCHEN "directly after the `<head>` element" und dann
+  zwingend als erster Code der Seite. Daneben Tag Manager (Google, Tealium, Adobe), rund
+  zwanzig CMS- und Shop-Wege und ein App-SDK.
+  **EINE GRENZE, DIE MITMUSS:** Auf der Seite "Standard Integration" ist der eigentliche
+  CMP-Code **als BILD eingebunden** und über `textContent` nicht lesbar. Der oben zitierte
+  Code stammt deshalb von der Entwickler-Seite "Adjusting the stub code" — er ist dort
+  ausdrücklich eine UMFORMULIERTE Fassung ("you can reformat your stub code as follows"),
+  und **ob der aus dem Dashboard ausgegebene Code zeichengleich dieselbe Gestalt hat, ist
+  NICHT erhoben.**
+- **QUELLE:** www.consentmanager.net/en/help/getting-started/6-integrating-the-code/ ·
+  /help/integration/standard-integration/ · /en/help/getting-started/7-blocking-third-
+  party-codes-and-cookies/ · /help/integration/how-to-block-third-party-codes-cookies-if-
+  no-consent-is-given/ · /en/help/developer-reference/adjusting-the-stub-code/, alle
+  2026-09-21.
+
+**OneTrust — DIE IN VERMERK P11.11-13 OFFENEN PUNKTE BLEIBEN IN DER DOKU OFFEN, UND EIN
+ANDERER WEG HAT (a) UND (b) TROTZDEM GELIEFERT.**
+- **DER DOKU-WEG IST ZU ENDE GEGANGEN UND HAT NICHTS ERGEBEN.** Drei weitere Seiten des
+  öffentlichen Entwicklerportals gelesen (s. Umfang) — sie sind REST-API-zentriert wie
+  schon in Crawl 1; die "Environment URLs" führen ausschliesslich Anwendungs- und
+  API-Hosts (`app*.onetrust.com`, `privacyportal*.onetrust.com`), **keinen Auslieferungs-
+  Host für ein Browser-Tag.** Der einzige Verweis, der den Einbau verspricht ("Quick Start
+  Guide: Website Scripts"), zeigt auf `my.onetrust.com` und **endet an einer
+  ANMELDESCHRANKE**. Dort ist abgebrochen worden; **es ist KEINE Anmeldung versucht und
+  KEINE Zustimmung erteilt worden.**
+- **WAS STATTDESSEN TRÄGT — UND ES IST KEINE DOKU-LESUNG, SONDERN EINE MESSUNG AN EINER
+  AUSGELIEFERTEN SEITE (GEMESSEN am DOM von developer.onetrust.com, CC, 2026-09-21):** Die
+  Doku-Seite des Anbieters setzt seine eigene CMP ein. Im Dokument stehen
+  `<script src="https://cdn.cookielaw.org/consent/<domain-script-id>/otSDKStub.js"
+  type="text/javascript" charset="UTF-8" data-domain-script="<dieselbe id>">` und,
+  nachgeladen, `https://cdn.cookielaw.org/scripttemplates/202602.1.0/otBannerSdk.js`. Zur
+  Laufzeit vorhanden: `OneTrust` (Objekt), `OneTrustStub` (Objekt), `OptanonWrapper`
+  (Funktion), `OptanonActiveGroups` (Zeichenkette) und das DOM-Element mit der Kennung
+  `onetrust-consent-sdk`.
+  **DREI GRENZEN, OHNE DIE DIESER ABSATZ MEHR BEHAUPTET ALS ER TRÄGT:** (1) Das ist EINE
+  Installation und keine Aussage des Anbieters darüber, was er ausliefert — eine andere
+  Kundenseite kann anders aussehen. (2) Der Wert von `data-domain-script` ist die Kennung
+  JENER Seite und keine Signatur. (3) Der Pfadbestandteil `202602.1.0` ist eine
+  VERSIONSANGABE und altert; tauglich als Signatur ist der Host `cdn.cookielaw.org`, nicht
+  der volle Pfad.
+- **(c) UND (d) BLEIBEN NICHT GEFUNDEN**, auch nach der Messung: Auf jener Seite gibt es
+  NULL `<noscript>`-Elemente, NULL `<script type="text/plain">` und NULL Elemente mit einer
+  `optanon-category`-Klasse (GEMESSEN, CC, 2026-09-21). **DAS IST KEINE AUSSAGE DARÜBER,
+  WIE ONETRUST FREMDE SCRIPTE PARKT** — die gemessene Seite parkt schlicht keine.
+- **`__tcfapi` IST AUF JENER SEITE `undefined`** (GEMESSEN). **DAS SAGT NICHTS ÜBER
+  OneTrust**, sondern über die Konfiguration dieser einen Installation.
+- **(e)** aus derselben Messung ABLEITBAR (Script-Tag im Dokument), **aus der Doku
+  weiterhin nicht belegt.**
+- **QUELLE (Doku):** developer.onetrust.com/onetrust/reference/automating-cmp-operations-
+  using-onetrust-apis · /onetrust/docs/onetrust-sdk-reference ·
+  /onetrust/reference/url-variables-for-apis-sdks, alle 2026-09-21. **QUELLE (Messung):**
+  das ausgelieferte Dokument von developer.onetrust.com, 2026-09-21.
+
+**DER GELESENE UMFANG DER CMP-HÄLFTE (2026-09-21):** CookieYes SIEBEN Seiten (zwei
+Kategorie-Übersichten und die fünf oben zitierten Artikel) · consentmanager SIEBEN Seiten
+(die Startseite der Hilfe, die Übersichten "Integration" und "Getting started" sowie die
+fünf oben zitierten Artikel) · OneTrust DREI Seiten plus EINE abgebrochene an der
+Anmeldeschranke.
+
+**GESEHEN, NICHT GEÖFFNET — UND ZWAR AUS BUDGETGRÜNDEN, NICHT AUS EINEM SACHLICHEN
+AUSSCHLUSS.** Der Satz steht so, weil die Dauerregel DIE LISTE "GESEHEN, NICHT GEÖFFNET"
+IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT genau den begründeten Ausschluss als
+Fehlerquelle führt:
+· **CookieYes:** `/documentation/how-to-prevent-fetch-and-xmlhttprequest-overrides-in-
+  cookieyes/` (der naheliegendste Ort für eine Aussage darüber, was der Lader zur Laufzeit
+  am Dokument ändert), `/documentation/events-on-cookie-banner-load/`,
+  `/documentation/events-on-cookie-banner-interactions/`, `/documentation/custom-data-
+  layer/`, `/documentation/subdomain-consent-sharing/`, die GCM- und
+  GTM-Integrationsseiten, `/developer-use-cases/`.
+· **consentmanager:** `/help/developer-reference/javascript-api/`, `/cmp-events/`,
+  `/checking-consent-for-a-vendor/`, `/general-api/`, `/automatic-blocking-of-codes-and-
+  cookies/`, `/custom-html-code/` sowie `/help/integration/using-a-synchronous-cmp-code/`
+  und `/using-the-cmp-with-amp-websites/`. **Die synchrone und die AMP-Fassung sind die
+  naheliegendsten Orte für eine ZWEITE Gestalt des Einbau-Codes; die JavaScript-API für
+  weitere globale Namen.**
+· **OneTrust:** der gesamte SDK-Referenzbaum für Mobile, OTT/CTV und Web-Formulare —
+  sachlich: andere Plattformen; `/onetrust/docs/cmp-global-opt-out` und
+  `/onetrust/reference/creating-a-new-cookie-runner-script` — BUDGET-AUSSCHLUSS.
+
+**WAS NACH CRAWL 2 OFFEN BLEIBT — die Rest-Liste der Entscheidung P11.11-11, ehrlich:**
+- **KEIN Fan-Out-Ziel bleibt offen.** Alle fünf sind zu Ende gelesen.
+- **Klaro** ist seit Crawl 1 belegt (VERMERK P11.11-13), **Cookiebot** und
+  **Usercentrics** ebenso — **DIESE DREI WERDEN HIER NICHT WIEDERHOLT**, ihre Befunde
+  stehen unverändert dort.
+- **OneTrust bleibt der einzige unvollständige Anbieter:** (c) und (d) sind nicht
+  gefunden, (a), (b) und (e) ruhen auf einer MESSUNG an einer einzelnen Installation statt
+  auf der Doku. **Nach Entscheidung P11.11-15 heisst das: OneTrust bekommt im ersten Wurf
+  KEINE Signatur, ODER eine, die ausdrücklich auf dieser Messung ruht — das entscheidet
+  der Plan 11.11b und NICHT dieser Vermerk.**
+
+**DIE TABELLE — ANBIETER × (a) BIS (e).** Vier Werte: **belegt** (im Fliesstext) · **nur im
+Beispiel** · **nicht gefunden** (mit Reichweite am jeweiligen Befund) · **nicht gefahren**
+(war nicht Gegenstand). **(d) UND (e) SIND BEI DEN FÜNF ZIELEN "NICHT GEFAHREN" UND NICHT
+"NICHT GEFUNDEN"** — der Auftrag hat sie ausdrücklich nur für CMPs erhoben; wer die Spalten
+gleichsetzt, liest eine nicht gestellte Frage als unbeantwortet.
+
+| Anbieter | (a) Adresse | (b) Namen/Aufrufe | (c) noscript | (d) Parken | (e) Einbauweg |
+|---|---|---|---|---|---|
+| meta | nur im Beispiel | belegt (`fbq`, `fbq('track','PageView')`); Rest nur im Beispiel | nur im Beispiel; die zweite Gestalt belegt | nicht gefahren | nicht gefahren |
+| pinterest | nur im Beispiel | nur im Beispiel | nur im Beispiel; die Auflage "in zwei Stellen" belegt | nicht gefahren | nicht gefahren |
+| tiktok | nur im Beispiel | belegt (`ttq.load`, `ttq.page`, `ttq.track`); Rest nur im Beispiel | nicht gefunden | nicht gefahren | nicht gefahren |
+| linkedin | nur im Beispiel | belegt (`_linkedin_event_id`, `lintrk`); Rest nur im Beispiel | nur im Beispiel; das Bild-Pixel als eigener Weg belegt | nicht gefahren | nicht gefahren |
+| google · gtag | nur im Beispiel (Host daneben belegt) | belegt (die fünf Befehle, `send_to`) | nicht gefunden | nicht gefahren | nicht gefahren |
+| google · Tag Manager | nur im Beispiel | nur im Beispiel | nur im Beispiel | nicht gefahren | nicht gefahren |
+| CookieYes | belegt, aber UNVOLLSTÄNDIG (Host und Pfadmuster getrennt, Host widersprüchlich) | belegt | nicht gefunden | belegt | belegt |
+| consentmanager | nur im Beispiel | nur im Beispiel | nicht gefunden | belegt | belegt |
+| OneTrust | nicht gefunden in der Doku; GEMESSEN an einer Installation | Doku: belegt (Crawl 1); Messung ergänzt vier Namen | nicht gefunden | nicht gefunden | Doku: nicht gefunden; aus der Messung ableitbar |
+
+**Cookiebot, Usercentrics und Klaro stehen NICHT in dieser Tabelle** — ihre Zeilen stünden
+sonst zweimal da und liefen mit VERMERK P11.11-13 auseinander.
+
+**PROVENIENZ:** Alle Anbieter-Angaben GELESEN an der jeweils genannten Quelle (CC,
+2026-09-21), durchgehend über `textContent` und über das Hauptelement bzw. den
+Artikel-Rumpf. Die OneTrust-Angaben unter "WAS STATTDESSEN TRÄGT" sind GEMESSEN am DOM
+einer ausgelieferten Seite (CC, 2026-09-21) und ausdrücklich keine Doku-Lesung. **KEIN
+Aufruf gegen eine Schnittstelle, keine Anmeldung, keine Eingabe, kein Download.** **KEIN
+Bau-Commit.**
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -1727,6 +1962,18 @@ Angabe** — die Angabe steht in diesem Satz.
   CookieYes und consentmanager nach bestem Bemühen; FRISCHE SITZUNG**, weil der Crawl am
   freien Kontext hängt (Entscheidung P11.11-14). Was dabei unbelegt bleibt, bekommt keine
   Signatur (Entscheidung P11.11-15).
+  **CRAWL 2 IST GEFAHREN (2026-09-21) — VERMERK P11.11-25.** Die fünf Browser-Tags sind zu
+  Ende gelesen und liegen je als NEUER Teil in docs/ziel-befunde.md (die Zeiger je Ziel
+  stehen im Vermerk); von den drei nachgeordneten CMPs sind CookieYes und consentmanager
+  zu Ende gelesen, **OneTrust bleibt unvollständig und damit nach Entscheidung P11.11-15
+  ohne Signatur** — sofern der Plan nicht ausdrücklich auf die dort benannte MESSUNG
+  statt auf die Doku stützt. **DAMIT IST DIE VORBEDINGUNG DIESER SCHEIBE ERFÜLLT:** Von
+  den elf Anbietern der Entscheidung P11.11-11 tragen ZEHN eine an einer Quelle belegte
+  Adresse UND einen belegten globalen Namen — die fünf Ziele und CookieYes und
+  consentmanager aus Crawl 2, Cookiebot, Usercentrics und Klaro aus Crawl 1 (VERMERK
+  P11.11-13). **DAS HEISST NICHT, DASS JE ANBIETER ALLES BELEGT IST** — welche der fünf
+  Fragen je Anbieter offen blieb, steht in der Tabelle am Ende des VERMERKS P11.11-25 und
+  für die drei aus Crawl 1 unverändert in VERMERK P11.11-13.
   **AUFLÖSUNGS-SATZ, 2026-09-21: IHR ANTEIL AN DEN EIGENEN BAUSTEINEN IST NACH 11.11d
   GEWANDERT** — die Klasse `eigen` und das Grundgerüst der Erkennung entstehen DORT, und
   11.11d läuft VOR dieser Scheibe. Der Text darüber ist NICHT umgeschrieben; die Angabe

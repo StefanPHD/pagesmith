@@ -1189,6 +1189,66 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Archiv der Phase 11.13 (VERMERK P11.13-8, Punkt (f), VERMERK P11.13-10, Punkt (f), und
   Vorrat P11.13-7). Dass die Escape-Umdeutung unter den Wortlaut dieser Regel nicht fällt,
   ist eine ABLEITUNG aus ihm — sie steht deshalb als eigene Regel.
+  ERGÄNZT 2026-09-21 — DIE ERGÄNZUNG VOM 2026-09-18 VERLANGT DREI ZAHLEN UND NENNT NUR FÜR
+  ZWEI EIN INSTRUMENT. Ihr Text bleibt wörtlich; dieser Absatz tritt DANEBEN und schliesst
+  die Lücke, die sie selbst aufgemacht hat.
+  `tr` UND `od` LIEFERN CR GESAMT UND LF GESAMT, ABER KEINE CRLF-PAARE — am Werkzeug
+  belegt, nicht hergeleitet: `tr` löscht und ersetzt BYTEWEISE und kennt keine
+  Nachbarschaft, `tr -dc '\r\n'` gibt deshalb BYTES zurück und keine Zahl; `od` gibt eine
+  DARSTELLUNG zurück, ebenfalls keine Zahl. WER DIE MITTLERE DER DREI ZAHLEN MIT DEN ZWEI
+  GENANNTEN INSTRUMENTEN SUCHT, FINDET SIE NICHT.
+  WAS FÜR DIE PAARE TRÄGT — zwei Instrumente, beide gegen alle drei Proben richtig:
+  · `perl -0777 -ne 'my $c = () = /\r\n/g; print $c'` — zählt `\r\n` über den GANZEN Strom.
+  · Python im BINÄRMODUS, mit der Datei als ARGUMENT: `open(pfad, 'rb').read().count(b'\r\n')`.
+    BEIDES IST TRAGEND UND NICHT GESCHMACK: Der Textmodus dreht Zeilenenden, und für den Weg
+    über `stdin` führt diese Datei bereits einen eigenen Befund (EIN ESCAPE, DAS IM
+    QUELLTEXT STEHEN SOLL …, dort der siebte Befund — GELESEN, nicht in diesem Lauf erneut
+    gemessen).
+  DIE DREI PROBEN, mit VOR dem Lauf aus ihrem Aufbau festgelegten Sollwerten (CR / Paare /
+  LF): reines LF `a\nb\nc\n` -> 0 / 0 / 3 · reines CRLF `a\r\nb\r\nc\r\n` -> 3 / 3 / 3 ·
+  GEMISCHT, mit einem `\r\r\n` und einem einzelnen `\r` ohne `\n`, `a\r\r\nb\rc\nd\r\n` ->
+  4 / 2 / 3. Der Aufbau ist vor jeder Messung mit `od -An -c` kontrolliert worden. `tr`
+  trifft CR und LF in allen drei Dateien, `perl` und Python die Paare ebenso.
+  gawk TAUGT DAFÜR NICHT, UND ZWAR IN KEINER VARIANTE — DAS IST DER TEUERSTE TEIL DIESES
+  ABSATZES: gawk 5.0.0 liest auf dieser Maschine im TEXTMODUS und ENTFERNT DAS CR AUS JEDEM
+  CRLF, BEVOR DAS PROGRAMM DEN STROM ÜBERHAUPT SIEHT. GEMESSEN am Vergleich Dateigrösse
+  gegen gawk-Länge: 9 Bytes kommen als 6 an, 11 als 9; aus `a\r\r\nb\rc\nd\r\n` wird
+  `a\r\nb\rc\nd\n`. DAS GILT ALS DATEIARGUMENT WIE ÜBER EINE PIPE. Vier Varianten geprüft —
+  `gsub(/\r\n/,"")` bei Default-RS, `RS="\\r\\n"`, `RS` mit OKTAL-ESCAPE (`\015\012`) und der
+  Slurp-Modus (`RS="^$"`) —, KEINE trifft: auf der reinen CRLF-Probe melden alle vier 0
+  statt 3, auf der gemischten 0 oder 1 statt 2. DAS VERSAGEN IST NIE EIN FEHLER, sondern
+  STILL EINE 0 ODER EINE ZU KLEINE ZAHL.
+  DASS gawk `"\\r"` SEHR WOHL ALS CR DEUTET, ÄNDERT DARAN NICHTS und gehört trotzdem hierher:
+  `RS="\\r\\n"` ergibt eine zwei Zeichen lange Zeichenkette, deren Bytes `od` als `\r` und
+  `\n` ausweist. Es nützt nur nichts, weil im Eingabestrom kein CR mehr steht, auf das sie
+  passen könnte. WER HIER AM ESCAPE REPARIERT, REPARIERT DIE FALSCHE HÄLFTE.
+  ZWEI KONTROLLEN AUS DEMSELBEN LAUF, und die zweite ist die wichtigere: `tr` sieht die CRs
+  sehr wohl (3 und 4) — POSITIVKONTROLLE. Und die Grünfärbung ALLER gawk-Varianten auf der
+  reinen LF-Probe ist TRIVIAL WAHR, weil dort der Sollwert selbst 0 ist; WER NUR DIESE PROBE
+  FÄHRT, HÄLT DAS INSTRUMENT FÜR TAUGLICH.
+  DIE ZWEITE HÄLFTE BETRIFFT NICHT DAS ZÄHLEN, SONDERN DAS SEHEN: `git diff` UND
+  `git diff --stat` SIND UNTER DEN ATTRIBUTEN DIESES PROJEKTS BLIND FÜR EIN CRLF IM
+  ARBEITSBAUM (`* text=auto eol=lf`, `core.autocrlf` effektiv `true`; beides gemessen).
+  GEMESSEN in einem Wegwerf-Repo mit denselben Attributen: Eine committete LF-Datei, im
+  Arbeitsbaum auf CRLF gedreht UND um eine Zeile verlängert, zeigt im `--stat` GENAU DIE
+  EINE EINFÜGUNG und im Diff KEIN EINZIGES CR; git meldet höchstens eine Warnung ("CRLF will
+  be replaced by LF the next time Git touches it"). DEN WECHSEL SEHEN ALLEIN
+  `git ls-files --eol` (`w/lf` -> `w/crlf`) UND EINE BYTE-ZÄHLUNG. Im Objekt steht danach
+  reines LF (CR = 0, Paare = 0), weil `eol=lf` auf dem Weg in den Index normalisiert.
+  ABGRENZUNG ZUR ERGÄNZUNG VOM 2026-09-18, ohne die sich das wie eine Wiederholung liest:
+  DORT MELDETE DER DIFF ZU VIEL — 1 494 Zeilen statt 83 —, und die vorgeschriebene Prüfung
+  war deshalb unbrauchbar. HIER MELDET ER GAR NICHTS. Beide Male ist der Diff kein Nachweis
+  über Zeilenenden, aber aus ENTGEGENGESETZTEN Gründen; wer nur den einen Fall kennt, hält
+  einen unauffälligen Diff für eine Entwarnung.
+  WAS AUSDRÜCKLICH NICHT DIE URSACHE IST, damit niemand die Blindheit dem Anhängen
+  zuschreibt: EIN HEREDOC-ANHANG PER `cat >> … <<'EOF'` SCHREIBT BESTEHENDE BYTES NICHT UM.
+  GEMESSEN: sha256 der ersten N Bytes (N = die alte Länge) vor und nach dem Anhängen
+  IDENTISCH, CR danach 0. Er verlängert die Datei, er dreht sie nicht.
+  DIE BEDINGUNG DES ENTFALLENS DIESER ERGÄNZUNG IST DIESELBE WIE DIE DER REGEL: Sie
+  entfällt, sobald ein GATE CR-ohne-LF, LF-ohne-CR und NUL im Diff rot macht.
+  PROVENIENZ: alle Angaben GEMESSEN am eigenen Lauf (CC, 2026-09-21), in einem
+  Wegwerf-Verzeichnis und einem Wegwerf-Repo AUSSERHALB des Projekts; die Sollwerte sind VOR
+  dem Lauf aus dem Aufbau der Proben festgelegt worden.
 - NAHT-HYGIENE (7c-2, aktiv): 7c-2 koppelt Domain-/Routing-Logik NICHT an Tracking-/
   Lead-Logik. Die Andock-Punkte für spätere Module existieren BEREITS (neutraler
   /api/e-Trichter, projekt-scoped Settings); "nahtloses Andocken" folgt aus sauberen

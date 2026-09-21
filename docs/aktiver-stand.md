@@ -448,6 +448,63 @@ einer Messung ruht, steht sie dabei.
 vier als GEMESSEN gekennzeichneten Angaben stammen aus jener Runde (Code-Messungen und die
 jsdom-Probe); sie sind hier als Begründung zitiert und nicht neu erhoben.
 
+### ENTSCHEIDUNG P11.11-14 — DER PFLICHT-STOPP FÜR docs/ziel-befunde.md IST BEI BROWSER-TAG-RECHERCHE GEZIELT STATT VOLL ZU ERFÜLLEN
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** **In DIESER Phase** gilt der Pflicht-Stopp für
+`docs/ziel-befunde.md` als erfüllt, wenn die Datei **mit einer BENANNTEN ACHSE und einer
+POSITIVKONTROLLE durchsucht** und jeder Treffer im Wortlaut gelesen wurde — **nicht erst bei
+Vollladung.**
+
+**DER GRUND IST EIN MESSWERT, KEIN UNBEHAGEN:** Die Datei ist **549 237 Bytes / 7 749
+Zeilen** (GEMESSEN, CC, 2026-09-21). Der freie Kontext einer CC-Sitzung lag zu Rundenbeginn
+bei **196k Token** (abgelesen an `/context`, OWNER-seitig sichtbar). **DIE UMRECHNUNG VON
+BYTES IN TOKEN IST EINE SCHÄTZUNG UND KEIN MESSWERT** — sie liegt für deutschen Fliesstext
+grob bei 150k. Ein Vollladen hätte den Crawl, für den die Lesung geschieht, unmöglich
+gemacht.
+
+**DASS DIE GEZIELTE FORM HIER TRÄGT, IST NICHT VORAUSGESETZT, SONDERN DAS ERGEBNIS:** Die
+Suche ergab fünf Treffer in zwei Zusammenhängen, und die Datei trägt über die Browser-Tags
+nahezu nichts (VERMERK P11.11-13). **Wäre das Ergebnis dicht gewesen, hätte die Entscheidung
+anders ausfallen müssen.**
+
+**DIE GRENZE, UND OHNE SIE IST DIESE ENTSCHEIDUNG EINE LOCKERUNG DURCH DIE HINTERTÜR:**
+- **SIE ÄNDERT DEN PFLICHT-STOPP IN CLAUDE.md NICHT.** Eine Standdatei kann eine
+  Projektregel weder lockern noch überschreiben — das steht im Kopf dieser Datei.
+- **SIE GILT NUR FÜR DIE BROWSER-TAG-RECHERCHE.** Wer an einer SERVER-Schnittstelle
+  arbeitet — Adapter, Nutzlast, Statuscodes, Live-Test-Anleitung —, lädt die Datei wie
+  bisher: **dort ist sie dicht, und genau dafür ist sie geschrieben.**
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Dateigrösse und Trefferzahl GEMESSEN
+(CC, 2026-09-21); der freie Kontext ist eine ABLESUNG, die Token-Umrechnung eine SCHÄTZUNG.
+
+### ENTSCHEIDUNG P11.11-15 — OHNE BELEG KEINE SIGNATUR
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** **Ein Anbieter, dessen Einbau-Dokumentation
+nicht belegbar ist, bekommt im ersten Wurf KEINE Signatur.** Sein Tag bleibt unerkannt und
+erscheint als **unbekanntes Script** — mit allem, was daran hängt: angezeigt, nicht
+markiert, ohne Handlung, ohne Leuchten.
+
+**DER GRUND — und er ist der Grund, aus dem Entscheidung P11.11-3 so geschnitten ist:**
+**EINE LÜCKE SCHWEIGT DORT NICHT STILL.** Weil JEDES Script angezeigt wird, steht das Tag
+eines unbelegten Anbieters trotzdem in der Liste, nur ohne Marke — das Fehlen ist sichtbar.
+**EIN GERATENES ETIKETT WÄRE DIE TEURERE SEITE:** Bei einem Pixel führt die Marke zum
+Angebot, es zu ENTFERNEN, und ein Fehltreffer bietet dann fremden Code zum Löschen an, den
+niemand gemeint hat.
+
+**DIE OWNER-LISTE AUS ENTSCHEIDUNG P11.11-11 BLEIBT DAS ZIEL** — elf Anbieter. Diese
+Entscheidung senkt sie nicht, sie regelt den Zwischenzustand: **Was nicht belegt ist, wird
+BENANNT statt geraten.**
+
+**DIE ABLAGE, damit die Belege nicht an drei Orten landen:**
+- **BROWSER-TAG-BEFUNDE DER FÜNF ZIELE → docs/ziel-befunde.md, je Ziel ein EIGENER TEIL**
+  in dessen bestehendem Abschnitt (Weg 5 aus CLAUDE.md, "Wohin ein neuer Satz gehört").
+- **CMP-BEFUNDE → VERMERKE DIESER DATEI**, später je Eintrag als Beleg an der Signaturdatei
+  aus Entscheidung P11.11-7.
+- **KEINE NEUE DOKU-DATEI** — das wäre Weg 8 und verlangte eine Owner-Entscheidung.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21; die Begründung stützt sich auf
+Entscheidung P11.11-3 und die Roadmap-Zeile 11.11, (e), beide GELESEN (CC, 2026-09-21).
+
 ---
 
 ## Die offenen Designfragen
@@ -769,6 +826,130 @@ Mutationsergebnisse GEMESSEN am eigenen Lauf (CC, 2026-09-21); der jsdom-Befund 
 Werkzeug. Der Live-Nachweis und das Fehlen der Browser-Angabe sind OWNER-ANGABEN vom
 2026-09-21.
 
+### VERMERK P11.11-13 — CRAWL 1: DIE CMPs (2026-09-21)
+
+**KEIN BAU-COMMIT — GRUND: CRAWL.** Die Runde hat fremde Dokumentation gelesen und keine
+Zeile Code erzeugt. Alles Folgende ist **GELESEN** an der Anbieter-Doku am 2026-09-21,
+nichts davon ist gemessen.
+
+**VON ELF ANBIETERN AUS ENTSCHEIDUNG P11.11-11 SIND DREI ZU ENDE GELESEN**, einer
+teilweise, sieben stehen aus.
+
+**Cookiebot — (a) bis (e):**
+- **(a)** `https://consent.cookiebot.com/uc.js` mit `data-cbid="<domain-group-id>"`,
+  Script-`id="Cookiebot"`; alternativ `…/uc.js?cbid=<id>`. Cookie-Declaration:
+  `https://consent.cookiebot.com/<id>/cd.js`, Script-`id="CookieDeclaration"`.
+  **Die `uc.js`-Adresse steht im FLIESSTEXT, die vollständigen Tags NUR IM BEISPIEL.**
+- **(b)** Globales Objekt `Cookiebot` mit `consent.necessary` · `consent.preferences` ·
+  `consent.statistics` · `consent.marketing` · `consent.method` · `consented` · `declined` ·
+  `hasResponse` · `doNotTrack`. FLIESSTEXT (Eigenschafts-Tabelle).
+- **(c)** **nicht gefunden**; Reichweite: die zwei gelesenen Seiten.
+- **(d)** `type="text/plain"` plus `data-cookieconsent="preferences|statistics|marketing"`
+  (kommagetrennt). **Die Adresse bleibt in `src`.** FLIESSTEXT, Beispiel bestätigt.
+  `__tcfapi` **nicht gefunden**; Reichweite wie oben.
+- **(e)** Script-Tag; daneben genannt: Google Tag Manager, WordPress-Plugin, und ein
+  automatisches Blockieren als Alternative zur Auszeichnung.
+- **QUELLE:** www.cookiebot.com/en/developer/ ("Developer Resources — Cookiebot
+  Installation — Cookiebot™", Abschnitt "Cookiebot Developer Resources") und
+  www.cookiebot.com/en/manual-implementation/ ("Cookiebot Set Up Guide — How to Install
+  Cookiebot CMP", Schritte 3 und 4), beide 2026-09-21.
+
+**Usercentrics — (a) bis (e):**
+- **(a)** `https://app.usercentrics.eu/browser-ui/latest/loader.js`,
+  Script-`id="usercentrics-cmp"`, `data-settings-id="<id>"`; TCF-Variante zusätzlich
+  `data-tcf-enabled`; Geolocation-Variante mit `ruleset-id` STATT `data-settings-id`;
+  Entwurfs-Variante mit `data-version="preview"` und `data-disable-tracking`. **Frühere
+  Script-Tags, ausdrücklich weiter unterstützt: `bundle.js` und `bundle_legacy.js`.**
+  **Die Tags stehen NUR IM BEISPIEL; die Endpunkt-Tabelle steht im FLIESSTEXT** und nennt
+  `app.usercentrics.eu` · `api.usercentrics.eu` · `aggregator.service.usercentrics.eu` ·
+  `consents.usercentrics.eu` · `consent-api.service.consent.usercentrics.eu`.
+- **(b)** `window.UC_UI_DOMAINS` (FLIESSTEXT und Beispiel). **Der globale Name der
+  Browser-UI-API ist im gelesenen Umfang NICHT ausgeschrieben.**
+- **(c)** **nicht gefunden.** Die Doku nennt `noscript` nur als etwas, das der BETREIBER
+  blocken muss — kein eigenes Rückfall-Element des Anbieters.
+- **(d)** `type="text/plain"` plus `data-usercentrics="Name Data Processing Service"`.
+  **Die Adresse bleibt in `src`.** FLIESSTEXT. Daneben ein automatischer Weg ("Smart Data
+  Protector"). TCF: eigener Abschnitt "TCF 2.2 Implementation" und das Attribut
+  `data-tcf-enabled`; **`__tcfapi` selbst nicht gefunden**, Reichweite: die drei
+  geöffneten Seiten.
+- **(e)** Script-Tag; daneben Google Tag Manager über eine eigene Vorlage.
+- **QUELLE:** docs.usercentrics.com ("Web CMP v2"), Abschnitte "Browser UI →
+  Implementation", "White labeling URLs" und "Guide for scripts that are directly
+  integrated into your website", 2026-09-21.
+
+**Klaro — (a) bis (e):**
+- **(a)** `https://cdn.kiprotect.com/klaro/v0.7/klaro.js` mit `data-config="klaroConfig"`;
+  daneben `klaro-no-css.js`, `klaro.min.css`, `klaro.css`. **NUR IM BEISPIEL.**
+- **(b)** `window.klaroConfig` (FLIESSTEXT und Beispiel). Eine "Javascript API" ist als
+  eigener Abschnitt geführt und NICHT geöffnet.
+- **(c)** **nicht gefunden**; Reichweite: die gelesene Seite.
+- **(d)** `type="text/plain"` plus `data-type="application/javascript"` plus
+  `data-name="<app>"`; **bei EXTERNEN Scripten wird `src` zu `data-src` umbenannt.**
+  FLIESSTEXT, Beispiel bestätigt. Ausdrücklich auch für Bilder und Tracking-Pixel.
+  `__tcfapi` **nicht gefunden**.
+- **(e)** Script-Tag (Open-Source-Fassung); die gehostete Fassung über einen
+  Installations-Assistenten nach Anmeldung.
+- **QUELLE:** klaro.org/docs/getting-started ("Getting started | Klaro! Documentation",
+  Schritte 2 und 3), 2026-09-21.
+
+**OneTrust — NUR (b):** Globales Objekt `OneTrust` mit `Close()` · `AllowAll()` ·
+`RejectAll()` · `ToggleInfoDisplay()` · `LoadBanner()` ·
+`InsertScript(url, selector, callback, options, groupId, async)`; dazu das DOM-Element
+`onetrust-consent-sdk` und das Cookie `OptanonAlertBoxClosed`. FLIESSTEXT.
+**QUELLE:** developer.onetrust.com/onetrust/docs/javascript-api ("Web CMP JavaScript
+Methods"), 2026-09-21.
+**(a), (c), (d), (e) NICHT GEFUNDEN — mit Reichweite:** Die erreichte öffentliche
+Entwickler-Doku ist REST-API-zentriert (Endpunkte zum Veröffentlichen und Herunterladen des
+Scripts, nicht der Einbau-Leitfaden); ihre Navigation führte ausschliesslich auf
+API-Referenzen. **Es ist KEINE Anmeldeschranke ausgelöst und KEINE Zustimmung erteilt
+worden.**
+
+**GELESENER UMFANG:** Cookiebot zwei Seiten · Usercentrics vier Seiten (Einstieg,
+`#/browser-cmp`, `#/browser-ui?id=implementation`, `#/direct-implementation-guide`) · Klaro
+eine Seite · OneTrust drei Seiten, davon zwei ohne Ertrag.
+
+**GESEHEN, NICHT GEÖFFNET — UND ZWAR AUS BUDGETGRÜNDEN, NICHT AUS EINEM SACHLICHEN
+AUSSCHLUSS.** Der Satz steht so, weil die Dauerregel DIE LISTE "GESEHEN, NICHT GEÖFFNET"
+IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT genau den begründeten Ausschluss als
+Fehlerquelle führt — hier gibt es keinen Grund ausser dem Kontext, und **jede dieser Seiten
+kann einen Befund tragen**: Cookiebot `/en/help/`, die GTM- und WordPress-Leitfäden, die
+JavaScript-SDK-Seite · Usercentrics `#/tcf2`, `#/smart-data-protector`, `#/v2-embeddings`,
+`#/cmp-v2-ui-api`, `#/browser-sdk`, die GTM-Seite · Klaro "Contextual Consent", "Google Tag
+Manager (& Consent Mode v2)", "Integration Overview", "Testing", "Annotated configuration",
+"Javascript API".
+
+**WAS OFFEN BLEIBT:** OneTrust (a) und (c) bis (e) · CookieYes vollständig — die
+Dokumentations-Navigation hat die Einbau- bzw. Blockier-Seite im gelesenen Umfang nicht
+hergegeben · consentmanager vollständig, nicht begonnen · **die fünf Fan-Out-Ziele
+vollständig, nicht begonnen.**
+
+**EIN QUERBEFUND, DER AUSDRÜCKLICH NICHT FÜR META ZÄHLT:** Die Usercentrics-Seite zeigt als
+Beispiel ein Meta-Pixel-Snippet mit `connect.facebook.net/en_US/fbevents.js`,
+`fbq('init', …)` und `fbq('track','PageView')`. **Das ist Usercentrics' Wiedergabe, nicht
+Metas Doku.** Er ersetzt den Meta-Crawl nicht und darf nicht als Beleg für `meta` zitiert
+werden.
+
+**EIN MUSTER ÜBER DIE DREI FERTIGEN CMPs, OHNE VERALLGEMEINERUNG AUF DIE ÜBRIGEN:** Alle
+drei parken über `type="text/plain"` und verlangen ein eigenes Attribut für Kategorie oder
+Dienstnamen. **SIE UNTERSCHEIDEN SICH DARIN, WO DIE ADRESSE LIEGT** — Cookiebot und
+Usercentrics lassen sie in `src`, **Klaro verschiebt sie nach `data-src`.** Das bestätigt
+Entscheidung P11.11-12, Satz 5, an einem zweiten Fall.
+
+**WAS docs/ziel-befunde.md ÜBER DIE BROWSER-TAGS DER FÜNF ZIELE TRÄGT: NAHEZU NICHTS.**
+GEMESSEN am Dateitext (CC, 2026-09-21), **Achse**
+`noscript|Browser-Tag|Basis-?Code|base code|Snippet|fbq|ttq|pintrk|gtag|lintrk|_linkedin|connect\.facebook|analytics\.tiktok|s\.pinimg|snap\.licdn|googletagmanager|script src|<script`,
+**Positivkontrolle** `Conversions API` mit 44 Treffern. **Ergebnis: fünf Treffer in zwei
+Zusammenhängen.** Für `meta`, `tiktok` und `pinterest` **nichts**; für `google` nur die
+gtag-GESTALT `AW-<id>/<label>` als Form der Kennung in der Nutzlast des SERVER-Aufrufs, also
+nichts zum Browser-Tag. **DIE EINZIGE ZITIERBARE ANGABE STEHT BEI LINKEDIN, Teil (y):**
+`window._linkedin_event_id` vor dem Insight Tag und `event_id` im `lintrk`-Aufruf — **zwei
+globale Namen, keine Script-Adresse, kein noscript.** **FOLGE: Alle fünf Ziele müssen
+gecrawlt werden.**
+
+**PROVENIENZ:** Alle Anbieter-Angaben GELESEN an der jeweils genannten Quelle (CC,
+2026-09-21); der Befund über docs/ziel-befunde.md GEMESSEN am Dateitext (CC, 2026-09-21).
+**KEIN Bau-Commit.**
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -869,9 +1050,33 @@ herunterladen, wieder importieren), und ob sie je stattgefunden hat, steht in ke
 
 ## Hebungs-Kandidaten
 
-**KEINE.** Aus der Aufklärung vom 2026-09-21 ist nichts hervorgegangen, das eine Dauerregel
-oder eine Änderung an docs/arbeitsweise.md tragen würde. Der Satz steht hier, damit die
-Abwesenheit eine Aussage ist und keine Lücke.
+**ZUR NUMMERIERUNG:** Die Hebungs-Kandidaten zählen in einer EIGENEN Reihe ab 1 — wie der
+Vorrat und anders als Vermerke und Entscheidungen, die sich eine Reihe teilen. Wer auf einen
+zeigt, nennt die Gattung mit.
+
+**BIS ZUM CRAWL 1 STAND HIER "KEINE"** — aus der Aufklärung vom 2026-09-21 war nichts
+hervorgegangen, das eine Dauerregel oder eine Änderung an docs/arbeitsweise.md getragen
+hätte. Der Crawl desselben Tages hat einen ergeben.
+
+### HEBUNGS-KANDIDAT P11.11-1 — DER PFLICHT-STOPP FÜR docs/ziel-befunde.md IST IN EINER CC-SITZUNG MIT CRAWL NICHT VOLLSTÄNDIG ERFÜLLBAR
+
+**DIE AUSSAGE:** Eine Sitzung, die `docs/ziel-befunde.md` vollständig lädt UND anschliessend
+crawlt, gibt es nicht — die Datei allein füllt den freien Kontext weitgehend aus. **Der
+Pflicht-Stopp und die Crawl-Regel verlangen damit zusammen etwas, das in EINER Sitzung nicht
+beides geht.**
+
+**DER BELEG:** 549 237 Bytes gegen 196k freie Token zu Rundenbeginn (Grösse GEMESSEN, freier
+Kontext ABGELESEN, die Umrechnung eine SCHÄTZUNG — s. Entscheidung P11.11-14).
+
+**WARUM ES EIN KANDIDAT IST UND KEINE REGEL:** Die Entscheidung P11.11-14 löst den Fall
+**für diese Phase und nur für die Browser-Tag-Achse.** Ob daraus eine Dauerregel wird, ob
+der Pflicht-Stopp in CLAUDE.md eine Form für "gezielt statt voll" bekommt, oder ob die Datei
+selbst geteilt gehört, **ist hier NICHT entschieden. KEINE EMPFEHLUNG.**
+
+**WAS DABEI NICHT ÜBERSEHEN WERDEN DARF:** Der Pflicht-Stopp ist nicht Ballast. Er ist
+entstanden, weil eine überholte Fassung einmal einen Plan getragen hat; wer ihn lockert,
+nimmt genau diesen Schutz zurück. **Der Kandidat stellt die Spannung fest, er löst sie
+nicht auf.**
 
 ---
 
@@ -892,7 +1097,11 @@ Abwesenheit eine Aussage ist und keine Lücke.
   ENTSCHEIDUNG P11.11-12.**
   **VOR IHREM PLAN STEHT EINE CRAWL-RUNDE** für die elf Signaturen aus
   Entscheidung P11.11-11 — ohne belegte Signaturen hat die Erkennung nichts, woran sie
-  erkennt.
+  erkennt. **CRAWL 1 IST GEFAHREN** (VERMERK P11.11-13): drei CMPs belegt, einer teilweise.
+  **VOR DEM PLAN STEHT DAMIT CRAWL 2 — die fünf Browser-Tags MIT VORRANG, OneTrust,
+  CookieYes und consentmanager nach bestem Bemühen; FRISCHE SITZUNG**, weil der Crawl am
+  freien Kontext hängt (Entscheidung P11.11-14). Was dabei unbelegt bleibt, bekommt keine
+  Signatur (Entscheidung P11.11-15).
 - **11.11c — HANDLUNGEN.** Entfernen auf Klick bei einem bekannten Pixel; der
   Anbindungs-Hinweis beim CMP; **dazu das Entfernen EIGENER Bausteine auf Klick und der
   RIEGEL, der das Veröffentlichen verweigert, solange sie im Text stehen** (Entscheidung

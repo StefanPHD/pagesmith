@@ -40,6 +40,16 @@ ZUGESCHNITTEN (11.11a, 11.11b, 11.11c), der Schnitt 11.11a im Detail** — Absch
 **NOCH IMMER KEINE ZEILE CODE**, und der Marker der Roadmap-Zeile 11.11 steht unverändert
 auf `[ ]`.
 
+**FORTGESCHRIEBEN AM 2026-09-21, DRITTE RUNDE DESSELBEN TAGES — die zwei Zeilen darüber
+bleiben als Stand ihrer Runde stehen, aus demselben Grund wie oben.** STAND JETZT: **ZWEI**
+Vermerke (P11.11-1 die Aufklärung, P11.11-8 die gebaute Scheibe 11.11a) · **SIEBEN**
+bindende Entscheidungen (P11.11-2 bis P11.11-7 und P11.11-9) · die fünf Designfragen bleiben
+beantwortet · VIER Vorrats-Einträge, davon **P11.11-1 ERLEDIGT** und auf Titel plus Beleg
+gekürzt · KEIN Hebungs-Kandidat. **DIE SCHEIBE 11.11a IST GEBAUT UND LIVE BESTÄTIGT**
+(Bau-Commit `4efa94b`), ihr Zuschnitt ist verdichtet; 11.11b und 11.11c stehen aus. Der
+Marker der Roadmap-Zeile 11.11 steht weiterhin auf `[ ]` — er gehört zum Phasenende, nicht
+zur Scheibe.
+
 **DIE NUMMERNFORM IST `P11.11-n`** und wird hier weder neu entschieden noch neu begründet:
 Sie ist seit dem 2026-09-17 Bauform JEDER Standdatei (docs/arbeitsweise.md, Die
 Standdatei: "Jede Nummer trägt das Präfix ihrer Phase: `P<Phase>-n`, Buchstabe vorn";
@@ -291,6 +301,50 @@ in welcher Form eine Signatur geschrieben wird. Das entscheidet der Zuschnitt de
 **PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21; der Einwand gegen Listen GELESEN an der
 Roadmap-Zeile 11.11, (e) (CC, 2026-09-21).
 
+### ENTSCHEIDUNG P11.11-9 — DIE SANDBOX-WERTELISTE IST JE RAHMEN ABSCHLIESSEND, UND JEDER NEUE RAHMEN BEKOMMT DENSELBEN WÄCHTER
+
+**HERKUNFT:** Sie stand als E1 im Zuschnitt der Scheibe 11.11a und ist beim
+Abschluss-Vermerk aus ihm HERAUSGELÖST worden, weil sie über ihre Scheibe hinaus bindet
+(docs/arbeitsweise.md, "Beim Abschluss-Vermerk wird der Zuschnitt verdichtet"). Am
+Zuschnitt steht an ihrer Fundstelle ein Zeiger.
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Die `sandbox`-Werteliste ist je Rahmen
+ABSCHLIESSEND, nicht eine Mindestmenge.
+- **Bearbeiten-Rahmen (`title="preview"`): genau `{allow-scripts}`.**
+- **Vorschau-Rahmen (`title="functional-preview"`): genau `{allow-scripts, allow-popups,
+  allow-popups-to-escape-sandbox}`.**
+
+**DIE HERKUNFT JEDES WERTS, und sie geht aus dem Code nicht hervor:**
+- `allow-scripts` und das VERBOT von `allow-same-origin` kommen aus der Dauerregel
+  "Importierter User-Code läuft NUR im sandboxed iframe …" (docs/immer-beachten.md). **Das
+  ist die SICHERHEITS-Achse und nicht verhandelbar.**
+- `allow-popups` und `allow-popups-to-escape-sandbox` am Vorschau-Rahmen sind
+  **EINGEFRORENER BESTAND. IHRE NOTWENDIGKEIT IST UNGEMESSEN** — der Kommentar am Rahmen
+  nennt als Grund einen echten Top-Level-Tab bei `window.open`, gemessen ist das nicht.
+
+**WAS DARAUS FÜR JEDE SPÄTERE RUNDE FOLGT — die drei Sätze sind der bindende Teil:**
+- **WER EINEN DER ZWEI POPUP-WERTE ENTFERNT, BRAUCHT EINE MESSUNG.** Eine Vermutung genügt
+  nicht, weil der heutige Grund selbst keine ist.
+- **WER EINEN WERT HINZUFÜGT, BRAUCHT EINE ENTSCHEIDUNG. JEDE ERWEITERUNG EINER SANDBOX IST
+  EINE LOCKERUNG**, und sie soll sichtbar getroffen werden statt eingeschoben.
+- **JEDER NEUE RAHMEN, DER IMPORTIERTEN ODER ERZEUGTEN KUNDENCODE RENDERT, BEKOMMT
+  DENSELBEN WÄCHTER** — dieselben vier Zusicherungen und eine eigene abschliessende Liste.
+  Die Regel gilt jedem solchen Rahmen, nicht nur den zwei bekannten.
+
+**DER PREIS IST BENANNT:** Der Abschluss-Lauf wird bei JEDER Erweiterung rot. **Das ist die
+Absicht, nicht sein Mangel** — ohne ihn fängt kein Lauf einen hinzugefügten Wert, und genau
+das ist am 2026-09-21 mit der Mutation M5 GEMESSEN worden (nur S4 bzw. nur V4 fielen;
+ohne die abschliessende Liste wäre die Zahl NULL gewesen).
+
+**DIE ERWARTUNG WIRD AUS DIESER ENTSCHEIDUNG GESCHRIEBEN, NIE AUS DEM PRODUKTIVCODE
+ABGELESEN** (docs/immer-beachten.md, EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE
+ERWARTUNG NIE AUS DEM CODE). Ein Import machte den Wächter zum SPIEGEL, der jede Änderung
+bestätigt, statt sie zu fangen.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Der M5-Befund GEMESSEN am eigenen Lauf
+(CC, 2026-09-21, Vermerk P11.11-8); dass die zwei Popup-Werte ungemessen sind, ist am Repo
+erhoben (kein Messwert dazu, nur der Kommentar am Rahmen).
+
 ---
 
 ## Die offenen Designfragen
@@ -388,7 +442,13 @@ sonst kollidiert das Zitat dauerhaft mit jeder künftigen gleichlautenden Übers
 VERZEICHNIS NICHT, Zusatz vom 2026-08-27).
 
 **TEILUNG IST AUSGESCHLOSSEN, SOLANGE DIESE DATEI UNTER 4000 ZEILEN BLEIBT** — ein Verbot,
-keine Schwelle (docs/arbeitsweise.md, Die Standdatei). Sie hat heute keine 300.
+keine Schwelle (docs/arbeitsweise.md, Die Standdatei). **HIER STAND BIS ZUM 2026-09-21 EINE
+ZAHL ÜBER DIE EIGENE GRÖSSE, UND SIE WAR SCHON BEIM SCHREIBEN FALSCH** ("Sie hat heute keine
+300", bei knapp 400 Zeilen). Sie ist ersetzt und nicht nachgezogen worden: Eine Datei, die
+ihre eigene Grösse im Präsens nennt, erzeugt einen Kreislauf aus Nachzügen, und der Nachzug
+ist selbst eine Änderung (docs/immer-beachten.md, EINE DATEI, DIE IHRE EIGENE GRÖSSE IM
+PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF AUS NACHZÜGEN). **Wer wissen will, ob die Schwelle
+erreicht ist, misst — `wc -l`.**
 
 ---
 
@@ -531,6 +591,81 @@ und des Backlog-Eintrags GELESEN (CC, 2026-09-21). **KEIN Bau-Commit** — die R
 nichts geschrieben; der Commit, der DIESE Datei anlegt, ist ein Doku-Commit und kein
 Bau-Commit.
 
+### VERMERK P11.11-8 — SCHEIBE 11.11a: DER SANDBOX-WÄCHTER (2026-09-21)
+
+**GEBAUT UND LIVE BESTÄTIGT. BAU-COMMIT `4efa94b`** — EINE Datei,
+`src/components/CodeImporter.test.tsx`, 163 Einfügungen, NULL Löschungen. **KEIN
+Produktivcode:** `src/components/CodeImporter.tsx` trägt vor wie nach dem Bau den sha256
+`0992cea94895c83c35a4dcc52b6d83b60c969ed0b40d4b013734f04671e03d8c` — nach JEDER der zehn
+Mutations-Rücknahmen einzeln geprüft, nicht nur am Ende.
+
+**WAS GEBAUT IST:** Ein `describe`-Block mit ACHT Läufen, vier je Rahmen (S1–S4 für den
+Bearbeiten-Rahmen `title="preview"`, V1–V4 für den Vorschau-Rahmen
+`title="functional-preview"`): das Attribut `sandbox` existiert · `allow-same-origin` fehlt
+· `allow-scripts` ist vorhanden · die Werteliste ist ABSCHLIESSEND. Gelesen wird über
+`getAttribute`, kleingeschrieben, an Leerraum getrennt, leere Einträge verworfen.
+
+**WARUM NICHT ÜBER `iframe.sandbox` — GEMESSEN, nicht erwogen** (CC, 2026-09-21, jsdom
+29.1.1, dieselbe Fassung, die vitest über `environment: "jsdom"` zieht): Die Eigenschaft ist
+dort `undefined`; es gibt KEIN `DOMTokenList`. Ein Lauf der Form
+`frame.sandbox?.contains(...)` wäre TRIVIAL WAHR gewesen und nie rot geworden
+(docs/immer-beachten.md, EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL, Fall (2)).
+**Das ist der Grund für die Bauform, und er steht auch im Kommentar am Wächter selbst.**
+
+**TESTZAHL: 1946 VORHER, 1954 NACHHER**, 88 Dateien vorher wie nachher, alle grün.
+Differenz **+8** — exakt die acht neuen Läufe, keine neue Testdatei.
+
+**DIE VIER GATES, alle grün** (CC, 2026-09-21): `tsc --noEmit` exit 0 · `npm run lint`
+exit 0, 0 errors / 1 warning (dieselbe vorbestehende in `consent.test.ts`, ausserhalb dieser
+Scheibe) · `vitest run` 88 Dateien und 1954 Tests · `npm run build` exit 0.
+
+**ZEHN PFLICHT-MUTATIONEN, FÜNF JE RAHMEN — JEDE WURDE ROT, UND JEDE GENAU WIE
+VORHERGESAGT.** Die Vorhersagen standen VOR dem jeweiligen Lauf und sind gegen den dann
+aktuellen Bestand neu abgeleitet worden (docs/immer-beachten.md, EINE
+MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF GEGEN DEN AKTUELLEN TESTBESTAND AKTUALISIERT):
+- **M1** (`allow-same-origin` hinzugefügt) -> S2 + S4 bzw. V2 + V4, zwei Fehlerklassen
+  ("verbotener Wert in der Liste" und "Werteliste weicht ab").
+- **M2** (derselbe Wert in GROSSBUCHSTABEN) -> dieselben Läufe, dieselben Klassen. **DAS
+  IST DIE EIGENTLICHE PROBE:** Ein Wächter ohne das Kleinschreiben wäre hier GRÜN geblieben.
+- **M3** (Attribut ganz entfernt) -> ALLE VIER Läufe des Rahmens. **S2/V2 fallen dabei über
+  ihre Positivkontrolle**, nicht trivial — ohne sie wären sie unter M3 grün geblieben, weil
+  eine leere Liste den verbotenen Wert nicht enthält.
+- **M4** (`allow-scripts` entfernt) -> am Bearbeiten-Rahmen S2 + S3 + S4 (das Attribut
+  bleibt, aber leer), am Vorschau-Rahmen V3 + V4 (die zwei Popup-Werte bleiben stehen).
+- **M5** (`allow-top-navigation` hinzugefügt) -> **NUR S4 bzw. NUR V4.** **DAS IST DER
+  GEMESSENE BELEG FÜR DIE ABSCHLIESSENDE LISTE:** Ohne sie hätte ein hinzugefügter Wert
+  NULL Läufe rot gemacht.
+**KEINE Mutation blieb grün, KEINE traf mehr als vorhergesagt, KEIN Bestandstest fiel.**
+
+**DER LIVE-NACHWEIS (OWNER-ANGABEN, 2026-09-21) — von CC nicht prüfbar:**
+- **REGRESSION BESTANDEN:** Das Markieren im Bearbeiten-Rahmen funktioniert; eine
+  Weiterleitung öffnet im Vorschau-Rahmen einen neuen Tab. Beide Rahmen tun also weiterhin,
+  wofür ihre Sandbox-Werte da sind.
+- **DAS `sandbox`-ATTRIBUT STEHT AN BEIDEN RAHMEN EXAKT SO, WIE ENTSCHIEDEN.**
+- **DIE TRENNUNG VOM APP-URSPRUNG IST BELEGT, UND ZWAR AN DER WIRKUNG:** In BEIDEN Rahmen
+  wirft der Zugriff auf `parent.document` einen `SecurityError`, und `origin` ergibt
+  `"null"`. **DAS IST DIE ACHSE, DIE DER WÄCHTER SELBST NICHT MESSEN KANN** — er prüft ein
+  Attribut, dieser Schritt prüft seine Wirkung.
+
+**BROWSER: VOM OWNER NICHT ANGEGEBEN.** Der Satz steht hier statt einer Vermutung; ohne ihn
+läse die nächste Runde den Nachweis als browser-übergreifend.
+
+**DIE GRENZEN DIESES NACHWEISES — sie stehen im Wortlaut, weil sie beim nächsten Lesen
+sonst zur Vollständigkeit werden:**
+- **DIE WIRKUNG IST IN EINEM BROWSER GEMESSEN.** Welcher, ist nicht angegeben; die übrigen
+  sind UNGEMESSEN. Der Editor läuft im Browser des Betreibers.
+- **DIE ZEHN MUTATIONEN LIEFEN GEGEN DIE EINE TESTDATEI**, nicht gegen die volle Suite.
+  "Kein Bestandstest fiel" ist damit INNERHALB dieser Datei gemessen; für die übrige Suite
+  liegt nur ein Lauf OHNE Mutation vor (Gate 3).
+- **DIE NOTWENDIGKEIT DER ZWEI POPUP-WERTE BLEIBT UNGEMESSEN.** Der Wächter nagelt sie
+  fest, er begründet sie nicht. Wer einen davon entfernen will, braucht eine Messung —
+  s. Entscheidung P11.11-9.
+
+**PROVENIENZ:** Bau-Commit, Dateiumfang, sha256, Testzahlen, Gates und die zehn
+Mutationsergebnisse GEMESSEN am eigenen Lauf (CC, 2026-09-21); der jsdom-Befund ebenso, am
+Werkzeug. Der Live-Nachweis und das Fehlen der Browser-Angabe sind OWNER-ANGABEN vom
+2026-09-21.
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -541,29 +676,11 @@ gemessen.
 
 ### VORRAT P11.11-1 — DIE SANDBOX-ATTRIBUTE BEIDER VORSCHAU-RAHMEN SICHERT KEIN TEST
 
-**GEMESSEN am Repo (CC, 2026-09-21):** Die Achse `sandbox` über
-`src/components/CodeImporter.test.tsx` ergibt **NULL TREFFER**. Kein Test sichert
-`allow-scripts` an einem der beiden Rahmen zu, und **keiner sichert die ABWESENHEIT von
-`allow-same-origin`**.
-
-**WAS DAMIT ALLEIN AUF EINEM KOMMENTAR RUHT:** die Dauerregel "Importierter User-Code läuft
-NUR im sandboxed iframe (sandbox="allow-scripts", niemals allow-same-origin), nie
-ungesandboxt" (docs/immer-beachten.md). Der Code trägt sie als Kommentar an beiden
-Rahmen — und ein Kommentar ist keiner (docs/immer-beachten.md, NUR EIN TEST IST EIN
-WÄCHTER — EIN KOMMENTAR ODER EIN NEBENEFFEKT IST KEINER).
-
-**WARUM DAS PRÜFBAR WÄRE, obwohl die Testumgebung kein CSS auswertet:** Ein `sandbox`-Wert
-ist ein ATTRIBUT, keine Sichtbarkeit — die Dauerregel DIE TESTUMGEBUNG WERTET KEIN CSS AUS
-steht dem nicht entgegen; sie nennt Attribute ausdrücklich als prüfbar.
-
-**KANDIDAT FÜR EINE SCHEIBE DIESER PHASE** — GEMELDET, NICHT ZUGESCHNITTEN. Der Gegenstand
-grenzt an 11.11, weil die Vorschau eine der fünf Stationen ist; ob er in diese Phase
-gehört oder daneben, ist nicht entschieden.
-**ZUGESCHNITTEN AM 2026-09-21 ALS SCHEIBE 11.11a** (Abschnitt 9). **DER EINTRAG BLEIBT
-OFFEN UND WIRD NICHT GESTRICHEN:** Ein Zuschnitt ist kein Bau. Erledigt ist er erst mit dem
-Bau-Commit der Scheibe und seinem Vermerk; bis dahin ruht der Schutz weiter allein auf
-Kommentaren. Der Satz "ob er in diese Phase gehört oder daneben" ist mit dem Zuschnitt
-beantwortet — er gehört in diese Phase.
+**ERLEDIGT AM 2026-09-21 MIT DER SCHEIBE 11.11a** — Bau-Commit `4efa94b`, Nachweis in
+VERMERK P11.11-8, die bindende Folge in ENTSCHEIDUNG P11.11-9. Seither sichern acht Läufe
+in `src/components/CodeImporter.test.tsx` beide Rahmen; der Schutz ruht nicht mehr allein
+auf Kommentaren. **Titel und Beleg bleiben stehen, der Rumpf ist gekürzt** — die Messung,
+die ihn trug (Achse `sandbox` über die Testdatei, NULL Treffer), ist im Vermerk erhalten.
 
 ### VORRAT P11.11-2 — DIE DREI EINGANGSWEGE SIND UNGETESTET
 
@@ -639,25 +756,33 @@ entfernen gibt. Wann gebaut wird, ist hier NICHT entschieden.
 
 ### ZUSCHNITT DER SCHEIBE 11.11a — DER SANDBOX-WÄCHTER
 
-**WAS SIE BAUT:** Einen Wächter, der für JEDEN Rahmen, der importierten oder erzeugten
-Kundencode rendert, drei Dinge zusichert — das Attribut `sandbox` EXISTIERT, `allow-scripts`
-ist vorhanden, und `allow-same-origin` FEHLT.
+**VERDICHTET AM 2026-09-21 MIT DEM ABSCHLUSS-VERMERK P11.11-8** (docs/arbeitsweise.md,
+"Beim Abschluss-Vermerk wird der Zuschnitt verdichtet"). Was hier stand und wohin es
+gegangen ist — die Titel ohne Marke zitiert, damit eine Überschriften-Suche sie nicht
+trifft:
 
-**IHRE INVARIANTEN:**
-- **NUR TESTDATEIEN. KEIN PRODUKTIVCODE** — auch nicht "nur schnell" ein Attribut oder ein
-  Kommentar. `src/components/CodeImporter.tsx` bleibt BYTE-GLEICH.
-- **DER WÄCHTER PRÜFT DAS GERENDERTE ATTRIBUT, NICHT DEN QUELLTEXT.** Ein Wächter über
-  Quelltext sieht Zeichen, nicht Bedeutung (Dauerregel); er träfe hier ausserdem die
-  Kommentare, die dasselbe Attribut in Prosa nennen — GEMESSEN (CC, 2026-09-21): Der Text
-  `sandbox=` steht im Produktivcode an DREI Stellen, und nur ZWEI davon sind Attribute.
-- **VERGLICHEN WIRD OHNE RÜCKSICHT AUF GROSS-/KLEINSCHREIBUNG.** GRUND: `sandbox`-Werte
-  sind im Browser ASCII-case-insensitiv. **DAS IST EINE ABLEITUNG AUS DER SPEZIFIKATION UND
-  NICHT GEMESSEN** — der Satz gehört dazu, sonst liest ihn die nächste Runde als Messwert.
-- **VERGLICHEN WIRD ÜBER GETRENNTE WERTE, NICHT ÜBER EINE TEILZEICHENKETTE.** Ein
-  Teilstring-Test auf `allow-same-origin` wäre zugleich zu eng und zu weit; die Werte sind
-  eine an Leerraum getrennte Liste.
+- **"WAS SIE BAUT"** nannte die drei Zusicherungen. **ABGELAUFEN:** Sie sind gebaut und
+  stehen als S1–S4 und V1–V4 in `src/components/CodeImporter.test.tsx`; der Umfang steht in
+  VERMERK P11.11-8.
+- **Die Invariante "NUR TESTDATEIEN. KEIN PRODUKTIVCODE"** war eine Anweisung an DIESE
+  Scheibe. **ABGELAUFEN UND EINGELÖST:** VERMERK P11.11-8 führt den sha256 von
+  `src/components/CodeImporter.tsx` vor und nach dem Bau als identisch.
+- **Die drei Bauform-Invarianten — gerendertes Attribut statt Quelltext · Vergleich ohne
+  Rücksicht auf Gross-/Kleinschreibung · getrennte Werte statt Teilzeichenkette.**
+  **ABGELAUFEN ALS ANWEISUNG, ERHALTEN AM ORT DER HANDLUNG:** Alle drei stehen mit ihrer
+  Begründung im Kommentarkopf des Wächters selbst — einschliesslich des Satzes, dass die
+  Case-Insensitivität eine ABLEITUNG aus der Spezifikation ist und KEINE Messung, und
+  einschliesslich des gemessenen jsdom-Befunds, der die Bauform erzwingt. **Ein Test ist
+  der stärkere Anker als ein Zuschnitt, der abläuft.**
+- **"WAS SIE AUSDRÜCKLICH NICHT TUT"** — kein Rahmen geändert, keiner hinzugefügt, keine
+  Aussage über den echten Browser. **ABGELAUFEN BIS AUF DIE LETZTE HÄLFTE**, und die steht
+  jetzt zweimal dort, wo sie gebraucht wird: als Grenze im Kommentar des Wächters und als
+  Grenze in VERMERK P11.11-8.
 
-**WAS SIE AUSDRÜCKLICH NICHT TUT:** Sie ändert keinen Rahmen, sie fügt keinen hinzu, und sie
-sagt nichts über das Verhalten im echten Browser — sie prüft, was im Test gerendert wird.
+**WAS ÜBER DIE SCHEIBE HINAUS BINDET, IST HERAUSGELÖST UND STEHT NICHT MEHR HIER:** die
+abschliessende Werteliste je Rahmen samt der Herkunft jedes Werts und der Auflage an jede
+spätere Runde — **jetzt ENTSCHEIDUNG P11.11-9** im Abschnitt "Entscheidungen, die über ihre
+Scheibe hinaus binden". Sie hiess im Zuschnitt **E1**; dieser Zeiger löst den alten Namen
+auf.
 
 ---

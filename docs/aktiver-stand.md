@@ -853,6 +853,170 @@ geschriebene Läufe.
 GEMESSEN am eigenen Lauf (CC, 2026-09-21): U9 und U10 vor der Korrektur rot, danach grün;
 die Mutationen M7a und M7b machen je genau einen der beiden wieder rot.
 
+### ENTSCHEIDUNG P11.11-26 — EIGEN VOR FREMD, MIT DER KNOTENAUSWAHL AUS 11.11d
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Die Erkennung prüft einen Knoten **ZUERST auf
+"eigen"**, und zwar mit **DERSELBEN Knotenauswahl wie das Entfernen aus 11.11d** — eine
+Quelle, keine zweite. Erst was nicht eigen ist, wird gegen die fremden Signaturen gehalten.
+
+**DER GRUND IST EIN GEMESSENER FEHLTREFFER UND KEINE ORDNUNGSFRAGE:** Unser eigenes
+Wiring-Script trägt `connect.facebook.net` und `fbq`-Aufrufe **als Zeichenketten** (VERMERK
+P11.11-17, Punkt (g): beide stehen im ausgelieferten Text nur innerhalb unserer eigenen
+Scripte). **In umgekehrter Reihenfolge meldete die Erkennung unseren eigenen Baustein als
+fremdes Meta-Pixel** — und ein fremdes Pixel bekommt nach ENTSCHEIDUNG P11.11-3 ein
+Entfernen-Angebot. Der Fehltreffer wäre also nicht bloss hässlich, er böte einen Klick an,
+der den falschen Knoten trifft.
+
+**DIE GRENZE:** "Dieselbe Knotenauswahl" heisst DIESELBE FUNKTION, nicht dieselbe Logik
+noch einmal geschrieben. Eine Kopie wäre die zweite Wahrheit, die ENTSCHEIDUNG P11.11-18
+für das Prädikat bereits ausschliesst. **WIE das technisch geschieht, entscheidet der Plan**
+— hier ist nur festgelegt, DASS es eine Quelle bleibt.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Dass unser Wiring-Script die zwei
+Meta-Merkmale als Zeichenketten trägt, ist GEMESSEN (VERMERK P11.11-17, Punkt (g)).
+
+### ENTSCHEIDUNG P11.11-27 — DER TAG MANAGER IST EIN CONTAINER: EIGENES ETIKETT, NIE ZUM ENTFERNEN
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Ein Tag Manager wird mit einem **EIGENEN
+Etikett "Container"** erkannt, **NIE zum Entfernen angeboten**, und trägt einen Hinweis,
+dass er **weitere Tags nachladen kann**.
+
+**ZWEI GRÜNDE, und der zweite ist der härtere:**
+- **ER IST KEIN PIXEL.** ENTSCHEIDUNG P11.11-3 bietet Entfernen ausschliesslich bei einem
+  bekannten PIXEL an. Ein Container unter dieselbe Handlung zu stellen hiesse, jene
+  Entscheidung stillschweigend zu erweitern.
+- **SEIN ENTFERNEN KANN EINE FREMDE SEITE BRECHEN.** Was ein Container lädt, weiss nur der
+  Betreiber; darin kann alles stecken, vom Tracking bis zur Funktion der Seite.
+
+**DIE DRITTE KLASSE IST DAMIT KEINE ERFINDUNG, SONDERN DIE FOLGE:** Neben "bekanntes Pixel"
+und "bekanntes CMP" tritt "Container" — mit Etikett, ohne Handlung. **Die Klassenzahl der
+ENTSCHEIDUNG P11.11-12, Satz 3, wächst dadurch von VIER auf FÜNF** (`eigen` · Pixel · CMP ·
+**Container** · unbekannt). Jener Satz wird NICHT umgeschrieben; dieser Satz tritt daneben.
+
+**DER HINWEIS IST DIE EIGENTLICHE LEISTUNG:** Ein Container ist der einzige Fund, bei dem
+die Liste dem Betreiber sagen muss, dass sie **unvollständig sein kann** — was der Container
+nachlädt, steht nicht im importierten Text und kann von keiner Erkennung gesehen werden.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21, auf dem Befund des Crawls 2 (VERMERK
+P11.11-25 und docs/ziel-befunde.md, Google-Abschnitt, Teil (ct)).
+
+### ENTSCHEIDUNG P11.11-28 — DER ONETRUST-BELEG ZÄHLT FÜR DAS ETIKETT; COOKIEYES BEKOMMT BEIDE BELEGTEN HOSTS
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21), zwei Hälften:**
+- **ONETRUST:** Die an EINER Installation abgelesene Adresse (VERMERK P11.11-25, "WAS
+  STATTDESSEN TRÄGT") gilt als **Beleg im Sinne von ENTSCHEIDUNG P11.11-15** — **NUR für
+  das Etikett.**
+- **COOKIEYES:** Die Signatur trägt **BEIDE belegten Hosts** — `cdn.cookieyes.com` und
+  `cdn-cookieyes.com`.
+
+**WARUM DAS BEI ONETRUST TRAGBAR IST, OBWOHL P11.11-15 EINE DOKU-LESUNG MEINT:** Der Grund
+jener Entscheidung ist der Schaden eines Fehltreffers — **ein Fehltreffer bietet fremden
+Code zum Löschen an**. **BEI EINEM CMP HÄNGT KEIN ENTFERNEN AM ETIKETT** (ENTSCHEIDUNG
+P11.11-3: CMP bekommt einen Anbindungs-Hinweis und kein Entfernen). Der Schaden, gegen den
+P11.11-15 schützt, kann hier also gar nicht eintreten; was bleibt, ist ein falsches Etikett
+an einem Script, das ohnehin angezeigt wird.
+
+**DIE GRENZE, UND SIE IST ENG:** Diese Lockerung gilt **nur** dem Etikett und **nur** bei
+CMPs. **Ein an einer Installation abgelesenes PIXEL bekäme damit KEINE Signatur** — dort
+hängt das Entfernen daran, und P11.11-15 gilt unverändert.
+
+**WARUM COOKIEYES ZWEI HOSTS BEKOMMT:** Die Doku des Anbieters widerspricht sich — der
+Fliesstext der CSP-Seite schreibt `cdn.cookieyes.com` mit PUNKT, die Direktiven-Tabelle
+derselben Seite `cdn-cookieyes.com` mit BINDESTRICH (VERMERK P11.11-25). **Beide sind
+belegt, und keiner ist widerlegt.** Sich für einen zu entscheiden hiesse, die Hälfte der
+Installationen zu verfehlen; **die Divergenz wird ABGEBILDET, nicht aufgelöst.**
+
+**WAS AUSDRÜCKLICH NICHT MITENTSCHIEDEN IST:** das Pfadmuster `client_data/(.*)/script.js`.
+Ob die Signatur es zusätzlich führt, entscheidet der Plan — ein Zusammensetzen von Host und
+Pfad zu einer URL wäre eine FOLGERUNG und bleibt verboten (VERMERK P11.11-25).
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Die OneTrust-Adresse ist GEMESSEN am DOM
+einer ausgelieferten Seite (CC, 2026-09-21); die zwei CookieYes-Hosts sind GELESEN an der
+CSP-Seite des Anbieters (CC, 2026-09-21). Beides in VERMERK P11.11-25.
+
+### ENTSCHEIDUNG P11.11-29 — BILD- UND IFRAME-TAGS MIT BEKANNTER ADRESSE WERDEN ERKANNT, AUCH OHNE SCRIPT DANEBEN
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** `<img>` und `<iframe>` mit einer **bekannten
+Adresse** werden erkannt und gelistet — **auch dann, wenn kein Script desselben Anbieters
+daneben steht.** **UNBEKANNTE Bilder und iframes erscheinen NICHT.**
+
+**DER GRUND IST EIN BEFUND DES CRAWLS 2 UND KEINE VORSICHT:** Meta und Pinterest erlauben
+ausdrücklich, ein Ziel **allein als Bild-Tag** einzubauen — Pinterest wörtlich: "if you
+choose you can include only the image tag event code without JavaScript. In this case you do
+not need the base code" (docs/ziel-befunde.md, Pinterest-Abschnitt, Teil (ab)); Meta mit dem
+eigenen Abschnitt "Das Pixel mit einem IMG-Tag installieren" (ebenda, Meta-Abschnitt, Teil
+(g)). **EINE ERKENNUNG ALLEIN ÜBER `<script>`-KNOTEN SÄHE EINE SOLCHE SEITE NICHT** — das
+Ziel wäre aktiv, und die Liste behauptete, es sei keines da.
+
+**DIE ASYMMETRIE ZU DEN SCRIPTEN IST ABSICHT UND MUSS BENANNT SEIN, weil sie der
+ENTSCHEIDUNG P11.11-3 zu widersprechen scheint:** Dort wird JEDES Script angezeigt, auch das
+unbekannte. **HIER NICHT.** Der Grund ist die Grundmenge: Eine Seite trägt eine Handvoll
+Scripte und beliebig viele Bilder. Jedes Bild zu listen machte die Liste unlesbar und
+verfehlte ihren Zweck; die Sichtbarkeit des Veralterns, die P11.11-3 trägt, leisten die
+Scripte bereits.
+
+**WAS DARAUS FOLGT UND WAS NICHT:** Erkannt heisst **gelistet und etikettiert**. Ob ein
+Bild-Tag in 11.11c ein Entfernen-Angebot bekommt, ist **hier NICHT entschieden** — das ist
+Prüfstein 2 jener Scheibe (Abschnitt 9), und er ist dort ausdrücklich offen.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Die zwei Anbieter-Sätze GELESEN
+(CC, 2026-09-21), Fundstellen wie genannt.
+
+### ENTSCHEIDUNG P11.11-30 — GEPARKT WIRD IN DREI BELEGTEN FORMEN, UND DIE ADRESSE STEHT AN DREI ORTEN
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Als GEPARKT gilt ein Script in den **belegten
+Formen** — `type="text/plain"` · `data-cookieyes` **ohne** Typwechsel · `class="cmplazyload"`
+—, und die Adresse wird an **drei** Orten gesucht: `src`, `data-src`, `data-cmp-src`.
+
+**JEDE FORM HAT IHREN BELEG, und die Aufzählung ist genau deshalb keine Vermutung:**
+- `type="text/plain"` — Cookiebot, Usercentrics, Klaro (VERMERK P11.11-13) und
+  consentmanager (VERMERK P11.11-25).
+- `data-cookieyes` **ohne Typwechsel** — CookieYes (VERMERK P11.11-25). **DAS IST DIE
+  ABWEICHUNG, DIE DIE AUFZÄHLUNG NÖTIG MACHT:** Wer nur auf `type="text/plain"` prüft, hält
+  ein von CookieYes geparktes Script für ein laufendes.
+- `class="cmplazyload"` — consentmanager (VERMERK P11.11-25); dort tritt sie ZUSÄTZLICH zum
+  Typwechsel auf.
+- Die Adresse: `src` bei Cookiebot, Usercentrics und CookieYes; `data-src` bei Klaro;
+  `data-cmp-src` bei consentmanager.
+
+**DAS BESTÄTIGT SATZ 5 DER ENTSCHEIDUNG P11.11-12 UND ERWEITERT IHN:** Jener nennt
+`data-src` und ist GEMESSEN (`getAttribute("src")` liefert `null`). **Hinzu kommt
+`data-cmp-src` als dritter Ort** — bei consentmanager gemessen wäre zu viel gesagt: er ist
+GELESEN.
+
+**DIE GRENZE:** Die Liste ist **abschliessend für das, was belegt ist**, nicht für das, was
+es gibt. Ein CMP mit einer vierten Parkform erschiene als laufendes Script mit unbekannter
+Adresse — angezeigt, ohne Marke. **Das ist der von ENTSCHEIDUNG P11.11-15 gewollte Ausgang
+und kein Defekt.**
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21, auf den Belegen der VERMERKE P11.11-13
+und P11.11-25; der `data-src`-Befund ist GEMESSEN (ENTSCHEIDUNG P11.11-12, Satz 5), alles
+Übrige GELESEN.
+
+### ENTSCHEIDUNG P11.11-31 — 11.11b BLEIBT REIN LESEND
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Die Scheibe 11.11b **zeigt an, erkennt und
+meldet die Kollision — sonst nichts.** **Das Entfernen fremder Pixel ist 11.11c.**
+
+**SIE WIEDERHOLT DEN ZUSCHNITT NICHT, SIE SCHÜTZT IHN:** Abschnitt 9 sagt bereits "NUR
+LESEND". **DER GRUND FÜR DIE EIGENE ENTSCHEIDUNG IST DER DRUCK, DER MIT A1 BIS A5
+ENTSTANDEN IST:** Diese Runde hat der Erkennung eine fünfte Klasse, drei Parkformen, zwei
+Adress-Orte und die Bild-Tags hinzugefügt. **Je genauer die Erkennung wird, desto
+naheliegender wird es, "dann kann sie es auch gleich entfernen" —** und genau dort bräche
+die Trennung, an der die Roadmap-Auflage "keine Veränderung des gespeicherten importierten
+Texts ohne seinen Klick" hängt.
+
+**WAS DAS FÜR DEN PLAN HEISST, in einem Satz:** Kein Schreibpfad, kein Knopf mit Wirkung auf
+den Text, keine vorbereitende Mutation "für später". **Der Scope-Wächter der Scheibe ist die
+Prüfung dieser Entscheidung, nicht eine Formalie daneben.**
+
+**WAS SIE AUSDRÜCKLICH NICHT VERBIETET:** die 11.11d-Warnung und ihren Knopf. Die stehen
+bereits und verändern den Text auf Klick — **sie gehören zu 11.11d und sind von dieser
+Entscheidung unberührt.**
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21; der Zuschnitt-Satz GELESEN in Abschnitt 9
+dieser Datei, die Roadmap-Auflage GELESEN an der Roadmap-Zeile 11.11 (CC, 2026-09-21).
+
 ---
 
 ## Die offenen Designfragen
@@ -1974,6 +2138,12 @@ Angabe** — die Angabe steht in diesem Satz.
   P11.11-13). **DAS HEISST NICHT, DASS JE ANBIETER ALLES BELEGT IST** — welche der fünf
   Fragen je Anbieter offen blieb, steht in der Tabelle am Ende des VERMERKS P11.11-25 und
   für die drei aus Crawl 1 unverändert in VERMERK P11.11-13.
+  **DIE BAUFORM NACH CRAWL 2 STEHT IN SECHS ENTSCHEIDUNGEN: P11.11-26 BIS P11.11-31**
+  (eigen vor fremd · der Container · der OneTrust-Beleg und die zwei CookieYes-Hosts ·
+  Bild- und Iframe-Tags · die drei Parkformen · rein lesend). **Sie treten NEBEN die zehn
+  Sätze der ENTSCHEIDUNG P11.11-12 und ersetzen sie nicht**; wo eine von ihnen einen jener
+  Sätze erweitert, steht es an ihr — P11.11-27 an Satz 3 (fünf Klassen statt vier),
+  P11.11-30 an Satz 5 (ein dritter Adress-Ort).
   **AUFLÖSUNGS-SATZ, 2026-09-21: IHR ANTEIL AN DEN EIGENEN BAUSTEINEN IST NACH 11.11d
   GEWANDERT** — die Klasse `eigen` und das Grundgerüst der Erkennung entstehen DORT, und
   11.11d läuft VOR dieser Scheibe. Der Text darüber ist NICHT umgeschrieben; die Angabe

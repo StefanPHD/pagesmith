@@ -1183,6 +1183,99 @@ P11.11-17 — DORT STEHT ES NICHT** (aufgeschlagen, CC, 2026-09-21: jener Vermer
 ERSETZT und nicht übernommen (docs/immer-beachten.md, EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE
 KANN AUS PLAUSIBILITÄT ENTSTEHEN STATT AUS NACHSEHEN).
 
+### ENTSCHEIDUNG P11.11-36 — DIE FREIGABEN ZUM PLAN DER SCHEIBE 11.11c
+
+**SIE STEHT VOR DEM BAU UND NICHT DANACH** — fünf Punkte, die der Plan als Freigabe gemeldet
+oder als Entscheidung ohne Deckung ausgewiesen hat. Dieselbe Bauform wie die ENTSCHEIDUNGEN
+P11.11-22 (zu 11.11d) und P11.11-32 (zu 11.11b). **Die Texte unter (F3) sind OWNER-FREIGABE,
+die übrigen vier ARCHITEKT.**
+
+**(F1) DER GRUPPENSCHLÜSSEL BEKOMMT EINE DRITTE ACHSE: `traeger` ("knoten" gegen
+"handler").** **DAS IST EINE ERWEITERUNG VON ENTSCHEIDUNG P11.11-32, PUNKT (c), und wird als
+solche benannt statt eingeschoben:** Aus einer Zeile werden zwei, wo ein `<script>` und ein
+Inline-Handler desselben Anbieters zusammentreffen. **DER GRUND IST DER, DEN DER
+PARKZUSTAND SCHON TRÄGT** — er steht im Schlüssel, damit jede Gruppe darin EINHEITLICH ist.
+Mit 11.11c entsteht derselbe Fall ein zweites Mal: Ein Knopf an einer gemischten Gruppe
+entfernte nur einen Teil ihrer Fundstellen, und der Handarbeits-Hinweis gälte nur für den
+anderen.
+
+**(F2) KANDIDAT (A) — ES WIRD NICHTS AUFGERÄUMT.** `stripForeignGroup` entfernt die Knoten
+des Fundes plus den unmittelbar vorangehenden reinen Leerraum-Textknoten, **sonst nichts**.
+**DREI GRÜNDE, und der erste trägt allein:**
+- **DAS LEERE `<noscript>` IM `head` ENTSTEHT BEI JEDEM RUNDLAUF, ALSO SCHON BEIM
+  SPEICHERN** — GEMESSEN im Plan dieser Scheibe (G2 (ii), CC, 2026-09-21, Projekt-jsdom
+  29.1.1): Ein Parse-plus-Serialisieren OHNE jeden Eingriff liefert
+  `<noscript></noscript>` im `head` und das `<img>` im `body`, und der zweite Rundlauf ist
+  byte-gleich. **11.11c verursacht diesen Zustand nicht; es soll ihn deshalb auch nicht
+  beseitigen.**
+- **(B) — dokumentweit leere `<noscript>` entfernen — TRÄGT BEIDE FÄLLE, TRIFFT ABER AUCH
+  FREMDE LEERE HÜLLEN**, die mit unserem Fund nichts zu tun haben.
+- **(B-schmal) UND (C) TRAGEN DEN `head`-FALL GEMESSEN NICHT:** Dort hat der Parser das
+  `<img>` aus dem `<noscript>` HERAUSGEHOBEN, bevor irgendeine Logik es sieht —
+  `img.closest("noscript")` liefert `null`, `parentElement` ist der `body`. Beide Kandidaten
+  lassen das leere `<noscript>` stehen (GEMESSEN, CC, 2026-09-21; der vorab gesetzte
+  Sollwert 0 war in beiden Fällen falsch, IST = 1).
+**DIE ANBIETER-KOMMENTARE BLEIBEN EBENFALLS** (`<!-- Meta Pixel Code -->` und sein
+Gegenstück, GEMESSEN im selben Lauf) — das ist Satz 1 der ENTSCHEIDUNG P11.11-19, hier
+unverändert übernommen und nicht neu begründet.
+
+**(F3) DIE VIER WORTLAUTE SIND OWNER-FREIGABE 2026-09-21.** Sie stehen im Bau-Prompt dieses
+Tages im Wortlaut; **die Freigabe ist OWNER, weil der Owner diesen Prompt weiterreicht.**
+Jeder wird gegen die vier dokumentweiten Abwesenheits-Zusicherungen aus
+`src/components/CodeImporter.test.tsx` (`/%/`, `/gerettet/i`, `/mindestens/`, `/NaN/`) und
+gegen `SK10` (die Form "Scripte" kommt nicht vor) geprüft. **EINE KOLLISION WIRD GEMELDET,
+NICHT DURCH EINE TEXT-ANPASSUNG BESEITIGT** — ein angepasster Text wäre eine Owner-Freigabe,
+die niemand erteilt hat.
+
+**(F4) DER GOOGLE-HINWEIS BEKOMMT SEINEN TRÄGER IN `foreign-scan.ts`, NICHT AM
+SIGNATUR-EINTRAG — KEINE HEBUNG DES SCOPE-WÄCHTERS.** Eine Zuordnung Anbietername →
+Hinweis, **plus ein STRUKTUR-WÄCHTER**, der jeden ihrer Schlüssel gegen
+`FOREIGN_SIGNATURES.map(s => s.anbieter)` hält. **DAS ZWEITE LITERAL IST DAMIT GEDECKT:**
+Eine Umbenennung des Anbieters macht den Wächter rot. Der Strukturwächter darf die Liste
+lesen — das ist die im Kopf von `foreign-signatures.ts` benannte Ausnahme von "die Erwartung
+wird nie von dort importiert". **Die saubere Form wäre ein `hinweis`-Feld am Eintrag; sie
+verlangt eine Hebung für `foreign-signatures.ts`, und die ist NICHT erteilt.**
+
+**(F5) EIN BILD-FUND OHNE SCRIPT DANEBEN BEKOMMT EINEN KNOPF.** Er ist ein ganzer Knoten der
+Klasse `pixel`, und Meta wie Pinterest dokumentieren den Bild-Tag als **eigenen Einbauweg**
+(ENTSCHEIDUNG P11.11-29). **DAMIT IST PRÜFSTEIN 2 DER SCHEIBE 11.11c ENTSCHIEDEN**, den
+jene Entscheidung ausdrücklich offengelassen hat.
+
+**PROVENIENZ:** (F1), (F2), (F4) und (F5) ARCHITEKT-ENTSCHEIDUNG 2026-09-21, (F3)
+OWNER-FREIGABE desselben Tages. Die fünf Messungen unter (F2) sind GEMESSEN an einer Sonde
+mit der Projekt-jsdom (CC, 2026-09-21), in einem Wegwerf-Verzeichnis AUSSERHALB des Repos.
+
+### ENTSCHEIDUNG P11.11-37 — DIE SCHEIBE 11.11e: DIE FUNDLISTE WIRD NACH HOST GEBÜNDELT, NICHT NACH PFAD GEFILTERT
+
+**DIE ENTSCHEIDUNG (OWNER, 2026-09-21):**
+- **ERKANNTE FUNDE STEHEN IMMER OFFEN OBEN.**
+- **DARUNTER, EINGEKLAPPT, "Weitere Skripte (N)":** je **HOST** eine eigene, aufklappbare
+  Gruppe, sortiert nach **Anzahl aufsteigend**; die Inline-Skripte als **eigene Gruppe**.
+- **NICHTS WIRD AUSGEBLENDET.**
+
+**DER ANLASS IST EINE MESSUNG AN EINER ECHTEN SEITE UND KEINE ERWÄGUNG** (OWNER-TEST,
+2026-09-21): Eine reale WordPress-Seite trug **136 Skripte**, davon rund **130** Seiten- und
+Theme-Code. Die Fundliste ist damit in ihrer heutigen Gestalt unlesbar — nicht falsch,
+sondern unbenutzbar.
+
+**VERWORFEN: TECHNISCHE PFADE AUSBLENDEN.** **DER GRUND STEHT AUF DERSELBEN SEITE:** Dort
+lief `https://…/wp-content/plugins/digistore/digistore.js`. **EIN PFAD-FILTER HÄTTE EINEN
+TRACKER VERSTECKT** — und zwar still, weil eine ausgeblendete Zeile keine Spur hinterlässt.
+Das ist genau der Ausgang, den ENTSCHEIDUNG P11.11-3 verhindern soll: Wer nur Bekanntes
+zeigt, lässt die Liste still altern. **Bündeln macht die Liste kurz, ohne etwas
+wegzunehmen; Filtern macht sie kurz, indem es etwas wegnimmt.**
+
+**OFFEN FÜR DEN PLAN 11.11e, hier ausdrücklich NICHT entschieden:** Skripte ohne Host
+(relative Adresse) · was die Zahl der Überschrift zählt (Hosts, Skripte oder Gruppen) · die
+Texte (OWNER).
+
+**REIHENFOLGE: 11.11e KOMMT NACH 11.11c UND VOR DEM PHASENENDE.** Sie setzt 11.11c voraus,
+weil die Knöpfe an den erkannten Funden hängen und die Bündelung darunter liegt.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-21. Die Zahlen (136 Skripte, rund 130
+Seiten-/Theme-Code) und der Digistore-Pfad sind **OWNER-ANGABEN aus der angezeigten Liste**,
+von CC nicht geprüft.
+
 ---
 
 ## Die offenen Designfragen
@@ -2414,6 +2507,31 @@ erscheint, ist immer richtig. Es fehlt einer, der erscheinen könnte.
 Betreiber, der ein CMP ausschliesslich in seine B-Variante schreibt — und ob das je
 vorkommt, ist nicht erhoben.
 
+### VORRAT P11.11-8 — DIE SIGNATURLISTE HAT LÜCKEN, UND EINE ECHTE SEITE HAT FÜNF DAVON AUF EINMAL GEZEIGT
+
+**DER BEFUND (OWNER-ANGABE aus der angezeigten Fundliste, 2026-09-21; NICHT von CC
+gemessen und an keiner Anbieter-Doku belegt):** Auf derselben echten WordPress-Seite, die
+ENTSCHEIDUNG P11.11-37 ausgelöst hat, liefen **Universal Analytics**
+(`GoogleAnalyticsObject`), **ActiveCampaign** (`trackcmp`), **Digistore24**, **Trustpilot**
+und **Deadline Funnel**. **KEINER DAVON IST ERKANNT** — alle fünf standen als unbekannte
+Skripte in der Liste.
+
+**DAS IST DER GEWOLLTE AUSGANG UND KEIN DEFEKT**, und der Satz gehört hierher, sonst liest
+die nächste Runde den Eintrag als Fehlermeldung: Weil JEDES Script angezeigt wird
+(ENTSCHEIDUNG P11.11-3), macht sich das Veralten der Liste als **fehlende Marke** bemerkbar
+statt als Abwesenheit. **Genau das ist hier eingetreten — die Lücke hat sich selbst
+gezeigt.**
+
+**WAS EINE AUFNAHME KOSTET:** Jede Signatur braucht ihren Beleg je Anbieter
+(ENTSCHEIDUNG P11.11-15, OHNE BELEG KEINE SIGNATUR), also **einen eigenen Crawl**. Eine aus
+der angezeigten Adresse abgelesene Signatur wäre eine Messung an EINER Installation; sie
+zählte nach ENTSCHEIDUNG P11.11-28 allein für ein CMP-Etikett und ausdrücklich **nicht für
+ein Pixel**, an dem ein Entfernen hängt.
+
+**GEHÖRT NICHT IN DIESE PHASE.** Der Zuschnitt der Phase 11.11 nennt elf Anbieter
+(ENTSCHEIDUNG P11.11-11); fünf weitere aufzunehmen ist eine eigene Arbeit mit einem eigenen
+Crawl. **KEIN TRIGGER BENANNT.**
+
 ---
 
 ## Hebungs-Kandidaten
@@ -2450,8 +2568,11 @@ nicht auf.**
 
 ## Zuschnitt — die drei Scheiben
 
-**DIE PHASE ZERFÄLLT SEIT DEM 2026-09-21 IN VIER SCHEIBEN, und die Trennlinie ist, WAS SIE
-ANFASSEN.** Hier stand "DREI"; die vierte (11.11d) ist an diesem Tag hinzugekommen.
+**DIE PHASE ZERFÄLLT SEIT DEM 2026-09-21 IN FÜNF SCHEIBEN, und die Trennlinie ist, WAS SIE
+ANFASSEN.** Hier stand "DREI", dann "VIER"; die vierte (11.11d) und die fünfte (11.11e,
+ENTSCHEIDUNG P11.11-37) sind an diesem Tag hinzugekommen. **DIE ZAHL WIRD IN DIESEM SATZ
+FORTGESCHRIEBEN UND NIRGENDS SONST** — sie steht damit an genau einer Stelle, und die
+vorigen Fassungen bleiben als Spur lesbar.
 **DIE ÜBERSCHRIFT DIESES ABSCHNITTS SAGT WEITERHIN "die drei Scheiben", UND DAS BLEIBT SO:**
 Sie ist der Anker, den Eintrag 9 des Abschnitts-Verzeichnisses wörtlich zitiert, und eine
 Umbenennung machte jeden Zeiger der Form "Abschnitt 9" und jedes Titel-Zitat halb falsch
@@ -2547,6 +2668,17 @@ Angabe** — die Angabe steht in diesem Satz.
   (**P11.11-20**), die Oberfläche (**P11.11-21**), die sieben Freigaben zum Plan
   (**P11.11-22**) und die Ableitung der Meldungen aus dem aktuellen Text (**P11.11-24**, im
   Review entstanden und in keinem Zuschnitt vorgesehen gewesen).
+- **11.11e — DIE FUNDLISTE NACH HOST BÜNDELN** (OWNER, 2026-09-21). Erkannte Funde stehen
+  offen oben; darunter, eingeklappt, "Weitere Skripte (N)" — je HOST eine aufklappbare
+  Gruppe, sortiert nach Anzahl aufsteigend, die Inline-Skripte als eigene Gruppe.
+  **NICHTS WIRD AUSGEBLENDET.** **DER ANLASS IST EINE ECHTE SEITE MIT 136 SKRIPTEN**, davon
+  rund 130 Seiten- und Theme-Code (OWNER-TEST, 2026-09-21); die Liste ist dort nicht falsch,
+  sondern unbenutzbar. **EIN PFAD-FILTER IST VERWORFEN, weil er auf derselben Seite einen
+  TRACKER versteckt hätte** (`…/wp-content/plugins/digistore/digistore.js`). **DER VOLLTEXT
+  MIT GRÜNDEN, DEN OFFENEN PLAN-FRAGEN UND DER PROVENIENZ STEHT IN ENTSCHEIDUNG P11.11-37**
+  und wird hier NICHT verdoppelt. **REIHENFOLGE: nach 11.11c, vor dem Phasenende** — sie
+  setzt 11.11c voraus, weil die Knöpfe an den erkannten Funden hängen und die Bündelung
+  darunter liegt.
 
 **ZWEI PRÜFSTEINE FÜR DEN PLAN DER SCHEIBE 11.11c, und sie stehen SCHON HIER, weil beide
 den Zuschnitt entscheiden und nicht erst den Bau:**
@@ -2560,6 +2692,10 @@ den Zuschnitt entscheiden und nicht erst den Bau:**
    PARST MIT AUSGESCHALTETEM SKRIPTING — WER KNOTEN DARAUS IN EINE LEBENDE SEITE ÜBERNIMMT
    …). Ein Entfernen, das nur das `<script>` nimmt, lässt das Rückfall-Bild stehen — und das
    zählt weiter.
+   **ENTSCHIEDEN AM 2026-09-21 → ENTSCHEIDUNG P11.11-36, Punkt (F5):** Das Rückfall-Element
+   gehört zum Fund und geht mit ihm; **und ein Bild-Fund OHNE Script daneben bekommt einen
+   eigenen Knopf.** Die Frage, die ENTSCHEIDUNG P11.11-29 hierher verwiesen hat, ist damit
+   beantwortet.
 3. **DER PLATZ DES `<noscript>` ENTSCHEIDET, WAS BEIM ENTFERNEN ZURÜCKBLEIBT** (GEMESSEN
    an einer Sonde, CC, 2026-09-21, jsdom 29.1.1, im Plan der Scheibe 11.11b unter G4):
    Steht das `<noscript>` im **`head`**, ist es nach dem Parse **LEER** (`childElementCount
@@ -2570,6 +2706,10 @@ den Zuschnitt entscheiden und nicht erst den Bau:**
    ENTFERNEN IST ES NICHT FOLGENLOS:** Wer im `head`-Fall nur das `<img>` nimmt, lässt ein
    leeres `<noscript>` stehen; wer im `body`-Fall das `<noscript>` nimmt, nimmt das `<img>`
    mit. **Zwei Fälle, zwei Ergebnisse — und der Zuschnitt muss sagen, welches gewollt ist.**
+   **ENTSCHIEDEN AM 2026-09-21 → ENTSCHEIDUNG P11.11-36, Punkt (F2): KANDIDAT (A), es wird
+   NICHTS aufgeräumt.** Der Fragetext bleibt stehen, weil er den Grund trägt. **Der
+   tragende Befund steht dort und nicht hier:** Das leere `<noscript>` im `head` entsteht
+   bei JEDEM Rundlauf, also schon beim Speichern — 11.11c verursacht es nicht.
 4. **EIN KNOTEN KANN MEHREREN ANBIETERN GEHÖREN**, und 11.11b zeigt ihn genau so an
    (ENTSCHEIDUNG P11.11-32, Punkt (d)). **FÜR DAS ENTFERNEN IST DAS EINE OFFENE FRAGE:** Ein
    Inline-Script, das `fbq(` UND `gtag(` ruft, lässt sich nicht "für einen Anbieter"

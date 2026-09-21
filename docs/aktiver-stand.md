@@ -701,10 +701,109 @@ Zen-Modus per `display:none` versteckt; eine Warnung darin wäre im eingeklappte
 unsichtbar — **und der Zen-Modus klappt bei einem Import-Ereignis automatisch ein, also
 genau in dem Moment, in dem die Warnung entsteht.** Die Testumgebung wertet kein CSS aus
 (Dauerregel), ein Test würde den Unterschied also NICHT sehen.
+**ENTSCHIEDEN AM 2026-09-21 → ENTSCHEIDUNG P11.11-22, Punkt (b): AUSSERHALB, direkt
+darunter.** Der Fragetext bleibt stehen, weil er den Grund trägt; ohne ihn liest sich die
+Platzierung wie eine Geschmacksfrage.
 
 **PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Die Test-Falle GELESEN am Code (CC,
 2026-09-21); das eine Signal der Reiterzeile ist die Angabe aus ENTSCHEIDUNG P11.11-12 und
 in dieser Runde nicht neu erhoben; das Zen-Verhalten GELESEN am Code (CC, 2026-09-21).
+
+### ENTSCHEIDUNG P11.11-22 — DIE FREIGABEN ZUM PLAN DER SCHEIBE 11.11d
+
+**SIE STEHT VOR DEM BAU UND NICHT DANACH** — sieben Punkte, die der Plan offengelassen oder
+als blockiert gemeldet hat. Der Byte-Wächter unter (g) ist der Grund für den Zeitpunkt: Sein
+Vorher-Wert ist nach der ersten Zeile Produktivcode nicht mehr herstellbar
+(docs/immer-beachten.md, EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT).
+
+**(a) DER SCOPE-WÄCHTER WIRD FÜR GENAU ZWEI ZEILEN GEHOBEN (ARCHITEKT, 2026-09-21).**
+`export` an `MAPPINGS_SCRIPT_ID` (`src/lib/generate.ts`) und an `SCRIPT_ID`
+(`src/lib/analytics/pageview-emitter.ts`) — **Weg (A) aus dem Plan.** Je Datei ändert sich
+**GENAU EINE Zeile**, und zwar um das Wort `export`; die Kopfkommentare werden NICHT
+angefasst. **Die drei anderen Wege sind mit ihrem Grund verworfen:**
+- **(B) beide Konstanten in eine neue reine Datei ziehen und zurückimportieren** — fasst die
+  geschützten Dateien **MEHR** an als (A) und verlangt zusätzlich eine neue Datei, also
+  Weg 8 aus CLAUDE.md und damit eine Owner-Entscheidung.
+- **(C) die zwei Literale im Prädikat neu tippen** — bricht ENTSCHEIDUNG P11.11-18 ("eine
+  Quelle") und ist **nicht absicherbar**: Ein Wächter kann eine modul-private Konstante
+  nicht lesen, die zweite Quelle bliebe ungedeckt und liefe bei der nächsten Umbenennung
+  still auseinander.
+- **(D) die zwei Merkmale weglassen** — für die ERKENNUNG fiele nichts aus, weil
+  `generateFunctional` Consent-Gate, Datenblock und Wiring **immer zusammen** anhängt; **für
+  das ENTFERNEN wäre es ein STILLER Fehlschlag:** Der Mapping-Block bliebe stehen, und die
+  Nachbedingung aus P11.11-19 meldete trotzdem "sauber", weil das Prädikat ihn nicht sieht.
+**WAS AN DEN KOPFKOMMENTAREN AUFFÄLLT — geprüft, nicht geändert:** Der Kommentar über
+`MAPPINGS_SCRIPT_ID` nennt das Wiring-Script als Verbraucher. Mit dem Export kommt ein
+zweiter dazu; der Satz wird dadurch **unvollständig, nicht falsch**. `SCRIPT_ID` trägt gar
+keinen eigenen Kommentar.
+
+**(b) DIE PLATZIERUNG: AUSSERHALB DES EINKLAPPBAREN CODE-BLOCKS, DIREKT DARUNTER
+(ARCHITEKT, 2026-09-21).** **DER GRUND IST EIN ZEITPUNKT, KEIN GESCHMACK:**
+`autoCollapseOnImport` klappt den Block bei einem Import-Ereignis ein — **also genau im
+Moment, in dem die Warnung entsteht.** Innen wäre sie damit im häufigsten Fall unsichtbar,
+und **kein Test würde es melden**, weil die Testumgebung kein CSS auswertet. Die offene
+Plan-Frage an ENTSCHEIDUNG P11.11-21 ist damit geschlossen; dort steht der Zeiger.
+
+**(c) `__ps_sbx` (`PREVIEW_STORAGE_SHIM_ID`) IST EIN MERKMAL.** **ER KANN IN EINEM EXPORT
+STRUKTURELL NICHT VORKOMMEN** — der Vorschau-Riegel hängt an den zwei Vorschau-Memos und
+NICHT an `generateFunctional` (Entscheidung P11.12-2). **Er steht trotzdem in der Liste, und
+zwar aus demselben Grund wie die zwei Host-Tags:** Er kostet nichts, er ist eindeutig, und
+er deckt den Fall, dass ein Betreiber aus dem Vorschau-Rahmen kopiert — ein Zustand, der
+**ungemessen** ist und nicht ausgeschlossen. **Am Merkmal steht der Satz, warum er im
+Normalfall nie anschlägt**, sonst hält die nächste Runde sein Schweigen für einen Defekt.
+
+**(d) DIE VERWEIGERUNGS-MELDUNG NENNT DIE VARIANTE**, nach dem Muster der drei
+`EMPTY_*`-Konstanten: ohne Variante B der neutrale Satz, mit B der varianten-spezifische,
+und ein eigener Satz, wenn BEIDE Varianten Blöcke tragen. **DER GRUND IST EINE LÜCKE DER
+OBERFLÄCHE:** Die Warnung im Bereich BAUEN zeigt nur die **aktive** Variante. Liegt der Fund
+in der inaktiven, sähe der Betreiber eine Sperre ohne sichtbare Ursache — er müsste raten,
+welche Variante gemeint ist. **Ohne die Variantenangabe wäre der Riegel derselbe tote
+Zustand, den P11.11-19 mit ihrer Nachbedingung ausschliesst**, nur auf einer anderen Achse.
+
+**(e) DIE WORTLAUTE SIND OWNER-FREIGABE 2026-09-21** — Warnung, Knopf, vier
+Publish-Meldungen, Export-Meldung und der Rest-Satz. **Sie sind gegen die dokumentweiten
+Abwesenheits-Zusicherungen geprüft, und das ist GEMESSEN (CC, 2026-09-21):** 26 Achsen aus
+`src/components/CodeImporter.test.tsx` und `src/components/TargetCard.test.tsx` — darunter
+`%`, `gerettet`, `mindestens`, `NaN`, `undefined`, `noch nicht veröffentlicht`,
+`über beide Varianten` — gegen alle acht Wortlaute: **NULL Treffer, keine Kollision.**
+Gemessen ist ausserdem, dass **keine Fixture** der zwei Dateien eines der neun Merkmale
+trägt; **kein Bestandstest sieht die Warnung also überhaupt.**
+
+**(f) GRENZE — DIE HISTORIE DER ÜBRIGEN KENNUNGEN IST NICHT ERHOBEN.** Erhoben ist allein
+die Mapping-Kennung (Vermerk P11.11-17, Punkt (j)). Ob die sechs anderen `id`-Werte oder die
+zwei Host-Tags je anders hiessen, ist **nicht gemessen**. **DAS IST TRAGBAR, und der Grund
+gehört dazu:** `MAPPINGS_SCRIPT_ID` steht seit `380d9be` (2026-06-23) unverändert, und
+`generateFunctional` hängt den Datenblock an **jeden** Export mit Laufzeit-Mappings.
+**Jeder Export seit dem ersten trägt damit ein Merkmal, das das Prädikat kennt** — eine
+frühere Kennung anderswo könnte also höchstens eine Fundstelle, nie den ganzen Fund
+verfehlen. **WAS SIE NICHT DECKT:** das Entfernen. Bliebe ein unbekannt benannter Block
+stehen, meldete die Nachbedingung ihn NICHT, weil das Prädikat ihn nicht kennt.
+
+**(g) DER VORHER-WERT DES BYTE-WÄCHTERS, ERHOBEN VOR DER ERSTEN ZEILE PRODUKTIVCODE**
+(GEMESSEN an der Sonde, CC, 2026-09-21; zweiter Lauf im selben Prozess byte-gleich, der
+erzeugte Text ist also deterministisch):
+
+Aufbau — ein SAUBERES Projekt ohne jeden eigenen Baustein:
+`<!DOCTYPE html><html lang="de"><head><title>Waechter</title></head><body><h1 data-pagesmith-id="ps-aaaaaa">Titel</h1><button data-pagesmith-id="ps-bbbbbb">Kaufen</button></body></html>`
+· Mappings: `redirect` auf `ps-bbbbbb` nach `https://example.com/checkout`,
+`openInNewTab: false`, plus `track` mit `event: "Lead"` · Optionen:
+`metaPixelId "1234567890"`, `trackingKey "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"`,
+`capiProxyUrl "/api/e"`, `consentTargets ["meta","analytics"]` · Emitter mit demselben
+Schlüssel, `"bar"`, `{ appearance: { theme: "auto" }, text: "standard", language: "de" }`.
+
+| Artefakt | Bytes | sha256 |
+|---|---|---|
+| `generateFunctional(…, "export", …)` | **13 250** | `b6ee842b2a6652ff50f7e827ccefeaef615cdadc1b0b342b67645e0a33a471e6` |
+| danach `injectPageViewEmitter(…)` | **27 158** | `70a86db8444cbbd988913373fc7b0c63959ab80050066a333af9048ef1a89d46` |
+
+**WAS DER WÄCHTER LEISTET UND WAS NICHT:** Er nagelt fest, dass die zwei `export`-Wörter aus
+(a) den ausgelieferten Text **nicht anfassen**. Er sagt NICHTS über eine reale Kundenseite —
+der Aufbau ist eine Sonde. **Wird er rot, ist das ein STOPP und keine Anpassung des
+Sollwerts**; ein nachgezogener Sollwert wäre genau der Spiegel, den P11.11-18 verbietet.
+
+**PROVENIENZ:** (a) bis (d) und (f) ARCHITEKT-ENTSCHEIDUNG 2026-09-21; (e) OWNER-FREIGABE
+2026-09-21, die Kollisionsprüfung GEMESSEN am Repo (CC, 2026-09-21); (g) GEMESSEN an der
+Sonde (CC, 2026-09-21).
 
 ---
 

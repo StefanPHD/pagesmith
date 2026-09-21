@@ -58,6 +58,7 @@ export default function PublishView({
   activeVariantLabel,
   onPublish,
   emptyPublishTarget,
+  ownBlocksTarget,
   publishStatus,
   publishNotice,
   hostingLabel,
@@ -91,6 +92,12 @@ export default function PublishView({
   activeVariantLabel: string;
   onPublish: () => void;
   emptyPublishTarget: "a" | "b" | null;
+  // EIGENE BAUSTEINE AUS EINEM FRUEHEREN EXPORT (Phase 11.11, Scheibe 11.11d).
+  // EIGENER PROP NEBEN emptyPublishTarget, NICHT MIT IHM VERSCHMOLZEN: Die zwei Riegel
+  // haben verschiedene Ursachen und verschiedene Ausgaenge ("both" gibt es nur hier).
+  // Ein gemeinsamer Wert naehme dem Leer-Riegel seine Bedeutung, und die Meldung
+  // koennte nicht mehr sagen, welcher der beiden gesperrt hat.
+  ownBlocksTarget: "a" | "b" | "both" | null;
   publishStatus: "idle" | "publishing" | "published" | "error";
   publishNotice: { tone: "error" | "hint"; text: string } | null;
   hostingLabel: string;
@@ -247,9 +254,15 @@ export default function PublishView({
             // las nur die AKTIVE Variante und liess damit genau den schlimmsten
             // Fall durch (B aktiv und gefuellt, A leer -> ALLE Besucher bekommen
             // die leere Seite, weil die Route ohne aktiven Test immer A liefert).
+            // ownBlocksTarget ist der DRITTE Term (Scheibe 11.11d): Ein Text mit
+            // Bausteinen aus einem frueheren Export wuerde Conversions an das
+            // URSPRUNGS-Projekt senden und sie beim Veroeffentlichen verdoppeln —
+            // GEMESSEN, VERMERK P11.11-16. Derselbe Rang wie der Leer-Riegel: Der
+            // Button ist Komfort, der SERVER-Riegel ist die Garantie.
             disabled={
               !projectId ||
               emptyPublishTarget !== null ||
+              ownBlocksTarget !== null ||
               publishStatus === "publishing"
             }
             className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300"

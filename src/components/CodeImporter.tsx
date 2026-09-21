@@ -123,6 +123,23 @@ import {
   EMPTY_VARIANT_A_MESSAGE,
   EMPTY_VARIANT_B_MESSAGE,
 } from "@/lib/hosting/variant";
+// EIGENE BAUSTEINE (Phase 11.11, Scheibe 11.11d). Das PRAEDIKAT liegt in der reinen
+// Datei, die auch der Server importiert (EIN Urteil, P11.11-18); das ENTFERNEN daneben,
+// weil es ein DOM braucht und die Praedikat-Datei server-tauglich bleiben muss.
+import {
+  hasOwnBlocks,
+  ownBlockFindings,
+  ownBlocksPublishTarget,
+  OWN_BLOCKS_EXPORT_MESSAGE,
+  OWN_BLOCKS_PUBLISH_MESSAGE,
+  OWN_BLOCKS_REMOVE_BUTTON,
+  OWN_BLOCKS_REST_MESSAGE,
+  OWN_BLOCKS_VARIANT_A_MESSAGE,
+  OWN_BLOCKS_VARIANT_B_MESSAGE,
+  OWN_BLOCKS_VARIANT_BOTH_MESSAGE,
+  OWN_BLOCKS_WARNING_MESSAGE,
+} from "@/lib/own-blocks";
+import { stripOwnBlocks } from "@/lib/own-blocks-strip";
 import {
   SAVE_THROW_MESSAGE,
   actionThrew,
@@ -583,6 +600,29 @@ export default function CodeImporter({
   // Status des "In Zwischenablage kopieren"-Buttons (ehrliches Erfolg/Fehler-
   // Feedback).
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
+  // EIGENE BAUSTEINE (Phase 11.11, Scheibe 11.11d) — ZWEI Zustaende, und BEIDE sagen
+  // ausschliesslich "ein Versuch hat stattgefunden", NIE "das Problem besteht".
+  //
+  // DAS IST DIE KORREKTUR K2 UND KEINE VERFEINERUNG: Bis zum 2026-09-21 hielten diese
+  // zwei States die MELDUNGEN selbst (ein fertiger Satz, eine fertige Fundstellen-
+  // Liste). Sie ueberlebten damit jedes Entfernen VON HAND im Editor — GEMESSEN an den
+  // Laeufen U9 und U10, die vor der Korrektur beide rot waren. Eine Meldung, die den
+  // Zustand behauptet, statt ihn abzuleiten, faellt genau dann auseinander, wenn die
+  // Ursache auf einem Weg verschwindet, den ihr Setzer nie sieht
+  // (docs/immer-beachten.md, ABLEITEN STATT LOESCHEN).
+  //
+  // exportAttempted: hat der Betreiber auf diesem Kontext ueberhaupt schon exportieren
+  // wollen? OB die Meldung erscheint, entscheidet daneben das PRAEDIKAT auf dem
+  // aktuellen Text.
+  //
+  // strippedText: WELCHEN Text der letzte Entfernen-Klick erzeugt hat. Die
+  // Rest-Meldung behauptet etwas ueber einen VERGANGENEN Versuch ("nicht alles liess
+  // sich automatisch entfernen") — sie darf deshalb nur stehen, solange der Editor
+  // GENAU das noch haelt, was jener Versuch hinterlassen hat. Ein blosses Flag waere
+  // hier zu schwach: Nach einem geglueckten Entfernen und einem NEU eingefuegten
+  // Export behauptete es einen Fehlschlag, den es nie gab.
+  const [exportAttempted, setExportAttempted] = useState(false);
+  const [strippedText, setStrippedText] = useState<string | null>(null);
   // Linkes Panel ein-/ausklappbar. Zen-Modus: ein Projekt MIT Code startet
   // eingeklappt (Fokus aufs Dashboard), ein leeres Projekt offen (man muss erst
   // importieren koennen). Deterministisch aus initialCode -> server- und
@@ -1273,6 +1313,57 @@ export default function CodeImporter({
         ? EMPTY_VARIANT_A_MESSAGE
         : EMPTY_VARIANT_B_MESSAGE;
 
+  // EIGENE BAUSTEINE AUS EINEM FRUEHEREN EXPORT (Phase 11.11, Scheibe 11.11d) — DER
+  // CLIENT-GUARD, DASSELBE Praedikat wie der Server-Riegel, aus der reinen Datei
+  // (bindende Entscheidung P11.11-18: EIN Urteil, vier Verbraucher).
+  //
+  // ER PRUEFT DENSELBEN GEGENSTAND WIE DER SERVER — den QUELLTEXT beider Varianten,
+  // nicht das erzeugte Dokument. publishPairs haelt beide bereits; eine zweite
+  // Ableitung derselben Frage waere exakt die 9b-1-Konstellation.
+  //
+  // Das null bei fehlender Variante B spiegelt die Write-Bedingung: ohne B wird B nicht
+  // publiziert, also auch nicht geprueft (derselbe null-Vertrag wie beim Leer-Riegel).
+  const ownBlocksTarget = ownBlocksPublishTarget(
+    publishPairs.pairA.html,
+    hasVariantB ? { html: publishPairs.pairB.html } : null
+  );
+  // Textauswahl wie auf dem Server: ohne B der neutrale Satz, mit B der
+  // varianten-spezifische. DIESELBEN Konstanten — der Nutzer soll fuer dieselbe Ursache
+  // nicht zwei verschiedene Erklaerungen bekommen, je nachdem ob der Button ihn bremst
+  // oder der Server ihn ablehnt.
+  const ownBlocksPublishMessage = !ownBlocksTarget
+    ? null
+    : !hasVariantB
+      ? OWN_BLOCKS_PUBLISH_MESSAGE
+      : ownBlocksTarget === "a"
+        ? OWN_BLOCKS_VARIANT_A_MESSAGE
+        : ownBlocksTarget === "b"
+          ? OWN_BLOCKS_VARIANT_B_MESSAGE
+          : OWN_BLOCKS_VARIANT_BOTH_MESSAGE;
+
+  // DIE WARNUNG IM BEREICH BAUEN zeigt nur die AKTIVE Variante — sie haengt am
+  // Editor-Text, den der Betreiber gerade vor sich hat. Genau deshalb NENNT die
+  // Publish-Meldung oben die Variante (Entscheidung P11.11-22, Punkt (d)): Liegt der
+  // Fund in der INAKTIVEN, saehe er hier nichts und dort nur eine Sperre.
+  const ownBlocksInActive = hasOwnBlocks(debouncedCode);
+
+  // DIE ZWEI MELDUNGEN — ABGELEITET AUS DEM AKTUELLEN TEXT, nicht gespeichert (K2).
+  //
+  // BEIDE LESEN debouncedCode UND NICHT code — EINE Quelle: Die Warnung darueber tut
+  // es auch, und zwei Staende nebeneinander liessen Warnung und Meldung fuer einen
+  // Lidschlag Verschiedenes behaupten. Der Preis ist die Entprellung von 300 ms nach
+  // einem Klick; das ist unkritisch und konsistent.
+  const exportBlockedMessage =
+    exportAttempted && ownBlocksInActive ? OWN_BLOCKS_EXPORT_MESSAGE : null;
+  // Die Fundstellen kommen aus dem JETZIGEN Text, nicht aus dem Ergebnis von damals —
+  // und die Identitaetspruefung sagt, ob jener Versuch ueberhaupt noch diesen Text
+  // meint. Loescht der Betreiber die Fundstelle von Hand, laufen beide Haelften
+  // zugleich aus: die Liste wird leer UND der Text ist nicht mehr der erzeugte.
+  const ownBlocksRest =
+    strippedText !== null && debouncedCode === strippedText
+      ? ownBlockFindings(debouncedCode)
+      : [];
+
   // EIN ANZEIGESLOT fuer die Publish-Sektion, Rangfolge STRUKTURELL statt per
   // Textvergleich: ein aufgetretener Server-Fehler schlaegt jeden vorbeugenden
   // Hinweis, und das fehlende Projekt schlaegt den Leer-Hinweis (ohne
@@ -1290,7 +1381,13 @@ export default function CodeImporter({
           }
         : emptyPublishMessage
           ? { tone: "hint", text: emptyPublishMessage }
-          : null;
+          : // DER BAUSTEIN-HINWEIS STEHT HINTER DEM LEER-HINWEIS, und die Reihenfolge ist
+            // dieselbe Denkfigur wie die der Tor-Kette im Server: Eine leere Seite ist der
+            // grundlegendere Mangel — wer nichts zu veroeffentlichen hat, braucht nicht zu
+            // erfahren, dass darin alte Bausteine stehen.
+            ownBlocksPublishMessage
+            ? { tone: "hint", text: ownBlocksPublishMessage }
+            : null;
 
   // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
   // -> "Unbenanntes Projekt" (entspricht dem spaeteren DB-Default).
@@ -1359,6 +1456,13 @@ export default function CodeImporter({
     // uploadError ist projekt-ungebundener View-State -> beim Kontext-Wechsel
     // mit zuruecksetzen, sonst leuchtet ein Fehler aus Projekt A in B weiter.
     setUploadError(null);
+    // DIESELBE ACHSE FUER DIE ZWEI BAUSTEIN-ZUSTAENDE (Scheibe 11.11d): beide
+    // beschreiben einen ABGESCHLOSSENEN VERSUCH am Text des VORIGEN Projekts, und ein
+    // Versuch von dort sagt ueber diesen Kontext nichts. Die MELDUNGEN werden hier
+    // NICHT geleert — es gibt sie als Zustand gar nicht mehr, sie sind abgeleitet
+    // (docs/immer-beachten.md, ABLEITEN STATT LOESCHEN).
+    setExportAttempted(false);
+    setStrippedText(null);
     // DIE FUENF CAPI-ZEILEN SIND HIER ENTFALLEN (Phase 11 Scheibe 6, zweite Haelfte).
     // Sie leerten Eingabe, Status, Fehler, Bestaetigung und Busy-Flag der
     // Token-Verwaltung. Diese Zustaende liegen jetzt in der Karte, und die wird beim
@@ -1909,6 +2013,22 @@ export default function CodeImporter({
   // URL wieder freigeben. Dateiname aus dem Projektnamen slugifiziert (Default-/
   // Leer-Name -> "pagesmith-export.html").
   function handleExportDownload() {
+    // DER EXPORT-RIEGEL (Phase 11.11, Scheibe 11.11d; Entscheidung P11.11-20, Satz 3).
+    // VOR buildExportDocument, damit gar nichts erzeugt wird — der Erzeuger baut unsere
+    // Bloecke ein zweites Mal hinein, und die heruntergeladene Datei ist genau der
+    // Aufbau, mit dem die Re-Import-Messung ihren Schaden hergestellt hat (VERMERK
+    // P11.11-16: "Sein Export wird heruntergeladen").
+    //
+    // GEPRUEFT WIRD NUR DIE AKTIVE VARIANTE, und das ist kein Widerspruch zum
+    // Publish-Riegel, der beide prueft: Download und Kopieren liefern IMMER nur die
+    // aktive aus (buildExportDocument liest debouncedCode). Wer hier beide pruefte,
+    // sperrte den Export wegen einer Variante, die gar nicht mitgeht.
+    //
+    // GESETZT WIRD NUR "ES GAB EINEN VERSUCH" (K2) — OB die Meldung erscheint,
+    // entscheidet das Praedikat auf dem aktuellen Text. Entfernt der Betreiber die
+    // Bloecke danach VON HAND, verschwindet sie ohne Zutun dieses Handlers.
+    setExportAttempted(true);
+    if (ownBlocksInActive) return;
     const blob = new Blob([buildExportDocument()], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -1924,12 +2044,47 @@ export default function CodeImporter({
   // in unsicherem Kontext / ohne Permission fehlschlagen -> try/catch, kein stilles
   // Nichts.
   async function handleExportCopy() {
+    // Derselbe Riegel wie beim Download — und er steht VOR dem try, weil eine
+    // Verweigerung kein Fehlschlag des Kopierens ist.
+    setExportAttempted(true);
+    if (ownBlocksInActive) return;
     try {
       await navigator.clipboard.writeText(buildExportDocument());
       setCopyStatus("copied");
     } catch {
       setCopyStatus("error");
     }
+  }
+
+  /**
+   * ENTFERNT DIE EIGENEN BAUSTEINE AUS DEM EDITOR-TEXT (Entscheidung P11.11-19).
+   *
+   * ER SCHREIBT NICHT IN DIE DATENBANK — gespeichert wird erst beim Speichern. Der
+   * Knopf aendert den Editor-Text, und der Betreiber sieht das Ergebnis, bevor es
+   * irgendwo hingeht.
+   *
+   * setCode UND NICHT setDebouncedCode: Der Text geht denselben Weg wie jede andere
+   * Eingabe, die Entprellung eingeschlossen. Ein direkter Griff an den entprellten
+   * Zwilling erzeugte zwei Wahrheiten ueber denselben Text.
+   *
+   * DIE NACHBEDINGUNG WIRD ANGEZEIGT, NICHT VERSCHLUCKT: Bleibt etwas stehen — etwa
+   * eine Kennung in einem KOMMENTAR, den der DOM-Durchlauf nicht erreicht —, nennt der
+   * Hinweis die Fundstellen. Ohne ihn waere der Publish-Riegel ein toter Zustand, den
+   * kein Knopf loesen kann.
+   *
+   * GEMERKT WIRD DER ERZEUGTE TEXT, NICHT DAS ERGEBNIS (K2): Die Fundstellen leitet
+   * die Ansicht aus dem AKTUELLEN Text ab; hier wird nur festgehalten, WORAUF sich der
+   * Versuch bezog. `rest` aus stripOwnBlocks wird deshalb bewusst nicht gespeichert —
+   * es waere ein zweiter, sofort alternder Rechenweg fuer dieselbe Frage. Die Pruefung
+   * IN stripOwnBlocks bleibt davon unberuehrt: sie ist der Waechter der Funktion.
+   */
+  function handleStripOwnBlocks() {
+    const { html } = stripOwnBlocks(code);
+    setCode(html);
+    setStrippedText(html);
+    // Der Export-Versuch bleibt stehen, wo er stand: Ob seine Meldung erscheint,
+    // entscheidet ohnehin das Praedikat auf dem neuen Text. Ein Zuruecksetzen hier
+    // waere die Bauform, die K2 gerade abgeschafft hat.
   }
 
   // Veroeffentlichen (Phase 7 Scheibe 7a): das funktionale Dokument wird CLIENT-seitig
@@ -1966,6 +2121,11 @@ export default function CodeImporter({
                   pairB.mappings,
                   "/api/e"
                 ),
+                // DER QUELLTEXT VON B, seit Scheibe 11.11d Pflicht (P11.11-20):
+                // symmetrisch zu snapshot.html bei A, damit der Server-Riegel BEIDE
+                // Varianten auf eigene Bausteine pruefen kann. Derselbe Wert, den der
+                // Client-Guard oben liest — EINE Quelle, kein zweiter Rechenweg.
+                html: pairB.html,
                 mappings: pairB.mappings,
               }
             : undefined
@@ -2778,6 +2938,7 @@ export default function CodeImporter({
               activeVariantLabel={activeVariantLabel}
               onPublish={handlePublish}
               emptyPublishTarget={emptyPublishTarget}
+              ownBlocksTarget={ownBlocksTarget}
               publishStatus={publishStatus}
               publishNotice={publishNotice}
               hostingLabel={hostingLabel}
@@ -3000,6 +3161,58 @@ export default function CodeImporter({
           )}
           </div>
         </div>
+
+        {/* (1b) EIGENE PAGESMITH-BAUSTEINE IM IMPORTIERTEN TEXT (Phase 11.11,
+            Scheibe 11.11d; Entscheidung P11.11-21 und P11.11-22, Punkt (b)).
+
+            AUSSERHALB DES EINKLAPPBAREN BLOCKS, DIREKT DARUNTER — und das ist eine
+            ZEITPUNKT-Frage, keine Geschmacksfrage: autoCollapseOnImport klappt den
+            Block oben bei einem Import-Ereignis ein, also GENAU im Moment, in dem diese
+            Warnung entsteht. Innen waere sie im haeufigsten Fall unsichtbar, und KEIN
+            Test wuerde es melden, weil die Testumgebung kein CSS auswertet.
+
+            ROT OHNE die Klasse `truncate`: Der Selektor span.truncate.text-red-600
+            bezeichnet in CodeImporter.test.tsx den ZENTRALEN Fehlerkanal — einmal als
+            Abwesenheits-, einmal als Positiv-Zusicherung, bei der querySelector den
+            ERSTEN Treffer in Dokumentreihenfolge liefert. Ein roter Text mit beiden
+            Klassen braeche beide Laeufe, und der zweite braeche STILL.
+
+            KEIN Signal in der Reiterzeile (P11.11-12, Satz 10). */}
+        {(ownBlocksInActive ||
+          ownBlocksRest.length > 0 ||
+          exportBlockedMessage) && (
+          <div className="flex flex-col gap-2 border-b border-gray-200 px-3 py-2.5">
+            {ownBlocksInActive && (
+              <p className="text-xs font-medium text-red-600">
+                {OWN_BLOCKS_WARNING_MESSAGE}
+              </p>
+            )}
+            {ownBlocksInActive && (
+              <button
+                type="button"
+                onClick={handleStripOwnBlocks}
+                className="self-start rounded-md border border-red-300 bg-white px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-500"
+              >
+                {OWN_BLOCKS_REMOVE_BUTTON}
+              </button>
+            )}
+            {ownBlocksRest.length > 0 && (
+              <div className="text-xs font-medium text-red-600">
+                <p>{OWN_BLOCKS_REST_MESSAGE}</p>
+                <ul className="mt-1 list-disc pl-4 font-mono font-normal">
+                  {ownBlocksRest.map((stelle) => (
+                    <li key={stelle}>{stelle}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {exportBlockedMessage && (
+              <p className="text-xs font-medium text-red-600">
+                {exportBlockedMessage}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* (2) Zaehler (Buttons/Forms/Links) — immer sichtbar, unabhaengig vom
             Code-Collapse. */}

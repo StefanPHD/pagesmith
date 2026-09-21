@@ -21,7 +21,7 @@ import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
 import { buildConsentRestoreScript } from "@/lib/tracking/consent-store";
 import type { ConsentDialog, ConsentPresentation } from "@/lib/settings";
 
-const SCRIPT_ID = "__ps_pve";
+export const SCRIPT_ID = "__ps_pve";
 
 // Erzeugt das <script id="__ps_pve">…</script> mit dem Emitter-JS. Enthaelt bewusst
 // KEIN literales "</script>" oder "</body>" -> serialisierungssicher.

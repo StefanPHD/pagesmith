@@ -80,6 +80,13 @@ import {
   VARIANT_B_NOT_PUBLISHED_MESSAGE,
   type PublishedLike,
 } from "@/lib/hosting/variant";
+import {
+  ownBlocksPublishTarget,
+  OWN_BLOCKS_PUBLISH_MESSAGE,
+  OWN_BLOCKS_VARIANT_A_MESSAGE,
+  OWN_BLOCKS_VARIANT_B_MESSAGE,
+  OWN_BLOCKS_VARIANT_BOTH_MESSAGE,
+} from "@/lib/own-blocks";
 
 /**
  * Speichern-Ergebnis. Bei { ok: true } liefert die Action die (ggf. NEU
@@ -1484,7 +1491,13 @@ export async function publishProject(
   // functionalHtml ist auch hier CLIENT-generiert (generateFunctional ist eine
   // reine Funktion und laesst sich auf die INAKTIVE Variante anwenden, ohne dass
   // der Editor umschaltet).
-  variantB?: { functionalHtml: string; mappings: Mapping[] }
+  // html IST SEIT DER SCHEIBE 11.11d PFLICHT UND HAT KEINEN VORGABEWERT (bindende
+  // Entscheidung P11.11-20): Der Riegel gegen eigene Bausteine prueft den QUELLTEXT
+  // beider Varianten, und fuer B reiste bis dahin NUR das erzeugte Dokument. Ein
+  // optionales Feld liesse den Riegel bei B still uebergehen — und ein Publish schreibt
+  // BEIDE Varianten in EINEM atomaren Write. So muss jede Aufrufstelle entscheiden, und
+  // der Compiler fragt (dieselbe Bauform wie bei consentDialog/consentPresentation).
+  variantB?: { functionalHtml: string; mappings: Mapping[]; html: string }
 ): Promise<PublishResult> {
   const supabase = await createClient();
   const {
@@ -1719,6 +1732,55 @@ export async function publishProject(
       trackCodeProblem(m.config.code) !== null
   );
   if (zeileKaputt) return { ok: false, error: TRACK_CODE_INVALID_MESSAGE };
+
+  // ===== EIGENE BAUSTEINE AUS EINEM FRUEHEREN EXPORT: NICHTS DOPPELTES GEHT LIVE ====
+  // (Phase 11.11, Scheibe 11.11d; bindende Entscheidungen P11.11-10 und P11.11-20)
+  //
+  // WARUM HIER — dieselbe Auflage wie beim Leer-Riegel weiter oben, und sie ist der
+  // eigentliche Grund fuer die Platzierung: Der Label-Block weiter unten SCHREIBT
+  // bereits (insertDomainLabel/assignDomainLabel legen eine domains-Zeile an). Laege
+  // der Riegel danach, hinterliesse ein ABGELEHNTER Publish eine frische Label-Zeile —
+  // eine Live-URL, die nie Inhalt bekommt. Hier oben schreibt die Ablehnung GAR NICHTS.
+  // Ans ENDE der bestehenden Tor-Kette gesetzt, bleibt diese unveraendert; der Eingriff
+  // in diese Kern-Datei ist damit rein additiv (wie die vier Consent-Tore davor).
+  //
+  // WARUM AUF DEM QUELLTEXT UND NICHT AUF functionalHtml: Das erzeugte Dokument traegt
+  // unsere Bloecke IMMER — es ist der Erzeuger, der sie einbaut. Die Frage "hat der
+  // Betreiber ALTE Bloecke im Text?" laesst sich daran gar nicht stellen. snapshot.html
+  // ist der Editor-Quelltext der Variante A; variantB.html seit dieser Scheibe der von
+  // B (P11.11-20).
+  //
+  // WARUM KEIN ZAEHLEN ("steht ein Block mehr als einmal da?") — das ist eine MESSUNG
+  // und keine Erwaegung: In Zustand 1 der Re-Import-Messung stand jeder alte Block
+  // GENAU EINMAL da (VERMERK P11.11-16), und genau dort fielen die Conversions ins
+  // falsche Projekt. Ein Zaehl-Riegel haette dort NICHTS gemeldet.
+  //
+  // publishesVariantB IST DASSELBE const, das der Leer-Riegel und der Write weiter
+  // unten benutzen — der Riegel prueft damit STRUKTURELL genau das, was geschrieben
+  // wird, statt es per Kommentar zu behaupten.
+  //
+  // DER SCHADEN, gegen den das steht, ist STILLER DATENVERLUST: Niemand sieht einen
+  // Fehler, die Zahlen sind falsch, und sie sehen richtig aus.
+  const ownBlocksTarget = ownBlocksPublishTarget(
+    snapshot.html,
+    publishesVariantB ? { html: variantB.html } : null
+  );
+  if (ownBlocksTarget)
+    return {
+      ok: false,
+      // Die Auswahl trifft der AUFRUFER, nicht das Praedikat — wie bei den drei
+      // EMPTY_*-Saetzen. Ohne Variante B der neutrale Satz ("Variante" waere dort
+      // Fachjargon fuer einen Zustand, den der Nutzer gar nicht kennt); mit B der
+      // varianten-spezifische, weil die Warnung im Bereich BAUEN nur die AKTIVE
+      // Variante zeigt und der Betreiber sonst raten muesste (P11.11-22, Punkt (d)).
+      error: !publishesVariantB
+        ? OWN_BLOCKS_PUBLISH_MESSAGE
+        : ownBlocksTarget === "a"
+          ? OWN_BLOCKS_VARIANT_A_MESSAGE
+          : ownBlocksTarget === "b"
+            ? OWN_BLOCKS_VARIANT_B_MESSAGE
+            : OWN_BLOCKS_VARIANT_BOTH_MESSAGE,
+    };
 
   // DER PLATZHALTER BEI "off" — dieselbe Bauform und derselbe Grund wie bei
   // deliveredAppearance darunter: Nach dem Abbruch ist "unknown" nur noch bei "off"

@@ -18,7 +18,7 @@ const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 
 // id des injizierten JSON-Datenblocks; das Wiring-Script liest die Tabelle per
 // getElementById genau hier aus.
-const MAPPINGS_SCRIPT_ID = "pagesmith-mappings";
+export const MAPPINGS_SCRIPT_ID = "pagesmith-mappings";
 
 // Vorschau- vs. Export- vs. Editier-Verhalten: dieselbe Wiring-Engine, EINE
 // mode-Verzweigung — kein Duplikat-Script.

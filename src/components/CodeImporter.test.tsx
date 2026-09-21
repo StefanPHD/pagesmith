@@ -152,6 +152,9 @@ vi.mock("@/app/projects/domain-actions", () => ({
 // Aufruf-Zaehlung in Scheibe 10b-1 (T2) greifbar. KEIN neuer Mock.
 import { addCustomDomain, listProjectDomains } from "@/app/projects/domain-actions";
 import CodeImporter from "@/components/CodeImporter";
+// Die Fixture der 11.11d-Laeufe wird vom ECHTEN Erzeuger gebaut, nicht nachgebaut —
+// der Gegenstand jener Scheibe ist der WIEDER IMPORTIERTE EIGENE EXPORT.
+import { generateFunctional } from "@/lib/generate";
 // Der ANBIETER-NAME aus derselben Konstante, die die Ansicht liest. Der Test
 // behauptet damit, dass der Name GERENDERT wird — nicht, wie er lautet.
 import { TARGET_CARDS } from "@/lib/tracking/target-cards";
@@ -4909,5 +4912,258 @@ describe("Scheibe 11.11a — der Sandbox-Waechter", () => {
         sandboxWerte((await vorschauRahmen()).getAttribute("sandbox")).sort(),
       ).toEqual([...SANDBOX_SOLL.vorschau].sort());
     });
+  });
+});
+
+// =============================================================================
+// EIGENE PAGESMITH-BAUSTEINE IM IMPORTIERTEN TEXT (Phase 11.11, Scheibe 11.11d)
+//
+// DIE FIXTURE WIRD VOM ECHTEN ERZEUGER GEBAUT, nicht nachgebaut: Der Gegenstand dieser
+// Scheibe ist der WIEDER IMPORTIERTE EIGENE EXPORT, und ein handgeschriebener
+// Schnipsel waere eine Attrappe in einer Gestalt, die es im Betrieb nicht gibt.
+//
+// DIE ERWARTETEN WORTLAUTE SIND GETIPPT, NICHT AUS own-blocks.ts IMPORTIERT — ein
+// Import machte diese Laeufe zum SPIEGEL, der jeden Tippfehler bestaetigt
+// (docs/immer-beachten.md, EIN WAECHTER UEBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG
+// NIE AUS DEM CODE). Quelle der Wortlaute: ENTSCHEIDUNG P11.11-22, Punkt (e).
+// =============================================================================
+describe("CodeImporter — eigene Bausteine aus einem frueheren Export (11.11d)", () => {
+  const SAUBER =
+    '<!DOCTYPE html><html lang="de"><head><title>S</title></head>\n' +
+    "<body>\n" +
+    '  <h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>\n' +
+    '  <button data-pagesmith-id="ps-bbbbbb">Kaufen</button>\n' +
+    "</body></html>";
+
+  // Ein echtes Export-Dokument — das, was ein Betreiber herunterlaedt und wieder
+  // importiert.
+  const MIT_BAUSTEINEN = generateFunctional(
+    SAUBER,
+    [
+      {
+        elementId: "ps-bbbbbb",
+        type: "redirect",
+        config: { url: "https://example.com/x", openInNewTab: false },
+      },
+    ],
+    "export",
+    { metaPixelId: "1234567890", trackingKey: "tk-alt", capiProxyUrl: "/api/e" },
+  );
+
+  const WARNUNG =
+    "Dieser Code enthält Pagesmith-Bausteine aus einem früheren Export. Sie senden Conversions an das ursprüngliche Projekt und würden sich beim Veröffentlichen verdoppeln.";
+  const KNOPF = "Pagesmith-Bausteine entfernen";
+  const EXPORT_GESPERRT =
+    "Export gesperrt: Der Code enthält noch Pagesmith-Bausteine aus einem früheren Export. Entferne sie zuerst.";
+  const PUBLISH_NEUTRAL =
+    "Veröffentlichen gesperrt: Der Code enthält noch Pagesmith-Bausteine aus einem früheren Export. Entferne sie im Bereich Bauen.";
+  const PUBLISH_B =
+    "Veröffentlichen gesperrt: Variante B enthält noch Pagesmith-Bausteine aus einem früheren Export. Entferne sie im Bereich Bauen.";
+  const REST_SATZ =
+    "Nicht alles ließ sich automatisch entfernen. Bitte diese Stellen von Hand löschen:";
+
+  const oeffneEinstellungen = () =>
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+  const publishKnopf = () =>
+    screen.getByRole("button", {
+      name: /^(Veröffentlichen|Erneut veröffentlichen)$/,
+    }) as HTMLButtonElement;
+
+  it("U1: Code MIT Bausteinen -> Warnung und Knopf stehen da", async () => {
+    // POSITIVKONTROLLE: die Fixture traegt wirklich Bausteine.
+    expect(MIT_BAUSTEINEN).toContain('id="pagesmith-mappings"');
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={MIT_BAUSTEINEN} />,
+    );
+    expect(await screen.findByText(WARNUNG)).toBeTruthy();
+    expect(screen.getByRole("button", { name: KNOPF })).toBeTruthy();
+  });
+
+  it("U2: der Knopf entfernt sie aus dem Editor-Text, und die Warnung verschwindet", async () => {
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={MIT_BAUSTEINEN} />,
+    );
+    await screen.findByText(WARNUNG);
+    fireEvent.click(screen.getByRole("button", { name: KNOPF }));
+
+    await waitFor(() => expect(screen.queryByText(WARNUNG)).toBeNull());
+    expect(screen.queryByRole("button", { name: KNOPF })).toBeNull();
+    // Der Text im Editor traegt die Bausteine wirklich nicht mehr …
+    const feld = document.querySelector("textarea") as HTMLTextAreaElement;
+    expect(feld.value).not.toContain('id="pagesmith-mappings"');
+    expect(feld.value).not.toContain('id="pagesmith-consent"');
+    // … die Inhalte des Betreibers aber schon.
+    expect(feld.value).toContain('data-pagesmith-id="ps-bbbbbb"');
+    expect(feld.value).toContain("Kaufen");
+  });
+
+  it("U3: sauberer Code -> WEDER Warnung NOCH Knopf (mit Positivkontrolle)", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={SAUBER} />);
+    // DER ANKER IST DER ZUSTAND NACH DER ENTPRELLUNG, NICHT IRGENDEINER DAVOR: Die
+    // Warnung haengt an debouncedCode, und der ist beim ersten Render noch "". Ein
+    // Anker, den auch der ALTE Zustand erfuellt, macht diese Abwesenheits-Zusicherung
+    // trivial wahr (docs/immer-beachten.md, EINE VORBEDINGUNG, DIE AUCH DER ALTE
+    // ZUSTAND ERFUELLT, IST KEINE VORBEDINGUNG). "(2)" kann nur der verarbeitete Code
+    // herstellen: ein Button und eine Ueberschrift.
+    await screen.findByText("Erkannte Elemente (2)");
+    expect(screen.queryByText(WARNUNG)).toBeNull();
+    expect(screen.queryByRole("button", { name: KNOPF })).toBeNull();
+  });
+
+  it("U4: der Veroeffentlichen-Knopf ist gesperrt und nennt den Grund", async () => {
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={MIT_BAUSTEINEN} />,
+    );
+    await screen.findByText(WARNUNG);
+    oeffneEinstellungen();
+    await waitFor(() => expect(publishKnopf().disabled).toBe(true));
+    expect(document.body.textContent).toContain(PUBLISH_NEUTRAL);
+  });
+
+  it("U4b: der Knopf ist bei sauberem Code NICHT gesperrt — Gegenprobe zu U4", async () => {
+    // Ohne diese Gegenprobe waere U4 von einem Knopf, der IMMER gesperrt ist, nicht zu
+    // unterscheiden.
+    render(<CodeImporter initialProjectId="proj-1" initialCode={SAUBER} />);
+    await screen.findByText("Erkannte Elemente (2)");
+    oeffneEinstellungen();
+    // "false" ist hier ein tauglicher Anker: VOR der Entprellung ist der Knopf wegen
+    // des Leer-Riegels gesperrt, der Zustand ist also unterscheidbar.
+    await waitFor(() => expect(publishKnopf().disabled).toBe(false));
+    expect(document.body.textContent).not.toContain(PUBLISH_NEUTRAL);
+  });
+
+  it("U4c: liegt der Fund in der INAKTIVEN Variante B, nennt die Meldung B", async () => {
+    // Der Fall, fuer den Entscheidung P11.11-22, Punkt (d) die Variantenangabe
+    // verlangt: Die Warnung im Bereich BAUEN zeigt NUR die aktive Variante — ohne den
+    // Variantennamen saehe der Betreiber eine Sperre ohne sichtbare Ursache.
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={SAUBER}
+        initialVariantBHtml={MIT_BAUSTEINEN}
+        initialVariantBMappings={[]}
+      />,
+    );
+    await screen.findByText("Erkannte Elemente (2)");
+    oeffneEinstellungen();
+    // DER ANKER IST DIE MELDUNG SELBST, NICHT "der Knopf ist gesperrt": Gesperrt ist
+    // er VOR der Entprellung schon, und zwar vom LEER-Riegel (debouncedCode ist beim
+    // ersten Render ""). Ein Anker, den auch der alte Zustand erfuellt, trennt VORHER
+    // nicht von NACHHER — dieser Lauf ist beim ersten Wurf genau daran gescheitert.
+    await screen.findByText(PUBLISH_B);
+    expect(publishKnopf().disabled).toBe(true);
+    expect(document.body.textContent).not.toContain(PUBLISH_NEUTRAL);
+    // Die Warnung im Bereich BAUEN steht NICHT da — A ist sauber.
+    expect(screen.queryByText(WARNUNG)).toBeNull();
+  });
+
+  it("U5: der Export-Download wird verweigert und meldet es", async () => {
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={MIT_BAUSTEINEN} />,
+    );
+    await screen.findByText(WARNUNG);
+    const erzeugt = vi
+      .spyOn(URL, "createObjectURL")
+      .mockReturnValue("blob:test");
+    fireEvent.click(screen.getByRole("button", { name: "Projekt exportieren" }));
+    await screen.findByText(EXPORT_GESPERRT);
+    // … und es ist WIRKLICH nichts erzeugt worden.
+    expect(erzeugt).not.toHaveBeenCalled();
+    erzeugt.mockRestore();
+  });
+
+  it("U6: das Kopieren wird verweigert und meldet es", async () => {
+    const writeText = vi.fn(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText },
+      configurable: true,
+    });
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={MIT_BAUSTEINEN} />,
+    );
+    await screen.findByText(WARNUNG);
+    fireEvent.click(
+      screen.getByRole("button", { name: "In Zwischenablage kopieren" }),
+    );
+    await screen.findByText(EXPORT_GESPERRT);
+    expect(writeText).not.toHaveBeenCalled();
+    expect(screen.queryByText("Kopiert ✓")).toBeNull();
+  });
+
+  it("U7: der Warntext traegt NICHT die Klasse truncate", async () => {
+    // DIREKTER WAECHTER GEGEN DIE TEST-FALLE aus Vermerk P11.11-17, Punkt (k): Der
+    // Selektor span.truncate.text-red-600 bezeichnet den ZENTRALEN Fehlerkanal. Ein
+    // roter Text mit beiden Klassen braeche zwei Bestandslaeufe, und einer davon
+    // braeche STILL — er bekaeme einfach den falschen Satz.
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={MIT_BAUSTEINEN} />,
+    );
+    const el = await screen.findByText(WARNUNG);
+    expect(el.className).toContain("text-red-600");
+    expect(el.className).not.toContain("truncate");
+    expect(document.querySelector("span.truncate.text-red-600")).toBeNull();
+  });
+
+  it("U8: bleibt eine Kennung in einem KOMMENTAR stehen, NENNT die Meldung sie", async () => {
+    // Die Nachbedingung aus Entscheidung P11.11-19. Ohne sie waere der Publish-Riegel
+    // ein toter Zustand, den kein Knopf loesen kann.
+    const mitKommentar = MIT_BAUSTEINEN.replace(
+      "</body>",
+      '<!-- id="pagesmith-mappings" Rest --></body>',
+    );
+    render(<CodeImporter initialProjectId="proj-1" initialCode={mitKommentar} />);
+    await screen.findByText(WARNUNG);
+    fireEvent.click(screen.getByRole("button", { name: KNOPF }));
+
+    await screen.findByText(REST_SATZ);
+    expect(document.body.textContent).toContain('id="pagesmith-mappings"');
+    // Die Warnung steht weiter — der Riegel greift also zu Recht noch.
+    expect(screen.queryByText(WARNUNG)).not.toBeNull();
+  });
+
+  // ---------------------------------------------------------------------------
+  // K2: DIE ZWEI MELDUNGEN WERDEN AUS DEM AKTUELLEN TEXT ABGELEITET, NICHT AUS EINEM
+  // GESPEICHERTEN ZUSTAND (Dauerregel ABLEITEN STATT LOESCHEN).
+  //
+  // BEIDE LAEUFE ENTFERNEN VON HAND, nicht per Knopf — der Knopf raeumt seine eigene
+  // Meldung ohnehin ab. Der Fall, der zaehlt, ist der, in dem die URSACHE auf einem
+  // Weg verschwindet, den der Setzer der Meldung nie sieht.
+  // ---------------------------------------------------------------------------
+  const feld = () => document.querySelector("textarea") as HTMLTextAreaElement;
+
+  it("U9: Export verweigert -> Bloecke VON HAND entfernt -> die Export-Meldung ist weg", async () => {
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={MIT_BAUSTEINEN} />,
+    );
+    await screen.findByText(WARNUNG);
+    fireEvent.click(screen.getByRole("button", { name: "Projekt exportieren" }));
+    await screen.findByText(EXPORT_GESPERRT);
+
+    // Von Hand sauber machen — kein Knopf, kein Projektwechsel.
+    fireEvent.change(feld(), { target: { value: SAUBER } });
+
+    // ANKER: die Warnung ist abgeleitet und verschwindet mit der Entprellung. Erst
+    // danach ist die Frage nach der Export-Meldung ueberhaupt gestellt.
+    await waitFor(() => expect(screen.queryByText(WARNUNG)).toBeNull());
+    expect(screen.queryByText(EXPORT_GESPERRT)).toBeNull();
+  });
+
+  it("U10: Rest-Meldung steht -> Fundstelle VON HAND geloescht -> die Rest-Meldung ist weg", async () => {
+    const mitKommentar = MIT_BAUSTEINEN.replace(
+      "</body>",
+      '<!-- id="pagesmith-mappings" Rest --></body>',
+    );
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={mitKommentar} />,
+    );
+    await screen.findByText(WARNUNG);
+    fireEvent.click(screen.getByRole("button", { name: KNOPF }));
+    await screen.findByText(REST_SATZ);
+
+    fireEvent.change(feld(), { target: { value: SAUBER } });
+
+    await waitFor(() => expect(screen.queryByText(WARNUNG)).toBeNull());
+    expect(screen.queryByText(REST_SATZ)).toBeNull();
+    expect(document.body.textContent).not.toContain('id="pagesmith-mappings"');
   });
 });

@@ -271,6 +271,10 @@ describe("publishProject (Scheibe 7a)", () => {
 describe("publishProject — Variante B (Phase 9 Scheibe 9a)", () => {
   const variantB = {
     functionalHtml: "<html><body>VARIANTE B</body></html>",
+    // html = der QUELLTEXT von B, seit Scheibe 11.11d Pflicht (P11.11-20). Er ist
+    // bewusst ein ANDERER String als functionalHtml: der Quelltext traegt unsere
+    // Bloecke nicht, das erzeugte Dokument schon.
+    html: "<html><body>QUELLE B</body></html>",
     mappings: [
       { elementId: "ps-b", type: "track" as const, config: { event: "Lead" } },
     ],
@@ -631,7 +635,14 @@ describe("publishProject — domains-Zeile ist die alleinige Wahrheit", () => {
 // (Auflage 1); ohne diese Assertion ist der Test als Waechter wertlos.
 // =============================================================================
 describe("publishProject — Leer-Riegel", () => {
-  const B = (html: string) => ({ functionalHtml: html, mappings: [] });
+  // Der Leer-Riegel urteilt ueber functionalHtml; der Quelltext reist seit Scheibe
+  // 11.11d daneben mit und ist hier bewusst IMMER nicht-leer und baustein-frei, damit
+  // diese Laeufe weiterhin GENAU den Leer-Riegel messen und nicht den neuen daneben.
+  const B = (html: string) => ({
+    functionalHtml: html,
+    html: "<h1>QUELLE B</h1>",
+    mappings: [],
+  });
 
   it("T1 A leer, kein B -> Ablehnung, KEIN update UND KEIN domains-insert (Platzierung vor dem Label-Block)", async () => {
     const { rec } = makeClient({
@@ -757,6 +768,7 @@ describe("publishProject — Leer-Riegel", () => {
 describe("publishProject — der Einwilligungs-Schalter (Scheibe 11.5a)", () => {
   const variantB11_5a = {
     functionalHtml: "<html><body>VARIANTE B</body></html>",
+    html: "<html><body>QUELLE B</body></html>",
     mappings: [
       { elementId: "ps-b", type: "track" as const, config: { event: "Lead" } },
     ],
@@ -870,6 +882,7 @@ describe("publishProject — der Einwilligungs-Schalter (Scheibe 11.5a)", () => 
 describe("publishProject — die Werte des Schalters (Scheibe 11.5d)", () => {
   const variantB11_5d = {
     functionalHtml: "<html><body>VARIANTE B</body></html>",
+    html: "<html><body>QUELLE B</body></html>",
     mappings: [
       { elementId: "ps-b", type: "track" as const, config: { event: "Lead" } },
     ],
@@ -1626,6 +1639,7 @@ describe("publishProject — Custom-Pixel-Tore (Scheibe 11.6a)", () => {
     });
     const res = await publishProject("proj-1", "<h1>LIVE</h1>", snapshot, {
       functionalHtml: "<h1>B</h1>",
+      html: "<h1>QUELLE B</h1>",
       mappings: [
         {
           elementId: "b1",
@@ -1655,6 +1669,144 @@ describe("publishProject — Custom-Pixel-Tore (Scheibe 11.6a)", () => {
         { elementId: "b1", type: "track", config: { event: "Purchase", code: "foo();" } },
       ],
     });
+    expect(res.ok).toBe(true);
+    expect(rec.updatePatch).not.toBeNull();
+  });
+});
+
+// =============================================================================
+// EIGENE BAUSTEINE AUS EINEM FRUEHEREN EXPORT (Phase 11.11, Scheibe 11.11d;
+// bindende Entscheidungen P11.11-10 und P11.11-20)
+//
+// DIE FIXTURE TRAEGT DIE MERKMALE WOERTLICH, ohne den Erzeuger zu rufen: Dieser Lauf
+// misst den RIEGEL, nicht den Erzeuger, und ein vollstaendiges Export-Dokument machte
+// nur die Ausgabe unlesbar. Dass die Merkmale die richtigen sind, sichern die Laeufe in
+// lib/own-blocks.test.ts gegen ein ECHTES Export-Dokument ab.
+//
+// DIE ERWARTETEN WORTLAUTE SIND GETIPPT, NICHT IMPORTIERT (Quelle: ENTSCHEIDUNG
+// P11.11-22, Punkt (e)) — ein Import machte diese Laeufe zum SPIEGEL.
+// =============================================================================
+describe("publishProject — eigene Bausteine aus einem frueheren Export", () => {
+  const MIT = '<html><body><script id="pagesmith-mappings">[]</scr' + "ipt></body></html>";
+  const OHNE = "<h1>sauberer Quelltext</h1>";
+  const B = (html: string) => ({
+    functionalHtml: "<h1>B</h1>",
+    html,
+    mappings: [],
+  });
+
+  it("R1: A traegt Bausteine -> Ablehnung, KEIN update UND KEIN domains-insert", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      // Bewusst OHNE settings.hosting und OHNE labelRows — der ERSTE Publish, also
+      // genau der Fall, in dem der Label-Block ein FRISCHES Label vergaebe. Ein Riegel
+      // hinter dem Block hinterliesse eine Live-Adresse, die nie Inhalt bekommt.
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+    });
+
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+      ...snapshot,
+      html: MIT,
+    });
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.error).toBe(
+      "Veröffentlichen gesperrt: Der Code enthält noch Pagesmith-Bausteine aus einem früheren Export. Entferne sie im Bereich Bauen.",
+    );
+    // Die Platzierung VOR dem Label-Block, an der Wirkung gemessen.
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+    expect(rec.fromTables).not.toContain("domains");
+  });
+
+  it("R2: A ist SAUBER, B traegt Bausteine -> Ablehnung, die Meldung nennt B", async () => {
+    // DER FALL, DEN DER SERVER OHNE variantB.html GAR NICHT SEHEN KOENNTE (P11.11-20):
+    // Bis zu dieser Scheibe reiste fuer B nur das ERZEUGTE Dokument, und daran ist die
+    // Frage "hat der Betreiber alte Bloecke im Text?" nicht zu stellen. Ein Publish
+    // schreibt BEIDE Varianten in EINEM atomaren Write.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "P", settings: {}, html_b: "<h1>b</h1>" },
+        error: null,
+      },
+    });
+
+    const res = await publishProject(
+      "proj-1",
+      "<h1>LIVE</h1>",
+      { ...snapshot, html: OHNE },
+      B(MIT),
+    );
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.error).toBe(
+      "Veröffentlichen gesperrt: Variante B enthält noch Pagesmith-Bausteine aus einem früheren Export. Entferne sie im Bereich Bauen.",
+    );
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+  });
+
+  it("R2b: BEIDE Varianten tragen Bausteine -> die Meldung nennt beide", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "P", settings: {}, html_b: "<h1>b</h1>" },
+        error: null,
+      },
+    });
+
+    const res = await publishProject(
+      "proj-1",
+      "<h1>LIVE</h1>",
+      { ...snapshot, html: MIT },
+      B(MIT),
+    );
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.error).toBe(
+      "Veröffentlichen gesperrt: Variante A und Variante B enthalten noch Pagesmith-Bausteine aus einem früheren Export. Entferne sie im Bereich Bauen.",
+    );
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("R3: beide SAUBER -> der Publish laeuft durch (Gegenprobe)", async () => {
+    // Ohne diese Gegenprobe waeren R1/R2/R2b von einem Riegel, der IMMER sperrt, nicht
+    // zu unterscheiden.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "P", settings: {}, html_b: "<h1>b</h1>" },
+        error: null,
+      },
+    });
+
+    const res = await publishProject(
+      "proj-1",
+      "<h1>LIVE</h1>",
+      { ...snapshot, html: OHNE },
+      B(OHNE),
+    );
+    expect(res.ok).toBe(true);
+    expect(rec.updatePatch).not.toBeNull();
+  });
+
+  it("R4: B existiert NICHT -> ein mitgeschicktes variantB wird NICHT geprueft", async () => {
+    // Der null-Vertrag des Praedikats, an der Wirkung gemessen: Der Riegel darf B nur
+    // pruefen, wenn B auch GESCHRIEBEN wird. Ein alter Tab, der nach dem Entfernen der
+    // Variante noch ein variantB im Zustand haelt, darf keinen legitimen Publish
+    // blockieren. html_b fehlt -> hasVariantB ist false.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+    });
+
+    const res = await publishProject(
+      "proj-1",
+      "<h1>LIVE</h1>",
+      { ...snapshot, html: OHNE },
+      B(MIT),
+    );
     expect(res.ok).toBe(true);
     expect(rec.updatePatch).not.toBeNull();
   });

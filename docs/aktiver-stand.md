@@ -1017,6 +1017,78 @@ Entscheidung unberührt.**
 **PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21; der Zuschnitt-Satz GELESEN in Abschnitt 9
 dieser Datei, die Roadmap-Auflage GELESEN an der Roadmap-Zeile 11.11 (CC, 2026-09-21).
 
+### ENTSCHEIDUNG P11.11-32 — DIE FREIGABEN ZUM PLAN DER SCHEIBE 11.11b
+
+**SIE STEHT VOR DEM BAU UND NICHT DANACH** — sechs Punkte, die der Plan offengelassen, als
+Owner-Frage gemeldet oder erst im Bau entschieden hätte. Dieselbe Bauform wie ENTSCHEIDUNG
+P11.11-22 zur Scheibe 11.11d.
+
+**(a) DER `export` AN `collectOwnNodes` (`src/lib/own-blocks-strip.ts`) IST FREIGEGEBEN.**
+Er ist die einzige Änderung an einer geschützten Datei und umfasst GENAU EIN WORT. **DER
+GRUND IST ENTSCHEIDUNG P11.11-26:** Die Erkennung muss "eigen" mit DERSELBEN Knotenauswahl
+prüfen wie das Entfernen, und jede andere Form wäre eine zweite Wahrheit — ein eigenes
+Prädikat daneben, eine Kopie der Auswahl oder ein neu getipptes Merkmal. **DIE
+NEBENWIRKUNG IST GEMESSEN UND KEINE:** Zur Laufzeit erreichen nur `src/lib/mappings.ts` und
+`src/components/CodeImporter.tsx` die Datei `detect.ts`; `actions.ts`, `generate.ts` und
+`event-names.ts` importieren `mappings.ts` ALLE `import type` (GEMESSEN am Repo, CC,
+2026-09-21). **Kein Server-Modul zieht damit den DOM-Code aus `own-blocks-strip.ts` mit** —
+die Invariante, für die 11.11d die zwei Dateien überhaupt getrennt hat, bleibt gewahrt.
+Präzedenz: P11.11-22, Punkt (a).
+
+**(b) DER GOOGLE-TAG BLEIBT IN 11.11b DIE KLASSE `pixel`.** **IN DIESER SCHEIBE IST DAS
+FOLGENLOS**, weil die Klasse allein das Etikett setzt und 11.11b keine Handlung anbietet
+(ENTSCHEIDUNG P11.11-31). **OB ER IN 11.11c ENTFERNT WERDEN DARF, IST EINE OWNER-FRAGE UND
+GEHÖRT IN DEN PLAN 11.11c** — und der Grund gehört dazu, sonst wird die Frage dort als
+erledigt gelesen: **derselbe Tag trägt auch Analytics.** Die Doku des Anbieters nennt für
+`gtag.js` ausdrücklich Google Ads, Analytics, Campaign Manager, Display & Video 360 und
+Search Ads 360 (docs/ziel-befunde.md, Google-Abschnitt, Teil (cs)). **Ein Entfernen nähme
+dem Betreiber möglicherweise seine Analytics mit, nicht nur unser Ziel.**
+
+**(c) DIE GRUPPIERUNG DER FUNDLISTE IST ZWEIGETEILT.** **BEKANNTE Anbieter werden JE
+ANBIETER gezeigt, mit der ZAHL der Fundstellen; UNBEKANNTE JE KNOTEN**, mit der Adresse
+oder — bei einem Script ohne Adresse — dem Wort `Inline-Skript` und einem kurzen Ausschnitt.
+**DER GRUND IST DIE GRUNDMENGE, nicht der Geschmack:** Ein Basiscode plus drei
+Ereigniszeilen desselben Pixels sind VIER Knoten und EINE Tatsache; vier Zeilen zu zeigen
+verdeckt sie. Bei einem UNBEKANNTEN Script gibt es dagegen keinen Anbieter, nach dem man
+gruppieren könnte — dort ist der Knoten die einzige Einheit, die es gibt.
+
+**(d) EIN KNOTEN MIT MEHREREN ANBIETERN WIRD ALLEN ZUGEORDNET, UND EINE ADRESSE GEHT VOR
+EINEM NAMEN.** Trifft eine bekannte ADRESSE, entscheidet sie allein. Treffen nur NAMEN
+mehrerer Anbieter — ein Inline-Script, das `fbq(` und `gtag(` ruft —, wird der Knoten
+ALLEN zugeordnet und als EIN Fund mit mehreren Anbietern gezeigt. **DER GRUND: DER ERSTE
+TREFFER IST EINE WILLKÜR.** Wer nur ihn zählt, macht die Reihenfolge der Signaturliste zur
+Produktaussage; ein Inline-Script mit zwei Pixeln erschiene dann als eines, und welches
+gewinnt, hinge an der Sortierung. **Die Adresse geht vor, weil sie das härtere Merkmal
+ist:** Sie steht in einem Attribut, das nur ein Anbieter belegen kann, während ein Name im
+Rumpf jedes beliebigen Scripts stehen darf.
+
+**(e) DER SATZ IN `src/components/PublishView.tsx` WIRD ERSETZT.** Heute steht dort "Ein
+bereits eingebundenes Consent-Management wird nicht erkannt — …". **MIT DER ERKENNUNG WIRD
+ER FALSCH**, und ein falscher Satz zwei Bildschirme neben einer Liste, die das Gegenteil
+zeigt, ist teurer als eine fehlende Warnung. Er ist von KEINEM Test gedeckt (GEMESSEN, CC,
+2026-09-21: Achse `nicht erkannt` über die drei Komponenten-Testdateien, NULL Treffer) —
+der Ersatz kippt also keinen Bestandslauf, und **genau deshalb braucht er einen eigenen
+Test, der das Verschwinden des alten Satzes festnagelt.**
+
+**(f) DIE ELF WORTLAUTE SIND FREIGEGEBEN (OWNER, 2026-09-21).** Sie stehen im Bau-Prompt
+dieses Tages im Wortlaut; **die Freigabe ist OWNER, weil der Owner diesen Prompt
+weiterreicht.** Sie sind gegen die vier dokumentweiten Abwesenheits-Zusicherungen aus
+`src/components/CodeImporter.test.tsx` (`/%/`, `/gerettet/i`, `/mindestens/`, `/NaN/`) und
+gegen die dreifache Heading-Abfrage `"Tracking-Pixel"` geprüft: **NULL Treffer in beide
+Richtungen** (GEMESSEN, CC, 2026-09-21). **DIE SCHREIBUNG IST DURCHGEHEND "SKRIPTE"** — die
+Form "Scripte" kommt weder in der Oberfläche noch in einem Test vor.
+**WAS DIE PRÜFUNG NICHT DECKT UND WAS DESHALB EINE AUFLAGE BLEIBT:** Der AUSSCHNITT eines
+unbekannten Inline-Scripts ist Text des Betreibers und kann jede dieser vier Nadeln
+tragen. Heute fällt das nicht auf, weil KEINE Fixture in
+`src/components/CodeImporter.test.tsx` ein `<script`, `<img`, `<iframe` oder `<noscript`
+enthält (GEMESSEN, NULL Treffer) und die vier Zusicherungen ohne `initialCode` rendern.
+**WER DIESER DATEI EINE FIXTURE MIT FREMDEM SCRIPT GIBT, PRÜFT ZUERST DIESE VIER ZEILEN.**
+
+**PROVENIENZ:** (a) bis (e) ARCHITEKT-ENTSCHEIDUNG 2026-09-21, (f) OWNER-FREIGABE desselben
+Tages. Die Messungen zum Modulgraphen, zur Testabdeckung des alten Satzes und zur
+Wortlaut-Kollision sind GEMESSEN am Repo (CC, 2026-09-21); die Mehrprodukt-Eigenschaft des
+Google-Tags ist GELESEN (docs/ziel-befunde.md, Google-Abschnitt, Teil (cs)).
+
 ---
 
 ## Die offenen Designfragen
@@ -2063,6 +2135,32 @@ belegt, dass er byte-gleich blieb).
   Client erzeugt den Emitter nie" war durch den Re-Import widerlegt; der Punkt sagt seither,
   dass die Idempotenz auf dem Riegel aus 11.11d ruht statt auf der Annahme allein.
 
+### VORRAT P11.11-6 — DIE MODUL-GRENZE, DIE `own-blocks-strip.ts` VOM SERVER FERNHÄLT, IST NICHT ABGESICHERT
+
+**DER ZUSTAND HEUTE IST IN ORDNUNG, und das ist GEMESSEN (CC, 2026-09-21):** Zur Laufzeit
+erreichen `detect.ts` nur `src/lib/mappings.ts` (Wert: `MAX_LABEL`) und
+`src/components/CodeImporter.tsx`; `mappings.ts` wiederum erreichen zur Laufzeit nur
+`ActionPanel.tsx` und `CodeImporter.tsx` — beide Client. `src/app/projects/actions.ts`
+(`"use server"`), `src/lib/generate.ts` und `src/lib/tracking/event-names.ts` importieren
+`mappings.ts` ALLE `import type`, und eine type-only-Kante ist zur Laufzeit gelöscht.
+**Kein Server-Modul erreicht `detect.ts`.**
+
+**WAS KIPPT, WENN SICH DAS ÄNDERT:** Seit der Scheibe 11.11b importiert `detect.ts` die
+Datei `own-blocks-strip.ts` (für `collectOwnNodes`, ENTSCHEIDUNG P11.11-26). **Value-
+importiert irgendwann EIN Server-Modul `mappings.ts` oder `detect.ts`, reist der DOM-Code
+aus `own-blocks-strip.ts` mit** — und damit fällt genau die Trennung, für die 11.11d die
+zwei Dateien angelegt hat (Kopfkommentar von `own-blocks.ts`: "darf deshalb KEIN DOM
+tragen").
+
+**DER SCHADEN IST HEUTE KLEIN UND DER BEFUND TROTZDEM WERT, AUFGESCHRIEBEN ZU WERDEN:**
+`own-blocks-strip.ts` ist gegen einen Server-Lauf gehärtet — `DOMParser` nur INNERHALB von
+`stripOwnBlocks` hinter einem `typeof`-Guard, `Node.TEXT_NODE` bewusst als die Zahl 3,
+`CSS.escape` bewusst vermieden (alles im Dateikopf begründet). Es stürzt also nichts ab.
+**WAS FEHLT, IST DER WÄCHTER:** Es gibt keinen Lauf und kein Gate, das die Kante meldet.
+
+**KEIN TRIGGER BENANNT**, und das ist Absicht: Der Fall tritt nicht zu einem Zeitpunkt ein,
+sondern mit einer Zeile, die jemand schreibt, ohne sie als Grenzübertritt zu erkennen.
+
 ---
 
 ## Hebungs-Kandidaten
@@ -2212,6 +2310,28 @@ den Zuschnitt entscheiden und nicht erst den Bau:**
    PARST MIT AUSGESCHALTETEM SKRIPTING — WER KNOTEN DARAUS IN EINE LEBENDE SEITE ÜBERNIMMT
    …). Ein Entfernen, das nur das `<script>` nimmt, lässt das Rückfall-Bild stehen — und das
    zählt weiter.
+3. **DER PLATZ DES `<noscript>` ENTSCHEIDET, WAS BEIM ENTFERNEN ZURÜCKBLEIBT** (GEMESSEN
+   an einer Sonde, CC, 2026-09-21, jsdom 29.1.1, im Plan der Scheibe 11.11b unter G4):
+   Steht das `<noscript>` im **`head`**, ist es nach dem Parse **LEER** (`childElementCount
+   = 0`), und sein `<img>` liegt im **`body`**; steht es im **`body`**, bleibt das `<img>`
+   sein Kind. **FÜR DIE ERKENNUNG IST DAS FOLGENLOS** — beide Fälle findet ein
+   dokumentweites `querySelectorAll("img, iframe")`, und genau deshalb erkennt 11.11b über
+   die ADRESSE und nicht über den Platz (ENTSCHEIDUNG P11.11-12, Satz 6). **FÜR DAS
+   ENTFERNEN IST ES NICHT FOLGENLOS:** Wer im `head`-Fall nur das `<img>` nimmt, lässt ein
+   leeres `<noscript>` stehen; wer im `body`-Fall das `<noscript>` nimmt, nimmt das `<img>`
+   mit. **Zwei Fälle, zwei Ergebnisse — und der Zuschnitt muss sagen, welches gewollt ist.**
+4. **EIN KNOTEN KANN MEHREREN ANBIETERN GEHÖREN**, und 11.11b zeigt ihn genau so an
+   (ENTSCHEIDUNG P11.11-32, Punkt (d)). **FÜR DAS ENTFERNEN IST DAS EINE OFFENE FRAGE:** Ein
+   Inline-Script, das `fbq(` UND `gtag(` ruft, lässt sich nicht "für einen Anbieter"
+   entfernen — es geht ganz oder gar nicht. **Ein Klick "Meta entfernen", der ausserdem
+   Google mitnimmt, ist genau der Fehltreffer, vor dem die Roadmap-Zeile 11.11 unter (e)
+   warnt.** Wie 11.11c damit umgeht — den Knoten gar nicht anbieten, warnen, oder eine
+   andere Form —, ist hier NICHT entschieden.
+
+**HIER STAND "ZWEI PRÜFSTEINE", UND DIE ÜBERSCHRIFT DES ABSATZES BLEIBT SO** — sie wird
+zitiert, und eine Umbenennung machte jedes Zitat halb falsch (docs/immer-beachten.md, EIN
+ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT). **Es sind seit
+dem 2026-09-21 VIER**; die Angabe steht in diesem Satz, nicht im Titel.
 
 **DIE REIHENFOLGE a → b → c IST NICHT BELIEBIG**, aber auch nicht zwingend: a ist von b und
 c unabhängig und könnte jederzeit laufen; **c setzt b voraus**, weil es ohne Fund nichts zu

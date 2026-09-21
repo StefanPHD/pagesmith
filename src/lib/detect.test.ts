@@ -232,8 +232,20 @@ describe("annotateAndDetect – IDs & Annotation", () => {
   });
 
   it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
-    expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
-    expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });
+    // ERWEITERT IN SCHEIBE 11.11b: PreparedPreview traegt seither das Pflichtfeld
+    // `scan`. Ein leerer Text traegt nachweislich nichts — "ok" mit leerer Liste,
+    // NICHT "skipped". toEqual vergleicht eigene Eigenschaften; ohne das dritte Feld
+    // waere dieser Lauf rot.
+    expect(annotateAndDetect("")).toEqual({
+      html: "",
+      elements: [],
+      scan: { status: "ok", findings: [] },
+    });
+    expect(annotateAndDetect("   \n\t ")).toEqual({
+      html: "",
+      elements: [],
+      scan: { status: "ok", findings: [] },
+    });
   });
 });
 
@@ -395,5 +407,50 @@ describe("LISTENER_SCRIPT – PS_SET_TEXT Live-Patch-Handler (Scheibe 3)", () =>
     ).not.toThrow();
     expect(container.querySelector("h1")?.textContent).toBe("Alt");
     cleanup();
+  });
+});
+
+// ===========================================================================
+// DIE FREMD-ERKENNUNG HAENGT AM SELBEN PARSE (Phase 11.11, Scheibe 11.11b;
+// ENTSCHEIDUNG P11.11-5 "kein zweiter Parse" und P11.11-12, Satz 1 "vor
+// stabilizeDoc").
+//
+// WAS HIER GEPRUEFT WIRD, IST DIE VERDRAHTUNG, nicht die Erkennung selbst — die
+// hat ihre eigenen Laeufe in foreign-scan.test.ts. Hier geht es darum, dass
+// annotateAndDetect das Ergebnis UEBERHAUPT durchreicht und dass beide Phasen auf
+// demselben Dokument gelaufen sind.
+// ===========================================================================
+
+describe("annotateAndDetect – der Fremd-Scan reist mit", () => {
+  it("reicht einen Fund durch UND stabilisiert im selben Lauf", () => {
+    const { html, elements, scan } = annotateAndDetect(
+      '<!DOCTYPE html><html lang="de"><head><title>t</title></head><body>' +
+        "<button>Kaufen</button>" +
+        '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>' +
+        "</body></html>"
+    );
+
+    // (1) Der Scan ist gelaufen und hat Meta gefunden.
+    expect(scan.status).toBe("ok");
+    if (scan.status !== "ok") throw new Error("unerreichbar");
+    expect(scan.findings).toHaveLength(1);
+    const fund = scan.findings[0];
+    expect(fund.art).toBe("bekannt");
+    if (fund.art !== "bekannt") throw new Error("unerreichbar");
+    expect(fund.anbieter).toEqual(["Meta"]);
+
+    // (2) UND DERSELBE LAUF HAT STABILISIERT. Das ist der Beleg fuer "ein Parse":
+    // Waere der Scan ein zweiter Parse, stuenden hier zwei verschiedene Dokumente.
+    expect(elements).toHaveLength(1);
+    expect(html).toContain("data-pagesmith-id");
+
+    // (3) DAS FREMDE SCRIPT UEBERSTEHT DEN RUNDLAUF UNVERAENDERT. Die Scheibe ist
+    // rein lesend (ENTSCHEIDUNG P11.11-31); sie entfernt nichts.
+    expect(html).toContain("connect.facebook.net");
+  });
+
+  it("ein Dokument ohne fremde Bausteine ergibt ok mit leerer Liste", () => {
+    const { scan } = annotateAndDetect("<button>Kaufen</button>");
+    expect(scan).toEqual({ status: "ok", findings: [] });
   });
 });

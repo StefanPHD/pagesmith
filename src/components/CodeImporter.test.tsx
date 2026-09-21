@@ -5167,3 +5167,227 @@ describe("CodeImporter — eigene Bausteine aus einem frueheren Export (11.11d)"
     expect(document.body.textContent).not.toContain('id="pagesmith-mappings"');
   });
 });
+
+// ===========================================================================
+// SKRIPTE UND TAGS IM CODE — DIE FUNDLISTE (Phase 11.11, Scheibe 11.11b).
+//
+// DIE FIXTURES SIND ECHTE ANBIETER-GESTALTEN aus den Belegen, keine erfundenen
+// (docs/ziel-befunde.md, Teile (g), (ab), (ct); docs/aktiver-stand.md, VERMERK
+// P11.11-25).
+//
+// EINE AUFLAGE AN JEDE SPAETERE RUNDE, DIE HIER EINE FIXTURE ERGAENZT: Diese
+// Datei traegt VIER dokumentweite Abwesenheits-Zusicherungen auf
+// document.body.textContent — /gerettet/i, /mindestens/, /%/ und /NaN/. Sie
+// rendern heute OHNE initialCode, und keine BESTEHENDE Fixture traegt ein
+// <script, <img, <iframe oder <noscript; die Fundliste erscheint dort also gar
+// nicht. WER DAS AENDERT, PRUEFT ZUERST DIESE VIER ZEILEN — ein gerenderter
+// Ausschnitt ist Text des Betreibers und kann jede der vier Nadeln tragen.
+// ===========================================================================
+
+describe("CodeImporter — Skripte und Tags im Code (11.11b)", () => {
+  const SAUBER =
+    '<!DOCTYPE html><html lang="de"><head><title>S</title></head>' +
+    '<body><button data-pagesmith-id="ps-bbbbbb">Kaufen</button></body></html>';
+
+  const MIT_META =
+    '<!DOCTYPE html><html lang="de"><head><title>S</title></head><body>' +
+    '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>' +
+    '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>' +
+    "</body></html>";
+
+  const MIT_CMP =
+    '<!DOCTYPE html><html lang="de"><head><title>S</title></head><body>' +
+    '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>' +
+    '<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js"></script>' +
+    "</body></html>";
+
+  const MIT_CONTAINER =
+    '<!DOCTYPE html><html lang="de"><head><title>S</title></head><body>' +
+    '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>' +
+    '<script src="https://www.googletagmanager.com/gtm.js?id=GTM-ABCDEFGH"></script>' +
+    "</body></html>";
+
+  const MIT_UNBEKANNT =
+    '<!DOCTYPE html><html lang="de"><head><title>S</title></head><body>' +
+    '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>' +
+    '<script src="https://example.com/slider.js"></script>' +
+    "</body></html>";
+
+  const KEINE_FUNDE = "Keine Skripte oder Tags gefunden.";
+  const CONTAINER_HINWEIS =
+    "Ein Tag-Container kann weitere Tags nachladen. Was er lädt, steht nicht in diesem Code.";
+  const CMP_HINWEIS = "Pagesmith lässt dieses Einwilligungs-Werkzeug unverändert.";
+  const KOLLISION =
+    "Im Code steht ein fremdes Einwilligungs-Werkzeug. Ist unsere Leiste oder unser Fenster eingeschaltet, erscheint sie zusätzlich.";
+  const ALTER_SATZ_ANFANG = "Ein bereits eingebundenes Consent-Management";
+  const NEUER_SATZ =
+    "Ist bereits ein fremdes Einwilligungs-Werkzeug eingebunden, erscheint unsere Leiste oder unser Fenster zusätzlich.";
+
+  const oeffneEinstellungen = () =>
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+  const oeffneVeroeffentlichen = () =>
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+
+  const liste = () =>
+    screen.getByRole("heading", { name: /^Skripte und Tags im Code/ })
+      .parentElement as HTMLElement;
+
+  // SK1. OHNE CODE GAR KEIN BLOCK. Das ist zugleich der Grund, warum die vier
+  // dokumentweiten Abwesenheits-Zusicherungen dieser Datei unberuehrt bleiben:
+  // sie rendern alle ohne initialCode.
+  it("SK1: ohne Code im Editor erscheint der Block nicht", () => {
+    render(<CodeImporter initialProjectId="proj-1" />);
+    expect(
+      screen.queryByRole("heading", { name: /^Skripte und Tags im Code/ }),
+    ).toBeNull();
+  });
+
+  // SK2. MIT CODE, ABER OHNE FUND: eine POSITIVE Aussage, nicht nichts. "Nichts
+  // gefunden" und "fehlgeschlagen" muessen unterscheidbar sein (P11.11-12, Satz 2).
+  it("SK2: Code ohne fremde Bausteine -> Keine Skripte oder Tags gefunden", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={SAUBER} />);
+    await screen.findByText("Kaufen");
+    expect(
+      screen.getByRole("heading", { name: "Skripte und Tags im Code (0)" }),
+    ).toBeTruthy();
+    expect(screen.getByText(KEINE_FUNDE)).toBeTruthy();
+  });
+
+  // SK3. EIN BEKANNTES PIXEL: Anbieter, Etikett und die Zahl der Fundstellen.
+  // DAS ETIKETT HEISST "Fremdes Pixel" UND NICHT "Tracking-Pixel" — jener Name ist
+  // im Einstellungs-Drawer eine Ueberschrift fuer eine ANDERE Sache, und dreimal
+  // fragt diese Datei sie dokumentweit als heading ab.
+  it("SK3: ein Meta-Pixel erscheint mit Anbieter, Etikett und Fundstelle", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_META} />);
+    await screen.findByText("Kaufen");
+    const l = liste();
+    expect(within(l).getByText("Meta")).toBeTruthy();
+    expect(within(l).getByText("Fremdes Pixel")).toBeTruthy();
+    expect(within(l).getByText("1 Fundstelle")).toBeTruthy();
+    expect(within(l).queryByText("Tracking-Pixel")).toBeNull();
+  });
+
+  // SK4. DER CONTAINER: eigenes Etikett und der Nachlade-Hinweis. ER IST DIE
+  // EIGENTLICHE LEISTUNG DIESER KLASSE — die Liste sagt, dass sie unvollstaendig
+  // sein kann.
+  it("SK4: ein Tag Manager traegt Tag-Container und den Nachlade-Hinweis", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_CONTAINER} />);
+    await screen.findByText("Kaufen");
+    const l = liste();
+    expect(within(l).getByText("Google Tag Manager")).toBeTruthy();
+    expect(within(l).getByText("Tag-Container")).toBeTruthy();
+    expect(within(l).getByText(CONTAINER_HINWEIS)).toBeTruthy();
+    // KEIN Entfernen-Angebot (P11.11-27) — und in 11.11b ueberhaupt kein Knopf.
+    expect(within(l).queryAllByRole("button")).toHaveLength(0);
+  });
+
+  // SK5. EIN UNBEKANNTES SCRIPT WIRD ANGEZEIGT, ABER NICHT MARKIERT (P11.11-3) —
+  // und es LEUCHTET NICHT: kein Rot, kein Signal. Jede importierte Seite traegt
+  // Skripte; ein Signal bei jeder Seite waere Signal-Ermuedung.
+  it("SK5: ein unbekanntes Script steht in der Liste, ohne Etikett und ohne Rot", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_UNBEKANNT} />);
+    await screen.findByText("Kaufen");
+    const l = liste();
+    expect(within(l).getByText("https://example.com/slider.js")).toBeTruthy();
+    expect(within(l).queryByText("Fremdes Pixel")).toBeNull();
+    expect(within(l).queryByText("Einwilligungs-Werkzeug")).toBeNull();
+    expect(within(l).queryByText("Tag-Container")).toBeNull();
+    expect(l.querySelector(".text-red-600")).toBeNull();
+    // UND DER ZENTRALE FEHLERKANAL BLEIBT FREI: Der Selektor
+    // span.truncate.text-red-600 bezeichnet ihn dokumentweit; ein roter Text mit
+    // beiden Klassen in dieser Liste braeche zwei Bestandslaeufe, einen davon STILL.
+    expect(l.querySelector("span.truncate.text-red-600")).toBeNull();
+  });
+
+  // SK6. EIN CMP: Etikett plus der Hinweis, der NICHTS VERSPRICHT. Es gibt heute
+  // keinen fuer einen Betreiber erreichbaren Ort, der den Einwilligungs-Hook
+  // beschreibt; der Satz sagt deshalb nur, was Pagesmith TUT.
+  it("SK6: ein CMP traegt Einwilligungs-Werkzeug und den Unveraendert-Hinweis", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_CMP} />);
+    await screen.findByText("Kaufen");
+    const l = liste();
+    expect(within(l).getByText("Cookiebot")).toBeTruthy();
+    expect(within(l).getByText("Einwilligungs-Werkzeug")).toBeTruthy();
+    expect(within(l).getByText(CMP_HINWEIS)).toBeTruthy();
+  });
+
+  // SK7. DIE KOLLISION LIEST DEN ENTWURFS-STAND (P11.11-12, Satz 8): Sie erscheint
+  // SOFORT beim Umschalten des Radios und nicht erst nach dem Speichern. DAS IST
+  // DER LAUF, DEN M8 SPIEGELT.
+  it("SK7: Kollision — CMP im Code UND Dialog eingeschaltet, ohne Speichern", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_CMP} />);
+    await screen.findByText("Kaufen");
+    oeffneEinstellungen();
+    oeffneVeroeffentlichen();
+
+    // VORBEDINGUNG: Der Dialog ist AUS, also steht der Hinweis noch nicht da.
+    // Ohne diese Zeile waere der Lauf gruen, auch wenn der Hinweis IMMER stuende.
+    expect(screen.queryByText(KOLLISION)).toBeNull();
+
+    fireEvent.click(await screen.findByRole("radio", { name: /Leiste/ }));
+
+    expect(await screen.findByText(KOLLISION)).toBeTruthy();
+  });
+
+  // SK8. OHNE FUND KEIN HINWEIS — auch bei eingeschaltetem Dialog. Sonst warnte die
+  // Oberflaeche bei jeder Seite.
+  it("SK8: eingeschalteter Dialog OHNE fremdes CMP zeigt keine Kollision", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_META} />);
+    await screen.findByText("Kaufen");
+    oeffneEinstellungen();
+    oeffneVeroeffentlichen();
+    fireEvent.click(await screen.findByRole("radio", { name: /Leiste/ }));
+
+    // POSITIVKONTROLLE: Der Schalter steht wirklich auf "Leiste" — sonst waere die
+    // Abwesenheit des Hinweises trivial wahr.
+    expect(
+      (screen.getByRole("radio", { name: /Leiste/ }) as HTMLInputElement).checked,
+    ).toBe(true);
+    expect(screen.queryByText(KOLLISION)).toBeNull();
+  });
+
+  // SK9. DER ALTE SATZ IST WEG UND DER NEUE STEHT DA. Der alte behauptete, ein
+  // fremdes Consent-Management werde NICHT erkannt — mit dieser Scheibe ist das
+  // falsch, und ein falscher Satz neben einer Liste, die das Gegenteil zeigt, ist
+  // teurer als eine fehlende Warnung.
+  it("SK9: der ueberholte Satz in PublishView ist ersetzt", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={SAUBER} />);
+    await screen.findByText("Kaufen");
+    oeffneEinstellungen();
+    oeffneVeroeffentlichen();
+    await screen.findByRole("radio", { name: /Leiste/ });
+
+    expect(document.body.textContent).not.toContain(ALTER_SATZ_ANFANG);
+    expect(screen.getByText(NEUER_SATZ)).toBeTruthy();
+  });
+
+  // SK10. DIE SCHREIBUNG IST "SKRIPTE". Ein Waechter, weil die falsche Form sich
+  // sonst ueber die naechste Runde einschleicht und niemand sie bemerkt.
+  it("SK10: die Form Scripte kommt in der Oberflaeche nicht vor", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_META} />);
+    await screen.findByText("Kaufen");
+    expect(document.body.textContent).not.toContain("Scripte");
+    expect(document.body.textContent).toContain("Skripte");
+  });
+
+  // SK11. DER AUSSCHNITT IST TEXT, NIE HTML. Er ist Betreiber-Code aus einer fremden
+  // Seite; als Markup gerendert brächte er dessen Elemente in UNSERE Oberflaeche.
+  // React setzt einen String als Textknoten — dieser Lauf haelt fest, dass es dabei
+  // bleibt, und wird rot, sobald jemand hier dangerouslySetInnerHTML einsetzt.
+  it("SK11: der Ausschnitt eines Inline-Skripts wird als Text gerendert", async () => {
+    const MIT_MARKUP =
+      '<!DOCTYPE html><html lang="de"><head><title>S</title></head><body>' +
+      '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>' +
+      '<script>var s = "<b>fett</b>";</script>' +
+      "</body></html>";
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_MARKUP} />);
+    await screen.findByText("Kaufen");
+    const l = liste();
+
+    // (1) Der Ausschnitt steht als TEXT da.
+    expect(l.textContent).toContain('var s = "<b>fett</b>";');
+    // (2) UND ER HAT KEIN ELEMENT ERZEUGT. Ohne diese Zeile waere (1) auch dann
+    // gruen, wenn das Markup gedeutet worden waere — textContent liest beides.
+    expect(l.querySelector("b")).toBeNull();
+  });
+});

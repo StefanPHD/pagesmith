@@ -120,7 +120,7 @@ const WIRING_NEEDLE = `getElementById("${MAPPINGS_SCRIPT_ID}")`;
  * spart nur die Inhaltspruefung an Knoten, die ueber ihre id ohnehin schon gefunden
  * sind. Wer ihn entfernt, aendert am Ergebnis nichts.
  */
-function collectOwnNodes(doc: Document): Element[] {
+export function collectOwnNodes(doc: Document): Element[] {
   const found: Element[] = [];
   const seen = new Set<Element>();
   const add = (el: Element | null) => {

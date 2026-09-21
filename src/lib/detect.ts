@@ -1,6 +1,8 @@
 // Reine Erkennungs-Logik. Bewusst ohne React-Seiteneffekte ausserhalb des
 // Parsers, damit sie unit-testbar bleibt (siehe detect.test.ts).
 
+import { scanForeignTags, type ForeignScan } from "./foreign-scan";
+
 export type ElementType = "button" | "form" | "link" | "text";
 
 export type DetectedElement = {
@@ -21,6 +23,10 @@ export type PreparedPreview = {
   html: string;
   // Die erkannten Elemente – ID-gleich mit den Attributen im html.
   elements: DetectedElement[];
+  // FREMDE TRACKING-BAUSTEINE (Phase 11.11, Scheibe 11.11b). PFLICHTFELD, nicht
+  // optional: "Feld fehlt" hiesse sonst zugleich "nichts gefunden" und "nicht
+  // gelaufen", und genau die Unterscheidung verlangt P11.11-12, Satz 2.
+  scan: ForeignScan;
 };
 
 export const MAX_LABEL = 60;
@@ -315,14 +321,25 @@ export function stabilizeIds(html: string): string {
  * - Dedupliziert pro DOM-Element (role=button-Anchor zaehlt einmal als Button).
  */
 export function annotateAndDetect(html: string): PreparedPreview {
-  if (!html || !html.trim()) return { html: "", elements: [] };
+  // Leerer Text traegt nachweislich nichts — "ok" mit leerer Liste ist die ehrliche
+  // Auskunft, nicht "nicht gelaufen".
+  if (!html || !html.trim())
+    return { html: "", elements: [], scan: { status: "ok", findings: [] } };
 
   // SSR-Schutz: DOMParser existiert nur im Browser. Client-Komponenten werden
   // beim ersten Render trotzdem serverseitig ausgefuehrt.
-  if (typeof DOMParser === "undefined") return { html, elements: [] };
+  // "skipped", nicht "failed": die Erkennung ist GAR NICHT GELAUFEN.
+  if (typeof DOMParser === "undefined")
+    return { html, elements: [], scan: { status: "skipped" } };
 
   try {
     const doc = new DOMParser().parseFromString(html, "text/html");
+
+    // Phase 0: fremde Tracking-Bausteine lesen — UNMITTELBAR nach dem Parse und VOR
+    // stabilizeDoc (P11.11-12, Satz 1), auf DEMSELBEN Parse (P11.11-5). Die Funktion
+    // faengt ihren eigenen Wurf und meldet ihn als "failed"; sie darf NICHT in den
+    // aeusseren catch unten laufen, der die Vorschau leert (Satz 2).
+    const scan = scanForeignTags(doc);
 
     // Phase 1: IDs sicherstellen (mutiert). Phase 2: Elemente lesen (read-only).
     stabilizeDoc(doc);
@@ -340,10 +357,12 @@ export function annotateAndDetect(html: string): PreparedPreview {
     doc.body.appendChild(script);
 
     const serialized = `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
-    return { html: serialized, elements };
+    return { html: serialized, elements, scan };
   } catch {
     // Kaputtes/exotisches HTML soll die Erkennung nie zum Absturz bringen.
-    return { html: "", elements: [] };
+    // "skipped", nicht "failed": hier ist der PARSE gescheitert, nicht die
+    // Fremd-Erkennung — und das ist als leere Vorschau bereits sichtbar.
+    return { html: "", elements: [], scan: { status: "skipped" } };
   }
 }
 

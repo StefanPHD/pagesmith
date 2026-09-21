@@ -140,6 +140,19 @@ import {
   OWN_BLOCKS_WARNING_MESSAGE,
 } from "@/lib/own-blocks";
 import { stripOwnBlocks } from "@/lib/own-blocks-strip";
+// FREMDE TRACKING-BAUSTEINE (Phase 11.11, Scheibe 11.11b). Die Erkennung selbst laeuft
+// in annotateAndDetect auf DEMSELBEN Parse; hier kommen nur das Ergebnis-Praedikat fuer
+// die Kollision und die Wortlaute her.
+import {
+  hasForeignCmp,
+  FOREIGN_CMP_NOTE,
+  FOREIGN_CONTAINER_NOTE,
+  FOREIGN_FAILED_MESSAGE,
+  FOREIGN_LABEL,
+  FOREIGN_LIST_HEADING,
+  FOREIGN_NONE_MESSAGE,
+  FOREIGN_PARKED_NOTE,
+} from "@/lib/foreign-scan";
 import {
   SAVE_THROW_MESSAGE,
   actionThrew,
@@ -683,10 +696,16 @@ export default function CodeImporter({
 
   // EINE Quelle der Wahrheit: einmal parsen -> annotiertes HTML (mit IDs +
   // Listener-Script) fuers iframe UND die erkannten Elemente fuer die Liste.
-  const { html: previewHtml, elements } = useMemo(
-    () => annotateAndDetect(debouncedCode),
-    [debouncedCode]
-  );
+  const {
+    html: previewHtml,
+    elements,
+    scan: foreignScan,
+  } = useMemo(() => annotateAndDetect(debouncedCode), [debouncedCode]);
+
+  // STEHT EIN FREMDES CMP IM CODE? ABGELEITET, nie gespeichert (Entscheidung
+  // P11.11-24). Geht als Prop an PublishView, wo der Kollisionshinweis am
+  // Einwilligungs-Schalter steht (P11.11-12, Satz 8).
+  const foreignCmp = hasForeignCmp(foreignScan);
 
   const counts = useMemo(
     () => ({
@@ -2945,6 +2964,7 @@ export default function CodeImporter({
               liveUrl={liveUrl}
               publishRestored={publishRestored}
               consentDialog={getConsentDialog(settings)}
+              foreignCmp={foreignCmp}
               onConsentDialogChange={(mode) =>
                 setSettings((prev) => setConsentDialog(prev, mode))
               }
@@ -3314,6 +3334,111 @@ export default function CodeImporter({
               })}
           </div>
         </div>
+
+        {/* (4) SKRIPTE UND TAGS IM CODE (Phase 11.11, Scheibe 11.11b).
+
+            NACH der Elementliste und nicht vor den Zaehlern: Jede importierte Seite
+            traegt Skripte; weiter oben schoebe dieser Block das Arbeitswerkzeug des
+            Marketers dauerhaft nach unten.
+
+            NUR BEI CODE IM EDITOR. Ohne Code gibt es nichts zu erkennen — und die vier
+            dokumentweiten Abwesenheits-Zusicherungen in CodeImporter.test.tsx (/%/,
+            /gerettet/i, /mindestens/, /NaN/) rendern OHNE initialCode; der Block
+            erscheint dort also gar nicht.
+
+            "skipped" ZEIGT NICHTS: Die Erkennung ist beim Server-Render gar nicht
+            gelaufen, und eine Fehlermeldung dafuer waere ein falscher Alarm.
+
+            KEIN ROT UND KEIN LEUCHTEN. In dieser Scheibe traegt kein Fund eine
+            Handlung, also darf nichts leuchten (Signal-Grenze aus P11.11-3). Das haelt
+            zugleich den Selektor span.truncate.text-red-600 frei, der in
+            CodeImporter.test.tsx den ZENTRALEN Fehlerkanal bezeichnet. */}
+        {debouncedCode.trim() !== "" && foreignScan.status !== "skipped" && (
+          <div className="border-t border-gray-200 p-3">
+            <h2 className="mb-2 text-sm font-medium text-gray-700">
+              {foreignScan.status === "ok"
+                ? `${FOREIGN_LIST_HEADING} (${foreignScan.findings.length})`
+                : FOREIGN_LIST_HEADING}
+            </h2>
+
+            {foreignScan.status === "failed" ? (
+              <p className="text-sm text-gray-400">{FOREIGN_FAILED_MESSAGE}</p>
+            ) : foreignScan.findings.length === 0 ? (
+              <p className="text-sm text-gray-400">{FOREIGN_NONE_MESSAGE}</p>
+            ) : (
+              <ul className="flex max-h-48 flex-col gap-2 overflow-y-auto">
+                {foreignScan.findings.map((f, i) =>
+                  f.art === "bekannt" ? (
+                    // BEKANNT: je ANBIETER-MENGE eine Zeile, mit der Zahl der
+                    // Fundstellen (Entscheidung P11.11-32, Punkt (c)). Mehrere
+                    // Anbieter an EINER Zeile sind der Knoten, den nur Namen mehrerer
+                    // Anbieter treffen (Punkt (d)).
+                    <li
+                      key={`b${i}`}
+                      className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm"
+                    >
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="font-medium text-gray-800">
+                          {f.anbieter.join(", ")}
+                        </span>
+                        {f.klassen.map((k) => (
+                          <span
+                            key={k}
+                            className="rounded-full border border-gray-300 bg-white px-1.5 py-0.5 text-xs text-gray-600"
+                          >
+                            {FOREIGN_LABEL[k]}
+                          </span>
+                        ))}
+                        {f.geparkt && (
+                          <span className="rounded-full border border-gray-300 bg-white px-1.5 py-0.5 text-xs text-gray-600">
+                            {FOREIGN_PARKED_NOTE}
+                          </span>
+                        )}
+                        <span className="text-xs text-gray-500">
+                          {f.stellen === 1
+                            ? "1 Fundstelle"
+                            : `${f.stellen} Fundstellen`}
+                        </span>
+                      </div>
+                      {f.klassen.includes("container") && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          {FOREIGN_CONTAINER_NOTE}
+                        </p>
+                      )}
+                      {f.klassen.includes("cmp") && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          {FOREIGN_CMP_NOTE}
+                        </p>
+                      )}
+                    </li>
+                  ) : (
+                    // UNBEKANNT: je KNOTEN eine Zeile — es gibt keinen Anbieter, nach
+                    // dem man gruppieren koennte. KEINE Marke, KEINE Handlung, KEIN
+                    // Leuchten (P11.11-3).
+                    //
+                    // DER AUSSCHNITT WIRD ALS TEXT GERENDERT, NIE ALS HTML: Er ist
+                    // Betreiber-Code aus einer fremden Seite. React setzt einen String
+                    // als Textknoten; dangerouslySetInnerHTML kommt in diesem Block
+                    // nicht vor, und ein Waechter haelt das fest.
+                    <li
+                      key={`u${i}`}
+                      className="rounded-md border border-gray-200 px-3 py-2 text-sm"
+                    >
+                      <span className="break-all font-mono text-xs text-gray-700">
+                        {f.kennung}
+                      </span>
+                      {f.ausschnitt !== null && (
+                        <p className="mt-1 break-all font-mono text-xs text-gray-400">
+                          {f.ausschnitt}
+                        </p>
+                      )}
+                    </li>
+                  )
+                )}
+              </ul>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Zone 2 (Mitte): Live-Preview. min-w-0 + flex-1 = nimmt die freie Breite

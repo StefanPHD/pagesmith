@@ -16,6 +16,10 @@ import {
   type ConsentLanguageRead,
 } from "@/lib/settings";
 import { contrastRatio } from "@/lib/contrast";
+// DER KOLLISIONS-WORTLAUT KOMMT AUS DER ERKENNUNG UND WIRD HIER NICHT ABGESCHRIEBEN:
+// EINE Quelle fuer die Fundliste im Bereich BAUEN und fuer diesen Hinweis — sonst
+// bekaeme der Betreiber fuer dieselbe Ursache zwei verschiedene Erklaerungen.
+import { FOREIGN_CMP_COLLISION } from "@/lib/foreign-scan";
 // DER STANDARDTEXT KOMMT AUS DEM ERZEUGER UND WIRD HIER NICHT ABGESCHRIEBEN ("ABLEITEN
 // STATT HARDCODEN"): Er steht an genau einer Stelle, und ein hier abgeschriebenes Literal
 // liefe beim naechsten Aendern des Satzes still auseinander — der Platzhalter zeigte dann
@@ -65,6 +69,7 @@ export default function PublishView({
   liveUrl,
   publishRestored,
   consentDialog,
+  foreignCmp,
   onConsentDialogChange,
   consentTheme,
   onConsentThemeChange,
@@ -108,6 +113,10 @@ export default function PublishView({
   // Zustand ABGELEITET aus dem Einstellungs-Blob des Projekts (getConsentDialog), nicht
   // lokal gehalten — dieselbe Bauform wie beim A/B-Schalter darunter.
   consentDialog: ConsentDialogRead;
+  // STEHT EIN FREMDES EINWILLIGUNGS-WERKZEUG IM CODE? (Phase 11.11, Scheibe 11.11b.)
+  // ABGELEITET aus dem aktuellen Editor-Text, NIE gespeichert — eine Meldung ueber
+  // einen Text wird aus dem AKTUELLEN Text abgeleitet (Entscheidung P11.11-24).
+  foreignCmp: boolean;
   onConsentDialogChange: (mode: ConsentDialog) => void;
   // --- Darstellung (Phase 11.13, Scheibe 11.13b) ---
   // Gleiche Bauform wie der Schalter darueber: ABGELEITET aus dem Einstellungs-Blob
@@ -411,11 +420,26 @@ export default function PublishView({
               bis hier eine Einstellung gewählt ist.
             </p>
           )}
+          {/* ERSETZT IN SCHEIBE 11.11b (Entscheidung P11.11-32, Punkt (e)). Hier
+              stand: "Ein bereits eingebundenes Consent-Management wird nicht erkannt
+              — …". MIT DER ERKENNUNG WIRD DIESER SATZ FALSCH, und ein falscher Satz
+              zwei Bildschirme neben einer Liste, die das Gegenteil zeigt, ist teurer
+              als eine fehlende Warnung. Die HAELFTE, die wahr bleibt — unsere
+              Oberflaeche erscheint zusaetzlich —, steht weiter da. */}
           <p>
-            Ein bereits eingebundenes Consent-Management wird nicht erkannt — bei
-            eingeschalteter Leiste oder eingeschaltetem Fenster erscheint unsere
-            Oberfläche zusätzlich.
+            Ist bereits ein fremdes Einwilligungs-Werkzeug eingebunden, erscheint
+            unsere Leiste oder unser Fenster zusätzlich.
           </p>
+          {/* DER KOLLISIONSHINWEIS (Entscheidung P11.11-4, P11.11-12 Satz 8).
+              ER STEHT AM SCHALTER, weil der Betreiber ihn hier bedient, und er liest
+              den ENTWURFS-Stand: `consentDialog` kommt aus getConsentDialog(settings),
+              nicht aus savedSettings — er erscheint also SOFORT beim Umschalten und
+              nicht erst nach dem Speichern.
+              ER IST EIN SIGNAL, KEINE LOESUNG: Der offene Punkt UNSER
+              EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP UEBERFAHREN bleibt bestehen. */}
+          {foreignCmp && (consentDialog === "bar" || consentDialog === "modal") && (
+            <p className="text-red-600">{FOREIGN_CMP_COLLISION}</p>
+          )}
           <p className="text-gray-400">
             Wirkt erst nach dem nächsten Veröffentlichen.
           </p>

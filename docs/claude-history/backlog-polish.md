@@ -1271,6 +1271,34 @@ miterledigen, sondern gebündelt abarbeiten.
   "Session-Analyse-Werkzeuge auf Kundenseiten" — dort steht dieselbe Messung als
   Begründung dafür, dass ein Custom-Script-Feld Schadensbegrenzung wäre und
   keine neue Fähigkeit.
+  ZUSATZ 2026-09-21 — DER EINTRAG DARÜBER BLEIBT WÖRTLICH STEHEN; DREI DINGE
+  TRETEN DANEBEN. Er ist NICHT erledigt und NICHT gestrichen; was sich geändert
+  hat, ist seine Verortung und der Stand zweier seiner Angaben.
+  (1) DIE ERKENNUNGS- UND ANZEIGE-HÄLFTE IST VERORTET: Sie gehört zur Phase
+  11.11 (Import-Bereinigung) — docs/roadmap.md, Roadmap-Zeile 11.11, und
+  docs/aktiver-stand.md, Entscheidung P11.11-2 (ARCHITEKT, 2026-09-21). DER
+  "ERSTE SCHRITT", DEN DIESER EINTRAG VERLANGT, IST DAMIT ENTSCHIEDEN: an der
+  Roadmap-Zeile 11.11 unter (c), zugunsten der ANZEIGE — "ERKENNEN UND MELDEN,
+  ENTFERNEN NUR AUF KLICK DES BETREIBERS" (OWNER-ENTSCHEIDUNG 2026-09-14;
+  GELESEN, CC, 2026-09-21). Der Schlusssatz "KEINE MASSNAHME VORSCHLAGEN, bevor
+  das entschieden ist" ist damit eingelöst, nicht aufgehoben.
+  (2) DIE SICHERHEITS-ACHSE BLEIBT HIER OFFEN und wird von der Phase 11.11
+  AUSDRÜCKLICH NICHT eingelöst: "ein Sanitizer existiert an keiner Stelle des
+  Pfades" und die als VERMUTUNG geführte Frage nach dem Ursprung ("BEIDES ZU
+  PRÜFEN"). Begründung an der Entscheidung P11.11-2: 11.11 ist eine
+  Anzeige-Phase, und ihre Entscheidung (c) verbietet gerade das Entfernen ohne
+  Klick des Betreibers — eine Phase, die beides trüge, trüge keine Entscheidung.
+  EINE GRENZE GEHÖRT DAZU: Dieser Eintrag spricht von "beliebigen Skripten", die
+  Roadmap-Zeile von bekannten Pixeln und Einwilligungs-Werkzeugen. Die Reichweite
+  ist als Designfrage D3 in docs/aktiver-stand.md geführt und HIER NICHT
+  entschieden.
+  (3) DAS "CUSTOM-SCRIPT-FELD" AUS DEM BEZUG EXISTIERT SEIT PHASE 11.6: Die
+  Projekt-Einstellungen tragen mit `settings.customPixel.code` ein Feld für
+  freien Betreiber-Code (`ProjectSettings` in src/lib/settings.ts, gelesen von
+  `getCustomPixelCode`; GEMESSEN am Code, CC, 2026-09-21). OB ES DAS
+  "UNIVERSELLE Custom-Script-Feld" JENER VISION IST, ist hier NICHT behauptet —
+  gemessen ist allein, dass es ein Feld für freien Betreiber-Code gibt, das es
+  bei der Messung dieses Eintrags am 2026-08-04 nicht gab.
 
 - DIE WURF-LÜCKE IN `__psConsent` — VOM OWNER ALS DRINGEND EINGESTUFT
   STATUS: OFFEN (am Code gemessen 2026-08-06, beobachtbar am Code, NICHT live

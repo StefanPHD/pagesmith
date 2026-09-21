@@ -2066,8 +2066,10 @@ liegen beide hier und finden einander.
       (b) DAS PROBLEM — drei Befunde am Bestand:
       · EIN HARTCODIERTES TRACKING-SCRIPT IM IMPORTIERTEN TEXT LÄUFT AM
         EINWILLIGUNGS-GATE VORBEI. Das Gate ist eine Funktion, die nur UNSER Code fragt:
-        `__psConsent` und `__psConsentAll` werden im Produktivcode allein aus
-        `src/lib/analytics/pageview-emitter.ts` und `src/lib/tracking/meta.ts` gerufen.
+        `__psConsent` und `__psConsentAll` werden im Produktivcode aus DREI Dateien
+        gerufen — `src/lib/analytics/pageview-emitter.ts`, `src/lib/tracking/meta.ts` und,
+        seit Phase 11.6, `src/lib/tracking/custom-pixel.ts` (dort in `__psCustomOk`, mit
+        `CUSTOM_CONSENT_TARGET`); GEMESSEN am Repo, CC, 2026-09-21.
         `generateFunctional` (`src/lib/generate.ts`) trägt keinen Aufruf, der ein
         Element entfernt; fremde `<script>`-Elemente gehen also in den ausgelieferten
         Text mit. Ein Script, das das Gate nicht fragt, hängt nicht am Hook — auch nicht
@@ -2088,8 +2090,14 @@ liegen beide hier und finden einander.
         einen echten Blocker verstecken. Lieber uninformativ als irrefuehrend."
         Was die Verlustraten-Kachel in diesem Fall anzeigt, ist hier NICHT nachgesehen.
       · EIN SCRIPT IM IMPORTIERTEN TEXT, DAS UNSEREN HOOK SETZT, ÜBERLEBT JEDES
-        NEU-VERÖFFENTLICHEN UND SIEHT AUS WIE EIN DEFEKT: Vorrat (13) der Phase 11.5
-        (heute in docs/aktiver-stand.md). Der Beleg dort ist ein Vorfall vom 2026-09-14
+        NEU-VERÖFFENTLICHEN UND SIEHT AUS WIE EIN DEFEKT: Vorrat (13) der Phase 11.5.
+        SEIN HEUTIGER ORT, GEMESSEN am Repo (CC, 2026-09-21): der ungekürzte Wortlaut im
+        Archiv docs/claude-history/phase-11.5-einwilligung.md, Abschnitt "9. Vorrat —
+        gemeldet, nicht gebaut", unter der Nummer (13), mit dem Zeiger "GEHOBEN
+        2026-09-16"; geführt wird er seit dem Phasenende in
+        docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.5 gehoben
+        (2026-09-16) — Vorrat, ein Roadmap-Punkt und zwei Hebungs-Kandidaten", ebenfalls
+        unter (13). Der Beleg dort ist ein Vorfall vom 2026-09-14
         mit einem Test-Script, das der Owner selbst eingesetzt hatte — ein Nachbild
         eines fremden CMP aus der Scheibe 11.5b. OWNER-ANGABE; kein Fall auf einer
         fremden Seite.
@@ -2105,11 +2113,22 @@ liegen beide hier und finden einander.
         im Wortlaut: "ENTSCHIEDEN (Owner 2026-08-12): ein eigener Dialog wird gebaut, ein
         fremder bleibt einbindbar." — und unter ihren Bindungen: "der eigene Dialog UND
         ein fremdes CMP bedienen DENSELBEN Hook."
-        AUF DIE SEITE KOMMT EIN FREMDES CMP HEUTE NUR ALS SCRIPT IM IMPORTIERTEN TEXT: Die
-        Projekt-Einstellungen tragen kein Feld für fremden Code (`ProjectSettings` führt
-        `pixels`, `capi`, `hosting` und `consent`), und die Server-Injektion fügt nur
-        unsere eigenen Bausteine ein (GEMESSEN am Code, CC, 2026-09-14). Wer es beim
-        Import entfernt, schafft das zugesicherte Merkmal ab.
+        SEIT PHASE 11.6 TRAGEN DIE PROJEKT-EINSTELLUNGEN EIN FELD FÜR BETREIBER-CODE:
+        `ProjectSettings` (`src/lib/settings.ts`) führt FÜNF Mitglieder — `pixels`,
+        `capi`, `hosting`, `consent` und `customPixel`; `customPixel.code` wird von
+        `getCustomPixelCode` gelesen und ausschliesslich im Modus "export" ausgeliefert.
+        Die Server-Injektion fügt weiterhin nur unsere eigenen Bausteine ein (GEMESSEN am
+        Code, CC, 2026-09-21).
+        OB `customPixel` EIN FREMDES CMP TRAGEN KANN, IST OFFEN — hier weder behauptet
+        noch bestritten. Die Frage steht als D4 in docs/aktiver-stand.md, Abschnitt "Die
+        offenen Designfragen", samt den zwei dazu gemessenen Angaben (der eigene
+        Einwilligungs-Schlüssel des Feldes und die Reihenfolge von Hook-Setzen und erster
+        Gate-Abfrage).
+        DER GRUND TRÄGT UNABHÄNGIG DAVON, und das ist der Punkt: Ein automatisches
+        Entfernen beim Import nähme jedem Betreiber, der sein CMP heute im importierten
+        Text stehen hat, genau dieses CMP — also das zugesicherte Merkmal. Das gilt, ob es
+        daneben einen zweiten Weg gibt oder nicht (ARCHITEKT-ANGABE, 2026-09-21). Wer es
+        beim Import entfernt, schafft das zugesicherte Merkmal ab.
       · WIR SIND WERKZEUG, NICHT AUFSICHT. Der Satz steht in docs/arbeitsweise.md,
         Abschnitt "4b. DIE TRAGENDEN ENTSCHEIDUNGEN", Unterabschnitt "Haltung"; die
         verbindliche Fassung an der Roadmap-Zeile 11.5 lautet "Wir weisen hin, wir

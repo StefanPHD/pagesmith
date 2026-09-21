@@ -4748,3 +4748,166 @@ describe("CodeImporter — die Darstellung des Einwilligungs-Dialogs (Scheibe 11
   });
 
 });
+
+// =====================================================================
+// SCHEIBE 11.11a — DER SANDBOX-WAECHTER (2026-09-21).
+//
+// WAS ER ZUSICHERT, je Rahmen, der importierten oder erzeugten Kundencode
+// rendert: das Attribut sandbox EXISTIERT · allow-same-origin FEHLT ·
+// allow-scripts ist VORHANDEN · und die Werteliste ist ABSCHLIESSEND.
+//
+// ER IST EIN EINZELSTUECK, UND DAS GEHOERT IN SEINEN KOMMENTAR (Lektion (f) an
+// MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE): GEMESSEN am Repo (CC, 2026-09-21)
+// hat vor dieser Scheibe KEIN Test im Repo eine Zusicherung ueber sandbox
+// getragen — der einzige Treffer des Wortes in einer Testdatei stand in einem
+// KOMMENTAR (preview-storage-shim.test.ts). Wer diesen Block loescht, weil er
+// redundant aussieht, nimmt die EINZIGE Abdeckung der Dauerregel mit:
+// "Importierter User-Code laeuft NUR im sandboxed iframe (sandbox=allow-scripts,
+// niemals allow-same-origin), nie ungesandboxt" (docs/immer-beachten.md).
+//
+// SEINE GRENZE, und sie steht an ihm selbst statt in einem Bericht: Er prueft
+// das im TEST GERENDERTE ATTRIBUT, nicht das Verhalten eines Browsers. jsdom
+// setzt keine Sandbox durch. GEMESSEN (CC, 2026-09-21, jsdom 29.1.1): die
+// Eigenschaft iframe.sandbox ist dort `undefined` — es gibt KEIN DOMTokenList.
+// Ein Lauf der Form `frame.sandbox?.contains(...)` waere deshalb TRIVIAL WAHR
+// und wuerde NIE rot (docs/immer-beachten.md, EINE ABWESENHEITS-BEHAUPTUNG WIRD
+// AUF DREI WEISEN HOHL, Fall (2)). Gelesen wird ausschliesslich ueber
+// getAttribute.
+//
+// DIE HERKUNFT JEDES WERTS — sie geht aus dem Code nicht hervor und steht
+// deshalb hier:
+// · allow-scripts (Pflicht) und das Verbot von allow-same-origin kommen aus der
+//   Dauerregel oben. Das ist die SICHERHEITS-Achse, und sie ist nicht
+//   verhandelbar.
+// · allow-popups und allow-popups-to-escape-sandbox am Vorschau-Rahmen sind
+//   EINGEFRORENER BESTAND. Ihre NOTWENDIGKEIT IST UNGEMESSEN; der Kommentar am
+//   Rahmen nennt als Grund einen echten Top-Level-Tab bei window.open.
+// WER EINEN DER ZWEI ENTFERNT, BRAUCHT EINE MESSUNG. WER EINEN WERT HINZUFUEGT,
+// BRAUCHT EINE ENTSCHEIDUNG — JEDE ERWEITERUNG EINER SANDBOX IST EINE LOCKERUNG.
+//
+// WARUM DIE LISTE ABSCHLIESSEND IST (ARCHITEKT-ENTSCHEIDUNG 2026-09-21): Ohne
+// den Abschluss faengt KEIN Lauf einen HINZUGEFUEGTEN Wert. Ein
+// allow-top-navigation liefe an "allow-scripts vorhanden" und an
+// "allow-same-origin fehlt" vorbei und waere STILL. Der Preis ist benannt: Der
+// Abschluss-Lauf wird bei JEDER Erweiterung rot — das ist die Absicht, nicht
+// sein Mangel.
+//
+// DIE ERWARTUNG IST GETIPPT, NICHT IMPORTIERT (docs/immer-beachten.md, EIN
+// WAECHTER UEBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE): Sie
+// stammt aus der Entscheidung. Ein Import aus dem Produktivcode machte den
+// Waechter zum SPIEGEL, der jede Aenderung bestaetigt, statt sie zu fangen.
+// =====================================================================
+
+/**
+ * Die ABSCHLIESSENDE Werteliste je Rahmen — getippt aus der Entscheidung vom
+ * 2026-09-21, NICHT aus dem Produktivcode abgelesen.
+ */
+const SANDBOX_SOLL = {
+  bearbeiten: ["allow-scripts"],
+  vorschau: [
+    "allow-scripts",
+    "allow-popups",
+    "allow-popups-to-escape-sandbox",
+  ],
+} as const;
+
+/** Der Wert, der an KEINEM Rahmen stehen darf — er hebt die Sandbox faktisch auf. */
+const SANDBOX_VERBOTEN = "allow-same-origin";
+
+/** Der Wert, ohne den in der Vorschau nichts laeuft. */
+const SANDBOX_PFLICHT = "allow-scripts";
+
+/**
+ * Zerlegt den ROHEN Attributwert in seine Werte: kleingeschrieben (sandbox-Werte
+ * sind ASCII-case-insensitiv — ABLEITUNG aus der Spezifikation, NICHT gemessen),
+ * an Leerraum getrennt, leere Eintraege verworfen.
+ * NIE ueber eine Teilzeichenkette: ein `includes("allow-same-origin")` auf dem
+ * Rohstring ist zugleich zu weit (traefe einen laengeren Wert, der ihn enthaelt)
+ * und zu eng (traefe die Grossschreibung nicht).
+ */
+function sandboxWerte(roh: string | null): string[] {
+  return (roh ?? "")
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((wert) => wert !== "");
+}
+
+/** Der Bearbeiten-Rahmen ist IMMER gemountet — kein Umschalter noetig. */
+function bearbeitenRahmen(): HTMLIFrameElement {
+  render(<CodeImporter initialCode="<button>X</button>" />);
+  return screen.getByTitle("preview") as HTMLIFrameElement;
+}
+
+/**
+ * Der Vorschau-Rahmen entsteht erst mit previewMode="functional" und haengt am
+ * entprellten Code — deshalb der Umschalter UND findBy* (pollt, kein fixer Wait).
+ * Bewusst ein EIGENER Helfer: vorschauSrcdoc/vorschauDoc gehoeren anderen
+ * describe-Bloecken und bleiben unangetastet.
+ */
+async function vorschauRahmen(): Promise<HTMLIFrameElement> {
+  render(<CodeImporter initialCode="<button>X</button>" />);
+  fireEvent.click(screen.getByRole("button", { name: "Vorschau" }));
+  return (await screen.findByTitle(
+    "functional-preview",
+  )) as HTMLIFrameElement;
+}
+
+describe("Scheibe 11.11a — der Sandbox-Waechter", () => {
+  describe("Bearbeiten-Rahmen (title=preview)", () => {
+    it("S1: das Attribut sandbox EXISTIERT", () => {
+      // ZUERST, WEIL SEIN FEHLEN DER GEFAEHRLICHSTE FALL IST: ein Rahmen ohne
+      // Attribut ist UNGESANDBOXT, und jede Wert-Pruefung liefe auf einer leeren
+      // Liste freundlich durch (S2 waere dann trivial wahr).
+      expect(bearbeitenRahmen().hasAttribute("sandbox")).toBe(true);
+    });
+
+    it("S2: allow-same-origin FEHLT", () => {
+      const werte = sandboxWerte(bearbeitenRahmen().getAttribute("sandbox"));
+      // POSITIVKONTROLLE IM SELBEN LAUF: ohne sie prueft die Abwesenheit nur,
+      // dass eine leere Liste nichts enthaelt.
+      expect(werte.length).toBeGreaterThan(0);
+      expect(werte).not.toContain(SANDBOX_VERBOTEN);
+    });
+
+    it("S3: allow-scripts ist VORHANDEN", () => {
+      expect(
+        sandboxWerte(bearbeitenRahmen().getAttribute("sandbox")),
+      ).toContain(SANDBOX_PFLICHT);
+    });
+
+    it("S4: die Werteliste ist ABSCHLIESSEND — genau {allow-scripts}", () => {
+      // DER EINZIGE LAUF, DER EINEN HINZUGEFUEGTEN WERT FAENGT. Sortiert
+      // verglichen, damit die REIHENFOLGE im Attribut nicht mitgeprueft wird —
+      // sie traegt keine Bedeutung.
+      expect(
+        sandboxWerte(bearbeitenRahmen().getAttribute("sandbox")).sort(),
+      ).toEqual([...SANDBOX_SOLL.bearbeiten].sort());
+    });
+  });
+
+  describe("Vorschau-Rahmen (title=functional-preview)", () => {
+    it("V1: das Attribut sandbox EXISTIERT", async () => {
+      expect((await vorschauRahmen()).hasAttribute("sandbox")).toBe(true);
+    });
+
+    it("V2: allow-same-origin FEHLT", async () => {
+      const werte = sandboxWerte(
+        (await vorschauRahmen()).getAttribute("sandbox"),
+      );
+      expect(werte.length).toBeGreaterThan(0);
+      expect(werte).not.toContain(SANDBOX_VERBOTEN);
+    });
+
+    it("V3: allow-scripts ist VORHANDEN", async () => {
+      expect(
+        sandboxWerte((await vorschauRahmen()).getAttribute("sandbox")),
+      ).toContain(SANDBOX_PFLICHT);
+    });
+
+    it("V4: die Werteliste ist ABSCHLIESSEND — genau die drei entschiedenen Werte", async () => {
+      expect(
+        sandboxWerte((await vorschauRahmen()).getAttribute("sandbox")).sort(),
+      ).toEqual([...SANDBOX_SOLL.vorschau].sort());
+    });
+  });
+});

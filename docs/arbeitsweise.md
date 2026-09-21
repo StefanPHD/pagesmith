@@ -1019,8 +1019,12 @@ nächsten Refactor als unnötig defensiv wegoptimiert.
   `lastIndexOf("</body>")` auf einem Lowercase-Klon.
 - **Idempotenz aus dem Datenfluss, nicht aus Bereinigung**
   (`phase-8-analytics.md`): `published_content` entsteht bei jedem Publish frisch
-  aus dem Client-HTML — der Client erzeugt den Emitter nie, also gibt es nichts
-  zu bereinigen.
+  aus dem Client-HTML — der Client erzeugt unsere Bausteine nie. **Das trägt nur,
+  solange das Client-HTML selbst keine mitbringt:** Ein re-importierter Export trug
+  sie und schrieb live Conversions ins Ursprungsprojekt (Phase 11.11). Seit 11.11d
+  verweigern Veröffentlichen und Export, solange der Quelltext eigene Bausteine
+  enthält. Die Idempotenz ruht damit auf diesem Riegel, nicht auf der Annahme
+  allein.
 
 ### A/B-Testing
 

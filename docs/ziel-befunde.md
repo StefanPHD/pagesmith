@@ -1252,6 +1252,93 @@ Die Statustabelle in H1 nennt ihre Farben als Text ("green", "gray", "red").
 · Postman-Sammlungen (fremder Host), das Tag-Template auf GitHub (Code, keine Doku),
   Googles Seiten zum Tag Manager (fremder Anbieter).
 
+### Browser-Tag-Lesung 2026-09-21 (Crawl 2 der Phase 11.11) — der Teil (am)
+
+**HERKUNFT (2026-09-21):** Eine Lesung mit dem Browser-Werkzeug, durchgehend über
+`textContent` und über das Hauptelement statt über `body`. GELESEN wurden ZWEI Seiten; die
+Liste steht am Ende dieses Teils. **KEIN AUFRUF GEGEN DIE SCHNITTSTELLE**, keine Anmeldung,
+keine Eingabe auf einer fremden Seite, kein Download. Alles unten ist GELESEN und **ersetzt
+keine Messung**.
+
+**DER GEGENSTAND IST EIN ANDERER ALS IN ALLEN TEILEN DARÜBER, und ohne diesen Satz liest
+jemand den Teil als Aussage über den Server-Weg:** Gesucht wurde das BROWSER-TAG des
+Anbieters — Script-Adresse, globale Namen, `noscript`-Rückfall —, weil die Phase 11.11
+fremde Tracking-Bausteine in importiertem HTML ERKENNEN will. Über Nutzlast, Statuscodes
+oder Fehlerformen des Server-Adapters sagt dieser Teil NICHTS.
+
+(am) DAS LINKEDIN INSIGHT TAG — ADRESSE, GLOBALE NAMEN UND RÜCKFALL-ELEMENT.
+     GELESEN 2026-09-21 an
+     learn.microsoft.com/en-us/linkedin/marketing/conversions/deduplication
+     ("Deduplication - LinkedIn | Microsoft Learn", Abschnitte "Manual Installation Method
+     → Insight Tag Procedure" und "→ Image Pixel Procedure"; ausgeliefert unter
+     `?view=li-lms-2026-09`, Seitenfuss "Last updated on 08/29/2025").
+     **DIES IST DIESELBE SEITE, AUS DER TEIL (y) STAMMT** — dort ging es um die
+     Deduplizierungs-BEDINGUNGEN, hier um die GESTALT des Tags. (y) wird nicht berührt.
+     · **(a) DIE SCRIPT-ADRESSE:** `https://snap.licdn.com/li.lms-analytics/insight.min.js`,
+       nachgeladen über ein zur Laufzeit erzeugtes `<script>` (`b.src = "…"`,
+       `b.async = true`, eingehängt per `insertBefore` vor dem ersten `<script>`).
+       **NUR IM BEISPIEL** (HTML-Block "An example of placing the script define
+       _linkedin_event_id before the Insight Tag base code"); der Fliesstext nennt keine
+       Adresse. **EINE ZWEITE, ALTERNATIVE ADRESSE IST NICHT GENANNT.**
+     · **(b) DIE GLOBALEN NAMEN, fünf Stück:** `_linkedin_partner_id` (Zuweisung im
+       ersten der zwei Script-Blöcke) · `window._linkedin_data_partner_ids` (Array, das die
+       Kennung per `push` aufnimmt) · `window.lintrk` samt seiner Warteschlange
+       `window.lintrk.q` · `window._linkedin_event_id`. Der charakteristische Aufruf lautet
+       `window.lintrk("track", { conversion_id: 12345, event_id: "ABCDppSv6kBwg" })`.
+       **`_linkedin_event_id` UND DER `lintrk`-AUFRUF STEHEN IM FLIESSTEXT** ("Assign the
+       eventId to the _linkedin_event_id property on the global window namespace before the
+       Insight Tag base code executes"; "invoke the window.lintrk function by passing in the
+       event_id property along with the conversion_id in the second argument"); **die drei
+       übrigen Namen stehen NUR IM BEISPIEL.**
+       **DAS BESTÄTIGT DIE EINZIGE ANGABE, DIE DER BESTAND BISHER TRUG** — Teil (y) nennt
+       `window._linkedin_event_id` und `event_id` im `lintrk`-Aufruf. Neu sind die Adresse,
+       `_linkedin_partner_id`, `window._linkedin_data_partner_ids` und `lintrk.q`.
+     · **(c) DER `noscript`-RÜCKFALL: VORHANDEN.** Im selben Beispiel steht innerhalb des
+       Insight-Tag-Blocks
+       `<noscript><img height="1" width="1" style="display:none;" alt=""
+       src="https://px.ads.linkedin.com/collect/?pid=5041322&fmt=gif" /></noscript>`.
+       Der Anbieter führt dieselbe Adresse zusätzlich als eigenständigen Einbauweg
+       ("Image Pixel Procedure", FLIESSTEXT: "Pass the eventId into the image pixel URL"):
+       `https://px.ads.linkedin.com/collect/?pid=1&conversionId=123&fmt=gif&eventId=…`.
+       **DER RÜCKFALL IST ALSO NICHT NUR EIN RÜCKFALL** — das Bild-Pixel ist beim Anbieter
+       ein vollwertiger, getrennt dokumentierter Weg und kann OHNE jedes `<script>` auf
+       einer Seite stehen.
+     **EINE BEOBACHTUNG, DIE NICHT LINKEDIN BETRIFFT und deshalb hier nur benannt wird:**
+     Dieselbe Seite zeigt im Abschnitt "Tag Manager Installation Method" ein vollständiges
+     Google-Tag-Manager-Snippet mit `https://www.googletagmanager.com/gtm.js?id=` und
+     `window.dataLayer`. **Das ist LinkedIns Wiedergabe, nicht Googles Doku**, und es darf
+     nicht als Beleg für `google` zitiert werden — der Google-Abschnitt dieser Datei trägt
+     dafür einen eigenen Teil aus der Quelle des Anbieters.
+
+**DER GELESENE UMFANG (2026-09-21) — LinkedIn, Browser-Tag**
+
+**GEÖFFNET UND GELESEN (2 Seiten):**
+1. `https://www.linkedin.com/help/lms/answer/a418880` — "Integrieren Sie das LinkedIn
+   Insight Tag in Ihre Website" (Hilfe-Artikel, deutschsprachig ausgeliefert, Rumpf rund
+   4 060 Zeichen). **KEIN CODE, UND DAS IST DER BEFUND:** Der Artikel beschreibt den Weg
+   über den Kampagnen-Manager ("Bewegen Sie den Mauszeiger über den Insight Tag-Code und
+   klicken Sie, um den Code im Fenster zu kopieren") und gibt den Code selbst NICHT wieder.
+   Achse `snap.licdn|lintrk|_linkedin|noscript` — **0 Treffer.**
+2. `https://learn.microsoft.com/en-us/linkedin/marketing/conversions/deduplication` —
+   "Deduplication" (rund 11 230 Zeichen). Die tragende Fundstelle für (am).
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `https://learn.microsoft.com/en-us/linkedin/marketing/conversions/insight-tag` —
+  **PROBIERT UND 404.** Der Pfad existiert nicht; er ist geraten und nicht aus einer
+  Navigation genommen.
+· Die übrigen Seiten des Conversions-Zweigs auf Microsoft Learn (`conversions-overview`,
+  `getting-access-conversions`, `conversions-usecase`, `conversions-workflow`,
+  `enabling-first-party-cookies`, `conversions-api-gtm-guide`, `custom-matching-identifiers`,
+  `conversions-faq`, `conversions-payload-builder`, `integration-requirements-conversions`)
+  — **BUDGET-AUSSCHLUSS**, nicht sachlich ausgeschlossen. Sie sind für den SERVER-Weg
+  einschlägig und in den Teilen (aa) bis (al) bereits gelesen; **ob eine von ihnen eine
+  ZWEITE Gestalt des Browser-Tags nennt, ist damit NICHT erhoben.**
+· Die Hilfe-Artikel "Häufig gestellte Fragen zum LinkedIn Insight Tag", "Fehlerbehebung für
+  das LinkedIn Insight Tag", "LinkedIn Insight Tag-Quellstatus" und "Mit dem LinkedIn
+  Insight Tag kompatible Tag-Management-Systeme" — **BUDGET-AUSSCHLUSS.** Der
+  Fehlerbehebungs-Artikel ist der naheliegendste Ort für eine abweichende Script-Adresse.
+· Campaign Manager und `linkedin.com/developers` — hinter einer Anmeldung, nicht betreten.
+
 ## Google (Google Ads Conversions · GA4)
 
 **HERKUNFT — ALLES IN DIESEM ABSCHNITT IST GELESEN, NICHTS IST GEMESSEN (2026-08-20):** Es
@@ -6857,6 +6944,113 @@ docs/immer-beachten.md, "DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT, AN DE
 BEFUND VERSTECKT"): Kein ausgeschlossener Titel trägt eine der Fragen; die drei Seiten ohne
 Titelfrage sind per Gegenprobe geprüft.
 
+### Browser-Tag-Lesung 2026-09-21 (Crawl 2 der Phase 11.11) — die Teile (cs) und (ct)
+
+**HERKUNFT (2026-09-21):** Eine Lesung mit dem Browser-Werkzeug, durchgehend über
+`textContent` und über das Hauptelement statt über `body`. GELESEN wurden VIER Seiten; die
+Liste steht am Ende dieses Teils. **KEIN AUFRUF GEGEN DIE SCHNITTSTELLE**, keine Anmeldung,
+keine Eingabe auf einer fremden Seite, kein Download. Alles unten ist GELESEN und **ersetzt
+keine Messung**.
+
+**DER GEGENSTAND IST EIN ANDERER ALS IN ALLEN TEILEN DARÜBER:** Gesucht wurde das
+BROWSER-TAG — Script-Adresse, globale Namen, `noscript`-Rückfall —, weil die Phase 11.11
+fremde Tracking-Bausteine in importiertem HTML ERKENNEN will. Über Data Manager, OAuth,
+`events:ingest` oder die Nutzlast des Server-Wegs sagen diese Teile NICHTS.
+
+**ES SIND ZWEI TEILE UND NICHT EINER, UND DAS IST DER EIGENTLICHE BEFUND:** Google liefert
+für dasselbe Ziel ZWEI verschiedene Browser-Bausteine mit verschiedenen Adressen, verschiedenen
+globalen Namen und verschiedenem Rückfall-Element — den GOOGLE-TAG (gtag.js) und den TAG
+MANAGER. Wer nur einen von beiden kennt, erkennt die Hälfte der Seiten nicht. Sie stehen
+deshalb getrennt.
+
+(cs) DER GOOGLE-TAG (gtag.js) — ADRESSE, GLOBALE NAMEN, KEIN RÜCKFALL-ELEMENT GEFUNDEN.
+     GELESEN 2026-09-21 an developers.google.com/tag-platform/gtagjs
+     ("Google-Tag mit gtag.js einrichten | Tag Platform | Google for Developers";
+     deutschsprachig ausgeliefert unter `?hl=de`, Rumpf rund 5 600 Zeichen; die angefragte
+     Adresse `/tag-platform/gtagjs/install` leitet dorthin weiter) und an
+     developers.google.com/tag-platform/gtagjs/reference?hl=en ("Google tag API reference",
+     rund 9 800 Zeichen).
+     · **(a) DIE SCRIPT-ADRESSE:** `https://www.googletagmanager.com/gtag/js?id=TAG_ID`,
+       eingebunden als `<script async src="…"></script>` direkt nach dem öffnenden
+       `<head>`. **NUR IM BEISPIEL.** Der FLIESSTEXT derselben Seite nennt den Host
+       `googletagmanager.com` jedoch eigens — im Prüfschritt "Wenn Anfragen an
+       googletagmanager.com angezeigt werden, wird Ihr Tag ausgelöst", daneben
+       `googleadservices.com` und `googlesyndication.com` für Google Ads,
+       `google-analytics.com` und `analytics.google.com` für Analytics sowie
+       `doubleclick.net` für Floodlight. **DIESE FÜNF SIND ZIELE VON LAUFZEIT-ANFRAGEN UND
+       KEINE `src`-ADRESSEN DES EINGEBAUTEN TAGS** — wer sie als Signatur eines
+       `<script src=…>` führt, sucht etwas, das im Quelltext nicht steht.
+     · **(b) DIE GLOBALEN NAMEN:** `window.dataLayer` und die Funktion `gtag`, im Beispiel
+       wörtlich als `window.dataLayer = window.dataLayer || []; function gtag()
+       {dataLayer.push(arguments);}`. Die charakteristischen Aufrufe im Basiscode sind
+       `gtag('js', new Date());` und `gtag('config', 'TAG_ID');`.
+       **DIE FÜNF BEFEHLE STEHEN IM FLIESSTEXT DER REFERENZ:** `config` · `get` · `set` ·
+       `event` · `consent`. Die Conversion-Gestalt für Google Ads steht dort ebenfalls im
+       Fliesstext-Beispiel: `gtag('event','conversion', { 'send_to': '<TARGET_ID1>' });`.
+       **DAS SCHLIESST AN TEIL (q) AN, OHNE IHN ZU ÄNDERN:** dort steht die Form der
+       Kennung (`AW-<id>/<label>`) in der Nutzlast des SERVER-Aufrufs; hier steht, wie
+       derselbe Wert browser-seitig als `send_to` erscheint.
+     · **(c) EIN `noscript`-RÜCKFALL: NICHT GEFUNDEN.** ACHSE `noscript` und `<img` über
+       den vollständigen Rumpf der zwei gelesenen Seiten — **0 Treffer.**
+       **KEINE ENTWARNUNG:** Reichweite sind diese zwei Seiten; der `gtag.js`-Zweig hat
+       weitere.
+
+(ct) DER GOOGLE TAG MANAGER — ZWEI BLÖCKE, ZWEI ADRESSEN, UND DER RÜCKFALL IST EIN
+     `<iframe>` UND KEIN `<img>`.
+     GELESEN 2026-09-21 an support.google.com/tagmanager/answer/14847097?hl=en
+     ("2. Install a web container - Tag Manager Help", Abschnitt "Steps", rund 4 900
+     Zeichen). Die Entwickler-Adresse developers.google.com/tag-platform/tag-manager/web
+     leitet auf diesen Hilfe-Baum weiter (GEMESSEN an der Weiterleitung, CC, 2026-09-21).
+     · **(a) DIE SCRIPT-ADRESSE:** `https://www.googletagmanager.com/gtm.js?id='+i+dl`, wobei
+       `i` die Container-Kennung der Form `GTM-ABCDEFGH` ist und `dl` bei einem abweichenden
+       Namen des Datenspeichers zu `'&l='+l` wird. Der Block wird "as high in the `<head>`
+       tag as possible" eingefügt. **NUR IM BEISPIEL** (zwei HTML-Blöcke); der Fliesstext
+       nennt weder Adresse noch globalen Namen.
+       **DERSELBE HOST WIE BEIM GOOGLE-TAG, EIN ANDERER PFAD** — `/gtm.js` gegen
+       `/gtag/js`. Eine Signatur allein auf `googletagmanager.com` träfe beide und könnte
+       sie nicht unterscheiden.
+     · **(b) DIE GLOBALEN NAMEN:** `dataLayer` (Vorgabename, über den Parameter `l`
+       änderbar) und der charakteristische erste Eintrag
+       `w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'})`.
+       **`dataLayer` IST DAMIT KEIN UNTERSCHEIDUNGSMERKMAL ZWISCHEN (cs) UND (ct)** — beide
+       benutzen ihn.
+     · **(c) DER RÜCKFALL: VORHANDEN, UND ER IST EIN `<iframe>`.** Zweiter Block,
+       unmittelbar nach dem öffnenden `<body>`:
+       `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-ABCDEFGH"
+       height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`.
+       **NUR IM BEISPIEL.**
+       **DAS IST DER EINZIGE RÜCKFALL DIESES CRAWLS, DER KEIN `<img>` IST.** Wer den
+       Rückfall eines Anbieters nur als Bild-Element sucht, findet diesen nicht.
+
+**DER GELESENE UMFANG (2026-09-21) — Google, Browser-Tag**
+
+**GEÖFFNET UND GELESEN (4 Seiten):**
+1. `developers.google.com/tag-platform/gtagjs?hl=de` — "Google-Tag mit gtag.js einrichten"
+   (rund 5 600 Z.) — tragend für (cs), (a) und (c).
+2. `developers.google.com/tag-platform/gtagjs/reference?hl=en` — "Google tag API reference"
+   (rund 9 800 Z.) — tragend für (cs), (b).
+3. `support.google.com/tagmanager/answer/14842164` — "1. Create an account and container"
+   (rund 2 760 Z.) — **0 Treffer auf `gtm.js`**, entgegen der Erwartung, die der Titel
+   weckt; kein Code.
+4. `support.google.com/tagmanager/answer/14847097?hl=en` — "2. Install a web container"
+   (rund 4 900 Z.) — tragend für (ct).
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `developers.google.com/google-ads/api/docs/conversions/…` — **PROBIERT:** die Adresse
+  `conversion-tracking-web` leitet auf `conversions/overview` der Google-Ads-API, also auf
+  den SERVER-Weg. Nicht weiter verfolgt; dieser Zweig ist in den Teilen (g) bis (cr) gelesen.
+· Die übrigen Seiten des Tag-Platform-Baums (`gtagjs/routing`, `gtagjs/configure`,
+  `devguides/consent`, `tag-manager/datalayer`, `tag-manager/server-side`, die
+  Produkt-Leitfäden für Analytics, Ads und Floodlight) — **BUDGET-AUSSCHLUSS**, nicht
+  sachlich ausgeschlossen. **Der Consent-Zweig und die `dataLayer`-Referenz sind die
+  naheliegendsten Orte für eine weitere Gestalt oder einen weiteren globalen Namen; dass
+  sie nicht geöffnet sind, begrenzt die Reichweite von (cs) und (ct).**
+· `support.google.com/tagmanager/answer/6103576` ("Considerations before you install") und
+  die AMP-, iOS-, Android- und Server-Container-Leitfäden — **BUDGET-AUSSCHLUSS**; AMP und
+  Server-Side sind eigene Einbauwege mit womöglich eigener Gestalt.
+· Die Google-Ads-Oberfläche, `tagmanager.google.com` und `tagassistant.google.com` — hinter
+  einer Anmeldung, nicht betreten.
+
 ## Pinterest (Conversions API)
 
 **DIE BUCHSTABEN BEGINNEN HIER BEI (a)** — die Konvention im Kopf dieser Datei bindet die
@@ -7395,6 +7589,76 @@ angehängtes (aa) machte jene Aufteilung stillschweigend falsch.
      docs/claude-history/phase-11.3-testmodus.md — diese Datei trägt Befunde, keine
      Entscheidungen.
 
+### Browser-Tag-Lesung 2026-09-21 (Crawl 2 der Phase 11.11) — der Teil (ab)
+
+**HERKUNFT (2026-09-21):** Eine Lesung mit dem Browser-Werkzeug, durchgehend über
+`textContent` und über das Hauptelement statt über `body`. GELESEN wurden ZWEI Seiten; die
+Liste steht am Ende dieses Teils. **KEIN AUFRUF GEGEN DIE SCHNITTSTELLE**, keine Anmeldung,
+keine Eingabe auf einer fremden Seite, kein Download. Alles unten ist GELESEN und **ersetzt
+keine Messung**.
+
+**DER GEGENSTAND IST EIN ANDERER ALS IN ALLEN TEILEN DARÜBER:** Gesucht wurde das
+BROWSER-TAG des Anbieters — Script-Adresse, globale Namen, `noscript`-Rückfall —, weil die
+Phase 11.11 fremde Tracking-Bausteine in importiertem HTML ERKENNEN will. Über die
+Conversions API sagt dieser Teil NICHTS.
+
+(ab) DER PINTEREST TAG — ADRESSE, GLOBALE NAMEN UND EIN RÜCKFALL JE EREIGNIS.
+     GELESEN 2026-09-21 an developers.pinterest.com/docs/track-conversions/pinterest-tag/
+     ("Pinterest Developers | Pinterest tag", Überschrift "Track conversions with Pinterest
+     Tag", Rumpf rund 34 260 Zeichen), Abschnitte "Base code", "Event code template",
+     "Event data in the img tag" und "Copy event code examples".
+     · **(a) DIE SCRIPT-ADRESSE:** `https://s.pinimg.com/ct/core.js`, im Basiscode als
+       Argument der sofort ausgeführten Funktion übergeben und zur Laufzeit als
+       `<script async>` eingehängt. **NUR IM BEISPIEL**; der Fliesstext nennt keine
+       Adresse. **EINE ALTERNATIVE ADRESSE IST NICHT GENANNT.**
+     · **(b) DIE GLOBALEN NAMEN:** `window.pintrk` samt `window.pintrk.queue` und
+       `pintrk.version` (Wert `"3.0"` im Beispiel). Die charakteristischen Aufrufe:
+       `pintrk('load', 'YOUR_TAG_ID');` · `pintrk('page');` · `pintrk('track', '<Event>')`,
+       optional mit einem Datenobjekt. **NUR IM BEISPIEL**; der Fliesstext spricht von
+       "base code" und "event code", ohne die Namen zu nennen.
+       **EINE FALLE FÜR EINE SIGNATUR AUF DEN EREIGNISNAMEN:** Dieselbe Seite schreibt sie
+       in BEIDEN Schreibungen — `pintrk('track', 'AddToWishList')` und
+       `pintrk('track', 'checkout')`, `'pagevisit'`, `'watchVideo'`, `'addtocart'`. Der
+       Anbieter nennt eigene Ereignisnamen ausdrücklich "treated as case insensitive"
+       (FLIESSTEXT).
+     · **(c) DER `noscript`-RÜCKFALL: VORHANDEN, UND ES IST NICHT NUR EINER.** Im
+       Basiscode:
+       `<noscript><img height="1" width="1" style="display:none;" alt=""
+       src="https://ct.pinterest.com/v3/?tid=YOUR_TAG_ID&noscript=1" /></noscript>`.
+       **JE EREIGNIS KOMMT EIN WEITERES HINZU** — der Fliesstext verlangt es ausdrücklich:
+       "Specify the event type in two places: In JavaScript code within a script tag · In an
+       image tag within a noscript block". Die Ereignis-Gestalt lautet
+       `https://ct.pinterest.com/v3/?tid=YOUR_TAG_ID&event=<Event>&noscript=1`, Ereignisdaten
+       als `&ed[value]=…`, `&ed[line_items][0][product_id]=…` und so fort.
+       **ZWEI HOSTS, NICHT EINER:** das Script liegt auf `s.pinimg.com`, der Rückfall auf
+       `ct.pinterest.com`. Eine Erkennung, die nur den Script-Host kennt, übersieht eine
+       Seite, die **NUR** das Bild-Tag trägt — und genau das lässt der Anbieter im
+       Fliesstext zu: "if you choose you can include only the image tag event code without
+       JavaScript. In this case you do not need the base code."
+
+**DER GELESENE UMFANG (2026-09-21) — Pinterest, Browser-Tag**
+
+**GEÖFFNET UND GELESEN (2 Seiten):**
+1. `developers.pinterest.com/docs/track-conversions/understand-conversions-and-how-to-track-them/`
+   — "Understand conversions and how to track them" (rund 6 530 Z.) — trägt die
+   Gegenüberstellung von API und Tag und die Tabelle "Name in API / Name in Tag"; **kein
+   Code, keine Adresse.**
+2. `developers.pinterest.com/docs/track-conversions/pinterest-tag/` — "Pinterest tag"
+   (rund 34 260 Z.) — die tragende Fundstelle für (ab).
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `developers.pinterest.com/docs/track-conversions/…` in den Zweigen
+  `track-conversions-in-the-api`, `define-your-own-event-types`, `remove-users-from-events`,
+  `get-event-quality-score`, `use-limited-data-processing-flag` — **SACHLICHER AUSSCHLUSS:**
+  Server-Weg bzw. Datenschutz-Kennzeichen, in den Teilen (a) bis (aa) behandelt.
+· `integrate-third-party-tracking-tools` — **BUDGET-AUSSCHLUSS**, und es ist der
+  naheliegendste Ort für eine ABWEICHENDE Gestalt (Tag-Manager-Vorlagen, Partner-Container).
+· "Pinterest Tag Helper" (eigener Unterabschnitt neben "Conversion-Tracking mit
+  Pinterest-Tag") — **BUDGET-AUSSCHLUSS.** Ein Prüfwerkzeug ist ein möglicher Ort für eine
+  Aussage darüber, woran der Anbieter sein eigenes Tag erkennt.
+· `ads.pinterest.com` (Conversion Tag Manager, Eventübersicht) — hinter einer Anmeldung,
+  nicht betreten.
+
 ## Meta (Conversions API)
 
 **DIE BUCHSTABEN BEGINNEN HIER BEI (a)** — die Konvention im Kopf dieser Datei bindet die
@@ -7560,6 +7824,101 @@ umgezogen — die Pfade lauten heute `/documentation/ads-commerce/conversions-ap
 `/docs/marketing-api/conversions-api/…`; die alten Adressen leiten weiter. Ältere Zeiger im
 Repo auf die alte Form sind NICHT nachgezogen worden und waren nicht Gegenstand dieser
 Lesung.
+
+### Browser-Tag-Lesung 2026-09-21 (Crawl 2 der Phase 11.11) — der Teil (g)
+
+**HERKUNFT (2026-09-21):** Eine Lesung mit dem Browser-Werkzeug, durchgehend über
+`textContent` und über das Hauptelement statt über `body`. GELESEN wurden DREI Seiten; die
+Liste steht am Ende dieses Teils. **KEIN AUFRUF GEGEN DIE SCHNITTSTELLE**, keine Anmeldung,
+keine Eingabe auf einer fremden Seite, kein Download. Alles unten ist GELESEN und **ersetzt
+keine Messung**.
+
+**DER GEGENSTAND IST EIN ANDERER ALS IN DEN TEILEN (a) BIS (f):** Jene handeln vom
+TESTMODUS der Conversions API. Hier geht es um das BROWSER-TAG — Script-Adresse, globale
+Namen, `noscript`-Rückfall —, weil die Phase 11.11 fremde Tracking-Bausteine in importiertem
+HTML ERKENNEN will.
+
+**DIESER TEIL SCHLIESST EINE LÜCKE, DIE DER BESTAND SELBST BENANNT HAT:** Bis zum
+2026-09-21 trug das Repo GENAU EINE Meta-Adresse, und zwar im Produktivcode
+(`connect.facebook.net/en_US/fbevents.js` in `src/lib/tracking/meta.ts`) — in dieser Datei
+stand sie nicht.
+
+(g) DAS META-PIXEL — ADRESSE, GLOBALE NAMEN UND ZWEI GESTALTEN DES BILD-TAGS.
+    GELESEN 2026-09-21 an developers.facebook.com/documentation/meta-pixel/get-started
+    ("Erste Schritte mit dem Meta-Pixel"; deutschsprachig ausgeliefert, Rumpf rund 6 020
+    Zeichen; die angefragte Adresse `/docs/meta-pixel/get-started` leitet dorthin weiter),
+    Abschnitte "Basiscode" und "Pixel installieren"; dazu
+    developers.facebook.com/documentation/meta-pixel/advanced ("Weiterführend", rund 19 810
+    Zeichen), Abschnitte "Das Pixel mit einem IMG-Tag installieren" und "Tracking von
+    Button-Klicks".
+    · **(a) DIE SCRIPT-ADRESSE:** `https://connect.facebook.net/en_US/fbevents.js`, im
+      Basiscode als Argument `v` übergeben und zur Laufzeit als `<script async>` per
+      `insertBefore` eingehängt. **NUR IM BEISPIEL**; der Fliesstext nennt keine Adresse.
+      **DIE SPRACHKENNUNG `en_US` STECKT IM PFAD** — ob der Anbieter andere Pfade
+      ausliefert, ist auf den gelesenen Seiten nicht gesagt und damit **NICHT ERHOBEN.**
+    · **(b) DIE GLOBALEN NAMEN:** `fbq` (gesetzt als `f.fbq`) und `_fbq` (gesetzt als
+      `f._fbq`), dazu `fbq.queue`, `fbq.loaded`, `fbq.version` (Wert `'2.0'` im Beispiel)
+      und `fbq.callMethod`. Die charakteristischen Aufrufe:
+      `fbq('init', '{your-pixel-id-goes-here}');` · `fbq('track', 'PageView');` ·
+      `fbq('track', '<Standard-Event>', { … })` · `fbq('trackCustom', …)`.
+      **`fbq()` UND `fbq('track', 'PageView')` STEHEN IM FLIESSTEXT** der Einstiegsseite
+      ("indem die fbq()-Funktion bei jedem Laden aufgerufen wird"; "Dadurch sollte
+      fbq('track', 'PageView') aufgerufen werden"); `_fbq` und die Hilfsfelder stehen
+      **NUR IM BEISPIEL.** `fbq('trackCustom')` ist GELESEN an
+      developers.facebook.com/documentation/meta-pixel/implementation/conversion-tracking
+      ("Conversion Tracking", rund 18 020 Zeichen); jene Seite führt neben Standard- und
+      selbstdefinierten Events eine dritte Art, die **selbstdefinierten Conversions**, die
+      "durch Parsen der Referrer-URLs deiner Webseite automatisch nachverfolgt werden" —
+      **die hinterlässt im HTML der Seite NICHTS und ist für eine Erkennung am Quelltext
+      unsichtbar.**
+    · **(c) DER `noscript`-RÜCKFALL: VORHANDEN.** Im Basiscode:
+      `<noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id={your-pixel-id-goes-here}&ev=PageView&noscript=1"/></noscript>`.
+      **NUR IM BEISPIEL.**
+      **DIESELBE ADRESSE IST ZUGLEICH EIN EIGENER EINBAUWEG, UND DAS STEHT IM FLIESSTEXT:**
+      "Falls du das Pixel mit einer einfachen Implementierung installieren musst, kannst du
+      es mit einem `<img>`-Tag installieren. Füge hierzu den nachstehenden Code zwischen
+      einem öffnenden und einem schließenden `<noscript>`-Tag in den Header oder den Text
+      deiner Webseite ein" — Gestalt
+      `https://www.facebook.com/tr?id={pixel-id}&ev={standard-event}`, Parameter als
+      `&cd[content_name]=…`. **DER PARAMETER `noscript=1` FEHLT IN DIESER ZWEITEN GESTALT**
+      (GELESEN an sechs Beispiel-Tags der Seite "Weiterführend"). Eine Signatur, die
+      `noscript=1` verlangt, träfe sie nicht; tauglich ist der Präfix
+      `www.facebook.com/tr?id=`.
+      **EIN SATZ DIESER SEITE BERÜHRT DIE EIGENE VORSCHAU-SANDBOX und wird hier nur
+      festgehalten, nicht bewertet:** "Wenn du dein Pixel-IMG innerhalb eines iframe mit dem
+      Attribut sandbox platzierst, musst du den Wert allow-scripts hinzufügen, da Facebook
+      sonst nicht deine IMG-Pixeldaten erhält." (FLIESSTEXT, "Weiterführend").
+
+**DER GELESENE UMFANG (2026-09-21) — Meta, Browser-Tag**
+
+**GEÖFFNET UND GELESEN (3 Seiten):**
+1. `/documentation/meta-pixel/get-started` — "Erste Schritte mit dem Meta-Pixel" (rund
+   6 020 Z.) — tragend für (a), (b) und (c).
+2. `/documentation/meta-pixel/advanced` — "Weiterführend" (rund 19 810 Z.) — die zweite
+   Gestalt des Bild-Tags, der Button-Klick-Aufruf und der Sandbox-Satz.
+3. `/documentation/meta-pixel/implementation/conversion-tracking` — "Conversion Tracking"
+   (rund 18 020 Z.) — `fbq('trackCustom')` und die dritte Conversion-Art.
+
+**NACH DEM DURCHGANG DURCH DIE AUSSCHLUSS-LISTE DOCH GEÖFFNET:**
+· `/documentation/meta-pixel/reference` — "Referenz zur Meta Pixel API" (rund 7 010 Z.) —
+  ausgeschlossen als "Ereignis- und Parameterliste, nicht Einbau". Geöffnet, weil (b) nach
+  den AUFRUFEN fragt: Sie trägt **nur `fbq('track')`** und sonst keine Aufrufform (Achse
+  `fbq\s*\(\s*'[a-zA-Z]+'` über den vollen Rumpf, ein einziger Treffer). Der Ausschluss war
+  im Ergebnis richtig und war es vorher nicht begründbar.
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `/documentation/meta-pixel/implementation/tag_spa` (Tagging von SPAs) — **BUDGET-
+  AUSSCHLUSS**, und der naheliegendste Ort für eine ABWEICHENDE Einbaugestalt.
+· `/documentation/meta-pixel/advanced/advanced-matching`,
+  `/implementation/custom-audiences`, `/implementation/marketing-api`,
+  `/implementation/pixel-for-collaborative-ads`, `/implementation/pixel-for-movies`,
+  `/get-started/advantage-catalog-ads`, `/guides/track-multiple-events` —
+  **BUDGET-AUSSCHLUSS**; "Mehrere Events verfolgen" kann eine weitere Aufrufform tragen.
+· `/implementation/gdpr`, `/implementation/data-processing-options`,
+  `/guides/terms-and-policies` — sachlich: Recht und Richtlinien, keine Einbaugestalt.
+· `/support/*` (Data Advisor, Pixel-Migration) — sachlich: Werkzeuge und Umzug.
+· Events Manager und Werbeanzeigenmanager — hinter einer Anmeldung, nicht betreten.
 
 ## TikTok (Events API 2.0)
 
@@ -7747,3 +8106,88 @@ Aussage, die der Anbieter in seiner eigenen Oberfläche trifft.
   LISTE.** Er liegt in einem anderen Abschnitt, und der Zugang verlangt eine Anmeldung.
   Ein Sandbox-Konto ist der naheliegendste Ort für eine Aussage über Testdaten und
   Berichterstattung; **dass er nicht geöffnet ist, begrenzt die Reichweite von (d).**
+
+### Browser-Tag-Lesung 2026-09-21 (Crawl 2 der Phase 11.11) — der Teil (i)
+
+**HERKUNFT (2026-09-21):** Eine Lesung mit dem Browser-Werkzeug, durchgehend über
+`textContent` und über den Artikel-Rumpf (`.doc-content-body`) statt über `body` — **das
+war hier nötig und nicht bloss sparsam:** Das `<main>`-Element dieser Doku enthält den
+gesamten Navigationsbaum (rund 62 460 Zeichen gegen 25 740 im Artikel-Rumpf), und eine
+Lesung darüber hätte den Befund in einem Inhaltsverzeichnis ertränkt. GELESEN wurden ZWEI
+Seiten; die Liste steht am Ende dieses Teils. **KEIN AUFRUF GEGEN DIE SCHNITTSTELLE**,
+keine Anmeldung, keine Eingabe auf einer fremden Seite, kein Download. Alles unten ist
+GELESEN und **ersetzt keine Messung**.
+
+**DER GEGENSTAND IST EIN ANDERER ALS IN DEN TEILEN (a) BIS (h):** Jene handeln vom
+TESTMODUS. Hier geht es um das BROWSER-TAG — Script-Adresse, globale Namen,
+`noscript`-Rückfall —, weil die Phase 11.11 fremde Tracking-Bausteine in importiertem HTML
+ERKENNEN will.
+
+(i) DAS TIKTOK-PIXEL — ADRESSE, GLOBALE NAMEN, UND KEIN RÜCKFALL-ELEMENT.
+    GELESEN 2026-09-21 an business-api.tiktok.com/portal/docs/install-pixel-using-code/v1.3
+    ("Install Pixel using code | TikTok API for Business", Artikel-Rumpf rund 25 740
+    Zeichen; die angefragte Adresse `ads.tiktok.com/marketing_api/docs?id=1739585702922241`
+    leitet dorthin weiter), Abschnitte "Install the pixel", "Event codes", "Install event
+    code" und "FAQs".
+    · **(a) DIE SCRIPT-ADRESSE:** `https://analytics.tiktok.com/i18n/pixel/events.js`, im
+      Basiscode der Variablen `i` zugewiesen und zur Laufzeit als
+      `o.src = i + "?sdkid=" + e + "&lib=" + t` eingehängt — die Pixel-Kennung reist also
+      in der Abfrage, der Wert `ttq` als `lib`. **NUR IM BEISPIEL** ("BASE CODE TEMPLATE");
+      der Fliesstext nennt keine Adresse. Dieselbe Adresse steht auf der Seite zusätzlich
+      als Verweis mit dem Linktext "Sdk Link" (im Abschnitt "Debug Mode").
+      **ES IST DIE EINZIGE ADRESSE DER SEITE** — Achse `https?://…` über den vollen
+      Artikel-Rumpf, genau ein Treffer.
+    · **(b) DIE GLOBALEN NAMEN:** `window.TiktokAnalyticsObject` (Wert `'ttq'`) und `ttq`
+      selbst, dazu `ttq.methods` (im Beispiel als Liste ausgeschrieben: `page`, `track`,
+      `identify`, `instances`, `debug`, `on`, `off`, `once`, `ready`, `alias`, `group`,
+      `enableCookie`, `disableCookie`), `ttq.load`, `ttq.instance`, `ttq.setAndDefer` und
+      die Speicher `ttq._i`, `ttq._t`, `ttq._o`. Die charakteristischen Aufrufe:
+      `ttq.load('<pixel id>');` · `ttq.page();` · `ttq.track('<Event>')` ·
+      `ttq.instance('<pixel id>').track('<Event>')`.
+      **`ttq.load()` UND `ttq.page()` STEHEN IM FLIESSTEXT** ("Part 2 contains
+      ttq.load('{pixel ID placeholder}') … ttq.page() will report a page view event"),
+      ebenso `ttq.track('')` ("You can call the ttq.track('') function anywhere between your
+      web page's opening and closing `<body>` tags"). `window.TiktokAnalyticsObject` und die
+      Methodenliste stehen **NUR IM BEISPIEL.**
+      **`window.TiktokAnalyticsObject` IST DER TRAGFÄHIGSTE ANKER DIESES ANBIETERS:** Der
+      Name `ttq` ist im Basiscode ein durchgereichter Parameter (`}(window, document,
+      'ttq');`) und damit im Quelltext austauschbar; die Eigenschaft
+      `TiktokAnalyticsObject` steht fest. **DASS SIE SICH ÄNDERN LIESSE, IST NICHT GESAGT
+      UND NICHT GEMESSEN** — die Doku zeigt in allen Beispielen `'ttq'`.
+    · **(c) EIN `noscript`-RÜCKFALL: NICHT GEFUNDEN.** ACHSE `noscript` und `<img` über den
+      vollständigen Artikel-Rumpf der Einbau-Seite — **je 0 Treffer.**
+      **DAS IST DER EINZIGE DER FÜNF ZIELE OHNE RÜCKFALL-ELEMENT IM GELESENEN UMFANG**, und
+      es ist **KEINE ENTWARNUNG:** Reichweite ist diese eine Seite; ein Bild-Rückfall könnte
+      in den nicht geöffneten Zweigen stehen.
+    **ZWEI NEBENBEFUNDE, die keine Frage dieses Laufs beantworten und trotzdem hierher
+    gehören, weil sie den Gegenstand berühren:**
+    NEBENBEFUND 1 — Die Doku empfiehlt für die Einwilligung ausdrücklich FREMDE Werkzeuge
+    ("TikTok Pixel integrates with many third-party consent management platforms") und
+    daneben einen eigenen "Pixel Cookie Consent Mode" (FLIESSTEXT, Abschnitt "Disable the
+    pixel when a user opts out"; die verlinkte Seite ist NICHT geöffnet).
+    NEBENBEFUND 2 — Der Debug-Modus wird über das Cookie `pixel_debug=true` eingeschaltet,
+    und die Konsolen-Ausgaben beginnen mit `[TT]` (FLIESSTEXT).
+
+**DER GELESENE UMFANG (2026-09-21) — TikTok, Browser-Tag**
+
+**GEÖFFNET UND GELESEN (2 Seiten):**
+1. `business-api.tiktok.com/portal/docs/events-api-v1-web-get-started/v1.3` — "Get started
+   for Events API 1.0 Web" — **NUR ALS DURCHGANG**, weil die angefragte Kennung
+   `?id=1739584855420929` dorthin geleitet hat; der Verweis "installing the pixel base code"
+   darin führte auf die richtige Seite. **KEIN BEFUND ENTNOMMEN**; die Seite betrifft
+   ausserdem die ÄLTERE Fassung 1.0.
+2. `business-api.tiktok.com/portal/docs/install-pixel-using-code/v1.3` — "Install Pixel
+   using code" (Artikel-Rumpf rund 25 740 Z.) — die tragende Fundstelle für (i).
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `business-api.tiktok.com/portal/docs?id=1795929012554754` ("Pixel Cookie Consent Mode") —
+  **BUDGET-AUSSCHLUSS.** Ein eigener Einwilligungs-Modus des Anbieters ist der
+  naheliegendste Ort für eine ABWEICHENDE Gestalt des Tags (geparkte Scripte, zusätzliche
+  Attribute); **dass er nicht geöffnet ist, begrenzt die Reichweite von (i).**
+· `ads.tiktok.com/help/article?aid=9661` ("Learn how to use Pixel Helper") und die
+  Chrome-Erweiterung "TikTok Pixel Helper" — **BUDGET-AUSSCHLUSS** bzw. ein Download, der
+  nach der Auflage "kein Download" ohnehin ausscheidet. Ein Prüfwerkzeug ist ein möglicher
+  Ort für eine Aussage darüber, woran der Anbieter sein eigenes Tag erkennt.
+· Die Zweige "Events API 2.0", "Events API for Web" und "Setup guide" im selben
+  Navigationsbaum — sachlich: der SERVER-Weg, in den Teilen (a) bis (h) behandelt.
+· Events Manager und TikTok Ads Manager — hinter einer Anmeldung, nicht betreten.

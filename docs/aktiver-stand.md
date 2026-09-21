@@ -1347,6 +1347,54 @@ Anbieter wie genannt; **nichts davon ist an einer echten Seite gemessen.** Dass 
 ihre Logik in einem Script bündeln, ist die Begründung der Entscheidung und **keine
 Messung**.
 
+**ERGÄNZT AM 2026-09-21 — EINE ADRESSE IM RUMPF ZÄHLT SCHON FÜR DIE ERKENNUNG, NICHT ERST
+FÜR DEN TRÄGER.** Der Text darüber bleibt wörtlich; dieser Absatz tritt DANEBEN und
+schliesst eine Lücke, die erst eine zweite Messung gezeigt hat.
+
+**DER BEFUND (V2) — GEMESSEN an einer Wegwerf-Probe mit dem ECHTEN `collectForeignHits`
+und der Projekt-jsdom (CC, 2026-09-21), fünf Blöcke, alle fünf Sollwerte vorher als
+Ableitung festgelegt und getroffen:**
+
+| Block | Treffer | Träger | Name im Block? | Adresse im Rumpf? |
+|---|---|---|---|---|
+| meta | `[Meta]` | knoten | ja | ja |
+| tiktok | `[TikTok]` | knoten | ja | ja |
+| pinterest | `[Pinterest]` | knoten | ja | ja |
+| linkedin, Block 1 (Partner-Kennung) | `[LinkedIn]` | **aufruf** | ja | nein |
+| **linkedin, Block 2 (LADER)** | **KEINE** | — | **nein** | **ja** |
+
+**DER LADE-BLOCK VON LINKEDIN TRÄGT SEINE ADRESSE UND BLEIBT TROTZDEM UNBEKANNT.** Er
+setzt `window.lintrk` als Zuweisung (`window.lintrk = function(a,b){…}`) und übergibt es
+als Argument (`})(window.lintrk);`) — **die Signatur sucht `lintrk(` mit Klammer, und die
+steht dort nirgends.** `_linkedin_partner_id` steht im ANDEREN Block.
+
+**WAS DARAUS FOLGT, UND DESHALB IST ES KEINE KOSMETIK:** Der Betreiber sähe den Lader als
+**„Inline-Skript" ohne Marke und ohne Knopf**. Ein Klick auf „LinkedIn" nähme dann nur das
+Rückfall-Bild mit — **der Lader bliebe stehen, und das Pixel liefe weiter.** Genau den
+stillen Ausgang soll diese Phase verhindern.
+
+**DIE REGEL:** Eine bekannte Adresse im **RUMPF** eines Inline-Scripts zählt als
+**ADRESS-TREFFER** — gleichrangig mit der Adresse im Attribut und **VOR den Namen**
+(dieselbe Rangfolge wie in ENTSCHEIDUNG P11.11-32, Punkt (d): die Adresse ist das härtere
+Merkmal). Der Träger bleibt damit folgerichtig **„knoten"**; an der Entscheidung darüber
+ändert sich nichts, sie bekommt nur eine zweite Quelle für dasselbe Urteil.
+
+**DER EIGEN-FILTER BLEIBT DER ERSTE SCHRITT, und das ist die Auflage, ohne die diese
+Erweiterung gefährlich wäre:** **UNSER Wiring-Script trägt `connect.facebook.net` als
+Zeichenkette im Rumpf** (GEMESSEN, VERMERK P11.11-17, Punkt (g)). Ohne den Vorrang von
+ENTSCHEIDUNG P11.11-26 würde es durch diese Erweiterung zum **fremden Meta-Pixel mit
+Entfernen-Knopf** — ein Klick träfe dann unseren eigenen Baustein.
+
+**DIE GRENZE DER MESSUNG GEHÖRT DAZU:** docs/ziel-befunde.md zitiert die Blöcke **NICHT
+wörtlich**; sie zerlegt sie in die Teile (a) Adresse und (b) globale Namen. Die fünf
+Blöcke der Probe sind daraus **NACHGEBAUT**, Bestandteil für Bestandteil. **Ein echter
+Anbieter-Schnipsel ist damit nicht gemessen** — was gemessen ist, ist der Bau aus den
+belegten Bestandteilen.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21. Der V2-Befund ist GEMESSEN an der
+Wegwerf-Probe (CC, 2026-09-21); die Bestandteile der Blöcke sind GELESEN an
+docs/ziel-befunde.md, Teile (g), (i), (ab) und (am), je Punkte (a) und (b).
+
 ---
 
 ## Die offenen Designfragen

@@ -2060,6 +2060,138 @@ einer ausgelieferten Seite (CC, 2026-09-21) und ausdrücklich keine Doku-Lesung.
 Aufruf gegen eine Schnittstelle, keine Anmeldung, keine Eingabe, kein Download.** **KEIN
 Bau-Commit.**
 
+### VERMERK P11.11-33 — SCHEIBE 11.11b: ERKENNUNG UND ANZEIGE (2026-09-21)
+
+**GEBAUT UND LIVE BESTÄTIGT. BAU-COMMIT `6d6ab42`** — ELF Dateien, 1 730 Einfügungen,
+VIERZEHN Löschungen; fünf Dateien neu (`src/lib/foreign-signatures.ts`,
+`src/lib/foreign-scan.ts` und die drei Testdateien `foreign-signatures.test.ts`,
+`foreign-scan.test.ts`, `detect.foreign.test.ts`).
+
+**WAS GEBAUT IST, in einem Satz je Schritt:** eine versionierte Signaturliste mit ZWÖLF
+Einträgen für die elf Anbieter aus ENTSCHEIDUNG P11.11-11, jeder mit seinem Beleg im
+Datensatz · eine reine Erkennung auf dem bereits zerlegten Dokument, unmittelbar nach dem
+Parse und VOR `stabilizeDoc`, mit eigenem Fehlerfang · die Fundliste als Block (4) im
+Bereich BAUEN, ausserhalb des einklappbaren Code-Blocks · der Kollisionshinweis am
+Einwilligungs-Schalter in `PublishView.tsx`, dazu der Ersatz des überholten Satzes.
+
+**DIE EINZIGE ÄNDERUNG AN EINER GESCHÜTZTEN DATEI IST EIN WORT** — `export` an
+`collectOwnNodes` (`src/lib/own-blocks-strip.ts`), `git diff --numstat` `1 1`, Freigabe
+ENTSCHEIDUNG P11.11-32, Punkt (a). **DIE SHA256 DER NEUN GESCHÜTZTEN DATEIEN SIND VORHER
+GLEICH NACHHER** — `ingest.ts` · `resolve.ts` · `proxy.ts` · `app-serve/route.ts` ·
+`generate.ts` · `pageview-emitter.ts` · `actions.ts` · `own-blocks.ts`, und
+`own-blocks-strip.ts` mit genau jener einen Zeile.
+
+**TESTZAHL: 1 996 VORHER, 2 038 NACHHER**, 91 Dateien vorher, 94 nachher, alle grün.
+Differenz **+42** — 6 in `foreign-signatures.test.ts`, 21 in `foreign-scan.test.ts`, 2 im
+neuen `detect.foreign.test.ts`, +2 in `detect.test.ts`, +11 in `CodeImporter.test.tsx`.
+
+**DIE VIER GATES, alle grün** (CC, 2026-09-21): `tsc --noEmit` exit 0 · `eslint` 0 errors /
+1 Warnung (dieselbe vorbestehende in `consent.test.ts`, ausserhalb dieser Scheibe) ·
+`vitest run` 94 Dateien und 2 038 Tests · `next build` exit 0.
+
+**DER BYTE-WÄCHTER W1–W4 IST GRÜN** und einzeln nachgefahren. Sein Sollwert ist der vor der
+ersten Zeile Produktivcode der Scheibe 11.11d erhobene (ENTSCHEIDUNG P11.11-22, Punkt (g));
+**diese Scheibe hat KEINEN zweiten angelegt** — ein zweiter Sollwert wäre die zweite
+Wahrheit, die P11.11-18 verbietet.
+
+**ELF PFLICHT-MUTATIONEN, JEDE ROT UND JEDE GENAU WIE VORHERGESAGT.** Die Vorhersagen
+standen VOR dem jeweiligen Lauf und sind gegen den dann aktuellen Bestand neu abgeleitet
+worden (docs/immer-beachten.md, EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF GEGEN DEN
+AKTUELLEN TESTBESTAND AKTUALISIERT). **M3, M4 UND M5 SIND GETEILT GEFAHREN** — eine
+Mutation, die zwei Achsen zugleich bewegt, sagt nicht, welche gedeckt ist:
+- **M1** (eigen-Riegel weg) -> nur S1. **M2** (Parkform ignoriert) -> S2, S3, S4, S5 **und
+  S15**, eine Klasse. **M3a/M3b** (`data-src` bzw. `data-cmp-src` nicht gelesen) -> S3 bzw.
+  S4. **M4a/M4b** (`img` bzw. `iframe` nicht gelesen) -> S6 + S7 bzw. S7.
+- **M5a** (Container als Pixel) -> F3, S9, SK4. **M6** (eigener `try/catch` weg) -> E-A +
+  E-B. **M7** (unbekanntes Script leuchtet) -> SK5. **M9** (nur der erste Treffer zählt) ->
+  S12. **M11** (zurück auf den ersten nicht-leeren Adress-Ort) -> S20 + S21.
+- **M10 STEHT IN KEINEM AUFTRAG UND IST ERGÄNZT WORDEN** (Ausschnitt per
+  `dangerouslySetInnerHTML`) -> SK11. Ohne ihn wäre SK11 eine Abwesenheits-Behauptung ohne
+  Positivkontrolle.
+- **M8 BEWEGT ZWEI ACHSEN UND IST AN DER GEBAUTEN GESTALT NICHT TEILBAR** — die Kollision
+  hängt am selben `consentDialog`-Prop wie die Radiogruppe. Das ist VOR dem Lauf gesagt und
+  in zwei Klassen vorhergesagt worden, die Zahl in (B) ausdrücklich offen: (A) SK7, (B) UI2
+  und SK8. **SK8 fiel über seine Positivkontrolle**, gehört also in (B) und nicht in (A).
+- **M5b IST NICHT FAHRBAR, UND ZWAR ALS FOLGE DER ENTSCHEIDUNG, NICHT ALS LÜCKE:** Ein
+  Container mit Entfernen-Angebot lässt sich in 11.11b nicht mutieren, weil diese Scheibe
+  gar keine Handlung anbietet (ENTSCHEIDUNG P11.11-31). Eine zu bauen, nur um sie zu
+  mutieren, verstiesse gegen ebendiese Entscheidung. **WEITERGEREICHT AN 11.11c**, s. den
+  Prüfstein 5 in Abschnitt 9.
+**KEINE Mutation blieb grün, KEINE traf mehr als vorhergesagt, KEIN Bestandstest fiel** —
+ausser den zwei geplanten `toEqual`-Erweiterungen in `detect.test.ts`, die das neue
+Pflichtfeld `scan` aufnehmen.
+
+**DIE REVIEW-KORREKTUR K1 — SIE IST DER WICHTIGSTE EINZELBEFUND DIESER SCHEIBE.** Die erste
+Fassung von `adresseVon` nahm den **ERSTEN nicht-leeren** Wert aus `src`, `data-src`,
+`data-cmp-src`. **consentmanager parkt ein `<iframe>`, indem es `src="about:blank"` setzt
+und die echte Adresse nach `data-cmp-src` verschiebt** (VERMERK P11.11-25, consentmanager
+(d)). Ein so geparkter Tag-Manager-Container hätte damit die Adresse `about:blank`
+getragen, **KEINE Signatur getroffen und wäre GAR NICHT ERSCHIENEN** — unbekannte iframes
+werden nach ENTSCHEIDUNG P11.11-29 bewusst nicht gelistet. **DAS WÄRE EIN STILLER
+FEHLSCHLAG GEWESEN: kein Fund, kein Hinweis, nichts, woran es auffiele.** Gebaut ist
+seither `adressenVon`: alle drei Orte werden gelesen, `about:blank` wird als Platzhalter
+verworfen, und die Signatur-Treffer sind die VEREINIGUNG über alle Kandidaten; für die
+Kennung eines UNBEKANNTEN Scripts gilt der erste. Wächter sind S20 und S21, die Mutation
+M11 macht beide wieder rot. **DIE ZWEI LÄUFE HEISSEN S20 UND S21 UND NICHT S16/S17**, wie
+der Auftrag sie nannte: jene Nummern waren in der Datei bereits vergeben, und zwei Läufe
+desselben Namens wären ein Anker, der zwei Stellen trifft.
+
+**DIE ZWEITE REVIEW-KORREKTUR K2 IST EINE KOMMENTAR-KORREKTUR:** Der Docblock an
+`FOREIGN_LIST_HEADING` behauptete einen Platzhalter `{n}`, den die Zeichenkette nicht
+trägt. Er sagt jetzt, WO die Zahl angehängt wird (Block (4) in `CodeImporter.tsx`) und dass
+sie **FUNDE zählt, nicht FUNDSTELLEN** — ein bekannter Anbieter ist EIN Fund, auch mit drei
+Fundstellen. Der Wortlaut der Überschrift ist unberührt.
+
+**DER LIVE-NACHWEIS (OWNER-ANGABEN, 2026-09-21, Chrome, Vercel-Status "Ready") — von CC
+nicht prüfbar:**
+- **REGRESSION BESTANDEN.** Ein sauberes Projekt zeigt "Skripte und Tags im Code (0)" mit
+  "Keine Skripte oder Tags gefunden."; Editor, Vorschau, Speichern und Export sind
+  unverändert. Das bereinigte Projekt B zeigt keine Warnung und **keinen Fehlfund**.
+- **EIGEN VOR FREMD, AN DER WIRKUNG BELEGT:** Beim Re-Import der Export-Datei von Projekt A
+  — mit unserem Meta-Wiring darin — erscheint die Warnung aus 11.11d, und **die Fundliste
+  zeigt (0), kein Meta.** Das ist der Live-Beleg für ENTSCHEIDUNG P11.11-26; ohne sie stünde
+  unser eigener Baustein dort als fremdes Pixel.
+- **DIE TESTSEITE: "Skripte und Tags im Code (6)"** — Meta (Fremdes Pixel, 2 Fundstellen) ·
+  Google Tag Manager (Tag-Container, 2 Fundstellen, mit Nachlade-Hinweis) · Cookiebot
+  (Einwilligungs-Werkzeug, 1 Fundstelle, mit CMP-Hinweis) · Pinterest (Fremdes Pixel,
+  1 Fundstelle) · Google Tag Manager (Tag-Container, 1 Fundstelle, **"wartet auf
+  Einwilligung"**) · ein Inline-Skript mit Ausschnitt. **`application/ld+json` ist NICHT
+  gelistet, und es gibt KEINEN Entfernen-Knopf.** Die zwei Tag-Manager-Zeilen sind der
+  Live-Beleg dafür, dass der Parkzustand die Gruppe teilt.
+- **DIE KOLLISION:** Bei "Leiste" erscheint der Hinweis, bei "Aus" verschwindet er; **nach
+  dem Löschen der Cookiebot-Zeile verschwindet er von selbst**, und die Überschrift zeigt
+  (5). Der Ersatzsatz steht in PublishView.
+
+**DER AUFBAU DER TESTSEITE, so weit die Funde ihn tragen** — er steht hier und nicht als
+Zeiger auf einen Chat-Stand, weil ein Zeiger dorthin für niemanden auflösbar ist: ein
+Meta-Pixel mit zwei Fundstellen, ein Google-Tag-Manager-Container mit zwei ungeparkten
+Fundstellen, ein DRITTES Tag-Manager-Vorkommen in einer belegten Parkform, ein
+Cookiebot-Script, ein Pinterest-Baustein, ein unbekanntes Inline-Skript und ein
+`application/ld+json`-Datenblock. **WELCHER BAUSTEIN IM `head` UND WELCHER IM `body` STAND,
+IST IN DER OWNER-MELDUNG NICHT ENTHALTEN UND WIRD HIER NICHT ERFUNDEN.** Für die ERKENNUNG
+ist das folgenlos — sie geht über die Adresse und nicht über den Platz (ENTSCHEIDUNG
+P11.11-12, Satz 6) —; **für eine WIEDERHOLUNG des Laufs fehlt die Angabe**, und für das
+ENTFERNEN in 11.11c wäre sie der Unterschied (Prüfstein 3 in Abschnitt 9).
+
+**DIE GRENZEN DIESES NACHWEISES — sie stehen im Wortlaut, weil sie beim nächsten Lesen
+sonst zur Vollständigkeit werden:**
+- **NUR CHROME.** Die übrigen Browser sind UNGEMESSEN. Der Editor läuft im Browser des
+  Betreibers.
+- **"ERKENNUNG FEHLGESCHLAGEN" IST LIVE NICHT HERSTELLBAR** und allein im Test gedeckt
+  (E-A, E-B in `detect.foreign.test.ts`, Mutation M6). Der Ausgang `failed` verlangt einen
+  Wurf der Erkennung, und den gibt es im gebauten Code nicht.
+- **DASS DER ALTE PUBLISHVIEW-SATZ FEHLT, IST DURCH DEN TEST GEDECKT (SK9), LIVE ABER NICHT
+  EIGENS BESTÄTIGT.** Bestätigt ist live nur, dass der ERSATZSATZ dasteht.
+- **DIE KOLLISION LIEST NUR DIE AKTIVE VARIANTE.** Ein CMP allein in Variante B löst KEINEN
+  Hinweis aus. S. VORRAT P11.11-7.
+- **DIE HISTORIE DER SIGNATUREN IST NICHT ERHOBEN:** Ob ein Anbieter seine Adresse je
+  geändert hat, ist an keiner Stelle gemessen. Eine Signatur altert still.
+
+**PROVENIENZ:** Bau-Commit, Dateiumfang, Testzahlen, Gates, Byte-Wächter, die sha256 der
+neun geschützten Dateien und die elf Mutationsergebnisse GEMESSEN am eigenen Lauf (CC,
+2026-09-21); der K1-Befund ebenso (S20 und S21 fallen unter M11). Der Live-Nachweis, der
+Browser und der Vercel-Status sind OWNER-ANGABEN vom 2026-09-21.
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -2161,6 +2293,33 @@ tragen").
 **KEIN TRIGGER BENANNT**, und das ist Absicht: Der Fall tritt nicht zu einem Zeitpunkt ein,
 sondern mit einer Zeile, die jemand schreibt, ohne sie als Grenzübertritt zu erkennen.
 
+### VORRAT P11.11-7 — DIE KOLLISIONSANZEIGE LIEST NUR DIE AKTIVE VARIANTE
+
+**DER BEFUND (GEMESSEN am gebauten Stand, CC, 2026-09-21):** `foreignCmp` wird in
+`CodeImporter.tsx` aus `foreignScan` abgeleitet, und jener Scan läuft über
+`debouncedCode` — also über den Text der AKTIVEN Variante. **Steht ein fremdes CMP allein
+in Variante B, während A aktiv ist, erscheint der Kollisionshinweis NICHT** — auch dann
+nicht, wenn der eigene Einwilligungs-Dialog eingeschaltet ist.
+
+**DER GRUND, WARUM DAS HEUTE SO GEBAUT IST UND KEIN VERSEHEN:** Die ganze Scheibe 11.11b
+arbeitet am Editor-Text, und der Editor zeigt eine Variante. Die Fundliste im Bereich
+BAUEN hat dieselbe Grenze; sie ist dort harmlos, weil der Betreiber sieht, welche Variante
+er gerade bearbeitet.
+
+**WARUM ES AN DER KOLLISION TROTZDEM WIEGT:** Der Hinweis steht im Bereich
+VERÖFFENTLICHEN, am Einwilligungs-Schalter — und **der Schalter gilt BEIDEN Varianten**.
+Der Betreiber trifft dort eine Entscheidung für die ganze Seite und bekommt eine Auskunft,
+die nur die halbe Seite gesehen hat. **Dieselbe Asymmetrie hat 11.11d bereits einmal
+gekostet**: Dort nennt die Verweigerungs-Meldung eigens die Variante, weil die Warnung im
+Bereich BAUEN nur die aktive zeigt (ENTSCHEIDUNG P11.11-22, Punkt (d)).
+
+**WAS ES NICHT IST:** kein Fehlalarm und kein falscher Hinweis — der Hinweis, der
+erscheint, ist immer richtig. Es fehlt einer, der erscheinen könnte.
+
+**KEIN TRIGGER BENANNT.** Der Fall tritt nicht zu einem Zeitpunkt ein, sondern beim ersten
+Betreiber, der ein CMP ausschliesslich in seine B-Variante schreibt — und ob das je
+vorkommt, ist nicht erhoben.
+
 ---
 
 ## Hebungs-Kandidaten
@@ -2211,43 +2370,40 @@ Angabe** — die Angabe steht in diesem Satz.
   Produktivcode.** Sie steht VORAN, weil sie die einzige Scheibe ist, die einen
   bestehenden Schutz sichert, statt einen neuen zu bauen — und weil ihr Gegenstand
   (Vorrat P11.11-1) ohne sie weiter allein auf Kommentaren ruht.
-- **11.11b — ERKENNUNG UND ANZEIGE.** **NUR LESEND. Der gespeicherte Text bleibt
-  unverändert.** Sie baut die Signaturliste (Entscheidung P11.11-7), die **VIER** Klassen —
-  die drei aus Entscheidung P11.11-3 **plus die Klasse `eigen` aus Entscheidung P11.11-10**,
-  die zeigt und WARNT —, die Kollisionsanzeige (Entscheidung P11.11-4) und die Ableitung am
-  Import-Dokument (Entscheidung P11.11-5). **IHRE BAUFORM STEHT IN ZEHN SÄTZEN IN
-  ENTSCHEIDUNG P11.11-12.**
-  **VOR IHREM PLAN STEHT EINE CRAWL-RUNDE** für die elf Signaturen aus
-  Entscheidung P11.11-11 — ohne belegte Signaturen hat die Erkennung nichts, woran sie
-  erkennt. **CRAWL 1 IST GEFAHREN** (VERMERK P11.11-13): drei CMPs belegt, einer teilweise.
-  **VOR DEM PLAN STEHT DAMIT CRAWL 2 — die fünf Browser-Tags MIT VORRANG, OneTrust,
-  CookieYes und consentmanager nach bestem Bemühen; FRISCHE SITZUNG**, weil der Crawl am
-  freien Kontext hängt (Entscheidung P11.11-14). Was dabei unbelegt bleibt, bekommt keine
-  Signatur (Entscheidung P11.11-15).
-  **CRAWL 2 IST GEFAHREN (2026-09-21) — VERMERK P11.11-25.** Die fünf Browser-Tags sind zu
-  Ende gelesen und liegen je als NEUER Teil in docs/ziel-befunde.md (die Zeiger je Ziel
-  stehen im Vermerk); von den drei nachgeordneten CMPs sind CookieYes und consentmanager
-  zu Ende gelesen, **OneTrust bleibt unvollständig und damit nach Entscheidung P11.11-15
-  ohne Signatur** — sofern der Plan nicht ausdrücklich auf die dort benannte MESSUNG
-  statt auf die Doku stützt. **DAMIT IST DIE VORBEDINGUNG DIESER SCHEIBE ERFÜLLT:** Von
-  den elf Anbietern der Entscheidung P11.11-11 tragen ZEHN eine an einer Quelle belegte
-  Adresse UND einen belegten globalen Namen — die fünf Ziele und CookieYes und
-  consentmanager aus Crawl 2, Cookiebot, Usercentrics und Klaro aus Crawl 1 (VERMERK
-  P11.11-13). **DAS HEISST NICHT, DASS JE ANBIETER ALLES BELEGT IST** — welche der fünf
-  Fragen je Anbieter offen blieb, steht in der Tabelle am Ende des VERMERKS P11.11-25 und
-  für die drei aus Crawl 1 unverändert in VERMERK P11.11-13.
-  **DIE BAUFORM NACH CRAWL 2 STEHT IN SECHS ENTSCHEIDUNGEN: P11.11-26 BIS P11.11-31**
-  (eigen vor fremd · der Container · der OneTrust-Beleg und die zwei CookieYes-Hosts ·
-  Bild- und Iframe-Tags · die drei Parkformen · rein lesend). **Sie treten NEBEN die zehn
-  Sätze der ENTSCHEIDUNG P11.11-12 und ersetzen sie nicht**; wo eine von ihnen einen jener
-  Sätze erweitert, steht es an ihr — P11.11-27 an Satz 3 (fünf Klassen statt vier),
-  P11.11-30 an Satz 5 (ein dritter Adress-Ort).
-  **AUFLÖSUNGS-SATZ, 2026-09-21: IHR ANTEIL AN DEN EIGENEN BAUSTEINEN IST NACH 11.11d
-  GEWANDERT** — die Klasse `eigen` und das Grundgerüst der Erkennung entstehen DORT, und
-  11.11d läuft VOR dieser Scheibe. Der Text darüber ist NICHT umgeschrieben; die Angabe
-  "VIER Klassen" bleibt richtig für das Ergebnis, nur bringt 11.11b davon **die drei
-  FREMDEN** mit (docs/immer-beachten.md, EINE ZITIERTE EINHEIT ZU TEILEN MACHT JEDEN ZEIGER
-  AUF SIE HALB FALSCH …, Gegenform (1)).
+- **11.11b — ERKENNUNG UND ANZEIGE. GEBAUT UND LIVE BESTÄTIGT; VERDICHTET AM 2026-09-21
+  MIT DEM ABSCHLUSS-VERMERK P11.11-33** (docs/arbeitsweise.md, "Beim Abschluss-Vermerk wird
+  der Zuschnitt verdichtet"). Was hier stand und wohin es gegangen ist — die Titel ohne
+  Marke zitiert, damit eine Überschriften-Suche sie nicht trifft:
+  - **Der Gegenstand** — nur lesend, Signaturliste, die Klassen, die Kollisionsanzeige, die
+    Ableitung am Import-Dokument. **ABGELAUFEN:** gebaut, Bau-Commit `6d6ab42`, Umfang und
+    Live-Nachweis in VERMERK P11.11-33.
+  - **"IHRE BAUFORM STEHT IN ZEHN SÄTZEN IN ENTSCHEIDUNG P11.11-12"** samt dem Zusatz, dass
+    die sechs Entscheidungen P11.11-26 bis P11.11-31 DANEBEN treten und zwei von ihnen
+    einen jener Sätze erweitern. **BLEIBT** — und zwar nicht als Rückblick: Jene sechzehn
+    Sätze binden **11.11c** genauso, denn das Entfernen setzt dieselben Klassen, dieselben
+    Parkformen und dieselbe Reihenfolge eigen-vor-fremd voraus.
+  - **Die Crawl-Auflage** ("VOR IHREM PLAN STEHT EINE CRAWL-RUNDE", Crawl 1, Crawl 2, die
+    frische Sitzung nach ENTSCHEIDUNG P11.11-14). **ABGELAUFEN ALS AUFLAGE:** beide Crawls
+    sind gefahren, die Befunde stehen in den VERMERKEN P11.11-13 und P11.11-25 und je Ziel
+    als eigener Teil in docs/ziel-befunde.md. **WAS DAVON BLEIBT, IST EIN ZUSTAND UND KEINE
+    AUFGABE:** Von den elf Anbietern trägt **OneTrust** seine Adresse aus einer MESSUNG an
+    einer einzelnen Installation statt aus der Doku (ENTSCHEIDUNG P11.11-28), und die
+    Tabelle am Ende des VERMERKS P11.11-25 sagt je Anbieter, welche der fünf Fragen offen
+    blieb. **Wer einen zwölften Anbieter aufnimmt, fährt den Crawl erneut** — die Auflage
+    aus ENTSCHEIDUNG P11.11-15 gilt jeder künftigen Signatur, nicht nur dem ersten Wurf.
+  - **Der Auflösungs-Satz vom 2026-09-21** ("IHR ANTEIL AN DEN EIGENEN BAUSTEINEN IST NACH
+    11.11d GEWANDERT"). **ABGELAUFEN:** 11.11d ist gebaut, und mit dieser Scheibe ist auch
+    das Grundgerüst am zerlegten Dokument gebaut. Die Klassenzahl ist seit ENTSCHEIDUNG
+    P11.11-27 **FÜNF** — `eigen` · Pixel · CMP · Container · unbekannt.
+
+  **WAS ÜBER DIE SCHEIBE HINAUS BINDET, IST HERAUSGELÖST UND STEHT NICHT MEHR HIER:** die
+  sechs Entscheidungen **P11.11-26 bis P11.11-31** (aus der Runde vor dem Plan) und die
+  sechs Freigaben **P11.11-32** (aus der Runde vor dem Bau). Die zwei Review-Korrekturen K1
+  und K2 sind **KEINE Entscheidungen geworden** und das mit Grund: K1 ist die Umsetzung von
+  ENTSCHEIDUNG P11.11-30 an einem Fall, den jene Entscheidung schon nennt, K2 war ein
+  falscher Kommentar. **Beide stehen am Ort der Handlung** — im Docblock von `adressenVon`
+  bzw. von `FOREIGN_LIST_HEADING` — und im Abschluss-Vermerk; **ein Test ist der stärkere
+  Anker als eine Regel** (S20, S21 und die Mutation M11).
 - **11.11c — HANDLUNGEN.** Entfernen auf Klick bei einem bekannten Pixel; der
   Anbindungs-Hinweis beim CMP; **dazu das Entfernen EIGENER Bausteine auf Klick und der
   RIEGEL, der das Veröffentlichen verweigert, solange sie im Text stehen** (Entscheidung
@@ -2328,10 +2484,29 @@ den Zuschnitt entscheiden und nicht erst den Bau:**
    warnt.** Wie 11.11c damit umgeht — den Knoten gar nicht anbieten, warnen, oder eine
    andere Form —, ist hier NICHT entschieden.
 
+5. **EIN CONTAINER WIRD NIE ZUM ENTFERNEN ANGEBOTEN** (ENTSCHEIDUNG P11.11-27). **ER STEHT
+   HIER, WEIL DIE MUTATION, DIE IHN PRÜFEN WÜRDE, IN 11.11b NICHT FAHRBAR WAR:** M5b
+   ("Container mit Entfernen-Angebot") setzt eine Handlung voraus, die jene Scheibe per
+   ENTSCHEIDUNG P11.11-31 gar nicht hat — sie ist als NICHT FAHRBAR protokolliert und
+   hierher weitergereicht (VERMERK P11.11-33). **11.11c IST DIE ERSTE SCHEIBE, IN DER SIE
+   FAHRBAR IST, und sie ist dort PFLICHT:** Bis dahin ist die Zusicherung "kein Entfernen
+   am Container" von KEINEM Lauf gedeckt, der rot werden könnte.
+6. **DIE OWNER-FRAGE ZUM GOOGLE-TAG GEHÖRT IN DEN PLAN 11.11c, NICHT IN DEN BAU**
+   (ENTSCHEIDUNG P11.11-32, Punkt (b)). Der Google-Tag trägt die Klasse `pixel`, und ein
+   Pixel bekommt nach ENTSCHEIDUNG P11.11-3 ein Entfernen-Angebot. **DERSELBE TAG BEDIENT
+   ABER AUCH ANALYTICS, Campaign Manager, Display & Video 360 und Search Ads 360**
+   (docs/ziel-befunde.md, Google-Abschnitt, Teil (cs)). **Ein Klick "entfernen" nähme dem
+   Betreiber möglicherweise seine Analytics mit, nicht nur unser Ziel.** In 11.11b war das
+   folgenlos — die Klasse setzte allein das Etikett. **IN 11.11c IST ES EINE
+   OWNER-ENTSCHEIDUNG und keine Code-Frage**, und sie fällt VOR dem Bau.
+
 **HIER STAND "ZWEI PRÜFSTEINE", UND DIE ÜBERSCHRIFT DES ABSATZES BLEIBT SO** — sie wird
 zitiert, und eine Umbenennung machte jedes Zitat halb falsch (docs/immer-beachten.md, EIN
 ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT). **Es sind seit
-dem 2026-09-21 VIER**; die Angabe steht in diesem Satz, nicht im Titel.
+dem 2026-09-21 SECHS**; die Angabe steht in diesem Satz, nicht im Titel. Hier stand
+zwischenzeitlich "VIER" — die Prüfsteine 5 und 6 sind mit dem Abschluss der Scheibe 11.11b
+dazugekommen, weil beide erst dort entstanden sind: der eine aus einer nicht fahrbaren
+Mutation, der andere aus einer Freigabe, die die Frage ausdrücklich weiterreicht.
 
 **DIE REIHENFOLGE a → b → c IST NICHT BELIEBIG**, aber auch nicht zwingend: a ist von b und
 c unabhängig und könnte jederzeit laufen; **c setzt b voraus**, weil es ohne Fund nichts zu

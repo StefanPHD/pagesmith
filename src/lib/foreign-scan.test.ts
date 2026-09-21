@@ -8,12 +8,21 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  foreignRemoveLabel,
   hasForeignCmp,
   scanForeignTags,
+  FOREIGN_ANBIETER_NOTE,
+  FOREIGN_GOOGLE_TAG_NOTE,
+  FOREIGN_MANUAL_NOTE,
+  FOREIGN_REST_MESSAGE,
   INLINE_EXCERPT_MAX,
   UNKNOWN_INLINE,
   type ForeignFinding,
 } from "./foreign-scan";
+// NUR FUER DEN STRUKTUR-WAECHTER S23 — er prueft keine Wortlaute, sondern eine
+// Eigenschaft (jeder Schluessel der Hinweis-Zuordnung ist ein Anbieter der Liste).
+// Das ist die im Kopf von foreign-signatures.ts benannte Ausnahme.
+import { FOREIGN_SIGNATURES } from "./foreign-signatures";
 import { generateFunctional } from "./generate";
 import type { Mapping } from "./mappings";
 
@@ -252,18 +261,45 @@ describe("scanForeignTags — Mehrfachtreffer (Entscheidung P11.11-32, Punkt (d)
 
 describe("scanForeignTags — Gruppierung", () => {
   // S14. BEKANNT JE ANBIETER MIT DER ZAHL DER FUNDSTELLEN (P11.11-32, Punkt (c)).
-  // Ein Basiscode plus zwei Ereigniszeilen sind DREI Knoten und EINE Tatsache.
+  // Drei Meta-Knoten sind DREI Fundstellen und EINE Tatsache.
+  //
+  // SEINE FIXTURE IST AM 2026-09-21 ERSETZT WORDEN, und der Grund gehoert an den Lauf,
+  // sonst liest die naechste Runde ihn als willkuerlich: Bis ENTSCHEIDUNG P11.11-38
+  // standen hier der Basiscode UND ZWEI EREIGNISZEILEN (`fbq('track', …)`), und alle
+  // drei bildeten EINE Gruppe. Seither traegt eine Ereigniszeile keine Lade-Adresse,
+  // gilt als AUFRUF IN SEITEN-CODE und bildet eine EIGENE Gruppe — die alte Fixture
+  // ergaebe ZWEI Zeilen. DER GEGENSTAND DES LAUFS IST UNVERAENDERT (Gruppierung je
+  // Anbieter mit Fundstellen-Zahl); ersetzt sind die drei Knoten, an denen er misst:
+  // Basiscode, Lade-Script und Rueckfall-Bild — alle drei tragen eine Adresse.
   it("S14: drei Meta-Knoten ergeben EINE Zeile mit stellen = 3", () => {
     const b = bekannt(
       funde(
         META_BASE +
-          "<script>fbq('track','Lead');</script>" +
-          "<script>fbq('track','Purchase');</script>"
+          '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>' +
+          '<img height="1" width="1" src="https://www.facebook.com/tr?id=1&ev=PageView">'
       )
     );
     expect(b).toHaveLength(1);
     expect(b[0].anbieter).toEqual(["Meta"]);
     expect(b[0].stellen).toBe(3);
+    expect(b[0].traeger).toBe("knoten");
+  });
+
+  // S14b. UND DIE ANDERE HAELFTE DERSELBEN AENDERUNG, eigens festgenagelt: Eine
+  // EREIGNISZEILE neben dem Basiscode ist eine ZWEITE Zeile und kein Teil der ersten.
+  //
+  // ER STEHT HIER UND NICHT BEI S27, weil er die GRUPPIERUNG prueft und nicht den
+  // Traeger: Ohne ihn waere aus S14 nur noch abzulesen, dass drei Knoten eine Zeile
+  // ergeben — nicht, dass die frueher mitgezaehlte Ereigniszeile jetzt daneben steht.
+  it("S14b: Basiscode und Ereigniszeile sind ZWEI Zeilen desselben Anbieters", () => {
+    const b = bekannt(
+      funde(META_BASE + "<script>fbq('track','Lead');</script>")
+    );
+    expect(b).toHaveLength(2);
+    expect(b.every((f) => f.anbieter[0] === "Meta")).toBe(true);
+    expect(b.every((f) => f.stellen === 1)).toBe(true);
+    expect(b.map((f) => f.traeger).sort()).toEqual(["aufruf", "knoten"]);
+    expect(b.map((f) => f.entfernbar).sort()).toEqual([false, true]);
   });
 
   // S15. DER PARKZUSTAND TEILT DIE GRUPPE. Sonst stuende an einer gemischten Gruppe
@@ -402,5 +438,309 @@ describe("scanForeignTags — die Adresse steht an ALLEN drei Orten, nicht am er
     expect(b).toHaveLength(1);
     expect(b[0].anbieter).toEqual(["Meta"]);
     expect(b[0].klassen).toEqual(["pixel"]);
+  });
+});
+
+// ===========================================================================
+// DIE SCHEIBE 11.11c — DIE DREI NEUEN FELDER AM FUND, DER KNOPFNAME UND DIE
+// HINWEIS-ZUORDNUNG.
+//
+// DIE ERWARTUNGEN SIND AUS DEN ENTSCHEIDUNGEN GETIPPT, NIE AUS DEM CODE ABGELESEN
+// (Dauerregel EIN WAECHTER UEBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM
+// CODE). AUSGENOMMEN ist S23: er ist ein STRUKTUR-Waechter und darf die Signaturliste
+// lesen, weil er keine Wortlaute prueft, sondern eine Eigenschaft.
+// ===========================================================================
+
+describe("scanForeignTags — Traeger, entfernbar und Schluessel (11.11c)", () => {
+  const rahmen = (rumpf: string) =>
+    `<!DOCTYPE html><html lang="de"><head><title>t</title></head><body>${rumpf}</body></html>`;
+
+  // S22. DIE TRAEGER-ACHSE TEILT DIE GRUPPE (ENTSCHEIDUNG P11.11-36, Punkt (F1)).
+  // OHNE SIE stuenden Script und Inline-Handler desselben Anbieters in EINER Zeile,
+  // und ein Knopf daran entfernte nur die Haelfte ihrer Fundstellen, waehrend der
+  // Handarbeits-Hinweis nur fuer die andere gaelte.
+  it("S22: Script und onclick desselben Anbieters sind ZWEI Gruppen", () => {
+    const b = bekannt(
+      funde(
+        rahmen(
+          '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>' +
+            "<a href=\"https://example.com/x\" onclick=\"fbq('track','Lead')\">K</a>"
+        )
+      )
+    );
+    expect(b).toHaveLength(2);
+    expect(b.map((f) => f.traeger).sort()).toEqual(["handler", "knoten"]);
+    expect(b.every((f) => f.anbieter[0] === "Meta")).toBe(true);
+    expect(b.every((f) => f.stellen === 1)).toBe(true);
+    // UND SIE HABEN VERSCHIEDENE SCHLUESSEL — sonst traefe ein Klick beide.
+    expect(b[0].schluessel).not.toBe(b[1].schluessel);
+  });
+
+  // S23. DER STRUKTUR-WAECHTER ZUR HINWEIS-ZUORDNUNG (ENTSCHEIDUNG P11.11-36, Punkt
+  // (F4)). Die Zuordnung traegt ein zweites Literal des Anbieternamens, weil
+  // foreign-signatures.ts vom Scope-Waechter geschuetzt ist; DIESER LAUF DECKT ES:
+  // Eine Umbenennung des Anbieters macht ihn rot.
+  //
+  // DIE POSITIVKONTROLLE IST PFLICHT: Waere die Zuordnung leer, liefe die Schleife
+  // durch, ohne etwas zu pruefen.
+  it("S23: jeder Schluessel der Hinweis-Zuordnung ist ein Anbieter der Signaturliste", () => {
+    const schluessel = Object.keys(FOREIGN_ANBIETER_NOTE);
+    expect(schluessel.length).toBeGreaterThan(0);
+    const anbieter = new Set(FOREIGN_SIGNATURES.map((s) => s.anbieter));
+    for (const k of schluessel) expect(anbieter.has(k)).toBe(true);
+    // Und der Google-Tag traegt ihn — aus der ENTSCHEIDUNG getippt, nicht abgelesen.
+    expect(FOREIGN_ANBIETER_NOTE["Google-Tag"]).toBe(FOREIGN_GOOGLE_TAG_NOTE);
+  });
+
+  // S24. DIE entfernbar-REGEL, alle fuenf Faelle nebeneinander. `every` statt `some`
+  // ist der Unterschied zwischen fail-closed und fail-open.
+  it("S24: entfernbar nur bei GANZEN Knoten und ausschliesslich der Klasse pixel", () => {
+    const eins = (rumpf: string) => {
+      const b = bekannt(funde(rahmen(rumpf)));
+      expect(b).toHaveLength(1);
+      return b[0];
+    };
+    expect(
+      eins('<script src="https://connect.facebook.net/en_US/fbevents.js"></script>')
+        .entfernbar
+    ).toBe(true);
+    expect(
+      eins('<script src="https://consent.cookiebot.com/uc.js"></script>').entfernbar
+    ).toBe(false);
+    expect(
+      eins('<script src="https://www.googletagmanager.com/gtm.js?id=GTM-A"></script>')
+        .entfernbar
+    ).toBe(false);
+    expect(
+      eins("<a href=\"https://example.com/x\" onclick=\"fbq('track','Lead')\">K</a>")
+        .entfernbar
+    ).toBe(false);
+    // DIE GEMISCHTE GRUPPE IST AM 2026-09-21 ZWEIMAL ERSETZT WORDEN, und beide Male
+    // aus demselben Grund: Ihr Gegenstand ist die KLASSEN-Regel (`every` statt `some`),
+    // und die darf nicht von einer anderen Achse verdeckt werden (Dauerregel EIN
+    // GRUENER TEST IST KEIN BELEG, DASS DER GRUND SEINER GRUENHEIT DERSELBE GEBLIEBEN
+    // IST).
+    // (1) Ohne Lade-Adresse waere sie seit ENTSCHEIDUNG P11.11-38 ein AUFRUF, und
+    //     `entfernbar === false` kaeme schon vom TRAEGER.
+    // (2) Mit Metas Lade-Adresse UND einem Cookiebot-NAMEN entscheidet seit K3 die
+    //     ADRESSE ALLEIN — der Name wird gar nicht mehr befragt, und die Gruppe waere
+    //     reines `pixel`, also entfernbar.
+    // GEBAUT IST DESHALB EINE GEMISCHTE GRUPPE AUS ZWEI ADRESSEN: Metas Lader (pixel)
+    // und der Tag-Manager (container) in EINEM Script. Beide treffen ueber die Adresse,
+    // der Traeger ist "knoten", und allein `every` haelt den Knopf zurueck.
+    const gemischt = eins(
+      "<script>!function(f,b,e,v){f.fbq=function(){};}(window,document,'script'," +
+        "'https://connect.facebook.net/en_US/fbevents.js');" +
+        "j.src='https://www.googletagmanager.com/gtm.js?id=GTM-A';</script>"
+    );
+    expect(gemischt.traeger).toBe("knoten"); // ANKER
+    expect(gemischt.klassen).toEqual(["pixel", "container"]); // ANKER
+    expect(gemischt.entfernbar).toBe(false);
+  });
+
+  // S25. DER KNOPFNAME WIRD GEBILDET, NICHT GETIPPT — und er nennt ALLE beteiligten
+  // Anbieter (ENTSCHEIDUNG P11.11-35, Satz (d), und P11.11-32, Punkt (d)). Ein Knopf
+  // "Meta entfernen", der ausserdem Google mitnaehme, waere der Fehltreffer, vor dem
+  // die Roadmap-Zeile 11.11 unter (e) warnt.
+  it("S25: foreignRemoveLabel nennt einen, zwei und drei Anbieter", () => {
+    expect(foreignRemoveLabel(["Meta"])).toBe("Meta aus dem Code entfernen");
+    expect(foreignRemoveLabel(["Meta", "Google-Tag"])).toBe(
+      "Meta und Google-Tag aus dem Code entfernen"
+    );
+    expect(foreignRemoveLabel(["Meta", "Google-Tag", "TikTok"])).toBe(
+      "Meta, Google-Tag und TikTok aus dem Code entfernen"
+    );
+    // ER KOLLIDIERT NICHT MIT DEN KNOPFNAMEN DES EINSTELLUNGS-DRAWERS, und das ist
+    // der Grund fuer "aus dem Code": dort heissen sie "Meta entfernen" und
+    // "Ja, Meta entfernen", an der Domain-Zeile schlicht "Entfernen".
+    for (const name of ["Meta entfernen", "Ja, Meta entfernen", "Entfernen"])
+      expect(foreignRemoveLabel(["Meta"])).not.toBe(name);
+  });
+
+  // S26. DIE VIER NEUEN WORTLAUTE GEGEN DIE DOKUMENTWEITEN ABWESENHEITS-ZUSICHERUNGEN
+  // (ENTSCHEIDUNG P11.11-36, Punkt (F3)). Die vier Nadeln stammen aus
+  // CodeImporter.test.tsx; "Scripte" aus SK10. EINE KOLLISION WIRD GEMELDET, NICHT
+  // DURCH EINE TEXT-ANPASSUNG BESEITIGT — ein angepasster Text waere eine
+  // Owner-Freigabe, die niemand erteilt hat.
+  it("S26: kein neuer Wortlaut traegt eine der vier Nadeln oder die Form Scripte", () => {
+    const texte = [
+      foreignRemoveLabel(["Meta", "Google-Tag"]),
+      FOREIGN_GOOGLE_TAG_NOTE,
+      FOREIGN_MANUAL_NOTE,
+      FOREIGN_REST_MESSAGE,
+    ];
+    // POSITIVKONTROLLE: die Nadeln treffen, wenn es etwas zu treffen gibt.
+    expect(/%/.test("50 %")).toBe(true);
+    expect(/gerettet/i.test("gerettet")).toBe(true);
+    for (const t of texte) {
+      expect(t).not.toMatch(/%/);
+      expect(t).not.toMatch(/gerettet/i);
+      expect(t).not.toMatch(/mindestens/);
+      expect(t).not.toMatch(/NaN/);
+      expect(t).not.toContain("Scripte");
+      expect(t).not.toContain("Tracking-Pixel");
+    }
+  });
+
+  // S27. DER DRITTE TRAEGER (ENTSCHEIDUNG P11.11-38). Ein Inline-Script OHNE
+  // Lade-Adresse, das nur ueber einen NAMEN getroffen wird, ist ein AUFRUF IN
+  // SEITEN-CODE — kein Knopf.
+  //
+  // DIE FIXTURE IST DER PRODUKTIVE FALL UND KEINE MINIMAL-ATTRAPPE: Sie traegt
+  // Formular- und Menuelogik UND die Ereigniszeile in EINEM Script. Genau daran haengt
+  // die Entscheidung — ein Klick auf "Meta" haette diese Logik geloescht (Dauerregel
+  // TESTDATEN UND TEST-SEQUENZ MUESSEN DEN PRODUKTIVEN PFAD TREFFEN).
+  it("S27: ein Inline-Skript mit Seitenlogik und fbq( ist ein Aufruf, kein Knoten", () => {
+    const b = bekannt(
+      funde(
+        rahmen(
+          "<script>document.querySelector('#m').addEventListener('click'," +
+            "function(){document.body.classList.toggle('offen');});" +
+            "fbq('track','Lead');</script>"
+        )
+      )
+    );
+    expect(b).toHaveLength(1);
+    expect(b[0].anbieter).toEqual(["Meta"]);
+    expect(b[0].traeger).toBe("aufruf");
+    expect(b[0].entfernbar).toBe(false);
+  });
+
+  // S28. DIE GEGENPROBE IN DREI RICHTUNGEN — ohne sie waere S27 auch dann gruen, wenn
+  // GAR NICHTS mehr als Knoten gaelte.
+  it("S28: Adresse im Rumpf, Adresse im Attribut und ein gemischtes Script sind Knoten", () => {
+    const eins = (rumpf: string) => {
+      const b = bekannt(funde(rahmen(rumpf)));
+      expect(b).toHaveLength(1);
+      return b[0];
+    };
+    // (a) DER BASISCODE: die Lade-Adresse steht als Zeichenkette im RUMPF. Das ist der
+    // Befund V1 — alle vier Basiscodes tragen sie so.
+    const basis = eins(
+      "<script>!function(f,b,e,v){f.fbq=function(){};}(window,document,'script'," +
+        "'https://connect.facebook.net/en_US/fbevents.js');fbq('init','1');</script>"
+    );
+    expect(basis.traeger).toBe("knoten");
+    expect(basis.entfernbar).toBe(true);
+
+    // (b) DIE ADRESSE IM ATTRIBUT bleibt unveraendert "knoten".
+    expect(
+      eins('<script src="https://connect.facebook.net/en_US/fbevents.js"></script>')
+        .traeger
+    ).toBe("knoten");
+
+    // (c) DIE GRENZE DER ENTSCHEIDUNG: Ein Script, das Basiscode UND eigene Logik
+    // MISCHT, ist "knoten" und wird GANZ entfernt. Wer beides in einen Knoten legt,
+    // hat es untrennbar gemacht.
+    //
+    // DIE FIXTURE TRAEGT EIGENS EINEN ECHTEN `fbq(`-AUFRUF, und der Satz steht hier,
+    // weil er beim Schreiben GEMESSEN gefehlt hat: DIE ADRESSE ALLEIN MACHT KEINEN
+    // FUND. Getroffen wird ueber die NAMEN (anbieterFuer); die Adresse entscheidet
+    // danach nur noch den TRAEGER. Ein Script mit der Adresse als blossem Text und
+    // ohne Aufruf ist "unbekannt" — nicht etwa ein nicht entfernbarer Knoten.
+    const gemischt = eins(
+      "<script>window.meinMenue=function(){};" +
+        "!function(f,b,e,v){f.fbq=function(){};}(window,document,'script'," +
+        "'https://connect.facebook.net/en_US/fbevents.js');fbq('init','1');</script>"
+    );
+    expect(gemischt.traeger).toBe("knoten");
+    expect(gemischt.entfernbar).toBe(true);
+  });
+
+  // S29. DER GOOGLE-KONFIGURATIONS-SCHNIPSEL IST EIN AUFRUF, DAS LADE-SCRIPT EIN
+  // KNOTEN — und sie sind ZWEI Zeilen, weil der Traeger in den Schluessel eingeht.
+  //
+  // DAS IST DIE GEMESSENE FOLGE VON V1: Beim Google-Tag steht die Adresse im
+  // LADE-Script; der Schnipsel traegt nur `window.dataLayer`, `function gtag(){…}` und
+  // die zwei Aufrufe.
+  it("S29: gtag-Ladescript ist Knoten, der Konfigurations-Schnipsel ist Aufruf", () => {
+    const b = bekannt(
+      funde(
+        rahmen(
+          '<script async src="https://www.googletagmanager.com/gtag/js?id=AW-1"></script>' +
+            "<script>window.dataLayer=window.dataLayer||[];" +
+            "function gtag(){dataLayer.push(arguments);}" +
+            "gtag('js',new Date());gtag('config','AW-1');</script>"
+        )
+      )
+    );
+    expect(b).toHaveLength(2);
+    expect(b.every((f) => f.anbieter[0] === "Google-Tag")).toBe(true);
+    expect(b.map((f) => f.traeger).sort()).toEqual(["aufruf", "knoten"]);
+    expect(b.map((f) => f.entfernbar).sort()).toEqual([false, true]);
+    // UND SIE HABEN VERSCHIEDENE SCHLUESSEL — sonst naehme ein Klick beide mit.
+    expect(b[0].schluessel).not.toBe(b[1].schluessel);
+  });
+
+  // S30. EINE LADE-ADRESSE IM RUMPF ENTSCHEIDET ALLEIN — AUCH GEGEN EINEN NAMEN.
+  //
+  // DIESER LAUF IST AM 2026-09-21 UMGEDREHT WORDEN, und der Grund gehoert an ihn, sonst
+  // liest die naechste Runde ihn als Defekt: Bis dahin behauptete er, Metas Adresse als
+  // blosser Text mache aus einem `gtag(`-Aufruf keinen Knoten. SEIT K3 (ENTSCHEIDUNG
+  // P11.11-38, Ergaenzung) ZAEHLT EINE LADE-ADRESSE IM RUMPF ALS ADRESS-TREFFER und
+  // steht damit VOR den Namen (dieselbe Rangfolge wie P11.11-32, Punkt (d)).
+  //
+  // DAS IST DER PREIS VON K3, UND ER WIRD HIER BENANNT STATT VERSCHWIEGEN: Die Regel
+  // kann einen LADER nicht von einer blossen ERWAEHNUNG der Lade-Adresse trennen. Wer
+  // die Adresse als Text in seinem Code fuehrt, bekommt das Etikett des Anbieters und
+  // einen Knopf. DER TAUSCH IST BEWUSST: Ohne die Regel bliebe LinkedIns LADER
+  // unbekannt und sein Pixel liefe nach dem Klick weiter (GEMESSEN, V2).
+  it("S30: eine Lade-Adresse im Rumpf schlaegt den Namen eines anderen Anbieters", () => {
+    const b = bekannt(
+      funde(
+        rahmen(
+          "<script>var hinweis='https://connect.facebook.net/en_US/fbevents.js';" +
+            "gtag('event','conversion');</script>"
+        )
+      )
+    );
+    expect(b).toHaveLength(1);
+    expect(b[0].anbieter).toEqual(["Meta"]);
+    expect(b[0].traeger).toBe("knoten");
+    expect(b[0].entfernbar).toBe(true);
+  });
+
+  // S30b. DER LINKEDIN-LADER — DER FALL, UM DESSENTWILLEN K3 GEBAUT WURDE.
+  //
+  // Er setzt `window.lintrk` als ZUWEISUNG und uebergibt es als Argument; `lintrk(`
+  // mit Klammer steht nirgends, und `_linkedin_partner_id` steht im ANDEREN Block.
+  // OHNE K3 WAERE ER EIN UNBEKANNTES INLINE-SKRIPT: kein Etikett, kein Knopf — und ein
+  // Klick auf "LinkedIn" naehme nur das Rueckfall-Bild mit (GEMESSEN, V2).
+  it("S30b: LinkedIns Lade-Block wird erkannt, obwohl kein Name greift", () => {
+    const LADER =
+      "<script>(function(l) {if (!l){window.lintrk = function(a,b){" +
+      "window.lintrk.q.push([a,b])};window.lintrk.q=[]}" +
+      "var s = document.getElementsByTagName('script')[0];" +
+      "var b = document.createElement('script');" +
+      "b.type = 'text/javascript';b.async = true;" +
+      "b.src = 'https://snap.licdn.com/li.lms-analytics/insight.min.js';" +
+      "s.parentNode.insertBefore(b, s);})(window.lintrk);</script>";
+    // POSITIVKONTROLLE: KEIN Name des Eintrags steht in diesem Block — sonst waere der
+    // Lauf auch ohne K3 gruen und bewiese nichts.
+    expect(LADER).not.toContain("lintrk(");
+    expect(LADER).not.toContain("_linkedin_partner_id");
+
+    const b = bekannt(funde(rahmen(LADER)));
+    expect(b).toHaveLength(1);
+    expect(b[0].anbieter).toEqual(["LinkedIn"]);
+    expect(b[0].traeger).toBe("knoten");
+    expect(b[0].entfernbar).toBe(true);
+  });
+
+  // S31. EINE RUECKFALL-ADRESSE IM RUMPF MACHT EBENFALLS KEINEN KNOTEN. Die Frage
+  // lautet "laedt dieses Script sein Anbieter-Script?" — `www.facebook.com/tr?` ist
+  // das Bild-Pixel und kein Lader.
+  it("S31: die Rueckfall-Adresse im Rumpf macht aus einem Aufruf keinen Knoten", () => {
+    const b = bekannt(
+      funde(
+        rahmen(
+          "<script>var px='https://www.facebook.com/tr?id=1';" +
+            "fbq('track','Lead');</script>"
+        )
+      )
+    );
+    expect(b).toHaveLength(1);
+    expect(b[0].traeger).toBe("aufruf");
+    expect(b[0].entfernbar).toBe(false);
   });
 });

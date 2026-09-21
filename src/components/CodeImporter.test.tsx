@@ -146,6 +146,37 @@ vi.mock("@/app/projects/domain-actions", () => ({
   removeCustomDomainAction: vi.fn(async () => ({ ok: true, healed: false })),
 }));
 
+// DIE ATTRAPPE FUER DEN FEHLERAUSGANG VON stripForeignGroup (Phase 11.11, Scheibe
+// 11.11c).
+//
+// WARUM SIE UEBERHAUPT NOETIG IST: Die Rest-Meldung steht am GEKLICKTEN Fund und
+// erscheint, wenn die Nachbedingung scheitert — der Klick ist gelaufen, und der Fund
+// steht immer noch da. AUF DEM GEGLUECKTEN WEG KANN DAS NICHT PASSIEREN:
+// stripForeignGroup nimmt ALLE Knoten seines Schluessels (GEMESSEN, Lauf F16 in
+// foreign-strip.test.ts). Erreichbar ist der Zustand allein ueber die FEHLERAUSGAENGE
+// der Funktion, die die EINGABE unveraendert zurueckgeben.
+//
+// WARUM EIN TEILMOCK MIT SCHALTER UND KEIN DATEIWEITER: Ein `vi.mock` gilt der ganzen
+// Datei, und die uebrigen 11.11c-Laeufe brauchen die ECHTE Funktion — SK13 und SK14
+// pruefen gerade, dass sie wirklich entfernt. Der Schalter steht per Vorgabe auf AUS;
+// nur die zwei Rest-Meldungs-Laeufe schalten ihn ein, und afterEach stellt ihn zurueck.
+const { foreignStripAttrappe } = vi.hoisted(() => ({
+  foreignStripAttrappe: { aktiv: false },
+}));
+vi.mock("@/lib/foreign-strip", async (importOriginal) => {
+  const echt = await importOriginal<typeof import("@/lib/foreign-strip")>();
+  return {
+    ...echt,
+    // DIE ATTRAPPE BILDET DEN FEHLERAUSGANG NACH, nicht irgendeinen Zustand: Text
+    // UNVERAENDERT zurueck, `rest` ungleich 0. Genau das liefert die echte Funktion
+    // nach einem Wurf waehrend des Entfernens.
+    stripForeignGroup: (html: string, schluessel: string) =>
+      foreignStripAttrappe.aktiv
+        ? { html, rest: 1 }
+        : echt.stripForeignGroup(html, schluessel),
+  };
+});
+
 // Erst nach dem Mock importieren, damit der Mock greift.
 // listProjectDomains kommt aus DEMSELBEN gemockten Modul (oben, vi.mock) — der
 // Import liefert genau die dortige vi.fn()-Instanz und macht sie fuer die
@@ -173,6 +204,10 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  // DER SCHALTER DER foreign-strip-ATTRAPPE GEHOERT HIERHER UND NICHT IN DEN LAUF, DER
+  // IHN SETZT: `clearAllMocks` leert die AUFRUFE, nicht einen eigenen Zustand. Bliebe
+  // er stehen, sähen alle folgenden Laeufe eine Funktion, die nichts entfernt.
+  foreignStripAttrappe.aktiv = false;
 });
 
 describe("CodeImporter — INVARIANTE: Uebernehmen schreibt NIE in die DB", () => {
@@ -5389,5 +5424,307 @@ describe("CodeImporter — Skripte und Tags im Code (11.11b)", () => {
     // (2) UND ER HAT KEIN ELEMENT ERZEUGT. Ohne diese Zeile waere (1) auch dann
     // gruen, wenn das Markup gedeutet worden waere — textContent liest beides.
     expect(l.querySelector("b")).toBeNull();
+  });
+});
+
+// ===========================================================================
+// DAS ENTFERNEN FREMDER PIXEL AUF KLICK (Phase 11.11, Scheibe 11.11c).
+//
+// DIE FIXTURES SIND ECHTE ANBIETER-GESTALTEN aus den Belegen, keine erfundenen.
+//
+// DIE AUFLAGE AUS DEM KOPF DES 11.11b-BLOCKS GILT HIER UNVERAENDERT: Diese Datei
+// traegt VIER dokumentweite Abwesenheits-Zusicherungen ueber document.body.textContent
+// — /gerettet/i, /mindestens/, /%/ und /NaN/ — und SK10 verbietet die Form "Scripte".
+// Die vier Wortlaute dieser Scheibe sind dagegen geprueft (Lauf S26 in
+// foreign-scan.test.ts); wer HIER eine Fixture ergaenzt, prueft sie erneut.
+// ===========================================================================
+
+describe("CodeImporter — fremde Pixel entfernen (11.11c)", () => {
+  const KOPF =
+    '<!DOCTYPE html><html lang="de"><head><title>S</title></head><body>' +
+    '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>';
+
+  const META_SCRIPT =
+    '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>';
+  const META_IMG =
+    '<img height="1" width="1" src="https://www.facebook.com/tr?id=123&ev=PageView">';
+  const PIN_IMG =
+    '<img height="1" width="1" src="https://ct.pinterest.com/v3/?tid=2612345678901">';
+  const CMP_SCRIPT =
+    '<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js"></script>';
+  const GTAG_SCRIPT =
+    '<script src="https://www.googletagmanager.com/gtag/js?id=AW-111111111"></script>';
+  const META_HANDLER =
+    '<a href="https://example.com/x" onclick="fbq(\'track\',\'Lead\')">Jetzt</a>';
+  // DER KONFIGURATIONS-SCHNIPSEL DES GOOGLE-TAGS — er traegt KEINE Adresse und ist
+  // damit ein AUFRUF (ENTSCHEIDUNG P11.11-38; V1, docs/ziel-befunde.md, Teil (cs)).
+  const GTAG_CONFIG =
+    "<script>window.dataLayer=window.dataLayer||[];" +
+    "function gtag(){dataLayer.push(arguments);}" +
+    "gtag('js',new Date());gtag('config','AW-111111111');</script>";
+  // SEITENLOGIK DES BETREIBERS MIT EINER EREIGNISZEILE DARIN — der produktive Fall,
+  // um dessentwillen "aufruf" existiert. KEINE Lade-Adresse, also kein Knopf.
+  const META_SEITENLOGIK =
+    "<script>document.querySelector('#m').addEventListener('click'," +
+    "function(){document.body.classList.toggle('offen');});" +
+    "fbq('track','Lead');</script>";
+
+  const seite = (rumpf: string) => `${KOPF}${rumpf}</body></html>`;
+
+  // DIE WORTLAUTE STEHEN HIER ALS LITERAL UND WERDEN NICHT IMPORTIERT — sonst waere
+  // der Waechter ein SPIEGEL, der jeden Tippfehler bestaetigt (Dauerregel EIN WAECHTER
+  // UEBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE).
+  const META_KNOPF = "Meta aus dem Code entfernen";
+  const PIN_KNOPF = "Pinterest aus dem Code entfernen";
+  const GOOGLE_KNOPF = "Google-Tag aus dem Code entfernen";
+  const GOOGLE_HINWEIS =
+    "Dieser Tag kann neben Google Ads auch Google Analytics und weitere Google-Produkte bedienen. Beim Entfernen hört alles auf, was über ihn läuft.";
+  // EIN WORTLAUT FUER BEIDE NICHT-KNOTEN-TRAEGER — Handler UND Aufruf in Seiten-Code
+  // (ENTSCHEIDUNG P11.11-38). Bis zum 2026-09-21 hiess er HANDLER_HINWEIS und nannte
+  // den Handler ausdruecklich; seither ist es dieselbe Auskunft fuer beide Faelle.
+  const MANUELL_HINWEIS =
+    "Dieser Aufruf steckt in Code der Seite, der auch anderes enthalten kann, und wird nicht automatisch entfernt. Bitte von Hand löschen.";
+  const REST_HINWEIS =
+    "Dieser Fund steht nach dem Entfernen noch im Code. Bitte die Stelle von Hand löschen.";
+
+  const liste = () =>
+    screen.getByRole("heading", { name: /^Skripte und Tags im Code/ })
+      .parentElement as HTMLElement;
+  const feld = () => document.querySelector("textarea") as HTMLTextAreaElement;
+
+  // SK12. DER KNOPF STEHT AM PIXEL — UND NUR DORT. Das ist zugleich die Zusicherung,
+  // die die Mutation M2 wieder rot macht: Ein CMP bekommt nie einen (P11.11-3), ein
+  // Container nie (P11.11-27).
+  it("SK12: ein Meta-Pixel traegt den Knopf, ein CMP traegt keinen", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${CMP_SCRIPT}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const l = liste();
+    expect(within(l).getByRole("button", { name: META_KNOPF })).toBeTruthy();
+    // Der CMP-Fund steht da — POSITIVKONTROLLE, sonst waere die naechste Zeile
+    // trivial wahr — und traegt KEINEN Knopf.
+    expect(within(l).getByText("Cookiebot")).toBeTruthy();
+    expect(within(l).queryAllByRole("button")).toHaveLength(1);
+  });
+
+  // SK13. DER KLICK ENTFERNT ALLE FUNDSTELLEN DES FUNDES aus dem EDITOR-Text — Script
+  // UND Rueckfall-Bild (P11.11-35, Satz (a)) — und der Inhalt des Betreibers bleibt.
+  it("SK13: ein Klick entfernt Script und Rueckfall-Bild aus dem Editor-Text", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${META_IMG}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    // POSITIVKONTROLLE: ZWEI Fundstellen, EIN Fund.
+    expect(within(liste()).getByText("2 Fundstellen")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: META_KNOPF }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("button", { name: META_KNOPF }),
+      ).toBeNull(),
+    );
+    expect(feld().value).not.toContain("connect.facebook.net");
+    expect(feld().value).not.toContain("www.facebook.com/tr?");
+    // … der Inhalt des Betreibers aber schon.
+    expect(feld().value).toContain("Kaufen");
+  });
+
+  // SK14. EIN KLICK AUF META LAESST PINTEREST STEHEN. Ohne ihn waere SK13 auch dann
+  // gruen, wenn der Klick die ganze Liste abraeumte.
+  it("SK14: ein Klick auf Meta laesst den Pinterest-Fund unberuehrt", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${PIN_IMG}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    expect(screen.getByRole("button", { name: PIN_KNOPF })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: META_KNOPF }));
+
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: META_KNOPF })).toBeNull(),
+    );
+    expect(screen.getByRole("button", { name: PIN_KNOPF })).toBeTruthy();
+    expect(feld().value).toContain("ct.pinterest.com");
+  });
+
+  // SK15. DER GOOGLE-HINWEIS STEHT AM GOOGLE-TAG UND NUR DORT (ENTSCHEIDUNG P11.11-34).
+  // Er ist der Preis der Entscheidung, den Tag ueberhaupt zum Entfernen anzubieten.
+  it("SK15: der Google-Tag traegt den Analytics-Hinweis, Meta nicht", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${GTAG_SCRIPT}${META_SCRIPT}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const l = liste();
+    expect(within(l).getByRole("button", { name: GOOGLE_KNOPF })).toBeTruthy();
+    expect(within(l).getByText(GOOGLE_HINWEIS)).toBeTruthy();
+    // NUR EINMAL — der Meta-Fund daneben traegt ihn nicht.
+    expect(within(l).queryAllByText(GOOGLE_HINWEIS)).toHaveLength(1);
+  });
+
+  // SK16. EIN INLINE-HANDLER BEKOMMT DEN HANDARBEITS-HINWEIS STATT EINES KNOPFES
+  // (P11.11-35, Satz (b)) — und er ist eine EIGENE Gruppe neben dem Script desselben
+  // Anbieters (ENTSCHEIDUNG P11.11-36, Punkt (F1)).
+  it("SK16: ein onclick-Fund traegt den Handarbeits-Hinweis und keinen Knopf", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${META_HANDLER}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const l = liste();
+    // ZWEI Meta-Zeilen: Knoten (mit Knopf) und Handler (ohne).
+    expect(within(l).getAllByText("Meta")).toHaveLength(2);
+    expect(within(l).getByText(MANUELL_HINWEIS)).toBeTruthy();
+    expect(within(l).queryAllByRole("button")).toHaveLength(1);
+  });
+
+  // SK16b. DERSELBE HINWEIS AM AUFRUF IN SEITEN-CODE (ENTSCHEIDUNG P11.11-38) — EIN
+  // Wortlaut fuer beide Traeger, und deshalb genuegt EINE Zeile fuer die Behauptung.
+  //
+  // DIE FIXTURE IST DER PRODUKTIVE FALL: Formular- und Menuelogik des Betreibers UND
+  // die Ereigniszeile in EINEM Script. Ein Knopf daran haette diese Logik geloescht.
+  it("SK16b: ein Aufruf in Seiten-Code traegt denselben Hinweis und keinen Knopf", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(META_SEITENLOGIK)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const l = liste();
+    // Der Fund steht da — POSITIVKONTROLLE, sonst waere die Knopf-Zeile trivial wahr.
+    expect(within(l).getByText("Meta")).toBeTruthy();
+    expect(within(l).getByText(MANUELL_HINWEIS)).toBeTruthy();
+    expect(within(l).queryAllByRole("button")).toHaveLength(0);
+  });
+
+  // SK16c. UND DIE GEGENPROBE AM GOOGLE-TAG: Das LADE-Script bekommt einen Knopf, der
+  // Konfigurations-Schnipsel daneben nicht (V1, docs/ziel-befunde.md, Teil (cs)).
+  it("SK16c: gtag-Lader traegt einen Knopf, der Konfigurations-Schnipsel nicht", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${GTAG_SCRIPT}${GTAG_CONFIG}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const l = liste();
+    // ZWEI Google-Zeilen, und GENAU EINE traegt einen Knopf.
+    expect(within(l).getAllByText("Google-Tag")).toHaveLength(2);
+    expect(within(l).getAllByRole("button", { name: GOOGLE_KNOPF })).toHaveLength(1);
+    expect(within(l).getByText(MANUELL_HINWEIS)).toBeTruthy();
+  });
+
+  // SK17. DER GEGLUECKTE KLICK ERZEUGT KEINE REST-MELDUNG. Er steht VOR den zwei
+  // Attrappen-Laeufen, weil er ihre POSITIVKONTROLLE in der anderen Richtung ist:
+  // Ohne ihn waere nicht zu unterscheiden, ob die Meldung am SCHEITERN haengt oder
+  // schlicht nach jedem Klick erscheint.
+  it("SK17: nach einem geglueckten Klick steht KEINE Rest-Meldung", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${META_HANDLER}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    fireEvent.click(screen.getByRole("button", { name: META_KNOPF }));
+
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: META_KNOPF })).toBeNull(),
+    );
+    expect(screen.queryByText(REST_HINWEIS)).toBeNull();
+    // ANKER: der Handler-Fund steht noch da, die Liste ist also nicht einfach leer.
+    // (Der Hinweis gilt seit P11.11-38 Handler UND Aufruf; hier ist es der Handler.)
+    expect(screen.getByText(MANUELL_HINWEIS)).toBeTruthy();
+  });
+
+  // SK18. SCHEITERT DIE NACHBEDINGUNG, STEHT DIE MELDUNG AM GEKLICKTEN FUND.
+  //
+  // DER ZUSTAND IST UEBER DEN FEHLERAUSGANG HERGESTELLT, nicht ueber einen erfundenen:
+  // Die Attrappe gibt den Text UNVERAENDERT zurueck — genau das tut die echte Funktion
+  // nach einem Wurf waehrend des Entfernens.
+  //
+  // DIE MELDUNG STEHT IN DER ZEILE DES GEKLICKTEN FUNDES, und das wird eigens geprueft:
+  // Ein blosses "sie ist irgendwo im Dokument" waere auch dann gruen, wenn sie an der
+  // Handler-Zeile stuende — also genau in der Bauform, die K1 zurueckgenommen hat.
+  it("SK18: Nachbedingung gescheitert -> die Meldung steht in der Zeile des geklickten Fundes", async () => {
+    foreignStripAttrappe.aktiv = true;
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${META_HANDLER}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    // VORHER steht sie NICHT da — sonst waere der Lauf trivial wahr.
+    expect(screen.queryByText(REST_HINWEIS)).toBeNull();
+
+    const knopf = screen.getByRole("button", { name: META_KNOPF });
+    fireEvent.click(knopf);
+
+    const meldung = await screen.findByText(REST_HINWEIS);
+    // Der Knopf steht noch da (nichts wurde entfernt) …
+    expect(screen.getByRole("button", { name: META_KNOPF })).toBeTruthy();
+    // … und die Meldung steht in SEINER Zeile.
+    const zeile = screen
+      .getByRole("button", { name: META_KNOPF })
+      .closest("li") as HTMLElement;
+    expect(zeile.contains(meldung)).toBe(true);
+    // NICHT in der Handler-Zeile: dort steht bereits der Handarbeits-Hinweis, und
+    // zwei gleichlautende Aufforderungen an einer Zeile waren der Grund fuer K1.
+    const handlerZeile = screen
+      .getByText(MANUELL_HINWEIS)
+      .closest("li") as HTMLElement;
+    expect(within(handlerZeile).queryByText(REST_HINWEIS)).toBeNull();
+  });
+
+  // SK19. UND SIE VERALTET NICHT — DER ANKER IST DAS, WAS SIE DAVOR BEWAHRT.
+  //
+  // ER IST EIN EINZELSTUECK: Er ist der EINZIGE Lauf, der faellt, wenn die Meldung
+  // ihren Anker verliert und am gespeicherten statt am aktuellen Text haengt
+  // (Mutation M7, GEMESSEN: genau ein roter Lauf). Wer ihn als redundant streicht,
+  // nimmt die einzige Abdeckung von ENTSCHEIDUNG P11.11-24 an dieser Scheibe mit
+  // (Dauerregel MUTATIONSPROBEN …, Lektion (f)).
+  //
+  // DER FALL IST BEWUSST DER SCHWERERE: Der Betreiber aendert den Text VON HAND, und
+  // der Fund BLEIBT dabei stehen. Ein blosses "der Fund ist weg" liefe auch ohne Anker
+  // gruen — dort raeumt schon die Liste die Zeile ab. ERST WENN DER FUND STEHEN BLEIBT,
+  // trennt sich abgeleitet von gespeichert.
+  it("SK19: Text VON HAND geaendert, Fund bleibt -> die Rest-Meldung ist weg", async () => {
+    foreignStripAttrappe.aktiv = true;
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${META_HANDLER}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    fireEvent.click(screen.getByRole("button", { name: META_KNOPF }));
+    await screen.findByText(REST_HINWEIS);
+
+    // VON HAND: ein Absatz dazu. Der Meta-Fund bleibt unveraendert stehen.
+    fireEvent.change(feld(), {
+      target: { value: seite(`${META_SCRIPT}${META_HANDLER}<p>neu</p>`) },
+    });
+
+    await waitFor(() => expect(screen.queryByText(REST_HINWEIS)).toBeNull());
+    // ANKER: der geklickte Fund steht wirklich noch da — sonst waere die Zeile
+    // darueber aus dem falschen Grund gruen.
+    expect(screen.getByRole("button", { name: META_KNOPF })).toBeTruthy();
   });
 });

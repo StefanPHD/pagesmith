@@ -144,15 +144,22 @@ import { stripOwnBlocks } from "@/lib/own-blocks-strip";
 // in annotateAndDetect auf DEMSELBEN Parse; hier kommen nur das Ergebnis-Praedikat fuer
 // die Kollision und die Wortlaute her.
 import {
+  foreignRemoveLabel,
   hasForeignCmp,
+  FOREIGN_ANBIETER_NOTE,
   FOREIGN_CMP_NOTE,
   FOREIGN_CONTAINER_NOTE,
   FOREIGN_FAILED_MESSAGE,
   FOREIGN_LABEL,
   FOREIGN_LIST_HEADING,
+  FOREIGN_MANUAL_NOTE,
   FOREIGN_NONE_MESSAGE,
   FOREIGN_PARKED_NOTE,
+  FOREIGN_REST_MESSAGE,
 } from "@/lib/foreign-scan";
+// Das ENTFERNEN fremder Pixel (Scheibe 11.11c) liegt in einer eigenen Datei — die
+// Erkennung daneben schreibt bewusst nicht. Beide teilen sich die Knotenauswahl.
+import { stripForeignGroup } from "@/lib/foreign-strip";
 import {
   SAVE_THROW_MESSAGE,
   actionThrew,
@@ -636,6 +643,25 @@ export default function CodeImporter({
   // Export behauptete es einen Fehlschlag, den es nie gab.
   const [exportAttempted, setExportAttempted] = useState(false);
   const [strippedText, setStrippedText] = useState<string | null>(null);
+  // foreignStrip (Scheibe 11.11c): WELCHEN Fund der letzte Klick entfernen sollte und
+  // WELCHEN Text er dabei erzeugt hat. Dieselbe Bauform wie strippedText darueber und
+  // aus demselben Grund (ENTSCHEIDUNG P11.11-24): Die Rest-Meldung behauptet etwas
+  // ueber einen VERGANGENEN Versuch und darf nur stehen, solange der Editor GENAU das
+  // haelt, was jener Versuch hinterlassen hat.
+  //
+  // SIE STEHT AM GEKLICKTEN FUND UND NICHT AM NACHBARN, und der Grund ist ein
+  // Oberflaechen-Grund: Am nicht entfernbaren Nachbarn steht bereits
+  // FOREIGN_MANUAL_NOTE mit derselben Aufforderung — zwei gleichlautende Hinweise an
+  // EINER Zeile.
+  //
+  // SIE IST ERREICHBAR, UND ZWAR UEBER DIE FEHLERAUSGAENGE VON stripForeignGroup: Ein
+  // Wurf gibt die EINGABE zurueck, und `rest` wird auf ihr gezaehlt — der Fund steht
+  // dann noch da. Im geglueckten Fall ist er weg, seine Zeile wird nicht gerendert,
+  // und die Meldung geht mit ihr.
+  const [foreignStrip, setForeignStrip] = useState<{
+    schluessel: string;
+    text: string;
+  } | null>(null);
   // Linkes Panel ein-/ausklappbar. Zen-Modus: ein Projekt MIT Code startet
   // eingeklappt (Fokus aufs Dashboard), ein leeres Projekt offen (man muss erst
   // importieren koennen). Deterministisch aus initialCode -> server- und
@@ -1383,6 +1409,20 @@ export default function CodeImporter({
       ? ownBlockFindings(debouncedCode)
       : [];
 
+  // DIE REST-MELDUNG DER SCHEIBE 11.11c — ABGELEITET, NICHT GESPEICHERT (ENTSCHEIDUNG
+  // P11.11-24). Sie ist eine Aussage ueber einen VERGANGENEN Versuch und braucht
+  // deshalb BEIDE Haelften: den Anker (haelt der Editor noch genau den Text, den jener
+  // Versuch erzeugt hat?) UND den aktuellen Scan (steht der Fund ueberhaupt noch da?).
+  // Die zweite Haelfte leistet die Liste selbst: Ist der Fund weg, wird seine Zeile
+  // nicht gerendert, und die Meldung geht mit ihr.
+  //
+  // DERSELBE VERGLEICH GEGEN debouncedCode WIE BEIM NACHBARN — EINE Quelle. Loescht
+  // der Betreiber die Fundstelle VON HAND, laufen beide Haelften zugleich aus.
+  const foreignRestKey =
+    foreignStrip !== null && debouncedCode === foreignStrip.text
+      ? foreignStrip.schluessel
+      : null;
+
   // EIN ANZEIGESLOT fuer die Publish-Sektion, Rangfolge STRUKTURELL statt per
   // Textvergleich: ein aufgetretener Server-Fehler schlaegt jeden vorbeugenden
   // Hinweis, und das fehlende Projekt schlaegt den Leer-Hinweis (ohne
@@ -2104,6 +2144,32 @@ export default function CodeImporter({
     // Der Export-Versuch bleibt stehen, wo er stand: Ob seine Meldung erscheint,
     // entscheidet ohnehin das Praedikat auf dem neuen Text. Ein Zuruecksetzen hier
     // waere die Bauform, die K2 gerade abgeschafft hat.
+  }
+
+  /**
+   * EINEN FREMDEN FUND AUS DEM EDITOR-TEXT ENTFERNEN (Scheibe 11.11c).
+   *
+   * EIN KLICK ENTFERNT EINEN GANZEN FUND, also ALLE seine Fundstellen (ENTSCHEIDUNG
+   * P11.11-35, Satz (a)) — Script, Rueckfall-Bild, Rueckfall-iframe. Welche Knoten
+   * das sind, entscheidet DIESELBE Funktion wie die Anzeige; der Schluessel kommt aus
+   * dem angezeigten Fund und wird hier nur durchgereicht.
+   *
+   * KEINE ZWEISTUFIGE BESTAETIGUNG. "EIN KLICK entfernt einen ganzen Fund" steht so in
+   * der Entscheidung, und handleStripOwnBlocks daneben ist der Praezedenzfall.
+   *
+   * DIESELBEN DREI SAETZE WIE BEIM NACHBARN, und sie sind keine Kopie, sondern die
+   * gleiche Lage: setCode UND NICHT setDebouncedCode (der Text geht denselben Weg wie
+   * jede andere Eingabe) · es aendert nur den EDITOR-Text, gespeichert wird beim
+   * Speichern (P11.11-35, Satz (e)) · gemerkt wird der ERZEUGTE Text, nicht das
+   * Ergebnis der Pruefung — `rest` aus stripForeignGroup wird bewusst nicht
+   * gespeichert, es waere ein zweiter, sofort alternder Rechenweg fuer dieselbe Frage
+   * (ENTSCHEIDUNG P11.11-24). Die Pruefung IN stripForeignGroup bleibt davon
+   * unberuehrt: sie ist der Waechter der Funktion.
+   */
+  function handleStripForeign(schluessel: string) {
+    const { html } = stripForeignGroup(code, schluessel);
+    setCode(html);
+    setForeignStrip({ schluessel, text: html });
   }
 
   // Veroeffentlichen (Phase 7 Scheibe 7a): das funktionale Dokument wird CLIENT-seitig
@@ -3408,6 +3474,79 @@ export default function CodeImporter({
                       {f.klassen.includes("cmp") && (
                         <p className="mt-1 text-xs text-gray-500">
                           {FOREIGN_CMP_NOTE}
+                        </p>
+                      )}
+                      {/* DER HANDARBEITS-HINWEIS STEHT STATT EINES KNOPFES, nicht
+                          daneben (P11.11-35, Satz (b)): Ein Attribut traegt oft auch
+                          Code des Betreibers, und daraus den Anbieter-Aufruf
+                          herauszuschneiden hiesse, fremden Text zu bearbeiten.
+
+                          ER GILT BEIDEN NICHT-KNOTEN-TRAEGERN — dem Inline-Handler UND
+                          dem Aufruf in Seiten-Code (ENTSCHEIDUNG P11.11-38). Die
+                          Bedingung ist deshalb "alles ausser knoten" und keine
+                          Aufzaehlung: Ein vierter Traeger bekaeme den Hinweis dann von
+                          selbst, statt still ohne dazustehen. */}
+                      {f.traeger !== "knoten" && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          {FOREIGN_MANUAL_NOTE}
+                        </p>
+                      )}
+                      {/* DER KNOPF — nur bei `entfernbar`. Die Regel dafuer liegt in
+                          foreign-scan.ts und nicht hier: ganze Knoten UND
+                          ausschliesslich die Klasse `pixel`. Ein CMP bekommt nie einen
+                          (P11.11-3), ein Container nie (P11.11-27).
+
+                          SEIN NAME WIRD GEBILDET, NICHT GETIPPT, und er enthaelt
+                          "aus dem Code" (P11.11-35, Satz (d)) — "Meta entfernen" und
+                          "Ja, Meta entfernen" bezeichnen im Einstellungs-Drawer
+                          bereits das Entfernen der EIGENEN Pixel-Konfiguration.
+
+                          KEIN ROT. In dieser Liste leuchtet nichts (P11.11-3); die
+                          Handlung ist am Namen erkennbar, nicht an der Farbe. Das
+                          haelt zugleich den Selektor span.truncate.text-red-600 frei,
+                          der dokumentweit den ZENTRALEN Fehlerkanal bezeichnet. */}
+                      {f.entfernbar && (
+                        <div className="mt-1.5 flex flex-col gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleStripForeign(f.schluessel)}
+                            className="self-start rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                          >
+                            {foreignRemoveLabel(f.anbieter)}
+                          </button>
+                          {/* ANBIETER-HINWEISE AM KNOPF (P11.11-34/-36 (F4)): Der
+                              Google-Tag bedient ausweislich der Anbieter-Doku mehr als
+                              unser Ziel. Die Zuordnung liegt in foreign-scan.ts, ein
+                              Struktur-Waechter haelt ihre Schluessel gegen die
+                              Signaturliste. */}
+                          {f.anbieter
+                            .filter((a) => FOREIGN_ANBIETER_NOTE[a] !== undefined)
+                            .map((a) => (
+                              <p key={a} className="text-xs text-gray-500">
+                                {FOREIGN_ANBIETER_NOTE[a]}
+                              </p>
+                            ))}
+                        </div>
+                      )}
+                      {/* DIE REST-MELDUNG — AM GEKLICKTEN FUND UND ABGELEITET
+                          (P11.11-24). Sie steht, wenn die Nachbedingung gescheitert
+                          ist: Der Klick ist gelaufen, und DIESER Fund steht immer noch
+                          da.
+
+                          BEIDE HAELFTEN SIND ABGELEITET, und nur zusammen tragen sie:
+                          der ANKER aus dem Text (haelt der Editor noch genau das, was
+                          jener Klick hinterlassen hat?) und die SICHTBARKEIT aus dem
+                          AKTUELLEN Scan (steht der Fund ueberhaupt noch in der Liste?).
+                          Ist er weg, wird diese Zeile gar nicht gerendert, und die
+                          Meldung geht mit ihr. Aendert der Betreiber den Text VON HAND,
+                          faellt der Anker.
+
+                          NICHT AM NACHBARN: Dort steht bereits FOREIGN_MANUAL_NOTE
+                          mit derselben Aufforderung — zwei gleichlautende Hinweise an
+                          einer Zeile. */}
+                      {f.schluessel === foreignRestKey && (
+                        <p className="mt-1 text-xs font-medium text-gray-700">
+                          {FOREIGN_REST_MESSAGE}
                         </p>
                       )}
                     </li>

@@ -3,8 +3,11 @@
 // P11.11-12, P11.11-26 bis P11.11-32).
 //
 // SIE LIEST, SIE SCHREIBT NICHT. Kein Knoten wird angefasst, kein Attribut gesetzt,
-// nichts entfernt — die Scheibe 11.11b ist rein lesend (P11.11-31), und das Entfernen
-// fremder Pixel ist 11.11c.
+// nichts entfernt — die Scheibe 11.11b ist rein lesend (P11.11-31). DAS ENTFERNEN
+// FREMDER PIXEL (11.11c) LIEGT IN foreign-strip.ts DANEBEN und benutzt von hier die
+// GETEILTE Knotenauswahl `collectForeignHits` samt `foreignGroupKey` — EINE Quelle,
+// keine zweite Suche (ENTSCHEIDUNG P11.11-35, Satz (c)). Dieselbe Aufteilung wie bei
+// own-blocks.ts / own-blocks-strip.ts.
 //
 // SIE LAEUFT AUF DEM BEREITS ZERLEGTEN DOKUMENT DES IMPORT-PFADS, unmittelbar nach dem
 // Parse und VOR stabilizeDoc (P11.11-12, Satz 1). KEIN ZWEITER PARSE (P11.11-5). Dass
@@ -26,6 +29,37 @@ import {
   type ForeignClass,
   type ForeignSignature,
 } from "./foreign-signatures";
+
+/**
+ * WORIN ein Fund steckt — DREI WERTE (ENTSCHEIDUNG P11.11-38):
+ * - "knoten"  = ein ganzes `<script>`, `<img>` oder `<iframe>`, das den Anbieter ueber
+ *               eine ADRESSE traegt: im Attribut (`src`, `data-src`, `data-cmp-src`)
+ *               ODER als Zeichenkette im RUMPF. Ein Basiscode laedt sein Script, und
+ *               die Lade-Adresse steht dabei im Rumpf.
+ * - "aufruf"  = ein Inline-Script, das NUR ueber einen NAMEN erkannt ist. Es laedt
+ *               nichts; es ruft etwas auf.
+ * - "handler" = ein Anbieter-Aufruf im Wert eines `onclick`/`onsubmit`.
+ *
+ * NUR "knoten" WIRD ENTFERNT. DER GRUND FUER "aufruf" IST DIE FEHLERKLASSE VON
+ * P11.11-35, Satz (b), EINE EBENE GROESSER: KI-erzeugte Seiten buendeln Formular- und
+ * Menuelogik oft in EINEM Script, in dem irgendwo ein `fbq('track', …)` steht. Ein
+ * Klick auf "Meta" haette diese Logik geloescht. Dort war es ein Attribut, das auch
+ * Code des Betreibers traegt; hier ist es ein ganzes Script.
+ *
+ * DASS DIE VIER BASISCODES IHRE LADE-ADRESSE WIRKLICH IM RUMPF TRAGEN, IST GELESEN und
+ * nicht angenommen (V1, CC, 2026-09-21, docs/ziel-befunde.md): meta Teil (g),
+ * pinterest Teil (ab), tiktok Teil (i), linkedin Teil (am), je Punkt (a). Beim
+ * Google-Tag steht sie im LADE-Script; der Konfigurations-Schnipsel traegt keine und
+ * ist damit ein "aufruf" (Teil (cs), Punkte (a) und (b)).
+ *
+ * DIE GRENZE GEHOERT AN DEN TYP, weil sie sonst beim naechsten Umbau als Mangel gelesen
+ * wird: EIN SCRIPT, DAS BASISCODE UND EIGENE LOGIK MISCHT, IST "knoten" UND WIRD GANZ
+ * ENTFERNT. Wer beides in einen Knoten legt, hat es untrennbar gemacht.
+ *
+ * DIE UNTERSCHEIDUNG GEHT IN DEN GRUPPIERUNGS-SCHLUESSEL EIN — sonst stuende an einer
+ * gemischten Gruppe ein Knopf, der nur einen Teil ihrer Fundstellen entfernt.
+ */
+export type ForeignCarrier = "knoten" | "aufruf" | "handler";
 
 /**
  * Ein Fund. ZWEI GESTALTEN, und die Aufteilung ist P11.11-32, Punkt (c):
@@ -51,6 +85,34 @@ export type ForeignFinding =
        * einer gemischten Gruppe ein Zusatz, der nur fuer einen Teil gilt.
        */
       geparkt: boolean;
+      /**
+       * DER SCHLUESSEL, DEN DAS ENTFERNEN BEKOMMT (Scheibe 11.11c). Er ist
+       * INHALTS-adressiert und kein Index: `stripForeignGroup` parst den Editor-Text
+       * neu, laeuft mit DERSELBEN Funktion (`collectForeignHits`) darueber und nimmt,
+       * was denselben Schluessel traegt. Ein Index haette an der Reihenfolge eines
+       * zweiten Parse gehangen.
+       *
+       * ER WIRD NIE GERENDERT — er traegt `\u0000` als Trenner.
+       */
+      schluessel: string;
+      /**
+       * WORIN der Fund steckt — drei Werte, s. ForeignCarrier. Er geht in den
+       * Gruppierungs-Schluessel ein, aus demselben Grund wie der Parkzustand: Eine
+       * gemischte Gruppe truege einen Knopf, der nur einen Teil ihrer Fundstellen
+       * entfernt, und einen Handarbeits-Hinweis, der nur fuer den anderen gilt
+       * (ENTSCHEIDUNG P11.11-36, Punkt (F1) — Erweiterung von P11.11-32, Punkt (c)).
+       */
+      traeger: ForeignCarrier;
+      /**
+       * Bekommt dieser Fund einen Entfernen-Knopf? DIE REGEL LIEGT HIER UND NICHT IM
+       * JSX, damit sie pruefbar ist und an genau einer Stelle steht.
+       *
+       * GANZE KNOTEN UND AUSSCHLIESSLICH DIE KLASSE `pixel`. Ein CMP bekommt nie einen
+       * (P11.11-3), ein Container nie (P11.11-27) — und eine GEMISCHTE Gruppe aus
+       * Pixel und CMP auch nicht: `every` statt `some` ist hier der Unterschied
+       * zwischen fail-closed und fail-open.
+       */
+      entfernbar: boolean;
     }
   | {
       art: "unbekannt";
@@ -205,13 +267,94 @@ function trefferUeberNamen(text: string): ForeignSignature[] {
  * Inline-Script mit zwei Pixeln erschiene als eines, und welches gewinnt, hinge an der
  * Sortierung.
  */
+/**
+ * Anbieter, deren LADE-Adresse als Zeichenkette im RUMPF eines Inline-Scripts steht —
+ * das Merkmal eines BASISCODES (ENTSCHEIDUNG P11.11-38).
+ *
+ * GEPRUEFT WIRD GEGEN `adressen` UND AUSDRUECKLICH NICHT GEGEN `rueckfall`. Die Frage
+ * lautet "laedt dieses Script sein Anbieter-Script?"; eine Rueckfall-Adresse
+ * (`www.facebook.com/tr?`) als Text macht daraus keinen Lader. Wer hier
+ * `trefferUeberAdressen` nimmt, prueft beides und laesst die blosse ERWAEHNUNG eines
+ * Bild-Pixels die Namen ueberstimmen.
+ *
+ * SIE IST DIE EINE QUELLE FUER BEIDE FRAGEN — die ERKENNUNG (anbieterFuer) und den
+ * TRAEGER (traegerFuer) lesen dasselbe Merkmal. Zwei Rechenwege liefen auseinander.
+ */
+function ladeAdresseImRumpf(rumpf: string): ForeignSignature[] {
+  if (rumpf === "") return [];
+  return FOREIGN_SIGNATURES.filter((s) =>
+    s.adressen.some((a) => rumpf.includes(a))
+  );
+}
+
 function anbieterFuer(
   adressen: readonly string[],
   rumpf: string
 ): ForeignSignature[] {
+  // EINE LADE-ADRESSE IM RUMPF IST EIN ADRESS-TREFFER, gleichrangig mit der im Attribut
+  // und VOR den Namen (ENTSCHEIDUNG P11.11-38, Ergaenzung vom 2026-09-21; dieselbe
+  // Rangfolge wie in P11.11-32, Punkt (d)).
+  //
+  // DER GRUND IST EIN GEMESSENER STILLER AUSFALL (V2, CC, 2026-09-21): LinkedIns
+  // LADE-Block setzt `window.lintrk` als ZUWEISUNG und uebergibt es als Argument —
+  // `lintrk(` mit Klammer steht dort NIRGENDS, und `_linkedin_partner_id` steht im
+  // ANDEREN Block. OHNE DIESE ZEILE BLIEBE DER LADER UNBEKANNT: kein Etikett, kein
+  // Knopf, und ein Klick auf "LinkedIn" naehme nur das Rueckfall-Bild mit. DAS PIXEL
+  // LIEFE WEITER, und niemand saehe es.
   const ueberAdresse = trefferUeberAdressen(adressen);
   if (ueberAdresse.length > 0) return ueberAdresse;
+  const imRumpf = ladeAdresseImRumpf(rumpf);
+  if (imRumpf.length > 0) return imRumpf;
   return trefferUeberNamen(rumpf);
+}
+
+/**
+ * DER TRAEGER EINES SCRIPTS (ENTSCHEIDUNG P11.11-38): "knoten", wenn der Anbieter ueber
+ * eine ADRESSE dransteht — im Attribut ODER als Zeichenkette im RUMPF —, sonst
+ * "aufruf".
+ *
+ * GEPRUEFT WIRD GEGEN `adressen` UND NICHT GEGEN `rueckfall`, und das ist eine
+ * Entscheidung und kein Versehen: Die Frage lautet "laedt dieses Script sein
+ * Anbieter-Script?". Eine Rueckfall-Adresse (`www.facebook.com/tr?`) im Rumpf macht
+ * daraus keinen Basiscode.
+ *
+ * EINE LADE-ADRESSE IM RUMPF UEBERSTIMMT JEDEN NAMEN, und dieser Absatz ist am
+ * 2026-09-21 RICHTIGGESTELLT worden statt gestempelt — er behauptete das Gegenteil,
+ * und ein Maszstab mit falschen Angaben taugt nicht als Maszstab (Dauerregel EINE
+ * REGEL KANN GUELTIG BLEIBEN, WAEHREND IHR BELEG FALSCH WIRD).
+ *
+ * WAS HIER STAND: Ein Script, das `gtag(` ruft und irgendwo Metas Adresse als Text
+ * fuehrt, sei "fuer Google weiterhin ein Aufruf". SEIT K3 IST DAS FALSCH. Eine
+ * Lade-Adresse im Rumpf entscheidet schon die ERKENNUNG (Adresse vor Name,
+ * P11.11-32, Punkt (d)): Das Script gehoert dem Anbieter DIESER Adresse, ist
+ * "knoten", und die Namen anderer Anbieter darin werden ueberstimmt — sie stehen gar
+ * nicht erst in `treffer`.
+ *
+ * EIN SOLCHES GEMISCHTES SCRIPT WIRD DAMIT GANZ ENTFERNT. Das ist die GRENZE aus
+ * ENTSCHEIDUNG P11.11-38, hier an einem zweiten Fall: Wer Anbieter-Basiscode und
+ * fremde Aufrufe in EINEN Knoten legt, hat sie untrennbar gemacht.
+ *
+ * DER PREIS IST BENANNT UND GEWOLLT: Die Regel kann einen LADER nicht von einer
+ * blossen ERWAEHNUNG der Lade-Adresse trennen. Ohne sie bliebe LinkedIns Lade-Block
+ * unbekannt und sein Pixel liefe nach dem Klick weiter (GEMESSEN, V2).
+ */
+function traegerFuer(
+  treffer: readonly ForeignSignature[],
+  adressen: readonly string[],
+  rumpf: string
+): ForeignCarrier {
+  if (treffer.length === 0) return "knoten";
+  if (trefferUeberAdressen(adressen).length > 0) return "knoten";
+  // DASSELBE MERKMAL WIE IN anbieterFuer, aus DERSELBEN Funktion — eine Quelle.
+  //
+  // HIER STAND BIS ZUM 2026-09-21 EIN SCHNITT AUF `treffer` ("traegt einer der
+  // GETROFFENEN Anbieter seine Adresse im Rumpf?"). ER IST MIT K3 REDUNDANT GEWORDEN
+  // und deshalb entfernt statt stehengelassen: Seit eine Lade-Adresse im Rumpf schon
+  // die ERKENNUNG entscheidet, ist `treffer` in genau den Faellen gleich dem Ergebnis
+  // von ladeAdresseImRumpf — der Schnitt konnte nie mehr etwas aussortieren. Ein
+  // Kommentar, der ihn als unterscheidend beschreibt, waere ab da eine Behauptung
+  // ohne Gegenstand.
+  return ladeAdresseImRumpf(rumpf).length > 0 ? "knoten" : "aufruf";
 }
 
 /** Der gekuerzte, auf einfache Leerzeichen normalisierte Rumpf eines Inline-Scripts. */
@@ -224,24 +367,149 @@ function ausschnittVon(rumpf: string): string | null {
     : `${zeichen.slice(0, INLINE_EXCERPT_MAX).join("")}…`;
 }
 
-type BekanntRoh = {
-  anbieter: string[];
-  klassen: ForeignClass[];
+/**
+ * EINE FUNDSTELLE MIT IHREM KNOTEN — die Zwischenstufe, die ANZEIGE und ENTFERNEN
+ * TEILEN (Scheibe 11.11c, ENTSCHEIDUNG P11.11-35, Satz (c)).
+ *
+ * WARUM SIE UEBERHAUPT EXISTIERT: Bis zur Scheibe 11.11b hat diese Datei in EINEM
+ * Durchlauf gelesen UND sofort verdichtet; die Knoten verliess kein Rueckgabewert.
+ * Das Entfernen braucht aber genau die Zuordnung Knoten -> Fund, und eine zweite Suche
+ * daneben waere die zweite Wahrheit, die bei der naechsten Signatur still
+ * auseinanderlaeuft. DER DURCHLAUF IST DESHALB GEHALBIERT, NICHT VERDOPPELT:
+ * collectForeignHits liest, scanForeignTags verdichtet, stripForeignGroup entfernt —
+ * und alle drei sehen dieselben Knoten.
+ */
+export type ForeignHit = {
+  el: Element;
+  /** LEER heisst unbekannt. Nur Scripte koennen so einen Treffer tragen. */
+  treffer: readonly ForeignSignature[];
   geparkt: boolean;
+  traeger: ForeignCarrier;
+  /** Alle drei Adress-Orte, Platzhalter bereits verworfen. */
+  adressen: readonly string[];
+  /** Rumpf eines Scripts bzw. Wert des Inline-Handlers. */
+  rumpf: string;
 };
 
 /**
- * Der Gruppierungs-Schluessel einer bekannten Fundstelle: die Anbieter-Menge PLUS der
- * Parkzustand.
+ * Der Gruppierungs-Schluessel einer bekannten Fundstelle: die Anbieter-Menge, der
+ * Parkzustand UND der Traeger.
  *
- * DER PARKZUSTAND GEHOERT IN DEN SCHLUESSEL, damit jede Gruppe darin EINHEITLICH ist.
- * Sonst stuende an einer gemischten Gruppe ein "wartet auf Einwilligung", das nur fuer
- * einen Teil ihrer Fundstellen gilt — eine Aussage, die mehr behauptet als sie traegt.
+ * ALLE DREI ACHSEN GEHOEREN IN DEN SCHLUESSEL, damit jede Gruppe darin EINHEITLICH
+ * ist. Sonst stuende an einer gemischten Gruppe ein Zusatz, der nur fuer einen Teil
+ * ihrer Fundstellen gilt — beim Parkzustand ein "wartet auf Einwilligung", beim
+ * Traeger ein Knopf, der nur die Haelfte entfernt.
  *
- * `\u0000` als Trenner, weil kein Anbietername ihn enthalten kann.
+ * `\u0000` als Trenner, weil kein Anbietername ihn enthalten kann. ER WIRD NIE
+ * GERENDERT.
  */
-function gruppenSchluessel(roh: BekanntRoh): string {
-  return `${roh.anbieter.join("\u0000")}|${roh.geparkt ? "1" : "0"}`;
+export function foreignGroupKey(hit: ForeignHit): string {
+  return `${hit.treffer.map((s) => s.anbieter).join("\u0000")}|${
+    hit.geparkt ? "1" : "0"
+  }|${hit.traeger}`;
+}
+
+/**
+ * Liest alle fremden Fundstellen eines bereits geparsten Dokuments, in
+ * Dokument-Reihenfolge je Durchgang, OHNE zu verdichten und OHNE etwas anzufassen.
+ *
+ * SIE FAENGT IHREN WURF NICHT SELBST — das tun ihre zwei Aufrufer, jeder auf seine
+ * Weise: scanForeignTags meldet "failed", stripForeignGroup gibt die Eingabe zurueck.
+ * Ein dritter catch hier verschluckte den Unterschied.
+ */
+export function collectForeignHits(doc: Document): ForeignHit[] {
+  const eigen = new Set<Element>(collectOwnNodes(doc));
+  const gesehen = new Set<Element>();
+  const hits: ForeignHit[] = [];
+
+  // (1) SCRIPTE — jedes wird angezeigt, bekannte werden markiert (P11.11-3).
+  doc.querySelectorAll("script").forEach((el) => {
+    if (eigen.has(el) || gesehen.has(el)) return;
+    const type = (el.getAttribute("type") ?? "").trim().toLowerCase();
+    if (DATA_SCRIPT_TYPES.includes(type)) return;
+    gesehen.add(el);
+
+    const adressen = adressenVon(el);
+    const rumpf = el.textContent ?? "";
+    const treffer = anbieterFuer(adressen, rumpf);
+    hits.push({
+      el,
+      treffer,
+      geparkt: istGeparkt(el),
+      // DER DRITTE TRAEGER ENTSTEHT HIER UND NUR HIER (ENTSCHEIDUNG P11.11-38): Ein
+      // Script OHNE Adresse, das allein ueber einen Namen getroffen wurde, ist ein
+      // AUFRUF in Seiten-Code und wird nie entfernt. Ein unbekanntes Script bekommt
+      // "knoten" und ist folgenlos — es hat gar keinen Fund, an dem ein Knopf haengen
+      // koennte.
+      traeger: traegerFuer(treffer, adressen, rumpf),
+      adressen,
+      rumpf,
+    });
+  });
+
+  // (2) BILD- UND IFRAME-TAGS mit BEKANNTER Adresse — auch ohne Script daneben
+  // (P11.11-29). Meta und Pinterest duerfen ausweislich ihrer Doku allein als
+  // Bild-Tag stehen; eine Erkennung nur ueber <script> saehe eine solche Seite
+  // nicht. Seit ENTSCHEIDUNG P11.11-36, Punkt (F5), bekommt ein solcher Fund auch
+  // einen eigenen Entfernen-Knopf.
+  //
+  // UNBEKANNTE BILDER UND IFRAMES ERSCHEINEN NICHT, und die Asymmetrie zu (1) ist
+  // Absicht: Eine Seite traegt eine Handvoll Scripte und beliebig viele Bilder. Die
+  // Sichtbarkeit des Veraltens, die P11.11-3 traegt, leisten die Scripte bereits.
+  //
+  // DER PLATZ DES <noscript> SPIELT KEINE ROLLE, und das ist GEMESSEN (CC,
+  // 2026-09-21, jsdom 29.1.1): Steht das <noscript> im head, ist es nach dem Parse
+  // LEER und sein <img> liegt im body; steht es im body, bleibt das <img> sein Kind.
+  // BEIDE FAELLE FINDET DIESE dokumentweite Abfrage. Erkannt wird ueber die ADRESSE,
+  // nicht ueber den Platz (P11.11-12, Satz 6). FUER DAS ENTFERNEN IST DER PLATZ
+  // EBENFALLS FOLGENLOS — entfernt wird der gefundene KNOTEN, nicht seine Huelle
+  // (ENTSCHEIDUNG P11.11-36, Punkt (F2)).
+  //
+  // EIN GEPARKTES IFRAME TRAEGT SEINE ADRESSE NICHT IN `src`: consentmanager setzt
+  // dort `about:blank` und verschiebt sie nach `data-cmp-src`. Deshalb liest
+  // adressenVon ALLE drei Orte und wirft den Platzhalter weg — sonst waere ein so
+  // geparkter Tag-Manager-Container unsichtbar geblieben.
+  doc.querySelectorAll("img, iframe").forEach((el) => {
+    if (eigen.has(el) || gesehen.has(el)) return;
+    const adressen = adressenVon(el);
+    const treffer = trefferUeberAdressen(adressen);
+    if (treffer.length === 0) return;
+    gesehen.add(el);
+    hits.push({
+      el,
+      treffer,
+      geparkt: istGeparkt(el),
+      traeger: "knoten",
+      adressen,
+      rumpf: "",
+    });
+  });
+
+  // (3) INLINE-HANDLER — NUR mit bekanntem Anbieter-Aufruf (P11.11-12, Satz 7).
+  // Sonst stuende jede Schaltflaeche der Seite in der Liste.
+  //
+  // SIE TRAGEN `traeger: "handler"` UND WERDEN NIE ENTFERNT (ENTSCHEIDUNG P11.11-35,
+  // Satz (b)): Ein Attribut traegt oft auch Code des Betreibers, und daraus den
+  // Anbieter-Aufruf herauszuschneiden hiesse, fremden Text zu bearbeiten. Ihr
+  // Element ist ausserdem oft ein LINKABLE_SELECTOR-Kandidat mit einem Mapping —
+  // es zu entfernen liesse das Mapping verwaisen.
+  doc.querySelectorAll("[onclick], [onsubmit]").forEach((el) => {
+    if (eigen.has(el) || gesehen.has(el)) return;
+    const wert = `${el.getAttribute("onclick") ?? ""} ${el.getAttribute("onsubmit") ?? ""}`;
+    const treffer = trefferUeberNamen(wert);
+    if (treffer.length === 0) return;
+    gesehen.add(el);
+    hits.push({
+      el,
+      treffer,
+      geparkt: false,
+      traeger: "handler",
+      adressen: [],
+      rumpf: wert,
+    });
+  });
+
+  return hits;
 }
 
 /**
@@ -255,102 +523,55 @@ function gruppenSchluessel(roh: BekanntRoh): string {
  */
 export function scanForeignTags(doc: Document): ForeignScan {
   try {
-    const eigen = new Set<Element>(collectOwnNodes(doc));
-    const gesehen = new Set<Element>();
-    const gruppen = new Map<string, { roh: BekanntRoh; stellen: number }>();
+    const gruppen = new Map<
+      string,
+      { hit: ForeignHit; stellen: number }
+    >();
     const unbekannt: ForeignFinding[] = [];
 
-    const buchen = (roh: BekanntRoh) => {
-      const key = gruppenSchluessel(roh);
+    for (const hit of collectForeignHits(doc)) {
+      if (hit.treffer.length === 0) {
+        // FUER DIE KENNUNG EINES UNBEKANNTEN SCRIPTS GILT DER ERSTE KANDIDAT. Die
+        // Erkennung liest alle drei Orte, die ANZEIGE zeigt einen — mehrere Adressen
+        // an einer Zeile eines Fundes, den niemand zuordnen kann, waeren Rauschen.
+        unbekannt.push(
+          hit.adressen.length > 0
+            ? { art: "unbekannt", kennung: hit.adressen[0], ausschnitt: null }
+            : {
+                art: "unbekannt",
+                kennung: UNKNOWN_INLINE,
+                ausschnitt: ausschnittVon(hit.rumpf),
+              }
+        );
+        continue;
+      }
+      const key = foreignGroupKey(hit);
       const vorhanden = gruppen.get(key);
       if (vorhanden) vorhanden.stellen += 1;
-      else gruppen.set(key, { roh, stellen: 1 });
-    };
+      else gruppen.set(key, { hit, stellen: 1 });
+    }
 
-    const rohAus = (
-      treffer: ForeignSignature[],
-      geparkt: boolean
-    ): BekanntRoh => ({
-      anbieter: treffer.map((s) => s.anbieter),
-      klassen: CLASS_ORDER.filter((k) => treffer.some((s) => s.klasse === k)),
-      geparkt,
-    });
-
-    // (1) SCRIPTE — jedes wird angezeigt, bekannte werden markiert (P11.11-3).
-    doc.querySelectorAll("script").forEach((el) => {
-      if (eigen.has(el) || gesehen.has(el)) return;
-      const type = (el.getAttribute("type") ?? "").trim().toLowerCase();
-      if (DATA_SCRIPT_TYPES.includes(type)) return;
-      gesehen.add(el);
-
-      const adressen = adressenVon(el);
-      const rumpf = el.textContent ?? "";
-      const treffer = anbieterFuer(adressen, rumpf);
-
-      if (treffer.length > 0) {
-        buchen(rohAus(treffer, istGeparkt(el)));
-        return;
+    const bekannt: ForeignFinding[] = Array.from(gruppen.entries()).map(
+      ([schluessel, { hit, stellen }]) => {
+        const klassen = CLASS_ORDER.filter((k) =>
+          hit.treffer.some((s) => s.klasse === k)
+        );
+        return {
+          art: "bekannt",
+          anbieter: hit.treffer.map((s) => s.anbieter),
+          klassen,
+          stellen,
+          geparkt: hit.geparkt,
+          schluessel,
+          traeger: hit.traeger,
+          // GANZE KNOTEN UND AUSSCHLIESSLICH `pixel`. `every` statt `some` ist der
+          // Unterschied zwischen fail-closed und fail-open: Ein Inline-Script, das
+          // `fbq(` ruft UND `Cookiebot` nennt, traegt beide Klassen — ein Knopf daran
+          // naehme dem Betreiber sein Einwilligungs-Werkzeug mit.
+          entfernbar:
+            hit.traeger === "knoten" && klassen.every((k) => k === "pixel"),
+        };
       }
-      // FUER DIE KENNUNG EINES UNBEKANNTEN SCRIPTS GILT DER ERSTE KANDIDAT. Die
-      // Erkennung liest alle drei Orte, die ANZEIGE zeigt einen — mehrere Adressen an
-      // einer Zeile eines Fundes, den niemand zuordnen kann, waeren Rauschen.
-      unbekannt.push(
-        adressen.length > 0
-          ? { art: "unbekannt", kennung: adressen[0], ausschnitt: null }
-          : {
-              art: "unbekannt",
-              kennung: UNKNOWN_INLINE,
-              ausschnitt: ausschnittVon(rumpf),
-            }
-      );
-    });
-
-    // (2) BILD- UND IFRAME-TAGS mit BEKANNTER Adresse — auch ohne Script daneben
-    // (P11.11-29). Meta und Pinterest duerfen ausweislich ihrer Doku allein als
-    // Bild-Tag stehen; eine Erkennung nur ueber <script> saehe eine solche Seite
-    // nicht.
-    //
-    // UNBEKANNTE BILDER UND IFRAMES ERSCHEINEN NICHT, und die Asymmetrie zu (1) ist
-    // Absicht: Eine Seite traegt eine Handvoll Scripte und beliebig viele Bilder. Die
-    // Sichtbarkeit des Veraltens, die P11.11-3 traegt, leisten die Scripte bereits.
-    //
-    // DER PLATZ DES <noscript> SPIELT KEINE ROLLE, und das ist GEMESSEN (CC,
-    // 2026-09-21, jsdom 29.1.1): Steht das <noscript> im head, ist es nach dem Parse
-    // LEER und sein <img> liegt im body; steht es im body, bleibt das <img> sein Kind.
-    // BEIDE FAELLE FINDET DIESE dokumentweite Abfrage. Erkannt wird ueber die ADRESSE,
-    // nicht ueber den Platz (P11.11-12, Satz 6).
-    //
-    // EIN GEPARKTES IFRAME TRAEGT SEINE ADRESSE NICHT IN `src`: consentmanager setzt
-    // dort `about:blank` und verschiebt sie nach `data-cmp-src`. Deshalb liest
-    // adressenVon ALLE drei Orte und wirft den Platzhalter weg — sonst waere ein so
-    // geparkter Tag-Manager-Container unsichtbar geblieben.
-    doc.querySelectorAll("img, iframe").forEach((el) => {
-      if (eigen.has(el) || gesehen.has(el)) return;
-      const treffer = trefferUeberAdressen(adressenVon(el));
-      if (treffer.length === 0) return;
-      gesehen.add(el);
-      buchen(rohAus(treffer, istGeparkt(el)));
-    });
-
-    // (3) INLINE-HANDLER — NUR mit bekanntem Anbieter-Aufruf (P11.11-12, Satz 7).
-    // Sonst stuende jede Schaltflaeche der Seite in der Liste.
-    doc.querySelectorAll("[onclick], [onsubmit]").forEach((el) => {
-      if (eigen.has(el) || gesehen.has(el)) return;
-      const wert = `${el.getAttribute("onclick") ?? ""} ${el.getAttribute("onsubmit") ?? ""}`;
-      const treffer = trefferUeberNamen(wert);
-      if (treffer.length === 0) return;
-      gesehen.add(el);
-      buchen(rohAus(treffer, false));
-    });
-
-    const bekannt: ForeignFinding[] = Array.from(gruppen.values()).map(
-      ({ roh, stellen }) => ({
-        art: "bekannt",
-        anbieter: roh.anbieter,
-        klassen: roh.klassen,
-        stellen,
-        geparkt: roh.geparkt,
-      })
     );
 
     // Bekannt zuerst: Was eine Marke traegt, ist die Auskunft; das Unbekannte ist die
@@ -459,3 +680,101 @@ export const FOREIGN_FAILED_MESSAGE =
  */
 export const FOREIGN_CMP_COLLISION =
   "Im Code steht ein fremdes Einwilligungs-Werkzeug. Ist unsere Leiste oder unser Fenster eingeschaltet, erscheint sie zusätzlich.";
+
+/* -------------------------------------------------------------------------- *
+ * DIE WORTLAUTE DER SCHEIBE 11.11c (OWNER-FREIGABE 2026-09-21, ENTSCHEIDUNG
+ * P11.11-36, Punkt (F3))
+ *
+ * SIE SIND GEGEN DIE DOKUMENTWEITEN ABWESENHEITS-ZUSICHERUNGEN GEPRUEFT (GEMESSEN,
+ * CC, 2026-09-21): die vier Nadeln aus CodeImporter.test.tsx — /%/, /gerettet/i,
+ * /mindestens/, /NaN/ — und SK10 ("Scripte" kommt in der Oberflaeche nicht vor),
+ * gegen alle vier Wortlaute: NULL Treffer. Ein Waechter haelt es fest.
+ * -------------------------------------------------------------------------- */
+
+/**
+ * Verbindet Anbieternamen zu einer lesbaren Aufzaehlung: "A" · "A und B" ·
+ * "A, B und C".
+ */
+function verbinde(namen: readonly string[]): string {
+  if (namen.length === 0) return "";
+  if (namen.length === 1) return namen[0];
+  return `${namen.slice(0, -1).join(", ")} und ${namen[namen.length - 1]}`;
+}
+
+/**
+ * Der Name des Entfernen-Knopfes. ER WIRD GEBILDET, NICHT GETIPPT.
+ *
+ * ER ENTHAELT "aus dem Code" (ENTSCHEIDUNG P11.11-35, Satz (d)), und das ist keine
+ * Geschmacksfrage: "Entfernen", "Meta entfernen" und "Ja, Meta entfernen" bezeichnen
+ * im Einstellungs-Drawer bereits das Entfernen der EIGENEN Pixel-Konfiguration
+ * (TargetCard.tsx, aus `${config.name} entfernen`), und "Entfernen" steht ausserdem an
+ * jeder Domain-Zeile. Derselbe Name fuer eine andere Wirkung ist die Dauerregel ZWEI
+ * BEDIENELEMENTE MIT GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG SIND EIN
+ * OBERFLAECHEN-PROBLEM, KEIN TESTPROBLEM — und sie verlangt, den Namen in der
+ * OBERFLAECHE zu unterscheiden, nicht per aria-label in der Abfrage.
+ *
+ * ER NENNT ALLE BETEILIGTEN ANBIETER. Ein Knoten mit mehreren gehoert allen
+ * (P11.11-32, Punkt (d)) und geht ganz oder gar nicht; ein Knopf "Meta entfernen",
+ * der ausserdem Google mitnimmt, waere der Fehltreffer, vor dem die Roadmap-Zeile
+ * 11.11 unter (e) warnt. DIESER HIER NENNT BEIDE.
+ */
+export function foreignRemoveLabel(anbieter: readonly string[]): string {
+  return `${verbinde(anbieter)} aus dem Code entfernen`;
+}
+
+/**
+ * Der Hinweis am Google-Tag. ER IST DER PREIS DER ENTSCHEIDUNG P11.11-34 und kein
+ * Schmuck: Die Doku des Anbieters nennt fuer `gtag.js` ausdruecklich Google Ads,
+ * Analytics, Campaign Manager, Display & Video 360 und Search Ads 360
+ * (docs/ziel-befunde.md, Google-Abschnitt, Teil (cs)).
+ *
+ * ER BEHAUPTET NICHTS UEBER DIESEN EINEN TAG — die Kennung wird nicht gedeutet. Er
+ * sagt, was der Tag tragen KANN, und verlegt die Entscheidung zu dem, der weiss, was
+ * seiner traegt.
+ */
+export const FOREIGN_GOOGLE_TAG_NOTE =
+  "Dieser Tag kann neben Google Ads auch Google Analytics und weitere Google-Produkte bedienen. Beim Entfernen hört alles auf, was über ihn läuft.";
+
+/**
+ * ANBIETER -> HINWEIS AM KNOPF (ENTSCHEIDUNG P11.11-36, Punkt (F4)).
+ *
+ * SIE LIEGT HIER UND NICHT AM SIGNATUR-EINTRAG, weil foreign-signatures.ts vom
+ * Scope-Waechter dieser Scheibe geschuetzt ist und eine Hebung NICHT erteilt wurde.
+ * Die saubere Form waere ein `hinweis`-Feld am Eintrag.
+ *
+ * DAS ZWEITE LITERAL IST GEDECKT: Ein STRUKTUR-Waechter haelt jeden Schluessel dieser
+ * Zuordnung gegen FOREIGN_SIGNATURES.map(s => s.anbieter). Eine Umbenennung des
+ * Anbieters macht ihn rot. Der Strukturwaechter darf die Liste lesen — das ist die im
+ * Kopf von foreign-signatures.ts benannte Ausnahme.
+ */
+export const FOREIGN_ANBIETER_NOTE: Readonly<Record<string, string>> = {
+  "Google-Tag": FOREIGN_GOOGLE_TAG_NOTE,
+};
+
+/**
+ * Der Hinweis an einem Fund, der NICHT als ganzer Knoten entfernt werden kann. ER STEHT
+ * STATT EINES KNOPFES, nicht daneben (ENTSCHEIDUNG P11.11-35, Satz (b)).
+ *
+ * ER GILT BEIDEN TRAEGERN — "handler" UND "aufruf" —, und deshalb heisst er nicht mehr
+ * FOREIGN_HANDLER_NOTE: Der alte Name benannte seit ENTSCHEIDUNG P11.11-38 nur noch die
+ * Haelfte seiner Faelle, und ein Name, der die Haelfte sagt, wird beim naechsten Umbau
+ * als Einschraenkung gelesen.
+ *
+ * ES IST DIESELBE AUSKUNFT, und genau deshalb EIN Wortlaut statt zweier: Hier steckt
+ * ein Aufruf in Code, der auch anderes enthalten kann, und er wird nicht automatisch
+ * entfernt. Zwei Saetze fuer eine Aussage liefen auseinander.
+ */
+export const FOREIGN_MANUAL_NOTE =
+  "Dieser Aufruf steckt in Code der Seite, der auch anderes enthalten kann, und wird nicht automatisch entfernt. Bitte von Hand löschen.";
+
+/**
+ * Die Nachbedingung des Entfernens, wenn sie NICHT erfuellt ist. DER GRUND IST DER
+ * GANZE SATZ: EIN AUSWEG, DER NICHT ZU ENDE FUEHRT, MUSS SAGEN, WO ES HAKT — sonst
+ * klickt der Betreiber und sieht denselben Fund weiter stehen, ohne zu wissen, warum
+ * (dieselbe Figur wie die Nachbedingung in ENTSCHEIDUNG P11.11-19).
+ *
+ * SIE WIRD AUS DEM AKTUELLEN TEXT ABGELEITET, nie aus einem gespeicherten Zustand
+ * (ENTSCHEIDUNG P11.11-24) — der Anker dafuer liegt im Aufrufer.
+ */
+export const FOREIGN_REST_MESSAGE =
+  "Dieser Fund steht nach dem Entfernen noch im Code. Bitte die Stelle von Hand löschen.";

@@ -374,8 +374,17 @@ begrenzt: DAS WIRING-SCRIPT TRÄGT KEINE KENNUNG** (GEMESSEN, CC, 2026-09-21) �
 "eigen" erreicht es heute nicht. Wie es erkennbar wird, ist eine Plan-Frage (Vorrat
 P11.11-5).
 
+**DIE AUFLAGE IST AM 2026-09-21 ERFÜLLT** — durch die Live-Messung in VERMERK P11.11-16.
+**Der Wortlaut der Auflage oben bleibt unangetastet**, weil er die Bedingung trägt, unter
+der sie erfüllt wurde; dieser Satz tritt DANEBEN. Was die Messung zeigt: Eine unter einem
+neuen Projekt ausgelieferte re-importierte Seite schreibt ihre Conversions in das
+URSPRUNGS-Projekt, und mit eigener Verdrahtung zählt ein Klick in beiden — mit
+verschiedenen Ereignis-Kennungen. **Der Riegel darf damit gebaut werden;** gebaut wird er
+in der Scheibe 11.11d.
+
 **PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-21; die Auflage ARCHITEKT-ENTSCHEIDUNG desselben
-Tages. Die fehlende Kennung des Wiring-Scripts GEMESSEN am Code (CC, 2026-09-21).
+Tages. Die fehlende Kennung des Wiring-Scripts GEMESSEN am Code (CC, 2026-09-21). Die
+Einlösung der Auflage: OWNER-MESSUNG (LIVE, 2026-09-21), s. VERMERK P11.11-16.
 
 ### ENTSCHEIDUNG P11.11-11 — DER ERSTE WURF DER SIGNATURLISTE: FÜNF ZIELE UND SECHS CMPs, JEDE SIGNATUR PER CRAWL BELEGT
 
@@ -950,6 +959,54 @@ gecrawlt werden.**
 2026-09-21); der Befund über docs/ziel-befunde.md GEMESSEN am Dateitext (CC, 2026-09-21).
 **KEIN Bau-Commit.**
 
+### VERMERK P11.11-16 — DIE RE-IMPORT-MESSUNG (OWNER, LIVE, 2026-09-21)
+
+**KEIN BAU-COMMIT — GRUND: MESSUNG.** Die Runde hat nichts gebaut.
+**ALLE ZAHLEN UND KENNUNGEN SIND OWNER-ANGABEN aus einem Live-Lauf vom 2026-09-21; CC hat
+sie nicht geprüft.** Was darüber hinausgeht, ist je Satz als ARCHITEKT-ABLEITUNG
+gekennzeichnet.
+
+**DER AUFBAU:** Projekt A wird veröffentlicht und trägt eine Track-Aktion. Sein Export wird
+heruntergeladen, in ein NEUES Projekt B importiert und dort veröffentlicht.
+
+**ZUSTAND 1 — B OHNE EIGENE VERDRAHTUNG.** Im ausgelieferten Text: `pagesmith-mappings`
+**1** · `pagesmith-consent` **1** · `__ps_pve` **1** · `__ps_cns` **0** ·
+`document.scripts` **4**. **Ein Klick erzeugt ZWEI Anfragen an `/api/e`**, beide mit
+`trackingKey 454ef50a-5038-4397-8997-317c8acf0e92` (**Projekt A**) und derselben
+`eventID 023de9b0-9f97-4f41-a24c-7fa8f554fe6b`.
+
+**ZUSTAND 2 — B MIT EINER META-AKTION AUF DEMSELBEN BUTTON, NEU VERÖFFENTLICHT.** **Ein
+Klick erzeugt DREI Anfragen:** einmal `trackingKey a3a76b35-36ce-4662-83bd-06c50f2e19ad`
+(**Projekt B**, `cns {meta: true}`, `eventID 702980ae-7588-41f6-9cc0-f6273bbc0d6e`) und
+zweimal den `trackingKey` von **A** mit
+`eventID aaf9d549-5fc9-423d-9cd8-6dc738e46ff6`.
+
+**WAS GEMESSEN IST — und das ist der Kern:**
+- **EINE UNTER B AUSGELIEFERTE SEITE SCHREIBT IHRE CONVERSIONS IN PROJEKT A**, und zwar
+  **auch dann, wenn in B gar nichts verdrahtet ist.**
+- **MIT Verdrahtung in B erzeugt EIN Klick ZWEI Conversions — eine in A, eine in B —, mit
+  VERSCHIEDENEN `eventID`s.** Eine Deduplizierung über die Kennung greift dort also nicht.
+
+**DIE DEUTUNG, JE ALS ARCHITEKT-ABLEITUNG (2026-09-21) UND NICHT ALS MESSUNG:**
+- **DIE PAARE MIT GLEICHER `eventID` SIND KEINE VERDOPPLUNG.** Sie sind Conversion plus
+  Adblocker-Bestätigung — dieselbe Kennung ist dort die Bauform, nicht der Fehler. **Wer
+  die zwei Anfragen aus Zustand 1 als doppelte Conversion liest, zählt falsch.**
+- **DAS FEHLEN EINER BESTÄTIGUNG FÜR B in Zustand 2 passt zum `foreign`-Zweig in
+  `__psMetaInit`** — findet der Bootstrap ein vorhandenes `fbq`, löst er zu `"foreign"` auf
+  und verwirft die Bestätigungen. **ABLEITUNG, nicht gemessen.**
+
+**WAS UNGEMESSEN BLEIBT:** **ob META doppelt zählt.** Das hängt an den Pixel-IDs von A und
+B, und die sind in diesem Lauf nicht erhoben. Der Lauf zeigt die EIGENE Ablage, nicht die
+des Anbieters.
+
+**WAS DER VERMERK EINLÖST:** Die Auflage an ENTSCHEIDUNG P11.11-10 — der Publish-Riegel
+erst nach einer Live-Messung des Verdoppelns — ist damit **ERFÜLLT**. Der Befund aus VORRAT
+P11.11-5 war eine Ableitung; er ist jetzt an der eigenen Ablage belegt.
+
+**PROVENIENZ:** Aufbau, Zählwerte, Kennungen und Anfragezahlen sind **OWNER-ANGABEN (LIVE,
+2026-09-21)**; die vier Deutungssätze sind **ARCHITEKT-ABLEITUNGEN desselben Tages**. **KEIN
+Bau-Commit.**
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -1046,6 +1103,15 @@ TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE).
 **KEIN TRIGGER benannt** — der Fall verlangt eine Handlung des Betreibers (Export
 herunterladen, wieder importieren), und ob sie je stattgefunden hat, steht in keiner Datei.
 
+**AM 2026-09-21 GEMESSEN — DER EINTRAG BLEIBT OFFEN UND WIRD NICHT GESTRICHEN.** Die Folgen,
+die hier als ABLEITUNG stehen, sind live belegt (VERMERK P11.11-16): Die re-importierte
+Seite schreibt ihre Conversions in das Ursprungsprojekt, und mit eigener Verdrahtung zählt
+ein Klick in beiden Projekten. **Was der Eintrag beschreibt, ist damit kein Verdacht mehr,
+sondern ein Befund** — offen bleibt er, weil nichts davon BEHOBEN ist. Gebaut wird die
+Abhilfe in der Scheibe 11.11d (Abschnitt 9). **Eine Einschränkung aus der Messung gehört
+hierher:** Die Ableitung "doppelte Conversions mit verschiedenen Ereignis-Kennungen" ist für
+die EIGENE Ablage belegt; **ob META doppelt zählt, bleibt UNGEMESSEN.**
+
 ---
 
 ## Hebungs-Kandidaten
@@ -1082,7 +1148,14 @@ nicht auf.**
 
 ## Zuschnitt — die drei Scheiben
 
-**DIE PHASE ZERFÄLLT IN DREI SCHEIBEN, und die Trennlinie ist, WAS SIE ANFASSEN:**
+**DIE PHASE ZERFÄLLT SEIT DEM 2026-09-21 IN VIER SCHEIBEN, und die Trennlinie ist, WAS SIE
+ANFASSEN.** Hier stand "DREI"; die vierte (11.11d) ist an diesem Tag hinzugekommen.
+**DIE ÜBERSCHRIFT DIESES ABSCHNITTS SAGT WEITERHIN "die drei Scheiben", UND DAS BLEIBT SO:**
+Sie ist der Anker, den Eintrag 9 des Abschnitts-Verzeichnisses wörtlich zitiert, und eine
+Umbenennung machte jeden Zeiger der Form "Abschnitt 9" und jedes Titel-Zitat halb falsch
+(docs/immer-beachten.md, EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT
+VERZEICHNIS NICHT). **Wer die Zahl im Titel liest, liest eine ANKER-Zeichenkette, keine
+Angabe** — die Angabe steht in diesem Satz.
 
 - **11.11a — SANDBOX-WÄCHTER.** Ein ADDITIVER Test, der die Dauerregel Importierter
   User-Code läuft NUR im sandboxed iframe an jedem Rahmen festnagelt. **KEIN
@@ -1102,6 +1175,12 @@ nicht auf.**
   CookieYes und consentmanager nach bestem Bemühen; FRISCHE SITZUNG**, weil der Crawl am
   freien Kontext hängt (Entscheidung P11.11-14). Was dabei unbelegt bleibt, bekommt keine
   Signatur (Entscheidung P11.11-15).
+  **AUFLÖSUNGS-SATZ, 2026-09-21: IHR ANTEIL AN DEN EIGENEN BAUSTEINEN IST NACH 11.11d
+  GEWANDERT** — die Klasse `eigen` und das Grundgerüst der Erkennung entstehen DORT, und
+  11.11d läuft VOR dieser Scheibe. Der Text darüber ist NICHT umgeschrieben; die Angabe
+  "VIER Klassen" bleibt richtig für das Ergebnis, nur bringt 11.11b davon **die drei
+  FREMDEN** mit (docs/immer-beachten.md, EINE ZITIERTE EINHEIT ZU TEILEN MACHT JEDEN ZEIGER
+  AUF SIE HALB FALSCH …, Gegenform (1)).
 - **11.11c — HANDLUNGEN.** Entfernen auf Klick bei einem bekannten Pixel; der
   Anbindungs-Hinweis beim CMP; **dazu das Entfernen EIGENER Bausteine auf Klick und der
   RIEGEL, der das Veröffentlichen verweigert, solange sie im Text stehen** (Entscheidung
@@ -1111,6 +1190,32 @@ nicht auf.**
   **DIE EINZIGE SCHEIBE, DIE DEN GESPEICHERTEN TEXT
   VERÄNDERT** — und deshalb die einzige, an der die Roadmap-Auflage "keine Veränderung des
   gespeicherten importierten Texts ohne seinen Klick" überhaupt greifen kann.
+  **AUFLÖSUNGS-SATZ, 2026-09-21: IHR ANTEIL AN DEN EIGENEN BAUSTEINEN IST NACH 11.11d
+  GEWANDERT** — das Entfernen eigener Bausteine und der Publish-Riegel werden DORT gebaut.
+  Der Text darüber ist NICHT umgeschrieben; wer ihm folgt, landet richtig, nur eine Station
+  weiter (docs/immer-beachten.md, EINE ZITIERTE EINHEIT ZU TEILEN MACHT JEDEN ZEIGER AUF SIE
+  HALB FALSCH …, Gegenform (1)). **Was bei 11.11c bleibt:** das Entfernen bei einem
+  bekannten FREMDEN Pixel und der Anbindungs-Hinweis beim CMP. **Der Satz "DIE EINZIGE
+  SCHEIBE, DIE DEN GESPEICHERTEN TEXT VERÄNDERT" gilt seit der Teilung NICHT MEHR
+  ausschliesslich** — 11.11d verändert ihn ebenfalls, und die Roadmap-Auflage greift dort
+  genauso.
+- **11.11d — EIGENE BAUSTEINE** (ARCHITEKT, 2026-09-21). Erkennen der Klasse `eigen` über
+  UNSERE Konstanten; **Warnen**; **Entfernen auf Klick**; **Veröffentlichen verweigern**,
+  solange eigene Bausteine im Text stehen (Entscheidung P11.11-10, deren Auflage mit
+  VERMERK P11.11-16 erfüllt ist).
+  **SIE LEGT ZUGLEICH DAS GRUNDGERÜST DER ERKENNUNG** nach Entscheidung P11.11-12 — die
+  reine Funktion am Dokument vor `stabilizeDoc` und den eigenen Fehlerfang —, **vorerst
+  aber NUR mit der Klasse `eigen`.** Die drei fremden Klassen kommen mit 11.11b dazu.
+  **REIHENFOLGE: 11.11d STEHT VOR CRAWL 2 UND VOR 11.11b.** **Die Buchstaben tragen keine
+  Reihenfolge** — wer sie als Abfolge liest, dreht den Bau um.
+  **DER GRUND, zweiteilig:** Sie braucht **KEINE fremde Signatur** — unsere eigenen
+  Kennungen stehen im Repo —, und ihr Gegenstand ist **ein GEMESSENER Datenfehler**
+  (VERMERK P11.11-16), nicht eine Ableitung. Alles andere in dieser Phase wartet auf Belege,
+  die es noch nicht gibt.
+  **DIE ZWEI PRÜFSTEINE UNTEN GELTEN AUCH HIER**, und zwar beide: Ein Entfernen über einen
+  `DOMParser`-Durchlauf normalisiert den ganzen Editor-Text, und ein Meta-Pixel trägt ein
+  `<noscript>`-Gegenstück. Sie stehen dort unter 11.11c; **dieser Zeiger zieht sie
+  herüber**, damit der Plan 11.11d sie nicht übersieht.
 
 **ZWEI PRÜFSTEINE FÜR DEN PLAN DER SCHEIBE 11.11c, und sie stehen SCHON HIER, weil beide
 den Zuschnitt entscheiden und nicht erst den Bau:**

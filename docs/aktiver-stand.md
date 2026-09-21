@@ -345,6 +345,109 @@ bestätigt, statt sie zu fangen.
 (CC, 2026-09-21, Vermerk P11.11-8); dass die zwei Popup-Werte ungemessen sind, ist am Repo
 erhoben (kein Messwert dazu, nur der Kommentar am Rahmen).
 
+### ENTSCHEIDUNG P11.11-10 — EIGENE BAUSTEINE IM IMPORTIERTEN TEXT SIND EINE EIGENE KLASSE, UND SIE BLOCKIEREN DAS VERÖFFENTLICHEN
+
+**DIE ENTSCHEIDUNG (OWNER, 2026-09-21):** Findet die Erkennung einen Baustein, den
+Pagesmith selbst erzeugt hat, gilt die Klasse **"eigen"**. Sie wird **NIE als fremdes Pixel
+angezeigt und NIE als fremdes zum Entfernen angeboten.** Je Scheibe:
+- **11.11b zeigt sie und WARNT.**
+- **11.11c entfernt sie auf Klick.**
+- **VERÖFFENTLICHEN WIRD VERWEIGERT, solange eigene Bausteine aus einem früheren Export im
+  Text stehen.**
+
+**DER GRUND — und er ist ein Schadens-Grund, kein Ordnungs-Grund: DOPPELTE CONVERSIONS SIND
+STILLER DATENVERLUST.** Niemand sieht einen Fehler; die Zahlen sind falsch, und sie sehen
+richtig aus. Deshalb ist das Veröffentlichen die Stelle, an der es abbricht, und nicht eine
+Warnung, die man wegklickt.
+
+**AUFLAGE (ARCHITEKT, 2026-09-21) — DER PUBLISH-RIEGEL WIRD ERST GEBAUT, WENN EINE
+LIVE-MESSUNG DAS VERDOPPELN BESTÄTIGT.** Der Befund darunter (Vorrat P11.11-5) ist eine
+ABLEITUNG aus dem Code und an keiner Seite gemessen. **Ein Riegel, der das Veröffentlichen
+verweigert, ist die härteste Handlung dieser Phase; er darf nicht auf einer Ableitung
+ruhen.** Anzeigen und Warnen (11.11b) sind davon NICHT betroffen — sie kosten nichts, wenn
+die Ableitung falsch ist.
+
+**WAS DIE KLASSE "EIGEN" ERKENNBAR MACHT, steht nicht hier, sondern im Bestand:** die
+`id`-Konstanten der Blöcke (Vermerk P11.11-1 und der Aufklärungsbericht vom 2026-09-21
+nennen sie je mit Datei und Symbol). **EINE LÜCKE GEHÖRT AN DIESE ENTSCHEIDUNG, weil sie sie
+begrenzt: DAS WIRING-SCRIPT TRÄGT KEINE KENNUNG** (GEMESSEN, CC, 2026-09-21) — die Klasse
+"eigen" erreicht es heute nicht. Wie es erkennbar wird, ist eine Plan-Frage (Vorrat
+P11.11-5).
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-21; die Auflage ARCHITEKT-ENTSCHEIDUNG desselben
+Tages. Die fehlende Kennung des Wiring-Scripts GEMESSEN am Code (CC, 2026-09-21).
+
+### ENTSCHEIDUNG P11.11-11 — DER ERSTE WURF DER SIGNATURLISTE: FÜNF ZIELE UND SECHS CMPs, JEDE SIGNATUR PER CRAWL BELEGT
+
+**DIE ENTSCHEIDUNG (OWNER, 2026-09-21) — der erste Wurf der Liste aus P11.11-7 trägt elf
+Anbieter:**
+- **DIE FÜNF FAN-OUT-ZIELE**, mit den Zielwerten, wie `TRACKING_TARGETS`
+  (`src/lib/settings.ts`) sie führt: `meta`, `pinterest`, `tiktok`, `linkedin`, `google`.
+- **SECHS CMPs:** Cookiebot, Usercentrics, OneTrust, CookieYes, consentmanager, Klaro.
+
+**JEDE SIGNATUR WIRD PER CRAWL GEGEN DIE ANBIETER-DOKUMENTATION BELEGT — KEINE AUS DEM
+GEDÄCHTNIS.** Das ist keine Formalie: Eine Signatur ist eine Aussage über ein FREMDES
+System, und die dauerhaften Regeln dieses Projekts lassen dafür nur zwei Quellen zu —
+gelesen (mit Fundstelle und Datum) oder gemessen. Eine erfundene Adresse erzeugt einen
+Fehltreffer, und ein Fehltreffer bietet in 11.11c fremden Code zum Entfernen an.
+
+**WARUM DER CRAWL NICHT OPTIONAL IST — DER BESTAND TRÄGT FAST NICHTS** (GEMESSEN am Repo,
+CC, 2026-09-21; Einzelheiten im Aufklärungsbericht desselben Tages und nicht hier
+verdoppelt): Im Produktivcode steht **genau EINE** Anbieter-Adresse
+(`connect.facebook.net/en_US/fbevents.js`, `src/lib/tracking/meta.ts`) und **genau EIN**
+globaler Anbieter-Name (`fbq`). Über CMPs weiss das Repo **nichts als zwei Prosa-Nennungen
+in Abschluss-Archiven** — keine Adresse, keine Signatur. **Zehn der elf Anbieter sind im
+Bestand also gar nicht vertreten.**
+
+**WAS HIER NICHT ENTSCHIEDEN IST:** in welcher FORM eine Signatur geschrieben wird (Adresse,
+globaler Name, Inline-Muster) und wie viele je Anbieter. Das entscheidet die Crawl-Runde
+zusammen mit dem Plan 11.11b.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-21. Die Zielwerte GELESEN an `TRACKING_TARGETS`
+(CC, 2026-09-21); der dünne Bestand an Anbieter-Wissen GEMESSEN am Repo (CC, 2026-09-21).
+
+### ENTSCHEIDUNG P11.11-12 — DIE BAUFORM DER SCHEIBE 11.11b, ZEHN SÄTZE
+
+**DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21).** Jeder Satz bindet den Plan 11.11b; wo er auf
+einer Messung ruht, steht sie dabei.
+
+1. **EINE REINE FUNKTION AUF DEM DOKUMENT, unmittelbar nach dem Parse und VOR
+   `stabilizeDoc`.** Das ist die einzige Stelle, an der das Dokument unberührt vorliegt
+   (GEMESSEN am Code, CC, 2026-09-21).
+2. **EIGENER FEHLERFANG.** Ein Wurf der Erkennung **leert die Vorschau NICHT**, und
+   **"fehlgeschlagen" ist von "nichts gefunden" unterscheidbar.** Der bestehende `catch` in
+   `annotateAndDetect` gibt `{ html: "", elements: [] }` zurück — ein Wurf der Erkennung
+   darf da nicht hineinlaufen.
+3. **VIER KLASSEN:** `eigen` · bekanntes Pixel · bekanntes CMP · unbekannt. Die vierte ist
+   die aus P11.11-3; die erste kommt mit P11.11-10 dazu.
+4. **REINE DATENBLÖCKE WERDEN NICHT GELISTET** — `application/ld+json` und
+   `application/json`. Sie führen keinen Code aus; sie in einer Liste zu führen, die von
+   Tracking handelt, wäre Rauschen.
+5. **`type="text/plain"` ERSCHEINT MIT DEM ZUSATZ "wartet auf fremdes CMP", UND DIE ADRESSE
+   KANN IN `data-src` STEHEN.** GEMESSEN (CC, 2026-09-21): Bei einem so geparkten Script
+   liefert `getAttribute("src")` `null`; ein Erkenner allein über `src` sähe es als adresslos.
+6. **RÜCKFALL-ELEMENTE ZÄHLEN ZUM ANBIETER, ERKANNT ÜBER IHRE ADRESSE, NICHT ÜBER IHREN
+   PLATZ.** GEMESSEN (CC, 2026-09-21): Steht ein `<noscript>` im `head`, **leert der Parser
+   es** — das `<img>` bzw. `<iframe>` landet im `body`, das `noscript` bleibt leer zurück.
+   Wer über den Platz erkennt, verliert den Head-Fall.
+7. **INLINE-HANDLER NUR MIT BEKANNTEM ANBIETER-AUFRUF.** `onclick` und Verwandte sind als
+   Attribut lesbar (GEMESSEN); gelistet wird nur, was einen Namen aus der Signaturliste
+   trägt — sonst stünde jede Schaltfläche der Seite in der Liste.
+8. **DIE KOLLISION LIEST DEN ENTWURFS-STAND DES SCHALTERS UND STEHT AM SCHALTER.**
+   `getConsentDialog(settings)` in `CodeImporter.tsx` reicht den Wert als Prop an
+   `PublishView`; `settings` ist der Entwurf, nicht `savedSettings` (GEMESSEN, CC,
+   2026-09-21). Die Anzeige gehört dorthin, wo der Betreiber den Schalter bedient.
+9. **DIE LISTE STEHT IM BEREICH BAUEN** — dort, wo die Element-Erkennung heute schon
+   angezeigt wird.
+10. **KEIN NEUES SIGNAL IN DER REITERZEILE; HERVORHEBUNG NUR INNERHALB DER LISTE.** Heute
+    trägt die Reiterzeile **genau ein** Signal (`measureSignal`, GEMESSEN); ein zweites
+    wäre Signal-Ermüdung und träfe ausserdem eine dokumentweite Bestandsabfrage. Die
+    Signal-Grenze aus P11.11-3 bleibt unberührt.
+
+**PROVENIENZ:** ARCHITEKT-ENTSCHEIDUNG 2026-09-21, auf der Aufklärung desselben Tages. Die
+vier als GEMESSEN gekennzeichneten Angaben stammen aus jener Runde (Code-Messungen und die
+jsdom-Probe); sie sind hier als Begründung zitiert und nicht neu erhoben.
+
 ---
 
 ## Die offenen Designfragen
@@ -671,8 +774,14 @@ Werkzeug. Der Live-Nachweis und das Fehlen der Browser-Angabe sind OWNER-ANGABEN
 ## Vorrat — gemeldet, nicht gebaut
 
 **WAS HIER STEHT, IST GEMELDET UND NICHT GEBAUT.** Ein Eintrag hier ist kein Auftrag und
-keine Empfehlung. Alle vier stammen aus der Aufklärung vom 2026-09-21 und sind am Repo
+keine Empfehlung. Alle stammen aus den Aufklärungen vom 2026-09-21 und sind am Repo
 gemessen.
+
+**ZUR NUMMERIERUNG, damit niemand danebengreift:** Die Vorrats-Einträge zählen in einer
+EIGENEN Reihe ab 1 — anders als Vermerke und Entscheidungen, die sich eine Reihe teilen
+(s. den Hinweis am Kopf des Entscheidungs-Abschnitts). "Vorrat P11.11-2" und "Entscheidung
+P11.11-2" sind deshalb ZWEI verschiedene Einträge; **wer auf einen zeigt, nennt die Gattung
+mit.**
 
 ### VORRAT P11.11-1 — DIE SANDBOX-ATTRIBUTE BEIDER VORSCHAU-RAHMEN SICHERT KEIN TEST
 
@@ -710,6 +819,52 @@ Gedeckt sind am Speicherweg die Eigentums-Achse (die IDOR-Fälle in
 saveVariantB" und seine Gegenprobe). **NICHT gedeckt ist der INHALT:** dass der übergebene
 HTML-String unverändert in die Spalte geht. GEMESSEN (CC, 2026-09-21).
 
+### VORRAT P11.11-5 — EIN WIEDER IMPORTIERTER EXPORT TRÜGE DIE EIGENEN BLÖCKE DOPPELT, UND DAS BRICHT EINE TRAGENDE ENTSCHEIDUNG
+
+**DER BEFUND, GEMESSEN am Code (CC, 2026-09-21):** `generateFunctional`
+(`src/lib/generate.ts`) erzeugt Consent-Gate, Mapping-Datenblock und Wiring-Script
+**unbedingt** — es prüft nicht, ob sie schon dastehen. **Einen Riegel hat GENAU EIN Block:**
+`injectPageViewEmitter` (`src/lib/analytics/pageview-emitter.ts`) fragt `hasConsentScript`
+(`src/lib/tracking/consent.ts`) und lässt das Gate weg, wenn es bereits im Text steht. Für
+Datenblock, Wiring-Script, PageView-Emitter, Setzer und Leiste/Fenster/Widerruf gibt es
+nichts dergleichen. Der Import-Pfad entfernt nichts (Vermerk P11.11-1).
+
+**DIE FOLGE IST EINE ABLEITUNG UND AN KEINER SEITE GEMESSEN — beide Punkte:**
+- **DOPPELTE CONVERSIONS MIT VERSCHIEDENEN EREIGNIS-KENNUNGEN.** Zwei Wiring-Scripte
+  verdrahten denselben Klick zweimal, und jede Feuerung erzeugt ihre eigene Kennung — die
+  Deduplizierung beim Anbieter greift also gerade nicht. **GEGENBEISPIEL, das mitmuss:** Der
+  PageView-Emitter trägt einen Laufzeit-Riegel (`window.__ps_pv`), ein doppelter Emitter
+  zählt deshalb **einmal** (GEMESSEN am Kommentar und am erzeugten Text). Die Ableitung gilt
+  den KLICK-Ereignissen, nicht dem Seitenaufruf.
+- **DIE ALTEN BLÖCKE TRAGEN TRACKING-SCHLÜSSEL UND PIXEL-ID DES URSPRUNGSPROJEKTS.** Beide
+  werden zur Erzeugungszeit in den Text gebacken (GEMESSEN am Code: `buildWiringScript` und
+  `buildPageViewScript` nehmen sie als Parameter). **Conversions könnten damit dem ALTEN
+  Projekt zufallen** — das ist die Ableitung, und sie ist die unangenehmere der beiden.
+
+**WAS DADURCH BRICHT, und deshalb ist der Eintrag mehr als ein Schönheitsfehler:** Die
+tragende Entscheidung **"Idempotenz aus dem Datenfluss, nicht aus Bereinigung"**
+(docs/arbeitsweise.md, Abschnitt 4b) begründet sich wörtlich mit „`published_content`
+entsteht bei jedem Publish frisch aus dem Client-HTML — der Client erzeugt den Emitter nie,
+also gibt es nichts zu bereinigen". **NACH EINEM RE-IMPORT ERZEUGT DER CLIENT IHN NICHT,
+ABER ER BRINGT IHN MIT — und damit ist die Prämisse falsch, nicht die Entscheidung.**
+GELESEN (CC, 2026-09-21). Ihr Herleitungs-Zeiger nennt `phase-8-analytics.md`; das Wort
+"Idempotenz" kommt dort NICHT vor (GEMESSEN, null Treffer) — der Zeiger meint die Datei,
+nicht eine Fundstelle.
+
+**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md FOLGT ERST NACH DER MESSUNG.** Hier wird er
+nur BENANNT. Dasselbe gilt für den Publish-Riegel: Die Auflage an ENTSCHEIDUNG P11.11-10
+bindet ihn an eine Live-Messung des Verdoppelns.
+
+**EINE ZWEITE, KLEINERE FRAGE HÄNGT DARAN: DAS WIRING-SCRIPT TRÄGT KEINE KENNUNG**
+(GEMESSEN, CC, 2026-09-21) — es ist der einzige unserer Blöcke ohne `id`. **Ob ein
+INHALTSMERKMAL oder eine NEUE `id` es erkennbar macht, ist eine PLAN-FRAGE und hier nicht
+entschieden.** Eine neue `id` ändert den ausgelieferten Text und verlangt damit den
+Differenz-Nachweis (docs/immer-beachten.md, WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD,
+TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE).
+
+**KEIN TRIGGER benannt** — der Fall verlangt eine Handlung des Betreibers (Export
+herunterladen, wieder importieren), und ob sie je stattgefunden hat, steht in keiner Datei.
+
 ---
 
 ## Hebungs-Kandidaten
@@ -730,10 +885,21 @@ Abwesenheit eine Aussage ist und keine Lücke.
   bestehenden Schutz sichert, statt einen neuen zu bauen — und weil ihr Gegenstand
   (Vorrat P11.11-1) ohne sie weiter allein auf Kommentaren ruht.
 - **11.11b — ERKENNUNG UND ANZEIGE.** **NUR LESEND. Der gespeicherte Text bleibt
-  unverändert.** Sie baut die Signaturliste (P11.11-7), die drei Klassen (P11.11-3), die
-  Kollisionsanzeige (P11.11-4) und die Ableitung am Import-Dokument (P11.11-5).
+  unverändert.** Sie baut die Signaturliste (Entscheidung P11.11-7), die **VIER** Klassen —
+  die drei aus Entscheidung P11.11-3 **plus die Klasse `eigen` aus Entscheidung P11.11-10**,
+  die zeigt und WARNT —, die Kollisionsanzeige (Entscheidung P11.11-4) und die Ableitung am
+  Import-Dokument (Entscheidung P11.11-5). **IHRE BAUFORM STEHT IN ZEHN SÄTZEN IN
+  ENTSCHEIDUNG P11.11-12.**
+  **VOR IHREM PLAN STEHT EINE CRAWL-RUNDE** für die elf Signaturen aus
+  Entscheidung P11.11-11 — ohne belegte Signaturen hat die Erkennung nichts, woran sie
+  erkennt.
 - **11.11c — HANDLUNGEN.** Entfernen auf Klick bei einem bekannten Pixel; der
-  Anbindungs-Hinweis beim CMP. **DIE EINZIGE SCHEIBE, DIE DEN GESPEICHERTEN TEXT
+  Anbindungs-Hinweis beim CMP; **dazu das Entfernen EIGENER Bausteine auf Klick und der
+  RIEGEL, der das Veröffentlichen verweigert, solange sie im Text stehen** (Entscheidung
+  P11.11-10). **DER RIEGEL TRÄGT EINE AUFLAGE: er wird erst gebaut, wenn eine Live-Messung
+  das Verdoppeln bestätigt** — der Befund dazu ist eine ABLEITUNG (Vorrat P11.11-5), und
+  die härteste Handlung dieser Phase darf nicht auf einer Ableitung ruhen.
+  **DIE EINZIGE SCHEIBE, DIE DEN GESPEICHERTEN TEXT
   VERÄNDERT** — und deshalb die einzige, an der die Roadmap-Auflage "keine Veränderung des
   gespeicherten importierten Texts ohne seinen Klick" überhaupt greifen kann.
 

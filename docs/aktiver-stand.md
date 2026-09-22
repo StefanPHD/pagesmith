@@ -687,6 +687,109 @@ worden. Die Einordnung "nicht am Code entscheidbar" bei C2 (google), C3 (zweite 
 und C9 (zweite Hälfte) ist eine ABLEITUNG aus dem Fehlen einer Fundstelle, keine Messung
 an einem Anbieter.
 
+### VERMERK P11.7-9 — Aufteilung von docs/ziel-befunde.md vom 2026-09-22 (KEIN BAU)
+
+**HARTE ANGABEN:** Datum 2026-09-22 · HEAD vor der Runde `8a8acfa` ("docs(claude): 11.7 —
+Aufklärung vor dem Zuschnitt abgelegt") · Arbeitsbaum vor der Runde sauber (`git status
+--short` leer) · **KEINE Navigation, kein Browser-Werkzeug, keine Werkzeug-Ablage, keine
+fremde Seite** · alle Probeläufe AUSSERHALB des Repos, auf einer Wegwerf-Kopie.
+
+**DIE LESBARKEIT DIESER DATEI IST ERNEUT EIN MESSWERT:** Sie ist **1 895 Zeilen /
+151 867 Bytes** (GEMESSEN, CC, 2026-09-22) und wurde in dieser Runde **vollständig
+gelesen, lückenlos von Zeile 1 bis 1 895**. Die Volllesung war ohne Einschränkung
+leistbar. Der Messwert aus VERMERK P11.7-8 (1 533 Zeilen) ist damit **alt und nicht
+falsch**; er wird nicht umgeschrieben.
+
+**WAS GEBAUT WORDEN IST — OWNER-ENTSCHEIDUNG 2026-09-22:** `docs/ziel-befunde.md` ist je
+Ziel in eine eigene Datei unter `docs/ziel-befunde/` aufgeteilt; die alte Datei bleibt als
+**VERZEICHNIS UND KONVENTIONS-KOPF** stehen und trägt **keinen Befund mehr**. Der Grund ist
+der Pflicht-Stopp: die Sammel-Datei war für die VOLLLADUNG zu gross geworden, die er vor
+einem Zuschnitt verlangt.
+
+**DIE FÜNF DATEIEN, je mit dem sha256 des ÜBERNOMMENEN ABSCHNITTS** (also des Teils hinter
+dem neuen Kopf; GEMESSEN, CC, 2026-09-22):
+
+| Datei | Quellzeilen | sha256 des Abschnitts-Teils |
+|---|---|---|
+| `docs/ziel-befunde/linkedin.md` | 160–1754 | `d0723536b82e7614bec29bbd8ef0c9cfae3b4dc9d60a209891b86c5628607789` |
+| `docs/ziel-befunde/google.md` | 1755–7466 | `8137a094d1cfbca4fd583b88580adf80c0d3a00227c75fdbae7194f3e2c81458` |
+| `docs/ziel-befunde/pinterest.md` | 7467–8528 | `6401ff186ff06ff5d61b79dbea48fc6cc3937c1d38f313cef87cde3eed85d5bb` |
+| `docs/ziel-befunde/meta.md` | 8529–9413 | `66805dc9a268369dafd5bd78c13fcab4ecf03a1564c8976144ad18a1e9b5a34c` |
+| `docs/ziel-befunde/tiktok.md` | 9414–9994 | `70ce633f1db0ab7bee02b94a412d44bf08eb370d2c333ef339e20a2a23bc0bdf` |
+
+**DER VERKETTUNGS-BELEG, OHNE DEN NICHTS VERSCHOBEN WORDEN WÄRE** (GEMESSEN vor dem
+Eingriff): Kopf (Zeilen 1–159) plus die fünf Abschnitte in Reihenfolge ergeben die
+Ausgangsdatei **BYTE-GENAU** — sha256 der Verkettung = sha256 der Datei =
+`81c62733075d94a0f3d60d4b9f4e3fefc027000589377bba80ef2c933e4c7597`. Kein Byte ist bei der
+Zerlegung verlorengegangen und keines hinzugekommen; je Datei ist der Abschnitts-Teil nach
+dem Bau gegen seinen sha256 gegengeprüft, fünf von fünf zeichengleich.
+
+**DAS WERKZEUG, MIT PROBELAUF AUSSERHALB DES REPOS:** `sed -n 'A,Bp'` für die Abschnitte,
+der neue Kopf per Editier-Werkzeug, zusammengesetzt per `cat`. Drei Instrumente sind
+geprüft worden (`sed`, `head|tail`, `awk`), alle drei zeichengleich.
+**DIE NEGATIVKONTROLLE GEHÖRT DAZU UND IST GEMESSEN:** Dieselbe Extraktion über die
+PowerShell-Ganz-Datei-Schreiber (`Set-Content`, `Out-File`) verfehlte den Soll-Hash um
+**+1 065 Bytes** — 3 Bytes UTF-8-BOM plus 1 062 zusätzliche CR, jede LF-Zeile zu CRLF
+gedreht. **KEINES DER VIER GATES HÄTTE DAS GEMELDET**; es ist eine Doku-Datei, kein Test
+liest sie.
+
+**EIN BEFUND ZUR PRÜFFORM, UND ER GILT ÜBER DIESE RUNDE HINAUS:** Die Ergänzung vom
+2026-09-18 an der Werkzeug-Regel verlangt "DREI ZAHLEN … CR GESAMT == CRLF-PAARE == LF
+GESAMT". Diese GLEICHHEITS-Form gilt einer Datei mit **CRLF** im Arbeitsbaum. Alle hier
+berührten Dateien tragen **LF** (`git ls-files --eol` → `w/lf`); die anzuwendende Form ist
+dort **CR = 0 ∧ CRLF = 0 ∧ LF = Zeilenzahl**. Wer die Gleichheit wörtlich fordert,
+verlangt `0 == 0 == n` und hält eine einwandfreie Datei für kaputt.
+
+**WAS AUSSERDEM GEÄNDERT WORDEN IST:** `CLAUDE.md` (Pflicht-Stopp neu gefasst, Weg 5, der
+Eintrag unter "## Aktive Dokumente", zwei Archiv-Zeiger) · `docs/arbeitsweise.md` (der
+ANGENOMMENE Änderungsantrag, Weg 5 und der Absatz "Auslöser-geladen") · diese Datei.
+**DER ALTE WORTLAUT IN docs/arbeitsweise.md IST VOR DEM ERSETZEN ALS ZEICHENGLEICH BELEGT
+WORDEN** — je ein Treffer, mit Positiv- und Negativkontrolle.
+
+**EIN NICHT-TREFFER MIT BENANNTER REICHWEITE, und er ist der Grund, warum die Zeiger
+überleben:** Im ganzen Repo gibt es **KEINEN EINZIGEN ZEILEN-ZEIGER** in jene Datei
+(Achse: `ziel-befunde` plus "Zeile/Zeilen/Z." plus Ziffer, mehrzeilig; Gegenachse
+`Zeilen N–M` über alle verfolgten Dateien — sechs Treffer, keiner auf
+`docs/ziel-befunde.md`). Ein Zeilen-Zeiger wäre der einzige gewesen, den die Aufteilung
+unrettbar gebrochen hätte.
+
+**DIE ZEIGER-INVENTUR, GEMESSEN am Repo (CC, 2026-09-22):** 408 Trefferzeilen in 42
+Dateien, davon 41 Treffer in 22 Dateien unter `src/` und **null** unter `supabase/`.
+**290 lösen über das Verzeichnis auf** und sind nicht angefasst; der Satz, der sie auflöst,
+steht seit dieser Runde im Kopf des Verzeichnisses UND in CLAUDE.md.
+**DREI GRUPPEN LÖSEN NICHT ÜBER DAS VERZEICHNIS AUF, und die Annahme, alle täten es, ist
+damit widerlegt:** (1) **ELF** interne Verweise auf "den Kopf dieser Datei" im übernommenen
+Text — sie zeigen nach INNEN, und nur der Kopf der neuen Datei kann sie auflösen; genau
+das tut er. (2) **DREI** Querverweise zwischen Zielen (Quellzeilen 1310, 5553, 5653) — sie
+bleiben auflösbar, weil sie ihr Ziel benennen. (3) Zeiger, die einen Buchstaben OHNE
+Abschnitt nennen; **DREI davon sind von Hand nachgelesen und echt** —
+`src/components/CodeImporter.test.tsx`, `src/lib/foreign-scan.test.ts`,
+`src/lib/foreign-strip.test.ts`. **SIE VERLETZEN DIE VERWEIS-REGEL SCHON VOR DER
+AUFTEILUNG**; diese macht ihre Auflösung nur teurer (fünf Dateien statt einer). Sie sind
+per ARCHITEKTEN-ENTSCHEIDUNG 2026-09-22 **NICHT angefasst** worden — es wäre ein
+Code-Commit mit eigenem Scope. Die Auflösung steht daneben in
+`src/lib/foreign-signatures.test.ts`, das dieselben Buchstaben MIT Ziel nennt.
+
+**ZWEI STELLEN HAT DIE INVENTUR DER STUFE 1 NICHT ALS FALSCH GEFÜHRT, UND SIE WAREN ES:**
+die zwei Archiv-Zeiger in CLAUDE.md ("Die Anbieter-Befunde selbst stehen NICHT hier,
+sondern in docs/ziel-befunde.md", an den Einträgen zu den Phasen 11.1 und 11.8). Sie lagen
+im Scope und sind mit richtiggestellt. **DAS IST EIN BEFUND ÜBER DIE INVENTUR, NICHT ÜBER
+DIE DATEIEN:** Mein Klassen-Kriterium fragte nach "Abschnitt" oder "Teil (" im Kontext —
+diese zwei Sätze nennen weder das eine noch das andere und fielen deshalb durch.
+
+**KEIN BAU-COMMIT, UND DER GRUND IST EIN FÜNFTER NEBEN P11.7-1, P11.7-2, P11.7-3 UND
+P11.7-8:** Diese Runde hat **keine Zeile Code** geschrieben. Sie hat eine Doku-Ablage
+umgebaut, damit der Pflicht-Stopp vor dem Zuschnitt wieder erfüllbar ist. Die einzigen
+Commits dieses Tages sind Doku-Commits.
+
+**PROVENIENZ:** Alle Zahlen, Prüfsummen und Nicht-Treffer dieses Vermerks sind GEMESSEN am
+Repo bzw. am Probelauf (CC, 2026-09-22), je mit der genannten Achse und Kontrolle. Die
+Aufteilung selbst ist eine OWNER-ENTSCHEIDUNG vom 2026-09-22; Dateinamen, das Bleiben der
+eingerückten `###`-Zeilen im Verzeichnis, das Ersetzen statt Stempeln der falschen Sätze
+und das Nicht-Anfassen der drei Testkommentare sind ARCHITEKTEN-ENTSCHEIDUNGEN desselben
+Tages. **KEINE Angabe stammt von einem Anbieter**, und in dieser Runde ist **keine fremde
+Quelle gelesen** worden.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1238,6 +1341,23 @@ die Crawls zu tiktok, linkedin und pinterest sind seither abgelegt worden.
 richtig; dieser Zusatz tritt DANEBEN. **DIE MESSUNG BEANTWORTET DIE FRAGE NICHT, SIE
 VERSCHÄRFT SIE** — die Datei ist gewachsen, nicht geschrumpft, und ob nach einer Volladung
 noch genug freier Kontext für einen Zuschnitt bleibt, ist unverändert ungemessen.
+**KEINE EMPFEHLUNG**, und kein Vorschlag einer Lockerung.
+
+**ZWEITER ZUSATZ 2026-09-22 — NACH DER AUFTEILUNG (VERMERK P11.7-9). DER WORTLAUT DER FRAGE
+UND DER ZUSATZ DARÜBER BLEIBEN WÖRTLICH STEHEN**; beide sind als Aussagen über ihren
+Zeitpunkt richtig und werden nicht umgeschrieben.
+**DIE FRAGE IST DURCH DIE AUFTEILUNG VERKLEINERT WORDEN, NICHT BEANTWORTET.** Was sie
+beantwortete, wäre eine Messung — dass eine Sitzung die Datei voll lädt UND danach noch
+einen Zuschnitt trägt. Eine solche Messung hat nicht stattgefunden.
+**WAS SICH GEÄNDERT HAT, IST DER GEGENSTAND DER PFLICHT:** Der Pflicht-Stopp verlangt seit
+dem 2026-09-22 die VOLLLADUNG DER DATEI DES ZIELS statt der Sammel-Datei. Die grösste
+davon ist `docs/ziel-befunde/google.md`; ihr Abschnitts-Teil trägt **405 265 Bytes**
+(GEMESSEN, CC, 2026-09-22) — gegenüber den 717 061 Bytes der Sammel-Datei rund **57 %**.
+**FÜR DIE ÜBRIGEN VIER ZIELE IST DIE FRAGE PRAKTISCH KLEIN GEWORDEN**, für google bleibt
+sie es nicht.
+**WER SIE MIT DEM VOLLZUG FÜR ERLEDIGT ERKLÄRT, ERKLÄRT EINE ABLEITUNG ZUR MESSUNG.** Die
+Grenze steht seit dieser Runde auch in CLAUDE.md, "## Anbieter-Befunde der Fan-Out-Ziele",
+damit sie nicht allein an dieser Datei hängt, die mit dem Phasenende archiviert wird.
 **KEINE EMPFEHLUNG**, und kein Vorschlag einer Lockerung.
 
 **DIE FÜNF FOLGENDEN STAMMEN AUS DEM TIKTOK-CRAWL (VERMERK P11.7-4) UND BRECHEN DESHALB DIE
@@ -1893,3 +2013,25 @@ dem fünften Ziel eingelöst; **an seine Stelle tritt dieser** — und aus demse
 Ein Zuschnitt gegen ungeprüfte Annahmen über den eigenen Code ist so wenig wert wie einer
 gegen eine geratene Feldliste. **Auch keine Scheibe "nur mal pinterest", und auch nicht für
 das Ziel, dessen Antwort am vollständigsten scheint.**
+
+**SIEBTER NACHZUG AM 2026-09-22, NACH DER AUFTEILUNG VON docs/ziel-befunde.md (VERMERK
+P11.7-9) — ALLE ABSÄTZE DARÜBER BLEIBEN WÖRTLICH.** Überholt ist allein, was als Nächstes
+ansteht — und **EIN SATZ DES SECHSTEN NACHZUGS IST EINGELÖST**, der hier aufgelöst und
+**NICHT umgeschrieben** wird: "DER NÄCHSTE SCHRITT IST EINE AUFKLÄRUNG AM CODE, NICHT DER
+ZUSCHNITT" war richtig und ist es seit VERMERK P11.7-8 nicht mehr; die zehn Code-Fragen
+sind beantwortet.
+**DIE AUFTEILUNG WAR KEIN SCHRITT DER PHASE, SONDERN IHRE VORAUSSETZUNG:** Sie hat keine
+Frage dieser Phase beantwortet und keine Zeile Code geschrieben. Sie hat den Pflicht-Stopp
+vor dem Zuschnitt wieder erfüllbar gemacht — mehr nicht, und das steht hier, damit sie
+niemand als Fortschritt an der Sache verbucht.
+**ALS NÄCHSTES DER ZUSCHNITT.** Die Sperren, die ihn bisher hielten, sind eingelöst: alle
+fünf Ziele sind durchlaufen (VERMERKE P11.7-2 bis P11.7-7), die Fragen an den eigenen Code
+sind am Code beantwortet (VERMERK P11.7-8), und die Ladung ist wieder leistbar (VERMERK
+P11.7-9).
+**WAS DER ZUSCHNITT MITBRINGEN MUSS, und es ist kein Vorschlag seines Inhalts:** die
+VOLLLADUNG der Datei jedes berührten Ziels samt dem Kopf des Verzeichnisses · die
+sechsundzwanzig ZUSCHNITT-FRAGEN dieses Abschnitts, von denen keine entschieden ist · die
+vier Entscheidungen P11.7-1 bis P11.7-4 · und den Pflicht-Nachweis aus "Was den Zuschnitt
+bindet", also die Messung auf Ablage und Logausgabe am gebauten Google-Transport, von der
+VERMERK P11.7-8 erst die Log-Achse erhoben hat. **KEINE EMPFEHLUNG**, welches Ziel oder
+welche Frage zuerst.

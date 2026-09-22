@@ -503,41 +503,61 @@ WAS DAMIT OFFEN IST UND HIER NICHT ENTSCHIEDEN WIRD: Der Titel-Zeiger in db-stan
 braucht die Titel weiterhin an einem auffindbaren Ort; ein Pfad-Zeiger auf diese Datei
 existiert nicht mehr.
 
-## Anbieter-Befunde der Fan-Out-Ziele — AUSGELAGERT nach docs/ziel-befunde.md
+## Anbieter-Befunde der Fan-Out-Ziele — AUSGELAGERT nach docs/ziel-befunde/
 Was über die Schnittstellen der Fan-Out-Ziele GEMESSEN und GELESEN ist (verlangte Felder,
-Statuscodes, Rumpfformen, stille Fehlzustände, taugliche Live-Test-Instrumente), steht je
-Ziel in docs/ziel-befunde.md. Diese Datei wird NICHT automatisch geladen.
+Statuscodes, Rumpfformen, stille Fehlzustände, taugliche Live-Test-Instrumente), steht JE
+ZIEL IN EINER EIGENEN DATEI unter docs/ziel-befunde/. docs/ziel-befunde.md ist seit dem
+2026-09-22 VERZEICHNIS UND KONVENTIONS-KOPF und trägt KEINEN Befund mehr. Nichts davon
+lädt automatisch.
 PFLICHT-STOPP, KEINE EMPFEHLUNG: Wer ein Fan-Out-Ziel zuschneidet, einen Adapter baut, beim
-Anbieter recherchiert oder eine Live-Test-Anleitung dafür schreibt, LÄDT
-docs/ziel-befunde.md ZUERST — vor dem Plan, nicht während des Baus. Ohne sie plant man
-gegen eine überholte Fassung: die LinkedIn-Befunde standen bis zum 2026-08-15 als GELESEN
-in der Roadmap-Zeile 11.1, und die Messung dieses Tages hat eine ihrer Angaben widerlegt.
-NEU GEFASST AM 2026-09-22 (OWNER-ENTSCHEIDUNG NACH SICHT DES WORTLAUTS), DAMIT ER ERFÜLLBAR
-IST. DIE PFLICHT BLEIBT; IHRE FORM IST ZWEIGETEILT:
-· ZUSCHNITT, ADAPTER UND LIVE-TEST-ANLEITUNG — VOLLLADUNG, unverändert. Dort ist die Datei
-  dicht, und genau dafür ist sie geschrieben.
+Anbieter recherchiert oder eine Live-Test-Anleitung dafür schreibt, LÄDT ZUERST — vor dem
+Plan, nicht während des Baus. Ohne das plant man gegen eine überholte Fassung: die
+LinkedIn-Befunde standen bis zum 2026-08-15 als GELESEN in der Roadmap-Zeile 11.1, und die
+Messung dieses Tages hat eine ihrer Angaben widerlegt. DIE FORM IST ZWEIGETEILT:
+· ZUSCHNITT, ADAPTER UND LIVE-TEST-ANLEITUNG — VOLLLADUNG DER DATEI DES ZIELS, dazu der
+  KOPF von docs/ziel-befunde.md (Konventionen, Provenienz-Pflicht, Verweis-Regel). Eine
+  Scheibe, die MEHRERE Ziele berührt, lädt die Dateien ALLER berührten Ziele; trägt eine
+  Sitzung das nicht, WIRD DIE SCHEIBE JE ZIEL GESCHNITTEN — nicht die Ladung verkürzt.
+  Er gilt dem Zuschnitt und verlegt die Grenze dort vom Ladeumfang in den Schnitt der
+  Scheibe. Die Teilung in zwei Sitzungen bei einer Recherche (unten) bleibt davon
+  unberührt.
 · RECHERCHE, DEREN FREIER KONTEXT DIE VOLLLADUNG NICHT TRÄGT — es genügt eine GEZIELTE
-  SUCHE über die Abschnitte des betroffenen Ziels, mit BENANNTER ACHSE und
-  POSITIVKONTROLLE, jeder Treffer im Wortlaut gelesen. WER SO VERFÄHRT, WEIST ES IM ERSTEN
-  SATZ SEINES BERICHTS AUS. Ohne diese Ansage ist von aussen nicht zu unterscheiden, ob
-  voll geladen oder gesucht wurde — und ein "steht dort nicht" hätte keine Reichweite.
-DER GRUND IST EIN MESSWERT UND KEIN UNBEHAGEN: Die Datei ist 549 237 Bytes / 7 749 Zeilen
-(GEMESSEN, CC, 2026-09-21), der freie Kontext einer Sitzung lag zu Rundenbeginn bei 196k
-Token (ABGELESEN; die Umrechnung ist eine SCHÄTZUNG). EINE SITZUNG, DIE VOLL LÄDT UND
-DANACH CRAWLT, GIBT ES NICHT — in der Phase 11.11 zweimal aufgetreten.
+  SUCHE über die Datei des Ziels, mit BENANNTER ACHSE und POSITIVKONTROLLE, jeder Treffer
+  im Wortlaut gelesen. WER SO VERFÄHRT, WEIST ES IM ERSTEN SATZ SEINES BERICHTS AUS. Ohne
+  diese Ansage ist von aussen nicht zu unterscheiden, ob voll geladen oder gesucht wurde —
+  und ein "steht dort nicht" hätte keine Reichweite.
+DAS VERZEICHNIS ALLEIN ERFÜLLT DEN PFLICHT-STOPP NICHT: Es trägt keinen Befund. Wer nur es
+lädt, hat die Pflicht dem ANSCHEIN nach erfüllt und nichts gelesen.
+NEUE BEFUNDE GEHEN IN DIE DATEI DES ZIELS, hinten, unter eine eigene DATIERTE
+Unterüberschrift; die Buchstaben laufen je Ziel fort. Das Verzeichnis bekommt nur bei einem
+NEUEN Ziel eine Zeile — dann zusammen mit der neuen Datei, im selben Zug.
+BESTEHENDE ZEIGER BLEIBEN GÜLTIG, und dafür ist die alte Datei stehengeblieben: Ein Verweis
+der Form "docs/ziel-befunde.md, Abschnitt X, Teil (y)" MEINT DIE DATEI DES ZIELS X. Die
+bestehenden sind bewusst NICHT nachgezogen; sie landen im Verzeichnis und werden dort
+aufgelöst.
+DER GRUND IST EIN MESSWERT UND KEIN UNBEHAGEN: Die Datei war 549 237 Bytes / 7 749 Zeilen
+(GEMESSEN, CC, 2026-09-21) und ist danach weiter gewachsen, der freie Kontext einer Sitzung
+lag zu Rundenbeginn bei 196k Token (ABGELESEN; die Umrechnung ist eine SCHÄTZUNG). EINE
+SITZUNG, DIE VOLL LÄDT UND DANACH CRAWLT, GIBT ES NICHT — in der Phase 11.11 zweimal
+aufgetreten. DIE DATIERTE ANGABE BLEIBT STEHEN: sie trägt die Begründung der gezielten
+Form, und die gilt weiter.
 DIE GRENZE, OHNE DIE DAS EINE LOCKERUNG DURCH DIE HINTERTÜR WÄRE: Die gezielte Form trägt
 nur, WENN IHR ERGEBNIS DÜNN IST, und das ist ein ERGEBNIS und keine Voraussetzung — im
 Fall, der sie ausgelöst hat, ergab die Suche fünf Treffer in zwei Zusammenhängen.
 IST DAS ERGEBNIS DICHT, WIRD DIE ARBEIT GETEILT UND NICHT DOCH NOCH IN EINE SITZUNG
-GEZWUNGEN: Eine Sitzung lädt docs/ziel-befunde.md VOLLSTÄNDIG und hält fest, was die Datei
-über das Ziel trägt; der Crawl läuft in einer ZWEITEN. Der Satz "voll laden" allein wäre
-hier unerfüllbar — genau das sagt der Messwert darüber.
+GEZWUNGEN: Eine Sitzung lädt die Datei des Ziels VOLLSTÄNDIG und hält fest, was sie
+über das Ziel trägt; der Crawl läuft in einer ZWEITEN.
+DIE ZWEITE GRENZE, UND SIE IST DIE WICHTIGERE: Die Google-Datei trägt 405 265 Bytes
+(GEMESSEN, CC, 2026-09-22) und bleibt die mit Abstand grösste. OB EINE SITZUNG SIE VOLL
+LÄDT UND DANACH NOCH EINEN ZUSCHNITT TRÄGT, IST UNGEMESSEN — DIE AUFTEILUNG HAT DIE FRAGE
+VERKLEINERT, NICHT BEANTWORTET. Wer sie mit dem Vollzug für erledigt erklärt, erklärt eine
+Ableitung zur Messung.
 UND AUCH DANN IST SIE KEINE QUELLE: Ein Dokument beschreibt ein fremdes System, es belegt
 es nicht. Was gilt, steht am ENDPUNKT DES ANBIETERS — gemessen wird mit einem Aufruf gegen
 die Schnittstelle, nicht abgelesen. Ein Anbieter kann sein Verhalten zudem ändern, ohne
 dass hier irgendetwas rot wird.
 DER EINTRAG UNTER "## Aktive Dokumente" BLEIBT DANEBEN STEHEN und wird von diesem Abschnitt
-nicht ersetzt: dort steht, WAS die Datei ist, hier, WANN sie Pflicht wird — dieselbe
+nicht ersetzt: dort steht, WAS die Dateien sind, hier, WANN sie Pflicht werden — dieselbe
 Aufteilung wie bei docs/db-stand.md.
 
 ## Aktiver Stand — Verfahren ab Phase 10
@@ -1058,7 +1078,8 @@ docs/immer-beachten.md, HINTEN anfügen · (2) laufender Phasenschnitt ->
 docs/aktiver-stand.md · (3) Zustand, der später kippt (TODO mit Trigger) ->
 docs/offene-punkte.md, Titel + Trigger als Stub-Zeile hier · (4) Phasenplanung
 oder -stand -> docs/roadmap.md, Marker im Stub hier · (5) Befund über ein
-FAN-OUT-ZIEL -> docs/ziel-befunde.md, offene FRAGE dazu ->
+FAN-OUT-ZIEL -> die Datei des Ziels unter docs/ziel-befunde/ (Verzeichnis
+und Konventionen: docs/ziel-befunde.md), offene FRAGE dazu ->
 docs/ziel-fragenkatalog.md; Befund über einen PLATTFORM-ANBIETER ->
 docs/plattform-befunde.md · (6) Schema,
 Policies, Analytics-Lesepfad -> docs/db-stand.md (Zustand) bzw. docs/db-regeln.md
@@ -1088,22 +1109,30 @@ NICHT aus dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   "## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md".
   Fortgeschrieben wird sie ausschliesslich aus einer Messung (Probe:
   supabase/checks/db-stand.sql), nie aus den Migrationsdateien.
-- docs/ziel-befunde.md — die GEMESSENEN und GELESENEN Befunde über die
+- docs/ziel-befunde/ — die GEMESSENEN und GELESENEN Befunde über die
   Schnittstellen der Fan-Out-Ziele (Felder, Statuscodes, Rumpfformen, stille
-  Fehlzustände, taugliche Live-Test-Instrumente), je Ziel ein Abschnitt, mit
-  Provenienz an jeder Angabe. Angelegt 2026-08-15. Sie trägt KEINE Regeln und
-  KEINE Entscheidungen — die stehen in docs/immer-beachten.md bzw. an der
-  Roadmap-Zeile. Sie wird NICHT automatisch geladen. AUSLÖSER: Wer an einem
+  Fehlzustände, taugliche Live-Test-Instrumente), JE ZIEL EINE EIGENE DATEI, mit
+  Provenienz an jeder Angabe. Angelegt 2026-08-15 als EINE Datei, am 2026-09-22
+  zeichengleich je Ziel aufgeteilt. Sie tragen KEINE Regeln und KEINE
+  Entscheidungen — die stehen in docs/immer-beachten.md bzw. an der
+  Roadmap-Zeile. Sie werden NICHT automatisch geladen. AUSLÖSER: Wer an einem
   Fan-Out-Ziel arbeitet — Zuschnitt, Adapter, Anbieter-Recherche oder
-  Live-Test-Anleitung —, lädt sie ZUERST. Sie gehört keiner Phase und wird NICHT
-  archiviert.
+  Live-Test-Anleitung —, lädt die Datei DES ZIELS ZUERST. Sie gehören keiner
+  Phase und werden NICHT archiviert.
+- docs/ziel-befunde.md — seit dem 2026-09-22 das VERZEICHNIS der Ziel-Dateien
+  und der Ort ihrer KONVENTIONEN (Buchstaben-Fortlauf, Doppelbuchstaben nach (z),
+  Provenienz-Pflicht, Verweis-Regel). SIE TRÄGT KEINEN BEFUND MEHR. Ihr Kopf
+  gehört zur Pflichtladung jeder Ziel-Arbeit; sie allein erfüllt den
+  Pflicht-Stopp NICHT. Sie löst ausserdem die bestehenden Zeiger der Form
+  "Abschnitt X" auf die Datei des Ziels X auf — deshalb ist sie stehengeblieben
+  und wird nicht gelöscht.
 - docs/ziel-fragenkatalog.md — die FRAGEN, die an JEDEM Fan-Out-Ziel zu beantworten
   sind (41 in 9 Gruppen, abgeleitet aus dem, was die vier gebauten Ziele gebraucht
   haben), und ein DATIERTER Befund darüber, welche Frage je Ziel beantwortet ist,
   welche gestellt und unbeantwortet blieb und welche NIE GESTELLT wurde. Angelegt
   2026-08-20. Sie trägt KEINE Antworten auf Anbieter-Fragen und KEINE
   Entscheidungen. Sie wird NICHT automatisch geladen. AUSLÖSER: derselbe wie bei
-  docs/ziel-befunde.md — wer ein Fan-Out-Ziel zuschneidet, einen Adapter baut oder
+  den Ziel-Dateien — wer ein Fan-Out-Ziel zuschneidet, einen Adapter baut oder
   beim Anbieter recherchiert, liest BEIDE zuerst.
   DIE ABGRENZUNG ZU docs/ziel-befunde.md IST DER GRUND FÜR ZWEI DATEIEN: Jene trägt
   die ANTWORTEN, je Ziel und mit Provenienz. Diese trägt die FRAGEN und den STAND
@@ -1224,7 +1253,7 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   die über ihre Scheibe hinaus binden" trägt NEUN Stück, die am Phasenende NICHT gehoben
   worden sind — darunter die Form der Kennungs-Ablage, die IPv6-Annahme und die
   Klartext-IP als Kennung. Die Anbieter-Befunde selbst stehen NICHT hier, sondern in
-  docs/ziel-befunde.md.
+  der Datei des Ziels unter docs/ziel-befunde/.
 - docs/claude-history/phase-11.8-autorisierungsschicht.md — GESAMTE gebaute Phase 11.8
   (Autorisierungsschicht, 2026-08-25 bis 2026-08-27): sechs Scheiben-Zuschnitte (11.8a bis
   11.8f) mit ihren Invarianten und Ausschlüssen, sechs Vermerke mit Bau-Commit und
@@ -1241,7 +1270,7 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   Backlog, und was seinen Gegenstand verloren hatte, gestrichen mit dem Beleg der
   Erledigung am Zeiger. An jeder gehobenen Stelle steht in der Datei ein Zeiger; das
   Protokoll der Hebung steht in ihrem Kopf. Die Anbieter-Befunde selbst stehen NICHT hier,
-  sondern in docs/ziel-befunde.md.
+  sondern in der Datei des Ziels unter docs/ziel-befunde/.
 - docs/claude-history/phase-11.2-google.md — das ARCHIV der ABGESCHLOSSENEN Phase 11.2:
   die ELF abgelaufenen Scheiben-Zuschnitte und die abgeschlossenen Scheiben-Vermerke,
   zeichengleich am 2026-09-08 aus docs/aktiver-stand.md herausgeschnitten (Prüfsummen im

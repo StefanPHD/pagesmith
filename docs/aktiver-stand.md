@@ -395,6 +395,93 @@ docs/ziel-befunde.md), **keine ist gemessen**. Die Zählungen über den eigenen 
 Abwesenheit eines TikTok-Tags im ausgelieferten Text sowie Endpunkt und Version am Code sind
 GEMESSEN am Repo (CC, 2026-09-22).
 
+### VERMERK P11.7-5 — LinkedIn-Bestandsaufnahme vom 2026-09-22 (KEIN BAU, KEIN CRAWL)
+
+**HARTE ANGABEN:** Datum 2026-09-22 · HEAD `2b28d7d` ("docs(claude): 11.7 — TikTok-Crawl
+abgelegt, Versions-Wächter als Frage") · Arbeitsbaum vor und nach der Runde sauber
+(`git status --short` leer) · **KEINE Navigation, kein Browser-Werkzeug, keine
+Werkzeug-Ablage angelegt, keine fremde Seite abgerufen.**
+
+**DIE FORM — GEZIELT, DANN DICHT, DANN VOLLTEXT DES ABSCHNITTS.** docs/ziel-befunde.md ist
+**NICHT vollgeladen** worden (GEMESSEN, CC, 2026-09-22: **9 127 Zeilen / 651 723 Bytes**).
+Gefahren ist die GEZIELTE SUCHE über den Abschnitt "LinkedIn (Conversions API)" (Zeilen
+160–1341, **1 182 Zeilen / 85 666 Bytes**), mit einer aus dem GEGENSTAND gebildeten Achse
+und Positivkontrolle — die zweite Form, die CLAUDE.md, "## Anbieter-Befunde der
+Fan-Out-Ziele", seit dem 2026-09-22 für RECHERCHE zulässt. **WEIL DAS ERGEBNIS DICHT WAR,
+IST DANACH DER ABSCHNITT IM VOLLTEXT GELESEN WORDEN — NUR ER, NICHT DIE DATEI.** Das ist
+mehr als die gezielte Form verlangt und weniger als die Volladung; es steht hier, damit
+niemand die Reichweite falsch einschätzt.
+
+**DIE DICHTE IST KEINE TREFFERZAHL, SONDERN EINE VERTEILUNG — NEUN ZUSAMMENHÄNGE**
+(GEMESSEN, CC, 2026-09-22): (1) Kennungs-Symbole und ihre Liste · (2) die gemessene
+Nutzlast-Hülle · (3) IPv4/IPv6 · (4) Deduplizierung samt Insight-Tag-Voraussetzung ·
+(5) Rate-Limits und Batch · (6) Versionierung und Abschalttermin · (7) die
+Kopfzeilen-Auflage `X-Restli-Protocol-Version` · (8) Zugangsdatum, Ablauf und Erneuerung ·
+(9) das Browser-Tag. Der Abschnitt trägt **VIER Messprotokolle** (2026-08-15, 2026-08-17,
+2026-08-19 samt Nachtrag), **DREI Lesungen** (2026-08-20, 2026-09-11, 2026-09-21) und die
+Teile **(a) bis (am)**.
+
+**ZAHLEN DER ACHSE, Auszug** (case-insensitiv über den Abschnitt): `Version` 161 · `Dedup`
+40 · `Insight Tag` 22 · `rate` 13 · `202601` 10 · `eventId` 10 · `userIds` 9 · `lintrk` 9 ·
+`PLAINTEXT` 8 · `SHA256` 5 · `IPv4` 4 · `Klick-Kennung` 3 · `LINKEDIN_FIRST_PARTY` 3 ·
+`IPv6` 2 · `li_fat_id` 1.
+**ECHTE NICHT-TREFFER auf derselben Achse:** `user_agent` · `userAgent` · `User-Agent` ·
+`user agent` · `useragent` · `Browser-Kennung` · `eventSourceUrl` · `page url` ·
+`sourceUrl` · `Seitenadresse` je **0**.
+**FALSCH-POSITIVE, BENANNT:** `UA` zählt 8 und ist **restlos unecht** (aktualisiere ·
+individually · January · Manual · qualified · Qualified · quality · quatschFeldXyz, einzeln
+nachgesehen); `URL` zählt 2 und trifft zweimal einen anderen Zusammenhang (die Landing-URL
+in Teil (i), das URN-Präfix in Teil (l)) — **nicht** ein Adressfeld der Nutzlast.
+**POSITIVKONTROLLE im selben Lauf:** `userIds` 9 · `userInfo` 4 · `externalIds` 3 ·
+`conversionHappenedAt` 3 — die Suche greift auf Nutzlast-Feldnamen, die Nullen oben sind
+echte Nicht-Treffer.
+
+**HERANGEZOGEN WURDEN AUSSERDEM GENAU ZWEI POSTEN aus docs/offene-punkte.md** — "DIE
+LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT DER FORWARD
+STILL" und "OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST ERST AB MITTE OKTOBER
+2026 ENTSCHEIDBAR"; keine weiteren. Jene Datei ist im Übrigen UNBERÜHRT.
+
+**ARCHITEKTEN-ENTSCHEIDUNG 2026-09-22 — FÜR LINKEDIN LÄUFT EIN CRAWL, IN EINER EIGENEN
+SITZUNG, BESCHRÄNKT AUF DIE LISTE** "Die Crawl-Liste für linkedin (2026-09-22)" im
+Abschnitt "Offene Fragen an den Anbieter-Crawl" dieser Datei.
+**DIE ERSTE HÄLFTE DES GETEILTEN VORGEHENS GILT ALS ERFÜLLT — UND DAS IST EINE AUSLEGUNG
+DES ARCHITEKTEN, KEIN MESSWERT:** Der Pflicht-Stopp verlangt bei dichtem Ergebnis, dass
+eine Sitzung festhält, was docs/ziel-befunde.md über das Ziel trägt, und eine ZWEITE
+crawlt. Gelesen worden ist der **ABSCHNITT** im Volltext, nicht die **DATEI**. **DER GRUND
+DER AUSLEGUNG:** Alles, was jene Datei über dieses Ziel trägt, steht in seinem Abschnitt.
+**SIE STEHT HIER ALS AUSLEGUNG UND NICHT ALS ERFÜLLUNG DES WORTLAUTS** — wer sie auf ein
+anderes Ziel überträgt, prüft zuerst, ob dessen Befunde ebenfalls sämtlich in seinem
+Abschnitt stehen.
+
+**KEIN BAU-COMMIT, UND DER GRUND IST DERSELBE WIE BEI P11.7-2 UND P11.7-4:** Die Runde hat
+EIN Ziel von fünf berührt und keine Zeile Code geschrieben; ein Zuschnitt auf linkedin
+allein bräche "KEIN ZUSCHNITT VOR DEM ANBIETER-CRAWL" für pinterest — und für linkedin
+selbst steht der Crawl noch aus. Die einzigen Commits dieses Tages sind Doku-Commits.
+
+**DER IPv4-RIEGEL UND SEIN GRUND — BEFUND, KEINE ENTSCHEIDUNG.** GEMESSEN am Code (CC,
+2026-09-22, HEAD `2b28d7d`): `forwardToLinkedin` (`src/lib/capi/linkedin-forward.ts`)
+bricht in Riegel 2 ab, wenn `isIpv4(clientIp)` falsch ist — **der GANZE Forward an linkedin
+entfällt dann**, nicht bloss ein Feld, weil die Kennung das Pflicht-Paar trägt. Tragend sind
+zwei Angaben aus docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)": die
+Schnittstelle **prüft die FORM des Kennungs-Werts NICHT** (Teil (j), GEMESSEN 2026-08-17 —
+der Wert "999.999.999.999" ergab 201, und die Empfangsanzeige zählte ihn MIT), und **beide
+IP-Symbole unterstützen laut Doku nur IPv4** — `PLAINTEXT_IP_ADDRESS` (Teil (i), GELESEN
+2026-08-17) und `SHA256_IP_ADDRESS` (Teil (aj), GELESEN 2026-09-11: "Currently, only IPv4
+addresses are supported."). **OHNE DEN RIEGEL GINGE EIN IPv6-WERT ALS ERFOLG HINAUS UND
+LIEFE INS LEERE; NICHTS WÜRDE ROT.**
+Dass IPv6 überhaupt vorkommt, bleibt eine ANNAHME und wird nicht gehoben
+(docs/claude-history/phase-11.1-linkedin.md, "DIE IPv6-ANNAHME", Owner 2026-08-18);
+**IPv6 ist gegen die Schnittstelle NIE probiert worden** — Teil (j) sagt das ausdrücklich.
+**DASS DIE BESCHRÄNKUNG BEIDE IP-SYMBOLE TRIFFT, IST EINE ABLEITUNG aus (i) und (aj)** und
+steht in keinem Teil zusammengezogen: Ein Wechsel auf die gehashte Form löste das Problem
+nicht.
+
+**PROVENIENZ:** Alle Zählungen über den eigenen Bestand und die Code-Angaben sind GEMESSEN
+am Repo (CC, 2026-09-22), je mit der genannten Achse. Die Anbieter-Angaben sind GELESEN bzw.
+GEMESSEN am Anbieter, **je nach Teil** — Quelle, Stufe und Datum stehen je am Teil in
+docs/ziel-befunde.md, **nicht hier**. Crawl-Beschluss und Auslegung sind eine
+ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-22.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -457,6 +544,32 @@ Ort der Entscheidung.
 **KEINE EMPFEHLUNG.**
 TRIGGER: die nächste Runde, die die Roadmap-Zeile 11.9 ohnehin öffnet — also der Zuschnitt
 von GA4.
+
+**P11.7-3 — DER KOPFKOMMENTAR VON `src/lib/capi/linkedin-forward.ts` FÜHRT DIE ABWESENHEIT
+EINES USER-AGENT-FELDES ALS GEMESSEN, UND DIE ZITIERTEN TEILE TRAGEN DAS NICHT.**
+Er sagt an der Signatur von `forwardToLinkedin`: *"Die Nutzlast dieses Anbieters kennt KEIN
+Feld dafuer (GEMESSEN, Teile (a), (i), (n))"*, und in der Abweichungsliste seines Kopfes:
+*"ES GIBT KEIN FELD FUER DEN USER-AGENT."* **Die Buchstaben meinen den Abschnitt "LinkedIn
+(Conversions API)" in docs/ziel-befunde.md.**
+**WAS DIE DREI GENANNTEN TEILE TRAGEN — GEMESSEN am Text (CC, 2026-09-22):** Teil (a) misst
+die Pflicht-FORM (ein Paar aus Kennungs-TYP und Kennungs-WERT, beide Pflicht) und die
+Ablehnung eines Feldes ausserhalb dieses Musters; Teil (i) misst die ANNAHME eines Symbols;
+Teil (n) misst eine ANGENOMMENE Nutzlast und zieht die Grenze selbst — "Gemessen ist eine
+ANGENOMMENE Nutzlast, KEIN Schema." **KEINER DER DREI ERWÄHNT EINEN USER-AGENT.**
+**DER GANZE ABSCHNITT ERWÄHNT IHN NICHT** — GEMESSEN (CC, 2026-09-22, über den
+vollständigen Abschnitt): `user_agent` · `userAgent` · `User-Agent` · `user agent` ·
+`useragent` · `Browser-Kennung` je 0 Treffer; die 8 Treffer auf `UA` sind restlos unecht.
+Positivkontrolle im selben Lauf: `userIds` 9 · `Insight Tag` 22.
+**DIE AUSSAGE IST DAMIT EINE ABLEITUNG AUS EINER GEMESSENEN FELDLISTE, KEIN GEMESSENER
+NICHT-TREFFER AUF DEN USER-AGENT.** Sie ist deshalb nicht falsch — sie trägt eine höhere
+Provenienz-Stufe, als ihre Quelle hergibt.
+**WAS DER KOMMENTAR DANEBEN FÜHRT UND WAS DIESER POSTEN NICHT BERÜHRT:** dass der Adapter
+den User-Agent gar nicht erst entgegennimmt, ist eine Entscheidung mit eigenem Grund ("ein
+Beacon ohne User-Agent-Kopfzeile ist fuer DIESES Ziel vollstaendig"), und der Eintrag in
+`FORWARDER_BY_TARGET` reicht ein Argument weniger weiter.
+**KEINE EMPFEHLUNG**, ob die Stufenangabe nachgezogen oder der Verweis erweitert wird.
+TRIGGER: die erste Bau-Scheibe dieser Phase, die diese Datei berührt; spätestens das
+Phasenende.
 
 ## Offene Fragen an den Anbieter-Crawl
 
@@ -561,6 +674,95 @@ Der Adapter sendet `v1.3`, und das ist die AKTUELLE Fassung; die Tabelle des Anb
 sie mit "Available until: **TBD**". **EIN ABLAUF SCHLÜGE LAUT FEHL** — anders als bei meta,
 wo still auf die nächste brauchbare Version umgeleitet wird. **ES GIBT FÜR TIKTOK ALSO KEIN
 GEGENSTÜCK ZUR META-FRIST** im Abschnitt "Frist mit Termin". Zeiger: Teil (p).
+
+**STAND FÜR LINKEDIN NACH DER BESTANDSAUFNAHME (2026-09-22, VERMERK P11.7-5) — KEINE FRAGE
+IST GESTRICHEN, UND KEINE IST FÜR EIN ANDERES ZIEL BERÜHRT.** Die Formulierungen von F1 bis
+F4 und F7 bleiben wörtlich; nachgezogen ist allein der STAND, und zwar je Frage nur für
+**linkedin**. Für pinterest steht jede unverändert offen. **ALLE ZEIGER GEHEN NACH
+docs/ziel-befunde.md, ABSCHNITT "LinkedIn (Conversions API)"** — die Buchstaben dieser
+Tabelle meinen weder den Meta-, noch den Google-, noch den TikTok-Abschnitt.
+
+| Frage | Stand für linkedin | Zeiger |
+|---|---|---|
+| F1 Klick-Kennung | **TEILWEISE AUS DEM BESTAND.** Name `li_fat_id`, Symbol `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`; HERKUNFT ist ein **Parameter, den der Anbieter an die Landing-URL anhängt**, und er setzt eine Einstellung im Campaign Manager voraus — "Enhanced conversion tracking" am Insight Tag, "enabled by default for all new Insight Tags that are recently created"; der Tag muss angelegt, aber nicht eingebaut sein. **NICHT IM BESTAND: das FORMAT · ob es daneben einen COOKIE-Weg gibt · VERLANGT oder EMPFOHLEN.** Nicht-Treffer mit benannter Reichweite über den vollständigen Abschnitt; `li_fat_id` trifft dort genau EINMAL. | Teile (i), (ah) |
+| F2 Ort in der Nutzlast | **AUS DEM BESTAND BEANTWORTET, teils GEMESSEN.** Gemessene Hülle: `conversion`, `conversionHappenedAt` (Millisekunden), `user.userIds[]` mit `idType`/`idValue`, `conversionValue.{currencyCode, amount}` (amount als ZEICHENKETTE), `eventId` auf OBERSTER Ebene — letzteres belegt durch eine Positivkontrolle im selben Lauf. Laut Doku trägt `user` VIER Zweige: `userIds`, `userInfo`, `lead`, `externalIds`. **DER ORT DER KLICK-KENNUNG IST EINE ABLEITUNG** aus Symbol-Liste und gemessener Paar-Form (`user.userIds[].idType` / `idValue`), keine eigene Lesung. | Teile (n), (p), (a), (ab), (aj) |
+| F3 Match-Felder, verlangt/empfohlen | **TEILWEISE — DIE LISTE STEHT, DIE TRENNUNG NICHT.** SECHS Symbole: `SHA256_EMAIL` · `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` · `ACXIOM_ID` · `PLAINTEXT_IP_ADDRESS` · `SHA256_IP_ADDRESS` · `GOOGLE_AID`. HASHEN: die zwei SHA256-Symbole ja; `PLAINTEXT_IP_ADDRESS` Klartext, der Anbieter hasht selbst mit Salt. Pflicht-Struktur GEMESSEN: ein Paar aus Typ und Wert, BEIDE Pflicht. Eine Identität kann auch OHNE `userIds`-Eintrag reisen — über `lead`, `externalIds` oder `userInfo`, `userIds` dann als leere Liste. **NICHT IM BESTAND: VERLANGT oder EMPFOHLEN je Merkmal** — genau die Unterscheidung, für die F3 so gestellt ist — **und was `externalIds`, `lead` und `userInfo` im Einzelnen tragen.** GEMESSEN angenommen sind ZWEI der sechs Symbole. | Teile (aj), (i), (b), (a), (ab) |
+| F4 liest der Anbieter aus der Adresse selbst? | **DIE FRAGE STELLT SICH FÜR LINKEDIN ANDERS — IM GELESENEN UND GEMESSENEN TRANSPORT GIBT ES KEIN FELD FÜR DIE SEITENADRESSE.** Nicht-Treffer mit benannter Reichweite: `eventSourceUrl` · `page url` · `sourceUrl` · `Seitenadresse` je 0 über den vollständigen Abschnitt, Positivkontrolle `userIds` 9 und `conversionHappenedAt` 3; die dokumentierte Kopfzeilen-Liste nennt zudem **keinen Query-Parameter**. **DAS IST EINE AUSSAGE ÜBER DEN BESTAND, NICHT ÜBER DEN ANBIETER.** Dazu GEMESSEN am Code: `LinkedinForwardBody` trägt genau `value` und `currency`. | Teile (ab), (n) |
+| F7 Rate-Limits (LinkedIn-Anteil) | **AUF DOKU-EBENE BEANTWORTET UND BEZIFFERT:** höchstens **600 Anfragen je Minute** und **500 000 je Tag**, je Mitglieds-Zugangsdatum, sonst Drosselung. ALLGEMEIN zur Schnittstelle des Anbieters: eine gedrosselte Anfrage bekommt **429**, die Grenzen werden um Mitternacht UTC zurückgesetzt, und die Standard-Limits sind nicht dokumentiert, sondern im Analytics-Reiter der App ablesbar. BATCH über `X-RestLi-Method: BATCH_CREATE`, bis **5 000** Ereignisse und höchstens **100** Regeln; ein ungültiger Datensatz lässt ALLE fallen. **EINE LÜCKE, DIE DER BESTAND SELBST BENENNT:** eine Vorgabe zu WIEDERHOLUNGSVERSUCHEN ist im gelesenen Umfang nicht gefunden worden, und die formale Suche deckte die Achse NICHT — `retry` und `backoff` standen nicht unter ihren Begriffen. **MESSUNG OFFEN:** welches Limit tatsächlich greift. | Teil (ag) |
+
+**F5 (tiktok), F6 (meta) UND F8 (pinterest) SIND VON DIESER RUNDE NICHT BERÜHRT** und stehen
+unverändert. **MIT DEM LINKEDIN-ANTEIL IST F7 AN ALLEN DREI ZIELEN AUF DOKU-EBENE
+BEANTWORTET** — meta (Teil (u) des Meta-Abschnitts), tiktok (Teil (o) des TikTok-Abschnitts)
+und linkedin.
+
+**EINE ANGABE, DIE ZU KEINER DER FRAGEN GEHÖRT UND HIER STEHT, DAMIT NIEMAND SIE VERMUTET:**
+Anders als bei google und tiktok **GIBT ES FÜR LINKEDIN EIN GEGENSTÜCK ZUR META-FRIST** —
+der Adapter sendet `202601`, Abschalttermin **15.01.2027**, und bei Ablauf scheitert der
+Forward **still**. **ER GEHÖRT TROTZDEM NICHT IN DEN ABSCHNITT "Frist mit Termin"**, denn er
+wird bereits dort geführt, wo ein solcher Posten hingehört: docs/offene-punkte.md, Eintrag
+"DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT DER
+FORWARD STILL", mit dem Termin im Trigger. Die linkedin-Zeile der ZUSCHNITT-FRAGE P11.7-13
+führt ihn ebenfalls.
+
+**DIE CRAWL-LISTE FÜR LINKEDIN (2026-09-22) — WAS DER CRAWL ZU BEANTWORTEN HAT, UND NUR
+DAS.** Die ARCHITEKTEN-ENTSCHEIDUNG aus VERMERK P11.7-5 beschränkt ihn auf das, wofür eine
+LESUNG genügt. Jede Zeile nennt die Seite, an der die Antwort zu erwarten ist; die Kürzel
+S1 bis S13 sind im Block "Der gelesene Umfang (2026-09-11) — LinkedIn" in
+docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", aufgelöst.
+
+- **DAS FORMAT VON `li_fat_id`, EIN MÖGLICHER COOKIE-WEG UND EINE HALTEDAUER** — S8
+  `marketing/conversions/enabling-first-party-cookies` (Titel "Enabling Click IDs"), dazu
+  S4 `…/conversions-api-schema`. **DER PFAD JENER SEITE NENNT COOKIES, IHR TITEL NENNT
+  KLICK-KENNUNGEN** — abgelegt ist aus ihr bisher allein der Satz über "Enhanced conversion
+  tracking".
+- **VERLANGT ODER EMPFOHLEN, je Kennungs-Symbol und je Merkmal** — S3 `…/conversions-api`,
+  S4, S10 `…/custom-matching-identifiers`. **Das ist der Kern von F3** und für kein Symbol
+  erhoben.
+- **WAS `externalIds`, `lead` UND `userInfo` IM EINZELNEN TRAGEN** — S10, S4. S10 ist am
+  2026-09-11 geöffnet worden; ihr Inhalt zu dieser Achse steht in keinem Teil, weil die
+  Frage jenes Laufs der Testmodus war.
+- **DIE FORM DER ANTWORT AUF EINEN ABGESCHALTETEN VERSIONS-HEADER** —
+  `marketing/error-responses`. **PFLICHT-SEITE: SIE STEHT IM BESTAND AUF DER LISTE
+  "GESEHEN, NICHT GEÖFFNET"** und trägt nach ihrem dortigen Vermerk "das Beispiel der
+  Antwort auf einen veralteten Versions-Header"; sie ist dort ausdrücklich als **nicht
+  gelesen** gekennzeichnet. Der offene Punkt zur Abschaltung hält fest, dass diese Form
+  **nicht gelesen und nicht gemessen** ist. Die Regel dahinter: docs/immer-beachten.md,
+  "DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT".
+- **EINE VORGABE ZU WIEDERHOLUNGSVERSUCHEN NACH EINER 429** — S3, S11
+  `…/conversions-faq`. Der Bestand führt dies als benannte Lücke: `retry` und `backoff`
+  standen nicht unter den zweiundzwanzig Begriffen der formalen Suche vom 2026-09-11.
+- **EINE FRAGE DES ARCHITEKTEN (2026-09-22), DIE IM BESTAND NICHT GESTELLT IST: DARF
+  `user.userIds` MEHR ALS EINEN EINTRAG TRAGEN?** Also etwa eine IP-Adresse UND
+  `li_fat_id` im selben Ereignis. **GEMESSEN IST BISHER GENAU EINER** — Teil (i)
+  protokolliert "userIds mit GENAU EINEM Eintrag — kein zweiter Identifier, kein userInfo",
+  Teil (n) dieselbe Form. **ÜBER DIE ZULÄSSIGE ANZAHL SAGT DAS NICHTS:** ein 201 auf eine
+  Einer-Liste ist kein Befund über eine Zweier-Liste. Seiten: S4, S3, S10.
+  **SIE TRÄGT BEWUSST KEINE NUMMER:** Die Gattung dieses Abschnitts zählt als F1 bis F8 und
+  weicht damit von der Nummernform des Dateikopfes ab (der Grund steht im Abschnitt "Fragen
+  an den Zuschnitt"); eine neunte F-Nummer vertiefte die Abweichung, eine
+  `P11.7-n`-Nummer erzeugte eine zweite Zählung im selben Abschnitt. **WER VON AUSSEN AUF
+  SIE ZEIGT, NENNT DIESE LISTE UND IHREN FETTSATZ.**
+
+**WAS EIN CRAWL FÜR LINKEDIN NICHT KLÄRT — DIE OFFENEN MESSFRAGEN (2026-09-22).** Sie stehen
+getrennt, weil eine LESUNG sie nicht erreicht. Kein Eintrag hier ist ein Auftrag; sie sind
+der Rest, der nach dem Crawl offen bleibt. Zeiger gehen nach docs/ziel-befunde.md, Abschnitt
+"LinkedIn (Conversions API)", wo nicht anders genannt.
+
+- **OB `li_fat_id` FACHLICH ANGENOMMEN WIRD.** GEMESSEN angenommen sind **ZWEI von SECHS**
+  Symbolen — `SHA256_EMAIL` (2026-08-15) und `PLAINTEXT_IP_ADDRESS` (2026-08-17); die vier
+  übrigen sind nie gesendet worden. Teile (b), (i), (aj).
+- **OB DIE SCHNITTSTELLE EINE IPv6-ADRESSE ABWEIST.** **NIE PROBIERT** — Teil (j) sagt das
+  ausdrücklich, und die Folgerung dort ("würde ebenfalls quittiert") ist als nicht gemessen
+  bezeichnet. Teile (j), (i), (aj).
+- **WELCHES RATE-LIMIT TATSÄCHLICH GREIFT.** Das zeigen erst die Nutzungs-Angaben einer
+  echten Antwort; die Standard-Limits sind laut Anbieter nicht dokumentiert. Teil (ag).
+- **OB DER ANBIETER DIE KOPFZEILE `X-Restli-Protocol-Version` DURCHSETZT.** Teil (ai) führt
+  das ausdrücklich als NICHT ENTSCHEIDBAR; der Adapter hat sie nie gesendet, und sein
+  Forward ist am 2026-08-19 ohne sie angekommen.
+- **OB DAS LIVE VERWENDETE ZUGANGSDATUM ABLÄUFT.** Keine Messung, sondern eine BEOBACHTUNG
+  ab Mitte Oktober 2026 an der Direct-API-Seite im Campaign Manager. Geführt als offener
+  Punkt: docs/offene-punkte.md, "OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST
+  ERST AB MITTE OKTOBER 2026 ENTSCHEIDBAR"; der Befund ebenda, Teile (v), (al).
 
 ## Fragen an den Zuschnitt (nach dem Meta-Crawl)
 
@@ -835,3 +1037,15 @@ Grund für eine Scheibe "nur mal tiktok".
 LOCKERUNG:** Der TikTok-Abschnitt ist mit 271 Zeilen der KLEINSTE der Datei (GEMESSEN, CC,
 2026-09-22). **FÜR LINKEDIN IST DAS KEIN PRÄZEDENZFALL** — jener Abschnitt ist nach google
 der zweitgrösste.
+
+**VIERTER NACHZUG AM 2026-09-22, NACH DER LINKEDIN-BESTANDSAUFNAHME — ALLE ABSÄTZE DARÜBER
+BLEIBEN WÖRTLICH.** An der AUFZÄHLUNG ist nichts überholt: **ES BLEIBEN WEITERHIN ZWEI,
+pinterest und linkedin** — **linkedin ist NICHT gecrawlt.** Der Satz des Absatzes darüber
+hat sich bestätigt: die gezielte Suche über den LinkedIn-Abschnitt ergab ein DICHTES
+Ergebnis, die geteilte Form greift also.
+**WAS SICH ÄNDERT, IST DIE GESTALT DER LINKEDIN-RUNDE.** Ihre erste Hälfte ist gefahren
+(VERMERK P11.7-5), und der Crawl ist auf die Liste beschränkt, die der Abschnitt "Offene
+Fragen an den Anbieter-Crawl" unter "DIE CRAWL-LISTE FÜR LINKEDIN (2026-09-22)" führt.
+**WER FÜR LINKEDIN EINEN VOLLEN CRAWL FÄHRT, FÄHRT MEHR ALS BESCHLOSSEN IST.**
+**"KEIN ZUSCHNITT VOR DEM CRAWL" GILT FÜR BEIDE ZIELE UNVERÄNDERT** — auch für linkedin,
+dessen Bestand jetzt vollständig gesichtet ist.

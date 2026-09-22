@@ -998,8 +998,13 @@ und P11.11-25; der `data-src`-Befund ist GEMESSEN (ENTSCHEIDUNG P11.11-12, Satz 
 **DIE ENTSCHEIDUNG (ARCHITEKT, 2026-09-21):** Die Scheibe 11.11b **zeigt an, erkennt und
 meldet die Kollision — sonst nichts.** **Das Entfernen fremder Pixel ist 11.11c.**
 
-**SIE WIEDERHOLT DEN ZUSCHNITT NICHT, SIE SCHÜTZT IHN:** Abschnitt 9 sagt bereits "NUR
-LESEND". **DER GRUND FÜR DIE EIGENE ENTSCHEIDUNG IST DER DRUCK, DER MIT A1 BIS A5
+**SIE WIEDERHOLT DEN ZUSCHNITT NICHT, SIE SCHÜTZT IHN:** Abschnitt 9 sagt bereits "nur
+lesend". **DER WORTLAUT DES ZITATS IST AM 2026-09-22 AN DIE FUNDSTELLE ANGEGLICHEN** — er
+stand als "NUR LESEND" da und war es bis zur Verdichtung der Scheibe 11.11b (`68721a5`)
+auch; seither heisst es dort klein. **Der Inhalt ist unberührt, korrigiert ist der
+SUCHANKER:** Eine wörtliche Suche nach der Grossschreibung fand die Fundstelle nicht mehr
+(GEMESSEN, CC, 2026-09-22), und ein Zeiger, der ins Leere greift, zwingt zum Suchen statt
+zum Lesen. **DER GRUND FÜR DIE EIGENE ENTSCHEIDUNG IST DER DRUCK, DER MIT A1 BIS A5
 ENTSTANDEN IST:** Diese Runde hat der Erkennung eine fünfte Klasse, drei Parkformen, zwei
 Adress-Orte und die Bild-Tags hinzugefügt. **Je genauer die Erkennung wird, desto
 naheliegender wird es, "dann kann sie es auch gleich entfernen" —** und genau dort bräche
@@ -1397,7 +1402,7 @@ docs/ziel-befunde.md, Teile (g), (i), (ab) und (am), je Punkte (a) und (b).
 
 ### ENTSCHEIDUNG P11.11-40 — DIE ZWEI KANDIDATEN GEHÖREN IN DIE SCHEIBE 11.11e: DER ORTSHINWEIS UND DIE ORDNUNG NACH ANBIETER
 
-**DIE ENTSCHEIDUNG (OWNER, 2026-09-21):** Die zwei Kandidaten, die am Eintrag 11.11e in
+**DIE ENTSCHEIDUNG (OWNER, 2026-09-22):** Die zwei Kandidaten, die am Eintrag 11.11e in
 Abschnitt 9 als **AUSDRÜCKLICH NICHT ENTSCHIEDEN** stehen, werden in die Scheibe 11.11e
 **AUFGENOMMEN**:
 - **DER ORTSHINWEIS AN AUFRUF- UND HANDLER-ZEILEN.**
@@ -1421,7 +1426,8 @@ jeden Vorschlag als solchen**; eine im Bau gewählte Formulierung wäre eine
 Owner-Freigabe, die niemand erteilt hat (dieselbe Bauform wie ENTSCHEIDUNG P11.11-36,
 Punkt (F3)).
 
-**EINE AUFLAGE REIST MIT DEM ORTSHINWEIS UND WIRD HIER NICHT ENTSCHIEDEN:** Ein Ausschnitt
+**EINE AUFLAGE REIST MIT DEM ORTSHINWEIS UND WIRD HIER NICHT ENTSCHIEDEN** (→ ENTSCHEIDUNG
+P11.11-41, wo sie am 2026-09-22 entschieden ist)**:** Ein Ausschnitt
 ist **Text des Betreibers** und kann jede der vier dokumentweiten Abwesenheits-Nadeln aus
 `src/components/CodeImporter.test.tsx` tragen (ENTSCHEIDUNG P11.11-32, Punkt (f)). Ob ein
 Ausschnitt an einem BEKANNTEN Fund dieselbe Auflage trägt wie am unbekannten, ist ein
@@ -1432,10 +1438,105 @@ ERKENNT NICHTS ANDERS** — die Erkennung bleibt im Verhalten unverändert, und 
 ausgeblendet (ENTSCHEIDUNG P11.11-37). Ein Ortshinweis ist eine ANZEIGE an einem Fund, den
 es schon gibt; eine Ordnung ist eine Reihenfolge derselben Funde.
 
-**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-21, im Chat bestätigt, bevor der Bau-Prompt
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG **2026-09-22**, im Chat bestätigt, bevor der Bau-Prompt
 weitergereicht wurde. Die zwei Kandidaten und ihre Belege sind OWNER-ANGABEN aus dem
 Live-Test der Scheibe 11.11c (2026-09-21) und stehen unverändert an ihrer Fundstelle in
 Abschnitt 9; **von CC ist keiner von beiden gemessen.**
+**DAS DATUM IST AM 2026-09-22 RICHTIGGESTELLT UND NICHT GESTEMPELT:** Es stand zunächst auf
+dem 2026-09-21, weil der Bau-Prompt es so nannte; die Bestätigung fiel auf den 2026-09-22
+(OWNER-ANGABE). **Der 2026-09-21 am Live-Test bleibt stehen** — er datiert die Kandidaten,
+nicht die Entscheidung über sie, und wer beide gleichsetzt, datiert einen Befund auf den Tag
+seiner Verwertung.
+
+### ENTSCHEIDUNG P11.11-41 — DIE FREIGABEN ZUM PLAN DER SCHEIBE 11.11e
+
+**SIE STEHT VOR DEM BAU UND NICHT DANACH** — dieselbe Bauform wie die ENTSCHEIDUNGEN
+P11.11-22 (zu 11.11d), P11.11-32 (zu 11.11b) und P11.11-36 (zu 11.11c). **Die Punkte (H)
+bis (J) sind OWNER-FREIGABE, die übrigen ARCHITEKT.**
+
+**(A) DER HOST WIRD ÜBER `new URL` GEWONNEN, UND JEDER DER SECHS FÄLLE HAT SEINEN AUSGANG**
+(ARCHITEKT, 2026-09-22). Absolut → `hostname`; protokoll-relativ (`//…`) → mit
+vorangestelltem `https:` als absolut behandelt; relativ, ungültig, `data:` und `blob:` →
+**EINE Gruppe ohne Domain**. **DER GRUND IST JE FALL EIN GEMESSENER** (CC, 2026-09-22,
+Wegwerf-Probe ausserhalb des Repos): Der Parser normalisiert die Gross-/Kleinschreibung
+selbst (`CDN.Example.COM` → `cdn.example.com`), er WIRFT bei relativ und ungültig — das ist
+das Erkennungsmerkmal —, und er wirft **NICHT** bei `data:`/`blob:`, sondern liefert einen
+**LEEREN** Host. **Ohne den eigens abgefangenen Leerfall entstünde eine namenlose Gruppe**,
+und die sähe auf dem Bildschirm aus wie ein Leerraum.
+
+**(B) DER WEG ÜBER EINE SENTINEL-BASIS IST VERWORFEN** (ARCHITEKT, 2026-09-22). **GEMESSEN:**
+`new URL("/pfad", "https://x.invalid/")` löst still auf den Sentinel-Host auf, und `::::`
+ebenso. Eine relative Adresse landete damit in einer Gruppe, die nach einem Host aussieht,
+den es nicht gibt — **ein stiller Fehlbefund statt einer ehrlichen Auskunft.**
+
+**(C) DER PORT GEHÖRT NICHT IN DEN SCHLÜSSEL** (ARCHITEKT, 2026-09-22): `hostname`, nicht
+`host`. **GRUND:** Die Bündelung will kurze Listen; `example.com` und `example.com:8443` als
+zwei Gruppen zu führen verlängert sie ohne Erkenntnisgewinn für den Betreiber.
+
+**(D) `www.` BLEIBT GETRENNT** (ARCHITEKT, 2026-09-22). **GRUND:** Es sind verschiedene
+Hosts, und eine Bündelung, die sie vereinigt, **behauptet mehr, als sie weiss** — sie kann
+nicht wissen, ob dahinter derselbe Betreiber steht. **Der Preis ist benannt:** Eine Seite,
+die von beiden lädt, zeigt zwei Gruppen.
+
+**(E) DIE BÜNDELUNG LIEGT IN `src/lib/foreign-scan.ts`, KEINE NEUE DATEI** (ARCHITEKT,
+2026-09-22). **GRUND:** `ausschnittVon` ist dort modul-privat und wird für den Ortshinweis
+gebraucht — **in derselben Datei ist er ohne Hebung erreichbar.** Eine neue Datei wäre Weg 8
+aus CLAUDE.md und verlangte eine Owner-Entscheidung (Präzedenz: P11.11-22, Punkt (a)).
+**DIESE SCHEIBE BRAUCHT DAMIT KEINE EINZIGE HEBUNG** — wie 11.11c und anders als 11.11b (ein
+Wort) und 11.11d (zwei Wörter).
+
+**(F) EINGEKLAPPT WIRD MIT `<details>`/`<summary>`** (ARCHITEKT, 2026-09-22). **GRUND, und er
+ist der tragende dieser Scheibe: ES IST DER EINZIGE KANDIDAT, DER "NICHTS WIRD AUSGEBLENDET"
+AM DOM BELEGBAR MACHT** — die Kinder stehen im Dokument, der Zustand ist das `open`-Attribut.
+Bedingtes Rendern hätte die Einträge aus dem DOM genommen; ein Test könnte dann
+**"gebündelt" nicht mehr von "ausgeblendet" unterscheiden**, und genau das ist die Zusage aus
+ENTSCHEIDUNG P11.11-37. **GEMESSEN (CC, 2026-09-22, Wegwerf-Probe in der Projekt-jsdom):** Ein
+`<summary>` zählt **NICHT** als Rolle `button` — `queryAllByRole("button")` findet allein den
+echten Knopf; `<details>` trägt die Rolle `group`; ein Klick auf das `<summary>` dreht `open`
+auch in jsdom. **Die sechs `role="group"`-Abfragen der Bestandsdatei sind alle mit
+`{ name: "Variante" }` qualifiziert** und damit unberührt (GEMESSEN).
+
+**(G) DER AUFKLAPP-ZUSTAND STIRBT AM `key`, DER AM PROJEKT HÄNGT** (ARCHITEKT, 2026-09-22).
+**GRUND:** Ein Zustand, der dort liegt, wo seine Lebensdauer endet, braucht keinen
+Aufräum-Aufruf — Präzedenz ist die Ziel-Karte, deren Zugangsdaten-Zustände beim
+Projektwechsel über ihren `key` sterben. Ein unkontrolliertes `<details>` ohne diesen `key`
+überlebte den Wechsel, weil React nach Position abgleicht.
+
+**(H) DIE ÄUSSERE ZAHL BLEIBT UNVERÄNDERT** (OWNER, 2026-09-22): sie zählt weiter FUNDE.
+**GRUND:** Der Bestandslauf SK2 nagelt die Überschrift wörtlich fest, und jede Umdeutung der
+Zahl wäre eine zweite Wahrheit neben der inneren. **"Weitere Skripte (N)" ZÄHLT SKRIPTE**,
+nicht Gruppen — so liest es der Wortlaut, den ENTSCHEIDUNG P11.11-37 selbst vorgibt.
+
+**(I) DER ORTSHINWEIS IST DER AUSSCHNITT DER ERSTEN FUNDSTELLE, NEBEN DER
+FUNDSTELLEN-ZAHL** (OWNER/ARCHITEKT, 2026-09-22). **DER PREIS IST BENANNT UND GEWOLLT:** Hat
+eine Gruppe mehrere Fundstellen, nennt der Ausschnitt **eine** — die Zahl daneben sagt, dass
+es mehr sind. Alle Ausschnitte zu zeigen machte eine Gruppe mit sieben Fundstellen zu sieben
+Zeilen und damit genau so lang, wie die Bündelung sie kurz machen wollte.
+**DIE AUFLAGE AUS ENTSCHEIDUNG P11.11-40 IST DAMIT ENTSCHIEDEN:** Ein Ausschnitt an einem
+BEKANNTEN Fund trägt **dieselbe** Auflage wie am unbekannten — er ist Betreiber-Text, wird
+als TEXT gerendert und nie als HTML, und wer einem Nadel-Lauf eine Fixture mit fremdem
+Script gibt, prüft zuerst die vier Nadeln.
+
+**(J) DIE ORDNUNG FOLGT DER SIGNATURLISTE, INNERHALB EINES ANBIETERS knoten → aufruf →
+handler** (ARCHITEKT, 2026-09-22). **GRUND:** Die Reihenfolge der Signaturliste ist im
+Bestand **schon** die Konvention für die Anbieter INNERHALB eines Fundes —
+`trefferUeberAdressen` und `trefferUeberNamen` filtern über `FOREIGN_SIGNATURES`, ausdrücklich
+damit die Folge reproduzierbar ist. Dieselbe Achse zweimal gleich zu ordnen erklärt sich
+selbst; alphabetisch wäre eine zweite Ordnungs-Wahrheit daneben. **Bei einem Fund mit
+mehreren Anbietern entscheidet der erste.**
+
+**(K) DER EINGEKLAPPTE BEREICH ERSCHEINT NUR BEI MINDESTENS EINEM UNBEKANNTEN FUND**
+(ARCHITEKT, 2026-09-22). **DAS IST EINE AUFLAGE AN DEN BAU UND KEINE
+GESTALTUNGSFRAGE:** `SK4` fordert innerhalb der Liste **null** Knöpfe, `SK12` **genau
+einen** — zwei ZÄHL-Zusicherungen. **GEMESSEN (CC, 2026-09-22): keine der beiden Fixturen
+trägt ein unbekanntes Script**, und nach Punkt (F) zählt ein `<summary>` ohnehin nicht als
+Knopf; die Auflage ist damit die zweite Sicherung und nicht die einzige. Sie steht
+trotzdem, weil eine Sektion mit `(0)` eine Auskunft über nichts wäre.
+
+**PROVENIENZ:** (A) bis (G) und (J), (K) ARCHITEKT-ENTSCHEIDUNG 2026-09-22, (H) und (I)
+OWNER-FREIGABE desselben Tages — der Owner reicht den Bau-Prompt nach Ankündigung im Chat
+weiter. Die Messungen zu (A), (B), (C) und (F) sind GEMESSEN an Wegwerf-Proben (CC,
+2026-09-22), die zu (K) und zu den `role="group"`-Abfragen am Repo (CC, 2026-09-22).
 
 ---
 
@@ -3000,7 +3101,7 @@ Angabe** — die Angabe steht in diesem Satz.
   dem Live-Test der Scheibe 11.11c (OWNER, 2026-09-21) und sind **KEINE Aufträge und KEINE
   Empfehlungen**; sie stehen hier, damit der Plan sie nicht unbemerkt mitentscheidet. **DIE
   TEXTE SIND OWNER-SACHE**, hier steht nur der Gegenstand.
-  **ENTSCHIEDEN AM 2026-09-21 → ENTSCHEIDUNG P11.11-40: BEIDE SIND IN DIE SCHEIBE
+  **ENTSCHIEDEN AM 2026-09-22 → ENTSCHEIDUNG P11.11-40: BEIDE SIND IN DIE SCHEIBE
   AUFGENOMMEN**, der Umfang von 11.11e ist damit dreiteilig. **Der Fragetext der zwei
   Kandidaten bleibt stehen, weil er den Gegenstand und die Auflage am Ausschnitt trägt**;
   ohne ihn läse sich die Aufnahme wie eine Selbstverständlichkeit. **Die TEXTE bleiben

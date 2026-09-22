@@ -161,7 +161,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
-- [ ] Phase 11.11 — Import-Bereinigung
+- [x] Phase 11.11 — Import-Bereinigung
 - [x] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
 - [x] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
@@ -1358,6 +1358,35 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   das `DOMParser`-Dokument mit ausgeschaltetem Skripting. BEIDE QUELLEN STEHEN IM ARCHIV
   WÖRTLICH WEITER, je mit einem Zeiger "→ GEHOBEN 2026-09-19" — die Regel ist das
   Destillat, nicht ihr Ersatz.
+- docs/claude-history/phase-11.11-import-bereinigung.md — GESAMTE gebaute Phase 11.11
+  (Import-Bereinigung, 2026-09-21 bis 2026-09-22, an ZWEI Tagen): FÜNF Scheiben, alle
+  gebaut und live bestätigt — 11.11a der Sandbox-Wächter, 11.11d die eigenen Bausteine,
+  11.11b Erkennung und Anzeige, 11.11c das Entfernen fremder Pixel auf Klick, 11.11e die
+  Bündelung der Fundliste nach Host. Dazu ZWEI Anbieter-Crawls und EINE Live-Messung ohne
+  Zeile Code, ZEHN Vermerke, 32 bindende Entscheidungen, NEUN Vorrats-Einträge, EIN
+  Hebungs-Kandidat. Sie ist ZUGLEICH der steuernde Stand und die Historie; sie hiess bis
+  zum Phasenende docs/aktiver-stand.md. IHR KOPF TRÄGT DAS PROTOKOLL DER HEBUNG samt der
+  am Bestand der Zieldateien GEGENGEPRÜFTEN Bilanz und den Messwert aus
+  docs/arbeitsweise.md, Abschnitt 2b.
+  DIE BUCHSTABEN TRAGEN KEINE REIHENFOLGE — 11.11d ist vor 11.11b gebaut worden; wer die
+  Scheiben nach ihren Buchstaben liest, liest die Phase in der falschen Folge.
+  HIER NACHSEHEN, WER AN DER ERKENNUNG, AM ENTFERNEN ODER AN DER FUNDLISTE ARBEITET: Die
+  DREISSIG nicht gehobenen Entscheidungen stehen NUR hier — darunter die fünf Klassen
+  (eigen · Pixel · CMP · Container · unbekannt), die drei belegten Parkformen und die drei
+  Adress-Orte, die Reihenfolge EIGEN VOR FREMD mit derselben Knotenauswahl wie das
+  Entfernen, das EINE Urteil ohne Parser für die eigenen Bausteine, die Regel, dass ein
+  Inline-Script nur mit einer LADE-Adresse im Rumpf entfernbar ist, und die vier
+  Freigabe-Blöcke je Plan. Sie tragen einen SAMMELVERMERK "NICHT GEHOBEN" am Kopf ihres
+  Abschnitts, mit Grund — nicht dreissig Einzelzeiger.
+  ZWEI ENTSCHEIDUNGEN SIND DAGEGEN GEHOBEN und stehen als datierte ERGÄNZUNG an einer
+  bestehenden Dauerregel in docs/immer-beachten.md, NICHT als neue Regel: P11.11-9
+  (jeder neue Rahmen mit Kundencode bekommt denselben Sandbox-Wächter) an "Importierter
+  User-Code läuft NUR im sandboxed iframe …" und P11.11-24 (eine Meldung über einen Text
+  wird aus dem aktuellen Text abgeleitet) an "ABLEITEN STATT LÖSCHEN". Beide stehen im
+  Archiv wörtlich weiter, je mit einem Zeiger "→ GEHOBEN 2026-09-22".
+  NACH docs/offene-punkte.md IST AUS DIESER PHASE NICHTS GEGANGEN, und das ist ein Befund
+  und kein Versäumnis: KEIN EINZIGER Vorrats-Eintrag trägt einen Trigger, und das
+  zweiteilige Kriterium hat hier gar nicht getrennt.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

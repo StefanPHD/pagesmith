@@ -1,4 +1,150 @@
-# Phase 11.11 — Import-Bereinigung: DER AKTIVE STAND
+# Phase 11.11 — Import-Bereinigung: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 11.11 — das, was jeweils galt, nicht
+das, was geworden ist. **Sie hiess bis zum Phasenende `docs/aktiver-stand.md`** und war das
+Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der Phase arbeitete.
+
+**ZEITRAUM UND UMFANG:** angelegt am 2026-09-21, archiviert am 2026-09-22 — **die Phase hat
+zwei Tage gedauert**, über DREISSIG Commits. FÜNF Scheiben, alle gebaut und live bestätigt,
+in Bau-Reihenfolge: **11.11a** der Sandbox-Wächter (`4efa94b`), **11.11d** die eigenen
+Bausteine (`0b9bd7f`), **11.11b** Erkennung und Anzeige (`6d6ab42`), **11.11c** das Entfernen
+fremder Pixel auf Klick (`bcd3c5a`), **11.11e** die Bündelung der Fundliste (`aad143e`).
+Dazwischen ZWEI Anbieter-Crawls und EINE Live-Messung ohne Zeile Code. ZEHN Vermerke,
+**32** bindende Entscheidungen, NEUN Vorrats-Einträge, EIN Hebungs-Kandidat.
+**DIE BUCHSTABEN TRAGEN KEINE REIHENFOLGE** — 11.11d ist vor 11.11b gebaut worden, und der
+Grund steht im Zuschnitt.
+
+**DER MESSWERT NACH docs/arbeitsweise.md, ABSCHNITT 2b** (GEMESSEN am Repo, CC, 2026-09-22,
+`git log --numstat`; Summen aus Einfügungen und Löschungen):
+
+| Phase | Spanne | `docs/` | `src/` | Verhältnis docs : src |
+|---|---|---|---|---|
+| **11.11** | `b57d9a6^..88650e6` | **4 472** | **6 828** | **0,65 : 1** |
+| 11.6 (Vorphase) | `7be1e9a^..b4e40d4` | 1 058 | 1 713 | 0,62 : 1 |
+| 11.13 | `023eb5a^..7a6a5f6` | 6 407 | 7 192 | 0,89 : 1 |
+| 11.12 | `a7fe5fe^..cd0b344` | **1 206** | 784 | **1,54 : 1** |
+
+**DIE SPANNE ENDET VOR DEN PHASENENDE-COMMITS**, und das ist die Hausform und keine Wahl
+dieser Runde: Bei 11.6 und 11.13 endet sie ebenso am letzten Scheiben-Commit, weil der Kopf
+IN dem Commit geschrieben wird, der ihn sonst mitzählen müsste. **MIT der Hebung (`c3b849a`)
+wären es 4 808 zu 6 828, also 0,70 : 1** — die Zahl steht hier, damit niemand sie für einen
+Messfehler hält, wenn er die Spanne anders zieht.
+**ZWEI DER DREISSIG COMMITS SIND PHASENFREMD** und in den 4 472 enthalten: `c9a561f` (die
+Werkzeug-Regel zum CRLF-Instrument, 60 Zeilen in docs/immer-beachten.md) und `01ff48b` (der
+Vollzug des Änderungsantrags an docs/arbeitsweise.md, Abschnitt 4b, 10 Zeilen). Ohne sie
+wären es 4 402 Zeilen und 0,64 : 1.
+**DAS VERHÄLTNIS IST EINMAL GESTIEGEN, NICHT ZWEIMAL IN FOLGE** (1,54 → 0,89 → 0,62 →
+**0,65**); der Befund der Arbeitsweise tritt NICHT ein.
+**DIE WERTE DER VORPHASEN SIND NACHGEMESSEN UND NICHT ÜBERNOMMEN WORDEN — UND EINER GEHT
+NICHT AUF:** Der Archivkopf der Phase 11.13 führt für 11.12 **1 165** Zeilen in `docs/` und
+**1,49 : 1**; an derselben dort genannten Spanne misst diese Runde **1 206** und
+**1,54 : 1** (auch mit Umbenennungs-Erkennung, drei Varianten geprüft). **DIE DIFFERENZ VON
+41 ZEILEN IST NICHT AUFGEKLÄRT, UND SIE WIRD HIER NICHT WEGGERECHNET.** 11.13 (0,89) und
+11.6 (0,62) sind dagegen auf die Zeile reproduziert. **Für die Reihe ist es folgenlos:**
+Beide Werte für 11.12 liegen weit über 0,89, die Richtung ändert sich nicht.
+**IN DER SPANNE FÜHRT GIT KEINE DATEI ALS BINÄR** — `src/lib/mappings.ts` mit ihrem NUL-Byte
+ist in dieser Phase nicht angefasst worden und verfälscht die Summe deshalb nicht.
+
+**WIE SIE ENDETE:** Ihr Marker steht auf `[x]`, und das heisst **BAU-FERTIG** — nicht "die
+Import-Bereinigung ist fertig". **WAS AM HAKEN UNBEWIESEN IST, STEHT AN DER ROADMAP-ZEILE
+11.11** (docs/roadmap.md) und wird hier NICHT verdoppelt; der tragende Punkt: **auf der
+einzigen echten Seite, an der die Erkennung gemessen worden ist, hat die Signaturliste
+KEINEN EINZIGEN Anbieter erkannt.**
+**ZWEI WERKZEUG-FEHLGRIFFE SIND IN DIESER PHASE PROTOKOLLIERT, BEIDE OHNE SCHADEN — sie
+stehen hier benannt und ziehen KEINE Regeländerung nach sich:** (1) Zweimal ist ein
+Ganz-Datei-Schreiber an einer HILFSDATEI angesetzt worden — `perl -i` an
+`src/components/PublishView.tsx` in 11.11d (VERMERK P11.11-23) und `sed -i` an der
+Wegwerf-Probe der E2-Messung in 11.11e (VERMERK P11.11-42); dort wurde aus der
+Versionsverwaltung wiederhergestellt, hier war die Datei eine Wegwerf-Datei, und in KEINEM
+Commit ist davon etwas gelandet. Ob die Werkzeug-Regel um den Fall der Hilfs- und
+Wegwerf-Datei geschärft wird, ist im Vermerk ausdrücklich NICHT entschieden. (2) Die
+Nachricht des Hebungs-Commits `c3b849a` ist zunächst als PowerShell-Here-String angesetzt
+worden statt per Bash-Heredoc und **vor dem Push berichtigt** — die committete Nachricht
+trägt reines LF und keinen Artefakt-Rest (GEMESSEN, CC, 2026-09-22); die Ansage des
+Fehlgriffs selbst ist eine ANGABE DES AUFTRAGS dieser Runde und am Repo nicht prüfbar.
+
+**DAS PROTOKOLL DER HEBUNG — 2026-09-22, EIN COMMIT (`c3b849a`).** An jeder gehobenen Stelle
+steht ein Zeiger; ohne ihn wäre ein umgezogener Eintrag von einem nie dagewesenen nicht zu
+unterscheiden. **DIE BILANZ IST VOR DER ARCHIVIERUNG AM BESTAND DER ZIELDATEIEN GEGENGEPRÜFT
+WORDEN — je Eintrag am ZIELORT, nicht gegen die Liste der Hebungs-Runde** (docs/arbeitsweise.md,
+Phasenende: "Eine Liste, die von derselben Runde stammt wie die Verschiebung, bestätigt sich
+selbst"). **42 EINTRÄGE, alle vier Klassen gehen auf** (GEMESSEN, CC, 2026-09-22):
+- **ZWEI NACH docs/immer-beachten.md**, als datierte ERGÄNZUNGEN an einer bestehenden Regel
+  und KEINE neue Regel: **ENTSCHEIDUNG P11.11-9** (dritter Satz — jeder neue Rahmen mit
+  Kundencode bekommt denselben Sandbox-Wächter) an der Regel "Importierter User-Code läuft
+  NUR im sandboxed iframe …", und **ENTSCHEIDUNG P11.11-24** (eine Meldung über einen Text
+  wird aus dem aktuellen Text abgeleitet) an der Regel "ABLEITEN STATT LÖSCHEN
+  (projekt-spezifischer View-State)". **GEGENPROBE:** je Marke genau EIN Treffer, beide
+  innerhalb ihrer Zielregel gelegen (Position gegen Regelanfang und nächste Regel gemessen,
+  leerraum-tolerant über `perl -0777`); Positivkontrolle an den zwei Regeltiteln, die wegen
+  des Verzeichnisses erwartungsgemäss je ZWEIMAL stehen, Negativkontrolle NULL.
+  **DER GRUND FÜR DIE ERGÄNZUNGS-FORM:** CLAUDE.md steht über ihrer Warnschwelle, und eine
+  Ergänzung an der Regel, die den Gegenstand ohnehin trägt, ist die billigere und die
+  auffindbarere Form.
+- **SIEBEN INS BACKLOG** — **VORRAT P11.11-2, -3, -4, -6, -7, -8 und -9**, nach
+  docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.11 gehoben (2026-09-22) —
+  sieben Vorrats-Einträge und ein Restsatz", je unter ihrer Ursprungs-Nummer. **DAZU EIN
+  EINTRAG OHNE EIGENE NUMMER:** der Restsatz aus VORRAT P11.11-5 ("ob Meta doppelt zählt,
+  ist ungemessen"), dessen übriger Gegenstand mit der Scheibe 11.11d erledigt ist — **wer nur
+  den offenen Vorrat sichtet, findet ihn nicht.** **GEGENPROBE:** alle acht als eigene
+  Einträge im Abschnitt nachgewiesen; Negativkontrolle NULL, der Stub jener Datei in
+  CLAUDE.md im selben Zug nachgezogen.
+  **KEIN EINZIGER VORRATS-EINTRAG DIESER PHASE TRÄGT EINEN TRIGGER**, und jeder sagt das an
+  seinem Abschnitt selbst — **nach docs/offene-punkte.md ist deshalb NICHTS gegangen.** Das
+  zweiteilige Kriterium (benennbarer Trigger UND "geht sonst still kaputt") hat hier gar
+  nicht getrennt. **ZWEI BESTEHENDE POSTEN JENER DATEI SIND TROTZDEM ANGEFASST**, als Zeiger
+  bzw. Sachkorrektur und nicht als Neuaufnahme — "UNSER EINWILLIGUNGS-DIALOG KANN EIN FREMDES
+  CMP ÜBERFAHREN" und "DER EINWILLIGUNGS-HOOK IST AN KEINER … STELLE BESCHRIEBEN"; **beide
+  bleiben OFFEN.**
+- **DREI GESTRICHEN, je mit dem Beleg der Erledigung am Eintrag:** **VORRAT P11.11-1**
+  (erledigt mit 11.11a, `4efa94b`), **VORRAT P11.11-5** (erledigt mit 11.11d, `0b9bd7f`) und
+  **HEBUNGS-KANDIDAT P11.11-1** (eingelöst mit der Neufassung des Pflicht-Stopps für
+  docs/ziel-befunde.md in CLAUDE.md). **GEGENPROBE:** Titel und Beleg stehen je am Eintrag,
+  beide Commit-Hashes existieren (`git cat-file -t`). **BEIM HEBUNGS-KANDIDATEN LAUTET DER
+  BELEG "dieser Commit" UND NENNT KEINEN HASH** — gemeint ist der Hebungs-Commit `c3b849a`;
+  dass er die Neufassung trägt, ist an seinem Diff nachgeprüft (CC, 2026-09-22). **Dieser
+  Satz ist der Ersatz für den fehlenden Hash**, denn "dieser Commit" löst sich nur auf,
+  solange jemand weiss, in welchem Commit der Satz entstanden ist.
+- **DREISSIG BLEIBEN IM ARCHIV** — die übrigen Entscheidungen, mit einem SAMMELVERMERK
+  "NICHT GEHOBEN" am Kopf ihres Abschnitts statt dreissig Einzelzeigern. **GESTRICHEN SIND
+  SIE DAMIT NICHT: sie gelten, solange der Code steht.** Sie beschreiben, WIE der Code
+  DIESER Phase gebaut ist — die fünf Klassen der Erkennung, die drei Parkformen, die
+  Reihenfolge eigen-vor-fremd, die Bauform des Entfernens, die Freigaben je Plan, die
+  Bündelung nach Host. **GEGENPROBE:** 32 Entscheidungs-Überschriften im Abschnitt, davon
+  ZWEI mit Einzelzeiger "→ GEHOBEN 2026-09-22" (P11.11-9 und P11.11-24) — bleiben 30.
+- **WAS SCHRITT 1 NICHT ERLEDIGT HAT:** Der Posten "DIE PRÄMISSE VON PUNKT (a) DES
+  DATENKLASSEN-BLOCKS IST TOT" (docs/offene-punkte.md) hat mit dieser Phase seinen Trigger
+  feuern sehen und ist **NICHT ANGEFASST** — an ihm selbst ist nichts falsch, und was er
+  offenlässt, ist mehr als eine Sachkorrektur.
+
+**ALTE ZEIGER AUF `docs/aktiver-stand.md` MEINEN NICHT IMMER DIESE DATEI**, sondern je nach
+Alter eine frühere Standdatei — der Pfad trug je Phase eine andere (docs/immer-beachten.md,
+EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE). **WELCHE ZEIGER DIESE
+PHASE MEINEN, IST GEMESSEN (CC, 2026-09-22)**, Achse `docs/aktiver-stand\.md` über CLAUDE.md
+und alle verfolgten Dateien in `docs/`, je Treffer der Kontext auf `11\.11` geprüft:
+- **IN `docs/` UND CLAUDE.md GENAU DREI**, alle mit der Archivierung nachgezogen: die zwei
+  im Zusatz vom 2026-09-21 an der Polish-Liste in docs/claude-history/backlog-polish.md
+  (Entscheidung P11.11-2 und Designfrage D3) und der D4-Zeiger in der Roadmap-Zeile 11.11,
+  der mit dem Kollabieren jener Zeile entfallen ist.
+- **IN `src/` ELF**, in einem EIGENEN `chore`-Commit auf diesen Archivpfad nachzuziehen:
+  sechs `beleg`-Felder in `src/lib/foreign-signatures.ts` und je ein Kommentar in
+  `foreign-scan.test.ts`, `foreign-signatures.test.ts`, `foreign-strip.test.ts`,
+  `own-blocks-waechter.test.ts` und `CodeImporter.test.tsx`. **SIE SIND IN DIESEM COMMIT
+  NOCH TOT** — er fasst nur `docs/` und CLAUDE.md an; wer zwischen beiden Commits sucht,
+  findet den alten Pfad nicht mehr.
+- **VIER WEITERE ZEIGER IN `src/` MEINEN FRÜHERE STANDDATEIEN** und sind im offenen Punkt
+  "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI" geführt; sie sind in
+  dieser Runde ausdrücklich NICHT angefasst worden.
+
+**DER SATZ IM KOPF DES RUMPFES, DASS SIE DEN NAMEN `docs/aktiver-stand.md` "BIS ZUM
+PHASENENDE" BEHÄLT, BLEIBT STEHEN.** Er ist ein Zeitdokument und war richtig, als er
+geschrieben wurde; sonst ist am Rumpf nichts umformuliert. **Dasselbe gilt für die drei
+datierten Zählzeilen des Rumpfes und für den Satz, mit dem sie am 2026-09-21 abgebrochen
+worden sind:** sie sind alt und nicht falsch.
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **WAS DIESE DATEI IST:** der steuernde Stand der laufenden Phase 11.11 — das, was jeweils
 gilt, nicht das, was geworden ist. Sie heisst `docs/aktiver-stand.md` und behält diesen

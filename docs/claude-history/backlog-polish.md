@@ -1276,7 +1276,9 @@ miterledigen, sondern gebündelt abarbeiten.
   hat, ist seine Verortung und der Stand zweier seiner Angaben.
   (1) DIE ERKENNUNGS- UND ANZEIGE-HÄLFTE IST VERORTET: Sie gehört zur Phase
   11.11 (Import-Bereinigung) — docs/roadmap.md, Roadmap-Zeile 11.11, und
-  docs/aktiver-stand.md, Entscheidung P11.11-2 (ARCHITEKT, 2026-09-21). DER
+  docs/claude-history/phase-11.11-import-bereinigung.md, Entscheidung P11.11-2
+  (ARCHITEKT, 2026-09-21; der Pfad ist mit der Archivierung am 2026-09-22
+  nachgezogen, die Standdatei hiess bis dahin docs/aktiver-stand.md). DER
   "ERSTE SCHRITT", DEN DIESER EINTRAG VERLANGT, IST DAMIT ENTSCHIEDEN: an der
   Roadmap-Zeile 11.11 unter (c), zugunsten der ANZEIGE — "ERKENNEN UND MELDEN,
   ENTFERNEN NUR AUF KLICK DES BETREIBERS" (OWNER-ENTSCHEIDUNG 2026-09-14;
@@ -1290,8 +1292,9 @@ miterledigen, sondern gebündelt abarbeiten.
   Klick des Betreibers — eine Phase, die beides trüge, trüge keine Entscheidung.
   EINE GRENZE GEHÖRT DAZU: Dieser Eintrag spricht von "beliebigen Skripten", die
   Roadmap-Zeile von bekannten Pixeln und Einwilligungs-Werkzeugen. Die Reichweite
-  ist als Designfrage D3 in docs/aktiver-stand.md geführt und HIER NICHT
-  entschieden.
+  ist als Designfrage D3 in docs/claude-history/phase-11.11-import-bereinigung.md
+  geführt und HIER NICHT entschieden (Pfad am 2026-09-22 mit der Archivierung
+  nachgezogen).
   (3) DAS "CUSTOM-SCRIPT-FELD" AUS DEM BEZUG EXISTIERT SEIT PHASE 11.6: Die
   Projekt-Einstellungen tragen mit `settings.customPixel.code` ein Feld für
   freien Betreiber-Code (`ProjectSettings` in src/lib/settings.ts, gelesen von

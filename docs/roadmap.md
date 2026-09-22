@@ -2051,146 +2051,105 @@ liegen beide hier und finden einander.
       steht statt 16.2.12 nun 16.3.5. DER ZWEITE VOLLZUG JENES ÄNDERUNGSANTRAGS IST
       EINGELÖST: Die Projektanweisung trägt "Next.js 16.3.5" (ARCHITEKT-ABLESUNG
       2026-09-17 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar).
-- [ ] Phase 11.11 — Import-Bereinigung: eine EIGENE Zeile, angelegt am 2026-09-14. Sie
-      GEHÖRT NICHT zur laufenden Phase 11.5 und ist kein Teil ihrer Scheiben.
+- [x] Phase 11.11 — Import-Bereinigung:
+      ABGESCHLOSSEN (2026-09-22, an ZWEI Tagen). Importiertes HTML bringt fremde
+      Tracking-Pixel, Einwilligungs-Werkzeuge und Tag-Container mit; sie laufen am
+      Einwilligungs-Gate vorbei, stellen beim Meta-Pixel unsere Adblocker-Messung ab und
+      können Ereignisse doppelt zählen — und niemand zeigte dem Betreiber, was in seinem
+      Code steckt. Seit dieser Phase ZEIGT der Editor JEDES `<script>` des importierten
+      Texts, MARKIERT die bekannten als Pixel, Einwilligungs-Werkzeug oder Container und
+      bietet bei einem bekannten Pixel — und nur dort — ein Entfernen auf Klick an.
+      FÜNF Scheiben, alle gebaut und live bewiesen: der SANDBOX-WÄCHTER an beiden
+      Vorschau-Rahmen (`4efa94b`), die EIGENEN BAUSTEINE aus einem früheren Export samt
+      Publish- und Export-Riegel (`0b9bd7f`), die ERKENNUNG UND ANZEIGE mit versionierter
+      Signaturliste (`6d6ab42`), das ENTFERNEN fremder Pixel auf Klick (`bcd3c5a`) und die
+      BÜNDELUNG der Fundliste nach Host (`aad143e`).
+      VERWEIS: Gegenstand, Ausgangslage, die zehn Vermerke, die 32 bindenden
+      Entscheidungen, der Vorrat und das Protokoll der Hebung stehen in
+      docs/claude-history/phase-11.11-import-bereinigung.md. Dort steht auch der Messwert
+      aus docs/arbeitsweise.md, Abschnitt 2b.
 
-      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5, 11.5, 11.10):
-      KEINE bestehende Nummer wird verschoben. Dass 11.11 im Bestand unbelegt war, ist
-      GEMESSEN am Repo (CC, 2026-09-14, `git grep "11\.11"` über alle verfolgten
-      Dateien — kein Treffer; Positivkontrolle: dieselbe Suche nach `11\.10` trifft).
+      WAS ZUM ZEITPUNKT DES HAKENS UNBEWIESEN IST — der Haken heisst BAU-FERTIG, nicht
+      „die Import-Bereinigung ist erledigt". Das Kriterium und seine Auflage stehen in
+      CLAUDE.md, "## Roadmap & aktueller Stand", unter "WANN [x] GESETZT WIRD — DAS
+      KRITERIUM"; sie werden hier NICHT wiederholt, sondern eingelöst. ACHT PUNKTE, NACH
+      RANG, je mit Fundstelle:
+      1. AUF DER EINZIGEN ECHTEN SEITE, AN DER GEMESSEN WORDEN IST, HAT DIE SIGNATURLISTE
+         KEINEN EINZIGEN ANBIETER ERKANNT. Eine reale WordPress-Seite trug 136 Skripte,
+         und alle 136 standen als UNBEKANNT in der Liste (OWNER-ANGABE, LIVE, 2026-09-22).
+         BEWIESEN IST DIE MECHANIK, NICHT DIE TREFFERQUOTE — das Produktversprechen dieser
+         Phase ist, dem Betreiber zu zeigen, WAS sein Code mitbringt, und genau das hat die
+         Liste dort nicht geleistet. DAS IST DER GEWOLLTE AUSGANG UND KEIN DEFEKT (die
+         fehlende Marke macht das Veralten sichtbar, so Entscheidung P11.11-3), UND ER
+         BLEIBT TROTZDEM EINE UNBEWIESENE ACHSE. Fünf auf derselben Seite benannte Lücken —
+         Universal Analytics, ActiveCampaign, Digistore24, Trustpilot, Deadline Funnel —
+         stehen als Vorrat P11.11-8 im Backlog; jede Aufnahme kostet einen eigenen Crawl.
+         AUS DERSELBEN EINEN SEITE STAMMT AUCH DIE GRUPPENZAHL der Bündelung (sieben
+         Gruppen für 136 Skripte); ob die Liste auf einer anderen realen Seite ähnlich kurz
+         wird, ist nicht erhoben. Fundstelle: VERMERK P11.11-42 im Archiv.
+      2. KEIN ECHTER ANBIETER-SCHNIPSEL IST GEMESSEN. docs/ziel-befunde.md zitiert die
+         Basiscodes nicht wörtlich, sondern zerlegt sie in Adresse und globale Namen; die
+         Testseite und die V2-Probe sind daraus NACHGEBAUT, Bestandteil für Bestandteil.
+         Gemessen ist der Bau aus den belegten Bestandteilen, nicht der Schnipsel, den ein
+         Anbieter heute ausliefert. Fundstelle: VERMERK P11.11-39, Grenzen, und ENTSCHEIDUNG
+         P11.11-38, Ergänzung.
+      3. NUR CHROME. Alle vier Live-Nachweise der Bau-Scheiben sind in Chrome gefahren;
+         Firefox und WebKit sind UNGEMESSEN. Der Editor läuft im Browser des Betreibers.
+         Fundstelle: die Grenzen der VERMERKE P11.11-8, P11.11-23, P11.11-33, P11.11-39 und
+         P11.11-42.
+      4. DIE HISTORIE ALTERT AUF BEIDEN SEITEN, UND KEINE DAVON IST ERHOBEN. Ob ein
+         ANBIETER seine Adresse je geändert hat, ist an keiner Stelle gemessen — eine
+         Signatur altert still. Und für die EIGENEN Kennungen ist nur `MAPPINGS_SCRIPT_ID`
+         historisch erhoben; trüge ein re-importierter Export aus einer früheren Fassung
+         eine Kennung, die das Prädikat nicht kennt, bliebe sein Block stehen UND die
+         Nachbedingung meldete trotzdem „sauber". Fundstelle: VERMERK P11.11-33, Grenzen,
+         und ENTSCHEIDUNG P11.11-22, Punkt (f).
+      5. ONETRUST RUHT AUF EINER MESSUNG AN EINER EINZIGEN INSTALLATION, NICHT AUF DER
+         DOKU; seine Punkte (c) und (d) sind nicht gefunden. ENTSCHEIDUNG P11.11-28 lässt
+         das ausdrücklich NUR für das ETIKETT und NUR bei einem CMP gelten, weil dort kein
+         Entfernen daran hängt — bei einem Pixel wäre derselbe Beleg zu dünn. Fundstelle:
+         VERMERK P11.11-25.
+      6. DIE KOLLISIONSANZEIGE LIEST NUR DIE AKTIVE VARIANTE. Ein fremdes CMP allein in
+         Variante B löst KEINEN Hinweis aus, obwohl der Einwilligungs-Schalter, an dem der
+         Hinweis steht, BEIDEN Varianten gilt. Es ist kein Fehlalarm — es fehlt einer, der
+         erscheinen könnte. Fundstelle: Vorrat P11.11-7, im Backlog.
+      7. DREI AUSGÄNGE SIND LIVE NICHT HERSTELLBAR UND ALLEIN IM TEST GEDECKT: „Erkennung
+         fehlgeschlagen", die Rest-Meldung und die Fehlerausgänge von `stripForeignGroup`.
+         Dazu ohne Live-Nachweis, bewusst und mit Grund: eigene Bausteine in Variante B und
+         das Entfernen von Hand. Fundstelle: die Grenzen der VERMERKE P11.11-33, P11.11-39
+         und P11.11-23.
+      8. OB META DOPPELT ZÄHLT, IST UNGEMESSEN. Die Re-Import-Messung belegt die EIGENE
+         Ablage — eine unter Projekt B ausgelieferte Seite schreibt ihre Conversions in
+         Projekt A —; die Zahlen des ANBIETERS sind in keinem Lauf erhoben worden.
+         Fundstelle: VERMERK P11.11-16, und als Restsatz aus Vorrat P11.11-5 im Backlog.
+      DIE PUNKTE 1 UND 2 SIND DIE TRAGENDEN: Beide betreffen das Produktversprechen selbst
+      — ob die Erkennung auf echten Seiten trifft, und ob sie gegen echte Anbieter-Bausteine
+      geprüft ist. DIE ÜBRIGEN SECHS SIND BENANNTE LÜCKEN mit eigener Ablage; sie halten die
+      Phase nicht offen.
+      DIE HERKUNFT DIESER ACHT GEHÖRT DAZU: Sie sind aus den GRENZEN-Abschnitten der zehn
+      Vermerke der Standdatei erhoben (CC, 2026-09-22) und nach Rang geordnet. Die Liste,
+      die eine frühere Runde dazu aufgestellt hat, liegt in KEINER Datei; sie ist hier nicht
+      abgeschrieben, sondern am Bestand neu gezogen worden.
 
-      (a) DER GEGENSTAND: Beim Import fremden HTML erkennt Pagesmith bekannte
-      Tracking-Pixel und Einwilligungs-Werkzeuge, ZEIGT sie dem Betreiber und bietet je
-      Fundstück eine Handlung an. ES WIRD NICHTS AUTOMATISCH ENTFERNT.
+      WAS ÜBER DIE PHASE HINAUS TRÄGT UND NICHT AM CODE ABLESBAR IST: EIGEN VOR FREMD.
+      Unser eigenes Wiring-Script trägt `connect.facebook.net` als Zeichenkette im Rumpf;
+      ohne den Vorrang der eigenen Erkennung meldete die Liste unseren eigenen Baustein als
+      fremdes Meta-Pixel — MIT Entfernen-Knopf. Das ist GEMESSEN (Mutation M1 der Scheibe
+      11.11c) und steht als ENTSCHEIDUNG P11.11-26 im Archiv. Ebenso: ein Inline-Script ist
+      nur entfernbar, wenn sein Rumpf eine bekannte LADE-Adresse trägt — sonst ist es ein
+      AUFRUF in Seiten-Code, und ein Klick hätte die Logik der Seite gelöscht
+      (ENTSCHEIDUNG P11.11-38).
 
-      (b) DAS PROBLEM — drei Befunde am Bestand:
-      · EIN HARTCODIERTES TRACKING-SCRIPT IM IMPORTIERTEN TEXT LÄUFT AM
-        EINWILLIGUNGS-GATE VORBEI. Das Gate ist eine Funktion, die nur UNSER Code fragt:
-        `__psConsent` und `__psConsentAll` werden im Produktivcode aus DREI Dateien
-        gerufen — `src/lib/analytics/pageview-emitter.ts`, `src/lib/tracking/meta.ts` und,
-        seit Phase 11.6, `src/lib/tracking/custom-pixel.ts` (dort in `__psCustomOk`, mit
-        `CUSTOM_CONSENT_TARGET`); GEMESSEN am Repo, CC, 2026-09-21.
-        `generateFunctional` (`src/lib/generate.ts`) trägt keinen Aufruf, der ein
-        Element entfernt; fremde `<script>`-Elemente gehen also in den ausgelieferten
-        Text mit. Ein Script, das das Gate nicht fragt, hängt nicht am Hook — auch nicht
-        bei eingeschaltetem Einwilligungs-Schalter der Phase 11.5.
-        (GEMESSEN am Code, CC, 2026-09-14. Dass ein solches Script dann tatsächlich
-        sendet, ist eine ABLEITUNG und an keiner Seite gemessen.)
-      · BEI EINEM FREMDEN META-PIXEL STELLT SICH UNSERE ADBLOCKER-MESSUNG AB — gebaut als
-        `foreign`-Zweig im Bootstrap von `__psMetaInit` (`src/lib/tracking/meta.ts`).
-        WAS ER TUT (GEMESSEN am Code, CC, 2026-09-14): Findet der Bootstrap beim ersten
-        eingewilligten Feuern schon ein `fbq` vor, ruft er `__psPixelResolve("foreign")`
-        — gepufferte und alle späteren Bestätigungen werden verworfen —, schreibt eine
-        Warnung in die BROWSER-KONSOLE und erzeugt kein eigenes Script-Element. Das
-        anschliessende `fbq("init", …)` läuft trotzdem, also gegen das vorgefundene
-        `fbq`. Er entfernt nichts.
-        SEINE BEGRÜNDUNG IM WORTLAUT des Kommentars, umlautfrei wie im Quelltext: "Blind
-        bestaetigen ist VERWORFEN: auch das Fremd-Snippet legt synchron einen Stub an,
-        der Frueh-Ausstieg greift also MIT und OHNE Blocker — blind bestaetigen wuerde
-        einen echten Blocker verstecken. Lieber uninformativ als irrefuehrend."
-        Was die Verlustraten-Kachel in diesem Fall anzeigt, ist hier NICHT nachgesehen.
-      · EIN SCRIPT IM IMPORTIERTEN TEXT, DAS UNSEREN HOOK SETZT, ÜBERLEBT JEDES
-        NEU-VERÖFFENTLICHEN UND SIEHT AUS WIE EIN DEFEKT: Vorrat (13) der Phase 11.5.
-        SEIN HEUTIGER ORT, GEMESSEN am Repo (CC, 2026-09-21): der ungekürzte Wortlaut im
-        Archiv docs/claude-history/phase-11.5-einwilligung.md, Abschnitt "9. Vorrat —
-        gemeldet, nicht gebaut", unter der Nummer (13), mit dem Zeiger "GEHOBEN
-        2026-09-16"; geführt wird er seit dem Phasenende in
-        docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.5 gehoben
-        (2026-09-16) — Vorrat, ein Roadmap-Punkt und zwei Hebungs-Kandidaten", ebenfalls
-        unter (13). Der Beleg dort ist ein Vorfall vom 2026-09-14
-        mit einem Test-Script, das der Owner selbst eingesetzt hatte — ein Nachbild
-        eines fremden CMP aus der Scheibe 11.5b. OWNER-ANGABE; kein Fall auf einer
-        fremden Seite.
-        DER ZEIGER NENNT DIE PHASE UND NICHT NUR DEN PFAD: Die Standdatei wird am
-        Phasenende umbenannt, und über die Phasennummer löst er dann über ihr Archiv auf
-        (docs/immer-beachten.md, "EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE
-        SIE KEINE", Gegenform (2)). Dasselbe gilt für Vorrat (3) unter (d) und (f).
-
-      (c) DIE ENTSCHEIDUNG — ERKENNEN UND MELDEN, ENTFERNEN NUR AUF KLICK DES BETREIBERS
-      (OWNER-ENTSCHEIDUNG 2026-09-14, auf Vorschlag des Architekten). Drei Gründe, in
-      dieser Reihenfolge:
-      · DIE ROADMAP-ZEILE 11.5 SICHERT ZU, DASS EIN FREMDES CMP EINBINDBAR BLEIBT. Dort
-        im Wortlaut: "ENTSCHIEDEN (Owner 2026-08-12): ein eigener Dialog wird gebaut, ein
-        fremder bleibt einbindbar." — und unter ihren Bindungen: "der eigene Dialog UND
-        ein fremdes CMP bedienen DENSELBEN Hook."
-        SEIT PHASE 11.6 TRAGEN DIE PROJEKT-EINSTELLUNGEN EIN FELD FÜR BETREIBER-CODE:
-        `ProjectSettings` (`src/lib/settings.ts`) führt FÜNF Mitglieder — `pixels`,
-        `capi`, `hosting`, `consent` und `customPixel`; `customPixel.code` wird von
-        `getCustomPixelCode` gelesen und ausschliesslich im Modus "export" ausgeliefert.
-        Die Server-Injektion fügt weiterhin nur unsere eigenen Bausteine ein (GEMESSEN am
-        Code, CC, 2026-09-21).
-        OB `customPixel` EIN FREMDES CMP TRAGEN KANN, IST OFFEN — hier weder behauptet
-        noch bestritten. Die Frage steht als D4 in docs/aktiver-stand.md, Abschnitt "Die
-        offenen Designfragen", samt den zwei dazu gemessenen Angaben (der eigene
-        Einwilligungs-Schlüssel des Feldes und die Reihenfolge von Hook-Setzen und erster
-        Gate-Abfrage).
-        DER GRUND TRÄGT UNABHÄNGIG DAVON, und das ist der Punkt: Ein automatisches
-        Entfernen beim Import nähme jedem Betreiber, der sein CMP heute im importierten
-        Text stehen hat, genau dieses CMP — also das zugesicherte Merkmal. Das gilt, ob es
-        daneben einen zweiten Weg gibt oder nicht (ARCHITEKT-ANGABE, 2026-09-21). Wer es
-        beim Import entfernt, schafft das zugesicherte Merkmal ab.
-      · WIR SIND WERKZEUG, NICHT AUFSICHT. Der Satz steht in docs/arbeitsweise.md,
-        Abschnitt "4b. DIE TRAGENDEN ENTSCHEIDUNGEN", Unterabschnitt "Haltung"; die
-        verbindliche Fassung an der Roadmap-Zeile 11.5 lautet "Wir weisen hin, wir
-        erzwingen nicht." Stilles Entfernen fremden Codes ist das Gegenteil.
-      · DER PRÄZEDENZFALL STEHT IM CODE: Der `foreign`-Zweig unter (b) erkennt, meldet und
-        stellt die Messung ab — er entfernt nichts. Seine Begründung endet mit "Lieber
-        uninformativ als irrefuehrend."
-        DIE GRENZE DES PRÄZEDENZFALLS GEHÖRT DAZU, sonst trägt er mehr, als er kann: Er
-        erkennt zur LAUFZEIT im Browser des Besuchers, nicht beim Import, und er meldet in
-        die Konsole, nicht dem Betreiber. Er belegt die HALTUNG — benennen statt
-        entfernen —, nicht die Bauform dieser Phase.
-
-      (d) DIE UNTERSCHEIDUNG, UND SIE IST DER KERN DIESER ZEILE: PIXEL UND CMP SIND NICHT
-      DIESELBE KLASSE.
-      · EIN FREMDES TRACKING-PIXEL KONKURRIERT MIT UNSEREM FAN-OUT: Es umgeht das Gate
-        (erster Befund unter (b)), beim Meta-Pixel stellt es zusätzlich die
-        Adblocker-Messung ab (zweiter Befund), und es kann Ereignisse doppelt zählen —
-        Letzteres ist eine ABLEITUNG, nicht gemessen. HIER IST ENTFERNEN MEIST DIE
-        RICHTIGE HANDLUNG, UND DER BETREIBER ENTSCHEIDET.
-      · EIN FREMDES CMP IST EIN ZUGESICHERTES MERKMAL. Entfernen wäre ein Bruch der
-        Zusicherung unter (c). Die nützlichere Handlung ist ein HINWEIS, WIE es
-        anzubinden ist — genau die Lücke aus Vorrat (3) der Phase 11.5 ("DER HOOK IST AN
-        KEINER FÜR EINEN BETREIBER ERREICHBAREN STELLE BESCHRIEBEN"): Ein fremdes CMP kann
-        ihn also nicht kennen.
-
-      (e) ZWEI DINGE, DIE DIESE ZEILE ALS OFFEN AUSWEIST, statt sie zu entscheiden:
-      · WORAN ERKANNT WIRD. Eine Erkennung an Namen und Adressen ist eine Liste, die
-        altert, und ein Fehltreffer bietet fremden Code zum Entfernen an, den niemand
-        gemeint hat — ein Klick darauf entfernt ihn. DAS ENTSCHEIDET DER ZUSCHNITT,
-        nicht diese Zeile.
-      · WANN SIE LÄUFT — beim Import, beim Speichern oder beim Veröffentlichen. Am Bestand
-        ist zu klären, welcher Weg fremdes HTML überhaupt annimmt und wo eine Erkennung
-        sitzen kann, ohne den Text zu verändern. IN DER RUNDE, DIE DIESE ZEILE ANLEGT,
-        NICHT ERHOBEN.
-
-      (f) WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT: automatisches Entfernen ohne Zutun des
-      Betreibers · jede Veränderung des gespeicherten importierten Texts ohne seinen
-      Klick · eine Erkennung, die einen Fund STILL behandelt · die
-      Betreiber-Dokumentation des Hooks selbst — Vorrat (3) der Phase 11.5; diese Zeile
-      ZEIGT auf sie und löst sie nicht ein.
-
-      (g) DIE NUMMER TRÄGT KEINE REIHENFOLGE, wie bei 11.10 (dort Punkt (d)). Wann diese
-      Phase gebaut wird, ist hier NICHT entschieden.
-
-      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet nichts zu, sie terminiert
-      nichts, und sie legt keine Erkennungs-Liste fest.
-
-      (h) PROVENIENZ — je Angabe:
-      · Die Anforderung: OWNER 2026-09-14. Die Korrektur von "automatisch entfernen" auf
-        "erkennen und melden": ARCHITEKT 2026-09-14, vom Owner angenommen. Die
-        Entscheidung unter (c): OWNER-ENTSCHEIDUNG 2026-09-14, auf Vorschlag des
-        Architekten.
-      · Die Freiheit der Nummer, die Aufrufer des Gates, das Fehlen eines entfernenden
-        Aufrufs in `generateFunctional`, das Verhalten des `foreign`-Zweigs und die
-        Mitglieder von `ProjectSettings`: GEMESSEN am Repo bzw. am Code (CC, 2026-09-14).
-      · Der Kommentar-Wortlaut des `foreign`-Zweigs, die Zusicherung und die Haltung an
-        der Roadmap-Zeile 11.5, der Haltungs-Satz in docs/arbeitsweise.md sowie Vorrat
-        (3) und (13) der Phase 11.5: GELESEN (CC, 2026-09-14) an den genannten Stellen.
-      · Der Vorfall hinter Vorrat (13): OWNER-ANGABE vom 2026-09-14.
-      · Dass ein fremdes Script tatsächlich sendet und dass ein fremdes Pixel doppelt
-        zählt: ABLEITUNGEN, keine Messungen. "Hier ist Entfernen meist die richtige
-        Handlung" unter (d): ARCHITEKT-ANGABE 2026-09-14, keine Messung.
+      DER VOLLTEXT DIESER ZEILE VOR DEM ABHAKEN — die Punkte (a) bis (h), die drei Befunde
+      am Bestand, die Entscheidung „erkennen und melden", die Unterscheidung Pixel gegen
+      CMP und die Provenienz je Angabe — STEHT IM COMMIT `c3b849a` und ist über
+      `git show c3b849a:docs/roadmap.md` vollständig nachzulesen. ER IST NICHT
+      VERLORENGEGANGEN, SONDERN KOLLABIERT: Seine Aufklärungs- und Zuschnitt-Vorbehalte
+      haben die Phase getragen und sind mit ihr eingelöst; was über sie hinaus bindet, steht
+      als Entscheidung im Archiv der Phase. DER ZEIGER AUF DIE DESIGNFRAGE D4 IN
+      `docs/aktiver-stand.md` IST MIT DIESEM KOLLABIEREN ENTFALLEN und NICHT nachgezogen
+      worden — D4 ist ohne Messung geschlossen (ENTSCHEIDUNG P11.11-6), und ein Zeiger auf
+      eine geschlossene Frage trüge nichts.
 - [x] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur:
       ABGESCHLOSSEN (2026-09-17, an EINEM Tag). Importierte Seiten, die beim Laden
       `document.cookie` oder Web Storage lesen, brachen im sandboxed Editor-Rahmen ab

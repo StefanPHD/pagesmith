@@ -1339,6 +1339,419 @@ oder Fehlerformen des Server-Adapters sagt dieser Teil NICHTS.
   Fehlerbehebungs-Artikel ist der naheliegendste Ort für eine abweichende Script-Adresse.
 · Campaign Manager und `linkedin.com/developers` — hinter einer Anmeldung, nicht betreten.
 
+### Abschnitts-Lesung 2026-09-22 (BESCHRÄNKTER CRAWL der Phase 11.7) — die Teile (an) bis (at)
+
+**HERKUNFT (2026-09-22):** Eine BESCHRÄNKTE Abschnitts-Lesung durch CC mit dem
+Browser-Werkzeug (Playwright-MCP). Sie ist KEIN voller Crawl des Conversions-Zweigs,
+sondern folgt einer im voraus festgelegten Liste von sechs Fragen; Umfang und Grund der
+Beschränkung stehen am Ende dieses Abschnitts unter "Der gelesene Umfang (2026-09-22) —
+LinkedIn, Klick-Kennung und Version". Gelesen wurde durchgehend mit `textContent` von
+`<main>`, nie mit `innerText`, und durchgehend an der ENGLISCHEN Fassung; auf
+learn.microsoft.com in der Ansicht `view=li-lms-2026-08`, also in DERSELBEN Ansicht wie
+die Lesung vom 2026-09-11 — sie ist ein gewählter Doku-Stand und wird hier ausgewiesen,
+nicht als neutral behauptet.
+**KEIN AUFRUF GEGEN DIE SCHNITTSTELLE.** Keine Anmeldung, keine Eingabe auf einer fremden
+Seite, kein Download. Alles unten ist GELESEN 2026-09-22 und **ersetzt keine Messung.**
+EINZIGE AUSNAHMEN sind drei Angaben in (ar) und (at), die unseren EIGENEN Code
+beschreiben: sie sind GEMESSEN am Repo (CC, 2026-09-22, HEAD `75f4718`) und je an Ort und
+Stelle als solche gekennzeichnet.
+**KEINE SEITE HAT VERSUCHT, DEN LESENDEN ANZUWEISEN.**
+**DREI SEITENSTÄNDE SIND JÜNGER ALS IM BESTAND, UND DAS GEHÖRT IN DEN KOPF:** S3, S4 und
+S11 tragen am 2026-09-22 den Stand **"Last updated on 09/16/2026"**; der Umfang vom
+2026-09-11 führt für S3 und S4 den 08/26/2026 und für S11 den 08/17/2026. **DIE SEITEN
+SIND SEIT JENER LESUNG FORTGESCHRIEBEN WORDEN.** Was davon neu ist und was schon am
+2026-09-11 dastand, ist NICHT erhoben — ein Seitenstand sagt, dass geändert wurde, nicht
+was. Wer einen Teil unten gegen einen Teil aus (aa) bis (al) hält, rechnet damit.
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF DIESER DATEI:** Auf (am) folgt (an).
+
+(an) `li_fat_id` — ZWEI HERKUNFTSWEGE MIT VERSCHIEDENER WIRKUNG AUF DIE ATTRIBUTION, EINE
+     HALTEDAUER — UND KEIN FORMAT.
+     GELESEN 2026-09-22 an
+     learn.microsoft.com/en-us/linkedin/marketing/conversions/enabling-first-party-cookies
+     ("Enabling Click IDs - LinkedIn | Microsoft Learn", Seitenstand "Last updated on
+     03/04/2026", Ansicht `view=li-lms-2026-08`) — das ist S8 des Umfangs vom 2026-09-11.
+     · **DER SATZ, DER BEIDE WEGE NEBENEINANDERSTELLT**, wörtlich: "Capture Click ID
+       li_fat_id by parsing from the Click URLs **and/or** read from Cookies (if Insight
+       Tag code is added on website)".
+     · **ADRESS-WEG** ("Parsing li_fat_id From Click URL"): Er setzt allein voraus, dass
+       "Enhanced conversion tracking" am Insight Tag eingeschaltet ist — und zwar
+       ausdrücklich **"but not required to actually install Insight Tag code on
+       advertiser's website"**. Der Beispielcode liest
+       `new URLSearchParams(window.location.search).get("li_fat_id")`. **EINSCHRÄNKUNG
+       DES ANBIETERS, wörtlich:** "View-though conversion attribution may be limited in
+       this approach." (Schreibweise wie in der Quelle.)
+     · **COOKIE-WEG** ("Reading li_fat_id From Cookies"): Er setzt ZUSÄTZLICH voraus, dass
+       das Insight Tag auf der Seite INSTALLIERT ist. Der Cookie heisst **`li_fat_id`**,
+       also gleich wie der URL-Parameter; der Beispielcode liest ihn aus
+       `document.cookie` und dekodiert den Wert (`decodeURIComponent`). **HALTEDAUER,
+       wörtlich:** "The cookie will persist for **30 days** from the most recent ad click
+       that redirected to the landing page where Insight Tag has been installed."
+       View-Through-Attribution ist auf diesem Weg unterstützt, wenn der Klick in diesen
+       30 Tagen lag.
+     · **DAS FORMAT IST EIN NICHT-TREFFER MIT BENANNTER REICHWEITE.** Über die SECHS in
+       dieser Runde gelesenen Seiten (S8, S4, S3, S10, S11 und der Hilfe-Artikel a423304)
+       nennt KEINE ein Format, eine Länge oder ein Muster. S4 führt den Typ als `string`
+       **ohne jede Auflage** — und das ist auf DERSELBEN Tabelle bemerkenswert, die für
+       `SHA256_EMAIL` "maximum length of 64 characters" und für `SHA256_IP_ADDRESS`
+       "exactly 64 characters" vorschreibt; das Fehlen ist also nicht die Nachlässigkeit
+       einer formlosen Tabelle. Die einzigen konkreten Werte sind **BEISPIELWERTE** in S3
+       (`df5gf5-gh6t7-ph4j7h-fgf6n1`) und S10 (`ufh8h5-gh6t7-ph4j7h-mkl86n1`): vier
+       bindestrichgetrennte Gruppen, UUID-ÄHNLICH — **weder als Format bezeichnet noch
+       mit einer UUID-Zusage versehen. AUS EINEM BEISPIEL EIN FORMAT ABZULEITEN WÄRE EINE
+       ERFINDUNG**, und dieser Teil tut es nicht.
+     · **ZWEITQUELLE FÜR DIE WORTWAHL**, GELESEN 2026-09-22 an S11: "LINKEDIN_FIRST_PARTY_
+       ADS_TRACKING_UUID, also known as li_fat_id, is LinkedIn's first party cookie click
+       ID. When enhanced conversion tracking is enabled, LinkedIn automatically adds a
+       click ID to the end of landing page URLs".
+     · **EIN NEBENBEFUND VON EINER HILFE-SEITE**, GELESEN 2026-09-22 an
+       `linkedin.com/help/lms/answer/a423304/enable-first-party-cookies-on-a-linkedin-insight-tag?lang=en`
+       ("Enable first-party cookies on your LinkedIn Insight Tag", "Last updated: 1 month
+       ago"; sie ist der unmittelbare Verweis aus S8 unter dem Ankertext "Enhanced
+       conversion tracking"): Wer ein **BILD-PIXEL** statt des Insight Tags einsetzt, kann
+       First-Party-Cookies NICHT nutzen und muss auf eine Insight-Tag-Conversion
+       umstellen. Dieselbe Seite trägt eine Auflage des Anbieters, die kein
+       Transport-Befund ist und hier nur gemeldet wird: das Insight Tag soll nicht auf
+       Seiten mit "Sensitive Data" stehen. **`li_fat_id` kommt auf jener Seite 0-mal vor.**
+     **STAND GEGENÜBER DEM BESTAND:** Die Voraussetzung "Enhanced conversion tracking,
+     Tag angelegt, aber nicht zwingend eingebaut" aus (ah) ist BESTÄTIGT **und zugleich
+     PRÄZISIERT** — sie gilt so nur für den ADRESS-Weg; der Cookie-Weg verlangt den
+     Einbau. Cookie-Weg und Haltedauer sind NEU. Der Wortlaut von (ah) wird NICHT
+     umformuliert.
+
+(ao) PFLICHT UND EMPFEHLUNG JE KENNUNG — DIE TRENNUNG, FÜR DIE F3 GESTELLT IST, UND EINE
+     DIVERGENZ IN DER ANBIETER-DOKU, DIE HIER BERICHTET UND NICHT AUFGELÖST WIRD.
+     GELESEN 2026-09-22 an drei Seiten, je mit Seitenstand: S11
+     `…/marketing/conversions/conversions-faq` ("Conversions FAQ", **09/16/2026**) · S4
+     `…/marketing/integrations/ads-reporting/conversions-api-schema` ("Conversions API
+     Schema", **09/16/2026**) · S3 `…/marketing/integrations/ads-reporting/conversions-api`
+     ("Conversions API", **09/16/2026**). Alle drei unter learn.microsoft.com/en-us/linkedin/,
+     Ansicht `view=li-lms-2026-08`.
+     · **DIE PFLICHT IST EINE ODER-LISTE, KEIN EINZELNES MERKMAL.** S11, Abschnitt "Which
+       parameters (user IDs) are required?", wörtlich: "An input request must provide **at
+       least one** of the following" — `SHA256_EMAIL` · `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`
+       · `ACXIOM_ID` · `PLAINTEXT_IP_ADDRESS` · `SHA256_IP_ADDRESS` · `GOOGLE_AID` · eine
+       gültige `userInfo`-Kombination · eine gültige `externalIds`-Liste · ein gültiges
+       `lead` im Format `urn:li:leadGenFormResponse:{id}`.
+     · **S4 FÜHRT DIESELBE LISTE ALS "Input Data Validation"**, inhaltsgleich, mit dem
+       Zusatz: "If you include userInfo or externalIds or lead without any valid idType in
+       userIds, you must use an empty list [] for userIds."
+     · **DIE `userInfo`-KOMBINATION IST VERSIONSABHÄNGIG** (S4 und S11): bis einschliesslich
+       202608 `firstName` UND `lastName` im Klartext ("Required for versions earlier than
+       202609"); **ab 202609** entweder `firstName` oder `hashedFirstName` ZUSAMMEN mit
+       entweder `lastName` oder `hashedLastName` — S11 nennt ausdrücklich auch GEMISCHTE
+       Paare ("for example, firstName with hashedLastName").
+     · **DIE EMPFEHLUNG IST QUALITATIV UND STEHT DREIMAL.** S11: "We recommend sending
+       **both** SHA256 EMAIL **and** LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID for the best
+       matching." S3, Note unter "Streaming Conversion Events": "Send multiple user
+       identifiers if available, to increase match rates. This is important, as only
+       matched events can be used for attribution and optimization." S4 zu `userInfo`:
+       "Including userInfo in the input request can improve match rates" — **also
+       EMPFOHLEN, nicht verlangt.**
+     · **HASHEN, JE SYMBOL** (S4, `idType`-Tabelle): `SHA256_EMAIL` — lowercase, ohne
+       Leerraum, SHA-256, HEX, **höchstens** 64 Zeichen · `SHA256_IP_ADDRESS` — SHA-256,
+       HEX, **genau** 64 Zeichen · `PLAINTEXT_IP_ADDRESS` — Klartext, "LinkedIn will
+       generate the SHA256 hash with salt from your plain text address before matching" ·
+       `ACXIOM_ID`, `GOOGLE_AID` und `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` tragen keine
+       Hash-Auflage. S11 ergänzt für Mailadressen: SHA-256 **ohne Salt**.
+     · **BEIDE IP-SYMBOLE: "Currently, only IPv4 addresses are supported."** Der Satz steht
+       am 2026-09-22 bei BEIDEN Zeilen DERSELBEN Tabelle in S4. **DAS SCHLIESST EINE LÜCKE,
+       DIE DER BESTAND SELBST BENANNT HAT:** Bis dahin war die Aussage über beide Symbole
+       eine ABLEITUNG aus (i) und (aj) und stand in keinem Teil zusammengezogen; jetzt
+       steht sie an EINER Stelle der Quelle. **Sie bleibt GELESEN** — gemessen ist die
+       Abweisung einer IPv6-Adresse weiterhin nicht (s. (j)).
+     · **DIE DIVERGENZ — BERICHTET, NICHT AUFGELÖST.** Die Fehlermeldung in S3s Tabelle
+       "API Error Details" zählt dieselben Pflicht-Alternativen auf und **LÄSST
+       `SHA256_IP_ADDRESS` AUS**, wörtlich: "message=The request must contain one of these
+       fields: SHA256_EMAIL or LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID or ACXIOM_ID or
+       PLAINTEXT_IP_ADDRESS or GOOGLE_AID or (firstName and lastName) or externalIds or
+       lead, and the input shouldn't be empty string". S4 und S11 führen
+       `SHA256_IP_ADDRESS` in derselben Aufzählung MIT. **WELCHE DER BEIDEN DAS VERHALTEN
+       BESCHREIBT, IST UNGEMESSEN** — eine Fehlermeldung in einer Doku-Tabelle ist eine
+       Zeichenkette, kein Schema. **FÜR DEN HEUTIGEN ADAPTER IST DAS FOLGENLOS** (er
+       sendet `PLAINTEXT_IP_ADDRESS`, s. (i)); für einen Wechsel auf die gehashte Form
+       wäre es die erste zu messende Frage.
+     **STAND GEGENÜBER DEM BESTAND:** Die Sechser-Liste der Symbole und die
+     Hash-Zuordnung aus (aj) und (i) sind BESTÄTIGT. **DIE TRENNUNG VERLANGT/EMPFOHLEN
+     IST NEU** — sie war für kein Symbol erhoben. Die 202609-Erweiterung um gehashte
+     Namen ist NEU.
+
+(ap) WAS `userInfo`, `lead` UND `externalIds` IM EINZELNEN TRAGEN.
+     GELESEN 2026-09-22 an S4 (Seitenstand 09/16/2026) und S10
+     `…/marketing/conversions/custom-matching-identifiers` ("Custom Matching Identifiers",
+     Seitenstand **04/30/2026**), beide unter learn.microsoft.com/en-us/linkedin/, Ansicht
+     `view=li-lms-2026-08`.
+     · **`userInfo`** (S4, eigene Tabelle) — SIEBEN Felder, in der Tabelle alle als
+       `(optional)` geführt; ihre Pflicht ergibt sich allein aus der Paar-Regel in (ao):
+       `firstName` · `lastName` · `hashedFirstName` · `hashedLastName` · `companyName` ·
+       `title` · `countryCode` (ISO-Zweibuchstabencode). Hash-Vorschrift für die zwei
+       gehashten Namensfelder: lowercase, ohne Leerzeichen und Zeichensetzung,
+       Sonderzeichen als UTF-8, SHA-256, HEX, **genau** 64 Zeichen; beide **ab 202609**.
+     · **`lead`** (S4) — Typ `LeadGenFormResponseUrn`, Format
+       `urn:li:leadGenFormResponse:{id}`. **ES IST KEIN FREIES FELD:** der Wert entsteht,
+       wenn ein Nutzer ein LinkedIn-Lead-Gen-Formular absendet, und wird aus dem Campaign
+       Manager oder der Lead-Sync-API bezogen. Ein ungültiges Präfix ergibt laut S3
+       **422** ("ERROR :: /user/lead :: Invalid Urn format. Invalid prefix.").
+     · **`externalIds`** (S4, ausführlicher in S10) — Liste von Zeichenketten,
+       **"The maximum supported size of the list is 1 at the moment"**; bei mehreren
+       Werten wird nur der erste benutzt. VIER Sätze ergeben zusammen die Mechanik:
+       (1) der Wert ist ein vom Werbetreibenden vergebener Bezeichner für den auslösenden
+       Nutzer; (2) er muss beim ERSTEN Mal ZUSAMMEN mit einem regulären Merkmal reisen
+       ("Advertisers must send the externalId together with regular standard identifiers …
+       in order for it to be matched"); (3) nach dem Abgleich hält LinkedIn die Zuordnung
+       **ein Jahr**, und zwar **über alle Werbekonten desselben Business Manager hinweg**;
+       (4) danach genügt `externalIds` allein. Verfügbar **ab Version 202410**. **KEINE
+       Hash-Vorschrift.**
+     · **S10 HANDELT AUSSCHLIESSLICH VON `externalIds`.** Zu `lead` und `userInfo` trägt
+       sie nichts — **das ist ein Befund über die Quelle**, weil die Crawl-Liste der Phase
+       sie für alle drei als Fundstelle erwartet hatte; getragen hat sie nur eine davon.
+     **STAND GEGENÜBER DEM BESTAND: VOLLSTÄNDIG NEU.** (aj) nennt die vier Zweige von
+     `user` und dass eine Identität auch OHNE `userIds`-Eintrag reisen kann; **WAS die
+     drei anderen Zweige im Einzelnen tragen, stand in keinem Teil.** (aj) wird nicht
+     umformuliert.
+
+(aq) `user.userIds` DARF MEHR ALS EINEN EINTRAG TRAGEN — ZULÄSSIGKEIT LAUT DOKU, NICHT
+     ANNAHME AM ENDPUNKT.
+     GELESEN 2026-09-22 an S4, S3 und S10 (Seitenstände wie in (ao) und (ap)).
+     · **DIE STELLE, DIE ES REGELT**, wörtlich — S4, Tabelle `ConversionEventUser`, Feld
+       `userIds`: **"List of one or more identifiers to match the conversion user with
+       objects containing idType and idValue."** Typ-Angabe derselben Zeile:
+       `List (idType,idValue)`.
+     · **DREI WEITERE STELLEN TRAGEN ES UNABHÄNGIG DAVON.** S3, Beispiel-Nutzlast "Adding
+       Single Conversion Event": `userIds` mit **VIER** Einträgen im SELBEN Ereignis —
+       `SHA256_EMAIL`, `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`, `PLAINTEXT_IP_ADDRESS`,
+       `GOOGLE_AID` —, daneben `userInfo`, `lead` und `externalIds` gleichzeitig; der
+       einleitende Satz sagt es zudem in Prosa: "This endpoint allows you to stream a
+       single conversion event, including **different match identifiers for the same
+       user**." S3, Batch-Beispiel: zwei Elemente, das zweite wieder mit vier Einträgen.
+       S10, Beispiel: `userIds` mit ZWEI Einträgen (`SHA256_EMAIL` und
+       `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`).
+     · **DER FALL, UM DEN ES GEHT, STEHT AUSGESCHRIEBEN:** eine IP-Adresse UND `li_fat_id`
+       im selben Ereignis — genau die Zusammenstellung des S3-Beispiels.
+     · **ES IST NICHT NUR ERLAUBT, SONDERN ANGERATEN**, zweimal mit Begründung: S3, Note —
+       "Send multiple user identifiers if available, to increase match rates"; S11 — "In
+       general, the more IDs you send with each event, the more likely we are to match it
+       to a member."
+     · **EINE OBERGRENZE WIRD NICHT GENANNT.** Über die sechs gelesenen Seiten steht KEINE
+       Zahl für die maximale Länge von `userIds` — im Unterschied zu `externalIds`, wo der
+       Anbieter die Grenze 1 ausdrücklich beziffert, und zu den Batch-Grenzen (5 000
+       Ereignisse, 100 Regeln). Das höchste in einem Beispiel gelesene Mass ist **vier**.
+       **WER DARAUS EINE OBERGRENZE MACHT, ERFINDET SIE.**
+     **DIE GRENZE DIESES TEILS, UND SIE IST SEIN WICHTIGSTER SATZ: DAS IST EINE AUSSAGE
+     ÜBER DIE ZULÄSSIGKEIT, NICHT ÜBER DIE ANNAHME.** (i) und (n) protokollieren als
+     GEMESSEN eine Nutzlast mit GENAU EINEM Eintrag; dass ein Ereignis mit ZWEI Einträgen
+     vom Endpunkt angenommen wird, ist **NICHT BEANTWORTET** — und zwar verschärft, weil
+     `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` zu den VIER Symbolen gehört, die nie
+     gesendet worden sind (s. (b), (i), (aj)). Der Wortlaut von (i) und (n) wird NICHT
+     umformuliert.
+
+(ar) DIE ANTWORT AUF EINEN ABGESCHALTETEN VERSIONS-HEADER — 426 UND `NONEXISTENT_VERSION`,
+     MIT EINEM ENDPUNKT-VORBEHALT, DER ZUM BEFUND GEHÖRT UND NICHT DANEBEN STEHT.
+     GELESEN 2026-09-22 an
+     learn.microsoft.com/en-us/linkedin/marketing/error-responses ("Updated Marketing API
+     Error Responses - LinkedIn | Microsoft Learn", Seitenstand **"Last updated on
+     10/16/2025"**, Ansicht `view=li-lms-2026-08`).
+     · **"Example 5: Version header is deprecated — This is the error response returned
+       when the version header is deprecated (e.g., 202401)":** `{"status": 426, "code":
+       "NONEXISTENT_VERSION", "message": "Requested version yyyymmdd is not active"}`.
+     · **"Example 4: Version header is missing":** `{"status": 400, "code":
+       "VERSION_MISSING", "message": "A version must be present. Please specify a version
+       by adding the Linkedin-Version header."}`
+     · **DER VORBEHALT IST TEIL DES BEFUNDS UND NICHT SEINE FUSSNOTE.** Dieselbe Seite
+       trägt im Abschnitt "Overview" die Note: **"These updates are available for
+       adCampaignGroups, adCampaigns and adAccounts endpoints only."** Sie bezieht sich
+       dort auf das NEUE FEHLER-SCHEMA (`code`, `errorDetailType`, `errorDetails`); **OB
+       SIE AUCH DIE BEISPIELE 4 UND 5 EINSCHLIESST, SAGT DIE SEITE NICHT.** Die zwei
+       Beispiele betreffen den Versions-Header, der laut S3 "in **all** your API requests"
+       zu senden ist — und `/rest/conversionEvents` steht in der Aufzählung der drei
+       Endpunkte NICHT. **FOLGE, ausdrücklich als Grenze und nicht als Abschwächung: Die
+       Form ist FÜR DIE DREI GENANNTEN ENDPUNKTE GELESEN. Dass `/rest/conversionEvents`
+       bei abgeschalteter Version genau 426/`NONEXISTENT_VERSION` liefert, ist NICHT
+       BELEGT und bleibt eine MESSFRAGE.** Wer den Befund ohne diesen Satz zitiert,
+       überträgt eine Angabe über drei fremde Endpunkte auf einen vierten.
+     · **WAS DER EIGENE CODE MIT EINER SOLCHEN ANTWORT TUT — GEMESSEN am Repo (CC,
+       2026-09-22, HEAD `75f4718`), damit das Wort "still" seine Reichweite behält:**
+       `forwardToLinkedin` (`src/lib/capi/linkedin-forward.ts`) prüft `if (!res.ok)` und
+       schreibt dann GENAU EINE `console.error`-Zeile über `describeLinkedinError`. Ein
+       426 landet also in einer Server-Logzeile — **er ist für den BETREIBER still, nicht
+       für das Log.** Danach kehrt die Funktion zurück; der Ingest-Pfad antwortet
+       unverändert mit der leeren 204, es entsteht keine Zeile in `events` (die Tabelle
+       trägt keine Ziel-Dimension), keine Anzeige und kein Rückkanal an den Betreiber.
+     **STAND GEGENÜBER DEM BESTAND: NEU.** Der Umfang vom 2026-09-11 führt diese Seite
+     unter "GESEHEN, NICHT GEÖFFNET" und die Form ausdrücklich als **nicht gelesen**; die
+     erste Hälfte ist damit — im Rahmen des Vorbehalts oben — eingelöst, die zweite
+     (Messung am eigenen Endpunkt) bleibt offen. (r) und (z) werden NICHT umformuliert.
+
+(as) EINE VORGABE ZU WIEDERHOLUNGSVERSUCHEN NACH EINER 429 GIBT ES IM GELESENEN UMFANG
+     NICHT — NICHT-TREFFER MIT BENANNTER REICHWEITE ÜBER DREI SEITEN, JE MIT
+     POSITIVKONTROLLE.
+     GELESEN 2026-09-22. Zählungen case-insensitiv über `main`:
+     · **S3** `…/ads-reporting/conversions-api` (09/16/2026): `retry` 0 · `backoff` /
+       `back off` 0 · `exponential` 0 · `429` 0. **Positivkontrolle im selben Lauf:**
+       `rate limit` 3 · `throttl` 3.
+     · **S11** `…/conversions/conversions-faq` (09/16/2026): `retry` 0 · `re-try` 0 ·
+       `backoff` / `back off` 0 · `429` 0 · `throttl` 0 · `rate limit` 0.
+       **Positivkontrolle:** `cookie` 5 · `recommend` 5 · `li_fat_id` 1.
+     · **X8** `shared/api-guide/concepts/rate-limits` ("LinkedIn API Rate Limiting",
+       Seitenstand **"Last updated on 08/20/2025"**): `retry` 0 · `retry-after` 0 ·
+       `backoff` / `back off` 0 · `exponential` 0 · `wait` 0 · `resubmit` 0 · `try again`
+       0. **Positivkontrolle:** `429` 2 — die Trefferstelle selbst.
+     · **WARUM X8 GEÖFFNET WURDE, OBWOHL SIE NICHT AUF DER CRAWL-LISTE STAND:** Ihr Titel
+       trägt die Frage unmittelbar, und (ag) benennt an genau ihr die Lücke ("`retry` und
+       `backoff` standen nicht unter den zweiundzwanzig Begriffen"). Sie ist die Seite, an
+       der eine Retry-Vorgabe stünde, wenn es eine gäbe — **ohne sie hätte der
+       Nicht-Treffer keine Reichweite.**
+     · **WAS STATT DESSEN DASTEHT, IST PRÄVENTIV UND NICHT REAKTIV** (S3, Note): "Use
+       batch requests for sending up to 5,000 conversion events in a single batch request
+       to avoid getting throttled from rate limits", und bei der Batch-Beschreibung: "If
+       you encounter issues, try using a smaller batch size." **BEIDES SAGT, WIE MAN DIE
+       429 VERMEIDET, NICHT, WAS MAN NACH EINER TUT.**
+     · **DREI ANGABEN VON X8 SIND NEU.** (1) "Rate limited requests will receive a 429
+       response. **In rare cases, LinkedIn may also return a 429 response as part of
+       infrastructure protection.** API service will return to normal automatically." —
+       eine 429 ist damit NICHT zwingend ein Beleg für das Überschreiten des eigenen
+       Kontingents. (2) **RATE-LIMIT-WARNMELDUNGEN:** Entwickler-Administratoren bekommen
+       eine E-Mail bei über **75 %** des Kontingents — **nur bei Überschreitung auf
+       ANWENDUNGS-Ebene**, nicht auf Mitglieds- oder kombinierter Ebene, und mit **1 bis 2
+       Stunden Verzug**; ein weiterer Endpunkt am selben Tag löst eine weitere Meldung
+       aus. (3) Zwei Grenzen-Arten, Anwendung und Mitglied, zurückgesetzt um Mitternacht
+       UTC.
+     **STAND GEGENÜBER DEM BESTAND:** Die Lücke, die (ag) selbst benennt, ist BESTÄTIGT
+     **und jetzt als Nicht-Treffer belegt statt als ungeprüfte Vermutung.** 429,
+     Mitternacht UTC und "Standard-Limits nicht dokumentiert, im Analytics-Reiter
+     ablesbar" sind BESTÄTIGT. **Die Messfrage, WELCHES Limit tatsächlich greift, ist
+     unberührt und bleibt NICHT BEANTWORTET.**
+
+(at) DIE HEUTE AKTIVEN VERSIONEN UND DER TERMIN DER GESENDETEN — 202601 LÄUFT AM
+     15.01.2027 AB, UNVERÄNDERT.
+     GELESEN 2026-09-22 an
+     learn.microsoft.com/en-us/linkedin/marketing/integrations/migrations ("Migrations -
+     LinkedIn | Microsoft Learn", Seitenstand **"Last updated on 09/16/2026"**, Ansicht
+     `view=li-lms-2026-08`) — das ist X2 des Umfangs vom 2026-09-11. Sie ist geöffnet
+     worden, weil der Warnhinweis auf JEDER in dieser Runde gelesenen Learn-Seite
+     unmittelbar auf sie verweist ("For information on all the supported versions, refer
+     to the migrations documentation").
+     · **DIE ZEILE ZUR GESENDETEN VERSION**, wörtlich: "Developers using LinkedIn
+       Marketing APIs version **202601** (January 2026) to migrate to the latest versions.
+       | **January 15, 2027** | **Active**".
+     · **ELF VERSIONEN SIND AKTIV**, je mit Abschalttermin: 202609 (15.09.2027) · 202608
+       (17.08.2027) · 202607 (15.07.2027) · 202606 (15.06.2027) · 202605 (15.05.2027) ·
+       202604 (15.04.2027) · 202603 (16.03.2027) · 202602 (15.02.2027) · **202601
+       (15.01.2027)** · 202511 (16.11.2026) · 202510 (15.10.2026). Ab **202509** abwärts
+       führt die Tabelle durchgehend "Deprecated". **202601 IST DIE DRITTÄLTESTE NOCH
+       AKTIVE VERSION; DIE JÜNGSTE IST 202609.**
+     · **EINE WARNUNG AUF ALLEN GELESENEN LEARN-SEITEN BETRIFFT EINE ANDERE VERSION UND
+       DARF NICHT MIT UNSERER VERWECHSELT WERDEN:** "The Marketing Version 202510
+       (Marketing October 2025) will be sunset on **October 15, 2026**." Das ist der
+       nächstliegende Ablauf, nicht unserer.
+     · **ZWEI FUNKTIONALE FOLGEN DES ALTERS, GELESEN UND NICHT BEWERTET** (S4, S11): Mit
+       **202608** kommen die Conversion-Typen `MARKETING_QUALIFIED_LEAD` und
+       `SALES_QUALIFIED_LEAD` sowie die Attributionsfenster 180 und 365 Tage; mit
+       **202609** die gehashten Namensfelder. **Unter 202601 steht beides nicht zur
+       Verfügung.**
+     · **DER EIGENE CODE — GEMESSEN am Repo (CC, 2026-09-22, HEAD `75f4718`):**
+       `src/lib/capi/linkedin-forward.ts` trägt `const LINKEDIN_VERSION = "202601";` und
+       sendet den Wert als Kopfzeile `"LinkedIn-Version"`. **EIN ENV-ÜBERSTEUERUNGSWEG
+       EXISTIERT NICHT** — der Wert ist eine Modul-Konstante; darin unterscheidet er sich
+       von `META_GRAPH_VERSION`.
+     **STAND GEGENÜBER DEM BESTAND: BESTÄTIGT, unverändert.** (z) und (af) nennen den
+     Abschalttermin 15.01.2027; er ist am 2026-09-22 an der Quelle gegengeprüft und
+     stimmt. Die Liste der aktiven Versionen und die zwei funktionalen Folgen sind NEU.
+
+### Der gelesene Umfang (2026-09-22) — LinkedIn, Klick-Kennung und Version
+
+**OHNE DIESEN BLOCK HABEN DIE NICHT-TREFFER IN (an) UND (as) KEINE REICHWEITE.** Alle
+Seiten sind am 2026-09-22 abgerufen worden, durchgehend über `textContent` von `<main>`
+und durchgehend an der ENGLISCHEN Fassung; die Learn-Seiten in der Ansicht
+`view=li-lms-2026-08`, der Hilfe-Artikel mit `?lang=en` (ohne diesen Parameter liefert die
+Hilfe eine deutsche Maschinenübersetzung, s. den Umfang vom 2026-09-11). Der Doku-Stand ist
+die "Last updated"-Angabe der jeweiligen Seite.
+
+**DIESE LESUNG IST BESCHRÄNKT, UND DAS IST KEINE AUSLASSUNG, SONDERN IHR ZUSCHNITT:** Sie
+folgt einer im voraus festgelegten Liste von sechs Fragen und liest NUR die Seiten, an
+denen deren Antworten zu erwarten waren, plus die Seiten, auf die jene für eine dieser
+Fragen unmittelbar verweisen. **EIN VOLLER CRAWL DES CONVERSIONS-ZWEIGS IST SIE NICHT** —
+der liegt als Lesung vom 2026-09-11 vor.
+
+**GEÖFFNET UND GELESEN (9 Seiten), je mit der Zeichenzahl des gerenderten Rumpfes:**
+
+1. S8 `marketing/conversions/enabling-first-party-cookies` — "Enabling Click IDs" —
+   03/04/2026 — 7 068 Z. — (an), **die tragende Fundstelle für beide Herkunftswege.**
+2. S4 `marketing/integrations/ads-reporting/conversions-api-schema` — "Conversions API
+   Schema" — **09/16/2026** — 16 260 Z. — (an), (ao), (ap), (aq).
+3. S3 `marketing/integrations/ads-reporting/conversions-api` — "Conversions API" —
+   **09/16/2026** — 21 940 Z. — (ao), (ap), (aq), (as).
+4. S10 `marketing/conversions/custom-matching-identifiers` — "Custom Matching Identifiers"
+   — 04/30/2026 — 3 110 Z. — (ap), (aq).
+5. `marketing/error-responses` — "Updated Marketing API Error Responses" — 10/16/2025 —
+   20 201 Z. — (ar).
+6. S11 `marketing/conversions/conversions-faq` — "Conversions FAQ" — **09/16/2026** —
+   8 102 Z. — (an), (ao), (as), (at).
+7. X2 `marketing/integrations/migrations` — "Migrations" — **09/16/2026** — 8 347 Z. —
+   (at).
+8. X8 `shared/api-guide/concepts/rate-limits` — "LinkedIn API Rate Limiting" — 08/20/2025
+   — 2 163 Z. — (as). **Über einen unmittelbaren Bezug geöffnet, nicht aus der Liste** —
+   der Grund steht in (as).
+9. `https://www.linkedin.com/help/lms/answer/a423304/enable-first-party-cookies-on-a-linkedin-insight-tag?lang=en`
+   — "Enable first-party cookies on your LinkedIn Insight Tag" — "Last updated: 1 month
+   ago" — 6 589 Z. — (an). **Über einen unmittelbaren Verweis aus S8 geöffnet**
+   (Ankertext "Enhanced conversion tracking").
+
+Die Pfade 1 bis 8 liegen unter `https://learn.microsoft.com/en-us/linkedin/`.
+
+**DREI SEITENSTÄNDE SIND JÜNGER ALS IM UMFANG VOM 2026-09-11** — S3 und S4 dort 08/26/2026,
+S11 dort 08/17/2026, alle drei heute 09/16/2026. **WAS SICH GEÄNDERT HAT, IST NICHT
+ERHOBEN;** ein Seitenstand sagt, DASS geändert wurde, nicht WAS.
+
+**REITER-GRUPPEN: GENAU EINE SEITE TRÄGT SIE.** S3 hat SECHS Gruppen `http`/`curl` (zwölf
+`[role=tab]`-Elemente). **BEIDE REITER-INHALTE SIND ERFASST, OHNE ZU KLICKEN** — der
+`textContent` enthält in jeder der sechs Gruppen sowohl den `HTTPCopy`- als auch den
+`curlCopy`-Block. **Das bestätigt den Befund des Umfangs vom 2026-09-11** ("`textContent`
+vor und nach dem Klick 26 432 Zeichen — der Klick lädt nichts nach"). Auf den übrigen acht
+Seiten ist die `[role=tab]`-Zählung **0**. **Kein Reiter-Inhalt ist ungelesen geblieben.**
+
+**SYMBOL-TABELLEN: KEINE.** Alle gelesenen Tabellen — Schema-Felder, `idType`, `userInfo`,
+Fehlercodes, Migrations-Status, Objective-Mapping — führen ihre Werte als WÖRTER. Nichts
+ist als leer behandelt worden.
+
+**ÜBERSETZTE FASSUNGEN: EINE**, der Hilfe-Artikel a423304; er ist mit `?lang=en` in der
+englischen Fassung gelesen und zitiert. Keine Learn-Seite war übersetzt.
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `marketing/integrations/ads-reporting/conversion-tracking` (X3, am 2026-09-11 gelesen) —
+  von S8 zweimal verlinkt (Insight-Tag-Abruf und -Teiländerung). Die verlinkten Anker
+  betreffen das VERWALTEN des Insight Tags; `li_fat_id` wäre dort ein Konfigurationsschalter
+  und kein Format.
+· `linkedin.com/help/lms/answer/a476761` (Insight Tag Troubleshooting), `a415868`,
+  `a418880` — aus S8 verlinkt. S8 verweist auf a476761 für die Frage, ob "Enhanced
+  conversion tracking" standardmässig an ist, und die ist in (ah) bereits beantwortet.
+  **GRENZFALL, AUSDRÜCKLICH BENANNT: a476761 IST DER NAHELIEGENDSTE VERBLIEBENE ORT FÜR
+  EINE FORMAT-ANGABE ZU `li_fat_id`. Die Reichweite des Nicht-Treffers in (an) schliesst
+  ihn NICHT ein.**
+· Die übrigen Learn-Einträge der Ausschluss-Liste vom 2026-09-11 —
+  `shared/authentication/*`, `shared/integrations/people/profile-api`,
+  `marketing/lead-sync/leadsync`, `…/create-and-manage-campaigns`,
+  `…/create-and-manage-account-users`, `marketing/matched-audiences/*`,
+  `…/ads-reporting-schema` — **trägt keiner nach seinem TITEL eine der sechs Fragen.**
+· Die dort nur als NUMMERN geführten Hilfe-Artikel (a484456, a423777, a426359 und die
+  übrigen) — **nach dem Titel NICHT beurteilbar, weil jener Block ihre Titel nicht führt.
+  DAS IST EINE BENANNTE GRENZE DIESES ABGLEICHS UND KEINE ENTWARNUNG.**
+· Entwicklerportal, Payload Builder und Campaign Manager — hinter einer Anmeldung, nicht
+  betreten. **In dieser Runde ist keine Anmeldeschranke aufgetreten:** alle neun Seiten
+  waren ohne Anmeldung lesbar.
+
+**EIN BEFUND ÜBER DAS VERFAHREN, UND ER IST HIER AM ORT SEINER WIRKUNG ABGELEGT:** Die
+Seite `marketing/error-responses` stand in der Liste "GESEHEN, NICHT GEÖFFNET" der Lesung
+vom 2026-09-11 — dort mit dem Grund "zweite Ebene" und dem Vermerk, sie trage "das Beispiel
+der Antwort auf einen veralteten Versions-Header" und sei **nicht gelesen**. **SIE TRÄGT
+DIE ANTWORT AUF DIE VERSIONS-FRAGE** (Teil (ar)). **DER AUSSCHLUSS BENANNTE DEN INHALT
+KORREKT UND ÖFFNETE DIE SEITE TROTZDEM NICHT** — er war für die Testmodus-Frage jenes Tages
+sachlich richtig und für die Frage dieser Lesung falsch, **und er sah bei jeder
+Wiederholung genauso richtig aus.** Es ist dieselbe Fehlerklasse, die
+docs/immer-beachten.md als "DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT, AN DEM SICH
+EIN BEFUND VERSTECKT" führt. **SIE IST DAMIT INNERHALB VON ZWEI TAGEN AN DREI ZIELEN
+EINGETRETEN** — beim Meta-Crawl des 2026-09-22 an vier Parameter-Seiten, beim TikTok-Crawl
+desselben Tages an `Responses and errors`, und hier.
+
 ## Google (Google Ads Conversions · GA4)
 
 **HERKUNFT — ALLES IN DIESEM ABSCHNITT IST GELESEN, NICHTS IST GEMESSEN (2026-08-20):** Es

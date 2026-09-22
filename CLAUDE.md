@@ -1017,11 +1017,17 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
 - Marketer-Mindset: Geschwindigkeit und "1 Klick" über Konfig-Tiefe.
 
 ## Immer beachten — AUSGELAGERT nach docs/immer-beachten.md
-Die rund achtzig dauerhaften Regeln dieses Projekts stehen seit dem 2026-08-14 in
-docs/immer-beachten.md — ZEICHENGLEICH übernommen und per Prüfsumme belegt (der Nachweis
-steht im Kopf jener Datei). Der Abschnitt ist NICHT gekürzt, NICHT verdichtet und NICHT
-umsortiert worden; er ist umgezogen, weil diese Datei bei 149 970 von 150 000 Bytes stand
-und die nächste Hebung nicht mehr hineingepasst hätte.
+Die dauerhaften Regeln dieses Projekts stehen seit dem 2026-09-22 in ZWEI Dateien:
+docs/immer-beachten.md ist der KERN — je Regel der wörtliche Titel und der verbindliche
+Inhalt, 123 Regeln plus die erste Regel über den Umgang mit Regeln.
+docs/immer-beachten-herleitung.md trägt den VOLLTEXT (Belege, Herkunft, Abgrenzungen,
+Stempel, Provenienz) und darin ZEICHENGLEICH den Stand vom 2026-09-22, per Prüfsumme im
+Kopf jener Datei belegt. Der Umzug am 2026-08-14 aus dieser Datei hierher und die Teilung
+heute haben denselben Grund: das Ladelimit.
+DIE HERLEITUNG IST AUSLÖSER-GELADEN, DER KERN NICHT: Wer eine Regel ÄNDERT, LOCKERT ODER
+AUSWEITET — und wer das WARUM einer Regel braucht —, lädt docs/immer-beachten-herleitung.md
+ZUERST. Für die tägliche Arbeit genügt der Kern; er ist nicht die Kurzfassung, sondern die
+verbindliche.
 PFLICHT, KEINE EMPFEHLUNG — UND AUSDRÜCKLICH KEIN AUSLÖSER: docs/immer-beachten.md WIRD
 IN JEDER SITZUNG GELADEN, unbedingt, genau wie diese Datei hier. Wer ohne sie arbeitet,
 arbeitet ohne rund achtzig Regeln — und merkt es nicht, weil nichts fehlt, wonach man
@@ -1074,7 +1080,8 @@ nicht in jede Session geladen wird.
 
 WOHIN EIN NEUER SATZ GEHÖRT — IM ZWEIFEL RAUS, NICHT IN DIESE DATEI. Acht Wege,
 die erste passende Antwort gewinnt: (1) dauerhaft und projektweit ->
-docs/immer-beachten.md, HINTEN anfügen · (2) laufender Phasenschnitt ->
+docs/immer-beachten.md (KERN), HINTEN anfügen; die Begründung dazu in
+docs/immer-beachten-herleitung.md · (2) laufender Phasenschnitt ->
 docs/aktiver-stand.md · (3) Zustand, der später kippt (TODO mit Trigger) ->
 docs/offene-punkte.md, Titel + Trigger als Stub-Zeile hier · (4) Phasenplanung
 oder -stand -> docs/roadmap.md, Marker im Stub hier · (5) Befund über ein

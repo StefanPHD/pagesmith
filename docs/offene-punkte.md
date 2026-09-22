@@ -1341,6 +1341,137 @@ aufeinander; sie liegen alle hier und finden einander.
   2026-09-19). DASS DIE VERSIONSANGABE ALS ANKER ERWOGEN UND VERWORFEN WURDE, IST
   OWNER-ANGABE aus dem Auftrag dieser Runde; am Repo steht davon nur die Richtigstellung
   selbst.
+
+  NACHGETRAGEN 2026-09-22 — DIE ACHTE LADE-PROBE, DAZU DIE SIEBTE DESSELBEN TAGES ALS
+  ZWEITHAND-ANGABE. Alles darüber bleibt wörtlich stehen; seine Angaben sind datierte
+  Messungen und werden hier gelesen, nicht ersetzt. Die Buchstaben laufen weiter, damit ein
+  Verweis auf einen Teil dieses Postens eindeutig bleibt.
+
+  (o) DIE PROBE IST BEI 239 743 ZEICHEN GEFAHREN UND BESTANDEN — FÜNF VON FÜNF —, UND SIE IST
+  DIE ERSTE, DEREN ENDE-ACHSE AUF EINE ERGÄNZUNG AN EINER BESTEHENDEN REGEL ZIELT STATT AUF
+  DIE LETZTE REGEL. Frische CC-Sitzung am 2026-09-22, Stand HEAD 42c7bd9, NACH der Hebung
+  und der Archivierung des Phasenendes 11.11; es läuft keine Phase. Die fünf Antworten sind
+  im Bericht festgeschrieben worden, BEVOR die Sitzung docs/immer-beachten.md mit einem
+  Werkzeug angefasst hat; wie bei (l), (m) und (n) ist das der Ablauf jener Sitzung und am
+  Repo nicht prüfbar.
+  ACHTUNG BEI DEN NUMMERN: Die Fragen (1) bis (4) SIND diesmal die von (b), ohne Abweichung;
+  die fünfte heisst F5 und ist die ENDE-ACHSE. Wer F5 zu den Nummern von (b) zählt,
+  vergleicht zwei verschiedene Sätze.
+  DIE FÜNF ANTWORTEN UND IHRE FUNDSTELLEN (GEMESSEN am Dateitext, CC, 2026-09-22):
+  · (1) ZAHL DER VERZEICHNIS-EINTRÄGE: 123 — die Einträge stehen in den Zeilen 86 bis 208,
+    und im Rumpf ab Zeile 210 stehen ebenfalls 123 Regelanfänge.
+  · (2) LETZTE REGELÜBERSCHRIFT: "EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM
+    SKRIPTING — WER KNOTEN DARAUS IN EINE LEBENDE SEITE ÜBERNIMMT, ÜBERNIMMT EINEN ANDEREN
+    BAUM, ALS DER BROWSER GEBAUT HÄTTE (Phase 11.6, gehoben 2026-09-19 aus der bindenden
+    Entscheidung P11.6-6 und dem Bau des Laders)" — Regelanfang in Zeile 3 024, gekappter
+    Verzeichnis-Eintrag in Zeile 208.
+  · (3) EINTRAG AUS DER MITTE: "VERSTECKEN PER CSS-KLASSE — WEDER DAS HTML-ATTRIBUT hidden
+    NOCH ..." — genannt als Eintrag #62 von 123 und positionsweise genau der 62., Zeile 147.
+  · (4) MARKE IN ZEILE 1: IB-GELADEN.
+  · F5 (ENDE-ACHSE, auf die Ergänzung vom 2026-09-22 an "ABLEITEN STATT LÖSCHEN"): "DERSELBE
+    BILDSCHIRM ZEIGTE EINE KORREKTE UND EINE VERALTETE AUSSAGE ÜBER DENSELBEN TEXT" — Zeilen
+    917 und 918, über den Zeilenumbruch getrennt.
+  Alle fünf stimmen mit dem Dateitext überein; gegengeprüft mit Werkzeug ERST NACH der
+  Antwort.
+  DIE ALLEINSTELLUNG VON F5 IST VOR DER GEGENPRÜFUNG GEMESSEN, wie (b) es seit dem
+  2026-09-18 verlangt (GEMESSEN, CC, 2026-09-22): Die Nadel hat im ganzen Repo GENAU EIN
+  Vorkommen — Achse über md/ts/tsx/sql ohne node_modules —, und es ist Zeile 917 der
+  Regeldatei selbst. CLAUDE.md und MEMORY.md tragen NULL Treffer. POSITIVKONTROLLE im selben
+  Lauf (docs/immer-beachten.md "IB-GELADEN" zweimal, CLAUDE.md "IB-GELADEN" einmal, MEMORY.md
+  ein eigener Anker einmal), NEGATIVKONTROLLE mit einer erfundenen Zeichenkette (null Treffer
+  in allen drei Dateien). INSTRUMENT: `perl -0777` mit leerraum-toleranter Nadel (`\s+`
+  zwischen den Wörtern) und dem Umlaut als Bytefolge, ausdrücklich NICHT `grep`.
+  DER BEFUND ÜBER DIE BAUFORM (b), UND ER IST DER ERTRAG DIESES NACHTRAGS: DIE ENDE-ACHSE
+  DORT IST AN DIE LETZTE REGEL GEBUNDEN — UND EINE HEBUNG MUSS KEINE REGEL ANFÜGEN. Die
+  Hebung des Phasenendes 11.11 hat der Datei KEINE neue Regel gegeben, sondern ZWEI
+  bestehende ERGÄNZT (GEMESSEN am Diff c3b849a, CC, 2026-09-22: 29 angefügte Zeilen, NULL
+  Zeilen mit Regelanfang; die zwei Ergänzungen sitzen an Regel 24 "Importierter User-Code
+  läuft NUR im sandboxed iframe ..." und an Regel 57 "ABLEITEN STATT LÖSCHEN"). FOLGE: Die
+  letzte Regel ist seit dem 2026-09-19 unverändert, und eine Ende-Achse nach dem WORTLAUT von
+  (b) hätte heute denselben Rumpf abgefragt wie (n) — sie hätte den NEU HINZUGEKOMMENEN Text
+  gar nicht berührt. Der Auftrag dieser Runde hat die Achse deshalb auf die zwei Ergänzungen
+  gelegt: FRISCHE statt ENDLAGE.
+  DER PREIS DIESER WAHL GEHÖRT DAZU, sonst liest sich die Probe stärker, als sie ist: Die
+  zwei Ergänzungen stehen im ERSTEN DRITTEL des Rumpfes. F5 liegt in Zeile 917 von 3 058 —
+  eine Antwort darauf belegt die Ladung BIS DORTHIN, nicht bis zum Dateiende.
+  DASS DAS DATEIENDE TROTZDEM BELEGT IST, IST BEIFANG UND NICHT PLANUNG: Die Antwort auf (2)
+  nannte die letzte Regelüberschrift MIT ihrem Klammerzusatz, und der Verzeichnis-Eintrag
+  (Zeile 208) ist VOR dem Klammerzusatz gekappt. Die Wortfolge "gehoben 2026-09-19 aus der
+  bindenden Entscheidung P11.6-6" hat im ganzen Repo GENAU EIN Vorkommen und steht in Zeile
+  3 026 von 3 058; CLAUDE.md und MEMORY.md tragen null (GEMESSEN, CC, 2026-09-22, dieselbe
+  Achse und dasselbe Instrument wie bei F5).
+  ER IST EIN BELEG UND KEINE ENDE-ACHSE NACH (b), und der Unterschied ist kein Formalismus:
+  Diese Alleinstellung ist NACH der Antwort gemessen worden, (b) verlangt die Messung VORHER.
+  Wer sie als zweite Ende-Achse führt, führt eine Alleinstellung, die zum Zeitpunkt der Frage
+  niemand kannte.
+  DIE ZAHLEN FÜGEN SICH, UND SIE TUN ES ZUM ERSTEN MAL OHNE ZUWACHS AN REGELN (GEMESSEN am
+  Repo, CC, 2026-09-22): (n) zählte am 2026-09-19 123 Verzeichnis-Einträge und 123 Regeln.
+  Seither haben ZWEI Commits die Datei angefasst — c9a561f (60 angefügte Zeilen, NULL
+  Regelanfänge; die Ergänzung an der Werkzeug-Regel vom 2026-09-21) und c3b849a (29
+  angefügte Zeilen, NULL Regelanfänge). Heute stehen 123 zu 123. DIE DATEI IST ZWISCHEN ZWEI
+  PROBEN UM 7 443 ZEICHEN GEWACHSEN, OHNE DASS DIE ZAHL DER REGELN GESTIEGEN IST — bei jeder
+  früheren Probe war der Zuwachs an Zeichen ein Zuwachs an Regeln. Wer den Bestand über die
+  Regelzahl beobachtet, sieht dieses Wachstum nicht.
+  DAS IST ZUGLEICH EIN BEFUND ZU (j): Jener Nachtrag misst die LÄNGE je Regel und nennt sie
+  den Wachstumstreiber. Die zwei Commits dieser Woche sind die stärkste Bestätigung im
+  Bestand — 89 Zeilen ohne eine einzige neue Regel. (j) BLEIBT WÖRTLICH; seine Zahlen sind
+  vom 2026-09-16 und werden hier nicht nachgezogen.
+  DIE GRÖSSEN AM 2026-09-22 (GEMESSEN am Repo, CC): docs/immer-beachten.md 243 222 Bytes /
+  239 743 Zeichen / 3 058 Zeilen, reines LF (`git ls-files --eol`: i/lf w/lf), kein BOM (die
+  ersten drei Bytes sind 49 42 2d), null CR, null NUL; Zeichen gezählt als Unicode-Codepoints,
+  CR und NUL über `tr` bzw. `od`, ausdrücklich nicht über `grep`. CLAUDE.md 114 244 Bytes /
+  112 464 Zeichen / 1 518 Zeilen. Datiert, also alt und nicht falsch; wer den heutigen Wert
+  braucht, misst ihn.
+  /context IST FÜR DIESE PROBE NICHT ERHOBEN — wie bei (m) und (n) gibt es für diesen Tag
+  keine Ablesung der Speicherdateien, keinen Token-Wert und keinen Wortlaut der Warnung.
+  DIE GRENZE DIESER PROBE, unverändert aus (a), (f), (h), (l), (m) und (n): Sie sagt, dass
+  die Datei an DIESEM Tag bei DIESER Grösse ankam — bis Zeile 917 durch F5, bis Zeile 3 026
+  durch den Beifang. Sie sagt NICHT, wo eine Obergrenze liegt, und NICHT, dass das Werkzeug
+  die gemeldete Grenze nie durchsetzt.
+  DIE FOLGE: BESTANDEN, KEINE HANDLUNG. Die Owner-Entscheidung vom 2026-09-16 unter (k) — es
+  wird nicht geschnitten — bleibt unberührt. Gehandelt wird, wenn eine Lade-Probe nach (b)
+  FEHLSCHLÄGT, nicht wenn eine Zahl eine Schwelle überschreitet.
+  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). WIE AM
+  2026-09-11, AM 2026-09-17, AM 2026-09-18 UND AM 2026-09-19 IST SEINE FRAGE NACHTRÄGLICH
+  BEANTWORTET: Die Hebung des Phasenendes 11.11 (Commit c3b849a) und die Archivierung
+  (04459c0) standen bereits, als die Probe lief. ANDERS ALS AM 2026-09-17 IST DAS HIER NICHT
+  FOLGENLOS — jene Hebung hat der Datei Text angefügt, und genau dieser Text ist der
+  Gegenstand von F5.
+  PROVENIENZ: Die fünf Fragen und ihr Rahmen stehen im Auftrag jener Sitzung; DASS DIE
+  ANTWORTEN VOR JEDEM WERKZEUGAUFRUF AUF DIE REGELDATEI STANDEN, ist am Repo nicht prüfbar —
+  es ist der Ablauf der Sitzung und kein Befund an einer Datei. Die fünf Antworten stammen
+  aus der Sitzung selbst. Die Gegenprüfung am Dateitext, die Grössen, die Fundstellen
+  1 · 86 · 147 · 208 · 210 · 917 · 918 · 3 024 · 3 026, die Zählung 123 zu 123, die
+  numstat-Werte von c9a561f und c3b849a und die Suchen samt Positiv- und Negativkontrolle
+  sind GEMESSEN am Repo (CC, 2026-09-22).
+
+  DIE SIEBTE PROBE DESSELBEN TAGES — ZWEITHAND, VON DIESER RUNDE NICHT NACHMESSBAR.
+  ARCHITEKT-ANGABE aus dem Bericht einer früheren Sitzung, hier wörtlich abgelegt und bis
+  heute nirgends im Repo verzeichnet: Am 2026-09-22, VOR der Hebung des Phasenendes 11.11,
+  lief eine Lade-Probe MIT Ende-Achse bei 240 689 Bytes / 237 251 Zeichen, und sie bestand.
+  Dabei meldete `grep -c -F` für eine UMBROCHENE Nadel fälschlich 0; gefunden hat sie erst
+  `perl -0777`.
+  WAS DAVON HEUTE GEMESSEN IST UND WAS NICHT — der Satz muss mit, sonst liest sich eine
+  Zweithand-Angabe wie eine Messung: Die zwei Grössen decken sich ZEICHENGLEICH mit dem Stand
+  von docs/immer-beachten.md bei Commit c9a561f, also unmittelbar VOR der Hebung c3b849a
+  (GEMESSEN, CC, 2026-09-22). Das bestätigt den STAND, auf den sich die Angabe bezieht — NICHT
+  die Probe selbst, nicht ihre Fragen, nicht ihre Antworten und nicht ihr Ergebnis. Die stehen
+  in keiner Datei dieses Repos.
+  DER `grep`-BEFUND IST HEUTE UNABHÄNGIG WIEDERHOLT WORDEN (GEMESSEN, CC, 2026-09-22): Auch
+  bei F5 meldet `grep -c -F` auf die volle, über zwei Zeilen laufende Nadel 0, während
+  `perl -0777` sie genau einmal findet. ZWEI LÄUFE, DERSELBE BEFUND — der zweite ist gemessen,
+  der erste Zweithand.
+  DAS IST EINE NEUE ACHSE AN EINEM BEKANNTEN BEFUND: Die Regel "`grep` TAUGT IN DIESER
+  UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL" (docs/immer-beachten.md) handelt von
+  SONDERBYTES. Hier ist das Byte harmlos und der ZEILENUMBRUCH die Ursache — `grep` arbeitet
+  zeilenweise und kann eine Nadel, die über zwei Zeilen läuft, gar nicht sehen. DER
+  FEHLSCHLAG SIEHT IN BEIDEN FÄLLEN GLEICH AUS: eine 0, die wie ein Befund aussieht. HIER
+  STEHT KEINE EMPFEHLUNG und kein Antrag auf eine Regeländerung; die Feststellung gehört an
+  diesen Posten, weil sie an seinem Verfahren entstanden ist.
+  PROVENIENZ: Die Angaben zur siebten Probe sind ARCHITEKT-ANGABE (Bericht einer früheren
+  Sitzung desselben Tages) und ausdrücklich ZWEITHAND. Die Deckung der zwei Grössen mit dem
+  Stand bei c9a561f und die heutige Wiederholung des `grep`-Befundes sind GEMESSEN am Repo
+  (CC, 2026-09-22).
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.

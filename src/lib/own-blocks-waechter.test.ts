@@ -7,7 +7,7 @@
 // dieser Waechter belegt, dass der erzeugte Text davon byte-gleich unberuehrt ist.
 //
 // DIE SOLLWERTE SIND VOR DER ERSTEN ZEILE PRODUKTIVCODE ERHOBEN WORDEN und stehen in
-// docs/aktiver-stand.md, ENTSCHEIDUNG P11.11-22, Punkt (g). Nach dem Bau sind sie nicht
+// docs/claude-history/phase-11.11-import-bereinigung.md, ENTSCHEIDUNG P11.11-22, Punkt (g). Nach dem Bau sind sie nicht
 // mehr herstellbar (docs/immer-beachten.md, EIN VORHER-WERT WIRD VOR DEM DEPLOY
 // GESICHERT).
 //

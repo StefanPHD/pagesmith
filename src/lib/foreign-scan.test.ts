@@ -2,7 +2,7 @@
 //
 // DIE FIXTURES SIND ECHTE ANBIETER-GESTALTEN, keine erfundenen: Adressen und Aufrufe
 // stammen aus den Belegen (docs/ziel-befunde.md, Teile (g), (ab), (i), (am), (cs),
-// (ct); docs/aktiver-stand.md, VERMERKE P11.11-13 und P11.11-25). Eine Fixture, die
+// (ct); docs/claude-history/phase-11.11-import-bereinigung.md, VERMERKE P11.11-13 und P11.11-25). Eine Fixture, die
 // den produktiven Fall nicht trifft, prueft nichts (Dauerregel TESTDATEN UND
 // TEST-SEQUENZ MUESSEN DEN PRODUKTIVEN PFAD TREFFEN).
 

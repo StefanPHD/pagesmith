@@ -5207,7 +5207,7 @@ describe("CodeImporter — eigene Bausteine aus einem frueheren Export (11.11d)"
 // SKRIPTE UND TAGS IM CODE — DIE FUNDLISTE (Phase 11.11, Scheibe 11.11b).
 //
 // DIE FIXTURES SIND ECHTE ANBIETER-GESTALTEN aus den Belegen, keine erfundenen
-// (docs/ziel-befunde.md, Teile (g), (ab), (ct); docs/aktiver-stand.md, VERMERK
+// (docs/ziel-befunde.md, Teile (g), (ab), (ct); docs/claude-history/phase-11.11-import-bereinigung.md, VERMERK
 // P11.11-25).
 //
 // EINE AUFLAGE AN JEDE SPAETERE RUNDE, DIE HIER EINE FIXTURE ERGAENZT: Diese

@@ -146,7 +146,7 @@ export const FOREIGN_SIGNATURES: readonly ForeignSignature[] = [
     adressen: ["consent.cookiebot.com/"],
     namen: ["Cookiebot"],
     rueckfall: [],
-    beleg: "docs/aktiver-stand.md, VERMERK P11.11-13 (Crawl 1), Cookiebot (a) und (b)",
+    beleg: "docs/claude-history/phase-11.11-import-bereinigung.md, VERMERK P11.11-13 (Crawl 1), Cookiebot (a) und (b)",
   },
   {
     anbieter: "Usercentrics",
@@ -155,7 +155,7 @@ export const FOREIGN_SIGNATURES: readonly ForeignSignature[] = [
     namen: ["UC_UI_DOMAINS"],
     rueckfall: [],
     beleg:
-      "docs/aktiver-stand.md, VERMERK P11.11-13 (Crawl 1), Usercentrics (a) und (b)",
+      "docs/claude-history/phase-11.11-import-bereinigung.md, VERMERK P11.11-13 (Crawl 1), Usercentrics (a) und (b)",
   },
   {
     anbieter: "Klaro",
@@ -163,7 +163,7 @@ export const FOREIGN_SIGNATURES: readonly ForeignSignature[] = [
     adressen: ["cdn.kiprotect.com/klaro/"],
     namen: ["klaroConfig"],
     rueckfall: [],
-    beleg: "docs/aktiver-stand.md, VERMERK P11.11-13 (Crawl 1), Klaro (a) und (b)",
+    beleg: "docs/claude-history/phase-11.11-import-bereinigung.md, VERMERK P11.11-13 (Crawl 1), Klaro (a) und (b)",
   },
   {
     anbieter: "OneTrust",
@@ -177,7 +177,7 @@ export const FOREIGN_SIGNATURES: readonly ForeignSignature[] = [
     namen: ["OptanonWrapper", "OptanonActiveGroups"],
     rueckfall: [],
     beleg:
-      "docs/aktiver-stand.md, VERMERK P11.11-25, OneTrust (Messung am DOM von developer.onetrust.com); Methoden aus VERMERK P11.11-13 (b)",
+      "docs/claude-history/phase-11.11-import-bereinigung.md, VERMERK P11.11-25, OneTrust (Messung am DOM von developer.onetrust.com); Methoden aus VERMERK P11.11-13 (b)",
   },
   {
     anbieter: "consentmanager",
@@ -185,7 +185,7 @@ export const FOREIGN_SIGNATURES: readonly ForeignSignature[] = [
     adressen: ["delivery.consentmanager.net", "cdn.consentmanager.net"],
     namen: ["cmp_host", "cmp_setStub"],
     rueckfall: [],
-    beleg: "docs/aktiver-stand.md, VERMERK P11.11-25, consentmanager (a) und (b)",
+    beleg: "docs/claude-history/phase-11.11-import-bereinigung.md, VERMERK P11.11-25, consentmanager (a) und (b)",
   },
   {
     anbieter: "CookieYes",
@@ -199,6 +199,6 @@ export const FOREIGN_SIGNATURES: readonly ForeignSignature[] = [
     adressen: ["cdn.cookieyes.com", "cdn-cookieyes.com"],
     namen: ["getCkyConsent", "cookieyes_banner_load"],
     rueckfall: [],
-    beleg: "docs/aktiver-stand.md, VERMERK P11.11-25, CookieYes (a) und (b)",
+    beleg: "docs/claude-history/phase-11.11-import-bereinigung.md, VERMERK P11.11-25, CookieYes (a) und (b)",
   },
 ];

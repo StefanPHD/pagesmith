@@ -16,7 +16,7 @@
 // DIE BELEGE, aus denen F1 bis F4 getippt sind:
 // - docs/ziel-befunde.md, Meta (g) · Pinterest (ab) · TikTok (i) · LinkedIn (am) ·
 //   Google (cs) und (ct).
-// - docs/aktiver-stand.md, VERMERK P11.11-13 (Cookiebot, Usercentrics, Klaro) und
+// - docs/claude-history/phase-11.11-import-bereinigung.md, VERMERK P11.11-13 (Cookiebot, Usercentrics, Klaro) und
 //   VERMERK P11.11-25 (OneTrust, consentmanager, CookieYes).
 
 import { describe, expect, it } from "vitest";

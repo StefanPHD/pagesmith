@@ -2786,6 +2786,152 @@ geschützten Dateien und die elf Mutationsergebnisse GEMESSEN am eigenen Lauf (C
 gelöscht worden ist. Der Live-Nachweis, der Browser und der Vercel-Status sind OWNER-ANGABEN
 vom 2026-09-21.
 
+### VERMERK P11.11-42 — SCHEIBE 11.11e: DIE FUNDLISTE NACH HOST BÜNDELN (2026-09-22)
+
+**GEBAUT UND LIVE BESTÄTIGT. BAU-COMMIT `aad143e`** — VIER Dateien, 880 Einfügungen,
+28 Löschungen; **KEINE neue Datei.**
+
+**WAS GEBAUT IST, in einem Satz je Schritt:** `hostVon` und `buildForeignView` als reine
+Umformung in `src/lib/foreign-scan.ts` — sie ORDNET und BÜNDELT, sie erkennt nichts anders ·
+ein additives Feld `ausschnitt` an der Variante `bekannt`, gesetzt nur an `aufruf` und
+`handler` · die eingeklappte Sektion als LETZTES `<li>` der bestehenden Liste, mit
+`<details>`/`<summary>` und einem `key` am Projekt · der Ortshinweis neben der
+Fundstellen-Zahl · `setForeignStrip(null)` in `applyZenForLoadedCode`.
+
+**DIE ZWÖLF GESCHÜTZTEN DATEIEN SIND VORHER GLEICH NACHHER** (sha256, nach JEDER
+Mutations-Rücknahme einzeln geprüft, nicht nur am Ende): `ingest.ts f93bd615…` ·
+`resolve.ts 061552cc…` · `proxy.ts 8a4bca17…` · `app-serve/route.ts 2e02abb9…` ·
+`generate.ts 7e5c26f1…` · `pageview-emitter.ts b26cb778…` · `actions.ts 87741fa8…` ·
+`own-blocks.ts e92898ca…` · `own-blocks-strip.ts 7b0bbb3c…` · `foreign-signatures.ts
+b9b9651d…` · `detect.ts 1ae5855d…` · `foreign-strip.ts 403551df…`. **DIESE SCHEIBE HAT
+KEINE EINZIGE HEBUNG GEBRAUCHT** — wie 11.11c und anders als 11.11b (ein Wort) und 11.11d
+(zwei Wörter); der Grund steht in ENTSCHEIDUNG P11.11-41, Punkt (E). **Auch
+`collectForeignHits`, `anbieterFuer`, `traegerFuer` und `foreignGroupKey` sind
+ZEICHENGLEICH** — der Diff von `foreign-scan.ts` berührt keine ihrer Zeilen.
+
+**TESTZAHL: 2 086 VORHER, 2 100 NACHHER**, 96 Dateien vorher wie nachher, alle grün.
+Differenz **+14** — 7 in `foreign-scan.test.ts` (S32–S38), 7 in `CodeImporter.test.tsx`
+(SK20–SK26). **Keine neue Testdatei.**
+
+**DIE VIER GATES, alle grün** (CC, 2026-09-22): `tsc --noEmit` exit 0 · `eslint` 0 errors /
+1 Warnung (dieselbe vorbestehende in `consent.test.ts`, ausserhalb dieser Scheibe) ·
+`vitest run` 96 Dateien und 2 100 Tests · `next build` exit 0. **DER BYTE-WÄCHTER W1–W4 IST
+GRÜN** gegen den Sollwert aus ENTSCHEIDUNG P11.11-22, Punkt (g); **ein zweiter Sollwert ist
+NICHT angelegt worden.**
+
+**DER E2-BEFUND — GEMESSEN VOR DEM BAU an einer Wegwerf-Probe in der Projekt-jsdom (CC,
+2026-09-22), und er trägt die Entscheidung (F):** Ein `<summary>` zählt **NICHT** als Rolle
+`button` — `queryAllByRole("button")` fand allein den echten Knopf daneben; `<details>`
+trägt die Rolle `group`; ein Klick auf das `<summary>` dreht `open` auch in jsdom; die
+Kinder stehen im DOM und sind per `getByText` auffindbar. **DIE FOLGE, und sie ist der
+Grund, warum kein STOPP eingetreten ist:** Die zwei ZÄHL-Zusicherungen SK4 (null Knöpfe)
+und SK12 (genau einer) sind von einem `<summary>` unberührt. Die Auflage (K) — Sektion nur
+bei mindestens einem unbekannten Fund — ist damit die ZWEITE Sicherung und nicht die
+einzige; sie steht trotzdem. **Nachgemessen im selben Lauf:** Die sechs
+`role="group"`-Abfragen der Bestandsdatei sind alle mit `{ name: "Variante" }` qualifiziert
+und damit unberührt.
+
+**ACHT PFLICHT-MUTATIONEN, M6 IN DREI TEILE GETEILT — ZEHN LÄUFE, JEDER ROT.** Die
+Vorhersagen standen VOR dem jeweiligen Lauf und sind gegen den dann aktuellen Bestand NEU
+abgeleitet worden (docs/immer-beachten.md, EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF
+GEGEN DEN AKTUELLEN TESTBESTAND AKTUALISIERT):
+- **M1** (`ohne-domain`-Gruppe übersprungen) -> 6: S34, S35, SK20, SK21, SK22, SK24. Klasse
+  und Menge exakt vorhergesagt; die Zahl war ausdrücklich offen gelassen ("mindestens
+  sechs").
+- **M2** (Sortierung absteigend) -> nur S33, exakt.
+- **M3** (`open` fest, Einklappen nur per CSS) -> **3 statt 2**: SK20, SK22 **und SK24**.
+  **DER ÜBERSCHUSS IST DECKUNG UND KEINE KASKADE** — alle drei melden dieselbe Klasse
+  (`open` ist true, wo false stehen müsste). Die Vorhersage war zu eng, und zwar in die
+  Richtung, die die Dauerregel als systematisch führt.
+- **M4** (zusätzliches `<details>` um die ganze Liste) -> **erst 4, dann 2**; s. unten.
+- **M5** (`key` am Projekt entfernt) -> nur SK24, exakt.
+- **M6a/M6b** (`ausschnitt` am `handler` bzw. am `aufruf` auf null) -> je 2: S37 und SK26,
+  dieselbe Klasse.
+- **M6c** (der JSX-Block des Ortshinweises entfernt) -> nur SK26. **S37 BLIEB GRÜN, WIE
+  VORHERGESAGT** — das Feld ist unberührt, allein das Rendern fehlt.
+- **M7** (Sortierung der bekannten Funde entfällt) -> nur S36, exakt.
+- **M8** (`setForeignStrip(null)` fehlt) -> nur SK25, exakt.
+**KEINE Mutation blieb grün. KEIN Bestandstest fiel ohne Mutation.**
+
+**DIE KASKADE UNTER M4 UND IHRE BEHEBUNG AN DER WURZEL — der lehrreiche Lauf dieser
+Scheibe:** Im ersten Anlauf fielen VIER Läufe statt des einen vorhergesagten. **VOR JEDER
+REPARATUR IST GEPRÜFT WORDEN, OB DIE ZUSATZTREFFER DIESELBE FEHLERKLASSE MELDEN** — sie
+taten es NICHT: SK22 und SK24 fielen mit "expected false to be true", weil der Test-Helfer
+`sektion()` als "das erste `details` in der Liste" formuliert war und unter der Mutation
+**das falsche Element** griff. **Das ist eine Kaskade, keine Abdeckung** (Dauerregel
+MUTATIONSPROBEN …, Lektion (g)). **BEHOBEN IST DIE WURZEL, NICHT DIE ASSERTION:** Der
+Helfer benennt die Sektion jetzt über ihre Überschrift
+(`getByText(/^Weitere Skripte \(/).closest("details")`). Danach fielen unter M4 **zwei**
+Läufe, SK21 und SK23, und beide melden dieselbe Klasse. Die Nachschärfung steht mit ihrem
+Grund im Kommentar des Helfers.
+
+**DREI EINZELSTÜCKE SIND ALS SOLCHE BENANNT** (Dauerregel MUTATIONSPROBEN …, Lektion (f)):
+SK24 (fällt allein unter M5), SK25 (allein unter M8) und SK26 (allein unter M6c). **SK26
+IST IM BAU ERGÄNZT WORDEN UND STAND IN KEINEM AUFTRAG:** Der Plan deckte den Ortshinweis
+nur auf DATENEBENE (S37); das Rendern wäre ungedeckt geblieben, und ein entfernter
+JSX-Block hätte S37 nicht rot gemacht.
+
+**DER LIVE-NACHWEIS (OWNER-ANGABEN, 2026-09-22, Chrome, Vercel-Status "Ready") — von CC
+nicht prüfbar:**
+- **REGRESSION BESTANDEN.** Sauberes Projekt: "(0)", **keine Sektion**. Die Testseite:
+  **"(12)"**, die **drei Meta-Zeilen direkt untereinander** — die Ordnung nach Anbieter an
+  der Wirkung belegt —, **Ortshinweise an den zwei Zeilen ohne Knopf**
+  (`querySelector('#menue')` bzw. `fbq('track','Lead')`), **Cookiebot zuletzt**,
+  **"Weitere Skripte (1)" → "Inline-Skripte (1)"**, und der **Pinterest-Knopf wirkt**
+  (Zähler 12 → 11).
+- **DER HAUPTFALL, DIE ECHTE WORDPRESS-SEITE:** **vorher (136), nachher (136)** — **die
+  äussere Zahl ist unverändert**, wie Punkt (H) es festlegt. Darunter **"Weitere Skripte
+  (136)"**, und die 136 Skripte stehen in **SIEBEN Gruppen**, aufsteigend sortiert: oben
+  unter anderem `accounts.google.com` (1), `api.traqqr.io` (1),
+  `www.digistore24-scripts.com` (1), unten die **Seiten-Domain (108)** und die
+  **Inline-Skripte (22)**. **`…/wp-content/plugins/digistore/digistore.js` STEHT IN DER
+  GRUPPE DER SEITEN-DOMAIN** — genau der Tracker, den ein Pfad-Filter versteckt hätte
+  (ENTSCHEIDUNG P11.11-37), an der Wirkung belegt. **DIE ECHTE SEITE LIEGT NICHT IM REPO.**
+- **PROJEKTWECHSEL:** die Sektion ist danach **wieder zu** — der `key` aus Punkt (G) an der
+  Wirkung.
+
+**EIN BEFUND, DER NICHT IM AUFTRAG STAND UND DER WICHTIGSTE DIESES LAUFS IST: AUF DER
+ECHTEN SEITE HAT DIE SIGNATURLISTE KEINEN EINZIGEN ANBIETER ERKANNT.** Die äussere Zahl
+(136) ist gleich der Zahl der unbekannten Skripte (136) — es gibt also **null bekannte
+Funde**. **DAS IST DER GEWOLLTE AUSGANG UND KEIN DEFEKT**, und der Satz gehört hierher,
+sonst liest die nächste Runde ihn als Fehlermeldung: Weil JEDES Script angezeigt wird
+(ENTSCHEIDUNG P11.11-3), macht sich das Veralten der Liste als **fehlende Marke** bemerkbar
+statt als Abwesenheit. **Der Gegenstand ist geführt** — VORRAT P11.11-8 nennt fünf auf
+DERSELBEN Seite gemessene Lücken (Universal Analytics, ActiveCampaign, Digistore24,
+Trustpilot, Deadline Funnel) und hält fest, dass eine Aufnahme je Anbieter einen eigenen
+Crawl kostet. **Die Bündelung macht die Lücke erst sichtbar**: 136 Zeilen ohne Marke
+liessen sich nicht lesen, sieben Gruppen schon.
+
+**EINE BEOBACHTUNG ÜBER DIESE PHASE, benannt und nicht bewertet:** In 11.11 ist **ZWEIMAL**
+ein Ganz-Datei-Schreiber an einer HILFSDATEI benutzt worden — `perl -i` an
+`src/components/PublishView.tsx` in der Scheibe 11.11d (VERMERK P11.11-23) und `sed -i` an
+der Wegwerf-Probe der E2-Messung in dieser Scheibe. **BEIDE MALE OHNE SCHADEN:** Dort wurde
+aus der Versionsverwaltung wiederhergestellt und mit dem Editier-Werkzeug neu eingetragen,
+hier war die Datei eine Wegwerf-Datei und ist gelöscht; in KEINEM Commit ist davon etwas
+gelandet (CR 0, `git status` leer). **HIER STEHT NUR DIE BEOBACHTUNG. Ob die Werkzeug-Regel
+um den Fall der Hilfs- und Wegwerf-Datei geschärft wird, ist eine Frage der Hebung und hier
+ausdrücklich NICHT entschieden — KEINE EMPFEHLUNG.**
+
+**DIE GRENZEN DIESES NACHWEISES — sie stehen im Wortlaut, weil sie beim nächsten Lesen
+sonst zur Vollständigkeit werden:**
+- **NUR CHROME.** Die übrigen Browser sind UNGEMESSEN. Der Editor läuft im Browser des
+  Betreibers.
+- **DIE GRUPPENZAHL IST AN EINER EINZIGEN ECHTEN SEITE GEMESSEN.** Sieben Gruppen für 136
+  Skripte ist ein Wert dieser Seite, keine Eigenschaft der Bündelung. Ob die Liste auf einer
+  anderen realen Seite ähnlich kurz wird, ist **nicht erhoben** — eine Seite, deren Skripte
+  über dreissig Hosts verteilt sind, ergäbe dreissig Gruppen.
+- **DIE ZWEITACHSE DER SORTIERUNG IST LIVE NICHT GEPRÜFT.** Bei gleicher Gruppengrösse
+  entscheidet der Titel; auf der echten Seite ist nicht erhoben, ob zwei Gruppen dieselbe
+  Grösse hatten. Gedeckt ist sie allein durch S33.
+- **DIE ORTSHINWEISE SIND AN ZWEI ZEILEN GEMESSEN**, nicht an allen möglichen Trägern.
+
+**PROVENIENZ:** Bau-Commit, Dateiumfang, Testzahlen, Gates, Byte-Wächter, die sha256 der
+zwölf geschützten Dateien, der E2-Befund und die zehn Mutationsergebnisse GEMESSEN am
+eigenen Lauf (CC, 2026-09-22). Der Live-Nachweis, die Zahlen der echten Seite, der Browser
+und der Vercel-Status sind OWNER-ANGABEN vom 2026-09-22; **die echte Seite ist von CC nie
+gesehen worden.** Die Beobachtung über die zwei Ganz-Datei-Schreiber ist am Repo und an den
+zwei Vermerken erhoben (CC, 2026-09-22).
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut
@@ -2939,6 +3085,47 @@ ein Pixel**, an dem ein Entfernen hängt.
 (ENTSCHEIDUNG P11.11-11); fünf weitere aufzunehmen ist eine eigene Arbeit mit einem eigenen
 Crawl. **KEIN TRIGGER BENANNT.**
 
+### VORRAT P11.11-9 — DIE VORSCHAU FLACKERT BEI JEDER CODE-ÄNDERUNG
+
+**DER BEFUND (OWNER-BEOBACHTUNG, 2026-09-22):** Die Vorschau flackert bei jeder
+Code-Änderung. **AUFGEFALLEN IST ES BEIM ENTFERNEN** — dort ändert EIN Klick den Text auf
+einen Schlag, und das Flackern hat einen sichtbaren Auslöser.
+
+**DIE URSACHE IST EINE ABLEITUNG UND KEINE MESSUNG (ARCHITEKT, 2026-09-22):** Jede
+Code-Änderung ersetzt den `srcDoc` des Rahmens, und der Rahmen lädt daraufhin neu. **BEIM
+TIPPEN GESCHIEHT DASSELBE, nur unauffällig** — dort kommt die Änderung entprellt und in
+kleinen Schritten, und niemand schreibt das Flackern einem Ereignis zu. **DER KLICK HAT
+ALSO NICHTS NEUES ERZEUGT, ER HAT ETWAS BESTEHENDES SICHTBAR GEMACHT.**
+
+**EIN AUSBLENDEN DER LISTENZEILE BEHÖBE ES NICHT**, und der Satz gehört an den Anfang,
+damit die nächste Runde nicht an der falschen Stelle sucht: Das Flackern hängt am RAHMEN
+und an seinem Neuladen, nicht an der Fundliste daneben.
+
+**DER LÖSUNGSWEG (ARCHITEKT, 2026-09-22) — GENANNT, NICHT ENTSCHIEDEN:** den neuen Stand
+**unsichtbar laden und erst nach dem `load`-Ereignis gegen den alten tauschen.** **WARUM
+DIESER UND KEIN ZUSCHNITT AM SYMPTOM:** Er ist STRUKTURELL — er überlebt ein Redesign der
+Oberfläche, weil er am Ladevorgang ansetzt und nicht an dem, was gerade darüber steht.
+**ER IST EIN VORSCHLAG UND KEINE EMPFEHLUNG**; welchen Preis er hat (ein zweiter Rahmen im
+Baum, doppelter Speicher während des Tauschs), ist nicht erhoben.
+
+**EINE AUFLAGE REIST MIT UND IST DER TEUERSTE SATZ DIESES EINTRAGS: JEDE ÄNDERUNG AN DEN
+RAHMEN FÄLLT UNTER ENTSCHEIDUNG P11.11-9.** Jene verlangt für **JEDEN neuen Rahmen, der
+importierten oder erzeugten Kundencode rendert**, denselben Sandbox-Wächter — dieselben
+vier Zusicherungen und eine eigene ABSCHLIESSENDE Werteliste. **Ein zweiter, unsichtbarer
+Rahmen ist ein solcher Rahmen.** Wer ihn ohne Wächter baut, hebt die Zusicherung auf, ohne
+dass ein Gate rot wird.
+
+**KEIN TRIGGER BENANNT, UND DAS IST BEGRÜNDET:** Es geht nichts still kaputt. Das Flackern
+ist sichtbar, es kostet keine Daten, und es fällt auf, sobald jemand hinsieht. **BEIM
+PHASENENDE GEHT DER EINTRAG IN DEN BACKLOG** (docs/claude-history/backlog-polish.md) und
+nicht nach docs/offene-punkte.md — das zweiteilige Kriterium verlangt benennbaren Trigger
+UND "geht sonst still kaputt", und hier trifft keines von beidem zu.
+
+**PROVENIENZ:** Die Beobachtung ist OWNER-ANGABE vom 2026-09-22 und **von CC nicht
+gemessen**. Die Ursache ist eine ARCHITEKT-ABLEITUNG desselben Tages, **nicht am Code
+erhoben**. Der Lösungsweg ist ein ARCHITEKT-VORSCHLAG, **nicht entschieden**. Die Auflage
+aus ENTSCHEIDUNG P11.11-9 ist GELESEN (CC, 2026-09-22).
+
 ---
 
 ## Hebungs-Kandidaten
@@ -3085,40 +3272,44 @@ Angabe** — die Angabe steht in diesem Satz.
   (**P11.11-20**), die Oberfläche (**P11.11-21**), die sieben Freigaben zum Plan
   (**P11.11-22**) und die Ableitung der Meldungen aus dem aktuellen Text (**P11.11-24**, im
   Review entstanden und in keinem Zuschnitt vorgesehen gewesen).
-- **11.11e — DIE FUNDLISTE NACH HOST BÜNDELN** (OWNER, 2026-09-21). Erkannte Funde stehen
-  offen oben; darunter, eingeklappt, "Weitere Skripte (N)" — je HOST eine aufklappbare
-  Gruppe, sortiert nach Anzahl aufsteigend, die Inline-Skripte als eigene Gruppe.
-  **NICHTS WIRD AUSGEBLENDET.** **DER ANLASS IST EINE ECHTE SEITE MIT 136 SKRIPTEN**, davon
-  rund 130 Seiten- und Theme-Code (OWNER-TEST, 2026-09-21); die Liste ist dort nicht falsch,
-  sondern unbenutzbar. **EIN PFAD-FILTER IST VERWORFEN, weil er auf derselben Seite einen
-  TRACKER versteckt hätte** (`…/wp-content/plugins/digistore/digistore.js`). **DER VOLLTEXT
-  MIT GRÜNDEN, DEN OFFENEN PLAN-FRAGEN UND DER PROVENIENZ STEHT IN ENTSCHEIDUNG P11.11-37**
-  und wird hier NICHT verdoppelt. **REIHENFOLGE: nach 11.11c, vor dem Phasenende** — sie
-  setzt 11.11c voraus, weil die Knöpfe an den erkannten Funden hängen und die Bündelung
-  darunter liegt.
+- **11.11e — DIE FUNDLISTE NACH HOST BÜNDELN. GEBAUT UND LIVE BESTÄTIGT; VERDICHTET AM
+  2026-09-22 MIT DEM ABSCHLUSS-VERMERK P11.11-42** (docs/arbeitsweise.md, "Beim
+  Abschluss-Vermerk wird der Zuschnitt verdichtet"). Was hier stand und wohin es gegangen
+  ist — die Titel ohne Marke zitiert, damit eine Überschriften-Suche sie nicht trifft:
+  - **Der Gegenstand** — erkannte Funde offen oben, darunter eingeklappt "Weitere Skripte
+    (N)", je HOST eine aufklappbare Gruppe, nach Anzahl aufsteigend, die Inline-Skripte als
+    eigene Gruppe. **ABGELAUFEN:** gebaut, Bau-Commit `aad143e`, Umfang und Live-Nachweis
+    in VERMERK P11.11-42.
+  - **"NICHTS WIRD AUSGEBLENDET"** samt dem Anlass (eine echte Seite mit 136 Skripten) und
+    dem verworfenen Pfad-Filter. **BLEIBT ALS ZUSAGE, ABGELAUFEN ALS BEGRÜNDUNG DER
+    SCHEIBE:** Der Volltext mit Gründen und Provenienz steht unverändert in **ENTSCHEIDUNG
+    P11.11-37** und wird hier nicht verdoppelt. **Die Zusage selbst ist seit dem Bau am DOM
+    BELEGBAR** — `<details>` hält die Einträge im Dokument (ENTSCHEIDUNG P11.11-41, Punkt
+    (F)), und SK20 nagelt es fest. **Der Digistore-Pfad steht live in seiner Gruppe**, nicht
+    verborgen; das ist der Beleg an der Wirkung.
+  - **"REIHENFOLGE: nach 11.11c, vor dem Phasenende"**. **ABGELAUFEN:** vollzogen.
+  - **Die drei offenen Plan-Fragen** (Skripte ohne Host · was die Zahl der Überschrift zählt
+    · die Texte). **ABGELAUFEN:** alle drei sind in **ENTSCHEIDUNG P11.11-41** entschieden —
+    die Punkte (A) bis (D) für den Host, (H) für die zwei Zahlen, (H) und die Wortlaute im
+    Bau-Prompt für die Texte.
+  - **Die zwei Kandidaten aus dem Live-Test der Scheibe 11.11c** (kein Ortshinweis an
+    Aufruf- und Handler-Zeilen · Zeilen desselben Anbieters stehen verstreut). **ABGELAUFEN
+    ALS OFFENE FRAGE, GEBAUT ALS BEIDES:** aufgenommen mit **ENTSCHEIDUNG P11.11-40**,
+    ausgestaltet in **P11.11-41**, Punkte (I) und (J), live belegt in VERMERK P11.11-42 —
+    die drei Meta-Zeilen stehen untereinander, und die zwei Zeilen ohne Knopf tragen ihren
+    Ausschnitt. **Ihr Fragetext ist mit dieser Verdichtung entfallen; sein Gegenstand und
+    seine Auflage stehen vollständig in den zwei Entscheidungen**, und ein zweites Mal
+    dasselbe hier liefe mit ihnen auseinander.
 
-  **ZWEI KANDIDATEN FÜR DEN PLAN 11.11e, AUSDRÜCKLICH NICHT ENTSCHIEDEN.** Beide kommen aus
-  dem Live-Test der Scheibe 11.11c (OWNER, 2026-09-21) und sind **KEINE Aufträge und KEINE
-  Empfehlungen**; sie stehen hier, damit der Plan sie nicht unbemerkt mitentscheidet. **DIE
-  TEXTE SIND OWNER-SACHE**, hier steht nur der Gegenstand.
-  **ENTSCHIEDEN AM 2026-09-22 → ENTSCHEIDUNG P11.11-40: BEIDE SIND IN DIE SCHEIBE
-  AUFGENOMMEN**, der Umfang von 11.11e ist damit dreiteilig. **Der Fragetext der zwei
-  Kandidaten bleibt stehen, weil er den Gegenstand und die Auflage am Ausschnitt trägt**;
-  ohne ihn läse sich die Aufnahme wie eine Selbstverständlichkeit. **Die TEXTE bleiben
-  Owner-Sache** und werden nach dem Plan festgelegt — daran ändert die Aufnahme nichts.
-  · **EINE AUFRUF- UND EINE HANDLER-ZEILE TRAGEN KEINEN ORTSHINWEIS.** Auf der Testseite
-    stehen ZWEI Zeilen "Meta · Fremdes Pixel · 1 Fundstelle" untereinander, und sie sehen
-    **gleich aus** — die eine ist das Seiten-Script, die andere der `onclick`. Beide sagen
-    dem Betreiber, er solle von Hand löschen, **und keine sagt ihm WO.** Denkbar wäre ein
-    kurzer Ausschnitt wie beim unbekannten Inline-Skript (`ausschnittVon`, achtzig
-    Codepunkte). **NICHT ENTSCHIEDEN**, auch nicht, ob ein Ausschnitt an einem BEKANNTEN
-    Fund dieselbe Auflage trägt wie am unbekannten (er ist Text des Betreibers und kann
-    jede der vier dokumentweiten Nadeln tragen — ENTSCHEIDUNG P11.11-32, Punkt (f)).
-  · **ZEILEN DESSELBEN ANBIETERS STEHEN VERSTREUT.** Die Liste folgt der Code-Reihenfolge;
-    auf der Testseite liegen zwischen den drei Meta-Zeilen und zwischen den zwei
-    Google-Zeilen jeweils fremde Funde. Denkbar wäre eine Ordnung nach Anbieter.
-    **NICHT ENTSCHIEDEN** — und sie berührt die Bündelung aus ENTSCHEIDUNG P11.11-37, weil
-    beide dieselbe Liste sortieren.
+  **WAS ÜBER DIE SCHEIBE HINAUS BINDET, IST HERAUSGELÖST UND STEHT NICHT MEHR HIER:** die
+  Bündelung samt ihrem Anlass und dem verworfenen Filter (**ENTSCHEIDUNG P11.11-37**), die
+  Aufnahme der zwei Kandidaten (**P11.11-40**) und die elf Freigaben zum Plan
+  (**P11.11-41**). **KEINE REVIEW-KORREKTUR IST EINE ENTSCHEIDUNG GEWORDEN**, und das mit
+  Grund: Die einzige Korrektur der Bau-Runde betraf einen TEST-HELFER, der unter einer
+  Mutation das falsche Element griff — sie steht am Ort der Handlung, im Kommentar des
+  Helfers, und im Abschluss-Vermerk. **Ein Test ist der stärkere Anker als eine Regel.**
+  **EIN LAUF IST IM BAU ERGÄNZT WORDEN UND STAND IN KEINEM AUFTRAG:** SK26 deckt das
+  RENDERN des Ortshinweises; ohne ihn wäre allein die Datenebene gedeckt gewesen.
 
 **ZWEI PRÜFSTEINE FÜR DEN PLAN DER SCHEIBE 11.11c, und sie stehen SCHON HIER, weil beide
 den Zuschnitt entscheiden und nicht erst den Bau:**

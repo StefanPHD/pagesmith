@@ -624,9 +624,10 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   Die volle Kontrolle ist nach ANLASS gestuft (Owner-Entscheidung 2026-09-22): Pflicht ist
   sie bei jedem Ganz-Datei-Schreiber, bei jeder neuen Datei und bei jeder Datei mit CRLF.
   Bei einer Bearbeitung mit dem Editier-Werkzeug in einer LF-Datei genügt
-  `git ls-files --eol` plus eine CR-Zählung. Die Stufung entlastet den häufigsten Fall und
-  steht unter einer benannten Unschärfe: Ob die Datei, an der der Editier-Werkzeug-Fall
-  gemessen wurde, damals LF oder CRLF trug, ist nicht festgehalten und nicht nachgemessen.
+  `git ls-files --eol` plus eine CR-Zählung. Die Stufung entlastet den häufigsten Fall.
+  Der Editier-Werkzeug-Fall trat an derselben Datei auf wie der git-stash-Fall, und jene
+  trug CRLF (Herleitung, Ergänzung vom 2026-09-18) — er liegt innerhalb der Stufe mit
+  voller Kontrolle.
   Die Instrumente, benannt: `tr` bzw. `od` für CR gesamt und LF gesamt · für die
   CRLF-Paare `perl -0777 -ne 'my $c = () = /\r\n/g; print $c'` oder Python im BINÄRMODUS
   mit der Datei als Argument. Nie `grep`, in keiner Variante, weder für das CR noch für

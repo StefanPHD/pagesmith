@@ -495,8 +495,10 @@ muss, nicht ob.
 **Im Zweifel raus aus `CLAUDE.md`.** Acht Wege, die erste passende Antwort
 gewinnt:
 
-1. **Dauerhaft und projektweit** → `docs/immer-beachten.md`, hinten anfügen, in
-   Datei wie Verzeichnis.
+1. **Dauerhaft und projektweit** → Kern-Eintrag in `docs/immer-beachten.md` (Titel
+   und verbindlicher Inhalt in wenigen Zeilen) und Volltext in
+   `docs/immer-beachten-herleitung.md`, beide hinten anfügen, dort auch im
+   Verzeichnis.
 2. **Laufender Phasenschnitt** → Standdatei.
 3. **Zustand, der später kippt** (TODO mit Trigger) → `docs/offene-punkte.md`;
    Titel und Trigger als Stub-Zeile in `CLAUDE.md`.
@@ -604,9 +606,10 @@ gestempelt; ist sie es nicht, war sie auch im Text keinen Platz wert. **Ein
 dritter Ort für ersetzte Fassungen wird nicht eingeführt** — das wäre eine neue
 Datei und fiele unter Weg 8.
 
-**Vollzugsauflage für `docs/immer-beachten.md`:** Ihr Verzeichnis führt je Regel
-deren wörtlichen Anfang. Wer die erste Zeile einer Regel ersetzt, zieht den
-Verzeichnis-Eintrag im selben Zug nach. Zwei Orte, ein Zug.
+**Vollzugsauflage für die Regeln:** Jede Regel steht als Kern in
+`docs/immer-beachten.md` und im Volltext in `docs/immer-beachten-herleitung.md`,
+deren Verzeichnis je Regel den wörtlichen Anfang führt. Wer eine Regel ändert,
+zieht Kern, Volltext und Verzeichnis-Eintrag im selben Zug nach.
 
 **Ein Korrektur-Block, den es nur beim Stempel gibt — eine Sachkorrektur trägt keinen
 in der Datei (s. „Review-Kalibrierung") —, setzt voraus, dass der korrigierte Text

@@ -1768,6 +1768,71 @@ liegen beide hier und finden einander.
       Und KEINE Empfehlung zur Reihenfolge innerhalb der Zeile.
       PROVENIENZ: die vier Punkte sind GELESEN an der Matrix (Stand 2026-08-20);
       die Klammer ist OWNER-ENTSCHEIDUNG (2026-08-20). KEINE Messung.
+
+      ERWEITERUNG VOM 2026-09-22 (OWNER) — EIN FÜNFTER PUNKT. DER GESAMTE TEXT DARÜBER
+      BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; er ist am 2026-08-20 geschrieben und beschreibt
+      seinen Tag richtig. DER SATZ "VIER PUNKTE, EINZELN AUFGEFÜHRT" WIRD DADURCH NICHT
+      FALSCH, SONDERN ALT: Er zählt die Katalog-Lücken, die am 2026-08-20 festgestellt
+      waren. DER PUNKT UNTEN TRITT DANEBEN und wird bewusst NICHT in jene Liste
+      eingeschoben — eingeschoben machte er einen Satz unwahr, den niemand angefasst hat.
+      DASSELBE GILT FÜR DEN TITEL DER ZEILE: Er sagt "die VIER GEBAUTEN ZIELE" und bleibt
+      so; seit dem 2026-09-22 untertreibt er, und dieser Absatz ist die Auflösung.
+
+      · KLICK-KENNUNGEN UND MATCH-FELDER ALLER GEBAUTEN ZIELE (OWNER 2026-09-22). JEDES
+        NETZWERK SOLL DIE DATEN BEKOMMEN, MIT DENEN ES BESTMÖGLICH OPTIMIERT — mit Blick
+        auf spätere interne Analytics und CRM.
+        ANLASS — OWNER-ANGABE, VON CC NICHT PRÜFBAR: Der Meta-Events-Manager meldet eine
+        Match-Qualität von 4,4/10 und "Server sendet keine Klick-ID (fbc)". Diese Angabe
+        ist NICHT am Repo und NICHT an einer Anbieter-Schnittstelle gemessen worden; sie
+        ist der Auslöser, nicht der Befund. WER SIE ALS MESSWERT ZITIERT, ZITIERT EINE
+        BILDSCHIRMLESUNG.
+        DER BEFUND AM EIGENEN CODE — GEMESSEN (CC, 2026-09-22, HEAD `9abdd2a`), verdichtet;
+        der Volltext steht in docs/aktiver-stand.md, VERMERK P11.7-1:
+        - ES GIBT EINEN BEACON, NICHT FÜNF. `buildCapiBeaconStatement`
+          (src/lib/tracking/meta.ts) liest GENAU EIN Cookie (`_fbp`) und `location.href`;
+          KEIN einziger URL-PARAMETER wird ausgelesen. Ein Vendor-Browser-Tag existiert
+          nur für meta (`fbq`).
+        - MATCH-FELDER JE ZIEL, vollständig: meta DREI (`client_ip_address`,
+          `client_user_agent`, `fbp`) · pinterest ZWEI (IP, UA) · tiktok ZWEI (IP, UA) ·
+          linkedin EINS (IP, und NUR IPv4) · google NUR die Klick-Kennungen, WEDER IP
+          NOCH UA.
+        - KEINE KLICK-KENNUNG AUSSER GOOGLES WIRD IRGENDWO BENANNT GEFÜHRT. Die Suche
+          über src/ nach fbc, fbclid, _fbc, ttclid, _ttp, epik und li_fat_id ergibt je
+          NULL Treffer, mit Positivkontrolle im selben Lauf.
+        GOOGLE GEHÖRT NUR ZU DIESEM PUNKT (OWNER-ENTSCHEIDUNG 2026-09-22). Die vier
+        Punkte darüber bleiben bei den vier Zielen, für die sie als Katalog-Lücken
+        festgestellt wurden. GRUND: Die Zahl VIER war am 2026-08-20 eine korrekte
+        Momentaufnahme — `'google'` kam erst am 2026-08-31 in `TRACKING_TARGETS`
+        (src/lib/settings.ts, Commit `659d672`; GEMESSEN, CC, 2026-09-22). Dieser Punkt
+        dagegen sagt ausdrücklich ALLE GEBAUTEN ZIELE und schliesst google damit ein.
+        DREI GRENZEN, JE EINZELN:
+        - E-MAIL UND TELEFON GEHÖREN AUSDRÜCKLICH NICHT DAZU. Für sie gilt die
+          Hash-Auflage der Datenklassen-Grenze, und sie sind eine ANDERE Arbeit mit einer
+          anderen Entscheidungslage. Wer sie hier mitnimmt, baut eine PII-Scheibe unter
+          dem Titel einer Match-Feld-Scheibe.
+        - OB EIN ANBIETER EINE KENNUNG VERLANGT ODER NUR EMPFIEHLT, IST UNGEMESSEN. Der
+          Unterschied entscheidet, ob ein fehlendes Feld ein Defekt oder eine Einbusse
+          ist; heute ist er für kein Ziel erhoben.
+        - FÜR TRAFFIC OHNE ANZEIGEN-KLICK IST EINE FEHLENDE KLICK-KENNUNG KORREKT. Ein
+          Besucher, der direkt kommt, trägt keine — die Abwesenheit ist dort kein Befund
+          und darf nicht als einer gezählt werden.
+        DIE DATENKLASSEN-ENTSCHEIDUNGEN, DIE DIESEN PUNKT BINDEN, STEHEN NICHT HIER,
+        SONDERN AN IHREM ORT — zweimal geschrieben liefen sie auseinander:
+        docs/offene-punkte.md, Eintrag "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE",
+        BLOCK VOM 2026-09-22, Teile (E2), (E3) und (E4). Dort ist die Reichweite der
+        dritten Datenklasse entschieden (fbc gleich welchen Trägers, fbp und
+        gleichartige Tag-Kennungen), der Grundsatz "eine Klick-Kennung geht nur an ihren
+        URHEBER" festgelegt — einschliesslich der Angabe, dass der heutige Code ihn
+        verletzt — und das Ablage-/Log-Verbot für den User-Agent klargestellt.
+        WAS DIESER PUNKT NICHT IST: KEIN Zuschnitt. Er benennt den Gegenstand; welche
+        Kennung je Ziel wie heisst, woher sie kommt und wo sie in die Nutzlast gehört,
+        ist UNGEMESSEN und Gegenstand des Anbieter-Crawls (Pflicht-Stopp für
+        docs/ziel-befunde.md, CLAUDE.md, "Anbieter-Befunde der Fan-Out-Ziele"). KEINE
+        EMPFEHLUNG zur Reihenfolge gegenüber den vier Punkten darüber.
+        PROVENIENZ: Der Punkt und die Zuordnung Googles sind OWNER-ENTSCHEIDUNG
+        (2026-09-22). Der Anlass ist eine OWNER-ANGABE (2026-09-22), NICHT gemessen. Die
+        Code-Befunde sind GEMESSEN am Repo (CC, 2026-09-22, HEAD `9abdd2a`); die drei
+        Grenzen sind OWNER-FESTLEGUNGEN desselben Tages.
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel: eine EIGENE Zeile, abgetrennt vom
       Eintrag 11.2 am 2026-09-08.
 

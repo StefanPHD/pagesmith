@@ -264,6 +264,102 @@ aufeinander; sie liegen alle hier und finden einander.
   PROVENIENZ: GEMESSEN am Code (CC, 2026-09-01). Dass es sich um eine ZWEITE Achse und nicht
   um eine Korrektur der ersten handelt, ist eine FOLGE aus dem Vergleich der beiden Achsen,
   keine eigene Messung.
+
+  BLOCK VOM 2026-09-22 — DREI ENTSCHEIDUNGEN (OWNER, auf Architekten-Vorschlag). DER
+  GESAMTE TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; dieser Block tritt DANEBEN und
+  ersetzt keinen Satz. Er schliesst ZWEI Fragen, die der Bestand ausdrücklich offen
+  geführt hat — Punkt (b) des Blocks vom 2026-08-28 und den Vermerk vom 2026-09-01 —, und
+  stellt EINE Angabe klar, die in der Präzisierung vom 2026-08-19 nur für die IP dasteht.
+  ANLASS: der Zuschnitt der Phase 11.7 um die Klick-Kennungen und Match-Felder ALLER
+  gebauten Ziele (docs/roadmap.md, Roadmap-Zeile 11.7, der fünfte Punkt vom 2026-09-22).
+  Ohne diese drei Entscheidungen hätte jene Arbeit keinen Massstab — sie berührt in jedem
+  einzelnen Schritt eine fremdvergebene Kennung.
+
+  (E2) DIE REICHWEITE DER DRITTEN KLASSE — ENTSCHIEDEN. Unter "FREMDVERGEBENE, FÜR UNS
+       UNDURCHSICHTIGE KENNUNG" mit der Auflage TRANSIT-ONLY fallen ausdrücklich:
+       · `fbc` — GLEICH OB AUS DEM KLICK-PARAMETER DER ADRESSE ODER AUS EINEM COOKIE
+         GEBILDET. Das Cookie ist nur der TRÄGER derselben vom Anbieter vergebenen
+         Kennung; das Kriterium der Klasse ist die HERKUNFT und nicht der Weg, auf dem
+         die Kennung in den Browser gelangt ist. WER NACH DEM TRÄGER UNTERSCHIEDE,
+         BEKÄME FÜR EINE KENNUNG ZWEI REGELN — und die Wahl zwischen ihnen hinge daran,
+         welchen Weg ein fremdes Tag an diesem Tag gerade nimmt.
+       · `fbp` UND GLEICHARTIGE KENNUNGEN, DIE DAS TAG DES ANBIETERS SETZT.
+       DAMIT IST PUNKT (b) DES BLOCKS VOM 2026-08-28 ENTSCHIEDEN. Jener Punkt hält für
+       `fbp` ausdrücklich fest, es sei "HIER NICHT ENTSCHIEDEN", ob es unter die Klasse
+       fällt. ER BLEIBT WÖRTLICH STEHEN: Er beschreibt den Stand seines Tages richtig,
+       und seine Messung — durchgereicht, nicht abgelegt — gilt unverändert. Entschieden
+       ist die ZUORDNUNG, nicht seine Beobachtung.
+       DIE GRENZE, UND SIE IST DER TRAGENDE TEIL DIESER ENTSCHEIDUNG: NIE EINE KENNUNG,
+       DIE DIESES PRODUKT SELBST ERZEUGT ODER SETZT. Die Klasse wächst über die
+       Klick-Kennung hinaus, aber AUSSCHLIESSLICH in Richtung FREMDER Urheberschaft. Wer
+       sie auf eine eigene Kennung anwendete, hätte aus einer Herkunfts-Regel eine
+       Form-Regel gemacht.
+       WAS DAMIT UNBERÜHRT BLEIBT: die Abgrenzung an der Roadmap-Zeile 11.9. Eine SELBST
+       GESETZTE Besucher-Kennung ist von dieser Klasse weiterhin NICHT gedeckt; sie löst
+       die Grenze dieses Eintrags auf dem Weg des fingerprint-artigen Merkmals aus, und
+       das ist ein anderer Weg mit anderen Folgen.
+       EINE FOLGE, DIE HIERHER GEHÖRT, WEIL SIE SONST BEIM NÄCHSTEN LESEN ALS WIDERSPRUCH
+       ERSCHEINT: Jener Halbsatz an der Roadmap-Zeile 11.9 beschreibt die Klasse als
+       geltend "fremdvergebenen KLICK-Kennungen". SEIT DIESEM BLOCK IST DAS DIE ENGERE
+       BESCHREIBUNG — `fbp` ist keine Klick-Kennung. SEINE SCHLUSSFOLGERUNG BLEIBT
+       RICHTIG (die selbst gesetzte Besucher-Kennung ist nicht gedeckt); unvollständig
+       ist seine AUFZÄHLUNG. Der Satz wird NICHT angefasst, und das ist eine Entscheidung
+       und kein Übersehen: Seine Aussage trägt weiter, und ein nachgezogener Halbsatz
+       machte aus einem Zeitdokument eine Behauptung über heute.
+       GEMELDET ALS VORRAT, NICHT GEBAUT: docs/aktiver-stand.md, Vorrat P11.7-2.
+
+  (E3) DER GRUNDSATZ: EINE KLICK-KENNUNG GEHT NUR AN IHREN URHEBER. Eine fremdvergebene
+       Klick-Kennung wird an den Anbieter weitergereicht, DER SIE VERGEBEN HAT — und an
+       keinen anderen.
+       DER GRUND STEHT IM BLOCK VOM 2026-08-28 SELBST und wird hier nur eingelöst: Die
+       dritte Klasse ist damit begründet, dass die Kennung "an ihren URHEBER zurück"
+       geht. Genau dieser Satz trägt die Erlaubnis zum Weiterreichen. AN EINEN DRITTEN
+       ANBIETER TRÄGT ER NICHT — dort ist die Kennung weder auflösbar noch zurückgegeben,
+       sondern schlicht ein fremdes Merkmal an einer fremden Stelle.
+       DAMIT IST DIE IM VERMERK VOM 2026-09-01 AUSSTEHENDE OWNER-ENTSCHEIDUNG GETROFFEN.
+       Jener Vermerk stellt fest, dass ein `gclid` im Query-String UNBENANNT an meta,
+       pinterest und tiktok mitreist, und ordnet es ausdrücklich NICHT ein. Er bleibt
+       wörtlich stehen; eingeordnet ist die Durchleitung ab jetzt hier.
+       PFLICHT-ANGABE, OHNE DIE SICH DIESER GRUNDSATZ ALS GELEBTER STAND LÄSE: DER
+       HEUTIGE CODE VERLETZT IHN. `eventSourceUrl` wird im Beacon als `location.href`
+       gesetzt, also EINSCHLIESSLICH Query-String, und drei Adapter reichen das Feld
+       weiter — `forwardToMeta` und `forwardToPinterest` als `event_source_url`,
+       `forwardToTiktok` als `page.url` (GEMESSEN am Code, CC, 2026-09-01, in der
+       Aufklärung der Phase 11.7 am 2026-09-22 bei HEAD 9abdd2a erneut erhoben). DIE
+       VERLETZUNG BESTEHT, BIS DIE PHASE 11.7 SIE BEHEBT; sie ist kein neuer Defekt,
+       sondern derselbe Sachverhalt unter einer Regel, die es vorher nicht gab.
+       DIE GRENZE, UND OHNE SIE WIRD DER GRUNDSATZ VOREILIG UMGESETZT: WELCHE Parameter
+       je Anbieter als Klick-Kennung gelten und OB ein Anbieter Kennungen aus der
+       Seitenadresse selbst ausliest, ist UNGEMESSEN. Die zweite Hälfte entscheidet über
+       die Gestalt der Umsetzung — liest ein Anbieter selbst aus der übergebenen Adresse,
+       ist ein blosses Weglassen des Parameters etwas anderes als das Weglassen eines
+       benannten Feldes. UMSETZUNG ERST NACH DEM ANBIETER-CRAWL.
+
+  (E4) KLARSTELLUNG ZUM USER-AGENT (Architekten-Vorschlag 2026-09-22, OWNER ohne
+       Widerspruch). Das Ablage- und Log-Verbot der Präzisierung vom 2026-08-19 gilt für
+       den USER-AGENT wie für die IP.
+       WAS GEKLÄRT WIRD: Der Spiegelstrich "INFRASTRUKTUR-DATEN — IP-ADRESSE UND
+       USER-AGENT" nennt beide Merkmale, sein Verbotssatz aber nur die IP ("Die IP wird
+       vom eigenen Server NIEMALS in der Datenbank gespeichert, persistiert oder in ein
+       Log geschrieben"). DER SATZ BLEIBT WÖRTLICH STEHEN. Diese Klarstellung sagt, dass
+       er für den User-Agent ebenso gilt.
+       WARUM DAS KEINE VERSCHÄRFUNG IST: Der Code legt den User-Agent ohnehin nicht ab —
+       `persistEvent` (src/lib/analytics/persist.ts) schreibt fünf Spalten, und keine
+       trägt ihn. Die Klarstellung bringt die REGEL auf den Stand des CODES, nicht
+       umgekehrt.
+       WARUM SIE TROTZDEM NÖTIG IST: Eine Aufzählung, die zwei Merkmale nennt, und ein
+       Verbot, das eines davon nennt, lesen sich beim nächsten Zuschnitt als ABSICHT.
+       Wer die Lücke für gewollt hält, legt den User-Agent ab und verstösst gegen nichts,
+       was dastünde.
+
+  PROVENIENZ DIESES BLOCKS, JE TEIL: (E2), (E3) und die Grenzen sind OWNER-ENTSCHEIDUNG
+  (2026-09-22) auf Architekten-Vorschlag — KEINE Messung, KEINE Ableitung, eine
+  FESTLEGUNG. (E4) ist ARCHITEKTEN-VORSCHLAG desselben Tages, vom Owner ohne Widerspruch
+  übernommen. Die Code-Angaben in (E3) und (E4) sind GEMESSEN am Repo (CC, 2026-09-22,
+  HEAD 9abdd2a); die Durchleitungs-Messung selbst stammt vom 2026-09-01 und ist an diesem
+  Tag am selben Code bestätigt. Dass der Halbsatz an der Roadmap-Zeile 11.9 seit (E2) die
+  engere Beschreibung trägt, ist eine ABLEITUNG aus dem Vergleich beider Wortlaute, keine
+  Messung.
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
   (__Host-ps_v) stellt Pagesmith dem Kunden heute KEINEN fertigen
@@ -4226,6 +4322,17 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     ist nicht der Ort dafür. Seine zwei Angaben sind an diesem Tag am Repo nachgeprüft und
     gelten unverändert (CC, 2026-09-22). **DER POSTEN BLEIBT OFFEN; DER ZWEITE TRIGGER GILT
     WEITER.**
+    **2026-09-22, ZWEITER EINTRAG DESSELBEN TAGES — DIE VERLANGTE MESSUNG BEKOMMT EINEN
+    ORT:** Sie wird PFLICHT-NACHWEIS DER ERSTEN BAU-SCHEIBE DER PHASE 11.7, DIE EINE
+    KENNUNG DURCHLEITET — Ablage und Logausgabe am gebauten Transport, Achse ALLE
+    `console`-Aufrufe im Produktivcode unter `src/` (binärsicher gelesen) plus die
+    Schreibpfade, mit Positivkontrolle. Zeiger: docs/aktiver-stand.md, Vermerk P11.7-1 —
+    eine NUMMER mit Phasen-Präfix und AUSDRÜCKLICH KEIN Abschnittstitel, weil ein
+    Titel-Zeiger in der nächsten Standdatei wieder etwas träfe (s. den Posten "ZEIGER AUF
+    docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI", Nachtrag vom 2026-09-17).
+    **DER POSTEN BLEIBT OFFEN** — ein Ort ist keine
+    Messung, und die Scheibe ist am 2026-09-22 nicht zugeschnitten. Beide Trigger gelten
+    unverändert weiter; dieser Satz ersetzt keinen von ihnen.
 
 <!-- Die Reste der Phase 11.2, gehoben 2026-09-08 -->
 

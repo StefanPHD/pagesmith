@@ -603,6 +603,90 @@ Zählungen über den eigenen Bestand, die Abwesenheit eines Pinterest-Tags im au
 Text sowie Endpunkt, Version und `evaluateSuccessBody` am Code sind GEMESSEN am Repo (CC,
 2026-09-22, HEAD `8cab827`), je mit der genannten Achse.
 
+### VERMERK P11.7-8 — Aufklärung am Code vom 2026-09-22 (KEIN BAU)
+
+**HARTE ANGABEN:** Datum 2026-09-22 · HEAD vor, während und nach der Runde `a763716`
+("docs(claude): 11.7 — Pinterest-Crawl abgelegt, alle fünf Ziele durchlaufen") ·
+Arbeitsbaum vor und nach der Aufklärung sauber (`git status --short` leer) · **KEINE
+Navigation, kein Browser-Werkzeug, keine Werkzeug-Ablage, keine fremde Seite** ·
+`docs/ziel-befunde.md` **weder geladen noch durchsucht** und `docs/offene-punkte.md`
+ebenso nicht — diese Runde war eine CODE-Aufklärung, kein Zuschnitt und keine
+Anbieter-Recherche, der Pflicht-Stopp aus CLAUDE.md ist damit nicht ausgelöst.
+
+**DIE LESBARKEIT DIESER DATEI IST JETZT EIN MESSWERT, KEINE VERMUTUNG:** Sie ist
+**1 533 Zeilen / 121 091 Bytes** (GEMESSEN, CC, 2026-09-22) und wurde in dieser Runde
+**vollständig gelesen, lückenlos von Zeile 1 bis 1 533**. Die Volllesung war ohne
+Einschränkung leistbar.
+**DIE ZAHL 1 578, DIE DER AUFTRAG ALS BISHER EINZIGEN BELEG NANNTE, IST NICHT DIE GRÖSSE
+DIESER DATEI** — sie war eine frühere LESEGRENZE an einer ANDEREN Datei. Wer sie als
+Schwelle für diese Datei liest, vergleicht zwei verschiedene Gegenstände. Der Messwert
+oben ersetzt sie für diese Datei und für nichts sonst.
+
+**KEIN BAU-COMMIT, UND DER GRUND IST EIN VIERTER NEBEN P11.7-1, P11.7-2 UND P11.7-3:**
+Diese Runde war READ-ONLY am eigenen Code. Sie hat keine Zeile geschrieben, weil der
+Abschnitt "Nächster Schritt" genau das verlangt — die Fragen AN DEN EIGENEN CODE werden
+beantwortet, BEVOR zugeschnitten wird. Der einzige Commit dieses Tages ist ein
+Doku-Commit (diese Datei).
+
+**DIE ZEHN CODE-FRAGEN, JE EIN SATZ BEFUND UND FUNDSTELLE.** Alle Angaben GEMESSEN am
+Repo (CC, 2026-09-22) bei HEAD `a763716`.
+
+| # | Frage (Herkunft) | Befund | Fundstelle |
+|---|---|---|---|
+| C1 | TRANSIT-ONLY im Google-Transport (VERMERK P11.7-1, Tabellenzeile 5) | **AUF DER LOG-ACHSE EINGEHALTEN** — die fünf `console`-Zeilen des Transports führen Festtext, `built.reason`, `res.status` und `errorName(err)`, und der Antwort-RUMPF wird gar nicht erst gelesen | `google-forward.ts:252, 266, 294, 335, 341`; `google-payload.ts:177` (`GoogleBuildRejection` = genau ein Literal `"no_click_id"`) |
+| C2 | Sendet jeder Adapter die Pflichtfelder seines Anbieters (ZUSCHNITT-FRAGE P11.7-3) | **VIER VON FÜNF JA; BEI META IST EINE LÜCKE** — `action_source` unbedingt, `client_user_agent` und `event_source_url` dagegen BEDINGT und ohne Riegel; für google **nicht entscheidbar** | `meta-forward.ts:310` gegen `:297` und `:317`; pinterest/tiktok mit Paar-Riegel, linkedin mit Identitäts-Riegel; s. ZUSCHNITT-FRAGE P11.7-22 |
+| C3 | Trennt die TikTok-Fehlerdeutung `40100` von `40104` (ZUSCHNITT-FRAGE P11.7-11) | **IM LOG JA, IM KONTROLLFLUSS NEIN** — `code=` kommt aus dem RUMPF und bleibt unter der Schwärzungsgrenze; behandelt werden beide Fälle gleich, und ob die im Kopfkommentar gemeinten zwei dieselben sind, ist **ungeprüft** | `tiktok-forward.ts:272–293`, `:123`, `:428 f.`; `src/lib/redact.ts:68` (Schwärzung erst ab 20 Zeichen) |
+| C4 | Welche Version sendet google, in welcher Form (ZUSCHNITT-FRAGE P11.7-13, google-Zeile) | **`v1`, INLINE IN EINER BENANNTEN ENDPUNKT-KONSTANTEN** — kein Env-Weg, aber anders als bei pinterest eine Konstante; der Bestands-Wert ist damit am Code bestätigt | `google-forward.ts:57 f.` `GOOGLE_INGEST_ENDPOINT` |
+| C5 | Grösse von `docs/ziel-befunde.md` (ZUSCHNITT-FRAGE P11.7-8) | **9 994 Zeilen / 717 061 Bytes** — gegenüber der Angabe jener Frage um 1 177 Zeilen / 88 432 Bytes GEWACHSEN; die Frage ist damit **nicht beantwortet, sondern verschärft** | `wc -l` / `wc -c` auf `docs/ziel-befunde.md` |
+| C6 | Steht der widerlegte Kopfkommentar noch (Vorrat P11.7-1) | **JA, UNVERÄNDERT** — alle drei Angaben weiterhin falsch, an HEAD gegengeprüft | `google-click-ids.ts:6–10`; Gegenprobe `google-forward.ts:279`, `ingest.ts:485` |
+| C7 | Steht die Stufenangabe im LinkedIn-Kopf noch (Vorrat P11.7-3) | **JA, BEIDE STELLEN UNVERÄNDERT** — nicht nachgezogen | `linkedin-forward.ts:19` und `:364` |
+| C8 | Steht die überholte Stellenzahl-Begründung noch (Vorrat P11.7-4) | **JA, UNVERÄNDERT** | `pinterest-forward.ts:567 f.` |
+| C9 | Was übergibt `forwardToGoogle` heute (ZUSCHNITT-FRAGE P11.7-6) | **NUR DIE KLICK-KENNUNGEN** — bestätigt; weder `clientIp` noch `userAgent` erreichen den Adapter, sie enden an der Signatur. WELCHER der zwei Anbieter-Orte passt, ist am Code **nicht entscheidbar** | `google-forward.ts:277–291`; `ingest.ts:485–495` |
+| C10 | Wie viele `userIds`-Einträge, was tut der IPv4-Riegel (ZUSCHNITT-FRAGEN P11.7-14, P11.7-16) | **GENAU EIN EINTRAG; BEIDE RIEGEL KEHREN VOR DEM `fetch` ZURÜCK** — der Befund aus VERMERK P11.7-5 ist an HEAD bestätigt | `linkedin-forward.ts:394`, `:402`; Wächter `linkedin-forward.test.ts` T1-a |
+
+**AUSGESCHLOSSEN ALS MESSFRAGEN, je mit Nummer — sie verlangen einen Aufruf gegen einen
+Anbieter, und kein Code beantwortet sie:** F1 (je Ziel der Teil "nimmt der Endpunkt den
+Wert fachlich an") · **F4** an allen fünf Zielen · **F5** · **F6** · **F7** (welches Limit
+tatsächlich greift) · **F8** · ZUSCHNITT-FRAGE **P11.7-10** · ZUSCHNITT-FRAGE **P11.7-21**
+· die FÜNF Messfragen aus "WAS EIN CRAWL FÜR LINKEDIN NICHT KLÄRT".
+
+**TEILMESSUNG ZU C1 FÜR EINEN POSTEN AUSSERHALB DIESER DATEI — UND SIE IST AUSDRÜCKLICH
+KEINE ERLEDIGUNG.** Der Posten "DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST
+TOT" (docs/offene-punkte.md) verlangt eine Messung am gebauten Google-Transport auf
+**ABLAGE UND LOGAUSGABE**. Davon ist hier erhoben:
+· **DIE LOG-ACHSE, VOLLSTÄNDIG:** alle `console`-Aufrufe im Produktivcode unter `src/` —
+  92 verfolgte `.ts`/`.tsx`-Dateien ohne `.test.` (`git ls-files`), Kommentarzeilen
+  ausgesondert, **81 echte Aufrufe**. POSITIVKONTROLLE: die Achse trifft in allen fünf
+  Adaptern. Der Google-Transport trägt fünf davon, keiner führt einen Wert (s. C1).
+· **DIE ANALYTICS-ABLAGE:** `persistEvent` (`src/lib/analytics/persist.ts`) schreibt fünf
+  Werte, keiner ist eine Kennung — der Befund aus VERMERK P11.7-1 (f) ist bestätigt.
+· **OFFEN BLEIBEN DIE ÜBRIGEN SCHREIBPFADE.** Sie sind in dieser Runde **nicht** erhoben,
+  und die Teilmessung deckt sie nicht.
+**DER POSTEN SELBST IST IN DIESER RUNDE NICHT ANGEFASST WORDEN** — docs/offene-punkte.md
+lag ausserhalb des Scopes. **SEIN NACHZUG GEHÖRT ZUR BAU-SCHEIBE**, wie der Abschnitt
+"Was den Zuschnitt bindet" es vorsieht; wer ihn früher schliesst, schliesst ihn auf einer
+halben Messung.
+
+**DER TESTBESTAND JE ADAPTER — GRUNDLAGE DER SPÄTEREN MUTATIONSPROBEN.** Eine Zeile je
+Adapter, erschöpfende Wächter (`toEqual` auf die geänderte Ebene) und Lücken getrennt.
+Gemeint sind ausschliesslich die Läufe, die **Match-Felder, Adressfeld oder Endpunkt**
+prüfen — also das, was diese Phase ändern würde.
+
+| Adapter | ERSCHÖPFEND | DANEBEN | LÜCKE |
+|---|---|---|---|
+| **meta** | **KEINER** | `route.test.ts:109–118` (volle URL, `action_source`, `event_source_url`, drei `user_data`-Felder, je Einzel-Assertion), `:176–205` (IP-Auflösung), `ingest.test-mode.test.ts:337/355` | **KEIN erschöpfender Nutzlast-Wächter** (ein zusätzliches `user_data`-Feld wird nicht rot) · **kein Lauf prüft die ABWESENHEIT** von `client_user_agent`/`event_source_url` · **der Vorgabewert der Version ist ungedeckt** (s. ZUSCHNITT-FRAGE P11.7-23). `meta-forward.test.ts` prüft **ausschliesslich den Fehlerpfad** |
+| **pinterest** | **T8** — `sentEvent().user_data` per `toEqual` | T6/T7 (Paar-Riegel), T15 (`action_source === "web"`), T15b (Pflichtfelder, Einzel-Assertions), T15c (Abwesenheiten), T16/T16b (volle URL inkl. `/v5/`, Pfad-Kodierung), T17/T17a2/T17b | **`event_source_url` ist von KEINEM Lauf gedeckt** — im ganzen Repo prüft es nur `route.test.ts:114`, und dort für meta |
+| **tiktok** | **T10** — `sentEvent().user` per `toEqual`; **T15** — `ev.page` per `toEqual` | T8/T9 (Paar-Riegel), T15 (`event_source`, `event_source_id`, `data`-Länge, `properties` per `toEqual`), T17 (volle URL inkl. `v1.3`) | keine auf dieser Achse |
+| **linkedin** | **T1-a** — `sentPayload()` per `toEqual` auf die **GANZE** Nutzlast (jedes zusätzliche Feld und jeder zweite `userIds`-Eintrag wird rot) | T1-b (URN dieses Ereignisses), T1-c (`LinkedIn-Version`, `Authorization`), T2-a bis T2-f (Riegel, IPv4, kein Konfigurationswert im Log) | **der ENDPUNKT ist von keinem Lauf gedeckt** — die Tests greifen nur auf `fetchCalls()[0][1]` (s. ZUSCHNITT-FRAGE P11.7-23) |
+| **google** | **GF-1** — `gesendet()` per `toEqual` auf die **GANZE** Nutzlast, dazu `url` per `toBe` auf die volle Adresse inkl. `/v1/` | GF-2 (Zugangsdatum nur in der Kopfzeile), GF-5, GF-1b, GF-3/GF-4/GF-4b (drei Riegel), **GF-7 und GF-7b** (TRANSIT-ONLY, mit Positivkontrolle), GF-6, GF-8; `google-payload.test.ts` je Kennung, `google-click-ids.test.ts` für die Extraktion | keine auf dieser Achse |
+
+**PROVENIENZ:** Alle Befunde dieses Vermerks sind **GEMESSEN am Repo** (CC, 2026-09-22)
+bei HEAD `a763716`, je mit der am Befund genannten Achse oder Fundstelle. **KEINE Angabe
+stammt von einem Anbieter**, und in dieser Runde ist **keine fremde Quelle gelesen**
+worden. Die Einordnung "nicht am Code entscheidbar" bei C2 (google), C3 (zweite Hälfte)
+und C9 (zweite Hälfte) ist eine ABLEITUNG aus dem Fehlen einer Fundstelle, keine Messung
+an einem Anbieter.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -651,6 +735,12 @@ Dass der Kommentar die widerlegte Aussage bis heute trägt, steht nirgends.
 TRIGGER: die erste Bau-Scheibe dieser Phase, die eine Google- oder Kennungs-Datei berührt;
 spätestens das Phasenende.
 
+**ZUSATZ 2026-09-22 — AM CODE BEANTWORTET, s. VERMERK P11.7-8, Zeile C6.** Der Wortlaut
+oben bleibt unverändert. Nachgezogen ist allein der STAND: Der Kommentar steht an HEAD
+`a763716` **unverändert** in den Zeilen 6 bis 10, und alle drei seiner Angaben sind dort
+erneut widerlegt. **DER TRIGGER IST DAMIT NICHT EINGELÖST** — gemessen ist, DASS er
+dasteht, nicht dass er nachgezogen wäre. **KEINE EMPFEHLUNG**, unverändert.
+
 **P11.7-2 — DER HALBSATZ AN DER ROADMAP-ZEILE 11.9 TRÄGT SEIT P11.7-2 DIE ENGERE
 BESCHREIBUNG DER DRITTEN DATENKLASSE.**
 Er lautet: *"Sie gilt fremdvergebenen KLICK-Kennungen, nicht einer selbst gesetzten
@@ -692,6 +782,12 @@ Beacon ohne User-Agent-Kopfzeile ist fuer DIESES Ziel vollstaendig"), und der Ei
 TRIGGER: die erste Bau-Scheibe dieser Phase, die diese Datei berührt; spätestens das
 Phasenende.
 
+**ZUSATZ 2026-09-22 — AM CODE BEANTWORTET, s. VERMERK P11.7-8, Zeile C7.** Der Wortlaut
+oben bleibt unverändert. Nachgezogen ist allein der STAND: **BEIDE** Stellen stehen an
+HEAD `a763716` unverändert — `linkedin-forward.ts:19` ("ES GIBT KEIN FELD FUER DEN
+USER-AGENT") und `:364` ("kennt KEIN Feld dafuer (GEMESSEN, Teile (a), (i), (n))"). Die zu
+hohe Stufenangabe ist nicht nachgezogen. **KEINE EMPFEHLUNG**, unverändert.
+
 **P11.7-4 — DER KOPFKOMMENTAR DER URL-BILDUNG IN `src/lib/capi/pinterest-forward.ts`
 BEGRÜNDET DEN VERZICHT AUF EINE FORMATPRÜFUNG MIT EINER UNGEPRÜFTEN STELLENZAHL — DIE
 ENDPUNKT-REFERENZ FÜHRT JETZT EINE FORMATREGEL.**
@@ -714,6 +810,11 @@ Beobachtung also nicht.
 stehengelassen wird. **KEIN FIX-VORSCHLAG.**
 TRIGGER: die erste Bau-Scheibe dieser Phase, die diese Datei berührt; spätestens das
 Phasenende.
+
+**ZUSATZ 2026-09-22 — AM CODE BEANTWORTET, s. VERMERK P11.7-8, Zeile C8.** Der Wortlaut
+oben bleibt unverändert. Nachgezogen ist allein der STAND: Die Begründung steht an HEAD
+`a763716` unverändert in `pinterest-forward.ts:567 f.`, mitsamt der überholten
+Tatsachenangabe über die "ungepruefte Stellenzahl". **KEINE EMPFEHLUNG**, unverändert.
 
 ## Offene Fragen an den Anbieter-Crawl
 
@@ -1034,6 +1135,15 @@ Adapter die Pflichtfelder seines Anbieters — für meta `action_source`, `event
 dass es **nicht gelesen** wird; ob LinkedIn ein entsprechendes Pflichtfeld kennt, steht in
 seinem eigenen Abschnitt und ist hier nicht behauptet.
 
+**ZUSATZ 2026-09-22 — AM CODE BEANTWORTET, s. VERMERK P11.7-8, Zeile C2.** Der Wortlaut
+der Frage bleibt unverändert. **IHRE ERSTE HÄLFTE IST EINGELÖST:** `action_source`
+**STEHT** in der Meta-Nutzlast, unbedingt und mit dem Wert `"website"`
+(`meta-forward.ts:310`), und der Lauf `route.test.ts:113` nagelt ihn fest — die Angabe aus
+`docs/claude-history/phase-6-capi.md` ist damit am HEUTIGEN Code bestätigt und nicht mehr
+nur ein Dokument über Phase-6-Code. **IHRE ZWEITE HÄLFTE — die Frage an alle fünf Adapter
+— IST BEANTWORTET UND HAT EINEN BEFUND ERGEBEN**, der eine eigene Frage trägt:
+ZUSCHNITT-FRAGE P11.7-22. **KEINE EMPFEHLUNG.**
+
 **ZUSCHNITT-FRAGE P11.7-4 — `external_id` WIRD VON META ZUM MITSENDEN ANGEHALTEN, UND DER
 WERT WÄRE SELBST
 ERZEUGT.** GELESEN (Teile (l), (o)): "Also include the `external_id` and `event_id` event
@@ -1087,6 +1197,14 @@ LANDESEITE. Der Anbieter unterscheidet zwei Momente.
 **DIE DATENKLASSEN-BERÜHRUNG WIRD BENANNT UND NICHT ENTSCHIEDEN:** Beide Felder tragen IP und
 User-Agent, und für die gilt P11.7-4. **KEINE EMPFEHLUNG.**
 
+**ZUSATZ 2026-09-22 — DIE CODE-HÄLFTE AM CODE BEANTWORTET, s. VERMERK P11.7-8, Zeile C9.**
+Der Wortlaut der Frage bleibt unverändert. Bestätigt an HEAD `a763716`: `forwardToGoogle`
+übergibt **nur** die Klick-Kennungen (`google-forward.ts:277–291`), und **weder `clientIp`
+noch `userAgent` erreichen den Adapter überhaupt** — beide enden schon an der Signatur des
+Pfeil-Ausdrucks in `FORWARDER_BY_TARGET` (`ingest.ts:485–495`). **DIE FRAGE SELBST BLEIBT
+OFFEN:** Welcher der zwei Anbieter-Orte zu unserem Zeitpunkt passt, ist am Code **nicht
+entscheidbar** — es ist eine Frage über zwei Anbieter-Semantiken. **KEINE EMPFEHLUNG.**
+
 **ZUSCHNITT-FRAGE P11.7-7 — DIE ZWEI DMA-EINWILLIGUNGSFELDER EXISTIEREN, BEIDE OPTIONAL, UND
 DER TRIGGER IHRES POSTENS ZEIGT AUF EINE ABGESCHLOSSENE PHASE.**
 GELESEN (docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)", Teile
@@ -1109,6 +1227,18 @@ Google-Abschnitt **5 712 / 405 265**.
 **DIE FRAGE IST NICHT, OB DIE PFLICHT GILT — SIE GILT**, sondern ob nach der Volladung noch
 genug freier Kontext für einen Zuschnitt bleibt. **SPÄTESTENS VOR DEM ERSTEN ZUSCHNITT DIESER
 PHASE ZU KLÄREN. KEINE EMPFEHLUNG**, und kein Vorschlag einer Lockerung.
+
+**ZUSATZ 2026-09-22 — DIE MESSGRÖSSE AM CODE NACHGEZOGEN, s. VERMERK P11.7-8, Zeile C5.**
+Der Wortlaut der Frage bleibt unverändert, und **DIE FRAGE IST NICHT BEANTWORTET.**
+Nachgezogen ist allein die Zahl, auf die sie sich stützt: `docs/ziel-befunde.md` ist am
+2026-09-22 **9 994 Zeilen / 717 061 Bytes** (GEMESSEN, CC, 2026-09-22). Gegenüber der
+Angabe im Text oben — 8 817 / 628 629 — sind das **1 177 Zeilen und 88 432 Bytes MEHR**;
+die Crawls zu tiktok, linkedin und pinterest sind seither abgelegt worden.
+**DIE ÄLTERE ANGABE BLEIBT WÖRTLICH STEHEN** und ist als Aussage über ihren Zeitpunkt
+richtig; dieser Zusatz tritt DANEBEN. **DIE MESSUNG BEANTWORTET DIE FRAGE NICHT, SIE
+VERSCHÄRFT SIE** — die Datei ist gewachsen, nicht geschrumpft, und ob nach einer Volladung
+noch genug freier Kontext für einen Zuschnitt bleibt, ist unverändert ungemessen.
+**KEINE EMPFEHLUNG**, und kein Vorschlag einer Lockerung.
 
 **DIE FÜNF FOLGENDEN STAMMEN AUS DEM TIKTOK-CRAWL (VERMERK P11.7-4) UND BRECHEN DESHALB DIE
 ABKÜRZUNG DIESES ABSCHNITTS** — ein "Teil (x)" meint hier sonst ausnahmslos den
@@ -1144,6 +1274,22 @@ BETREIBER-SUPPORT UNTERSCHEIDBAR MACHT, IST IN DIESER RUNDE NICHT ERHOBEN.** Der
 Kopfkommentar von `src/lib/capi/tiktok-forward.ts` führt "zwei verschiedene Codes teilen
 sich HTTP 401" bereits als gemessenen Unterschied (2026-08-11); **ob die dort gemeinten zwei
 dieselben zwei sind, ist ungeprüft.** KEINE EMPFEHLUNG.
+
+**ZUSATZ 2026-09-22 — AM CODE BEANTWORTET, s. VERMERK P11.7-8, Zeile C3.** Der Wortlaut
+der Frage bleibt unverändert. **SIE TEILT SICH AM CODE IN ZWEI ANTWORTEN:**
+· **IM LOG SIND DIE ZWEI FÄLLE UNTERSCHEIDBAR.** `describeRejection`
+  (`tiktok-forward.ts:272–293`) schreibt `code=` aus dem **RUMPF**, nicht den HTTP-Status;
+  `asLogShort` (`:123`) läuft über `redactOpaque` (`src/lib/redact.ts:68`), das erst ab
+  **zwanzig** Zeichen schwärzt — eine fünfstellige Zahl bleibt vollständig lesbar. Der
+  Betreiber-Support sieht `code=40100` gegen `code=40104`.
+· **IM KONTROLLFLUSS SIND SIE ES NICHT.** Der Adapter verzweigt nicht auf den Code; beide
+  Fälle laufen durch denselben Zweig (`:428 f.`: `if (!res.ok) { console.error(…); return; }`).
+**DIE ZWEITE HÄLFTE DER FRAGE BLEIBT UNGEPRÜFT, UND DER GRUND STEHT JETZT FEST:** Ob die
+im Kopfkommentar gemeinten "zwei verschiedene Codes" dieselben sind, ist **am Code NICHT
+entscheidbar** — der Kommentar (`:34 f.`, `:424–427`) nennt als Beispiel "falsche Kennung"
+gegen "falsches Zugangsdatum", die gelesene Doku nennt Drosselung gegen leeres
+Zugangsdatum, und welche Codes die Messung vom 2026-08-11 ergeben hat, steht im Code
+nirgends. **KEINE EMPFEHLUNG.**
 
 **ZUSCHNITT-FRAGE P11.7-12 — `external_id` IST AUCH BEI TIKTOK DER EINZIGE SELBST ERZEUGTE
 WERT: ZEIGER STATT KOPIE.**
@@ -1230,6 +1376,27 @@ sind VIER Angaben. **DIE ÜBRIGEN VIER ZEILEN SIND VON DIESEM ZUSATZ NICHT BERÜ
   `…/docs/reference/manage-notifications/` ist als Grenzfall ausdrücklich **nicht geöffnet**
   worden. Zeiger: ebenda, Teil (ag).
 
+**ZUSATZ 2026-09-22 NACH DER CODE-AUFKLÄRUNG (VERMERK P11.7-8, Zeile C4) — DIE TABELLE UND
+DIE ZWEI ZUSÄTZE DARÜBER BLEIBEN WÖRTLICH STEHEN.** Überholt ist allein die Angabe der
+google-Zeile "in dieser Runde NICHT am Code nachgesehen"; sie war für ihren Zeitpunkt
+richtig und wird **nicht umgeschrieben**. **WAS HINZUKOMMT, SIND DREI ANGABEN.**
+· **GOOGLE SENDET `v1`, INLINE IN EINER BENANNTEN ENDPUNKT-KONSTANTEN** (GEMESSEN am Repo,
+  CC, 2026-09-22, HEAD `a763716`): `google-forward.ts:57 f.`,
+  `const GOOGLE_INGEST_ENDPOINT = "https://datamanager.googleapis.com/v1/events:ingest";`.
+  Der Bestands-Wert der Tabelle ist damit am Code bestätigt. **WEDER EIGENE
+  VERSIONS-KONSTANTE NOCH ENV-WEG** — aber, anders als bei pinterest, eine benannte
+  Konstante für die ganze Adresse. Eine Anhebung wäre eine Code-Änderung an dieser Zeile.
+· **DIE SPALTE "FORM" FÄLLT ÜBER ALLE FÜNF ZIELE AUSEINANDER, UND ZWAR VOLLSTÄNDIG**
+  (GEMESSEN, ebenda): meta **env-übersteuerbar mit Vorgabewert** (`config.ts:14`,
+  verwendet `meta-forward.ts:353`) · linkedin **eigene Modul-Konstante ohne Env-Weg**
+  (`linkedin-forward.ts:105`, Kopfzeile `:473`) · tiktok und google **Modul-Konstante für
+  die ganze Adresse, Version darin** (`tiktok-forward.ts:71`, `google-forward.ts:57 f.`) ·
+  pinterest **weder das eine noch das andere, inline im Template-Literal**
+  (`pinterest-forward.ts:576`). **FÜNF ZIELE, VIER FORMEN.**
+· **DIE ABDECKUNG DURCH TESTS FÄLLT EBENSO AUSEINANDER, UND ZWEI ZIELE SIND UNGEDECKT** —
+  das ist der Befund, der die eigene ZUSCHNITT-FRAGE P11.7-23 trägt und hier nur
+  angezeigt wird.
+
 **DIE FÜNF FOLGENDEN STAMMEN AUS DEM LINKEDIN-CRAWL (VERMERK P11.7-6) UND BRECHEN DESHALB
 DIE ABKÜRZUNG DIESES ABSCHNITTS** — ein "Teil (x)" meint hier sonst ausnahmslos den
 **Meta**-Abschnitt; die fünf unten nennen ihren Abschnitt **jedes Mal ausgeschrieben.**
@@ -1255,6 +1422,17 @@ ob er eine Liste mit ZWEI Einträgen annimmt, ist **UNGEMESSEN** (ebenda, Teile 
 (aj), (aq)). **OFFEN und hier nicht entschieden:** ob ein zweiter Eintrag gebaut wird, ob
 er die IP ersetzt oder ergänzt, und welches Format der Wert haben muss — das Format ist
 **nicht gelesen.** **KEINE EMPFEHLUNG.**
+
+**ZUSATZ 2026-09-22 — DIE CODE-HÄLFTE AM CODE BESTÄTIGT, s. VERMERK P11.7-8, Zeile C10.**
+Der Wortlaut der Frage bleibt unverändert, und **SIE BLEIBT OFFEN.** Bestätigt an HEAD
+`a763716` ist allein die gemessene Ausgangslage: Der Adapter sendet **GENAU EINEN**
+Eintrag, und der Wächter dafür ist schärfer als vermutet — `linkedin-forward.test.ts` T1-a
+prüft `sentPayload()` per `toEqual` auf die **GANZE** Nutzlast, **ein zweiter
+`userIds`-Eintrag wird also rot.** Das ist für die Scheibe, die P11.7-14 bauen würde, eine
+Zusage und eine Auflage zugleich: Der Lauf ist der Ort, an dem die neue Gestalt sichtbar
+entschieden wird, und er lässt sich nicht umgehen. **AN DER FRAGE SELBST ÄNDERT DAS
+NICHTS** — ob der Endpunkt den Wert und eine Zweier-Liste annimmt, bleibt UNGEMESSEN, und
+das Format ist nicht gelesen. **KEINE EMPFEHLUNG.**
 
 **ZUSCHNITT-FRAGE P11.7-15 — EINE GEMEINSAME BAUFORM FÜR ALLE KLICK-KENNUNGEN
 (ARCHITEKTEN-VORSCHLAG 2026-09-22, NICHT ENTSCHIEDEN).**
@@ -1299,6 +1477,14 @@ SIE GEGENSTANDSLOS.**
 **DIE GRENZE:** Dass IPv6 überhaupt vorkommt, ist eine ANNAHME und nicht gehoben; **IPv6
 ist gegen die Schnittstelle NIE probiert worden** (ebenda, Teil (j); dazu die Messfrage im
 Block "WAS EIN CRAWL FÜR LINKEDIN NICHT KLÄRT"). **KEINE EMPFEHLUNG.**
+
+**ZUSATZ 2026-09-22 — DIE CODE-HÄLFTE AM CODE BESTÄTIGT, s. VERMERK P11.7-8, Zeile C10.**
+Der Wortlaut der Frage bleibt unverändert, und **SIE BLEIBT EINE FOLGEFRAGE VON
+P11.7-14.** Bestätigt an HEAD `a763716`: Beide Riegel kehren **VOR** dem `fetch` zurück
+(`linkedin-forward.ts:394` und `:402`), der ganze Forward entfällt also tatsächlich statt
+nur eines Feldes. Die Läufe T2-a bis T2-c (`linkedin-forward.test.ts`) decken beide Riegel
+einzeln, T2-c zusätzlich den Rand "Zahlengruppe über 255". **KEINE EMPFEHLUNG**, und der
+Grund des Riegels bleibt unangetastet.
 
 **ZUSCHNITT-FRAGE P11.7-17 — DIE VERSIONS-ANHEBUNG TRIFFT META UND LINKEDIN BEIDE IM
 JANUAR 2027, UND DIE ZIELVERSION IST VOR DEM ZUSCHNITT ZU LESEN.**
@@ -1406,6 +1592,182 @@ FORWARD ALS FEHLSCHLAG** — und zwar still: es entstünde eine Logzeile, sonst 
 `sanitizeProviderText` gibt für einen Nicht-String `"-"` zurück und deckt `""`, `null` und
 ein fehlendes Feld gleich ab (GEMESSEN, ebenda).
 **KEIN FIX-VORSCHLAG UND KEINE EMPFEHLUNG.**
+
+**DIE FÜNF FOLGENDEN STAMMEN AUS DER CODE-AUFKLÄRUNG (VERMERK P11.7-8) UND BRECHEN DIE
+ABKÜRZUNG DIESES ABSCHNITTS NICHT** — ein "Teil (x)" meint hier ausnahmslos den
+**Meta**-Abschnitt, und diese fünf zitieren **überhaupt keinen Teil**: sie stützen sich
+allein auf GEMESSENE Angaben über den EIGENEN Code. Wo sie einen Anbieter erwähnen, steht
+der Zeiger ausgeschrieben.
+
+**ZUSCHNITT-FRAGE P11.7-22 — META SENDET ZWEI VERLANGTE FELDER NUR BEDINGT, UND ES GIBT
+KEINEN RIEGEL DAGEGEN.**
+**BEFUND, KEIN FIX-VORSCHLAG.**
+GEMESSEN am Code (CC, 2026-09-22, HEAD `a763716`): In `forwardToMeta`
+(`src/lib/capi/meta-forward.ts`) steht `action_source: "website"` **UNBEDINGT** in der
+Nutzlast (Zeile 310), `client_user_agent` dagegen hinter `if (userAgent)` (Zeile 297) und
+`event_source_url` hinter `if (eventSourceUrl)` (Zeile 317).
+GELESEN (docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)", Teil (l)): Für
+Website-Ereignisse sind `action_source`, `event_source_url` und `client_user_agent`
+**VERLANGT — das ist die ganze Pflicht-Liste.**
+**DIE FOLGE, UND SIE IST STILL:** Fehlt die `user-agent`-Kopfzeile oder das Rumpf-Feld
+`eventSourceUrl`, entsteht eine Nutzlast **OHNE ein verlangtes Feld, und sie wird trotzdem
+gesendet.** `userAgent` entsteht in `handleIngest` als
+`asString(request.headers.get("user-agent"))` (`ingest.ts:996`) und ist bei fehlender
+Kopfzeile die leere Zeichenkette.
+**DER UNTERSCHIED ZU DEN VIER ÜBRIGEN ADAPTERN IST DER EIGENTLICHE BEFUND, und er ist
+gemessen:** pinterest und tiktok tragen je einen Riegel "beide oder keiner" und senden
+ohne das Paar gar nicht; linkedin bricht ohne Identität ab. **NUR META HAT KEINEN.**
+**WAS AM CODE NICHT ENTSCHEIDBAR IST:** ob ein fehlendes Pflichtfeld beim Anbieter ein
+DEFEKT oder eine EINBUSSE ist. Genau diese Trennung ist der Grund, aus dem F3 so gestellt
+ist; für meta ist sie auf Doku-Ebene beantwortet, am Endpunkt nicht.
+**KEIN TEST DECKT DEN FALL** — s. ZUSCHNITT-FRAGE P11.7-23 und die Testbestands-Tabelle in
+VERMERK P11.7-8. **NICHT ENTSCHIEDEN, KEINE EMPFEHLUNG.**
+
+**ZUSCHNITT-FRAGE P11.7-23 — ZWEI DER FÜNF ZIELE HABEN KEINEN WÄCHTER ÜBER IHRE VERSION
+BZW. IHREN ENDPUNKT: EINE ANHEBUNG BLIEBE GRÜN, GLEICH WAS SIE TUT.**
+**GEMESSEN am Repo (CC, 2026-09-22, HEAD `a763716`), je mit benannter Achse:**
+· **DER META-VORGABEWERT IST VON KEINEM TEST GEDECKT.** **ZWÖLF** Testdateien mocken
+  `@/lib/capi/config` und setzen `META_GRAPH_VERSION` selbst auf `"v21.0"` — zehn als
+  Literal, zwei als mutierbaren Getter. **KEINE einzige Testdatei importiert
+  `@/lib/capi/config`**; der einzige Treffer auf `from "./config"` ist
+  `src/lib/domains/config.test.ts` und meint eine **ANDERE** Datei. **FOLGE: Eine Mutation
+  von `config.ts:15` — etwa `"v21.0"` zu `"v22.0"` — lässt KEINEN Test rot werden.** Die
+  Assertion in `src/app/api/capi/route.test.ts:109`, die wie ein Wächter aussieht, prüft
+  den **gemockten** Wert gegen sich selbst.
+· **DER LINKEDIN-ENDPUNKT IST VON KEINEM TEST GEDECKT.** Achse `api.linkedin` ·
+  `LINKEDIN_ENDPOINT` · `fetchCalls()[0][0]` über `linkedin-forward.test.ts` — **null
+  Treffer**; die Läufe greifen ausschliesslich auf `fetchCalls()[0][1]`, also Kopfzeilen
+  und Rumpf. **POSITIVKONTROLLE im selben Lauf:** `LinkedIn-Version` trifft (`:115`), die
+  Suche greift.
+· **DIE GEGENPROBE, damit die zwei Nullen nicht als Eigenschaft des Bestands gelesen
+  werden:** pinterest (`:438`, `:458`, `:526`), tiktok (`:358`) und google (`:25`/`:87`)
+  nageln ihre volle Adresse **inklusive Versionsanteil** per `toBe` fest.
+**DIE VERSCHRÄNKUNG IST EXAKT ÜBER KREUZ, und darin liegt die Frage:** linkedin hat als
+einziges einen Wächter über die **VERSION** und keinen über die **ADRESSE**; bei den drei
+anderen steckt die Version IN der Adresse und ist damit mitgedeckt; meta hat für die
+Adresse einen Wächter, der seinen eigenen Mock prüft.
+**WARUM DAS JETZT ZÄHLT UND NICHT IRGENDWANN:** Zwei Anhebungen sind terminiert
+(ZUSCHNITT-FRAGE P11.7-17, meta und linkedin sechs Tage auseinander im Januar 2027), und
+die Frist für meta steht im Abschnitt "Frist mit Termin" dieser Datei. **EINE ANHEBUNG
+OHNE VORHERIGEN WÄCHTER BLIEBE AN ALLEN VIER GATES GRÜN, GLEICH WAS SIE TUT.**
+**NICHT ENTSCHIEDEN:** ob ein Wächter vor der Anhebung entsteht · wo er ansetzte (am
+Vorgabewert, an der gesendeten Adresse, an beiden) · ob er mit dem Versions-Wächter aus
+ZUSCHNITT-FRAGE P11.7-13 dieselbe Sache ist oder eine andere. **KEINE EMPFEHLUNG.**
+
+**ZUSCHNITT-FRAGE P11.7-24 — DIE SEITENADRESSE WIRD NIRGENDS GEPRÜFT, UND DAS URTEIL
+DARÜBER STEHT SECHSMAL ZEICHENGLEICH.**
+GEMESSEN am Code (CC, 2026-09-22, HEAD `a763716`):
+· **SIE BETRITT DEN SERVER UNGEPRÜFT.** `handleIngest` parst den Rumpf
+  (`src/lib/capi/ingest.ts:650`) und typisiert `eventSourceUrl?: unknown` (`:103`) in einem
+  Blob, den der Kopfkommentar ausdrücklich als **UNTRUSTED** führt. Die Pflichtfeld-Prüfung
+  (`:656–660`) fasst **nur** `trackingKey`, `eventID` und `event` an, dazu `body.obs`
+  (`:668`). **`eventSourceUrl` wird im Handler kein einziges Mal berührt** — weder geprüft
+  noch normalisiert noch gekappt.
+· **DIE EINZIGE BEHANDLUNG IST EIN TRIM JE ADAPTER.** `asString(v)` =
+  `typeof v === "string" ? v.trim() : ""` — und diese Funktion existiert **SECHSMAL
+  ZEICHENGLEICH** im Repo: `ingest.ts:137`, `meta-forward.ts:59`, `pinterest-forward.ts:95`,
+  `tiktok-forward.ts:456`, `linkedin-forward.ts:160`, `google-forward.ts:138` (alle sechs
+  Rümpfe verglichen, identisch). Ein Längen-, Format- oder Schema-Urteil fällt an keiner.
+· **WER SIE LIEST, JE SYMBOL:** meta `meta-forward.ts:316 f.` zu `event_source_url` ·
+  pinterest `pinterest-forward.ts:538 f.` zu `event_source_url` · tiktok
+  `tiktok-forward.ts:362 f.` zu `page.url` · google `google-forward.ts:279` über
+  `extractGoogleClickIds`, **die Adresse selbst geht dort NICHT hinaus** · linkedin gar
+  nicht, `LinkedinForwardBody` (`:513`) typisiert das Feld nicht einmal.
+**WARUM DAS EINE FRAGE AN DEN ZUSCHNITT IST UND KEIN MANGEL-BERICHT:** Die Entscheidung
+P11.7-3 verlangt, fremde Kennungen aus dieser Adresse zu ENTFERNEN. Eine Stelle, die
+entfernt, ist zwangsläufig auch die erste, die den Wert ANFASST — die Frage "wo wird
+geprüft" und die Frage "wo wird bereinigt" fallen damit möglicherweise zusammen, und die
+sechs Kopien von `asString` sind der Ort, an dem das sichtbar würde.
+**DIE SECHS KOPIEN SIND KEIN NEUER BEFUND UND WERDEN HIER NICHT ZUM VORHABEN GEMACHT** —
+der Kopfkommentar an mehreren von ihnen führt die Doppelung ausdrücklich als gewollt.
+**NICHT ENTSCHIEDEN, KEINE EMPFEHLUNG**, weder zu einer Prüfung noch zu einer
+Zusammenlegung.
+
+**ZUSCHNITT-FRAGE P11.7-25 — DIE SIEBEN KANDIDATEN ZUR GEMEINSAMEN BAUFORM, VERDICHTET:
+JE EIN SATZ UND DER CODE-BEFUND, DER IHN ERZWINGT.**
+**SIE IST DIE CODE-SEITE VON ZUSCHNITT-FRAGE P11.7-15** ("EINE GEMEINSAME BAUFORM FÜR ALLE
+KLICK-KENNUNGEN") und ersetzt sie nicht: jene trägt die Gestalt des Vorschlags und die
+Anbieter-Ungleichheit, diese die Auflagen, die der eigene Code stellt.
+**WAS `extractGoogleClickIds` HEUTE IST** (`src/lib/capi/google-click-ids.ts`):
+`(url: unknown) => GoogleClickIds`, rein, ohne `server-only`, ohne Netz, DOM oder Zustand,
+**wirft nie** (ein `typeof`, ein `try/catch` um das einzige werfende `new URL(x)`, drei
+Nachschläge). Rückgabe mit höchstens drei Schlüsseln; ein nicht gefundener Schlüssel
+FEHLT, er ist nie `undefined`. Prüft **Anwesenheit, nie Form** — wörtliche Auflage im Kopf.
+**KANDIDATEN JA, AUSWAHL NEIN. ALLE SIEBEN SIND KANDIDATEN.**
+(1) **DIE RÜCKGABE-FORM IST HEUTE AUF EIN ZIEL FESTGELEGT** — `GoogleClickIds` (Zeile 52)
+    kennt genau `gclid`/`gbraid`/`wbraid`, und der Kopf sagt ausdrücklich, sie sei **kein
+    Alias auf ein fremdes Modell**. Kandidaten: Zuordnung Ziel nach Kennungen · flache
+    Menge benannter Kennungen · je Ziel eine Funktion mit gemeinsamem Rückgabe-Vertrag.
+(2) **DIE EINGABE IST EINE EINZIGE ZEICHENKETTE, UND DAS REICHT FÜR DIE COOKIE-WEGE
+    NICHT** — s. ZUSCHNITT-FRAGE P11.7-26, wo der Befund vollständig steht.
+(3) **SIE EXTRAHIERT, SIE ENTFERNT NICHT** — das Entfernen fremder Kennungen aus der
+    Adresse gibt eine ZEICHENKETTE zurück, nicht ein Objekt. Kandidaten: zweite Funktion ·
+    Rückgabe aus Kennungen PLUS bereinigter Adresse · zwei getrennte Scheiben. Dass diese
+    Teilung offen ist, sagt ZUSCHNITT-FRAGE P11.7-15 bereits selbst.
+(4) **DER ORT — UND HIER LIEGT DIE HARTE AUFLAGE, DIE JEDER ZUSCHNITT KENNEN MUSS.** Zwei
+    Orte sind am Code sichtbar: IM ADAPTER, wie heute bei google
+    (`google-forward.ts:279`), oder VOR dem Fan-Out. **`dispatchForward`
+    (`src/lib/capi/ingest.ts:540`) IST NICHT ASYNC, UND ALLES, WAS DORT STEHT, LIEGT
+    AUSSERHALB DES 204-CONTAINMENTS** — die Kommentare an der linkedin- und der
+    google-Zeile sagen das wörtlich und lassen dort nur Eigenschafts-Lesungen und
+    Objektliterale zu. **JEDE gemeinsame Stelle an diesem Ort müsste dieselbe Zusage
+    tragen: SIE DARF NIE WERFEN.** `extractGoogleClickIds` erfüllt sie bereits, und ihr
+    Kopf führt dieselbe Auflage aus demselben Grund. Der dritte Ort, `handleIngest` vor
+    Zeile 1044, läge INNERHALB des `try` und wäre insoweit freier. **Ein Wurf im
+    Ingest-Pfad machte aus der garantierten leeren 204 einen 500 und leakte den
+    Gültigkeitszustand des trackingKeys** — s. docs/immer-beachten.md,
+    "INGEST-204-CONTAINMENT".
+(5) **DIE SIGNATUR VON `Forwarder` MÜSSTE WACHSEN, WENN DIE STELLE VOR DEM ADAPTER LIEGT**
+    — heute reicht `body` durch, ein vorab gelöstes Ergebnis wäre ein ACHTER Parameter. Das
+    Muster dafür steht am siebten (`ingest.ts:283–314`): nachgestellt und optional, damit
+    die Adapter, die ihn nicht brauchen, byte-gleich bleiben. **DIE DORT VERWORFENE
+    ALTERNATIVE — denselben Zustand ZUSÄTZLICH an `ResolvedTarget` zu hängen — IST MIT
+    GRUND VERWORFEN** ("ZWEI Traeger desselben Zustands, und die koennten auseinanderlaufen")
+    und wäre hier neu vorzutragen, nicht stillschweigend zu wiederholen.
+(6) **`unknown` STATT `string` IST RICHTIG UND BLEIBT ES** — der Kopf begründet es mit
+    `CapiRequestBody` (`ingest.ts:98–110`), das JEDES Rumpf-Feld als `unknown` typisiert;
+    am Code bestätigt. Eine gemeinsame Stelle vor dem Adapter sähe denselben rohen Typ.
+(7) **DIE AUFLAGE "ANWESENHEIT, NIE FORM" IST HEUTE ZIEL-SPEZIFISCH BEGRÜNDET** — sie ruht
+    darauf, dass über die Form einer echten `gclid` nichts gelesen ist. Für **zwei weitere
+    Ziele steht jetzt dasselbe im Bestand**: das Format von `li_fat_id` und das von `epik`
+    sind je ein Nicht-Treffer mit benannter Reichweite. **OB DIE AUFLAGE DAMIT FÜR ALLE
+    GILT, IST EINE ENTSCHEIDUNG UND HIER NICHT GETROFFEN.**
+**WAS AM CODE NICHT ENTSCHEIDBAR IST:** was "nur seine eigene Kennung" je Ziel heisst —
+das ist die Anbieter-Achse, und ZUSCHNITT-FRAGE P11.7-15 führt sie samt der gelesenen
+Ungleichheit. **KEINE EMPFEHLUNG an irgendeinem der sieben Punkte.**
+
+**ZUSCHNITT-FRAGE P11.7-26 — DIE COOKIE-WEGE DER ANBIETER SIND ÜBER DIE HEUTIGE
+BEACON-FORM NICHT ERREICHBAR, UND DER WEG DORTHIN FÜHRT DURCH DEN `/api/e`-PFAD.**
+GEMESSEN am Code (CC, 2026-09-22, HEAD `a763716`): `buildCapiBeaconStatement`
+(`src/lib/tracking/meta.ts:420–448`) liest **GENAU EIN** Cookie — `_fbp` über
+`document.cookie.match(/(?:^|; )_fbp=([^;]*)/)` (Zeile 435) — und setzt
+`eventSourceUrl: location.href` (Zeile 440). **KEIN EINZIGER URL-PARAMETER WIRD
+AUSGELESEN.** Der PageView-Emitter und die Pixel-Bestätigung senden weder das eine noch
+das andere (`meta.ts:464`, "BARE Payload"). Der Befund aus VERMERK P11.7-1 (a) ist damit an
+HEAD bestätigt.
+**DIE ANBIETER-SEITE, je mit ausgeschriebenem Zeiger** — alle vier Angaben GELESEN und in
+dieser Datei bereits abgelegt: pinterest rät zum `_epik`-COOKIE **statt** zum Parameter
+(docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teil (ac)) · meta empfiehlt,
+`_fbc` selbst als Cookie zu setzen (ebenda, Abschnitt "Meta (Conversions API)", Teil (h)) ·
+tiktok nennt ein gleichnamiges First-Party-Cookie (ebenda, Abschnitt "TikTok (Events API
+2.0)", Teil (j)) · linkedin einen gleichnamigen Cookie mit 30 Tagen (ebenda, Abschnitt
+"LinkedIn (Conversions API)", Teil (an)).
+**DIE FOLGE, UND SIE IST DER GANZE INHALT DIESER FRAGE: EIN COOKIE-WERT STEHT NICHT IN
+`eventSourceUrl` UND IST ÜBER SIE NICHT ZU ERREICHEN.** Wer einen Cookie-Weg zuschneidet,
+braucht **NEUE FELDER IM BEACON-RUMPF** — und der Beacon läuft auf `/api/e`, also auf dem
+Pfad, den JEDER Besucher JEDER Kundenseite trifft. **DAS BERÜHRT DIE A-REGEL
+"/API/E-SCHLANKHEIT"** (CLAUDE.md, "## Code-Qualität, Performance & SaaS-Skalierung"), und
+zwar an ihrem Kopf: jede zusätzliche Arbeit je Beacon multipliziert sich über alle Kunden.
+**ES BERÜHRT AUSSERDEM ZWEI BEREITS GEFÜHRTE SÄTZE, die hier nur angezeigt und nicht
+wiederholt werden:** die Kollision der Meta-Empfehlung mit der Datenklassen-Grenze
+(ZUSCHNITT-FRAGE P11.7-2) und den Befund, dass dieses Produkt nichts aufbewahrt
+(ZUSCHNITT-FRAGE P11.7-20).
+**DIE GRENZE, DIE MITMUSS:** Ein zusätzliches Rumpf-Feld ist **nicht** dasselbe wie eine
+Aufbewahrung — das Lesen eines Cookies, das ein fremdes Tag gesetzt hat, legt nichts ab.
+Ob und wo diese Unterscheidung trägt, entscheidet die Entscheidung P11.7-2 und **nicht
+diese Frage.**
+**NICHT ENTSCHIEDEN:** ob Cookie-Wege überhaupt zugeschnitten werden · welche Felder der
+Beacon dann trüge · ob das je Ziel oder gebündelt geschähe. **KEINE EMPFEHLUNG.**
 
 ## Nächster Schritt
 

@@ -544,6 +544,65 @@ Angaben in (ar) und (at) beschreiben den EIGENEN Code und sind GEMESSEN am Repo 
 2026-09-22, HEAD `75f4718`). Die Beschränkung des Crawls ist die ARCHITEKTEN-ENTSCHEIDUNG
 aus P11.7-5.
 
+### VERMERK P11.7-7 — Pinterest-Crawl vom 2026-09-22 (KEIN BAU)
+
+**HARTE ANGABEN:** Datum 2026-09-22 · HEAD bei Crawl und Ablage `8cab827` ("docs(claude):
+11.7 — LinkedIn-Crawl abgelegt, gemeinsame Bauform als Frage") · Arbeitsbaum vor dem Crawl
+sauber (`git status --short` leer) · **DREIZEHN Seiten** geöffnet und gelesen · durchgehend
+`textContent` und an der ENGLISCHEN Fassung — die Navigation der Seiten ist deutsch
+lokalisiert, die Artikel-Rümpfe waren englisch · **KEIN Aufruf gegen die Schnittstelle**,
+keine Anmeldung, keine Eingabe, kein Download, keine Auszugsdatei · Werkzeug-Ablage VOR der
+ersten Navigation als ignoriert belegt (`git check-ignore -v .playwright-mcp` →
+`.gitignore:28`).
+
+**DIE FORM — GEZIELT, DANN DICHT, DANN VOLLTEXT DES ABSCHNITTS, UND DER CRAWL IN DERSELBEN
+SITZUNG.** `docs/ziel-befunde.md` ist **NICHT vollgeladen** worden. Gefahren ist die
+GEZIELTE SUCHE über den Abschnitt "Pinterest (Conversions API)" mit einer aus dem
+GEGENSTAND gebildeten Achse (34 Begriffe, case-insensitiv) und Positivkontrolle — die
+zweite Form, die CLAUDE.md, "## Anbieter-Befunde der Fan-Out-Ziele", seit dem 2026-09-22
+für RECHERCHE zulässt. **WEIL DAS ERGEBNIS DICHT WAR — Treffer in sieben Zusammenhängen —,
+IST DANACH DER ABSCHNITT IM VOLLTEXT GELESEN WORDEN, NUR ER, NICHT DIE DATEI.**
+**DIE GETEILTE FORM WAR TROTZDEM NICHT NÖTIG, UND DAS IST EIN MESSWERT UND KEINE
+LOCKERUNG:** Der Pinterest-Abschnitt ist **608 Zeilen / 42 874 Bytes** (GEMESSEN, CC,
+2026-09-22) — der drittkleinste Ziel-Abschnitt der Datei. Bestand-Prüfung und Crawl passten
+in EINE Sitzung. **DAMIT IST AUCH DIE FRAGE DES FÜNFTEN NACHZUGS IM ABSCHNITT "Nächster
+Schritt" BEANTWORTET**, die die Grösse dieses Abschnitts ausdrücklich als "nicht erhoben"
+führte.
+
+**DIE FALSCH-POSITIVE, DIE SONST EINE DICHTE VORTÄUSCHT, WO KEINE IST:** `Version` zählt im
+Abschnitt **78** Trefferzeilen und ist **fast restlos unecht** — 77 tragen das Teilwort in
+"con**version**(s)", **genau EINE** ist echt (`pintrk.version`). Wer die 78 als Dichte
+liest, hält eine Versions-Ablage für vorhanden, die es nicht gibt.
+
+**WOHIN DIE BEFUNDE GEGANGEN SIND — DER ZEIGER:** docs/ziel-befunde.md, Abschnitt
+"Pinterest (Conversions API)", Unterüberschrift "Abschnitts-Lesung 2026-09-22
+(Anbieter-Crawl der Phase 11.7) — die Teile (ac) bis (ak)", dazu der Umfangs-Block "Der
+gelesene Umfang (2026-09-22)". **Sie stehen NICHT hier.** Der Bestand ist wörtlich
+stehengeblieben: **NULL Löschzeilen** (`git diff --numstat`: 454 / 0). **VIER ältere Teile
+haben einen datierten VORBEHALT bekommen** — (e) zur dritten Rate-Limit-Zahl, (i) zu
+Katalog-Frage I4, (o)/C1 zur Formatregel von `ad_account_id`, (o)/E1 zur Merkmalsliste;
+ihr Wortlaut ist in allen vier Fällen unangetastet.
+
+**STAND JE FRAGE — F1 BIS F4 UND F8; DIE TABELLE MIT DEN ZEIGERN STEHT IM ABSCHNITT "Offene
+Fragen an den Anbieter-Crawl".** Auf Doku-Ebene beantwortet sind **F1, F2, F3 und F4**;
+**F8 bleibt MESSFRAGE** — die Form der Erfolgsantwort ist jetzt gelesen, ihre Bestätigung
+am eigenen Aufruf nicht.
+
+**KEIN BAU-COMMIT, UND DER GRUND IST DERSELBE WIE BEI P11.7-2, P11.7-4, P11.7-5 UND
+P11.7-6:** Die Runde hat EIN Ziel berührt und keine Zeile Code geschrieben. Die einzigen
+Commits dieses Tages sind Doku-Commits.
+
+**MIT DIESEM CRAWL SIND ALLE FÜNF ZIELE DURCHLAUFEN** — meta (P11.7-2), google aus dem
+Bestand ohne Crawl (P11.7-3), tiktok (P11.7-4), linkedin beschränkt (P11.7-5 und P11.7-6)
+und pinterest (dieser Vermerk). **DAS HEISST NICHT, DASS ALLES BEANTWORTET IST:** Was nur
+ein Aufruf zeigt, steht je Ziel ausdrücklich als NICHT BEANTWORTET in der Ablage.
+
+**PROVENIENZ:** Alle Anbieter-Angaben sind **GELESEN** (Quelle, Seitenstand und Datum je
+Angabe am Teil in docs/ziel-befunde.md, **nicht hier**), **keine ist gemessen**. Die
+Zählungen über den eigenen Bestand, die Abwesenheit eines Pinterest-Tags im ausgelieferten
+Text sowie Endpunkt, Version und `evaluateSuccessBody` am Code sind GEMESSEN am Repo (CC,
+2026-09-22, HEAD `8cab827`), je mit der genannten Achse.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -630,6 +689,29 @@ den User-Agent gar nicht erst entgegennimmt, ist eine Entscheidung mit eigenem G
 Beacon ohne User-Agent-Kopfzeile ist fuer DIESES Ziel vollstaendig"), und der Eintrag in
 `FORWARDER_BY_TARGET` reicht ein Argument weniger weiter.
 **KEINE EMPFEHLUNG**, ob die Stufenangabe nachgezogen oder der Verweis erweitert wird.
+TRIGGER: die erste Bau-Scheibe dieser Phase, die diese Datei berührt; spätestens das
+Phasenende.
+
+**P11.7-4 — DER KOPFKOMMENTAR DER URL-BILDUNG IN `src/lib/capi/pinterest-forward.ts`
+BEGRÜNDET DEN VERZICHT AUF EINE FORMATPRÜFUNG MIT EINER UNGEPRÜFTEN STELLENZAHL — DIE
+ENDPUNKT-REFERENZ FÜHRT JETZT EINE FORMATREGEL.**
+Er sagt über der Bildung der Adresse: *"SIE PRUEFT NICHTS, UND DAS IST RICHTIG SO: Eine
+Formatpruefung machte die ungepruefte Stellenzahl aus dem Anbieter-Konto zur Bedingung."*
+**DIE STELLENZAHL IST NICHT MEHR UNGEPRÜFT — GELESEN 2026-09-22** (docs/ziel-befunde.md,
+Abschnitt "Pinterest (Conversions API)", Teil (aj)): Die Endpunkt-Referenz führt den
+Pfad-Parameter `ad_account_id` als `string`, `required`, mit `<= 18 characters` und dem
+Muster `^\d+$`.
+**DER KOMMENTAR IST DAMIT NICHT FALSCH GEWORDEN, UND DAS IST DER PUNKT:** Seine
+SCHLUSSFOLGERUNG — nicht zu prüfen — steht unberührt; überholt ist die TATSACHENANGABE, auf
+die er sie stützt. Es ist dieselbe Figur wie bei den zwei Kommentar-Befunden darüber:
+docs/immer-beachten.md, "EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD —
+UND DAS FÄLLT NIEMANDEM AUF, WEIL DIE REGEL WEITER STIMMT".
+**WAS DIESER POSTEN AUSDRÜCKLICH NICHT SAGT:** dass eine Formatprüfung zu bauen wäre. Die
+Uneinheitlichkeit der Doku-Beispiele (zwölf und achtzehn Stellen, Teil (o)/C1) besteht
+fort, und **beide erfüllen `<= 18` und `^\d+$`** — die gelesene Regel widerlegt jene
+Beobachtung also nicht.
+**KEINE EMPFEHLUNG**, ob der Kommentar nachgezogen, sein Grund ersetzt oder er
+stehengelassen wird. **KEIN FIX-VORSCHLAG.**
 TRIGGER: die erste Bau-Scheibe dieser Phase, die diese Datei berührt; spätestens das
 Phasenende.
 
@@ -850,6 +932,32 @@ der Rest, der nach dem Crawl offen bleibt. Zeiger gehen nach docs/ziel-befunde.m
   ab Mitte Oktober 2026 an der Direct-API-Seite im Campaign Manager. Geführt als offener
   Punkt: docs/offene-punkte.md, "OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST
   ERST AB MITTE OKTOBER 2026 ENTSCHEIDBAR"; der Befund ebenda, Teile (v), (al).
+
+**STAND FÜR PINTEREST NACH DEM CRAWL (2026-09-22, VERMERK P11.7-7) — KEINE FRAGE IST
+GESTRICHEN, KEINE ZEILE EINER TABELLE DARÜBER IST ANGETASTET, UND KEINE IST FÜR EIN ANDERES
+ZIEL BERÜHRT.** Die Formulierungen von F1 bis F4 und F8 bleiben wörtlich; nachgezogen ist
+allein der STAND, und zwar je Frage nur für **pinterest**. **ALLE ZEIGER GEHEN NACH
+docs/ziel-befunde.md, ABSCHNITT "Pinterest (Conversions API)"** — die Buchstaben dieser
+Tabelle meinen weder den Meta-, noch den Google-, noch den TikTok-, noch den
+LinkedIn-Abschnitt.
+
+| Frage | Stand für pinterest | Zeiger |
+|---|---|---|
+| F1 Klick-Kennung | **AUF DOKU-EBENE BEANTWORTET, BIS AUF DAS FORMAT.** Feldname `click_id`, Name des Werts **`epik`** ("External Pinterest ID Key"). ZWEI Herkunftswege mit einem ausdrücklichen VORRANG auf den Cookie: `_epik`-Cookie auf der eigenen Domain **oder** `&epik=`-Parameter der Adresse — "Use the `_epik` cookie instead of the `&epik=` query parameter… ensures greater coverage". **EMPFOHLEN, nicht verlangt**, mit acht benannten Ereignistypen. **DAS FORMAT IST EIN NICHT-TREFFER** mit benannter Reichweite über dreizehn Seiten; die zwei Beispielwerte sind base64-ähnlich und **nicht als Format bezeichnet**. **MESSUNG OFFEN:** ob der Endpunkt den Wert fachlich annimmt. | Teil (ac) |
+| F2 Ort in der Nutzlast | **AUF DOKU-EBENE BEANTWORTET.** `user_data.click_id`, im Schema `"type": "string"`, `"nullable": true` — **eine Zeichenkette, KEIN Array**, anders als die gehashten Merkmale desselben Objekts. `event_source_url` daneben auf Ereignis-Ebene. | Teile (ac), (ae), (af) |
+| F3 Match-Felder, verlangt/empfohlen | **AUF DOKU-EBENE BEANTWORTET — GENAU DIE TRENNUNG, FÜR DIE F3 GESTELLT IST.** Die Pflicht liegt auf dem OBJEKT `user_data` und seiner ODER-Mindestregel (`em` · `hashed_maids` · Paar aus IP und User-Agent); **KEIN EINZELNES FELD IST VERLANGT**. Dazu die vollständige Liste von **SIEBZEHN** Feldern mit Typ, Hashen und Rang — zwei mehr, als der Bestand führte (`fn`, `customer_type`). **MEHRERE KENNUNGEN ZUGLEICH SIND ZULÄSSIG**, das Doku-Beispiel trägt alle siebzehn in EINEM Objekt, ohne genannte Obergrenze — **DAS IST ZULÄSSIGKEIT, NICHT ANNAHME AM ENDPUNKT.** | Teil (ae); Vorbehalt an (o)/E1 |
+| F4 liest der Anbieter aus der Adresse selbst? | **ZWEITEILIG, UND DIE TEILE DÜRFEN NICHT ZUSAMMENGEZOGEN WERDEN.** Zum INHALT des Adressfelds sagt die Doku ausdrücklich etwas und **verlangt den Query-String**: "For Pinterest click events, include `&epik` query string… in the URL", mit Beispiel. **OB DER ANBIETER DARAUS SELBST AUSLIEST, SAGT SIE NICHT** — NICHT-TREFFER mit benannter Reichweite; über FREMDE Kennungen im Adressfeld schweigt sie vollständig. **Anders als bei tiktok, wo der Satz wörtlich dasteht. MESSUNG OFFEN.** | Teil (af) |
+| F8 Erfolgsrumpf (Katalog G1) | **DIE FORM IST GELESEN — DIE FRAGE BLEIBT EINE MESSFRAGE UND IST NICHT BEANTWORTET.** Gelesen sind: die Felder `num_events_received`, `num_events_processed`, `events[]` mit `status`, `error_message`, `warning_message`; ein **dokumentierter TEILERFOLG mit HTTP 200** (`2/1`, ein Eintrag `failed`); die belegten Statuswerte `processed` und `failed` **ohne abschliessende Enum-Liste**; beide Leerformen `""` und `null`; `data` mit `minItems 1`, `maxItems 1000`, im Testmodus 20. **`evaluateSuccessBody` STIMMT MIT DER DOKUMENTIERTEN FORM ÜBEREIN** (GEMESSEN am Repo, CC, 2026-09-22): Die Prüfung auf `1/1`, genau einen Eintrag und `status === "processed"` ist für unsere Ein-Ereignis-Nutzlast die dokumentierte Erfolgsform, und `sanitizeProviderText` deckt `""`, `null` und ein fehlendes Feld gleich ab. **WAS FEHLT, IST DER AUFRUF** — die Doku ist hier der Massstab einer späteren Messung, nicht ihr Ersatz. | Teil (ah) |
+
+**ZWEI ANGABEN GEHÖREN ZU KEINER DER FRAGEN UND STEHEN HIER, DAMIT NIEMAND SIE VERMUTET:**
+(1) **F7 NENNT PINTEREST NICHT** — die Rate-Limits dieses Ziels standen seit dem
+2026-08-20 in Teil (e). **SEIT DEM CRAWL SIND ES DREI EINANDER WIDERSPRECHENDE AUSSAGEN**
+für denselben Endpunkt (120 000/Minute je Werbekonto je App · "unlimited" mit dem
+Conversion-Token · 5 000/Minute je Werbekonto laut Endpunkt-Referenz); welche gilt, ist
+**UNGEMESSEN**. Zeiger: Teil (ai)(2), dazu der Vorbehalt an Teil (e).
+(2) **EINE VORGABE ZU WIEDERHOLUNGSVERSUCHEN NACH EINER 429 GIBT ES NICHT** — der
+Nicht-Treffer aus Teil (e) ist am 2026-09-22 an einer breiteren Achse bestätigt: vier
+Seiten, je mit Positivkontrolle. Zeiger: Teil (ah).
 
 ## Fragen an den Zuschnitt (nach dem Meta-Crawl)
 
@@ -1091,6 +1199,37 @@ DIESEM ZUSATZ NICHT BERÜHRT.**
   ANGABE ÜBER DEN STAND, KEIN VORSCHLAG EINER ZIELVERSION** — die Frage danach steht als
   ZUSCHNITT-FRAGE P11.7-17.
 
+**ZUSATZ 2026-09-22 NACH DEM PINTEREST-CRAWL (VERMERK P11.7-7) — DIE PINTEREST-ZEILE DER
+TABELLE DARÜBER BLEIBT WÖRTLICH STEHEN.** Sie sagt viermal "OFFEN", und das war für den
+Zeitpunkt ihrer Niederschrift richtig; sie wird **nicht umgeschrieben**. Was hinzukommt,
+sind VIER Angaben. **DIE ÜBRIGEN VIER ZEILEN SIND VON DIESEM ZUSATZ NICHT BERÜHRT.**
+· **DIE GESENDETE VERSION IST `v5` — UND SIE STEHT INLINE IN DER URL-BILDUNG** (GEMESSEN am
+  Repo, CC, 2026-09-22, HEAD `8cab827`): `src/lib/capi/pinterest-forward.ts` baut
+  `https://api.pinterest.com/v5/ad_accounts/…/events` in einem Template-Literal; die Achse
+  `api\.pinterest|/v[0-9]|VERSION|endpoint|https://` über die Datei trifft **genau diese
+  eine Zeile**. **WEDER MODUL-KONSTANTE NOCH ENV-WEG** — darin unterscheidet sie sich von
+  **beiden** bereits erhobenen Zielen: von meta, wo der Wert env-übersteuerbar ist, UND von
+  linkedin, wo er wenigstens eine benannte Konstante ist. Eine Anhebung wäre hier eine
+  Code-Änderung **an der URL-Bildung selbst**.
+· **EIN ABSCHALTTERMIN IST NICHT DOKUMENTIERT, UND EIN LEBENSZYKLUS AUCH NICHT** —
+  NICHT-TREFFER mit benannter Reichweite über VIER Seiten (Übersicht · Changelog ·
+  API-Referenz-Einstieg · FAQ), Achse `sunset`, `deprecat`, `end of life`, `retire`, `v3`,
+  `v4`. Die sechzehn `deprecat`-Treffer des Changelogs betreffen ausnahmslos einzelne
+  Endpunkte oder Merkmale, **keiner die Version**. **DAS IST AUSDRÜCKLICH KEINE ZUSAGE AUF
+  UNBEFRISTETHEIT** — dieselbe Lage wie bei google. Zeiger: docs/ziel-befunde.md, Abschnitt
+  "Pinterest (Conversions API)", Teil (ag).
+· **DIE SPALTE "bei Ablauf" BLEIBT UNBEKANNT, UND ZWAR AUS EINEM ANDEREN GRUND ALS BEI
+  GOOGLE:** Dort ist sie "ungelesen"; hier ist sie **gelesen und leer** — es gibt keinen
+  dokumentierten Ablauf, also auch keine dokumentierte Folge. Weder eine stille Umleitung
+  (wie bei meta) noch ein lautes Scheitern (wie bei tiktok) ist behauptet.
+· **WAS STATT DESSEN DASTEHT, UND ES IST DER OPERATIVE TEIL:** Breaking Changes kündigt der
+  Anbieter über den Changelog an und **per E-Mail an die Kontakte, die unter den Angaben
+  einer registrierten App hinterlegt sind.** **OB DAS UNSEREN ZUGANGSWEG ERREICHT, IST
+  UNGELESEN** — Teil (r) hält fest, dass der Owner den Weg über die WERBE-Oberfläche
+  genommen hat (Conversion-Token), nicht über eine App. Die Seite
+  `…/docs/reference/manage-notifications/` ist als Grenzfall ausdrücklich **nicht geöffnet**
+  worden. Zeiger: ebenda, Teil (ag).
+
 **DIE FÜNF FOLGENDEN STAMMEN AUS DEM LINKEDIN-CRAWL (VERMERK P11.7-6) UND BRECHEN DESHALB
 DIE ABKÜRZUNG DIESES ABSCHNITTS** — ein "Teil (x)" meint hier sonst ausnahmslos den
 **Meta**-Abschnitt; die fünf unten nennen ihren Abschnitt **jedes Mal ausgeschrieben.**
@@ -1195,6 +1334,79 @@ wurde. **DIE EIN-JAHR-BINDUNG IST DER TEIL, DER DIE BESTEHENDE FRAGE VERSCHÄRFT
 macht aus einem je Anbieter vergebenen Bezeichner eine über Konten hinweg stabile
 Zuordnung. **KEINE EMPFEHLUNG.**
 
+**DIE DREI FOLGENDEN STAMMEN AUS DEM PINTEREST-CRAWL (VERMERK P11.7-7) UND BRECHEN DESHALB
+DIE ABKÜRZUNG DIESES ABSCHNITTS** — ein "Teil (x)" meint hier sonst ausnahmslos den
+**Meta**-Abschnitt; die drei unten nennen ihren Abschnitt **jedes Mal ausgeschrieben.**
+
+**ZUSCHNITT-FRAGE P11.7-19 — `epik` HAT EIN BENANNTES FELD *UND* EINEN PLATZ IN DER
+ADRESSE, UND DER ANBIETER BITTET UM BEIDE.**
+GELESEN (docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teile (ac) und
+(af)): Die Klick-Kennung gehört in `user_data.click_id` — **und dieselbe Doku verlangt
+daneben**, "For Pinterest click events, include `&epik` query string… in the URL", also im
+Feld, in dem wir heute `eventSourceUrl` übergeben.
+**OB EINES DAS ANDERE ERSETZT, ERGÄNZT ODER DOPPELT, SAGT KEINE GELESENE SEITE.** Und **ob
+der Anbieter die Adresse selbst ausliest, ist ausdrücklich NICHT beantwortet** — anders als
+bei tiktok, wo der Satz wörtlich dasteht.
+**FÜR DIE EINORDNUNG IN EINE GEMEINSAME BAUFORM GILT DER ZEIGER STATT DER KOPIE:**
+ZUSCHNITT-FRAGE P11.7-15 dieser Datei ("EINE GEMEINSAME BAUFORM FÜR ALLE KLICK-KENNUNGEN").
+Ihr Satz "FÜR PINTEREST IST F4 UNVERÄNDERT OFFEN, der Crawl steht aus" **bleibt wörtlich
+stehen** und ist seit VERMERK P11.7-7 eingelöst; dieser Absatz löst ihn auf. **WAS ER FÜR
+JENE FRAGE BEDEUTET:** Damit liegt für ALLE FÜNF Ziele eine Doku-Antwort auf F4 vor, und
+**sie fallen weiterhin auseinander** — tiktok liest selbst aus, pinterest bittet um die
+Kennung in der Adresse ohne zu sagen, dass es sie liest, meta schweigt, linkedin bekommt
+die Adresse gar nicht, google hat kein Feld dafür. **DAS SCHÄRFT DAS ARGUMENT FÜR EINE
+GEMEINSAME STELLE UND IHRE SCHWIERIGKEIT GLEICHERMASSEN.** **NICHT ENTSCHIEDEN, KEINE
+EMPFEHLUNG.**
+
+**ZUSCHNITT-FRAGE P11.7-20 — ALLE ZIELE ÜBERGREIFEND: JEDES ZIEL MIT KLICK-KENNUNG
+EMPFIEHLT, SIE IM BROWSER AUFZUBEWAHREN — UND DIESES PRODUKT BEWAHRT NICHTS AUF.**
+**ARCHITEKT 2026-09-22 — BEFUND, KEINE ENTSCHEIDUNG.**
+**DIE FUNDSTELLEN JE ZIEL, sämtlich in docs/ziel-befunde.md:**
+· **pinterest** — der Anbieter rät ausdrücklich zum COOKIE statt zum Adress-Parameter:
+  "Use the `_epik` cookie instead of the `&epik=` query parameter… passing `_epik` cookie
+  values is necessary when a URL parameter is missing or removed and ensures greater
+  coverage." Abschnitt "Pinterest (Conversions API)", Teil (ac).
+· **meta** — der Anbieter empfiehlt, `_fbc` SELBST als Cookie mit 90 Tagen Laufzeit zu
+  setzen oder den Wert im eigenen Backend zu halten. Abschnitt "Meta (Conversions API)",
+  Teil (h); die Kollision ist bereits als ZUSCHNITT-FRAGE P11.7-2 geführt.
+· **tiktok** — dritter Herkunftsweg "selbst auslesen und ablegen", empfohlene Haltedauer
+  28 Tage. Abschnitt "TikTok (Events API 2.0)", Teil (j).
+· **linkedin** — der Cookie-Weg trägt 30 Tage ab dem letzten Anzeigenklick, setzt aber ein
+  eingebautes Insight Tag voraus. Abschnitt "LinkedIn (Conversions API)", Teil (an).
+**DER ZUSTAND DIESES PRODUKTS, GEMESSEN (VERMERK P11.7-1 (a), (b), (f)):** Es gibt EINEN
+Beacon, er liest GENAU EIN fremdes Cookie und keinen einzigen URL-Parameter; es gibt kein
+eigenes Browser-Tag ausser Metas; und `persistEvent` schreibt fünf Werte, von denen keiner
+eine Kennung ist. **UNTER DER ENTSCHEIDUNG P11.7-2 (Zeiger oben unter "Entscheidungen":
+TRANSIT-ONLY für fremdvergebene Kennungen) SETZT DIESES PRODUKT KEIN EIGENES COOKIE UND
+LEGT NICHTS AB.**
+**DIE FOLGE, UND SIE IST DER GANZE BEFUND: EINE KLICK-KENNUNG IST NUR VERFÜGBAR, SOLANGE
+DIE ADRESSE SIE TRÄGT.** Für eine EINSEITIGE Landingpage genügt das — die Landeseite ist
+die Seite, auf der der Anzeigenklick ankommt. **FÜR SEITEN JENSEITS DER LANDESEITE GENÜGT
+ES NICHT**, und das ist keine ferne Möglichkeit, sondern eine phasierte:
+**docs/roadmap.md, Roadmap-Zeile 17 (Multi-Page-Funnels).**
+**DORT IST DIE AUFBEWAHRUNG EINE OWNER-FRAGE**, weil sie die Grenze aus P11.7-2 berührt.
+**HEUTE IST NICHTS ZU ENTSCHEIDEN UND NICHTS ZU BAUEN.** **KEINE EMPFEHLUNG**, weder zur
+Form einer Aufbewahrung noch dazu, ob es je eine gibt.
+**DIE GRENZE, DIE MITMUSS:** Dass die vier Anbieter es EMPFEHLEN, ist GELESEN. Wie gross
+der Verlust ohne Aufbewahrung tatsächlich ist, ist **UNGEMESSEN** — kein Anbieter beziffert
+ihn, und wir haben es nie gemessen.
+
+**ZUSCHNITT-FRAGE P11.7-21 — EIN ANGEKÜNDIGTER, UNDATIERTER SCHEMA-WECHSEL KÖNNTE
+`evaluateSuccessBody` EINEN ANGEKOMMENEN FORWARD ALS FEHLSCHLAG WERTEN LASSEN.**
+GELESEN (docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teil (ak)): Der
+Anbieter stellt sein Antwort-Schema um und **lässt optionale Felder mit Null-Werten weg** —
+"gradually… to all endpoints", "plan to apply it to all public Pinterest API endpoints over
+time". **KEIN DATUM, KEINE ENDPUNKT-LISTE.**
+GEMESSEN am Repo (CC, 2026-09-22, HEAD `8cab827`): `evaluateSuccessBody` verlangt
+`typeof num_events_received === "number"` und `typeof num_events_processed === "number"`.
+**FIELE EINES DIESER ZWEI FELDER UNTER DIE UMSTELLUNG, WERTETE DER CODE EINEN ANGEKOMMENEN
+FORWARD ALS FEHLSCHLAG** — und zwar still: es entstünde eine Logzeile, sonst nichts.
+**OB SIE DARUNTER FALLEN KÖNNEN, SAGT DIE SEITE NICHT; ES IST UNGEMESSEN.**
+**FÜR `error_message` UND `warning_message` BESTEHT DIE GEFAHR NICHT** —
+`sanitizeProviderText` gibt für einen Nicht-String `"-"` zurück und deckt `""`, `null` und
+ein fehlendes Feld gleich ab (GEMESSEN, ebenda).
+**KEIN FIX-VORSCHLAG UND KEINE EMPFEHLUNG.**
+
 ## Nächster Schritt
 
 **DER ANBIETER-CRAWL, NACH DEM PFLICHT-STOPP.** CLAUDE.md, "## Anbieter-Befunde der
@@ -1285,3 +1497,37 @@ und eine Lesung erreicht sie nicht. Ob für pinterest die geteilte Form nötig i
 **"KEIN ZUSCHNITT VOR DEM CRAWL" GILT UNVERÄNDERT UND JETZT AUSDRÜCKLICH AUCH FÜR
 LINKEDIN** — dass für linkedin alles Gelesene vorliegt, ist kein Grund für eine Scheibe
 "nur mal linkedin". Der Satz oben nennt genau diesen Fall.
+
+**SECHSTER NACHZUG AM 2026-09-22, NACH DEM PINTEREST-CRAWL — ALLE ABSÄTZE DARÜBER BLEIBEN
+WÖRTLICH.** Überholt ist die Aufzählung der Ziele, die noch ausstehen — und **ZWEI SÄTZE
+DES FÜNFTEN NACHZUGS SIND EINGELÖST**, die hier aufgelöst und **NICHT umgeschrieben**
+werden: "ES BLEIBT EINS: PINTEREST" war am Vormittag richtig; und "Ob für pinterest die
+geteilte Form nötig ist, ist nicht erhoben" ist es seit VERMERK P11.7-7 nicht mehr — der
+Abschnitt ist **608 Zeilen / 42 874 Bytes** (GEMESSEN, CC, 2026-09-22), die geteilte Form
+war nicht nötig.
+
+**PINTEREST IST GECRAWLT** (VERMERK P11.7-7; die Befunde in docs/ziel-befunde.md, Abschnitt
+"Pinterest (Conversions API)", Teile (ac) bis (ak)). **ES BLEIBT KEINES: ALLE FÜNF ZIELE
+SIND DURCHLAUFEN** — meta (P11.7-2), google aus dem Bestand ohne Crawl (P11.7-3), tiktok
+(P11.7-4), linkedin beschränkt (P11.7-5 und P11.7-6), pinterest (P11.7-7).
+
+**"ALLE CRAWLS SIND DURCH" HEISST NICHT "ALLES IST BEANTWORTET", und der Satz muss mit:**
+Was nur ein Aufruf gegen den Endpunkt zeigt, steht je Ziel ausdrücklich als NICHT
+BEANTWORTET in der Ablage — **für pinterest ist das F8**, der Erfolgsrumpf, die einzige der
+vier alten Fragen, die eine MESSUNG verlangt. Der Satz des fünften Nachzugs dazu gilt
+unverändert: **eine Lesung erreicht sie nicht.**
+
+**DER NÄCHSTE SCHRITT IST EINE AUFKLÄRUNG AM CODE, NICHT DER ZUSCHNITT.** Die
+ZUSCHNITT-FRAGEN dieses Abschnitts haben über fünf Crawls hinweg Fragen AN DEN EIGENEN CODE
+angesammelt, die keine Anbieter-Lesung beantwortet — unter anderem, ob jeder der fünf
+Adapter die Pflichtfelder seines Anbieters sendet (P11.7-3), welcher der zwei Google-Orte
+für IP und User-Agent zu unserem Zeitpunkt passt (P11.7-6), ob die Fehlerdeutung des
+TikTok-Adapters zwei Fälle mit HTTP 401 trennt (P11.7-11), und ob eine Sitzung die
+Volladung von docs/ziel-befunde.md für einen Zuschnitt überhaupt trägt (P11.7-8).
+**SIE WERDEN IN EINER RUNDE AM CODE BEANTWORTET, BEVOR ZUGESCHNITTEN WIRD.**
+
+**KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist mit
+dem fünften Ziel eingelöst; **an seine Stelle tritt dieser** — und aus demselben Grund:
+Ein Zuschnitt gegen ungeprüfte Annahmen über den eigenen Code ist so wenig wert wie einer
+gegen eine geratene Feldliste. **Auch keine Scheibe "nur mal pinterest", und auch nicht für
+das Ziel, dessen Antwort am vollständigsten scheint.**

@@ -7566,6 +7566,16 @@ am selben Tag eine eigene Konto-Oberfläche abgelesen.
     ZUM WIEDERHOLUNGSVERHALTEN: NICHT GEFUNDEN — kein Statuscode für Überschreitung, keine
     Wartezeit, kein Verfahren. ABGESUCHTE ACHSE: Rate-Limit-Seite vollständig,
     Conversions-Seite, FAQ — Begriffe `429`, `retry`, `back off`, `too many`.
+    VORBEHALT (2026-09-22) — DIE ZAHLEN OBEN SIND UNVERÄNDERT DIE DER RATE-LIMIT-SEITE UND
+    DORT WEITERHIN ZU LESEN; ES GIBT INZWISCHEN EINE DRITTE ZAHL FÜR DENSELBEN ENDPUNKT:
+    Die Endpunkt-Referenz nennt "a rate limit of 5,000 calls per minute per ad account" —
+    ohne jeden Vorbehalt zum Träger des Zugangsdatums. Welche der drei Aussagen für einen
+    gegebenen Zugangsweg gilt, ist UNGEMESSEN; die Gegenüberstellung steht unten unter
+    (ai). Der Wortlaut oben wird NICHT umformuliert.
+    ZUM WIEDERHOLUNGSVERHALTEN IST DER NICHT-TREFFER AM 2026-09-22 AN EINER BREITEREN ACHSE
+    BESTÄTIGT WORDEN, nicht aufgelöst: zusätzlich zu den drei Seiten oben auch die
+    Endpunkt-Referenz und die Fehlercode-Seite, je mit Positivkontrolle. Einzelheiten und
+    Reichweite unten unter (ah).
 
 (f) DIE PRODUKT-FREIGABE — ZWEISTUFIG, MIT ECHTER PRÜFUNG (Katalog-Frage I1).
     GELESEN 2026-08-20, https://developers.pinterest.com/docs/getting-started/connect-app/,
@@ -7620,6 +7630,12 @@ am selben Tag eine eigene Konto-Oberfläche abgelesen.
     `Admin`, `business access`, `Business Access`, `permission`, `owner`. NICHT-TREFFER auf
     DIESER Achse — die Rollen dürften in der Business-Hilfe ausserhalb der
     Entwicklerdokumentation stehen, und dorthin ist nicht gegangen worden.
+    VORBEHALT (2026-09-22) — "NICHT GEFUNDEN" GILT NICHT MEHR, UND DIE VERMUTUNG ÜBER DEN
+    ORT WAR FALSCH: Die Rollen stehen NICHT in der Business-Hilfe, sondern in der
+    Endpunkt-Referenz — also in der Entwicklerdokumentation, und zwar auf genau der Seite,
+    die am 2026-08-20 als "GESEHEN, NICHT GEÖFFNET" ausgeschlossen war. Der Wortlaut oben
+    wird NICHT umformuliert: er sagt richtig, was auf den dreizehn Seiten JENER Lesung
+    stand. Die Antwort auf Katalog-Frage I4 steht unten unter (aj).
 
 ### Fünf Fragen, die eine MESSUNG verlangen — hier steht NUR das Instrument
 
@@ -7685,6 +7701,13 @@ DIESE Lesung galt sie noch.)
     · C1 (Form der Kennung) — Matrix: `ad_account_id`, Stellenzahl UNGEPRÜFT. Doku: Kennung
       im Pfad, KEINE Formatregel; die Beispiele sind untereinander uneinheitlich (zwölf und
       achtzehn Stellen). DECKUNGSGLEICH, und die Uneinheitlichkeit stützt das "ungeprüft".
+      VORBEHALT (2026-09-22) — "KEINE FORMATREGEL" IST ÜBERHOLT: Die Endpunkt-Referenz
+      führt den Pfad-Parameter `ad_account_id` als `string`, `required`, mit
+      `<= 18 characters` und dem Muster `^\d+$`. Der Wortlaut oben wird NICHT
+      umformuliert — er sagt richtig, was auf den dreizehn Seiten der Lesung vom
+      2026-08-20 stand, und jene Seite war dort ausgeschlossen. Die Angabe steht unten
+      unter (aj). Die Uneinheitlichkeit der Beispiele bleibt davon unberührt: zwölf und
+      achtzehn Stellen erfüllen beide `<= 18` und `^\d+$`.
     · D4 (Typ des Werts) — Matrix: Zeichenkette, gel. Doku: "Accepted as a string in the
       request and parsed into a double." DECKUNGSGLEICH.
     · F3 (Standard-Namen) — Matrix: zwei Namen weichen ab. Doku: `checkout` = "Track people
@@ -7698,6 +7721,12 @@ DIESE Lesung galt sie noch.)
       `click_id`, `client_ip_address`, `client_user_agent`, `country`, `ct`, `db`, `em`,
       `ge`, `ln`, `ph`, `st`, `zp`, `hashed_maids`, `partner_id`. UNSERE ZELLE BEANTWORTET
       DIE MINDESTBEDINGUNG, NICHT DIE GESTELLTE FRAGE.
+      VORBEHALT (2026-09-22) — DIE LISTE IST UM ZWEI LÄNGER, UND DER RANG FEHLTE GANZ:
+      Es sind SIEBZEHN Felder, nicht fünfzehn — `fn` (Vorname) und `customer_type` stehen
+      oben nicht. Ausserdem beantwortet erst die Lesung vom 2026-09-22 die Frage nach
+      VERLANGT oder EMPFOHLEN je Merkmal, die diese Zelle ausdrücklich offenlässt. Der
+      Wortlaut oben wird NICHT umformuliert; er benennt seine eigene Unvollständigkeit
+      richtig. Die vollständige Liste mit Typ, Hashen und Rang steht unten unter (ae).
     · E2 (roh oder gehasht) — **ABWEICHUNG (UNVOLLSTÄNDIGKEIT).** Roh sind IP ("Valid IPv4
       or IPv6. No pure zero (0.0.0.0) addresses.") und User-Agent. Die MEHRHEIT der übrigen
       Merkmale ist SHA-256: `em`, `ph`, `ct`, `db`, `ge`, `ln`, `st`, `zp`, `country`,
@@ -8071,6 +8100,431 @@ Conversions API sagt dieser Teil NICHTS.
   Aussage darüber, woran der Anbieter sein eigenes Tag erkennt.
 · `ads.pinterest.com` (Conversion Tag Manager, Eventübersicht) — hinter einer Anmeldung,
   nicht betreten.
+
+### Abschnitts-Lesung 2026-09-22 (Anbieter-Crawl der Phase 11.7) — die Teile (ac) bis (ak)
+
+**HERKUNFT (2026-09-22):** Eine ABSCHNITTS-LESUNG der Anbieter-Dokumentation mit dem
+Browser-Werkzeug, nach der Regel "ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN"
+(docs/immer-beachten.md). GELESEN wurden DREIZEHN Seiten; die Liste steht am Ende dieses
+Teils unter "Der gelesene Umfang (2026-09-22)". Durchgehend `textContent`, durchgehend an
+der ENGLISCHEN Fassung — die Navigation der Seiten ist deutsch lokalisiert, die
+Artikel-Rümpfe waren englisch und sind als solche zitiert.
+**KEIN AUFRUF GEGEN DIE SCHNITTSTELLE**, keine Anmeldung, keine Eingabe auf einer fremden
+Seite, kein Download, keine Auszugsdatei. **KEINE SEITE HAT VERSUCHT, DEN LESENDEN
+ANZUWEISEN** — geprüft und ausdrücklich vermerkt.
+**ALLES UNTEN IST GELESEN UND ERSETZT KEINE MESSUNG.** Wo eine Angabe den eigenen Code
+beschreibt, steht GEMESSEN dabei.
+
+(ac) DIE KLICK-KENNUNG — SIE HEISST `epik`, UND SIE HAT ZWEI HERKUNFTSWEGE MIT EINEM
+     AUSDRÜCKLICHEN VORRANG.
+     GELESEN 2026-09-22, https://developers.pinterest.com/docs/api/v5/events-create/
+     ("Send conversions", Spec-Stand "Pinterest REST API 5.31.0") und
+     https://developers.pinterest.com/docs/track-conversions/track-conversions-in-the-api/
+     ("Track conversions in the api", Abschnitte "Format server event parameters" und
+     "Format user data parameters").
+     · **DER FELDNAME IST `click_id`, DER NAME DES WERTS IST `epik`** — "The **epik
+       (External Pinterest ID Key)** value is a unique identifier that Pinterest uses to
+       help track users across devices and sessions."
+     · **ZWEI HERKUNFTSWEGE, im Schema in EINEM Satz:** "The unique identifier stored in
+       `_epik` cookie on your domain or `&epik=` query parameter in the URL." Zum
+       Adressweg zusätzlich: "It is typically passed as a query parameter in your URLs,
+       for example, after a click on a Pinterest ad."
+     · **DER VORRANG STEHT WÖRTLICH DA, und er zeigt auf den COOKIE:** "Use the `_epik`
+       cookie instead of the `&epik=` query parameter. While both are accepted, passing
+       `_epik` cookie values is necessary when a URL parameter is missing or removed and
+       ensures greater coverage."
+     · **DER ORT IN DER NUTZLAST:** `user_data.click_id`, im Schema `"type": "string"`,
+       `"nullable": true` — **eine Zeichenkette, KEIN Array.** Das unterscheidet sie von
+       `em`, `ph`, `ct`, `external_id` und den übrigen gehashten Merkmalen, die im Schema
+       sämtlich Arrays sind.
+     · **RANG: EMPFOHLEN, NICHT VERLANGT.** Schema: "We highly recommend this on checkout
+       events at least. It may improve reporting performance such as ROAS/CPA." Die
+       Parameter-Tabelle nennt als Ereignisse `add_to_cart`, `checkout`, `lead`,
+       `page_visit`, `search`, `signup`, `view_category`, `watch_video`; Plattformen Web
+       und App. Sie beschreibt das Feld als "Cookie generated when a user clicks an ad."
+     · **DAS FORMAT IST NICHT BEANTWORTET.** Keine Formatregel, keine Länge, kein Muster.
+       Die zwei Beispielwerte sind lange, base64-ähnliche Zeichenketten
+       (`dj0yJnU9b2JDcFFHekV4SHJNcmVrbFBkUEdqakh0akdUT1VjVVUm…`) und werden **nirgends als
+       Format bezeichnet**. NICHT-TREFFER mit benannter Reichweite über alle dreizehn
+       gelesenen Seiten.
+     **NICHT BEANTWORTET, WEIL NUR EIN AUFRUF ES ZEIGT:** ob der Endpunkt einen Wert dieser
+     Form fachlich annimmt. Gemessen gesendet hat unser Adapter bisher kein `click_id` —
+     Teil (x) protokolliert die Live-Warnung "click_id is missing".
+     **EIN DRITTER COOKIE-NAME STEHT IN DERSELBEN DOKUMENTATION; s. unten (ai).**
+
+(ad) DAS BROWSER-TAG SETZT FIRST-PARTY-COOKIES — DASS DARUNTER `_epik` IST, IST NICHT
+     GELESEN.
+     GELESEN 2026-09-22, https://developers.pinterest.com/docs/track-conversions/pinterest-tag/
+     ("Pinterest tag", Abschnitt "First party cookies", Rumpf rund 34 260 Zeichen).
+     · "The Pinterest Tag can create and access **cookies in a first party context** on
+       the partner's site domain, providing better visibility into the Pinterest traffic
+       they're getting on their site." · "You always have the option to delete first-party
+       cookies by updating your base code to set the **`fp_cookie`** parameter to
+       `false`." · "The Pinterest Tag can also create and access **localstorage** in a
+       first party context on the partner's site domain."
+     · **DIE VERBINDUNG ZU (ac) IST NICHT GELESEN:** `epik` kommt auf dieser Seite
+       **NULL-mal** vor (Reichweite: der vollständige Artikel-Rumpf, `textContent`). Dass
+       das Tag das `_epik`-Cookie setzt, ist eine naheliegende Vermutung und **bleibt
+       eine**.
+     · **EINE BROWSER-KENNUNG IM SINNE EINES BENANNTEN NUTZLAST-FELDES GIBT ES BEI DIESEM
+       ANBIETER NICHT** — `user_data` trägt kein Gegenstück zu Metas `fbp`; die
+       vollständige Feldliste steht unter (ae).
+     **GEMESSEN AM EIGENEN REPO (CC, 2026-09-22, HEAD `8cab827`) — UNSER AUSGELIEFERTER
+     TEXT TRÄGT KEIN TAG DIESES ANBIETERS:** Achse `pintrk|s\.pinimg|ct\.pinterest|core\.js|_epik|epik`
+     über `src/**/*.ts(x)`; im Produktivcode genau DREI Treffer, alle in
+     `src/lib/foreign-signatures.ts` — also in der Erkennung FREMDER Pixel aus Phase
+     11.11, in keinem Erzeuger. `_epik` und `epik` je NULL im ganzen Repo.
+     POSITIVKONTROLLE im selben Lauf: `connect.facebook.net` trifft
+     `src/lib/tracking/meta.ts` — die Suche findet einen Tag-Erzeuger, wenn es einen gibt.
+     **DIESER TEIL ERGÄNZT (ab) UND WIDERSPRICHT IHM NICHT:** `fp_cookie` und die
+     localStorage-Aussage stehen dort nicht.
+
+(ae) DIE VOLLSTÄNDIGE MERKMALSLISTE — SIEBZEHN FELDER, JE MIT TYP, HASHEN UND RANG.
+     GELESEN 2026-09-22, Endpunkt-Referenz (eingebettetes Schema) und Conversions-Seite
+     (Tabelle "User data parameters"), Quellen wie in (ac).
+     **DIE PFLICHT LIEGT AUF DEM OBJEKT, NICHT AUF EINEM MERKMAL:** `user_data` ist
+     Pflichtfeld des Ereignisses und "must include at least one of the following: 1) `em`,
+     2) `hashed_maids` or 3) pair `client_ip_address` + `client_user_agent`". Die
+     Einzelfelder darin sind "all optional and all strings". **KEIN EINZIGES
+     `user_data`-FELD IST VERLANGT.**
+     Spalte "Rang" = die Spalte "Recommended for or optional for events?" der
+     Anbieter-Tabelle.
+
+     | Feld | Typ | Hashen | Rang | Plattform |
+     |---|---|---|---|---|
+     | `em` E-Mail | Array | ja, SHA-256, lowercase | Recommended for all events | alle |
+     | `ph` Telefon | Array | ja, SHA-256, nur Ziffern m. Ländervorwahl | Recommended for all events | alle |
+     | `fn` Vorname | Array | ja, SHA-256, lowercase | Recommended for all events | alle |
+     | `ln` Nachname | Array | ja, SHA-256, lowercase | Recommended for all events | alle |
+     | `db` Geburtsdatum | Array | ja, SHA-256 von `YYYYMMDD` | Recommended for all events | alle |
+     | `ge` Geschlecht | Array | ja, SHA-256 von `f`/`m`/`n` | Recommended for all events | alle |
+     | `ct` Stadt | Array | ja, SHA-256 | Recommended for all events | alle |
+     | `st` Bundesland | Array | ja, SHA-256, zwei Buchstaben | Recommended for all events | alle |
+     | `zp` PLZ | Array | ja, SHA-256, nur Ziffern | Recommended for all events | alle |
+     | `country` Land | Array | ja, SHA-256, ISO-3166 zweistellig | Recommended for all events | alle |
+     | `hashed_maids` GAID/IDFA | Array | ja, SHA-256 | Recommended for all events | App |
+     | `external_id` | Array | ja, SHA-256 | Recommended for all events | alle |
+     | `click_id` | **String** | **nein** | **Recommended**, 8 Ereignistypen (s. (ac)) | Web, App |
+     | `client_ip_address` | String | **nein** — roh | Recommended for all events | Web |
+     | `client_user_agent` | String | **nein** — roh | Recommended for all events | Web, App |
+     | `partner_id` | String | **nein** | **Optional for all events** — "Use only if you are a Pinterest integration partner" | alle |
+     | `customer_type` | String, Enum `new`/`returning` | **nein** | *im Schema geführt, in der Tabelle der Conversions-Seite NICHT* | — |
+
+     **`client_ip_address` IM SCHEMA:** "The user's IP address, which can be either in
+     IPv4 or IPv6 format." Die Conversions-Seite ergänzt: "Valid IPv4 or IPv6. No pure
+     zero (0.0.0.0) addresses."
+     **`client_user_agent` TRÄGT EINE FORM-AUFLAGE, die in keinem Teil darüber steht:**
+     "Include at least two of each of these information categories: OS family · browser
+     family · device family. Do not send 'Other' or null. Do not send user agents produced
+     by bot."
+     **DARF EIN EREIGNIS MEHRERE KENNUNGEN ZUGLEICH TRAGEN? — JA, AUF DOKU-EBENE
+     EINDEUTIG.** Das Beispiel des Anbieters im eigenen Schema trägt alle siebzehn
+     Merkmale in EINEM `user_data`-Objekt gleichzeitig; die gehashten Merkmale sind
+     ausserdem Arrays, und `em` wie `hashed_maids` tragen dort je ZWEI Werte. **EINE
+     OBERGRENZE WIRD NICHT GENANNT.**
+     **DAS IST EINE AUSSAGE ÜBER DIE ZULÄSSIGKEIT, NICHT ÜBER DIE ANNAHME AM ENDPUNKT.**
+     Gemessen gesendet hat unser Adapter bisher genau das Paar `client_ip_address` +
+     `client_user_agent`; ein Ereignis mit einer dritten Kennung ist nie gesendet worden.
+     **NICHT BEANTWORTET, WEIL NUR EIN AUFRUF ES ZEIGT.**
+     **EIN ZWEITER ORT FÜR DEN USER-AGENT, der leicht übersehen wird:**
+     `app_info.user_agent` — "User Agent request header. Primarily used for Web events",
+     `maxLength: 16384`. Er liegt NICHT in `user_data` und ist **kein** Mitglied der
+     Mindestregel.
+     **PERSONENBEZOGENES — NUR AUFGEZÄHLT, NICHT EINGEORDNET:** `em`, `ph`, `fn`, `ln`,
+     `db`, `ge`, `ct`, `st`, `zp`, `country`, `hashed_maids`, `external_id`, `click_id`,
+     `client_ip_address`, `client_user_agent`, `partner_id`. **KEINE
+     DATENKLASSEN-ZUORDNUNG** — diese Datei trägt Befunde, keine Entscheidungen.
+     **DAS EINZIGE FELD DIESER LISTE, DESSEN WERT DER SENDER SELBST VERGEBEN MÜSSTE, IST
+     `external_id`** — "a unique id from the advertiser that identifies a user in their
+     space, e.g. user id, loyalty id"; SHA-256 verlangt; "We highly recommend this on all
+     events." **EINE ABLAUF- ODER BINDUNGSDAUER NENNT DER ANBIETER NICHT** — NICHT-TREFFER
+     mit benannter Reichweite über die dreizehn Seiten. Alle übrigen Merkmale sind
+     fremdvergeben oder kommen aus der Anfrage.
+
+(af) DIE SEITENADRESSE — DER ANBIETER BITTET UM SEINE EIGENE KENNUNG IM ADRESSFELD; OB ER
+     SIE SELBST AUSLIEST, SAGT ER NICHT.
+     GELESEN 2026-09-22, Conversions-Seite, Abschnitt "Format server event parameters",
+     Zeile `event_source_url`; dazu das Schema der Endpunkt-Referenz.
+     · **RANG UND TYP:** `event_source_url`, `string, nullable`, **Optional**, Plattform
+       Web, "Recommended for all events". Das Schema sagt dazu nur: "URL of the web
+       conversion event."
+     · **ZUM INHALT DES ADRESSFELDS SAGT DIE DOKU AUSDRÜCKLICH ETWAS, UND SIE VERLANGT DEN
+       QUERY-STRING:** "Include the full URL path for the conversion event.
+       `https://www.myshop.org/` — **For Pinterest click events, include `&epik` query
+       string, a unique click identifier, in the URL.**" Beispiel der Doku:
+       `https://www.myshop.org/checkout?epik=123abc456def789ghi`.
+     · **OB DER ANBIETER DARAUS SELBST AUSLIEST: NICHT BEANTWORTET — DIE DOKU SCHWEIGT.**
+       Keine der dreizehn gelesenen Seiten sagt, dass Pinterest `epik` aus dem übergebenen
+       `event_source_url` PARST. NICHT-TREFFER mit benannter Reichweite; `parse` trifft auf
+       der Conversions-Seite genau einmal und betrifft dort einen Zahlenwert, nicht die
+       Adresse.
+     · **ÜBER FREMDE KENNUNGEN IM ADRESSFELD** — ein `gclid`, ein `fbclid` — **schweigt die
+       Doku vollständig**, NICHT-TREFFER mit derselben Reichweite.
+     **DIE ABGRENZUNG GEHÖRT DAZU, sonst wird aus einer Bitte eine Zusage:** Dass der
+     Anbieter um `&epik` in der Adresse BITTET, ist etwas anderes als die Aussage, dass er
+     die Adresse AUSLIEST. Beim dritten Ziel steht der zweite Satz wörtlich da (Abschnitt
+     "TikTok (Events API 2.0)", Teil (m)); **hier steht er nicht.** **MESSUNG OFFEN.**
+     **OB DAS BENANNTE FELD `user_data.click_id` UND DER ADRESSWEG EINANDER ERSETZEN,
+     ERGÄNZEN ODER DOPPELN, SAGT KEINE GELESENE SEITE.**
+
+(ag) DIE VERSIONIERUNG — KEIN LEBENSZYKLUS, KEIN TERMIN, UND DIE ANKÜNDIGUNG HÄNGT AN
+     EINER REGISTRIERTEN APP.
+     GELESEN 2026-09-22.
+     · **KEIN DOKUMENTIERTER LEBENSZYKLUS UND KEIN ABSCHALTTERMIN FÜR `v5`** —
+       NICHT-TREFFER mit benannter Reichweite über VIER Seiten, je mit der Achse `sunset`,
+       `deprecat`, `end of life`, `retire`, `v3`, `v4`:
+       `…/docs/overview/welcome/` ("Welcome") · `…/docs/changelog/changelog/` ("Changelog")
+       · `…/docs/api/v5/introduction/` · `…/docs/faqs/faqs/` ("API FAQs"). **`sunset` je
+       NULL.**
+     · **DIE SECHZEHN `deprecat`-TREFFER DES CHANGELOGS BETREFFEN AUSNAHMSLOS EINZELNE
+       ENDPUNKTE ODER MERKMALE** — user interests, custom audience, gtin integer support,
+       Pin notes creation, glitch OAuth tutorial, das alte Aktualisierungs-Token —
+       **KEINER die Version.**
+     · **DIE EINZIGE DEPRECATION-AUSSAGE DER ÜBERSICHTSSEITE BETRIFFT TLS**, nicht die
+       API-Version: "Use Transport Layer Security (TLS) version 1.2 or later when calling
+       the Pinterest API v5, as the 1.0 and 1.1 protocols are deprecated."
+     · **DER SPEC-STAND DER REFERENZ HEISST "Pinterest REST API 5.31.0"** — eine
+       Fassungsangabe der Spezifikation, kein Lebenszyklus.
+     · **WAS STATT DESSEN DASTEHT, und es ist der operative Teil** (Übersichtsseite,
+       Abschnitt "Maintaining your app"): "Our **Changelog** is the most up-to-date
+       resource for information on breaking changes, deprecations, and new features in the
+       Pinterest API. **For breaking changes we'll send an email notification to the
+       contacts provided under your app's details.** In order to ensure you receive these
+       notifications, be sure you have enabled business emails under your profile
+       settings."
+     **DIE ANKÜNDIGUNG HÄNGT DAMIT AN EINER REGISTRIERTEN APP.** Teil (r) hält fest, dass
+     der Owner den Weg über die WERBE-Oberfläche genommen hat (Conversion-Token), nicht
+     über eine App. **OB DIESER KANAL FÜR JENEN ZUGANGSWEG ÜBERHAUPT GREIFT, IST
+     UNGELESEN UND UNGEMESSEN.**
+     **WAS BEI EINEM ABLAUF GESCHIEHT: NICHT BEANTWORTET.** Es gibt keinen dokumentierten
+     Ablauf, also auch keine dokumentierte Folge — weder eine stille Umleitung noch ein
+     lautes Scheitern. **DAS IST AUSDRÜCKLICH KEINE ZUSAGE AUF UNBEFRISTETHEIT.**
+
+(ah) DIE ERFOLGSANTWORT — FORM, ZÄHLUNGEN JE EREIGNIS UND EIN DOKUMENTIERTER TEILERFOLG
+     MIT HTTP 200.
+     GELESEN 2026-09-22, Endpunkt-Referenz (Response Sample `200`) und Conversions-Seite
+     (Abschnitt "Example response").
+     · **ERFOLGSRUMPF, Endpunkt-Referenz, im Wortlaut:**
+       `{"events": [{"error_message": "", "status": "processed", "warning_message": ""}],`
+       `"num_events_processed": 1, "num_events_received": 1}`
+     · **TEILERFOLG IST DOKUMENTIERT UND AUSDRÜCKLICH**, Conversions-Seite, mit dem
+       erklärenden Satz "The response indicates that one event was not sent because it was
+       incorrectly named.":
+       `{"num_events_received": 2, "num_events_processed": 1, "events": [`
+       `{"status": "failed", "error_message": "Invalid event_name: subscription. Use a`
+       `supported conversion event_name (for example subscribe, checkout).",`
+       `"warning_message": null}, {"status": "processed", "error_message": null,`
+       `"warning_message": null}]}`
+     · **EIN ABGELEHNTES EREIGNIS KOMMT MIT HTTP 200** und erscheint als
+       `status: "failed"` INNERHALB einer Erfolgsantwort — nicht als Fehler-Statuscode.
+     · **BELEGTE STATUSWERTE JE EINTRAG: `"processed"` und `"failed"`. EINE ABSCHLIESSENDE
+       ENUM-LISTE GIBT ES NICHT** — das Schema führt `status` nicht als Enum;
+       NICHT-TREFFER mit benannter Reichweite über beide Seiten.
+     · **`error_message` UND `warning_message` TRETEN IN BEIDEN LEERFORMEN AUF** — als `""`
+       (Endpunkt-Referenz) und als `null` (Conversions-Seite).
+     · **MENGEN:** `data` ist im Schema `minItems: 1, maxItems: 1000`. Im TESTMODUS gilt
+       abweichend: "If you send multiple test events in a request, limit the batch to 20
+       events. We only process the first 20 events in a batch."
+     · **DER TESTMODUS-PARAMETER DER ENDPUNKT-REFERENZ HEISST `test`**, mit einer Angabe,
+       die Teil (u) ergänzt: "Include query param `?test=true` to mark the request as a
+       test request. **The events will not be recorded but the API will still return the
+       same response messages.**" Dazu die Warnung: "If you use this query parameter, be
+       certain that it is off (set to false or deleted) before sending a legitimate
+       (non-testing) request."
+     · **FEHLER-STATUSCODES DER REFERENZ:** 200, 400, 401, 403, 404, 422, **429** ("The
+       user has sent too many requests in a given amount of time and is being rate
+       limited"), 503 und `default`. Die Fehlerform heisst im Schema "Generic Error" und
+       trägt `{"code": 2, "message": "AdAccount not found."}`.
+     · **EINE VORGABE ZU WIEDERHOLUNGSVERSUCHEN NACH EINER 429 GIBT ES NICHT** —
+       NICHT-TREFFER mit benannter Reichweite über VIER Seiten, je mit Positivkontrolle:
+       Endpunkt-Referenz (`retry` 0) · Rate-Limit-Seite (`retry` 0, `back off` 0,
+       `too many` 0; Positivkontrolle `ads_conversions` 1) · Fehlercode-Seite (`429` 0,
+       `retry` 0 — sie sagt selbst "Many errors not covered here are specific to a
+       particular endpoint") · FAQ (`retry` 0, `429` 0; Positivkontrolle `rate limit` 5).
+       Das bestätigt den Nicht-Treffer aus Teil (e) an einer breiteren Achse.
+     **DER ABGLEICH MIT DEM GEBAUTEN ADAPTER — GEMESSEN am Repo (CC, 2026-09-22, HEAD
+     `8cab827`), `evaluateSuccessBody` in `src/lib/capi/pinterest-forward.ts`:** Der Code
+     prüft `num_events_received === 1`, `num_events_processed === 1`, genau EINEN Eintrag
+     in `events[]` und dort `status === "processed"`; ein nicht leeres `warning_message`
+     wird geloggt, ohne den Vorgang zu verwerfen. **DAS DECKT SICH MIT DER OBEN GELESENEN
+     FORM** — für unsere Ein-Ereignis-Nutzlast ist `1/1` die dokumentierte Erfolgsform, und
+     das Teilerfolg-Beispiel `2/1` belegt, dass die Ungleichheit real vorkommt.
+     **`sanitizeProviderText` gibt für einen Nicht-String `"-"` zurück** und deckt damit
+     `""`, `null` und ein FEHLENDES Feld gleich ab.
+     **DAS BLEIBT EINE MESSFRAGE — Katalog-Frage G1 IST NICHT BEANTWORTET.** Alles oben ist
+     GELESEN. Ob der Endpunkt bei unserer echten Nutzlast genau diese Form liefert, zeigt
+     erst ein Aufruf; die Doku ist hier der Massstab einer späteren Messung, **nicht ihr
+     Ersatz**.
+
+(ai) DREI DIVERGENZEN IN DER ANBIETER-DOKU SELBST — BERICHTET, NICHT AUFGELÖST.
+     GELESEN 2026-09-22. Ohne Bewertung; keine der drei ist gemessen.
+     **(1) DER COOKIE-NAME DER KLICK-KENNUNG STEHT IN ZWEI FASSUNGEN.** Schema und
+     Conversions-Seite sagen `_epik` (s. (ac)). Die Seite
+     `…/docs/track-conversions/integrate-third-party-tracking-tools/` ("Integrate third
+     party tracking tools") beschreibt dasselbe Feld als "The unique identifier stored in,
+     **`ptk` cookie** on your domain or `&epik=` query parameter in the URL. **Web
+     fingerprint key to measure attributions.** It may improve reporting performance such
+     as ROAS/CPA." **Welcher Cookie-Name gilt, ist UNGEMESSEN.**
+     **EINE GRENZE, OHNE DIE MAN VON JENER SEITE DAS FALSCHE ABLEITET:** Sie beschreibt die
+     Vorlage für Google-Tag-Manager-Server-Side-Tagging und führt durchweg eine ANDERE
+     Feld-Benennung — `user_data.email_address`, `user_data.phone_number`,
+     `user_data.user_agent`, `user_data.address.postal_code`. **Das ist das Schema jener
+     Vorlage, nicht das des v5-Endpunkts.** Wer daraus Feldnamen für einen Adapter
+     ableitet, leitet aus dem falschen Schema ab.
+     **DER WORTLAUT "Web fingerprint key" IST HIER NUR ZITIERT.** Es findet **keine
+     Datenklassen-Zuordnung** statt; diese Datei trägt Befunde, keine Entscheidungen.
+     **(2) DREI RATE-LIMIT-AUSSAGEN FÜR DENSELBEN ENDPUNKT.**
+     · Die **Rate-Limit-Seite** führt `ads_conversions` unverändert mit Trial 1 000
+       Anfragen je Tag je Werbekonto je App und Standard **120 000** je Minute je
+       Werbekonto je App — am 2026-09-22 an der Quelle gegengeprüft und unverändert.
+     · Dieselbe Seite sagt weiterhin: "It is recommended that you use the conversion access
+       token, which enables you to send **unlimited** conversion-tracking events."
+     · Die **Endpunkt-Referenz** sagt: "This endpoint has a rate limit of **5,000 calls per
+       minute per ad account**." **Ohne jeden Vorbehalt zum Träger des Zugangsdatums.**
+     **WELCHE AUSSAGE FÜR EINEN GEGEBENEN ZUGANGSWEG GILT, IST UNGEMESSEN.** Teil (e) ist
+     damit nicht widerlegt, sondern unvollständig; der Vorbehalt dort zeigt hierher.
+     **(3) DREI AUSSAGEN ZU `partner_name`.**
+     · **Conversions-Seite:** "Syntax: `ss-companyname`. **For direct integration, use
+       value `direct`.**"
+     · **Endpunkt-Schema:** "The third party partner name responsible to send the event to
+       Conversions API on behalf of the advertiser. The naming convention is
+       `\"ss-partnername\"` lowercase. E.g 'ss-shopify'" — **ohne `direct` zu erwähnen.**
+     · **Drittanbieter-Seite:** "Only send this field if Pinterest has directly requested
+       to include this field."
+     **DER ADAPTER SENDET `partner_name: "direct"`** (GEMESSEN am Repo, CC, 2026-09-22).
+     Teil (q) führt das als GEDECKT, gestützt auf die erste Aussage — **die steht
+     unverändert da und trägt weiter.** Die zwei anderen sind neu und **nicht aufgelöst.**
+     **EINE VIERTE SPANNUNG IST KEINE NEUE, SONDERN EINE BESTÄTIGTE:** Die Namensfrage aus
+     Teil (p)(1) besteht am 2026-09-22 unverändert fort — die Endpunkt-Referenz führt
+     `test`, die Rate-Limit-Seite führt am selben Endpunkt weiterhin `is_test`. **BEIDE
+     SÄTZE STEHEN AN DER QUELLE.** Das bestätigt Teil (v) wörtlich; `is_test` bleibt
+     ungeprüft, nicht ausgeschlossen.
+
+(aj) WAS DIE ENDPUNKT-REFERENZ SONST TRÄGT — DIE PFLICHTFELDER, DIE ROLLEN, DIE FORMATREGEL
+     — UND DIE GRENZE DIESER LESUNG.
+     GELESEN 2026-09-22, https://developers.pinterest.com/docs/api/v5/events-create/.
+     · **DIE PFLICHTFELDER JE EREIGNIS, aus dem Schema im Wortlaut:**
+       `"required": ["action_source", "event_id", "event_name", "event_time", "user_data"]`.
+       **DAS SCHLIESST DIE LÜCKE, DIE TEIL (q) BENENNT** — dort steht, das
+       Parameter-Verzeichnis sage ausdrücklich, es benenne die Pflichtfelder NICHT, und
+       verweise auf genau diese Seite. Die Conversions-Seite markiert dieselben vier
+       Ereignis-Felder als "Required" und `event_source_url`, `opt_out` und `partner_name`
+       als "Optional".
+     · **DIE ROLLE DER ANMELDENDEN IDENTITÄT — KATALOG-FRAGE I4, JETZT BEANTWORTET:** "The
+       token's `user_account` must either be the **Owner** of the specified ad account, or
+       have one of the necessary roles granted to them via Business Access: **Admin,
+       Analyst, Audience, Campaign**. (Note that the token can be used across multiple ad
+       accounts under an user ID.)" **Der Klammersatz bestätigt Teil (s) an der Quelle** —
+       jener war eine Ablesung an der Oberfläche.
+     · **DIE FORMATREGEL DER KENNUNG:** `ad_account_id` als Pfad-Parameter, `string`,
+       `required`, `<= 18 characters`, Muster `^\d+$`. **Das überholt die Angabe "KEINE
+       Formatregel" in Teil (o)/C1**, der dort einen Vorbehalt trägt.
+     · **DIE DEDUPLIZIERUNG, mit einem Satz, der in Teil (d) nicht steht:** "If the
+       merchant is submitting this information using both Pinterest conversion tags and
+       the Pinterest API, Pinterest will remove duplicate information before reporting.
+       **(Note that events that took place offline cannot be deduplicated.)**"
+     · **DIE RATE-LIMIT-KATEGORIE wird auf der Seite selbst genannt:** `ads_conversions`.
+     **DIE GRENZE DIESER LESUNG, UND SIE GEHÖRT AN DEN BEFUND:** Die Seite trägt ZWEI
+     Reiter-Gruppen — "Request Samples" und "Response Samples" (200, 400, 401, 403, 404,
+     422, 429, 503, default). **DIE EINZELNEN RESPONSE-REITER SIND NICHT ANGEKLICKT
+     WORDEN.** Gelesen ist statt dessen das im Seitenrumpf eingebettete OpenAPI-JSON, das
+     die Antwortdefinitionen trägt; daher der 200-Rumpf und die "Generic Error"-Form in
+     (ah). **DAS IST EINE ANDERE QUELLE ALS DER REITER: WER DEN GENAUEN RUMPF EINES 422,
+     EINES 429 ODER EINES 503 BRAUCHT, HAT IHN HIER NICHT.**
+     **WARUM DIE SEITE ÜBERHAUPT LESBAR WAR:** Teil (z) führt sie als "vom Werkzeug
+     erzeugte Abwesenheit" und sagt, wer sie schliessen wolle, brauche `textContent` statt
+     `innerText`. **DAS HAT GETRAGEN** — GEMESSEN am eigenen Lauf (CC, 2026-09-22): das
+     `main`-Element gibt 8 563 Zeichen, der `body` **928 751**, und im `body` liegt das
+     vollständige Schema. **TEIL (z) BLEIBT WÖRTLICH STEHEN**; seine Aussage war für ihren
+     Tag richtig und hat den Weg gewiesen.
+
+(ak) EIN ANGEKÜNDIGTER, UNDATIERTER SCHEMA-WECHSEL BERÜHRT GENAU DIE FELDER DES
+     ERFOLGSRUMPFS.
+     GELESEN 2026-09-22,
+     https://developers.pinterest.com/docs/reference/schema-standardization-of-optional-nullable-fields/
+     ("Schema standardization of optional nullable fields").
+     **IM WORTLAUT:** "We are updating our API schema to **omit optional fields with null
+     values** in JSON response payloads. These changes could impact your integration,
+     depending on whether, or how, you ingest optional fields with null values." · "We are
+     **gradually** applying this standard to **all endpoints** with optional fields that
+     return null." · "We are applying this standard to endpoints on an ongoing basis and
+     plan to apply it to **all public Pinterest API endpoints over time.**"
+     **KEIN DATUM, KEINE ENDPUNKT-LISTE** — die Seite nennt weder einen Stichtag noch,
+     welche Endpunkte bereits umgestellt sind.
+     **WAS DAS FÜR DEN ERFOLGSRUMPF AUS (ah) HEISST, ALS FRAGE UND NICHT ALS ANTWORT:** Die
+     dort gelesenen Beispiele führen `error_message` und `warning_message` als `null` bzw.
+     `""`. **OB `num_events_received`, `num_events_processed` ODER `status` JE DARUNTER
+     FALLEN KÖNNTEN, SAGT DIE SEITE NICHT.** **UNGEMESSEN.**
+     **KEINE EMPFEHLUNG** und kein Vorschlag einer Änderung am Code; diese Datei trägt
+     Befunde.
+
+### Der gelesene Umfang (2026-09-22) — Pinterest, Klick-Kennung, Merkmale, Version, Erfolgsrumpf
+
+**OHNE DIESE LISTE HAT JEDES "STEHT DORT NICHT" IN DEN TEILEN (ac) BIS (ak) KEINE
+REICHWEITE.** Dreizehn Seiten, alle am 2026-09-22 abgerufen, durchgehend `textContent`.
+
+**GEÖFFNET UND GELESEN (13 Seiten):**
+1. `developers.pinterest.com/docs/api/v5/events-create/` — "Send conversions", Spec-Stand
+   "Pinterest REST API 5.31.0" — **die tragende Fundstelle für (ac), (ae), (ah), (aj)**
+2. `…/docs/track-conversions/track-conversions-in-the-api/` — "Track conversions in the
+   api" (rund 28 266 Z.)
+3. `…/docs/track-conversions/pinterest-tag/` — "Pinterest tag" (rund 34 260 Z.)
+4. `…/docs/track-conversions/understand-conversions-and-how-to-track-them/` (rund 6 533 Z.)
+   — **NICHT-TREFFER auf `epik` und `click_id`**
+5. `…/docs/track-conversions/use-pinterest-tag-helper/` (rund 5 766 Z.) — **NICHT-TREFFER
+   auf `epik`, `cookie`, `pintrk`**
+6. `…/docs/track-conversions/integrate-third-party-tracking-tools/` (rund 11 465 Z.) —
+   tragend für (ai)(1)
+7. `…/docs/reference/rate-limits/` — "Rate limits" (rund 4 101 Z.)
+8. `…/docs/reference/error-codes/` — "Error codes" (rund 6 539 Z.)
+9. `…/docs/reference/schema-standardization-of-optional-nullable-fields/` (rund 3 235 Z.)
+   — tragend für (ak)
+10. `…/docs/changelog/changelog/` — "Changelog" (rund 13 374 Z.)
+11. `…/docs/overview/welcome/` — "Welcome" (rund 3 123 Z.)
+12. `…/docs/api/v5/introduction/` (rund 1 885 Z.)
+13. `…/docs/faqs/faqs/` — "API FAQs" (rund 16 738 Z.)
+
+**DER BEFUND ÜBER DAS VERFAHREN, und er ist der teuerste dieser Runde: DIE
+ENDPUNKT-REFERENZ STAND IM BESTAND ZWEIMAL ALS AUSGESCHLOSSEN — UND SIE TRUG DEN KERN
+DIESER RUNDE.** Am 2026-08-20 als "GESEHEN, NICHT GEÖFFNET" mit dem Grund, die API-Referenz
+sei ein eigener Baum; am 2026-09-10 als Versuch gescheitert und in Teil (z) als
+werkzeugerzeugte Abwesenheit abgelegt. **AUS IHR STAMMEN: der Name und die Herkunft der
+Klick-Kennung, die vollständige Feldliste, die PFLICHTFELDER, die Rollen zu Katalog-Frage
+I4, die Formatregel der Kennung, die dritte Rate-Limit-Zahl und die Form der
+Erfolgsantwort.** Die Fehlerklasse ist in docs/immer-beachten.md als "DIE LISTE 'GESEHEN,
+NICHT GEÖFFNET' IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT" geführt; gelöst hat sie der
+Werkzeugwechsel, den Teil (z) benennt.
+**ZWEI WEITERE AUSGESCHLOSSENE SEITEN SIND AUS DEMSELBEN GRUND GEÖFFNET WORDEN:** Der Tag
+Helper (2026-09-21, BUDGET-AUSSCHLUSS, "ein möglicher Ort für eine Aussage darüber, woran
+der Anbieter sein eigenes Tag erkennt") trug **nichts**; die Drittanbieter-Seite
+(2026-09-21, BUDGET-AUSSCHLUSS, "der naheliegendste Ort für eine ABWEICHENDE Gestalt") trug
+den `ptk`-Cookie-Namen aus (ai)(1), der auf keiner anderen gelesenen Seite steht.
+**UND ZWEI, DIE ALS "Nachbarn ohne Katalog-Bezug" AUSGESCHLOSSEN WAREN, TRAGEN NACH IHREM
+TITEL DIE VERSIONSFRAGE:** Changelog und Übersichtsseite — geöffnet, Ergebnis in (ag).
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `…/docs/track-conversions/define-your-own-event-types/`, `…/remove-users-from-events/`,
+  `…/get-event-quality-score/`, `…/use-limited-data-processing-flag/` — **SACHLICHER
+  AUSSCHLUSS:** in den Teilen (h), (k), (m) und (g) bereits gelesen und abgelegt; keine der
+  Fragen dieser Runde trägt ihren Titel.
+· `…/docs/getting-started/connect-app/`, `…/set-up-authentication-and-authorization/`,
+  `…/make-an-api-call/`, `…/key-concepts/access-tiers/` — **SACHLICHER AUSSCHLUSS:**
+  Zugangsweg und Freigabe, in den Teilen (a), (b), (c), (f) und (h) abgelegt.
+· `…/docs/reference/pagination/`, `…/image-proxy-requests-to-your-website/`,
+  `…/help-and-feedback/`, `…/control-pinterestbot-access-to-your-site/` — **SACHLICHER
+  AUSSCHLUSS:** kein Bezug zu den Fragen dieser Runde.
+· `…/docs/reference/manage-notifications/` — **DER GRENZFALL, UND ER WIRD EIGENS BENANNT:**
+  Sie könnte zum E-Mail-Kanal aus (ag) etwas sagen. **SIE IST NICHT GEÖFFNET**, und was
+  dort steht, ist **ungelesen**.
+· `…/docs/developer-tools/sdk/`, Sandbox-Leitfaden, API Explorer, Python SDK —
+  **SACHLICHER AUSSCHLUSS:** Werkzeuge, kein Transport-Befund.
+· Die Zweige "Mit Anzeigen arbeiten", "Mit Analytics und Berichten arbeiten", "Mit
+  Katalogen arbeiten", "Mit Zielen und Zielgruppen arbeiten", "Web-Funktionen", "Wichtige
+  Konzepte" (übrige) — **andere Produkte.**
+· `help.pinterest.com` — **NICHT betreten.** Die Spannung aus Teil (y) bleibt damit
+  unberührt und unbewertet.
+· **HINTER EINER ANMELDESCHRANKE, NICHT BETRETEN:** Ads Manager, Conversion Tag Manager,
+  "My apps", Token Debugger, Help-Center-Tickets, `community.pinterest.biz`.
 
 ## Meta (Conversions API)
 

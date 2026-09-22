@@ -308,6 +308,52 @@ Bestand und die Versionsangabe am Code sind GEMESSEN am Repo (CC, 2026-09-22). D
 den fehlenden Bau-Commit ist eine ABLEITUNG aus der Reichweite des Crawls, keine
 Owner-Entscheidung.
 
+### VERMERK P11.7-3 — Google-Bestandsaufnahme vom 2026-09-22 (KEIN BAU, KEIN CRAWL)
+
+**HARTE ANGABEN:** Datum 2026-09-22 · HEAD `24f8b29` ("docs(claude): 11.7 — Meta-Crawl
+abgelegt, Versionsfrist v21.0") · Arbeitsbaum vor und nach der Runde sauber (`git status
+--short` leer) · **KEINE Navigation, kein Browser-Werkzeug, keine Werkzeug-Ablage angelegt.**
+
+**DIE FORM:** docs/ziel-befunde.md **NICHT vollgeladen**, sondern GEZIELTE SUCHE über den
+Abschnitt "Google (Google Ads Conversions · GA4)" — die zweite Form, die CLAUDE.md,
+"## Anbieter-Befunde der Fan-Out-Ziele", seit dem 2026-09-22 zulässt. **SUCHRAUM:** die
+Zeilen 1342–7053 jener Datei. **ACHSE, aus dem Gegenstand gebildet:** `gclid` · `gbraid` ·
+`wbraid` · `adIdentifiers` · `deviceInfo` · `landingPageDeviceInfo` · `eventDeviceInfo` ·
+`userAgent` · `ipAddress` · `consent` · `adUserData` · `adPersonalization` · `userData` ·
+`userIdentifier` · `version` · `sunset` · `deprecat` · `eventSourceUrl` · `pageLocation` ·
+`page_location` · `page url` · `URL-Parameter` · `Parametername` · `userIdentifierSource` ·
+`conversionEnvironment`, case-insensitiv. **POSITIVKONTROLLE im selben Lauf:** `gclid` 39 ·
+`consent` 49 · `userData` 32 · `deviceInfo` 30 · `adIdentifiers` 21. **ECHTE NICHT-TREFFER
+auf derselben Achse:** die letzten fünf der Liste je 0.
+**EINE FALSCH-POSITIVE, die sonst eine Dichte vortäuscht:** `version` zählt 294, davon sind
+nur rund fünfzehn das echte Wort — die übrigen sind das Teilwort in "con**version**".
+
+**DIE STOPP-BEDINGUNG DER GEZIELTEN FORM IST EINGETRETEN — DREI ZAHLEN, GEMESSEN (CC,
+2026-09-22):** (1) Der Google-Abschnitt ist **5 712 Zeilen / 405 265 Bytes**, rund **64 %**
+der Datei (8 817 / 628 629). (2) Er trägt **NEUN Abschnitts-Lesungen** (LAUF 1 bis LAUF 9,
+2026-08-20 bis 2026-09-11) und **SIEBEN Messungen** (A, B1, C, D, E, F, G) in den Teilen
+**(a) bis (ct)**. (3) Die Klick-Kennungs-Treffer verteilen sich auf **32 getrennte
+Fundstellen-Gruppen** in **mindestens SECHS Zusammenhängen** — genau der Fall, den der
+Abschnitt "Nächster Schritt" für google vorhergesagt hat.
+
+**ARCHITEKTEN-ENTSCHEIDUNG 2026-09-22 — FÜR GOOGLE LÄUFT KEIN ANBIETER-CRAWL.** GRUND: Die
+gezielte Suche hat **F1 bis F4 für google aus dem Bestand beantwortet**, je mit Teil-Zeiger
+(Tabelle im Abschnitt "Offene Fragen an den Anbieter-Crawl"). **DIE EINZIGE LÜCKE — die
+Schreibung der Auto-Tagging-Parameter — LIEGT AUSSERHALB DER TRANSPORT-DOKU**, und ihr Posten
+in docs/offene-punkte.md verlangt eine **MESSUNG an einem echten Anzeigen-Klick, die keine
+Lesung ersetzt.** **DER PFLICHT-STOPP IST NICHT UMGANGEN:** Es findet keine Recherche statt,
+für die er gälte.
+
+**KEIN BAU-COMMIT, UND DER GRUND IST EIN DRITTER NEBEN P11.7-1 UND P11.7-2:** Diese Runde war
+eine BESTANDSAUFNAHME am eigenen Text — keine Zeile Code, keine fremde Seite. **OB DIE
+ENTSCHEIDUNG OBEN DEN SATZ "KEIN ZUSCHNITT VOR DEM CRAWL" FÜR GOOGLE AUFLÖST, IST HIER NICHT
+ENTSCHIEDEN** — drei Ziele sind ungecrawlt, und die Frage ist eine eigene. **KEINE EMPFEHLUNG.**
+
+**PROVENIENZ:** Alle Zahlen dieses Vermerks sind GEMESSEN am Repo (CC, 2026-09-22), je mit
+der genannten Achse. Die Antworten auf F1 bis F4 sind **GELESEN** — Quelle, Seitenstand und
+Datum stehen je am Teil in docs/ziel-befunde.md, **nicht hier**. Der Entfall des Crawls ist
+eine **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-22**.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -433,6 +479,26 @@ Zeiger gehen sämtlich nach docs/ziel-befunde.md, Abschnitt "Meta (Conversions A
 
 **F5 (tiktok) UND F8 (pinterest) SIND VOM META-CRAWL NICHT BERÜHRT** und stehen unverändert.
 
+**STAND FÜR GOOGLE NACH DER BESTANDSAUFNAHME (2026-09-22, VERMERK P11.7-3) — KEINE FRAGE IST
+GESTRICHEN, UND KEINE IST FÜR EIN ANDERES ZIEL BERÜHRT.** Die Formulierungen von F1 bis F4
+bleiben wörtlich; nachgezogen ist allein der STAND, und zwar je Frage nur für **google**. Für
+pinterest, tiktok und linkedin steht jede der vier **unverändert offen**. **ALLE ZEIGER GEHEN
+NACH docs/ziel-befunde.md, ABSCHNITT "Google (Google Ads Conversions · GA4)"** — die
+Buchstaben dieser Tabelle meinen NICHT den Meta-Abschnitt.
+
+| Frage | Stand für google | Zeiger |
+|---|---|---|
+| F1 Klick-Kennung | **AUS DEM BESTAND BEANTWORTET** — Namen, Bildung, Ort und die Pflicht-Tabelle, die sie von den Floodlight-Kennungen trennt; die Feldliste ist dort ausdrücklich als ABSCHLIESSEND belegt. **EINE LÜCKE BLEIBT: DIE SCHREIBUNG DER PARAMETER, AUS DENEN SIE STAMMEN.** Sie liegt im Auto-Tagging, nicht im Transport, und ist als Posten "DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH AUF NICHTS GELESENES" in docs/offene-punkte.md geführt, der dafür eine MESSUNG an einem echten Anzeigen-Klick verlangt. | Teile (m)/E1, (w)/E1, (l)/D5, (cc)(c) |
+| F2 Ort in der Nutzlast | **AUS DEM BESTAND BEANTWORTET** — DREI Orte, deren Trennung dort als wesentlicher bezeichnet ist als die Liste selbst, dazu die Hülle mit Pflicht-Annotationen. | Teile (m)/E1, (l)/D1, (w)/D1 |
+| F3 Match-Felder, verlangt/empfohlen | **AUS DEM BESTAND BEANTWORTET — MIT EINEM WIDERSPRUCH, DER DORT ALS SOLCHER GEFÜHRT UND NICHT AUFGELÖST IST:** Der Leitfaden verlangt mindestens ein Identitätsmerkmal, die Referenz sagt "alle Optional" und kennt zugleich `NO_IDENTIFIERS_PROVIDED`. **WER DIE TRENNUNG VERLANGT/EMPFOHLEN BRAUCHT, LIEST BEIDE SEITEN.** | Teile (w)/E1, (m)/E2, (m)/E3, (m)/E4, (l)/D5, (cc)(c); Widerspruch: (w)/E3 mit Zeiger auf (u) Frage 3 und (r) Widerspruch 1 |
+| F4 liest der Anbieter aus der Adresse selbst? | **DIE FRAGE STELLT SICH FÜR GOOGLE ANDERS — IM GELESENEN TRANSPORT GIBT ES KEIN FELD FÜR DIE SEITENADRESSE.** NICHT-TREFFER mit benannter Reichweite (Achse und Suchraum: VERMERK P11.7-3); in keiner der drei Feldlisten kommt ein URL-Feld vor. Die einzigen zwei Vorkommen von "landing page URL" sagen das Umgekehrte: **WIR** sollen auslesen. **DAS IST EINE AUSSAGE ÜBER DEN BESTAND, NICHT ÜBER DEN ANBIETER.** Dazu: der Adapter übergibt `eventSourceUrl` gar nicht an google (VERMERK P11.7-1 (d)). | Teile (l)/D2, (w)/E1, (cc)(c) |
+
+**EINE ANGABE, DIE ZU KEINER DER FRAGEN GEHÖRT UND HIER STEHT, DAMIT NIEMAND SIE VERMUTET:**
+Für die benutzte Schnittstelle ist **KEINE ABSCHALTREGEL DOKUMENTIERT** — der Bestand
+kennzeichnet das ausdrücklich als NICHT-TREFFER und **keine Zusage**, dass `v1` unbefristet
+trägt. **ES GIBT FÜR GOOGLE ALSO KEIN GEGENSTÜCK ZUR META-FRIST** im Abschnitt "Frist mit
+Termin". Zeiger: Teil (cm).
+
 ## Fragen an den Zuschnitt (nach dem Meta-Crawl)
 
 **FRAGEN UND GRENZEN, KEINE ENTSCHEIDUNGEN.** Kein Eintrag hier entscheidet etwas, und keiner
@@ -545,6 +611,45 @@ Aussage über die vier übrigen Ziele — für die ist F4 unverändert offen.
 `fbclid` in der Adresse und entfiele gleichzeitig ein `fbc`, wäre die Frage aus (q) — ob Meta
 dann doch verwertet — entscheidend; **sie ist offen.**
 
+**DIE DREI FOLGENDEN STAMMEN AUS DER GOOGLE-BESTANDSAUFNAHME (VERMERK P11.7-3) UND BRECHEN
+DESHALB DIE ABKÜRZUNG DIESES ABSCHNITTS:** Ein "Teil (x)" meint hier sonst ausnahmslos den
+**Meta**-Abschnitt — die drei unten nennen ihren Abschnitt **jedes Mal ausgeschrieben.**
+
+**ZUSCHNITT-FRAGE P11.7-6 — DER ADAPTER SENDET WEDER IP NOCH USER-AGENT, OBWOHL DER
+TRANSPORT ZWEI ORTE DAFÜR KENNT — UND WELCHER ZU UNSEREM ZEITPUNKT PASST, IST DIE FRAGE.**
+GEMESSEN (VERMERK P11.7-1 (d)): `forwardToGoogle` übergibt **NUR die Klick-Kennungen**;
+`GoogleEvent` trägt kein `eventDeviceInfo` und kein `landingPageDeviceInfo`.
+GELESEN (docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)", Teile
+(m)/E4 und (w)/E1): **ZWEI Feldpaare an zwei Orten mit verschiedener Bedeutung** —
+`eventDeviceInfo` für den EREIGNIS-Zeitpunkt, `adIdentifiers.landingPageDeviceInfo` für die
+LANDESEITE. Der Anbieter unterscheidet zwei Momente.
+**DIE FRAGE IST DAMIT NICHT "OB", SONDERN "WELCHES"**, und sie ist hier **nicht entschieden.**
+**DIE DATENKLASSEN-BERÜHRUNG WIRD BENANNT UND NICHT ENTSCHIEDEN:** Beide Felder tragen IP und
+User-Agent, und für die gilt P11.7-4. **KEINE EMPFEHLUNG.**
+
+**ZUSCHNITT-FRAGE P11.7-7 — DIE ZWEI DMA-EINWILLIGUNGSFELDER EXISTIEREN, BEIDE OPTIONAL, UND
+DER TRIGGER IHRES POSTENS ZEIGT AUF EINE ABGESCHLOSSENE PHASE.**
+GELESEN (docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)", Teile
+(w)/I2 und (l)/D1): `Consent` trägt **GENAU ZWEI** Felder, beide Optional — `adUserData` und
+`adPersonalization`; es ist ausweislich seiner Überschrift **ein DMA-Objekt, kein allgemeiner
+Einwilligungs-Träger.** **OB UND WIE SIE AUS DEM EINWILLIGUNGS-URTEIL GEFÜLLT WERDEN, IST
+OFFEN.**
+**EINE ZWEITE, DAVON GETRENNTE OFFENHEIT — NUR FESTGEHALTEN:** Der Posten "DREI FELDER DER
+NUTZLAST SIND FRAGEN DER TRANSPORT-SCHEIBE, NICHT DIESER" (docs/offene-punkte.md) nennt als
+Trigger für `consent` die **Phase 11.5**, und die ist abgeschlossen. **OB DER TRIGGER DAMIT
+EINGETRETEN IST, STEHT AN KEINER GELESENEN STELLE UND IST HIER NICHT ENTSCHIEDEN** — für den
+Entfall jenes Postens ohnehin unerheblich, er trägt drei Trigger. **KEINE EMPFEHLUNG.**
+
+**ZUSCHNITT-FRAGE P11.7-8 — OB EINE SITZUNG DIE VOLLADUNG VON docs/ziel-befunde.md FÜR EINEN
+ZUSCHNITT TRÄGT, IST UNGEMESSEN.**
+Der Pflicht-Stopp (CLAUDE.md, "## Anbieter-Befunde der Fan-Out-Ziele") lässt die gezielte
+Form für RECHERCHE zu, verlangt für **ZUSCHNITT UND ADAPTER** aber die **VOLLLADUNG**.
+GEMESSEN (CC, 2026-09-22): die Datei **8 817 Zeilen / 628 629 Bytes**, davon der
+Google-Abschnitt **5 712 / 405 265**.
+**DIE FRAGE IST NICHT, OB DIE PFLICHT GILT — SIE GILT**, sondern ob nach der Volladung noch
+genug freier Kontext für einen Zuschnitt bleibt. **SPÄTESTENS VOR DEM ERSTEN ZUSCHNITT DIESER
+PHASE ZU KLÄREN. KEINE EMPFEHLUNG**, und kein Vorschlag einer Lockerung.
+
 ## Nächster Schritt
 
 **DER ANBIETER-CRAWL, NACH DEM PFLICHT-STOPP.** CLAUDE.md, "## Anbieter-Befunde der
@@ -585,3 +690,11 @@ datiert auf den 2026-09-21. Die Datei ist seither gewachsen, auch durch diese Ru
 Zahl wird hier **NICHT nachgezogen** (docs/immer-beachten.md, "EINE DATEI, DIE IHRE EIGENE
 GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF AUS NACHZÜGEN"). Wer den heutigen Wert
 braucht, misst ihn.
+
+**ZWEITER NACHZUG AM 2026-09-22, NACH DER GOOGLE-BESTANDSAUFNAHME — ALLE ABSÄTZE DARÜBER
+BLEIBEN WÖRTLICH.** Überholt ist allein die AUFZÄHLUNG der Ziele, die noch ausstehen.
+**GOOGLE FÄLLT AUS DER LISTE — NICHT WEIL ES GECRAWLT WÄRE, SONDERN WEIL FÜR ES KEIN CRAWL
+LÄUFT** (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-22, Grund und Beleg: VERMERK P11.7-3; der Stand
+seiner Fragen: die google-Tabelle im Abschnitt "Offene Fragen an den Anbieter-Crawl").
+**ES BLEIBEN DREI: pinterest, tiktok, linkedin. "KEIN ZUSCHNITT VOR DEM CRAWL" GILT FÜR DIESE
+DREI UNVERÄNDERT**; was der Satz für google bedeutet, ist am Vermerk **NICHT entschieden.**

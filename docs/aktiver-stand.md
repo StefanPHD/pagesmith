@@ -27,11 +27,20 @@ DATEI MIT VERZEICHNIS NICHT").
 - Verzeichnis
 - Gegenstand der Phase
 - Was den Zuschnitt bindet
+- Frist mit Termin — sie wartet nicht auf das Phasenende
 - Vermerke
 - Entscheidungen, die über ihre Scheibe hinaus binden
 - Vorrat (gemeldet, nicht gebaut)
 - Offene Fragen an den Anbieter-Crawl
+- Fragen an den Zuschnitt (nach dem Meta-Crawl)
 - Nächster Schritt
+
+**ZWEI ABSCHNITTE SIND AM 2026-09-22 HINZUGEKOMMEN** — "Frist mit Termin" und "Fragen an den
+Zuschnitt". Sie sind EINGEFÜGT, nicht angehängt: der erste steht vor den Vermerken, weil er
+unabhängig vom Fortschritt der Phase gilt und hinten niemand nach ihm sucht; der zweite
+hinter den Fragen an den Crawl, weil er deren Ergebnis verarbeitet. **NICHTS IST UMSORTIERT
+ODER UMBENANNT WORDEN.** Die Regel "ein neuer Eintrag tritt hinten an" im Kopf dieser Datei
+gilt den NUMMERN (`P11.7-n`), nicht den Abschnitten — sie ist hier nicht gebrochen.
 
 ## Gegenstand der Phase
 
@@ -72,6 +81,61 @@ Google-Transport (docs/offene-punkte.md, Posten "DIE PRÄMISSE VON PUNKT (a) DES
 DATENKLASSEN-BLOCKS IST TOT", Satz vom 2026-09-22). Achse: ALLE `console`-Aufrufe im
 Produktivcode unter `src/`, binärsicher gelesen, plus die Schreibpfade, mit
 Positivkontrolle.
+
+## Frist mit Termin — sie wartet nicht auf das Phasenende
+
+**DIESER ABSCHNITT TRÄGT GENAU EINEN POSTEN, UND ER HAT EIN DATUM.** Er steht nicht im
+Vorrat, und das ist der ganze Zweck des eigenen Abschnitts: **der Vorrat wird am Phasenende
+gehoben, diese Frist kann das nicht abwarten.** Sie gilt unabhängig davon, ob die Phase 11.7
+zugeschnitten, gebaut oder verworfen wird.
+
+**DIE ANHEBUNG DER GRAPH-API-VERSION MUSS VOR DEM 2027-01-21 GEBAUT SEIN.**
+
+**DER ZUSTAND, GEMESSEN am Repo (CC, 2026-09-22, HEAD `354a6e5`):** Der Meta-Adapter sendet
+`v21.0`. `META_GRAPH_VERSION` (`src/lib/capi/config.ts`) trägt den Vorgabewert `"v21.0"` und
+ist über die Umgebungsvariable gleichen Namens übersteuerbar; verwendet wird er in
+`src/lib/capi/meta-forward.ts` als
+`https://graph.facebook.com/${META_GRAPH_VERSION}/${config.pixelId}/events`. **WAS IN DER
+PRODUKTIONSUMGEBUNG GESETZT IST, IST AM REPO NICHT FESTSTELLBAR und ausdrücklich nicht
+erhoben** — steht dort ein höherer Wert, verschiebt sich der Termin, und dieser Posten ist
+dann an der Umgebung neu zu prüfen, nicht am Code.
+
+**DER TERMIN, GELESEN 2026-09-22** (docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)",
+Teil (s)): Die Tabelle "Available Graph API Versions" führt `v21.0` mit "Available Until
+**January 21, 2027**". Die Tabelle "Available Marketing API Versions" derselben Seite
+**führt `v21.0` überhaupt nicht** — ihre älteste Zeile ist `v24.0`. Welche der beiden für
+`/{PIXEL_ID}/events` gilt, ist **UNGEMESSEN** und nur mit einem Aufruf gegen den Endpunkt zu
+entscheiden.
+
+**WARUM DIE FRIST TROTZ DIESER UNSICHERHEIT EIN HARTES DATUM HAT — und das ist der tragende
+Satz:** Von den zwei möglichen Schemata ist das GRAPH-Schema das MILDERE (zwei Jahre
+Garantie, Ablauf am 2027-01-21); das Marketing-Schema wäre das strengere (90 Tage, `v21.0`
+nicht geführt). **DER 2027-01-21 IST ALSO DIE SPÄTESTMÖGLICHE GRENZE, NICHT DIE
+WAHRSCHEINLICHSTE.** Wer auf die Messung wartet, kann die Frist nur verkürzen, nie
+verlängern.
+
+**WARUM DAS NICHT VON SELBST AUFFÄLLT — DER ABLAUF ERZEUGT KEINEN FEHLER** (ebenda, Teil
+(t)): Unter dem Graph-Schema wird ein Aufruf an eine abgelaufene Version "defaulted to the
+next oldest, usable version" — der Adapter bekommt **weiter eine Erfolgsantwort, von einer
+Version, die er nicht gewählt hat.** Unter dem Marketing-Schema kann dieselbe Anfrage statt
+dessen scheitern. **Nichts im eigenen Code wird davon rot, und keine Logzeile entsteht.**
+Dass Meta Validierungsregeln an Versionsnummern bindet, ist belegt (die "Baseline
+requirements for matching" ab `v13.0`, ebenda Teil (m)); **welche Regeln eine
+stillschweigend untergeschobene Version mitbringt, ist ungemessen.**
+
+**WAS ZU TUN IST, ohne es hier zu entscheiden:** Der Wert ist env-übersteuerbar, eine
+Anhebung ist also nicht zwingend eine Code-Änderung. **OB sie über die Umgebung oder über
+den Vorgabewert läuft, ist NICHT entschieden** — das ist eine eigene Frage, und sie hängt
+daran, ob der Sprung eine Änderung an der Nutzlast nach sich zieht. **KEINE EMPFEHLUNG.**
+
+**WO DIESER POSTEN AUF DAUER HINGEHÖRT, und er ist es heute nicht:** Ein Zustand, der später
+kippt, gehört nach CLAUDE.md (Weg 3 unter "## Aktive Dokumente") in docs/offene-punkte.md,
+mit Titel und Trigger als Stub-Zeile in CLAUDE.md. **BEIDE DATEIEN LAGEN AM 2026-09-22
+AUSSERHALB DES SCOPES DIESER RUNDE** und sind ausdrücklich UNBERÜHRT. **FOLGE, und sie ist
+selbst eine Aufgabe:** Die nächste Runde, die docs/offene-punkte.md ohnehin öffnet, trägt
+diese Frist dorthin — mit dem Termin im Trigger. Solange sie hier steht, stirbt sie mit dem
+Phasenende dieser Datei, und **die Archivierung der Standdatei ist keine Erledigung der
+Frist.**
 
 ## Vermerke
 
@@ -171,6 +235,78 @@ Entscheidungen desselben Tages erledigt:**
 **PROVENIENZ:** (a) bis (h) sind GEMESSEN am Repo (CC, 2026-09-22) bei HEAD `9abdd2a`, je
 mit der am Befund genannten Achse. Die Tabelle ist eine ABLEITUNG aus dem Vergleich der
 Aufklärung mit den Entscheidungen desselben Tages.
+
+### VERMERK P11.7-2 — Meta-Crawl vom 2026-09-22 (KEIN BAU)
+
+**KEIN BAU-COMMIT, UND DER GRUND IST EIN ANDERER ALS BEI P11.7-1:** Dort war nicht
+entscheidbar, WELCHES Feld zu bauen wäre. Hier ist es für meta entscheidbar geworden — und
+es ist trotzdem kein Code entstanden, weil **der Crawl EIN Ziel von fünf abgedeckt hat.**
+Ein Zuschnitt auf meta allein bräche die Auflage "KEIN ZUSCHNITT VOR DEM ANBIETER-CRAWL" für
+die vier übrigen, und die Regel "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
+CONSTRAINT-ERWEITERUNG MIT — UND EIN DRITTES ZIEL ERZWINGT EINE ENTSCHEIDUNG, KEINE KOPIE"
+(docs/immer-beachten.md) sagt, warum ein am ersten Ziel geschnittenes Feld beim zweiten nicht
+passt. Die einzigen Commits dieses Tages sind Doku-Commits.
+
+**HARTE ANGABEN:** Datum 2026-09-22 · HEAD bei Crawl und Ablage `354a6e5` ("docs(claude):
+Phase 11.7 beginnt — Standdatei, Klick-Kennungen, Datenklassen") · Arbeitsbaum sauber vor dem
+Crawl (`git status --short` leer) · **VIERZEHN Seiten** geöffnet und gelesen, durchgehend mit
+`textContent` und an der ENGLISCHEN Fassung · **KEIN Aufruf gegen die Schnittstelle**, keine
+Anmeldung, keine Eingabe, kein Download · `docs/ziel-befunde.md` **NICHT vollgeladen**,
+sondern per GEZIELTER SUCHE über den Abschnitt "Meta (Conversions API)" mit benannter Achse
+und Positivkontrolle geprüft (die Form, die CLAUDE.md, "## Anbieter-Befunde der
+Fan-Out-Ziele", seit dem 2026-09-22 dafür vorschreibt).
+
+**DER BESTAND TRUG ZU KEINER DER SECHS META-FRAGEN EINE ANTWORT** — GEMESSEN am Abschnitt
+"Meta (Conversions API)" (CC, 2026-09-22): `user_data` 0 · `event_source_url` 0 ·
+`Rate-Limit` 0 · Graph-Version 0 Treffer; `fbc` und `fbp` trafen **ausschliesslich die
+Ausschluss-Zeile** der Umfangs-Liste. **POSITIVKONTROLLE:** `Version` 27 Treffer — die Suche
+greift; alle 27 sind unecht (26-mal das Teilwort in "con**version**s-api", einmal
+`fbq.version`). Gegengeprüft wurde auch der Ort, auf den jener Abschnitt selbst verweist,
+`docs/claude-history/phase-6-capi.md`: dort stehen **unsere Bauentscheidungen**, keine
+Anbieter-Befunde, und `fbc` trifft 0-mal.
+
+**WOHIN DIE BEFUNDE GEGANGEN SIND — DER ZEIGER:** docs/ziel-befunde.md, Abschnitt "Meta
+(Conversions API)", Unterüberschrift "Abschnitts-Lesung 2026-09-22 … die Teile (h) bis (u)".
+**Sie stehen NICHT hier**, und das ist die Arbeitsteilung aus dem Kopf jener Datei: sie trägt
+die Anbieter-Befunde, diese Datei trägt den Stand der Phase. Der Kopf des Meta-Abschnitts und
+seine Umfangs-Liste vom 2026-09-08 sind **wörtlich stehengeblieben** und haben je einen
+datierten Zusatz bekommen; Teil (f) hat einen Vorbehalt auf (m). **NULL Löschzeilen in
+docs/ziel-befunde.md** (`git diff --numstat`).
+
+**WELCHE FRAGEN DAMIT AUF DOKU-EBENE BEANTWORTET SIND — und "Doku-Ebene" ist hier keine
+Abschwächung, sondern der Rang der Quelle:** F1, F2 und F3 vollständig (Name, Bildung,
+Format, Ort, und die Pflicht-Tabelle, die "verlangt" von "empfohlen" trennt) · F6 mit einer
+benannten Zweideutigkeit statt einer Antwort · F7 mit einer Aussage des Anbieters, die kein
+Limit nennt · **F4 GAR NICHT** — dazu schweigt die Doku, und das Schweigen ist mit benannter
+Reichweite über neun Seiten festgehalten.
+
+**VIER DINGE BLEIBEN OFFEN, WEIL NUR EIN AUFRUF GEGEN DEN ENDPUNKT SIE BEANTWORTET**, je mit
+Zeiger: die fachliche Annahme von `fbc`/`fbp` (Teile (h), (i)) · welches Versions-Schema
+`/{PIXEL_ID}/events` regiert (Teil (s)) · welches Limit tatsächlich greift (Teil (u)) · ob
+Meta aus `event_source_url` selbst ausliest (Teil (q)). **Sie sind in der Ablage ausdrücklich
+als NICHT BEANTWORTET geführt**, nicht als Nebenbemerkung.
+
+**DER BEFUND ÜBER DAS VERFAHREN, und er ist der teuerste dieser Runde:** **VIER der SIEBEN
+am 2026-09-08 unter "gesehen, nicht geöffnet" ausgeschlossenen Parameter-Seiten trugen die
+Antworten dieser Phase.** Der Ausschluss war für die Frage jenes Tages (Testmodus) sachlich
+richtig und für die Fragen dieser Phase falsch — **und er sah bei jeder Wiederholung genauso
+richtig aus.** Zwei Seiten sind am 2026-09-22 nachträglich geöffnet worden und trugen beide
+je einen Befund, der an keiner anderen gelesenen Seite steht. Die Fehlerklasse ist in
+docs/immer-beachten.md als "DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT, AN DEM SICH EIN
+BEFUND VERSTECKT" geführt; **der Befund ist am Ort seiner Wirkung abgelegt** — an jener
+Ausschluss-Liste selbst, nicht nur hier.
+
+**EIN NEBENBEFUND, DER EINE ANDERE PHASE BERÜHRT UND HIER NUR GEMELDET WIRD:** Die Seite
+`/parameters/external-id` sagt "external_ids are not available in the Test Events tool."
+Das ist eine Aussage über das Werkzeug der Teile (a) bis (f) — also über den Gegenstand der
+Phase 11.3 —, und sie stand dort nicht, weil die Lesung vom 2026-09-08 jene Seite
+ausgeschlossen hatte. **KEINE Folgerung, KEINE Empfehlung**; sie ist in Teil (o) abgelegt.
+
+**PROVENIENZ:** Alle Anbieter-Angaben sind GELESEN (Quelle, Seitenstand und Datum je Angabe
+am Teil in docs/ziel-befunde.md), **keine ist gemessen**. Die Zählungen über den eigenen
+Bestand und die Versionsangabe am Code sind GEMESSEN am Repo (CC, 2026-09-22). Der Grund für
+den fehlenden Bau-Commit ist eine ABLEITUNG aus der Reichweite des Crawls, keine
+Owner-Entscheidung.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -280,6 +416,135 @@ hereinkommt, dieses, was der ANBIETER von uns annimmt.
 verlangt — `evaluateSuccessBody` (src/lib/capi/pinterest-forward.ts) entscheidet auf
 dieser Grundlage über Erfolg oder Fehlschlag.
 
+**STAND NACH DEM META-CRAWL (2026-09-22) — KEINE FRAGE IST GESTRICHEN, UND KEINE IST FÜR EIN
+ANDERES ZIEL BERÜHRT.** Die Formulierungen oben bleiben wörtlich; nachgezogen ist allein der
+STAND, und zwar je Frage nur für **meta**. Für pinterest, tiktok, linkedin und google steht
+jede der Fragen F1 bis F4 **unverändert offen** — der Crawl hatte sie nicht zum Gegenstand.
+Zeiger gehen sämtlich nach docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)":
+
+| Frage | Stand für meta | Zeiger |
+|---|---|---|
+| F1 Klick-Kennung | **AUF DOKU-EBENE BEANTWORTET.** Name `fbc`; ZWEI Bildungswege (Cookie `_fbc` des Meta-Pixels · `fbclid` aus der Adresse); Format `fb.{subdomainIndex}.{creationTime}.{fbclid}`, Zeitanteil = Ablage bzw. erste Beobachtung in Millisekunden. **MESSUNG OFFEN:** ob der Endpunkt den Wert fachlich annimmt. | Teil (h) |
+| F2 Ort in der Nutzlast | **AUF DOKU-EBENE BEANTWORTET.** `fbc` und `fbp` INNERHALB `user_data`; `event_source_url` und `action_source` daneben auf Ereignis-Ebene. | Teile (h), (i), (l) |
+| F3 Match-Felder, verlangt/empfohlen | **AUF DOKU-EBENE BEANTWORTET, und die Trennung ist explizit.** VERLANGT für Website-Ereignisse: `action_source`, `event_source_url`, `client_user_agent` — **das ist die ganze Pflicht-Liste.** Alles Übrige EMPFOHLEN, mit der Folge am Event Match Quality. Dazu die vollständige Parameter-Liste mit Hash-Status und die vier UNGÜLTIGEN Kombinationen. | Teile (k), (l), (m), (n) |
+| F4 liest der Anbieter aus der Adresse selbst? | **NICHT BEANTWORTET — DIE DOKU SCHWEIGT.** Nicht-Treffer mit benannter Reichweite über neun Seiten; positiv steht dort nur, dass der Werbetreibende `fbclid` SELBST auslesen und formatieren soll. **MESSUNG OFFEN**, und sie entscheidet die Gestalt von P11.7-3. | Teil (q) |
+| F6 Versionsangabe | **AUF DOKU-EBENE NICHT ENTSCHIEDEN — ZWEI TABELLEN.** Graph-Tabelle: `v21.0` bis 2027-01-21. Marketing-Tabelle: `v21.0` nicht geführt. Welche für `/{PIXEL_ID}/events` gilt, sagt keine gelesene Seite. **MESSUNG OFFEN.** Die Frist daraus steht im Abschnitt "Frist mit Termin". | Teile (s), (t) |
+| F7 Rate-Limits (Meta-Anteil) | **AUF DOKU-EBENE BEANTWORTET, mit einer Aussage, die kein Limit nennt:** "There is no specific rate limit for the Conversions API", gezählt als Marketing-API-Aufruf, einzige genannte Grenze 1 000 Ereignisse je Anfrage; allgemein unter Business-Use-Case-Limits. **MESSUNG OFFEN:** welches Limit tatsächlich greift — das zeigen erst die Nutzungs-Kopfzeilen einer echten Antwort. Für tiktok und linkedin **unverändert offen.** | Teil (u) |
+
+**F5 (tiktok) UND F8 (pinterest) SIND VOM META-CRAWL NICHT BERÜHRT** und stehen unverändert.
+
+## Fragen an den Zuschnitt (nach dem Meta-Crawl)
+
+**FRAGEN UND GRENZEN, KEINE ENTSCHEIDUNGEN.** Kein Eintrag hier entscheidet etwas, und keiner
+ist ein Bau-Vorschlag. Sie stehen hier, weil der Crawl sie erzeugt hat und ein Zuschnitt sonst
+über sie hinweggeht, ohne sie zu bemerken. **KEINE EMPFEHLUNG an irgendeinem Punkt.**
+
+**ZUR NUMMERNFORM, weil hier eine Divergenz ENTSTEHT und nicht stillschweigend entstehen
+soll:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n` — mit Gattungsnamen, wie der Kopf
+dieser Datei es für alle Gattungen vorsieht ("laufen über alle Gattungen getrennt"). **DIE
+GATTUNG DARÜBER, "Offene Fragen an den Anbieter-Crawl", ZÄHLT DAGEGEN ALS F1 BIS F8** und
+weicht damit von derselben Regel ab; sie ist am 2026-09-22 so angelegt worden und wird hier
+**NICHT nachgezogen** — ein Nachzug machte jeden bestehenden Zeiger auf "F4" tot. **WER VON
+AUSSEN ZEIGT, NENNT DIE GATTUNG MIT:** "ZUSCHNITT-FRAGE P11.7-4" und "VERMERK P11.7-1" und
+"Vorrat P11.7-1" sind drei verschiedene Einträge, und die Nummer allein trennt sie nicht
+(docs/immer-beachten.md, Abschnitt der Phase 11.11 zur Gattung am Zeiger).
+
+**EIN VERWEIS DER FORM "Teil (x)" IN DIESEM ABSCHNITT MEINT AUSNAHMSLOS
+docs/ziel-befunde.md, ABSCHNITT "Meta (Conversions API)".** Der Satz steht hier einmal,
+damit er nicht an jedem einzelnen Zeiger wiederholt werden muss — und er steht überhaupt,
+weil jene Datei es verlangt: ihr Kopf schreibt unter "EIN VERWEIS VON AUSSEN NENNT ABSCHNITT
+UND BUCHSTABEN — NIE DEN BUCHSTABEN ALLEIN" vor, dass ein Buchstabe allein nicht genügt, da
+dieselben Buchstaben in mehreren Ziel-Abschnitten vergeben sind.
+
+**ZUSCHNITT-FRAGE P11.7-1 — `fbc` HAT ZWEI BILDUNGSWEGE, UND EINER FÄLLT GENAU DANN WEG,
+WENN ER GEBRAUCHT WIRD.**
+GELESEN (Teil (h)): Der Cookie-Weg setzt voraus, dass das Meta-Pixel auf der Seite läuft und
+`_fbc` gesetzt hat; der Adressweg liest `fbclid` aus der Seitenadresse. Der Anbieter sieht den
+Adressweg ausdrücklich für den Fall ohne Pixel vor.
+**DIE FOLGE IST EINE ABLEITUNG und keine Angabe des Anbieters:** Ist das Pixel BLOCKIERT, gibt
+es kein `_fbc` — der Adressweg ist dann der einzige. Der Anbieter spricht von "no Meta Pixel
+running on the website", nicht von einem blockierten; **dass ein blockiertes Pixel kein Cookie
+setzt, ist erschlossen und nicht gelesen.**
+**WARUM DAS FÜR DIESES PRODUKT MEHR ALS EIN RANDFALL IST:** Die Adblocker-Verlustrate ist ein
+gebautes Produktmerkmal — der Fall ohne wirksames Pixel ist hier der gemessene Normalfall und
+nicht die Ausnahme. **OFFEN und hier nicht entschieden:** ob der Zuschnitt beide Wege trägt,
+nur den Adressweg, oder einen Vorrang zwischen ihnen.
+
+**ZUSCHNITT-FRAGE P11.7-2 — METAS EIGENE EMPFEHLUNG ZUM `_fbc`-COOKIE KOLLIDIERT MIT DER
+GRENZE DER DRITTEN
+DATENKLASSE.** GELESEN (Teil (h)): Der Anbieter empfiehlt ausdrücklich, `_fbc` SELBST als
+HTTP-Cookie mit 90 Tagen Laufzeit zu setzen, oder den Wert im eigenen Backend zu halten.
+**DIE GRENZE, gegen die das läuft, ist die Entscheidung P11.7-2** (Zeiger oben unter
+"Entscheidungen": docs/offene-punkte.md, Eintrag "DATENKLASSEN-GRENZE VOR DER ERSTEN
+PII-SCHEIBE", BLOCK VOM 2026-09-22, Teil (E2)). Nach ihrer Fassung in dieser Datei fällt eine
+FREMDVERGEBENE Kennung unter TRANSIT-ONLY, **eine vom Produkt selbst gesetzte NIE.**
+**DER WORTLAUT VON (E2) IST IN DIESER RUNDE NICHT GELESEN WORDEN** — docs/offene-punkte.md lag
+ausserhalb des Scopes. Was hier steht, ist die Fassung des Zeigers P11.7-2 in dieser Datei;
+**wer die ZUSCHNITT-FRAGE P11.7-2 bearbeitet, liest zuerst (E2) im Wortlaut.**
+**OHNE EINE NEUE OWNER-ENTSCHEIDUNG IST DER COOKIE-WEG NICHT BAUBAR.** Das ist keine Wertung
+der Empfehlung des Anbieters, sondern die Feststellung, dass zwei geltende Sätze einander hier
+ausschliessen.
+**DIE FOLGE DES VERZICHTS, und sie gehört dazu, weil sie sonst als Kleinigkeit durchgeht:**
+Ohne eigene Ablage gibt es keinen Zeitpunkt der ersten Beobachtung, den wir kennen würden — der
+Zeitanteil von `fbc` wäre dann faktisch der EREIGNISZEITPUNKT statt der ersten Beobachtung.
+Der Anbieter verlangt in diesem Fall "the timestamp when you first observed or received this
+fbclid value" (Teil (h)); ein Ereigniszeitpunkt ist dem nahe, aber nicht dasselbe.
+**WELCHE WIRKUNG DIESE ABWEICHUNG AUF DEN ABGLEICH HAT, IST UNGEMESSEN** — die Doku sagt
+darüber nichts, und gemessen ist es nicht.
+
+**ZUSCHNITT-FRAGE P11.7-3 — OB DER ADAPTER `action_source` SENDET, IST IM VERMERK P11.7-1
+NICHT ERHOBEN.** Meta führt
+`action_source` als Pflicht für ALLE Ereignisse (Teil (l)), und die Aufklärung P11.7-1 hat die
+Match-Felder je Ziel vollständig aufgelistet, **`action_source` aber nicht erwähnt** — es ist
+kein `user_data`-Feld und fiel damit aus ihrer Achse.
+**EIN HINWEIS AUS DEM BESTAND, der die Frage nicht ersetzt:** docs/claude-history/phase-6-capi.md
+beschreibt die Nutzlast des Meta-Forwards mit `action_source="website"` (GELESEN, CC,
+2026-09-22). **Das ist ein Dokument über Code aus der Phase 6, keine Messung am heutigen
+Code** — und die Regel "EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD"
+(docs/immer-beachten.md) gilt dieser Art von Angabe genau.
+**ERSTE FRAGE AN DIE AUFKLÄRUNG VOR DEM ZUSCHNITT**, und sie ist billig: Sendet jeder der fünf
+Adapter die Pflichtfelder seines Anbieters — für meta `action_source`, `event_source_url`,
+`client_user_agent`? Bei `event_source_url` ist für linkedin in P11.7-1 (d) bereits GEMESSEN,
+dass es **nicht gelesen** wird; ob LinkedIn ein entsprechendes Pflichtfeld kennt, steht in
+seinem eigenen Abschnitt und ist hier nicht behauptet.
+
+**ZUSCHNITT-FRAGE P11.7-4 — `external_id` WIRD VON META ZUM MITSENDEN ANGEHALTEN, UND DER
+WERT WÄRE SELBST
+ERZEUGT.** GELESEN (Teile (l), (o)): "Also include the `external_id` and `event_id` event
+parameters for all events"; der Wert ist "a string that represents a user on an advertiser's
+system", Hashing empfohlen, mit einer Konsistenz-Auflage über alle Kanäle und einem Ablauf,
+den der Anbieter nicht beziffert.
+**ER IST DER EINZIGE PARAMETER DER LISTE, DESSEN WERT WIR SELBST VERGEBEN MÜSSTEN** — alle
+übrigen sind fremdvergeben, kommen aus der Anfrage oder aus einem Geschäftsvorgang (Teil (k)).
+**DAMIT FÄLLT ER NICHT UNTER DIE DRITTE DATENKLASSE:** P11.7-2 nimmt eine vom Produkt selbst
+gesetzte Kennung ausdrücklich aus.
+**WORUNTER ER STATT DESSEN FÄLLT, IST HIER NICHT ENTSCHIEDEN UND AUSDRÜCKLICH KEINE
+ZUORDNUNG.** Die offene Frage lautet, ob eine selbst vergebene, über Kanäle hinweg stabile
+Besucher-Kennung ein "fingerprint-artiges Merkmal" im Sinne des Triggers der
+DATENKLASSEN-GRENZE ist (CLAUDE.md, "## Offene Punkte", Eintrag "DATENKLASSEN-GRENZE VOR DER
+ERSTEN PII-SCHEIBE"). **DAS IST EINE OWNER-FRAGE, KEINE CC-EINORDNUNG**, und sie ist nicht
+Gegenstand dieser Phase ohne eine eigene Entscheidung.
+**WAS OHNE DIESE ENTSCHEIDUNG BLEIBT:** Meta nutzt `fbp` ersatzweise als `external_id`, wenn
+letzteres fehlt (Teil (j)) — **das ist eine Angabe des Anbieters über sein eigenes Verhalten
+und kein Ersatz für die Entscheidung.**
+
+**ZUSCHNITT-FRAGE P11.7-5 — E3 UND META: DAS ENTFERNEN FREMDER KLICK-KENNUNGEN AUS
+`event_source_url` IST NACH DEM GELESENEN VERTRÄGLICH.** Die Entscheidung P11.7-3 ("EINE KLICK-KENNUNG GEHT NUR AN IHREN
+URHEBER", Zeiger oben) verlangt eine Reparatur der unbenannten Durchleitung; ihre Gestalt hing
+daran, ob ein Anbieter Kennungen aus der Seitenadresse SELBST ausliest.
+**FÜR META IST DAS GELESENE ERGEBNIS ZWEITEILIG:** Keine der neun gelesenen Seiten sagt, dass
+Meta aus `event_source_url` ausliest (Teil (q)) — **und Metas eigene Bibliothek übergibt in
+ihrem Beispiel einen Query-String in genau diesem Feld** (Teil (r), zugleich der einzige
+solche Fall der ganzen Lesung; die Beispiele der Haupt-Doku zeigen Adressen ohne Query-String,
+Teil (p)).
+**DIE FOLGERUNG, ausdrücklich als solche:** Fremde Klick-Kennungen (etwa ein `gclid`) aus
+`event_source_url` zu entfernen, verträgt sich mit dem, was über Meta gelesen ist; `fbclid`
+geht an seinen Urheber. **DAS IST KEINE ENTSCHEIDUNG über die Gestalt**, und es ist keine
+Aussage über die vier übrigen Ziele — für die ist F4 unverändert offen.
+**DIE GRENZE, DIE MITMUSS:** "Verträglich nach dem Gelesenen" ist nicht "gemessen". Bliebe ein
+`fbclid` in der Adresse und entfiele gleichzeitig ein `fbc`, wäre die Frage aus (q) — ob Meta
+dann doch verwertet — entscheidend; **sie ist offen.**
+
 ## Nächster Schritt
 
 **DER ANBIETER-CRAWL, NACH DEM PFLICHT-STOPP.** CLAUDE.md, "## Anbieter-Befunde der
@@ -299,3 +564,24 @@ Ziel, dessen Antwort am naheliegendsten scheint.
 **WAS DER CRAWL NICHT ENTSCHEIDET:** die Datenklassen-Fragen. Sie sind am 2026-09-22
 entschieden (P11.7-2 bis P11.7-4) und werden von einem Anbieter-Befund nicht berührt — ein
 Anbieter sagt, was er annimmt, nicht, was wir ablegen dürfen.
+
+**NACHGEZOGEN AM 2026-09-22, NACH DEM CRAWL — DIE ABSÄTZE DARÜBER BLEIBEN WÖRTLICH.** Sie
+sind als Anweisung eingelöst und als Beschreibung des Verfahrens weiter richtig; überholt ist
+allein, welches Ziel noch aussteht.
+**EIN ZIEL VON FÜNF IST GECRAWLT: META** (VERMERK P11.7-2; die Befunde in
+docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)", Teile (h) bis (u)). **DER
+NÄCHSTE SCHRITT IST DERSELBE CRAWL FÜR DIE VIER ÜBRIGEN** — pinterest, tiktok, linkedin,
+google —, je Ziel eine eigene Runde. **KEIN ZUSCHNITT VOR DEM CRAWL GILT UNVERÄNDERT UND
+JETZT AUSDRÜCKLICH AUCH FÜR META:** dass für meta alles Gelesene vorliegt, ist kein Grund
+für eine Scheibe "nur mal meta" — der Satz oben nennt genau diesen Fall.
+**DIE GETEILTE FORM HAT SICH AN META NICHT ALS NÖTIG ERWIESEN, und das ist ein Messwert und
+keine Lockerung:** Die gezielte Suche über den Meta-Abschnitt ergab ein DÜNNES Ergebnis —
+fünf echte Treffer in zwei Zusammenhängen —, und deshalb passten Bestand-Prüfung und Crawl
+in EINE Sitzung. **BEI EINEM DICHTEN ABSCHNITT GILT DIE TEILUNG UNVERÄNDERT**; google und
+linkedin sind die mit Abstand grössten Abschnitte jener Datei, und für sie ist das dünne
+Ergebnis von meta kein Präzedenzfall.
+**EINE ANGABE DARÜBER IST ALT UND NICHT FALSCH:** "549 237 Bytes / 7 749 Zeilen" ist
+datiert auf den 2026-09-21. Die Datei ist seither gewachsen, auch durch diese Runde; die
+Zahl wird hier **NICHT nachgezogen** (docs/immer-beachten.md, "EINE DATEI, DIE IHRE EIGENE
+GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF AUS NACHZÜGEN"). Wer den heutigen Wert
+braucht, misst ihn.

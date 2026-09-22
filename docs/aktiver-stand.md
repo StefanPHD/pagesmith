@@ -354,6 +354,47 @@ der genannten Achse. Die Antworten auf F1 bis F4 sind **GELESEN** — Quelle, Se
 Datum stehen je am Teil in docs/ziel-befunde.md, **nicht hier**. Der Entfall des Crawls ist
 eine **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-22**.
 
+### VERMERK P11.7-4 — TikTok-Crawl vom 2026-09-22 (KEIN BAU)
+
+**HARTE ANGABEN:** Datum 2026-09-22 · HEAD bei Crawl und Ablage `ad0501e` ("docs(claude):
+11.7 — Google aus dem Bestand beantwortet, kein Crawl") · Arbeitsbaum vor dem Crawl sauber
+(`git status --short` leer) · **NEUN Seiten** geöffnet und gelesen, dazu eine zehnte für ein
+einzelnes Feld · durchgehend `textContent` über den Artikel-Rumpf und an der ENGLISCHEN
+Fassung · **KEIN Aufruf gegen die Schnittstelle**, keine Anmeldung, keine Eingabe, kein
+Download · Werkzeug-Ablage vor der ersten Navigation als ignoriert belegt
+(`git check-ignore -v .playwright-mcp` → `.gitignore:28`).
+
+**DIE FORM:** docs/ziel-befunde.md **NICHT vollgeladen**, sondern GEZIELTE SUCHE über den
+Abschnitt "TikTok (Events API 2.0)" mit benannter Achse und Positivkontrolle — und weil
+dieser Abschnitt mit **271 Zeilen / 18 603 Bytes** der kleinste der Datei ist, zusätzlich im
+**VOLLTEXT** gelesen. Das Ergebnis der Suche war DÜNN (zwei Zusammenhänge); die
+Stopp-Bedingung der geteilten Form ist nicht eingetreten, Bestand-Prüfung und Crawl passten
+in EINE Sitzung.
+
+**DER BESTAND TRUG ZU FÜNF DER SECHS TIKTOK-FRAGEN NICHTS** — `ttclid`, `_ttp`,
+`user_agent`, `page.url` und `event_id` je 0 Treffer; die Treffer auf `version`, `rate` und
+`limit` waren sämtlich unecht. **F5 stand als EIN Satz in Teil (d)**, ohne Schlüssel, ohne
+Fenster, ohne Feld.
+
+**WOHIN DIE BEFUNDE GEGANGEN SIND — DER ZEIGER:** docs/ziel-befunde.md, Abschnitt "TikTok
+(Events API 2.0)", Unterüberschrift "Abschnitts-Lesung 2026-09-22 … die Teile (j) bis (p)",
+dazu der datierte Umfangs-Zusatz darunter. **Sie stehen NICHT hier.** Der Bestand ist
+wörtlich stehengeblieben: **NULL Löschzeilen** (`git diff --numstat`: 310 / 0).
+
+**AUF DOKU-EBENE BEANTWORTET: F1, F2, F3, F4, F5 UND DER TIKTOK-ANTEIL VON F7** — die
+Tabelle im Abschnitt "Offene Fragen an den Anbieter-Crawl" trägt sie je Frage mit
+Teil-Zeiger. **SECHS Dinge bleiben offen, weil nur ein Aufruf sie zeigt;** sie stehen in der
+Ablage ausdrücklich als NICHT BEANTWORTET, nicht als Nebenbemerkung.
+
+**KEIN BAU-COMMIT, UND DER GRUND IST DERSELBE WIE BEI P11.7-2:** Der Crawl hat EIN Ziel von
+fünf abgedeckt; ein Zuschnitt auf tiktok allein bräche "KEIN ZUSCHNITT VOR DEM
+ANBIETER-CRAWL" für pinterest und linkedin.
+
+**PROVENIENZ:** Alle Anbieter-Angaben sind **GELESEN** (Quelle und Datum je Angabe am Teil in
+docs/ziel-befunde.md), **keine ist gemessen**. Die Zählungen über den eigenen Bestand, die
+Abwesenheit eines TikTok-Tags im ausgelieferten Text sowie Endpunkt und Version am Code sind
+GEMESSEN am Repo (CC, 2026-09-22).
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -498,6 +539,28 @@ Für die benutzte Schnittstelle ist **KEINE ABSCHALTREGEL DOKUMENTIERT** — der
 kennzeichnet das ausdrücklich als NICHT-TREFFER und **keine Zusage**, dass `v1` unbefristet
 trägt. **ES GIBT FÜR GOOGLE ALSO KEIN GEGENSTÜCK ZUR META-FRIST** im Abschnitt "Frist mit
 Termin". Zeiger: Teil (cm).
+
+**STAND FÜR TIKTOK NACH DEM CRAWL (2026-09-22, VERMERK P11.7-4) — KEINE FRAGE IST
+GESTRICHEN, UND KEINE IST FÜR EIN ANDERES ZIEL BERÜHRT.** Die Formulierungen von F1 bis F5
+und F7 bleiben wörtlich; nachgezogen ist allein der STAND, und zwar je Frage nur für
+**tiktok**. Für pinterest und linkedin steht jede unverändert offen. **ALLE ZEIGER GEHEN
+NACH docs/ziel-befunde.md, ABSCHNITT "TikTok (Events API 2.0)"** — die Buchstaben dieser
+Tabelle meinen weder den Meta- noch den Google-Abschnitt.
+
+| Frage | Stand für tiktok | Zeiger |
+|---|---|---|
+| F1 Klick-Kennung | **AUF DOKU-EBENE BEANTWORTET.** Name `ttclid`; DREI Herkunftswege (Parameter der Adresse · gleichnamiges First-Party-Cookie des TikTok-Pixels · selbst auslesen und ablegen, empfohlene Haltedauer 28 Tage); kein Format genannt, aber bis 1 000 Zeichen; EMPFOHLEN, nicht verlangt. **MESSUNG OFFEN:** ob der Endpunkt den Wert fachlich annimmt. | Teil (j) |
+| F2 Ort in der Nutzlast | **AUF DOKU-EBENE BEANTWORTET.** `user.ttclid` und `user.ttp` INNERHALB des `user`-Objekts; `page.url` daneben auf Ereignis-Ebene. | Teile (j), (k), (m) |
+| F3 Match-Felder, verlangt/empfohlen | **AUF DOKU-EBENE BEANTWORTET — MIT EINER DIVERGENZ, DIE BERICHTET UND NICHT AUFGELÖST IST:** Pflicht ist das `user`-OBJEKT, kein einzelnes Merkmal darin; die Web-Seite markiert `user` und `page` als Required, die Parameter-Seite tut es für `user` nicht. Dazu die vollständige Feldliste, zwei Symbol-Tabellen und `external_id` als einziger selbst erzeugter Wert. | Teil (l) |
+| F4 liest der Anbieter aus der Adresse selbst? | **JA, AUF DOKU-EBENE UND WÖRTLICH:** "The API backend will parse the Click ID if it detects the presence of a ttclid parameter in the page.url." Gilt für `ttclid`; über FREMDE Kennungen im Adressfeld schweigt die Doku (Nicht-Treffer mit benannter Reichweite). **MESSUNG OFFEN.** | Teil (m) |
+| F5 Deduplizierung | **AUF DOKU-EBENE BEANTWORTET.** Schlüssel `[event_source_id, event, event_id]`; Verwurf späterer Dubletten binnen **48 Stunden**, Verschmelzung binnen **5 Minuten**; gegen Browser-Pixel UND Events API. Ein ZWEITER Weg über `_ttp` greift nur OHNE `event_id` und verwirft nie ein Browser-Ereignis. **MESSUNG OFFEN.** | Teil (n) |
+| F7 Rate-Limits (TikTok-Anteil) | **AUF DOKU-EBENE BEANTWORTET UND BEZIFFERT:** `/event/track/` QPS 1 000 · QPM 600 000 · QPD 86 400 000, auf allen vier Stufen gleich, Bezug ist die Entwickler-Anwendung; Überschreitung → `40100` mit **HTTP 401**. Daneben: höchstens 1 000 Ereignisse je Anfrage. Für linkedin **unverändert offen.** | Teil (o) |
+
+**EINE ANGABE, DIE ZU KEINER DER FRAGEN GEHÖRT UND HIER STEHT, DAMIT NIEMAND SIE VERMUTET:**
+Der Adapter sendet `v1.3`, und das ist die AKTUELLE Fassung; die Tabelle des Anbieters führt
+sie mit "Available until: **TBD**". **EIN ABLAUF SCHLÜGE LAUT FEHL** — anders als bei meta,
+wo still auf die nächste brauchbare Version umgeleitet wird. **ES GIBT FÜR TIKTOK ALSO KEIN
+GEGENSTÜCK ZUR META-FRIST** im Abschnitt "Frist mit Termin". Zeiger: Teil (p).
 
 ## Fragen an den Zuschnitt (nach dem Meta-Crawl)
 
@@ -650,6 +713,68 @@ Google-Abschnitt **5 712 / 405 265**.
 genug freier Kontext für einen Zuschnitt bleibt. **SPÄTESTENS VOR DEM ERSTEN ZUSCHNITT DIESER
 PHASE ZU KLÄREN. KEINE EMPFEHLUNG**, und kein Vorschlag einer Lockerung.
 
+**DIE FÜNF FOLGENDEN STAMMEN AUS DEM TIKTOK-CRAWL (VERMERK P11.7-4) UND BRECHEN DESHALB DIE
+ABKÜRZUNG DIESES ABSCHNITTS** — ein "Teil (x)" meint hier sonst ausnahmslos den
+**Meta**-Abschnitt; die fünf unten nennen ihren Abschnitt **jedes Mal ausgeschrieben.**
+
+**ZUSCHNITT-FRAGE P11.7-9 — E3 UND TIKTOK: DER URHEBER LIEST SELBST AUS, UND DAMIT TEILT
+SICH DIE FRAGE.**
+GELESEN (docs/ziel-befunde.md, Abschnitt "TikTok (Events API 2.0)", Teil (m)): TikTok parst
+`ttclid` aus dem übergebenen `page.url`. **FOLGE FÜR DIE ENTSCHEIDUNG P11.7-3** ("EINE
+KLICK-KENNUNG GEHT NUR AN IHREN URHEBER", Zeiger oben unter "Entscheidungen"): Ein `ttclid`
+in der an TikTok übergebenen Adresse geht an SEINEN Urheber und ist damit verträglich; ein
+`gclid` oder `fbclid` in derselben Adresse verletzt sie **unverändert**.
+**OFFEN UND HIER NICHT ENTSCHIEDEN:** ob zusätzlich `user.ttclid` gesendet wird. Der
+Anbieter empfiehlt beides nebeneinander; **ob ein Weg den anderen ersetzt, sagt keine
+gelesene Seite.** KEINE EMPFEHLUNG.
+
+**ZUSCHNITT-FRAGE P11.7-10 — DOPPELZÄHLUNG: EINE ABLEITUNG, UNGEMESSEN, UND SIE BETRIFFT
+MEHR ALS EIN ZIEL.**
+GEMESSEN am Code (CC, 2026-09-22): Der Adapter setzt `event_id` IMMER. GELESEN (ebenda, Teil
+(n)): Der Cookie-Weg der Deduplizierung greift **nur ohne** `event_id`; wirksam ist bei uns
+also allein der Schlüssel `[event_source_id, event, event_id]`. **BEHÄLT EIN BETREIBER SEIN
+EIGENES TIKTOK-PIXEL, FEUERT DIESES MIT EINER ANDEREN KENNUNG** — ob daraus eine
+Doppelzählung folgt, ist eine **ABLEITUNG und ungemessen.**
+**VERWANDT ÜBER TIKTOK HINAUS:** der Restsatz aus der Phase 11.11 zu Meta ("ob Meta doppelt
+zählt, ist ungemessen"), docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.11
+gehoben (2026-09-22)". **Die Frage betrifft damit mehr als ein Ziel.** KEINE EMPFEHLUNG.
+
+**ZUSCHNITT-FRAGE P11.7-11 — DAS RATE-LIMIT ANTWORTET WIE EIN ZUGANGSFEHLER: EINE FRAGE AN
+DEN CODE, NICHT BEANTWORTET.**
+GELESEN (ebenda, Teil (o)): `40100` (Drosselung) kommt mit **HTTP 401**, ebenso `40104`
+(leeres Zugangsdatum). **OB DIE FEHLERDEUTUNG DES ADAPTERS DIE ZWEI FÄLLE FÜR DEN
+BETREIBER-SUPPORT UNTERSCHEIDBAR MACHT, IST IN DIESER RUNDE NICHT ERHOBEN.** Der
+Kopfkommentar von `src/lib/capi/tiktok-forward.ts` führt "zwei verschiedene Codes teilen
+sich HTTP 401" bereits als gemessenen Unterschied (2026-08-11); **ob die dort gemeinten zwei
+dieselben zwei sind, ist ungeprüft.** KEINE EMPFEHLUNG.
+
+**ZUSCHNITT-FRAGE P11.7-12 — `external_id` IST AUCH BEI TIKTOK DER EINZIGE SELBST ERZEUGTE
+WERT: ZEIGER STATT KOPIE.**
+GELESEN (ebenda, Teil (l)). **DIE LAGE IST DIESELBE WIE BEI META, UND DIE FRAGE IST DORT
+BEREITS GESTELLT:** ZUSCHNITT-FRAGE P11.7-4 dieser Datei. Sie wird hier **NICHT
+verdoppelt.** Was hinzukommt und dort nicht steht: TikTok verlangt SHA-256 auch für Web.
+**KEINE DATENKLASSEN-ZUORDNUNG**, keine Empfehlung.
+
+**ZUSCHNITT-FRAGE P11.7-13 — EIN VERSIONS-WÄCHTER ÜBER ALLE ZIELE (ARCHITEKTEN-VORSCHLAG
+2026-09-22, NICHT ENTSCHIEDEN).**
+**DIE GESTALT DES VORSCHLAGS:** ein Test über eine Tabelle "Ziel · gesendete Version ·
+Abschalttermin", der eine festgelegte Zeit vor jedem Termin rot wird.
+**DER GRUND:** Die Ziele verhalten sich beim Ablauf **verschieden**, und **heute wird davon
+nichts rot.** Der bekannte Stand, je mit Fundstelle:
+
+| Ziel | gesendete Version | Abschalttermin | bei Ablauf | Fundstelle |
+|---|---|---|---|---|
+| meta | `v21.0` | 2027-01-21 unter dem Graph-Schema; **welches Schema gilt, ist ungemessen** | **still umgeleitet** ("defaulted to the next oldest, usable version") | Abschnitt "Frist mit Termin" dieser Datei; docs/ziel-befunde.md, Meta, Teile (s), (t) |
+| tiktok | `v1.3` | **KEINER — "TBD"** | **laut fehl** ("any calls made to the deprecated API will fail") | docs/ziel-befunde.md, TikTok, Teil (p) |
+| linkedin | `202601` | **15.01.2027** | **still** ("dann scheitert der Forward still") | CLAUDE.md, "## Offene Punkte", Posten "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET …" |
+| google | `v1` — so der Bestand; **in dieser Runde NICHT am Code nachgesehen** | **KEINE dokumentierte Abschaltregel**, und das ist ausdrücklich keine Zusage auf Unbefristetheit | **ungelesen** | VERMERK P11.7-3 dieser Datei; docs/ziel-befunde.md, Google, Teil (cm) |
+| pinterest | **OFFEN** | **OFFEN** | **OFFEN** | in dieser Runde nicht erhoben — der Crawl steht aus |
+
+**NICHT ENTSCHIEDEN:** ob der Wächter gebaut wird · wo die Tabelle läge · welche Vorlaufzeit
+"eine festgelegte Zeit" wäre · was er täte, wo es keinen Termin gibt (tiktok, google) oder
+wo die Version gar nicht im Repo steht, sondern in der Umgebung (meta, s. "Frist mit
+Termin"). **KEINE EMPFEHLUNG.**
+
 ## Nächster Schritt
 
 **DER ANBIETER-CRAWL, NACH DEM PFLICHT-STOPP.** CLAUDE.md, "## Anbieter-Befunde der
@@ -698,3 +823,15 @@ LÄUFT** (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-22, Grund und Beleg: VERMERK P11.7-3;
 seiner Fragen: die google-Tabelle im Abschnitt "Offene Fragen an den Anbieter-Crawl").
 **ES BLEIBEN DREI: pinterest, tiktok, linkedin. "KEIN ZUSCHNITT VOR DEM CRAWL" GILT FÜR DIESE
 DREI UNVERÄNDERT**; was der Satz für google bedeutet, ist am Vermerk **NICHT entschieden.**
+
+**DRITTER NACHZUG AM 2026-09-22, NACH DEM TIKTOK-CRAWL — ALLE ABSÄTZE DARÜBER BLEIBEN
+WÖRTLICH.** Überholt ist allein die Aufzählung der Ziele, die noch ausstehen.
+**TIKTOK IST GECRAWLT** (VERMERK P11.7-4; die Befunde in docs/ziel-befunde.md, Abschnitt
+"TikTok (Events API 2.0)", Teile (j) bis (p)). **ES BLEIBEN ZWEI: pinterest und linkedin**,
+je eine eigene Runde. **"KEIN ZUSCHNITT VOR DEM CRAWL" GILT FÜR DIESE ZWEI UNVERÄNDERT UND
+JETZT AUSDRÜCKLICH AUCH FÜR TIKTOK** — dass für tiktok alles Gelesene vorliegt, ist kein
+Grund für eine Scheibe "nur mal tiktok".
+**DIE GETEILTE FORM WAR AUCH HIER NICHT NÖTIG, UND DAS IST WIEDER EIN MESSWERT UND KEINE
+LOCKERUNG:** Der TikTok-Abschnitt ist mit 271 Zeilen der KLEINSTE der Datei (GEMESSEN, CC,
+2026-09-22). **FÜR LINKEDIN IST DAS KEIN PRÄZEDENZFALL** — jener Abschnitt ist nach google
+der zweitgrösste.

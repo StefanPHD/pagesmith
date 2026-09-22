@@ -1395,6 +1395,48 @@ belegten Bestandteilen.
 Wegwerf-Probe (CC, 2026-09-21); die Bestandteile der Blöcke sind GELESEN an
 docs/ziel-befunde.md, Teile (g), (i), (ab) und (am), je Punkte (a) und (b).
 
+### ENTSCHEIDUNG P11.11-40 — DIE ZWEI KANDIDATEN GEHÖREN IN DIE SCHEIBE 11.11e: DER ORTSHINWEIS UND DIE ORDNUNG NACH ANBIETER
+
+**DIE ENTSCHEIDUNG (OWNER, 2026-09-21):** Die zwei Kandidaten, die am Eintrag 11.11e in
+Abschnitt 9 als **AUSDRÜCKLICH NICHT ENTSCHIEDEN** stehen, werden in die Scheibe 11.11e
+**AUFGENOMMEN**:
+- **DER ORTSHINWEIS AN AUFRUF- UND HANDLER-ZEILEN.**
+- **DIE ORDNUNG DER BEKANNTEN FUNDE NACH ANBIETER.**
+
+**DER UMFANG DER SCHEIBE 11.11e IST DAMIT DREITEILIG** — die Bündelung nach Host aus
+ENTSCHEIDUNG P11.11-37 plus diese zwei. **Jener Eintrag wird NICHT umgeschrieben**; an der
+Fundstelle der zwei Kandidaten steht ein Zeiger hierher, und ihr Fragetext bleibt, weil er
+den Gegenstand und seine Auflagen trägt.
+
+**WARUM SIE ZUSAMMEN IN EINE SCHEIBE GEHÖREN UND NICHT IN ZWEI:** Beide sortieren
+DIESELBE Liste. Der zweite Kandidat sagt das selbst ("sie berührt die Bündelung aus
+ENTSCHEIDUNG P11.11-37, weil beide dieselbe Liste sortieren"). Zwei Scheiben an einer
+Sortierung hätten zweimal denselben Bestandslauf angefasst und beim zweiten Mal gegen
+einen Zustand gebaut, den die erste erzeugt hat.
+
+**DIE TEXTE SIND NICHT TEIL DIESER ENTSCHEIDUNG.** Der Owner legt sie **nach dem Plan**
+fest — die Überschrift der eingeklappten Gruppe, die Gruppe ohne Host, die Inline-Gruppe,
+die Aufklapp-Bedienung und der Ortshinweis. **Der Plan schlägt sie vor und kennzeichnet
+jeden Vorschlag als solchen**; eine im Bau gewählte Formulierung wäre eine
+Owner-Freigabe, die niemand erteilt hat (dieselbe Bauform wie ENTSCHEIDUNG P11.11-36,
+Punkt (F3)).
+
+**EINE AUFLAGE REIST MIT DEM ORTSHINWEIS UND WIRD HIER NICHT ENTSCHIEDEN:** Ein Ausschnitt
+ist **Text des Betreibers** und kann jede der vier dokumentweiten Abwesenheits-Nadeln aus
+`src/components/CodeImporter.test.tsx` tragen (ENTSCHEIDUNG P11.11-32, Punkt (f)). Ob ein
+Ausschnitt an einem BEKANNTEN Fund dieselbe Auflage trägt wie am unbekannten, ist ein
+Gate des Plans und nicht dieser Entscheidung.
+
+**WAS SIE NICHT ÄNDERT:** die Reichweite der Scheibe. **11.11e ORDNET UND BÜNDELT, SIE
+ERKENNT NICHTS ANDERS** — die Erkennung bleibt im Verhalten unverändert, und nichts wird
+ausgeblendet (ENTSCHEIDUNG P11.11-37). Ein Ortshinweis ist eine ANZEIGE an einem Fund, den
+es schon gibt; eine Ordnung ist eine Reihenfolge derselben Funde.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-21, im Chat bestätigt, bevor der Bau-Prompt
+weitergereicht wurde. Die zwei Kandidaten und ihre Belege sind OWNER-ANGABEN aus dem
+Live-Test der Scheibe 11.11c (2026-09-21) und stehen unverändert an ihrer Fundstelle in
+Abschnitt 9; **von CC ist keiner von beiden gemessen.**
+
 ---
 
 ## Die offenen Designfragen
@@ -2958,6 +3000,11 @@ Angabe** — die Angabe steht in diesem Satz.
   dem Live-Test der Scheibe 11.11c (OWNER, 2026-09-21) und sind **KEINE Aufträge und KEINE
   Empfehlungen**; sie stehen hier, damit der Plan sie nicht unbemerkt mitentscheidet. **DIE
   TEXTE SIND OWNER-SACHE**, hier steht nur der Gegenstand.
+  **ENTSCHIEDEN AM 2026-09-21 → ENTSCHEIDUNG P11.11-40: BEIDE SIND IN DIE SCHEIBE
+  AUFGENOMMEN**, der Umfang von 11.11e ist damit dreiteilig. **Der Fragetext der zwei
+  Kandidaten bleibt stehen, weil er den Gegenstand und die Auflage am Ausschnitt trägt**;
+  ohne ihn läse sich die Aufnahme wie eine Selbstverständlichkeit. **Die TEXTE bleiben
+  Owner-Sache** und werden nach dem Plan festgelegt — daran ändert die Aufnahme nichts.
   · **EINE AUFRUF- UND EINE HANDLER-ZEILE TRAGEN KEINEN ORTSHINWEIS.** Auf der Testseite
     stehen ZWEI Zeilen "Meta · Fremdes Pixel · 1 Fundstelle" untereinander, und sie sehen
     **gleich aus** — die eine ist das Seiten-Script, die andere der `onclick`. Beide sagen

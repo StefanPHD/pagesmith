@@ -512,6 +512,26 @@ Anbieter recherchiert oder eine Live-Test-Anleitung dafür schreibt, LÄDT
 docs/ziel-befunde.md ZUERST — vor dem Plan, nicht während des Baus. Ohne sie plant man
 gegen eine überholte Fassung: die LinkedIn-Befunde standen bis zum 2026-08-15 als GELESEN
 in der Roadmap-Zeile 11.1, und die Messung dieses Tages hat eine ihrer Angaben widerlegt.
+NEU GEFASST AM 2026-09-22 (OWNER-ENTSCHEIDUNG NACH SICHT DES WORTLAUTS), DAMIT ER ERFÜLLBAR
+IST. DIE PFLICHT BLEIBT; IHRE FORM IST ZWEIGETEILT:
+· ZUSCHNITT, ADAPTER UND LIVE-TEST-ANLEITUNG — VOLLLADUNG, unverändert. Dort ist die Datei
+  dicht, und genau dafür ist sie geschrieben.
+· RECHERCHE, DEREN FREIER KONTEXT DIE VOLLLADUNG NICHT TRÄGT — es genügt eine GEZIELTE
+  SUCHE über die Abschnitte des betroffenen Ziels, mit BENANNTER ACHSE und
+  POSITIVKONTROLLE, jeder Treffer im Wortlaut gelesen. WER SO VERFÄHRT, WEIST ES IM ERSTEN
+  SATZ SEINES BERICHTS AUS. Ohne diese Ansage ist von aussen nicht zu unterscheiden, ob
+  voll geladen oder gesucht wurde — und ein "steht dort nicht" hätte keine Reichweite.
+DER GRUND IST EIN MESSWERT UND KEIN UNBEHAGEN: Die Datei ist 549 237 Bytes / 7 749 Zeilen
+(GEMESSEN, CC, 2026-09-21), der freie Kontext einer Sitzung lag zu Rundenbeginn bei 196k
+Token (ABGELESEN; die Umrechnung ist eine SCHÄTZUNG). EINE SITZUNG, DIE VOLL LÄDT UND
+DANACH CRAWLT, GIBT ES NICHT — in der Phase 11.11 zweimal aufgetreten.
+DIE GRENZE, OHNE DIE DAS EINE LOCKERUNG DURCH DIE HINTERTÜR WÄRE: Die gezielte Form trägt
+nur, WENN IHR ERGEBNIS DÜNN IST, und das ist ein ERGEBNIS und keine Voraussetzung — im
+Fall, der sie ausgelöst hat, ergab die Suche fünf Treffer in zwei Zusammenhängen.
+IST DAS ERGEBNIS DICHT, WIRD DIE ARBEIT GETEILT UND NICHT DOCH NOCH IN EINE SITZUNG
+GEZWUNGEN: Eine Sitzung lädt docs/ziel-befunde.md VOLLSTÄNDIG und hält fest, was die Datei
+über das Ziel trägt; der Crawl läuft in einer ZWEITEN. Der Satz "voll laden" allein wäre
+hier unerfüllbar — genau das sagt der Messwert darüber.
 UND AUCH DANN IST SIE KEINE QUELLE: Ein Dokument beschreibt ein fremdes System, es belegt
 es nicht. Was gilt, steht am ENDPUNKT DES ANBIETERS — gemessen wird mit einem Aufruf gegen
 die Schnittstelle, nicht abgelesen. Ein Anbieter kann sein Verhalten zudem ändern, ohne
@@ -1449,6 +1469,18 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   für ihren Ort: Das zweiteilige Kriterium verlangt Trigger UND "geht sonst still kaputt".
   Auch hier steht keine Stückzahl für die Datei, aus demselben Grund wie darüber; der Text
   ist VERDICHTET und nicht zeichengleich.
+  NACHGEZOGEN 2026-09-22 — DER ABSCHNITT DER PHASE 11.11: "Aus Phase 11.11 gehoben
+  (2026-09-22) — sieben Vorrats-Einträge und ein Restsatz". Er trägt die Vorrats-Einträge
+  P11.11-2, -3, -4, -6, -7, -8 und -9 unter ihren Ursprungs-Nummern, dahinter EINEN Eintrag
+  OHNE eigene Nummer: den Restsatz aus Vorrat P11.11-5 ("ob Meta doppelt zählt, ist
+  ungemessen"), dessen übriger Gegenstand mit der Scheibe 11.11d erledigt ist — wer nur den
+  offenen Vorrat sichtet, findet ihn nicht. KEIN EINZIGER VORRATS-EINTRAG JENER PHASE TRÄGT
+  EINEN TRIGGER; nach docs/offene-punkte.md ist von dort folglich NICHTS gegangen, und das
+  zweiteilige Kriterium hat hier gar nicht getrennt. JEDER ZEIGER IN JENEM ABSCHNITT NENNT
+  DIE GATTUNG MIT — in der Standdatei der Phase 11.11 zählen Vorrats-Einträge in einer
+  eigenen Reihe, "Vorrat P11.11-6" und "Entscheidung P11.11-6" sind zwei verschiedene
+  Einträge. Auch hier steht keine Stückzahl für die Datei, aus demselben Grund wie darüber;
+  der Text ist VERDICHTET und nicht zeichengleich.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

@@ -69,6 +69,35 @@ GELESEN, CC, 2026-09-21). Vermerke, Entscheidungen, Vorrats-Einträge und
 Hebungs-Kandidaten zählen unabhängig voneinander. **Die Designfragen zählen eigens mit
 `D<n>`** — sie sind keine Entscheidungen und dürfen mit keiner verwechselt werden.
 
+**PROTOKOLL DER HEBUNG (2026-09-22, SCHRITT 1 DES PHASENENDES).** Jeder Eintrag dieser Datei
+trägt seit heute sein ZIEL an seinem Abschnitt; die dreissig nicht gehobenen Entscheidungen
+tragen einen SAMMELVERMERK am Kopf ihres Abschnitts statt dreissig Einzelzeiger.
+**DIE BILANZ — 42 EINTRÄGE, am Bestand nachgezählt (CC, 2026-09-22):**
+· **2 → docs/immer-beachten.md** als datierte ERGÄNZUNGEN an bestehenden Regeln, KEINE neue
+  Regel: ENTSCHEIDUNG P11.11-9 (dritter Satz) und ENTSCHEIDUNG P11.11-24.
+· **7 → docs/claude-history/backlog-polish.md**, eigener datierter Abschnitt am Dateiende:
+  VORRAT P11.11-2, -3, -4, -6, -7, -8, -9. **Dazu EIN Eintrag ohne eigene Nummer** — der
+  Restsatz aus VORRAT P11.11-5.
+· **2 GESTRICHEN, Gegenstand erledigt, je mit Beleg am Eintrag:** VORRAT P11.11-1 (Scheibe
+  11.11a) und VORRAT P11.11-5 (Scheibe 11.11d).
+· **30 BLEIBEN IM ARCHIV** — die übrigen Entscheidungen, Sammelvermerk "NICHT GEHOBEN".
+· **1 GESTRICHEN, weil eingelöst:** HEBUNGS-KANDIDAT P11.11-1, mit der Neufassung des
+  Pflicht-Stopps in CLAUDE.md.
+**NACH docs/offene-punkte.md IST NICHTS GEGANGEN, UND DAS IST EIN BEFUND UND KEIN
+VERSÄUMNIS:** Das Kriterium ist zweiteilig — benennbarer Trigger UND "geht sonst still
+kaputt" —, und **KEIN EINZIGER VORRATS-EINTRAG DIESER PHASE TRÄGT EINEN TRIGGER**; jeder
+sagt das an seinem Abschnitt selbst. **ZWEI BESTEHENDE POSTEN JENER DATEI SIND TROTZDEM
+ANGEFASST**, aber als Zeiger bzw. Sachkorrektur und nicht als Neuaufnahme: "UNSER
+EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP ÜBERFAHREN" und "DER EINWILLIGUNGS-HOOK IST AN
+KEINER … STELLE BESCHRIEBEN". **Beide bleiben OFFEN.**
+**WAS SCHRITT 1 NICHT ERLEDIGT HAT, mit Umfang:** Der Posten "DIE PRÄMISSE VON PUNKT (a) DES
+DATENKLASSEN-BLOCKS IST TOT" (docs/offene-punkte.md) hat mit dieser Runde seinen Trigger
+feuern sehen. **ER IST NICHT ANGEFASST** — an ihm selbst ist nichts falsch (seine zwei
+Messungen gelten, am Repo nachgeprüft CC, 2026-09-22), und was er offenlässt, ist mehr als
+eine Sachkorrektur: das Nachziehen des Punktes (a) im Datenklassen-Block wäre eine VIERTE
+Stelle in jener Datei und führt der Posten ausdrücklich ohne Empfehlung; die zweite Hälfte
+ist eine MESSUNG am gebauten Google-Transport und keine Doku-Arbeit.
+
 ---
 
 ## Abschnitts-Verzeichnis
@@ -122,6 +151,22 @@ Entscheidungs-Zählung dieser Phase beginnt bei **2** — P11.11-1 ist beim Anle
 an den Vermerk gegangen. Sie wird ab hier **lückenlos fortgeführt** (P11.11-3 und folgende)
 statt auf 1 zurückgesetzt; eine Rücksetzung erzeugte zwei Einträge mit derselben Nummer,
 und ein Zeiger "Entscheidung P11.11-2" träfe dann zwei Stellen.
+
+**SAMMELVERMERK DER HEBUNG (2026-09-22) — NICHT GEHOBEN: DREISSIG VON ZWEIUNDDREISSIG
+ENTSCHEIDUNGEN BLEIBEN IM ARCHIV.** Sie tragen KEINEN Einzelzeiger; dieser Vermerk gilt
+ihnen allen. **DER GRUND:** Sie beschreiben, WIE DER CODE DIESER PHASE GEBAUT IST — die
+Klassen der Erkennung, die Parkformen, die Reihenfolge eigen-vor-fremd, die Bauform des
+Entfernens, die Freigaben je Plan, die Bündelung nach Host. Projektweit ist davon nichts.
+**GESTRICHEN SIND SIE DAMIT NICHT, UND DER SATZ GEHÖRT HIERHER** (docs/arbeitsweise.md,
+Phasenende, Schritt 1): **sie gelten, solange der Code steht.** Wer an der Erkennung, am
+Entfernen oder an der Fundliste arbeitet, liest sie hier — nicht in
+docs/immer-beachten.md, wo sie nie standen.
+**ZWEI SIND GEHOBEN und tragen je einen eigenen Zeiger an ihrem Abschnitt: P11.11-9** (der
+Sandbox-Wächter je Rahmen) **und P11.11-24** (eine Meldung über einen Text wird aus dem
+aktuellen Text abgeleitet). **BEIDE SIND ERGÄNZUNGEN AN EINER BESTEHENDEN DAUERREGEL UND
+KEINE NEUE REGEL** — die Datei steht über ihrer Warnschwelle (docs/offene-punkte.md,
+CLAUDE.md NÄHERT SICH DEM LADELIMIT), und eine Ergänzung an der Regel, die den Gegenstand
+schon trägt, ist dort die billigere und die auffindbarere Form.
 
 ### ENTSCHEIDUNG P11.11-2 — DIE ZUORDNUNG DES BACKLOG-EINTRAGS: DIE ERKENNUNG GEHÖRT ZU 11.11, DIE SICHERHEITS-ACHSE BLEIBT IM BACKLOG
 
@@ -314,6 +359,17 @@ in welcher Form eine Signatur geschrieben wird. Das entscheidet der Zuschnitt de
 Roadmap-Zeile 11.11, (e) (CC, 2026-09-21).
 
 ### ENTSCHEIDUNG P11.11-9 — DIE SANDBOX-WERTELISTE IST JE RAHMEN ABSCHLIESSEND, UND JEDER NEUE RAHMEN BEKOMMT DENSELBEN WÄCHTER
+
+**→ GEHOBEN 2026-09-22 — ihr DRITTER Satz ("JEDER NEUE RAHMEN, DER IMPORTIERTEN ODER
+ERZEUGTEN KUNDENCODE RENDERT, BEKOMMT DENSELBEN WÄCHTER") steht seither als datierte
+ERGÄNZUNG an der Dauerregel "Importierter User-Code läuft NUR im sandboxed iframe …"
+(docs/immer-beachten.md), mit der Bedingung ihres Entfallens und einem Zeiger auf das Archiv
+dieser Phase. KEINE NEUE REGEL — eine Ergänzung an der Regel, aus der die zwei
+Sicherheits-Werte ohnehin stammen.
+DER REST DIESER ENTSCHEIDUNG BLEIBT HIER und ist NICHT gehoben: die zwei konkreten
+Wertelisten je Rahmen, die Herkunft jedes Werts und der Befund, dass die zwei Popup-Werte
+EINGEFRORENER BESTAND mit ungemessener Notwendigkeit sind. Das ist Bestand dieses Codes und
+keine projektweite Regel.**
 
 **HERKUNFT:** Sie stand als E1 im Zuschnitt der Scheibe 11.11a und ist beim
 Abschluss-Vermerk aus ihm HERAUSGELÖST worden, weil sie über ihre Scheibe hinaus bindet
@@ -806,6 +862,16 @@ Sollwerts**; ein nachgezogener Sollwert wäre genau der Spiegel, den P11.11-18 v
 Sonde (CC, 2026-09-21).
 
 ### ENTSCHEIDUNG P11.11-24 — EINE MELDUNG ÜBER EINEN TEXT WIRD AUS DEM AKTUELLEN TEXT ABGELEITET; EIN GESPEICHERTER ZUSTAND SAGT HÖCHSTENS "ES GAB EINEN VERSUCH"
+
+**→ GEHOBEN 2026-09-22 — ihre drei Sätze stehen seither als datierte ERGÄNZUNG an der
+Dauerregel "ABLEITEN STATT LÖSCHEN (projekt-spezifischer View-State)"
+(docs/immer-beachten.md), mit der Bedingung ihres Entfallens und einem Zeiger auf das Archiv
+dieser Phase. KEINE NEUE REGEL, und der Grund steht in dieser Entscheidung selbst: Sie IST
+die Anwendung jener Dauerregel — neu ist allein ihr dritter Satz, der Fall der Meldung über
+einen VERGANGENEN Versuch. Eine eigene Regel daneben hätte die Achse ein zweites Mal
+geführt.
+DER BEFUND UND SEINE MESSUNG BLEIBEN HIER** (U9/U10 vor der Korrektur rot, M7a/M7b machen je
+einen wieder rot) **— die Ergänzung trägt ihn verdichtet.**
 
 **HERKUNFT:** Sie stand nicht im Zuschnitt der Scheibe 11.11d, sondern ist im Review jener
 Scheibe als Korrektur K2 entstanden. Sie bindet über die Scheibe hinaus und steht deshalb
@@ -2948,6 +3014,10 @@ mit.**
 
 ### VORRAT P11.11-1 — DIE SANDBOX-ATTRIBUTE BEIDER VORSCHAU-RAHMEN SICHERT KEIN TEST
 
+**→ ZIEL DER HEBUNG (2026-09-22): GESTRICHEN, GEGENSTAND ERLEDIGT.** Er geht NICHT ins
+Backlog und nicht nach docs/offene-punkte.md; der Beleg der Erledigung steht hier am Eintrag,
+Titel und Beleg bleiben als Spur.
+
 **ERLEDIGT AM 2026-09-21 MIT DER SCHEIBE 11.11a** — Bau-Commit `4efa94b`, Nachweis in
 VERMERK P11.11-8, die bindende Folge in ENTSCHEIDUNG P11.11-9. Seither sichern acht Läufe
 in `src/components/CodeImporter.test.tsx` beide Rahmen; der Schutz ruht nicht mehr allein
@@ -2956,6 +3026,10 @@ die ihn trug (Achse `sandbox` über die Testdatei, NULL Treffer), ist im Vermerk
 
 ### VORRAT P11.11-2 — DIE DREI EINGANGSWEGE SIND UNGETESTET
 
+**→ GEHOBEN 2026-09-22 nach docs/claude-history/backlog-polish.md**, Abschnitt "Aus Phase
+11.11 gehoben (2026-09-22)", unter der Ursprungs-Nummer. **ZIEL "SONST": KEIN TRIGGER** —
+das zweiteilige Kriterium verlangt Trigger UND "geht sonst still kaputt".
+
 Dass Paste, Datei-Upload und Drag-Drop ALLE in `setCode` münden, ist am Code sichtbar und
 von KEINEM Test zugesichert (GEMESSEN, CC, 2026-09-21: kein Test in
 `src/components/CodeImporter.test.tsx` fährt einen der drei Wege). Gedeckt ist allein die
@@ -2963,6 +3037,9 @@ Validierung davor — `src/lib/upload.test.ts` für `validateUploadFile`, sechs 
 **KEIN TRIGGER benannt.**
 
 ### VORRAT P11.11-3 — DAS VERHALTEN DES ROUND-TRIPS GEGENÜBER FREMDEN `<script>`-ELEMENTEN IST UNGETESTET, IN BEIDE RICHTUNGEN
+
+**→ GEHOBEN 2026-09-22 nach docs/claude-history/backlog-polish.md**, Abschnitt "Aus Phase
+11.11 gehoben (2026-09-22)", unter der Ursprungs-Nummer. **ZIEL "SONST": KEIN TRIGGER.**
 
 **GEMESSEN (CC, 2026-09-21):** Die Achse `fremd|foreign|<script` über `src/lib/detect.test.ts`
 trifft EINE Zeile, und die prüft die EIGENE Listener-Injektion. **Kein Test sichert zu, dass
@@ -2976,6 +3053,9 @@ baut, liest jene Regel zuerst.
 
 ### VORRAT P11.11-4 — DASS `saveProject` DEN HTML-INHALT UNVERÄNDERT SCHREIBT, SICHERT KEIN TEST
 
+**→ GEHOBEN 2026-09-22 nach docs/claude-history/backlog-polish.md**, Abschnitt "Aus Phase
+11.11 gehoben (2026-09-22)", unter der Ursprungs-Nummer. **ZIEL "SONST": KEIN TRIGGER.**
+
 Gedeckt sind am Speicherweg die Eigentums-Achse (die IDOR-Fälle in
 `src/app/projects/actions.test.ts`) und das Varianten-Ziel (die zwei Riegel-Tests in
 `src/components/CodeImporter.test.tsx`, "Speichern bei aktiver Variante B ruft
@@ -2983,6 +3063,16 @@ saveVariantB" und seine Gegenprobe). **NICHT gedeckt ist der INHALT:** dass der 
 HTML-String unverändert in die Spalte geht. GEMESSEN (CC, 2026-09-21).
 
 ### VORRAT P11.11-5 — EIN WIEDER IMPORTIERTER EXPORT TRÜGE DIE EIGENEN BLÖCKE DOPPELT, UND DAS BRICHT EINE TRAGENDE ENTSCHEIDUNG
+
+**→ ZIEL DER HEBUNG (2026-09-22): GESTRICHEN, GEGENSTAND ERLEDIGT — MIT ZWEI AUSNAHMEN AUS
+SEINEM RUMPF, UND SIE SIND DER GRUND, WARUM DIESER EINTRAG NICHT EINFACH ABGEHAKT WIRD:**
+· Der Satz **"OB META DOPPELT ZÄHLT, BLEIBT UNGEMESSEN"** ist **nach
+docs/claude-history/backlog-polish.md GEHOBEN**, Abschnitt "Aus Phase 11.11 gehoben
+(2026-09-22)", als Eintrag OHNE eigene Vorrats-Nummer. **Wer nur den offenen Vorrat sichtet,
+findet ihn nicht.**
+· Der **Änderungsantrag an docs/arbeitsweise.md, Abschnitt 4b, IST VOLLZOGEN** — jener Text
+sagt seither, die Idempotenz ruhe auf dem Riegel aus 11.11d statt auf der Annahme allein
+(GELESEN, CC, 2026-09-22). **ERLEDIGT, kein Ziel mehr nötig.**
 
 **ERLEDIGT AM 2026-09-21 MIT DER SCHEIBE 11.11d** — Bau-Commit `0b9bd7f`, Nachweis in
 VERMERK P11.11-23, die bindenden Folgen in den ENTSCHEIDUNGEN P11.11-18, P11.11-19,
@@ -3009,6 +3099,14 @@ belegt, dass er byte-gleich blieb).
 
 ### VORRAT P11.11-6 — DIE MODUL-GRENZE, DIE `own-blocks-strip.ts` VOM SERVER FERNHÄLT, IST NICHT ABGESICHERT
 
+**→ GEHOBEN 2026-09-22 nach docs/claude-history/backlog-polish.md**, Abschnitt "Aus Phase
+11.11 gehoben (2026-09-22)", unter der Ursprungs-Nummer. **ZIEL "SONST": KEIN TRIGGER** —
+der Eintrag sagt selbst, warum keiner benennbar ist. **AM EINTRAG DORT STEHT ZUSÄTZLICH EIN
+LÖSUNGSWEG, DEN ES HIER NOCH NICHT GAB** (ARCHITEKT-VORSCHLAG 2026-09-22, UNGEPRÜFT, KEINE
+EMPFEHLUNG): `import "client-only"` an `own-blocks-strip.ts`, spiegelbildlich zu
+`server-only`, damit ein Server-Import beim BUILD laut wird statt still. Ob das in diesem
+Setup trägt, ist offen; Kandidat für eine kleine eigene Scheibe.
+
 **DER ZUSTAND HEUTE IST IN ORDNUNG, und das ist GEMESSEN (CC, 2026-09-21):** Zur Laufzeit
 erreichen `detect.ts` nur `src/lib/mappings.ts` (Wert: `MAX_LABEL`) und
 `src/components/CodeImporter.tsx`; `mappings.ts` wiederum erreichen zur Laufzeit nur
@@ -3034,6 +3132,12 @@ tragen").
 sondern mit einer Zeile, die jemand schreibt, ohne sie als Grenzübertritt zu erkennen.
 
 ### VORRAT P11.11-7 — DIE KOLLISIONSANZEIGE LIEST NUR DIE AKTIVE VARIANTE
+
+**→ GEHOBEN 2026-09-22 nach docs/claude-history/backlog-polish.md**, Abschnitt "Aus Phase
+11.11 gehoben (2026-09-22)", unter der Ursprungs-Nummer. **ZIEL "SONST": KEIN TRIGGER.**
+**SEIN GEGENSTAND STEHT SEIT DEM 2026-09-22 AUSSERDEM ALS GRENZE AM OFFENEN PUNKT** "UNSER
+EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP ÜBERFAHREN" (docs/offene-punkte.md) — dort als
+Grenze der neuen Anzeige, hier als der Befund selbst.
 
 **DER BEFUND (GEMESSEN am gebauten Stand, CC, 2026-09-21):** `foreignCmp` wird in
 `CodeImporter.tsx` aus `foreignScan` abgeleitet, und jener Scan läuft über
@@ -3062,6 +3166,9 @@ vorkommt, ist nicht erhoben.
 
 ### VORRAT P11.11-8 — DIE SIGNATURLISTE HAT LÜCKEN, UND EINE ECHTE SEITE HAT FÜNF DAVON AUF EINMAL GEZEIGT
 
+**→ GEHOBEN 2026-09-22 nach docs/claude-history/backlog-polish.md**, Abschnitt "Aus Phase
+11.11 gehoben (2026-09-22)", unter der Ursprungs-Nummer. **ZIEL "SONST": KEIN TRIGGER.**
+
 **DER BEFUND (OWNER-ANGABE aus der angezeigten Fundliste, 2026-09-21; NICHT von CC
 gemessen und an keiner Anbieter-Doku belegt):** Auf derselben echten WordPress-Seite, die
 ENTSCHEIDUNG P11.11-37 ausgelöst hat, liefen **Universal Analytics**
@@ -3086,6 +3193,13 @@ ein Pixel**, an dem ein Entfernen hängt.
 Crawl. **KEIN TRIGGER BENANNT.**
 
 ### VORRAT P11.11-9 — DIE VORSCHAU FLACKERT BEI JEDER CODE-ÄNDERUNG
+
+**→ GEHOBEN 2026-09-22 nach docs/claude-history/backlog-polish.md**, Abschnitt "Aus Phase
+11.11 gehoben (2026-09-22)", unter der Ursprungs-Nummer — **so, wie dieser Eintrag es selbst
+vorsieht** ("BEIM PHASENENDE GEHT DER EINTRAG IN DEN BACKLOG"). **DIE AUFLAGE AUS
+ENTSCHEIDUNG P11.11-9 IST AM BACKLOG-EINTRAG MITGEREIST** und steht seit demselben Tag
+zusätzlich als Ergänzung an der Dauerregel "Importierter User-Code läuft NUR im sandboxed
+iframe …" (docs/immer-beachten.md) — sie hängt damit nicht mehr allein an diesem Eintrag.
 
 **DER BEFUND (OWNER-BEOBACHTUNG, 2026-09-22):** Die Vorschau flackert bei jeder
 Code-Änderung. **AUFGEFALLEN IST ES BEIM ENTFERNEN** — dort ändert EIN Klick den Text auf
@@ -3139,6 +3253,22 @@ hervorgegangen, das eine Dauerregel oder eine Änderung an docs/arbeitsweise.md 
 hätte. Der Crawl desselben Tages hat einen ergeben.
 
 ### HEBUNGS-KANDIDAT P11.11-1 — DER PFLICHT-STOPP FÜR docs/ziel-befunde.md IST IN EINER CC-SITZUNG MIT CRAWL NICHT VOLLSTÄNDIG ERFÜLLBAR
+
+**→ ZIEL DER HEBUNG (2026-09-22): ERLEDIGT UND GESTRICHEN — DER PFLICHT-STOPP IST NEU
+GEFASST.** OWNER-ENTSCHEIDUNG nach Sicht des Wortlauts: Der Pflicht-Stopp in CLAUDE.md,
+Abschnitt "Anbieter-Befunde der Fan-Out-Ziele", ist so gefasst, dass er ERFÜLLBAR ist —
+**Vollladung bleibt für Zuschnitt, Adapter und Live-Test-Anleitung**, und **für Recherche,
+deren freier Kontext sie nicht trägt, genügt eine GEZIELTE SUCHE über die Abschnitte des
+Ziels mit benannter Achse und Positivkontrolle, im ersten Satz des Berichts ausgewiesen.**
+**DAMIT IST DIE SPANNUNG, DIE DIESER KANDIDAT FESTSTELLT, AUFGELÖST** — und zwar auf der
+Achse, die er selbst als offen benannt hat ("ob der Pflicht-Stopp in CLAUDE.md eine Form für
+'gezielt statt voll' bekommt"). **Die zwei anderen Wege, die er offenliess, sind damit NICHT
+entschieden:** weder wird daraus eine Dauerregel in docs/immer-beachten.md, noch wird
+docs/ziel-befunde.md geteilt. **KEINE EMPFEHLUNG dazu.**
+**WAS DER KANDIDAT WARNEND SAGT, IST IN DIE NEUE FASSUNG MITGENOMMEN:** Der Pflicht-Stopp
+ist nicht Ballast, und die gezielte Form trägt nur, WENN IHR ERGEBNIS DÜNN IST — das steht
+dort als Grenze, damit die Lockerung keine durch die Hintertür wird.
+**BELEG: dieser Commit.**
 
 **DIE AUSSAGE:** Eine Sitzung, die `docs/ziel-befunde.md` vollständig lädt UND anschliessend
 crawlt, gibt es nicht — die Datei allein füllt den freien Kontext weitgehend aus. **Der

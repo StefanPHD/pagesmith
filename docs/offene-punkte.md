@@ -4089,6 +4089,12 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     damit die Prämisse des Punktes (a) entfallen ist, ist eine **ABLEITUNG** aus diesen zwei
     Messungen. Dass die Einhaltung ungemessen ist, ist ein **NICHT-TREFFER mit benannter
     Achse** — Punkt (c) jenes Blocks trägt das Datum 2026-08-28 und keine spätere Wiederholung.
+    **2026-09-22 — DER ERSTE TRIGGER HAT MIT DEM PHASENENDE 11.11 GEFEUERT, UND DER POSTEN IST
+    BEWUSST NICHT ABGEARBEITET:** Was er verlangt, ist eine MESSUNG am gebauten
+    Google-Transport auf Ablage und Logausgabe — kein Doku-Vorgang, und eine Hebungs-Runde
+    ist nicht der Ort dafür. Seine zwei Angaben sind an diesem Tag am Repo nachgeprüft und
+    gelten unverändert (CC, 2026-09-22). **DER POSTEN BLEIBT OFFEN; DER ZWEITE TRIGGER GILT
+    WEITER.**
 
 <!-- Die Reste der Phase 11.2, gehoben 2026-09-08 -->
 
@@ -4511,6 +4517,25 @@ Nummer in der Standdatei.
   sagt, welcher der beiden Fälle vorliegt.
   **KEINE EMPFEHLUNG**, weder zu einer Erkennung noch zu einer Verzögerung noch dazu, ob das
   überhaupt zu lösen ist.
+  **ZEIGER 2026-09-22 (Phase 11.11, Scheibe 11.11b) — DER BETREIBER SIEHT DIE KOLLISION
+  JETZT, UND DER POSTEN IST DAVON NICHT GESCHLOSSEN.** Seit dem Bau-Commit `6d6ab42` steht
+  am Einwilligungs-Schalter im Bereich VERÖFFENTLICHEN ein Hinweis, sobald im Code des
+  Projekts ein fremdes Einwilligungs-Werkzeug erkannt ist UND unsere Leiste oder unser
+  Fenster eingeschaltet ist (`FOREIGN_CMP_COLLISION`, `src/lib/foreign-scan.ts`, gerendert
+  in `src/components/PublishView.tsx`; GEMESSEN am Code, CC, 2026-09-22).
+  **ES IST EIN SIGNAL UND KEINE LÖSUNG** — so ausdrücklich die Entscheidung, unter der es
+  gebaut ist. **DIE ZWEI WEGE OBEN SIND VON EINER ANZEIGE IM EDITOR UNBERÜHRT:** der
+  asynchron gesetzte Fremd-Hook wird von der Prüfung weiterhin nicht erfasst, und `write()`
+  weicht einem gesetzten Fremd-Hook weiterhin nicht aus. **BEIDE TRIGGER GELTEN
+  UNVERÄNDERT.** Wer die Anzeige für die Behebung hält, streicht einen Posten, der weiter
+  besteht.
+  **EINE GRENZE DER ANZEIGE GEHÖRT DAZU: SIE LIEST NUR DIE AKTIVE VARIANTE.** Steht das
+  fremde Werkzeug allein in Variante B, erscheint der Hinweis nicht — auch bei
+  eingeschaltetem Dialog (GEMESSEN am gebauten Stand, CC, 2026-09-21; geführt als Vorrat
+  P11.11-7 der Phase 11.11, seit dem 2026-09-22 in
+  docs/claude-history/backlog-polish.md). **Der Schalter selbst gilt BEIDEN Varianten** —
+  der Betreiber entscheidet dort für die ganze Seite und bekommt eine Auskunft, die nur die
+  halbe gesehen hat.
   PROVENIENZ: die zwei Prüfungen und ihr Fehlen GEMESSEN am Code (CC, 2026-09-12 bzw.
   2026-09-14); die Bindung GELESEN an docs/roadmap.md, Roadmap-Zeile 11.5. Die Zusammenlegung
   zu EINEM Posten mit zwei Ursachen ist die Hebung des Phasenendes 11.5 (2026-09-16).
@@ -4531,9 +4556,25 @@ Nummer in der Standdatei.
   Posten beschrieb ursprünglich „es gibt keinen Text über die Einwilligung". Heute gilt „es
   gibt Text über die Einwilligung, aber keinen über den Hook" — `src/components/PublishView.tsx`
   trägt seit `7516bce` nutzersichtbaren Text im Bereich VERÖFFENTLICHEN (Überschrift
-  „Einwilligung", drei Options-Beschreibungen, der Hinweis bei unbekanntem Wert, der Satz
-  über ein nicht erkanntes Consent-Management), seit `e061d7b` dazu den Abschnitt „Widerruf"
-  (GEMESSEN am Repo, CC, 2026-09-16). **DAS SIND ZWEI VERSCHIEDENE AUSGANGSLAGEN FÜR DIESELBE
+  „Einwilligung", drei Options-Beschreibungen, der Hinweis bei unbekanntem Wert, der Satz,
+  dass unsere Leiste oder unser Fenster bei einem bereits eingebundenen fremden
+  Einwilligungs-Werkzeug ZUSÄTZLICH erscheint, und seit `6d6ab42` der Kollisionshinweis, der
+  genau diesen Fall im Code des Projekts erkennt), seit `e061d7b` dazu den Abschnitt
+  „Widerruf" (GEMESSEN am Repo, CC, 2026-09-16; die zwei letzten Angaben CC, 2026-09-22).
+  **DIE AUFZÄHLUNG IST AM 2026-09-22 ERSETZT UND NICHT GESTEMPELT:** Sie führte „der Satz
+  über ein nicht erkanntes Consent-Management" — den gibt es seit der Scheibe 11.11b nicht
+  mehr, er ist dort als FALSCH ersetzt worden, weil die Erkennung ihn widerlegt. Eine
+  Bestandsaufnahme mit einem Element, das es nicht mehr gibt, ist als Ausgangslage
+  unbrauchbar.
+  **AM GEGENSTAND DIESES POSTENS ÄNDERT DAS NICHTS, UND EIN NAHELIEGENDER FEHLSCHLUSS GEHÖRT
+  ABGEWEHRT:** `src/components/PublishView.tsx` nennt seit dem Abschnitt „Widerruf" SEHR WOHL
+  einen globalen Namen — `pagesmithConsentRevoke()`, zweimal, im Fliesstext und im
+  Beispiel-Schnipsel (GEMESSEN, CC, 2026-09-22). **DAS IST DIE WIDERRUFS-FUNKTION UND NICHT
+  DER EINWILLIGUNGS-HOOK.** `window.pagesmithConsent` — der Hook, um den es hier geht, samt
+  seinen Gestalten und seinen Schlüsseln — kommt in KEINER Komponente vor (NULL Treffer über
+  `src/components/`, Positivkontrolle im selben Lauf: der Name existiert im Repo, in sechs
+  Dateien unter `src/`). **DER POSTEN BLEIBT OFFEN.**
+  **DAS SIND ZWEI VERSCHIEDENE AUSGANGSLAGEN FÜR DIESELBE
   ARBEIT:** Die erste verlangt, einen Ort zu schaffen; die zweite verlangt, einen bestehenden
   Ort zu ergänzen.
   **DIE ABGRENZUNG ZUM POSTEN „BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE":** Dessen drei

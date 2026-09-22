@@ -5394,3 +5394,133 @@ zeichengleich; der ungekürzte Wortlaut steht im Archiv der Phase.
   also keine Inkonsequenz.
   **KEIN TRIGGER** — der Zustand geht nicht still kaputt, er ist seit Phase 4 bekannt und
   bewusst. KEINE EMPFEHLUNG, ob Meta und der Beacon in der Vorschau bleiben sollen.
+
+## Aus Phase 11.11 gehoben (2026-09-22) — sieben Vorrats-Einträge und ein Restsatz
+
+Aus dem Vorrat der Standdatei der Phase 11.11 (Import-Bereinigung). Die Einträge tragen ihre
+URSPRUNGS-NUMMERN mit Phasen-Präfix (`P11.11-n`). **JEDER ZEIGER NENNT DIE GATTUNG MIT** —
+in jener Datei zählen Vorrats-Einträge in einer EIGENEN Reihe, "Vorrat P11.11-6" und
+"Entscheidung P11.11-6" sind deshalb ZWEI verschiedene Einträge.
+Das Kriterium war zweiteilig — benennbarer Trigger UND "geht sonst still kaputt". **ES HAT
+HIER GAR NICHT GETRENNT, UND DAS IST DER BEFUND DIESER HEBUNG: KEIN EINZIGER VORRATS-EINTRAG
+DER PHASE TRÄGT EINEN TRIGGER** — nach docs/offene-punkte.md ist folglich NICHTS gegangen.
+Von NEUN Einträgen sind ZWEI mit dem Beleg ihrer Erledigung GESTRICHEN (P11.11-1 mit der
+Scheibe 11.11a, P11.11-5 mit 11.11d), die übrigen SIEBEN liegen hier. Der Text ist
+VERDICHTET und nicht zeichengleich; der ungekürzte Wortlaut steht im Archiv der Phase.
+**EIN ACHTER EINTRAG KOMMT NICHT AUS DEM VORRAT, SONDERN AUS DEM RUMPF EINES ERLEDIGTEN** —
+wer nur die offenen Vorrats-Einträge sichtet, findet ihn nicht.
+
+- **Vorrat P11.11-2 — DIE DREI EINGANGSWEGE SIND UNGETESTET**
+  Dass Paste, Datei-Upload und Drag-Drop ALLE in `setCode` münden, ist am Code sichtbar und
+  von KEINEM Test zugesichert (GEMESSEN, CC, 2026-09-21: kein Lauf in
+  `src/components/CodeImporter.test.tsx` fährt einen der drei Wege). Gedeckt ist allein die
+  Validierung davor — `src/lib/upload.test.ts` für `validateUploadFile`, sechs Fälle.
+  **KEIN TRIGGER.**
+
+- **Vorrat P11.11-3 — DAS VERHALTEN DES ROUND-TRIPS GEGENÜBER FREMDEN `<script>`-ELEMENTEN IST UNGETESTET, IN BEIDE RICHTUNGEN**
+  GEMESSEN (CC, 2026-09-21): Die Achse `fremd|foreign|<script` über `src/lib/detect.test.ts`
+  trifft EINE Zeile, und die prüft die EIGENE Listener-Injektion. Kein Lauf sichert zu, dass
+  ein fremdes `<script>` den Round-Trip unverändert übersteht — und keiner, dass es entfernt
+  würde.
+  **WARUM DIE ZWEITE RICHTUNG MITGEHÖRT:** Ein Lauf nur für "wird nicht entfernt" wäre eine
+  Abwesenheits-Behauptung und würde hohl, sobald sein Gegenstand verschwindet
+  (docs/immer-beachten.md, EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL). Wer hier
+  baut, liest jene Regel zuerst. **KEIN TRIGGER.**
+
+- **Vorrat P11.11-4 — DASS `saveProject` DEN HTML-INHALT UNVERÄNDERT SCHREIBT, SICHERT KEIN TEST**
+  Gedeckt sind am Speicherweg die Eigentums-Achse (die IDOR-Fälle in
+  `src/app/projects/actions.test.ts`) und das Varianten-Ziel (die zwei Riegel-Läufe in
+  `src/components/CodeImporter.test.tsx`). **NICHT gedeckt ist der INHALT:** dass der
+  übergebene HTML-String unverändert in die Spalte geht. GEMESSEN (CC, 2026-09-21).
+  **KEIN TRIGGER.**
+
+- **Vorrat P11.11-6 — DIE MODUL-GRENZE, DIE `own-blocks-strip.ts` VOM SERVER FERNHÄLT, IST NICHT ABGESICHERT**
+  **DER ZUSTAND HEUTE IST IN ORDNUNG, GEMESSEN (CC, 2026-09-21):** Zur Laufzeit erreichen
+  `detect.ts` nur `src/lib/mappings.ts` und `src/components/CodeImporter.tsx`;
+  `src/app/projects/actions.ts` (`"use server"`), `generate.ts` und
+  `src/lib/tracking/event-names.ts` importieren `mappings.ts` ALLE `import type`, und eine
+  type-only-Kante ist zur Laufzeit gelöscht. **Kein Server-Modul erreicht `detect.ts`.**
+  **WAS KIPPT, WENN SICH DAS ÄNDERT:** Seit der Scheibe 11.11b importiert `detect.ts` die
+  Datei `own-blocks-strip.ts` (für `collectOwnNodes`, ENTSCHEIDUNG P11.11-26).
+  Value-importiert irgendwann EIN Server-Modul `mappings.ts` oder `detect.ts`, reist der
+  DOM-Code mit — und damit fällt genau die Trennung, für die 11.11d die zwei Dateien
+  angelegt hat.
+  **DER SCHADEN IST HEUTE KLEIN:** `own-blocks-strip.ts` ist gegen einen Server-Lauf
+  gehärtet — `DOMParser` nur innerhalb von `stripOwnBlocks` hinter einem `typeof`-Guard,
+  `Node.TEXT_NODE` bewusst als die Zahl 3, `CSS.escape` bewusst vermieden. **WAS FEHLT, IST
+  DER WÄCHTER:** Es gibt keinen Lauf und kein Gate, das die Kante meldet.
+  **DER LÖSUNGSWEG — ARCHITEKT-VORSCHLAG 2026-09-22, UNGEPRÜFT UND KEINE EMPFEHLUNG:**
+  `import "client-only"` an `own-blocks-strip.ts`, spiegelbildlich zu `server-only`, damit
+  ein Server-Import beim BUILD laut wird statt still. **OB DAS IN DIESEM SETUP TRÄGT, IST
+  OFFEN** — die Wirkung des Pakets ist in diesem Repo nicht erhoben. Kandidat für eine
+  kleine eigene Scheibe.
+  **KEIN TRIGGER**, und das ist Absicht: Der Fall tritt nicht zu einem Zeitpunkt ein,
+  sondern mit einer Zeile, die jemand schreibt, ohne sie als Grenzübertritt zu erkennen.
+
+- **Vorrat P11.11-7 — DIE KOLLISIONSANZEIGE LIEST NUR DIE AKTIVE VARIANTE**
+  **GEMESSEN am gebauten Stand (CC, 2026-09-21):** `foreignCmp` wird in `CodeImporter.tsx`
+  aus `foreignScan` abgeleitet, und jener Scan läuft über `debouncedCode` — also über den
+  Text der AKTIVEN Variante. **Steht ein fremdes CMP allein in Variante B, während A aktiv
+  ist, erscheint der Kollisionshinweis NICHT** — auch bei eingeschaltetem eigenem Dialog.
+  **WARUM ES TROTZDEM WIEGT:** Der Hinweis steht am Einwilligungs-Schalter, und **der
+  Schalter gilt BEIDEN Varianten**. Der Betreiber entscheidet dort für die ganze Seite und
+  bekommt eine Auskunft, die nur die halbe gesehen hat. Dieselbe Asymmetrie hat 11.11d
+  bereits einmal gekostet (ENTSCHEIDUNG P11.11-22, Punkt (d)).
+  **WAS ES NICHT IST:** kein Fehlalarm — der Hinweis, der erscheint, ist immer richtig. Es
+  fehlt einer, der erscheinen könnte. **KEIN TRIGGER.**
+
+- **Vorrat P11.11-8 — DIE SIGNATURLISTE HAT LÜCKEN, UND EINE ECHTE SEITE HAT FÜNF DAVON AUF EINMAL GEZEIGT**
+  **OWNER-ANGABE aus der angezeigten Fundliste (2026-09-21; NICHT von CC gemessen und an
+  keiner Anbieter-Doku belegt):** Auf derselben echten WordPress-Seite, die ENTSCHEIDUNG
+  P11.11-37 ausgelöst hat, liefen **Universal Analytics** (`GoogleAnalyticsObject`),
+  **ActiveCampaign** (`trackcmp`), **Digistore24**, **Trustpilot** und **Deadline Funnel**.
+  **KEINER DAVON IST ERKANNT.**
+  **DAS IST DER GEWOLLTE AUSGANG UND KEIN DEFEKT:** Weil JEDES Script angezeigt wird
+  (ENTSCHEIDUNG P11.11-3), macht sich das Veralten der Liste als **fehlende Marke**
+  bemerkbar statt als Abwesenheit — die Lücke hat sich selbst gezeigt. **Der Live-Lauf der
+  Scheibe 11.11e hat es an derselben Seite bestätigt:** 136 Skripte, davon NULL bekannte
+  Funde (VERMERK P11.11-42).
+  **WAS EINE AUFNAHME KOSTET:** je Anbieter einen eigenen Crawl (ENTSCHEIDUNG P11.11-15,
+  OHNE BELEG KEINE SIGNATUR). Eine aus der angezeigten Adresse abgelesene Signatur wäre eine
+  Messung an EINER Installation; sie zählte nach ENTSCHEIDUNG P11.11-28 allein für ein
+  CMP-Etikett und ausdrücklich **nicht für ein Pixel**, an dem ein Entfernen hängt.
+  **GEHÖRT NICHT IN DIESE PHASE** — der Zuschnitt nennt elf Anbieter. **KEIN TRIGGER.**
+
+- **Vorrat P11.11-9 — DIE VORSCHAU FLACKERT BEI JEDER CODE-ÄNDERUNG**
+  **OWNER-BEOBACHTUNG (2026-09-22), von CC nicht gemessen.** Aufgefallen ist es beim
+  ENTFERNEN — dort ändert EIN Klick den Text auf einen Schlag, und das Flackern hat einen
+  sichtbaren Auslöser.
+  **DIE URSACHE IST EINE ARCHITEKT-ABLEITUNG (2026-09-22) UND NICHT AM CODE ERHOBEN:** Jede
+  Code-Änderung ersetzt den `srcDoc` des Rahmens, und der Rahmen lädt daraufhin neu. **Beim
+  Tippen geschieht dasselbe, nur unauffällig** — entprellt und in kleinen Schritten. **DER
+  KLICK HAT NICHTS NEUES ERZEUGT, ER HAT ETWAS BESTEHENDES SICHTBAR GEMACHT.**
+  **EIN AUSBLENDEN DER LISTENZEILE BEHÖBE ES NICHT:** Das Flackern hängt am RAHMEN und an
+  seinem Neuladen, nicht an der Fundliste daneben.
+  **DER LÖSUNGSWEG (ARCHITEKT, 2026-09-22) — GENANNT, NICHT ENTSCHIEDEN:** den neuen Stand
+  unsichtbar laden und erst nach dem `load`-Ereignis gegen den alten tauschen. Er ist
+  STRUKTURELL — er überlebt ein Redesign der Oberfläche, weil er am Ladevorgang ansetzt.
+  Sein Preis (ein zweiter Rahmen im Baum, doppelter Speicher während des Tauschs) ist
+  **nicht erhoben.**
+  **DIE AUFLAGE REIST MIT UND IST DER TEUERSTE SATZ DIESES EINTRAGS: JEDE ÄNDERUNG AN DEN
+  RAHMEN FÄLLT UNTER ENTSCHEIDUNG P11.11-9.** Jene verlangt für **JEDEN neuen Rahmen, der
+  importierten oder erzeugten Kundencode rendert**, denselben Sandbox-Wächter — dieselben
+  vier Zusicherungen und eine eigene ABSCHLIESSENDE Werteliste. **Ein zweiter, unsichtbarer
+  Rahmen ist ein solcher Rahmen.** Wer ihn ohne Wächter baut, hebt die Zusicherung auf, ohne
+  dass ein Gate rot wird. **Seit dem 2026-09-22 steht die Auflage auch als Ergänzung an der
+  Dauerregel "Importierter User-Code läuft NUR im sandboxed iframe …"
+  (docs/immer-beachten.md)** — der Eintrag hier ist damit nicht ihr einziger Ort.
+  **KEIN TRIGGER, UND DAS IST BEGRÜNDET:** Es geht nichts still kaputt. Das Flackern ist
+  sichtbar, es kostet keine Daten, und es fällt auf, sobald jemand hinsieht.
+
+- **OHNE EIGENE VORRATS-NUMMER — DER RESTSATZ AUS Vorrat P11.11-5: OB META DOPPELT ZÄHLT, IST UNGEMESSEN**
+  Vorrat P11.11-5 (ein wieder importierter Export trüge die eigenen Blöcke doppelt) ist mit
+  der Scheibe 11.11d **ERLEDIGT** (Bau-Commit `0b9bd7f`). **ZWEI Sätze seines Rumpfes waren
+  damit NICHT erledigt, und einer davon ist inzwischen vollzogen:** der Änderungsantrag an
+  docs/arbeitsweise.md, Abschnitt 4b — jener Text sagt seither, die Idempotenz ruhe auf dem
+  Riegel aus 11.11d statt auf der Annahme allein (GELESEN, CC, 2026-09-22).
+  **DER ZWEITE BLEIBT OFFEN UND LIEGT DESHALB HIER:** Belegt ist allein die EIGENE Ablage —
+  dass eine unter Projekt B ausgelieferte Seite ihre Conversions in Projekt A schreibt
+  (VERMERK P11.11-16, OWNER-MESSUNG live, 2026-09-21). **OB META DOPPELT ZÄHLT, IST IN
+  KEINEM LAUF ERHOBEN:** Es hängt an den Pixel-IDs von A und B, und die sind dort nicht
+  erfasst worden. Der Lauf zeigt die eigene Ablage, nicht die des Anbieters.
+  **KEIN TRIGGER.**

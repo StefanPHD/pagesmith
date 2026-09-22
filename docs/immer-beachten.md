@@ -558,6 +558,19 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - Erst der nutzbare Kern, dann Infrastruktur.
 - Importierter User-Code läuft NUR im sandboxed iframe (sandbox="allow-scripts",
   niemals allow-same-origin), nie ungesandboxt.
+  ERGÄNZT 2026-09-22 (Phase 11.11, aus ENTSCHEIDUNG P11.11-9): JEDER NEUE RAHMEN, DER
+  IMPORTIERTEN ODER ERZEUGTEN KUNDENCODE RENDERT, BEKOMMT DENSELBEN WÄCHTER — dieselben
+  vier Zusicherungen (das Attribut existiert · `allow-same-origin` fehlt · `allow-scripts`
+  ist vorhanden · die Werteliste ist ABSCHLIESSEND) und eine EIGENE abschliessende Liste.
+  Die Regel gilt JEDEM solchen Rahmen, nicht nur den zwei bekannten.
+  DIE ABSCHLIESSENDE LISTE TRÄGT ALLEIN, UND DAS IST GEMESSEN (CC, 2026-09-21): Unter der
+  Mutation "ein Wert hinzugefügt" fiel NUR der Listen-Lauf; ohne ihn wäre die Zahl NULL
+  gewesen. Jede Erweiterung einer Sandbox ist eine LOCKERUNG und wird sichtbar entschieden
+  statt eingeschoben; wer einen Wert ENTFERNT, braucht eine Messung.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Gate jeden Rahmen im Repo gegen eine abschliessende Werteliste prüft — eine
+  Lint-Regel, ein CI-Schritt. Ein solches gibt es nicht; gedeckt ist je Rahmen ein eigener
+  Lauf. Herleitung: das Archiv der Phase 11.11, ENTSCHEIDUNG P11.11-9.
 - HISTORIE-CHECK VOR EINGRIFF IN KERN-DATEIEN (Regressions-Schutz, gilt bei JEDEM Plan): CLAUDE.md ist
   bewusst gekürzt; das WARUM abgeschlossener Phasen liegt in docs/claude-history/*. Wenn ein Plan eine
   BESTEHENDE Kern-/geteilte Datei modifiziert oder erweitert (z.B. ingest.ts, resolve.ts, host.ts,
@@ -891,6 +904,22 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Spiegel, und der Publish-Pfad leitet aus der Zeile ab, nicht aus dem Spiegel.
   Die Aufzählung im ersten Satz und das "Dreimal aufgetreten" bleiben unangetastet: sie
   benennen VIEW-States und eine Historie, nicht Quellen.
+  ERGÄNZT 2026-09-22 (Phase 11.11, aus ENTSCHEIDUNG P11.11-24) — DIESELBE FIGUR AN EINER
+  MELDUNG STATT AN EINEM VIEW-STATE: EINE MELDUNG, DIE EINE AUSSAGE ÜBER EINEN TEXT MACHT,
+  WIRD AUS DEM AKTUELLEN TEXT ABGELEITET — nie aus einem Zustand, den ein Handler einmal
+  gesetzt hat. EIN GESPEICHERTER ZUSTAND DARF HÖCHSTENS SAGEN "ein Versuch hat
+  stattgefunden", NIE "das Problem besteht". Behauptet eine Meldung etwas über einen
+  VERGANGENEN Versuch, braucht sie zusätzlich einen Anker, der sagt, ob jener Versuch noch
+  DIESEN Text meint — ein blosses Flag behauptete nach einem geglückten Entfernen und einem
+  NEU eingefügten Text einen Fehlschlag, den es nie gab.
+  DER BEFUND IST GEMESSEN (CC, 2026-09-21): Zwei Meldungen lagen als fertige Sätze im State
+  und überlebten jedes Entfernen VON HAND, während die Warnung daneben richtig war, weil sie
+  abgeleitet war — DERSELBE BILDSCHIRM ZEIGTE EINE KORREKTE UND EINE VERALTETE AUSSAGE ÜBER
+  DENSELBEN TEXT. Der DRITTE Satz ist das Neue: Der View-State-Fall oben kennt ihn nicht.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Gate eine Meldung, die einen Zustand behauptet, gegen ihre Quelle prüft. Ein
+  solches gibt es nicht — gefangen hat den Fall ein Review, und danach zwei eigens dafür
+  geschriebene Läufe. Herleitung: das Archiv der Phase 11.11, ENTSCHEIDUNG P11.11-24.
 - DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER (Phase 10, an der
   eigenen Doku widerlegt): Wer in Doku, Kommentar oder Backlog auf Code verweist,
   nennt den SYMBOLNAMEN (applyZenForLoadedCode, settingsEqual, statusBadge). Namen

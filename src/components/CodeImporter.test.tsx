@@ -5728,3 +5728,292 @@ describe("CodeImporter — fremde Pixel entfernen (11.11c)", () => {
     expect(screen.getByRole("button", { name: META_KNOPF })).toBeTruthy();
   });
 });
+
+// ===========================================================================
+// DIE FUNDLISTE WIRD GEBUENDELT (Phase 11.11, Scheibe 11.11e).
+//
+// DER ANLASS IST EINE ECHTE SEITE MIT 136 SKRIPTEN (OWNER-TEST, 2026-09-21): Die Liste
+// war dort nicht falsch, sondern unbenutzbar. GEBUENDELT statt GEFILTERT — ein
+// Pfad-Filter haette auf derselben Seite einen Tracker versteckt (P11.11-37).
+//
+// DIE FIXTURE IST SYNTHETISCH UND KEINE ECHTE DRITTSEITE: Das Repo ist oeffentlich.
+// Die Hosts sind `*.example` bzw. `*.example.com` — reservierte Namen, die niemandem
+// gehoeren.
+//
+// DIE AUFLAGE AUS DEM KOPF DER 11.11b/c-BLOECKE GILT HIER UNVERAENDERT: Diese Datei
+// traegt VIER dokumentweite Abwesenheits-Zusicherungen ueber document.body.textContent
+// — /gerettet/i, /mindestens/, /%/ und /NaN/ — und SK10 verbietet die Form "Scripte".
+// Die drei Wortlaute dieser Scheibe sind dagegen geprueft (Lauf S38 in
+// foreign-scan.test.ts); wer HIER eine Fixture ergaenzt, prueft sie erneut.
+// ===========================================================================
+
+describe("CodeImporter — die Fundliste buendelt (11.11e)", () => {
+  const KOPF =
+    '<!DOCTYPE html><html lang="de"><head><title>S</title></head><body>' +
+    '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>';
+  const seite = (rumpf: string) => `${KOPF}${rumpf}</body></html>`;
+  const skript = (src: string) => `<script src="${src}"></script>`;
+
+  // DREI SKRIPTE EINES HOSTS, EINES EINES ZWEITEN, EINE RELATIVE ADRESSE UND EIN
+  // INLINE-SKRIPT — der Fall der echten Seite im Kleinen.
+  const VIELE =
+    skript("https://cdn.theme.example/a.js") +
+    skript("https://cdn.theme.example/b.js") +
+    skript("https://cdn.theme.example/c.js") +
+    skript("https://andere.example/x.js") +
+    skript("/wp-content/plugins/irgendwas/f.js") +
+    "<script>console.log('seitenlogik');</script>";
+
+  const META_SCRIPT =
+    '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>';
+
+  // DIE WORTLAUTE STEHEN HIER ALS LITERAL UND WERDEN NICHT IMPORTIERT — sonst waere
+  // der Waechter ein SPIEGEL, der jeden Tippfehler bestaetigt (Dauerregel EIN WAECHTER
+  // UEBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE).
+  const WEITERE = "Weitere Skripte (6)";
+  const OHNE_DOMAIN = "Ohne Domain-Angabe (1)";
+  const INLINE = "Inline-Skripte (1)";
+  // Fuer SK25: derselbe Handler und derselbe Wortlaut wie im 11.11c-Block, hier
+  // eigens getippt — die Konstanten dort sind auf jenen `describe` beschraenkt, und
+  // ein Import machte den Waechter zum Spiegel.
+  const META_HANDLER_E =
+    '<a href="https://example.com/x" onclick="fbq(\'track\',\'Lead\')">Jetzt</a>';
+  const REST_HINWEIS_E =
+    "Dieser Fund steht nach dem Entfernen noch im Code. Bitte die Stelle von Hand löschen.";
+
+  const liste = () =>
+    screen.getByRole("heading", { name: /^Skripte und Tags im Code/ })
+      .parentElement as HTMLElement;
+  // DER HELFER BENENNT DIE SEKTION UEBER IHRE UEBERSCHRIFT UND NICHT ALS "das erste
+  // details in der Liste". DAS IST IN DER MUTATIONSRUNDE NACHGESCHAERFT WORDEN: Unter
+  // der Mutation M4 (ein zusaetzliches details um die ganze Liste) traf die lose
+  // Fassung das FALSCHE Element, und SK22/SK24 fielen mit einer ANDEREN Fehlerklasse
+  // als der gemeinten — eine Kaskade, keine Abdeckung. Behoben wird die Wurzel, also
+  // der Ausschnitt, nicht die Assertion (Dauerregel MUTATIONSPROBEN …, Lektion (b)).
+  const sektion = () =>
+    within(liste())
+      .getByText(/^Weitere Skripte \(/)
+      .closest("details") as HTMLDetailsElement;
+
+  // SK20. EINGEKLAPPT — UND ZWAR IM DOM PRUEFBAR (P11.11-41, Punkt (F)).
+  //
+  // DAS IST DER TRAGENDE LAUF DIESER SCHEIBE, UND SEINE ZWEITE HAELFTE IST DER GRUND
+  // FUER `<details>`: Der Zustand ist das `open`-Attribut, UND DIE EINTRAEGE STEHEN
+  // TROTZDEM IM DOM. Bei bedingtem Rendern waere die zweite Zeile rot, und ein Test
+  // koennte "gebuendelt" nicht mehr von "ausgeblendet" unterscheiden — genau das ist
+  // die Zusage "NICHTS WIRD AUSGEBLENDET" (P11.11-37).
+  //
+  // DIE TESTUMGEBUNG WERTET KEIN CSS AUS (Dauerregel): Dieser Lauf behauptet NICHT,
+  // dass etwas unsichtbar ist. Er prueft STRUKTUR — ein Attribut und die Praesenz.
+  it("SK20: die Sektion ist zu, und ihre Eintraege stehen dennoch im DOM", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={seite(VIELE)} />);
+    await screen.findByText("Kaufen");
+
+    const d = sektion();
+    expect(d.hasAttribute("open")).toBe(false);
+    expect(d.open).toBe(false);
+    // NICHTS IST AUSGEBLENDET: die Gruppen-Ueberschriften UND ein einzelner Eintrag
+    // sind auffindbar, obwohl alles zu ist.
+    expect(within(liste()).getByText("cdn.theme.example (3)")).toBeTruthy();
+    expect(within(liste()).getByText(OHNE_DOMAIN)).toBeTruthy();
+    expect(within(liste()).getByText(INLINE)).toBeTruthy();
+    expect(
+      within(liste()).getByText("https://cdn.theme.example/b.js"),
+    ).toBeTruthy();
+    // UND DER PFAD, DEN EIN FILTER VERSTECKT HAETTE, STEHT DA — der Live-Beleg von
+    // ENTSCHEIDUNG P11.11-37 im Kleinen.
+    expect(
+      within(liste()).getByText("/wp-content/plugins/irgendwas/f.js"),
+    ).toBeTruthy();
+  });
+
+  // SK21. DIE ERKANNTEN FUNDE STEHEN OFFEN OBEN, MIT IHREM KNOPF (P11.11-37).
+  // OHNE DIESEN LAUF waere ein Bau gruen, der die bekannten Funde mit einklappt.
+  it("SK21: der bekannte Fund steht offen, sein Knopf ist unmittelbar erreichbar", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${VIELE}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+
+    const l = liste();
+    // Der Meta-Fund liegt AUSSERHALB der eingeklappten Sektion.
+    const metaZeile = within(l).getByText("Meta").closest("li") as HTMLElement;
+    expect(metaZeile.closest("details")).toBeNull();
+    expect(
+      within(l).getByRole("button", { name: "Meta aus dem Code entfernen" }),
+    ).toBeTruthy();
+    // UND DIE UEBERSCHRIFT DER SEKTION ZAEHLT SKRIPTE, NICHT GRUPPEN (P11.11-41 (H)):
+    // sechs unbekannte Skripte in drei Gruppen.
+    expect(within(l).getByText(WEITERE)).toBeTruthy();
+  });
+
+  // SK22. AUFKLAPPEN DREHT DEN ZUSTAND. GEMESSEN (CC, 2026-09-22): ein Klick auf das
+  // `<summary>` setzt `open` auch in jsdom — der Lauf prueft also die echte Bedienung
+  // und nicht eine programmatische Zuweisung.
+  it("SK22: ein Klick auf die Ueberschrift klappt die Sektion auf", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={seite(VIELE)} />);
+    await screen.findByText("Kaufen");
+
+    const d = sektion();
+    expect(d.open).toBe(false);
+    fireEvent.click(within(liste()).getByText(WEITERE));
+    expect(d.open).toBe(true);
+  });
+
+  // SK23. OHNE UNBEKANNTEN FUND GIBT ES DIE SEKTION NICHT (P11.11-41, Punkt (K)).
+  //
+  // DAS IST DIE AUFLAGE, DIE SK4 UND SK12 SCHUETZT: beide zaehlen die Knoepfe INNERHALB
+  // der Liste (null bzw. genau einen). Eine Sektion mit "(0)" waere ausserdem eine
+  // Auskunft ueber nichts.
+  it("SK23: ein Code nur mit bekanntem Fund traegt keine eingeklappte Sektion", async () => {
+    render(
+      <CodeImporter initialProjectId="proj-1" initialCode={seite(META_SCRIPT)} />,
+    );
+    await screen.findByText("Kaufen");
+
+    const l = liste();
+    // POSITIVKONTROLLE: der bekannte Fund IST da — sonst waere die Zeile darunter
+    // trivial wahr, weil die ganze Liste leer ist.
+    expect(within(l).getByText("Meta")).toBeTruthy();
+    expect(l.querySelector("details")).toBeNull();
+    expect(within(l).queryByText(/^Weitere Skripte/)).toBeNull();
+  });
+
+  // SK24. DER AUFKLAPP-ZUSTAND UEBERLEBT DEN PROJEKTWECHSEL NICHT (P11.11-41, Punkt
+  // (G)). Er lebt im DOM und stirbt mit dem `key` am Projekt — kein Aufruf leert ihn.
+  //
+  // ER IST EIN EINZELSTUECK, UND ZWAR GEMESSEN (Mutation M5, CC, 2026-09-22): Faellt der
+  // `key` weg, faellt NUR DIESER LAUF — React gleicht dann nach Position ab, und `open`
+  // ueberlebt den Wechsel (Dauerregel MUTATIONSPROBEN …, Lektion (f)).
+  it("SK24: nach einem Projektwechsel ist die Sektion wieder zu", async () => {
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: seite(VIELE),
+      mappings: [],
+      settings: {},
+    });
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={seite(VIELE)}
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-02T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-01T00:00:00Z" },
+        ]}
+      />,
+    );
+    await screen.findByText("Kaufen");
+
+    fireEvent.click(within(liste()).getByText(WEITERE));
+    // VORBEDINGUNG: sie ist wirklich offen. Ohne diese Zeile waere der Schluss unten
+    // aus dem falschen Grund gruen (Dauerregel EINE VORBEDINGUNG, DIE AUCH DER ALTE
+    // ZUSTAND ERFUELLT, IST KEINE VORBEDINGUNG).
+    expect(sektion().open).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Projekte/ }));
+    fireEvent.click(await screen.findByText("P2"));
+
+    // Neu abgefragt: nach dem Remount ist es ein anderes DOM-Element.
+    await waitFor(() => expect(sektion().open).toBe(false));
+  });
+
+  // SK25 (E3). DER ANKER DER REST-MELDUNG STIRBT BEIM PROJEKTWECHSEL.
+  //
+  // DER FALL IST BENENNBAR UND NICHT ERFUNDEN: Zwei Projekte mit BYTE-GLEICHEM Text —
+  // ein duplizierter Entwurf. Ohne das Zuruecksetzen von `foreignStrip` in
+  // applyZenForLoadedCode blieb der Anker gueltig, weil er nur `debouncedCode ===
+  // foreignStrip.text` prueft, und die Rest-Meldung stuende im ZWEITEN Projekt fuer
+  // einen Klick im ERSTEN.
+  //
+  // ER IST EIN EINZELSTUECK, UND ZWAR GEMESSEN (Mutation M8, CC, 2026-09-22): Faellt die
+  // Zeile `setForeignStrip(null)` in applyZenForLoadedCode weg, faellt NUR DIESER LAUF.
+  // Wer ihn streicht, nimmt die einzige Abdeckung mit (Dauerregel MUTATIONSPROBEN …,
+  // Lektion (f)).
+  it("SK25: gleicher Text in zwei Projekten — der Klick im ersten erzeugt keine Rest-Meldung im zweiten", async () => {
+    foreignStripAttrappe.aktiv = true;
+    const CODE = seite(`${META_SCRIPT}${META_HANDLER_E}`);
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: CODE,
+      mappings: [],
+      settings: {},
+    });
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={CODE}
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-02T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-01T00:00:00Z" },
+        ]}
+      />,
+    );
+    await screen.findByText("Kaufen");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Meta aus dem Code entfernen" }),
+    );
+    // VORBEDINGUNG: die Meldung steht wirklich — sonst prueft der Schluss unten nichts.
+    await screen.findByText(REST_HINWEIS_E);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Projekte/ }));
+    fireEvent.click(await screen.findByText("P2"));
+
+    await waitFor(() => expect(screen.queryByText(REST_HINWEIS_E)).toBeNull());
+    // ANKER: der Fund steht im zweiten Projekt weiterhin da — der Text ist ja
+    // derselbe. Ohne diese Zeile waere die Zeile darueber auch dann gruen, wenn
+    // schlicht die ganze Liste fehlte.
+    expect(
+      screen.getByRole("button", { name: "Meta aus dem Code entfernen" }),
+    ).toBeTruthy();
+  });
+
+  // SK26. DER ORTSHINWEIS WIRD GERENDERT — UND ZWAR AN DER ZEILE OHNE KNOPF
+  // (P11.11-41, Punkt (I)).
+  //
+  // ER GEHOERT HIERHER UND NICHT NUR ZU S37, und der Grund ist die Dauerregel NUR EIN
+  // TEST IST EIN WAECHTER: S37 prueft das FELD, dieser Lauf prueft, dass es auch
+  // ANKOMMT. Ohne ihn bliebe S37 gruen, wenn jemand den JSX-Block entfernt.
+  //
+  // ER LOEST DAS GEMESSENE PROBLEM: Zwei Zeilen "Meta · Fremdes Pixel · 1 Fundstelle"
+  // untereinander sahen GLEICH AUS — ein Seiten-Script und ein `onclick` —, und beide
+  // sagten "von Hand loeschen", ohne zu sagen WO.
+  //
+  // ER IST EIN EINZELSTUECK, UND ZWAR GEMESSEN (Mutation M6c, CC, 2026-09-22): Wird der
+  // JSX-Block des Ortshinweises entfernt, faellt NUR DIESER LAUF — S37 bleibt gruen,
+  // weil das FELD unberuehrt ist. Wer ihn als redundant streicht, nimmt die einzige
+  // Abdeckung des Renderns mit (Dauerregel MUTATIONSPROBEN …, Lektion (f)).
+  it("SK26: die Zeile ohne Knopf zeigt ihren Ausschnitt, die Zeile mit Knopf nicht", async () => {
+    const AUFRUF = "<script>document.title='x';fbq('track','Purchase');</script>";
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={seite(`${META_SCRIPT}${AUFRUF}${META_HANDLER_E}`)}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const l = liste();
+
+    // VORBEDINGUNG: es sind wirklich DREI Meta-Zeilen — Knoten, Aufruf, Handler.
+    // Ohne sie prueften die Zeilen darunter eine Liste, die es so nicht gibt.
+    expect(within(l).getAllByText("Meta")).toHaveLength(3);
+
+    // DER AUSSCHNITT DES AUFRUFS UND DER DES HANDLERS STEHEN DA — als TEXT.
+    const aufrufZeile = within(l)
+      .getByText(/document\.title='x';fbq\('track','Purchase'\);/)
+      .closest("li") as HTMLElement;
+    expect(aufrufZeile).toBeTruthy();
+    expect(within(l).getByText("fbq('track','Lead')")).toBeTruthy();
+
+    // UND DIE ZEILE MIT DEM KNOPF TRAEGT KEINEN — sie braucht keine Wegbeschreibung.
+    const knopfZeile = within(l)
+      .getByRole("button", { name: "Meta aus dem Code entfernen" })
+      .closest("li") as HTMLElement;
+    expect(knopfZeile.querySelector(".font-mono")).toBeNull();
+  });
+});

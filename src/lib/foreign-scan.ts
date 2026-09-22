@@ -113,6 +113,28 @@ export type ForeignFinding =
        * zwischen fail-closed und fail-open.
        */
       entfernbar: boolean;
+      /**
+       * DER ORTSHINWEIS (Scheibe 11.11e; ENTSCHEIDUNGEN P11.11-40, P11.11-41 Punkt (I)):
+       * der gekuerzte Rumpf der ERSTEN Fundstelle, oder `null`.
+       *
+       * ER STEHT NUR AN EINEM FUND, DER NICHT ENTFERNBAR IST — also an `aufruf` und
+       * `handler`, nie an `knoten`. **DER GRUND IST DAS PROBLEM, DAS ER LOEST:** Zwei
+       * Zeilen "Meta · Fremdes Pixel · 1 Fundstelle" untereinander sehen GLEICH AUS,
+       * die eine ist ein Seiten-Script, die andere ein `onclick`, und beide sagen dem
+       * Betreiber, er solle von Hand loeschen — **keine sagt ihm WO**. Ein `knoten`
+       * braucht ihn nicht: er hat einen Knopf.
+       *
+       * ES IST DER AUSSCHNITT DER ERSTEN FUNDSTELLE, und der Preis ist benannt und
+       * gewollt (P11.11-41, Punkt (I)): Hat die Gruppe mehrere Fundstellen, nennt er
+       * EINE — die Zahl daneben sagt, dass es mehr sind. Alle zu zeigen machte eine
+       * Gruppe mit sieben Fundstellen zu sieben Zeilen und damit genau so lang, wie die
+       * Buendelung sie kurz machen wollte.
+       *
+       * ER IST TEXT DES BETREIBERS. Er wird als TEXT gerendert, nie als HTML, und er
+       * kann jede der vier dokumentweiten Abwesenheits-Nadeln tragen (P11.11-32,
+       * Punkt (f), und P11.11-41, Punkt (I)).
+       */
+      ausschnitt: string | null;
     }
   | {
       art: "unbekannt";
@@ -570,6 +592,12 @@ export function scanForeignTags(doc: Document): ForeignScan {
           // naehme dem Betreiber sein Einwilligungs-Werkzeug mit.
           entfernbar:
             hit.traeger === "knoten" && klassen.every((k) => k === "pixel"),
+          // DER ORTSHINWEIS, NUR WO ER GEBRAUCHT WIRD (Scheibe 11.11e): an `aufruf` und
+          // `handler`. Ein `knoten` hat einen Knopf und braucht keine Wegbeschreibung;
+          // `null` dort macht die Abwesenheits-Zusicherung in S37 zu einer Aussage
+          // statt zu einer Selbstverstaendlichkeit.
+          ausschnitt:
+            hit.traeger === "knoten" ? null : ausschnittVon(hit.rumpf),
         };
       }
     );
@@ -580,6 +608,192 @@ export function scanForeignTags(doc: Document): ForeignScan {
   } catch {
     return { status: "failed" };
   }
+}
+
+/* -------------------------------------------------------------------------- *
+ * DIE ANZEIGE-SICHT (Phase 11.11, Scheibe 11.11e; ENTSCHEIDUNGEN P11.11-37,
+ * P11.11-40 und die Freigaben P11.11-41)
+ *
+ * SIE ORDNET UND BUENDELT, SIE ERKENNT NICHTS ANDERS. `scanForeignTags` und der Typ
+ * ForeignScan sind davon UNBERUEHRT: Diese Funktionen nehmen ein fertiges
+ * ForeignFinding[] und geben eine ANZEIGE-Struktur zurueck. Der Grund ist der harte
+ * Scope-Waechter der Scheibe — die Erkennung aendert sich nicht, und ein Verbraucher
+ * von ForeignScan (annotateAndDetect, detect.test.ts, S16) darf davon nichts merken.
+ *
+ * WARUM HIER UND NICHT IN EINER NEUEN DATEI (P11.11-41, Punkt (E)): `ausschnittVon`
+ * ist modul-privat und wird fuer den Ortshinweis gebraucht — in DIESER Datei ist er
+ * ohne Hebung erreichbar. Eine neue Datei waere Weg 8 aus CLAUDE.md und verlangte eine
+ * Owner-Entscheidung (Praezedenz: P11.11-22, Punkt (a)).
+ * -------------------------------------------------------------------------- */
+
+/** Feste Reihenfolge der Traeger in der Anzeige (P11.11-41, Punkt (J)). */
+const CARRIER_ORDER: readonly ForeignCarrier[] = ["knoten", "aufruf", "handler"];
+
+/** Ein unbekannter Fund, als eigener Typ, damit die Gruppen ihn tragen koennen. */
+export type ForeignUnknown = Extract<ForeignFinding, { art: "unbekannt" }>;
+
+/** Ein bekannter Fund, als eigener Typ. */
+export type ForeignKnown = Extract<ForeignFinding, { art: "bekannt" }>;
+
+/**
+ * Eine Gruppe unbekannter Skripte. DREI GESTALTEN, und die dritte ist keine Laune:
+ *
+ * - "host"        — je HOST eine Gruppe (P11.11-37).
+ * - "ohne-domain" — alles, woraus sich KEIN Host ablesen laesst: relative Adressen,
+ *                   ungueltige, `data:` und `blob:` (P11.11-41, Punkt (A)).
+ * - "inline"      — Skripte ohne jede Adresse (P11.11-37: "die Inline-Skripte als
+ *                   eigene Gruppe").
+ */
+export type ForeignUnknownGroup = {
+  art: "host" | "ohne-domain" | "inline";
+  /** Die Ueberschrift OHNE die Zahl — die haengt die Komponente an. */
+  titel: string;
+  eintraege: readonly ForeignUnknown[];
+};
+
+/**
+ * Was die Fundliste anzeigt: die bekannten Funde GEORDNET und die unbekannten
+ * GEBUENDELT.
+ */
+export type ForeignView = {
+  bekannt: readonly ForeignKnown[];
+  gruppen: readonly ForeignUnknownGroup[];
+  /**
+   * Die Zahl der unbekannten SKRIPTE ueber ALLE Gruppen — nicht die der Gruppen
+   * (P11.11-41, Punkt (H): "Weitere Skripte (N)" zaehlt Skripte).
+   *
+   * SIE WIRD AUS DEN GRUPPEN GERECHNET UND NICHT NEBEN IHNEN, und das ist der Grund,
+   * warum der Summen-Waechter etwas beweist: Verliert die Buendelung ein Skript,
+   * sinkt diese Zahl mit. Eine unabhaengig gezaehlte waere trivial richtig.
+   */
+  unbekannteSkripte: number;
+};
+
+/**
+ * DER HOST EINER KENNUNG, oder `null`, wenn keiner ablesbar ist.
+ *
+ * ALLE SECHS FAELLE SIND GEMESSEN (CC, 2026-09-22, Wegwerf-Probe ausserhalb des Repos),
+ * und jeder hat seinen eigenen Grund — sie sind ausdruecklich NICHT zusammengefasst:
+ *
+ * - ABSOLUT -> `hostname`. **Die Gross-/Kleinschreibung normalisiert der Parser
+ *   selbst**: `https://CDN.Example.COM/a.js` ergibt `cdn.example.com`. Wer je auf einen
+ *   Zeichenketten-Schnitt wechselt, verliert diese Normalisierung STILL.
+ * - PROTOKOLL-RELATIV (`//host/x`) -> WIRFT ohne Basis. Mit vorangestelltem `https:`
+ *   ergibt sie den Host. Sie wird NICHT wie eine relative Adresse behandelt, obwohl
+ *   beide werfen: **hier STEHT der Host da**, dort nicht.
+ * - RELATIV (`/pfad`, `pfad`) und UNGUELTIG (`https://`, `::::`, `""`, `#x`) -> WERFEN.
+ *   Der Wurf IST das Erkennungsmerkmal.
+ * - `data:` UND `blob:` -> **WERFEN NICHT**, sondern liefern einen LEEREN Host. Das ist
+ *   die Falle dieses Gates: ohne den eigens abgefangenen Leerfall entstuende eine
+ *   Gruppe mit dem Titel `""`, und die saehe auf dem Bildschirm aus wie ein Leerraum.
+ * - PORT -> `hostname` und NICHT `host` (P11.11-41, Punkt (C)): `example.com:8443` und
+ *   `example.com` sind EINE Gruppe.
+ *
+ * EINE SENTINEL-BASIS IST VERWORFEN (P11.11-41, Punkt (B)) und darf nicht
+ * zurueckkommen: `new URL("/pfad", "https://x.invalid/")` loest STILL auf den
+ * Sentinel-Host auf, und `::::` ebenso (GEMESSEN). Eine relative Adresse landete dann
+ * in einer Gruppe, die nach einem Host aussieht, den es nicht gibt.
+ *
+ * `www.` WIRD NICHT ABGESCHNITTEN (P11.11-41, Punkt (D)): `www.example.com` und
+ * `example.com` sind verschiedene Hosts, und eine Zusammenfassung behauptete mehr, als
+ * diese Funktion weiss.
+ */
+export function hostVon(kennung: string): string | null {
+  const roh = kennung.trim();
+  if (roh === "") return null;
+  const v = roh.startsWith("//") ? `https:${roh}` : roh;
+  try {
+    const host = new URL(v).hostname;
+    return host === "" ? null : host;
+  } catch {
+    return null;
+  }
+}
+
+/** Position eines Anbieters in der Signaturliste — die Ordnungsachse aus (J). */
+function signaturIndex(anbieter: string): number {
+  const i = FOREIGN_SIGNATURES.findIndex((s) => s.anbieter === anbieter);
+  // UNERREICHBAR, und der Satz gehoert hierher, damit niemand den Zweig fuer einen
+  // Fehlerfall haelt: Die Namen eines Fundes stammen aus `hit.treffer`, und das ist
+  // eine Teilmenge von FOREIGN_SIGNATURES. Ein Wurf waere hier ausserdem der falsche
+  // Ausgang — diese Funktion laeuft im Render, und ein Wurf leerte die ganze Liste.
+  return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+}
+
+/**
+ * DIE ANZEIGE-SICHT AUS EINER FUNDLISTE.
+ *
+ * DIE BEKANNTEN WERDEN GEORDNET (P11.11-41, Punkt (J)): nach der Reihenfolge der
+ * SIGNATURLISTE — bei mehreren Anbietern entscheidet der erste —, innerhalb eines
+ * Anbieters knoten -> aufruf -> handler. **Die Signaturliste ist im Bestand schon die
+ * Ordnungsachse fuer die Anbieter INNERHALB eines Fundes** (trefferUeberAdressen und
+ * trefferUeberNamen filtern ueber FOREIGN_SIGNATURES); dieselbe Achse zweimal gleich zu
+ * ordnen erklaert sich selbst, alphabetisch waere eine zweite Ordnungs-Wahrheit daneben.
+ *
+ * `sort` IST SEIT ES2019 STABIL — bei gleichem Schluessel bleibt die Dokument-Reihenfolge,
+ * die `collectForeignHits` geliefert hat.
+ *
+ * DIE GRUPPEN WERDEN NACH ANZAHL AUFSTEIGEND SORTIERT (P11.11-37). **DIE ZWEITACHSE BEI
+ * GLEICHSTAND IST DER TITEL, und sie ist BENANNT statt zufaellig** — ohne sie haengte die
+ * Reihenfolge zweier gleich grosser Gruppen an der Einfuegefolge einer Map und waere
+ * nicht reproduzierbar. Verglichen wird mit `<` und NICHT mit `localeCompare`: eine
+ * locale-abhaengige Ordnung waere auf zwei Rechnern eine andere (Dauerregel KEIN ZEIT-
+ * ODER LOCALE-ABHAENGIGER WERT …).
+ *
+ * DIE DREI GESTALTEN SORTIEREN GEMEINSAM. "Ohne Domain-Angabe" und "Inline-Skripte"
+ * stehen nicht fest am Ende: Der Wortlaut der Entscheidung sagt "sortiert nach Anzahl
+ * aufsteigend" ohne Ausnahme, und eine feste Position waere eine zusaetzliche Regel, die
+ * niemand getroffen hat.
+ */
+export function buildForeignView(
+  findings: readonly ForeignFinding[]
+): ForeignView {
+  const bekannt = findings
+    .filter((f): f is ForeignKnown => f.art === "bekannt")
+    .slice()
+    .sort((a, b) => {
+      const sa = signaturIndex(a.anbieter[0] ?? "");
+      const sb = signaturIndex(b.anbieter[0] ?? "");
+      if (sa !== sb) return sa - sb;
+      return CARRIER_ORDER.indexOf(a.traeger) - CARRIER_ORDER.indexOf(b.traeger);
+    });
+
+  // DIE SCHLUESSEL DER MAP SIND NICHT DIE TITEL, sondern tragen die GESTALT vorn. Sonst
+  // kollidierte ein Host, der zufaellig wie eine der zwei Sondergruppen heisst, mit ihr.
+  const gruppen = new Map<string, ForeignUnknownGroup>();
+  const lege = (
+    schluessel: string,
+    art: ForeignUnknownGroup["art"],
+    titel: string,
+    eintrag: ForeignUnknown
+  ) => {
+    const vorhanden = gruppen.get(schluessel);
+    if (vorhanden) (vorhanden.eintraege as ForeignUnknown[]).push(eintrag);
+    else gruppen.set(schluessel, { art, titel, eintraege: [eintrag] });
+  };
+
+  for (const f of findings) {
+    if (f.art !== "unbekannt") continue;
+    if (f.kennung === UNKNOWN_INLINE) {
+      lege("inline", "inline", FOREIGN_GROUP_INLINE, f);
+      continue;
+    }
+    const host = hostVon(f.kennung);
+    if (host === null) lege("ohne-domain", "ohne-domain", FOREIGN_GROUP_NO_HOST, f);
+    else lege(`host:${host}`, "host", host, f);
+  }
+
+  const sortiert = Array.from(gruppen.values()).sort((a, b) => {
+    if (a.eintraege.length !== b.eintraege.length)
+      return a.eintraege.length - b.eintraege.length;
+    return a.titel < b.titel ? -1 : a.titel > b.titel ? 1 : 0;
+  });
+
+  return {
+    bekannt,
+    gruppen: sortiert,
+    unbekannteSkripte: sortiert.reduce((n, g) => n + g.eintraege.length, 0),
+  };
 }
 
 /** Traegt dieser Lauf ein bekanntes CMP? Grundlage der Kollisionsanzeige (P11.11-4). */
@@ -612,10 +826,25 @@ export function hasForeignCmp(scan: ForeignScan): boolean {
  * Oberflaeche noch in einem Test vor; ein Waechter haelt das fest.
  *
  * WAS DIE PRUEFUNG NICHT DECKT: Der AUSSCHNITT eines unbekannten Inline-Scripts ist
- * Text des Betreibers und kann jede der vier Nadeln tragen. Heute faellt das nicht
- * auf, weil KEINE Fixture in CodeImporter.test.tsx ein <script, <img, <iframe oder
- * <noscript enthaelt und die vier Zusicherungen ohne initialCode rendern. WER DIESER
- * DATEI EINE FIXTURE MIT FREMDEM SCRIPT GIBT, PRUEFT ZUERST DIESE VIER ZEILEN.
+ * Text des Betreibers und kann jede der vier Nadeln tragen. Seit der Scheibe 11.11e
+ * gilt dasselbe fuer den ORTSHINWEIS an einem BEKANNTEN Fund (P11.11-41, Punkt (I))
+ * und fuer den TITEL einer Host-Gruppe.
+ *
+ * DER SATZ, DER DAS BISHER TRUG, IST AM 2026-09-22 RICHTIGGESTELLT UND NICHT
+ * GESTEMPELT — er war eine TATSACHENBEHAUPTUNG UEBER DEN CODE und ist mit den
+ * Scheiben 11.11b/c ueberholt worden (Dauerregel EINE REGEL KANN GUELTIG BLEIBEN,
+ * WAEHREND IHR BELEG FALSCH WIRD). Er lautete: "KEINE Fixture in CodeImporter.test.tsx
+ * enthaelt ein <script, <img, <iframe oder <noscript". GEMESSEN (CC, 2026-09-22):
+ * ELF Vorkommen von `<script`, alle in den SK-Bloecken der Scheiben 11.11b und 11.11c.
+ *
+ * WAS STATTDESSEN TRAEGT, und es ist schmaler: **KEIN Lauf, der eine der vier Nadeln
+ * prueft, rendert eine Fixture mit `<script`.** GEMESSEN (CC, 2026-09-22): die Nadeln
+ * /gerettet/i, /mindestens/ und /%/ rendern OHNE initialCode; die zwei /NaN/-Laeufe
+ * rendern MIT initialCode, aber mit einer script-freien Fixture — dort steht die
+ * Fundliste mit "(0)".
+ *
+ * WER EINEM NADEL-LAUF EINE FIXTURE MIT FREMDEM SCRIPT GIBT, PRUEFT ZUERST DIESE
+ * SECHS ZEILEN.
  * -------------------------------------------------------------------------- */
 
 /**
@@ -778,3 +1007,45 @@ export const FOREIGN_MANUAL_NOTE =
  */
 export const FOREIGN_REST_MESSAGE =
   "Dieser Fund steht nach dem Entfernen noch im Code. Bitte die Stelle von Hand löschen.";
+
+/* -------------------------------------------------------------------------- *
+ * DIE WORTLAUTE DER SCHEIBE 11.11e (OWNER-FREIGABE 2026-09-22, ENTSCHEIDUNG
+ * P11.11-41, Punkt (H) und E1 des Bau-Prompts)
+ *
+ * SIE SIND GEGEN DIE DOKUMENTWEITEN ABWESENHEITS-ZUSICHERUNGEN GEPRUEFT (GEMESSEN,
+ * CC, 2026-09-22): die vier Nadeln aus CodeImporter.test.tsx — /%/, /gerettet/i,
+ * /mindestens/, /NaN/ —, SK10 ("Scripte" kommt nicht vor) und "Tracking-Pixel".
+ * Ein Waechter haelt es fest (S38). EINE KOLLISION WIRD GEMELDET, NICHT DURCH EINE
+ * TEXT-ANPASSUNG BESEITIGT — ein angepasster Text waere eine Owner-Freigabe, die
+ * niemand erteilt hat.
+ *
+ * SIE STEHEN HIER UND WERDEN VON `buildForeignView` WEITER OBEN BENUTZT. Das ist kein
+ * Versehen: Sie gehoeren zu den Wortlauten und nicht in die Logik, und eine
+ * Vorwaerts-Referenz auf eine Modul-Konstante ist unbedenklich, solange die Funktion
+ * erst NACH der Modul-Auswertung gerufen wird — sie wird im Render gerufen.
+ * -------------------------------------------------------------------------- */
+
+/**
+ * Die Ueberschrift des eingeklappten Bereichs. DIE ZAHL WIRD ANGEHAENGT, an genau
+ * einer Stelle: im Block (4) in `src/components/CodeImporter.tsx`.
+ *
+ * SIE ZAEHLT SKRIPTE, NICHT GRUPPEN (P11.11-41, Punkt (H)) — `unbekannteSkripte` aus
+ * `foreignView`, gerechnet als Summe ueber alle Gruppen.
+ */
+export const FOREIGN_UNKNOWN_HEADING = "Weitere Skripte";
+
+/**
+ * Die Gruppe fuer alles, woraus sich KEIN Host ablesen laesst: relative Adressen,
+ * ungueltige, `data:` und `blob:`.
+ *
+ * SIE HEISST NICHT "Ohne Host": "Host" ist Jargon, und die Zielgruppe sind Media
+ * Buyer. "Domain-Angabe" sagt dasselbe in ihrer Sprache.
+ */
+export const FOREIGN_GROUP_NO_HOST = "Ohne Domain-Angabe";
+
+/**
+ * Die Gruppe der Skripte ohne jede Adresse. Der Singular steht schon als
+ * UNKNOWN_INLINE in der Liste — dieselbe Wortwahl im Plural, damit der Betreiber die
+ * Gruppe und ihre Eintraege als dasselbe erkennt.
+ */
+export const FOREIGN_GROUP_INLINE = "Inline-Skripte";

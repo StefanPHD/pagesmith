@@ -144,6 +144,7 @@ import { stripOwnBlocks } from "@/lib/own-blocks-strip";
 // in annotateAndDetect auf DEMSELBEN Parse; hier kommen nur das Ergebnis-Praedikat fuer
 // die Kollision und die Wortlaute her.
 import {
+  buildForeignView,
   foreignRemoveLabel,
   hasForeignCmp,
   FOREIGN_ANBIETER_NOTE,
@@ -156,6 +157,7 @@ import {
   FOREIGN_NONE_MESSAGE,
   FOREIGN_PARKED_NOTE,
   FOREIGN_REST_MESSAGE,
+  FOREIGN_UNKNOWN_HEADING,
 } from "@/lib/foreign-scan";
 // Das ENTFERNEN fremder Pixel (Scheibe 11.11c) liegt in einer eigenen Datei — die
 // Erkennung daneben schreibt bewusst nicht. Beide teilen sich die Knotenauswahl.
@@ -732,6 +734,20 @@ export default function CodeImporter({
   // P11.11-24). Geht als Prop an PublishView, wo der Kollisionshinweis am
   // Einwilligungs-Schalter steht (P11.11-12, Satz 8).
   const foreignCmp = hasForeignCmp(foreignScan);
+
+  // DIE ANZEIGE-SICHT DER FUNDLISTE (Scheibe 11.11e): die bekannten Funde GEORDNET,
+  // die unbekannten nach HOST GEBUENDELT. SIE ERKENNT NICHTS ANDERS — `foreignScan`
+  // und sein Typ sind unberuehrt, diese Sicht ist eine reine Umformung daneben
+  // (ENTSCHEIDUNG P11.11-41, Punkt (E)).
+  //
+  // DER ANLASS IST EINE ECHTE SEITE MIT 136 SKRIPTEN, davon rund 130 Seiten- und
+  // Theme-Code (OWNER-TEST, 2026-09-21): Die Liste war dort nicht falsch, sondern
+  // unbenutzbar. GEBUENDELT statt GEFILTERT — ein Pfad-Filter haette auf derselben
+  // Seite einen Tracker versteckt (ENTSCHEIDUNG P11.11-37).
+  const foreignView = useMemo(
+    () => buildForeignView(foreignScan.status === "ok" ? foreignScan.findings : []),
+    [foreignScan]
+  );
 
   const counts = useMemo(
     () => ({
@@ -1522,6 +1538,15 @@ export default function CodeImporter({
     // (docs/immer-beachten.md, ABLEITEN STATT LOESCHEN).
     setExportAttempted(false);
     setStrippedText(null);
+    // DERSELBE ANKER DER SCHEIBE 11.11c GEHOERT DAZU (Scheibe 11.11e): Auch
+    // `foreignStrip` beschreibt einen ABGESCHLOSSENEN VERSUCH am Text des VORIGEN
+    // Projekts. ER FEHLTE HIER BIS ZUM 2026-09-22, und der Ausfall war STILL, weil die
+    // Rest-Meldung zusaetzlich `debouncedCode === foreignStrip.text` verlangt — ein
+    // Projektwechsel tauscht den Text und loescht den Anker damit von selbst.
+    // ER BEISST GENAU DANN, WENN ZWEI PROJEKTE BYTE-GLEICHEN TEXT TRAGEN (ein
+    // duplizierter Entwurf): Dann stuende die Rest-Meldung im zweiten Projekt fuer
+    // einen Klick im ersten. Gedeckt von SK25, die Mutation M8 macht ihn wieder rot.
+    setForeignStrip(null);
     // DIE FUENF CAPI-ZEILEN SIND HIER ENTFALLEN (Phase 11 Scheibe 6, zweite Haelfte).
     // Sie leerten Eingabe, Status, Fehler, Bestaetigung und Busy-Flag der
     // Token-Verwaltung. Diese Zustaende liegen jetzt in der Karte, und die wird beim
@@ -3433,8 +3458,17 @@ export default function CodeImporter({
               <p className="text-sm text-gray-400">{FOREIGN_NONE_MESSAGE}</p>
             ) : (
               <ul className="flex max-h-48 flex-col gap-2 overflow-y-auto">
-                {foreignScan.findings.map((f, i) =>
-                  f.art === "bekannt" ? (
+                {/* DIE BEKANNTEN FUNDE STEHEN OFFEN OBEN (P11.11-37) UND GEORDNET
+                    (P11.11-41, Punkt (J)): nach der Reihenfolge der Signaturliste,
+                    innerhalb eines Anbieters knoten -> aufruf -> handler. Die Ordnung
+                    liegt in `buildForeignView` und nicht hier — eine Sortierung im JSX
+                    waere eine zweite Ordnungs-Wahrheit ohne eigenen Test.
+
+                    ES BLEIBT EINE EINZIGE LISTE MIT EINEM EINZIGEN SCROLL-BEHAELTER:
+                    die eingeklappte Sektion ist ihr LETZTES `<li>`. Ein zweiter
+                    Behaelter daneben haette zwei Scroll-Bereiche erzeugt, und der
+                    eingeklappte waere im aufgeklappten Zustand der laengere. */}
+                {foreignView.bekannt.map((f, i) => (
                     // BEKANNT: je ANBIETER-MENGE eine Zeile, mit der Zahl der
                     // Fundstellen (Entscheidung P11.11-32, Punkt (c)). Mehrere
                     // Anbieter an EINER Zeile sind der Knoten, den nur Namen mehrerer
@@ -3465,6 +3499,25 @@ export default function CodeImporter({
                             ? "1 Fundstelle"
                             : `${f.stellen} Fundstellen`}
                         </span>
+                        {/* DER ORTSHINWEIS — NEBEN DER FUNDSTELLEN-ZAHL (Scheibe
+                            11.11e; ENTSCHEIDUNG P11.11-41, Punkt (I)). Er steht nur
+                            an einem Fund ohne Knopf, also an `aufruf` und `handler`;
+                            `foreign-scan.ts` setzt ihn dort und sonst auf null.
+
+                            ER LOEST EIN GEMESSENES PROBLEM: Auf der Testseite stehen
+                            ZWEI Zeilen "Meta · Fremdes Pixel · 1 Fundstelle"
+                            untereinander — ein Seiten-Script und ein `onclick` —, und
+                            beide sagen "von Hand loeschen", ohne zu sagen WO.
+
+                            ALS TEXT, NIE ALS HTML: Er ist Betreiber-Code aus einer
+                            fremden Seite, genau wie der Ausschnitt eines unbekannten
+                            Skripts. Dieselbe Mono-Gestalt, damit der Betreiber beide
+                            als dasselbe erkennt. */}
+                        {f.ausschnitt !== null && (
+                          <span className="break-all font-mono text-xs text-gray-400">
+                            {f.ausschnitt}
+                          </span>
+                        )}
                       </div>
                       {f.klassen.includes("container") && (
                         <p className="mt-1 text-xs text-gray-500">
@@ -3550,29 +3603,79 @@ export default function CodeImporter({
                         </p>
                       )}
                     </li>
-                  ) : (
-                    // UNBEKANNT: je KNOTEN eine Zeile — es gibt keinen Anbieter, nach
-                    // dem man gruppieren koennte. KEINE Marke, KEINE Handlung, KEIN
-                    // Leuchten (P11.11-3).
-                    //
-                    // DER AUSSCHNITT WIRD ALS TEXT GERENDERT, NIE ALS HTML: Er ist
-                    // Betreiber-Code aus einer fremden Seite. React setzt einen String
-                    // als Textknoten; dangerouslySetInnerHTML kommt in diesem Block
-                    // nicht vor, und ein Waechter haelt das fest.
-                    <li
-                      key={`u${i}`}
-                      className="rounded-md border border-gray-200 px-3 py-2 text-sm"
+                  ))}
+
+                {/* DIE UNBEKANNTEN SKRIPTE — GEBUENDELT UND EINGEKLAPPT (Scheibe 11.11e;
+                  ENTSCHEIDUNGEN P11.11-37, P11.11-41).
+
+                  NUR BEI MINDESTENS EINER GRUPPE (P11.11-41, Punkt (K)). Das ist eine
+                  AUFLAGE und keine Gestaltungsfrage: SK4 fordert innerhalb der Liste
+                  NULL Knoepfe und SK12 GENAU EINEN — zwei ZAEHL-Zusicherungen. Eine
+                  Sektion mit "(0)" waere ausserdem eine Auskunft ueber nichts.
+
+                  `<details>`/`<summary>` UND NICHT BEDINGTES RENDERN, und das ist der
+                  tragende Entschluss dieser Scheibe: DIE KINDER BLEIBEN IM DOM. Damit
+                  ist "NICHTS WIRD AUSGEBLENDET" (P11.11-37) am DOM BELEGBAR — bei
+                  bedingtem Rendern koennte ein Test "gebuendelt" nicht mehr von
+                  "ausgeblendet" unterscheiden, und genau das ist die Zusage.
+                  GEMESSEN (CC, 2026-09-22, Projekt-jsdom): ein `<summary>` zaehlt NICHT
+                  als Rolle `button` — die zwei Knopf-Zaehlungen bleiben unberuehrt —,
+                  `<details>` traegt die Rolle `group`, und ein Klick dreht `open` auch
+                  in jsdom.
+
+                  DER `key` HAENGT AM PROJEKT (P11.11-41, Punkt (G)): Der Aufklapp-
+                  Zustand lebt im DOM und nicht in React; er stirbt beim Projektwechsel
+                  mit dem Abbau des Elements, statt von einem Aufruf geleert zu werden.
+                  Praezedenz ist die Ziel-Karte, deren Zustaende ueber ihren `key`
+                  sterben. OHNE IHN UEBERLEBTE `open` DEN WECHSEL, weil React nach
+                  Position abgleicht.
+
+                  KEIN ROT UND KEIN LEUCHTEN, wie im ganzen Block (P11.11-3). */}
+                {foreignView.gruppen.length > 0 && (
+                  <li>
+                    <details
+                      key={projectId ?? "kein-projekt"}
+                      className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2"
                     >
-                      <span className="break-all font-mono text-xs text-gray-700">
-                        {f.kennung}
-                      </span>
-                      {f.ausschnitt !== null && (
-                        <p className="mt-1 break-all font-mono text-xs text-gray-400">
-                          {f.ausschnitt}
-                        </p>
-                      )}
-                    </li>
-                  )
+                      <summary className="cursor-pointer text-sm text-gray-700">
+                        {`${FOREIGN_UNKNOWN_HEADING} (${foreignView.unbekannteSkripte})`}
+                      </summary>
+                      <ul className="mt-2 flex flex-col gap-1.5">
+                        {foreignView.gruppen.map((g) => (
+                          <li key={`${g.art}:${g.titel}`}>
+                            <details className="rounded-md border border-gray-200 bg-white px-2.5 py-1.5">
+                              <summary className="cursor-pointer break-all text-xs text-gray-700">
+                                {`${g.titel} (${g.eintraege.length})`}
+                              </summary>
+                              {/* JE KNOTEN EINE ZEILE — innerhalb der Gruppe gibt es
+                                  keinen Anbieter, nach dem man weiter gruppieren
+                                  koennte. KEINE Marke, KEINE Handlung (P11.11-3).
+
+                                  DER AUSSCHNITT WIRD ALS TEXT GERENDERT, NIE ALS HTML:
+                                  Er ist Betreiber-Code aus einer fremden Seite. React
+                                  setzt einen String als Textknoten;
+                                  dangerouslySetInnerHTML kommt in diesem Block nicht
+                                  vor, und SK11 haelt das fest. */}
+                              <ul className="mt-1.5 flex flex-col gap-1">
+                                {g.eintraege.map((e, j) => (
+                                  <li key={`u${j}`}>
+                                    <span className="break-all font-mono text-xs text-gray-700">
+                                      {e.kennung}
+                                    </span>
+                                    {e.ausschnitt !== null && (
+                                      <p className="break-all font-mono text-xs text-gray-400">
+                                        {e.ausschnitt}
+                                      </p>
+                                    )}
+                                  </li>
+                                ))}
+                              </ul>
+                            </details>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
                 )}
               </ul>
             )}

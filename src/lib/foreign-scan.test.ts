@@ -8,13 +8,18 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  buildForeignView,
   foreignRemoveLabel,
   hasForeignCmp,
+  hostVon,
   scanForeignTags,
   FOREIGN_ANBIETER_NOTE,
   FOREIGN_GOOGLE_TAG_NOTE,
+  FOREIGN_GROUP_INLINE,
+  FOREIGN_GROUP_NO_HOST,
   FOREIGN_MANUAL_NOTE,
   FOREIGN_REST_MESSAGE,
+  FOREIGN_UNKNOWN_HEADING,
   INLINE_EXCERPT_MAX,
   UNKNOWN_INLINE,
   type ForeignFinding,
@@ -742,5 +747,189 @@ describe("scanForeignTags — Traeger, entfernbar und Schluessel (11.11c)", () =
     expect(b).toHaveLength(1);
     expect(b[0].traeger).toBe("aufruf");
     expect(b[0].entfernbar).toBe(false);
+  });
+});
+
+// ===========================================================================
+// DIE ANZEIGE-SICHT: BUENDELN UND ORDNEN (Phase 11.11, Scheibe 11.11e).
+//
+// SIE ERKENNT NICHTS ANDERS. Jeder Lauf hier prueft eine UMFORMUNG von
+// ForeignFinding[]; die Erkennung selbst hat ihre Laeufe oben und ist unberuehrt.
+//
+// DIE ERWARTUNGEN SIND AUS DEN ENTSCHEIDUNGEN GETIPPT, NIE AUS DEM LAUF ABGELESEN
+// (Dauerregel EIN WAECHTER UEBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM
+// CODE) — die Fallliste in S32 stammt aus P11.11-41, Punkt (A), und die Messung, auf
+// die jener Punkt sich stuetzt, lief AUSSERHALB dieses Repos.
+// ===========================================================================
+
+describe("buildForeignView — Host-Ableitung und Buendelung (11.11e)", () => {
+  const rahmen = (rumpf: string) =>
+    `<!DOCTYPE html><html lang="de"><head><title>t</title></head><body>${rumpf}</body></html>`;
+  const sicht = (rumpf: string) => buildForeignView(funde(rahmen(rumpf)));
+  const skript = (src: string) => `<script src="${src}"></script>`;
+
+  // S32. DIE SECHS FAELLE DER HOST-ABLEITUNG, JEDER EINZELN (P11.11-41, Punkt (A)).
+  // SIE SIND AUSDRUECKLICH NICHT ZUSAMMENGEFASST: protokoll-relativ und relativ werfen
+  // beide, aber bei `//host/x` STEHT der Host da und bei `/pfad` nicht.
+  it("S32: hostVon loest absolut, protokoll-relativ, relativ, ungueltig und data: je eigen auf", () => {
+    // ABSOLUT — und der Parser normalisiert die Gross-/Kleinschreibung SELBST.
+    expect(hostVon("https://connect.facebook.net/en_US/fbevents.js")).toBe(
+      "connect.facebook.net"
+    );
+    expect(hostVon("https://CDN.Example.COM/A.js")).toBe("cdn.example.com");
+    expect(hostVon("http://example.com/a.js?v=1")).toBe("example.com");
+
+    // PROTOKOLL-RELATIV — mit vorangestelltem https: ergibt sie den Host.
+    expect(hostVon("//cdn.example.com/x.js")).toBe("cdn.example.com");
+
+    // DER PORT GEHOERT NICHT IN DEN SCHLUESSEL (Punkt (C)): hostname, nicht host.
+    expect(hostVon("https://example.com:8443/a.js")).toBe("example.com");
+
+    // `www.` BLEIBT GETRENNT (Punkt (D)) — zwei verschiedene Hosts, zwei Werte.
+    expect(hostVon("https://www.example.com/a.js")).toBe("www.example.com");
+    expect(hostVon("https://example.com/a.js")).toBe("example.com");
+
+    // RELATIV und UNGUELTIG -> null. Der Wurf ist das Erkennungsmerkmal.
+    for (const v of ["/wp-content/plugins/digistore/digistore.js", "js/app.js", "https://", "::::", "", "   ", "#x"])
+      expect(hostVon(v)).toBeNull();
+
+    // `data:` UND `blob:` WERFEN NICHT, sie liefern einen LEEREN Host — ohne den
+    // eigens abgefangenen Leerfall entstuende eine Gruppe mit dem Titel "".
+    expect(hostVon("data:text/javascript,alert(1)")).toBeNull();
+    expect(hostVon("blob:https://example.com/abc")).toBeNull();
+  });
+
+  // S33. SORTIERT NACH ANZAHL AUFSTEIGEND (P11.11-37), MIT BENANNTER ZWEITACHSE.
+  // OHNE DIE ZWEITACHSE haengte die Reihenfolge zweier gleich grosser Gruppen an der
+  // Einfuegefolge einer Map und waere nicht reproduzierbar.
+  it("S33: die Gruppen stehen nach Anzahl aufsteigend, bei Gleichstand nach Titel", () => {
+    const v = sicht(
+      skript("https://viele.example/1.js") +
+        skript("https://viele.example/2.js") +
+        skript("https://viele.example/3.js") +
+        skript("https://bbb.example/x.js") +
+        skript("https://aaa.example/x.js")
+    );
+    expect(v.gruppen.map((g) => `${g.titel}:${g.eintraege.length}`)).toEqual([
+      "aaa.example:1",
+      "bbb.example:1",
+      "viele.example:3",
+    ]);
+  });
+
+  // S34. DREI GESTALTEN, UND DIE ZWEI SONDERGRUPPEN SAMMELN, WAS SONST NAMENLOS WAERE.
+  it("S34: relative, ungueltige und data:-Adressen bilden EINE Gruppe, Inline eine eigene", () => {
+    const v = sicht(
+      skript("/js/a.js") +
+        skript("js/b.js") +
+        skript("data:text/javascript,alert(1)") +
+        "<script>console.log('eins');</script>" +
+        "<script>console.log('zwei');</script>" +
+        skript("https://cdn.example/x.js")
+    );
+    // POSITIVKONTROLLE: KEINE Gruppe traegt einen leeren Titel. Ohne diese Zeile waere
+    // der Lauf auch dann gruen, wenn die data:-Adresse eine namenlose Gruppe erzeugt
+    // haette — sie stuende dann einfach als vierte da.
+    expect(v.gruppen.every((g) => g.titel !== "")).toBe(true);
+
+    const nachArt = new Map(v.gruppen.map((g) => [g.art, g]));
+    expect(nachArt.get("ohne-domain")?.eintraege).toHaveLength(3);
+    expect(nachArt.get("inline")?.eintraege).toHaveLength(2);
+    expect(nachArt.get("host")?.titel).toBe("cdn.example");
+    expect(v.gruppen).toHaveLength(3);
+  });
+
+  // S35. DER SUMMEN-WAECHTER — DER LAUF, UM DESSENTWILLEN `unbekannteSkripte` AUS DEN
+  // GRUPPEN GERECHNET WIRD UND NICHT NEBEN IHNEN.
+  //
+  // ER IST DIE EINZIGE ZUSICHERUNG, DASS DIE BUENDELUNG NICHTS VERLIERT: "NICHTS WIRD
+  // AUSGEBLENDET" (P11.11-37) ist sonst eine Behauptung. Die Mutation M1 macht ihn rot.
+  it("S35: die Summe aller gebuendelten Skripte ist die Zahl der unbekannten Funde", () => {
+    const rumpf =
+      skript("https://viele.example/1.js") +
+      skript("https://viele.example/2.js") +
+      skript("/js/a.js") +
+      skript("data:text/javascript,alert(1)") +
+      "<script>console.log('x');</script>" +
+      META_BASE;
+    const fs = funde(rahmen(rumpf));
+    const v = buildForeignView(fs);
+
+    const vorher = unbekannt(fs).length;
+    expect(vorher).toBe(5); // vier mit Adresse, eines inline
+    const summe = v.gruppen.reduce((n, g) => n + g.eintraege.length, 0);
+    expect(summe).toBe(vorher);
+    expect(v.unbekannteSkripte).toBe(vorher);
+    // UND DER BEKANNTE FUND IST NICHT IN DIE GRUPPEN GERUTSCHT.
+    expect(v.bekannt).toHaveLength(1);
+    expect(v.bekannt[0].anbieter).toEqual(["Meta"]);
+  });
+
+  // S36. DIE ORDNUNG DER BEKANNTEN FUNDE (P11.11-41, Punkt (J)): nach der Reihenfolge
+  // der SIGNATURLISTE, innerhalb eines Anbieters knoten -> aufruf -> handler.
+  //
+  // DIE FIXTURE STEHT IN UMGEKEHRTER CODE-REIHENFOLGE — sonst waere der Lauf auch bei
+  // einer Sortierung nach Code-Reihenfolge gruen und bewiese nichts.
+  it("S36: bekannte Funde stehen in der Reihenfolge der Signaturliste, innerhalb knoten vor aufruf vor handler", () => {
+    const v = sicht(
+      '<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js"></script>' +
+        '<a href="#" onclick="fbq(\'track\',\'Lead\')">k</a>' +
+        "<script>fbq('track','Purchase');</script>" +
+        skript("https://connect.facebook.net/en_US/fbevents.js")
+    );
+    // Meta steht in FOREIGN_SIGNATURES VOR Cookiebot; innerhalb von Meta zaehlt der
+    // Traeger. POSITIVKONTROLLE der Achse: die Erwartung ist aus der Liste und der
+    // Entscheidung getippt, nicht aus dem Lauf.
+    expect(v.bekannt.map((f) => `${f.anbieter[0]}:${f.traeger}`)).toEqual([
+      "Meta:knoten",
+      "Meta:aufruf",
+      "Meta:handler",
+      "Cookiebot:knoten",
+    ]);
+  });
+
+  // S37. DER ORTSHINWEIS STEHT AN `aufruf` UND `handler` — UND NICHT AN `knoten`
+  // (P11.11-41, Punkt (I)). Die zweite Haelfte ist die eigentliche Zusicherung: Ein
+  // Knoten hat einen Knopf und braucht keine Wegbeschreibung.
+  it("S37: der Ausschnitt steht an aufruf und handler, nicht an knoten", () => {
+    const v = sicht(
+      skript("https://connect.facebook.net/en_US/fbevents.js") +
+        "<script>document.title='x';fbq('track','Purchase');</script>" +
+        '<a href="#" onclick="fbq(\'track\',\'Lead\')">k</a>'
+    );
+    const nach = new Map(v.bekannt.map((f) => [f.traeger, f]));
+    // POSITIVKONTROLLE: alle drei Traeger sind da, sonst waere eine der drei Zeilen
+    // unten trivial wahr.
+    expect([...nach.keys()].sort()).toEqual(["aufruf", "handler", "knoten"]);
+    expect(nach.get("knoten")?.ausschnitt).toBeNull();
+    expect(nach.get("aufruf")?.ausschnitt).toContain("fbq('track','Purchase')");
+    expect(nach.get("handler")?.ausschnitt).toContain("fbq('track','Lead')");
+    // ER IST GEKUERZT UND GEGLAETTET wie der Ausschnitt eines unbekannten Skripts.
+    expect(nach.get("aufruf")?.ausschnitt).not.toContain("\n");
+    expect(
+      Array.from(nach.get("aufruf")?.ausschnitt ?? "").length
+    ).toBeLessThanOrEqual(INLINE_EXCERPT_MAX + 1);
+  });
+
+  // S38. DIE DREI NEUEN WORTLAUTE GEGEN DIE DOKUMENTWEITEN ABWESENHEITS-ZUSICHERUNGEN
+  // (Bauform S26). EINE KOLLISION WIRD GEMELDET, NICHT DURCH EINE TEXT-ANPASSUNG
+  // BESEITIGT — ein angepasster Text waere eine Owner-Freigabe, die niemand erteilt hat.
+  it("S38: kein Wortlaut der Scheibe 11.11e traegt eine der vier Nadeln oder die Form Scripte", () => {
+    const texte = [
+      FOREIGN_UNKNOWN_HEADING,
+      FOREIGN_GROUP_NO_HOST,
+      FOREIGN_GROUP_INLINE,
+    ];
+    // POSITIVKONTROLLE: die Nadeln treffen, wenn es etwas zu treffen gibt.
+    expect(/%/.test("50 %")).toBe(true);
+    expect(/gerettet/i.test("gerettet")).toBe(true);
+    for (const t of texte) {
+      expect(t).not.toMatch(/%/);
+      expect(t).not.toMatch(/gerettet/i);
+      expect(t).not.toMatch(/mindestens/);
+      expect(t).not.toMatch(/NaN/);
+      expect(t).not.toContain("Scripte");
+      expect(t).not.toContain("Tracking-Pixel");
+    }
   });
 });

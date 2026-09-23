@@ -1,0 +1,371 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("server-only", () => ({}));
+
+import type { TrackingTarget } from "@/lib/settings";
+import { CLICK_ID_TABLE, stripForeignClickIds } from "./click-id-strip";
+import { forwardToMeta } from "./meta-forward";
+import { forwardToPinterest } from "./pinterest-forward";
+import { forwardToTiktok } from "./tiktok-forward";
+import { forwardToLinkedin } from "./linkedin-forward";
+import { forwardToGoogle } from "./google-forward";
+
+// ===========================================================================
+// FREMDE KLICK-KENNUNGEN (Phase 11.7, S4) — DIE FUNKTION UND DER ZENTRALE WAECHTER.
+//
+// DIE ERWARTUNG STEHT HIER VON HAND, AUS DER QUELLE, NIE AUS DEM CODE. Jede Zeile ist
+// vor dem Bau zeichengleich gegen ihre Ziel-Datei gehalten worden. Ein Waechter, der
+// seine Erwartung aus CLICK_ID_TABLE bezoege, bestaetigte jeden Tippfehler dort.
+// EIN Record UEBER ALLE ZIELE: Ein neues Ziel kompiliert hier erst mit einer Zeile.
+// ===========================================================================
+
+const ERWARTUNG: Record<TrackingTarget, readonly string[]> = {
+  // docs/ziel-befunde/meta.md, Teil (h): "…if an fbclid query parameter is in the URL…"
+  meta: ["fbclid"],
+  // docs/ziel-befunde/pinterest.md, Teil (ac): "`&epik=` query parameter in the URL."
+  pinterest: ["epik"],
+  // docs/ziel-befunde/tiktok.md, Teil (j): "TikTok only appends the ttclid parameter
+  // to the landing page URL of an ad."
+  tiktok: ["ttclid"],
+  // docs/ziel-befunde/linkedin.md, Teil (an): "Capture Click ID li_fat_id by parsing
+  // from the Click URLs"
+  linkedin: ["li_fat_id"],
+  // CLICK_ID_PARAMS (capi/google-click-ids.ts) — die Schreibung als URL-Parameter ist
+  // dort als UNBELEGT gefuehrt; der Zuschnitt (D2) nimmt die Namen von dort.
+  google: ["gclid", "gbraid", "wbraid"],
+};
+
+const ZIELE = Object.keys(ERWARTUNG) as TrackingTarget[];
+
+/** Zeichen, die im Quelltext nicht als Escape stehen sollen, werden GEBAUT. */
+const TAB = String.fromCharCode(9);
+const LONE_SURROGATE = String.fromCharCode(0xd800);
+
+describe("Die Tabelle", () => {
+  it("T1: jede Zeile gleicht der Entscheidung und traegt eine Quelle", () => {
+    for (const ziel of ZIELE) {
+      expect([...CLICK_ID_TABLE[ziel].params]).toEqual(ERWARTUNG[ziel]);
+      expect(CLICK_ID_TABLE[ziel].quelle.trim()).not.toBe("");
+    }
+  });
+
+  it("T2: alle Namen sind kleingeschrieben und kommen genau einmal vor", () => {
+    const alle = ZIELE.flatMap((ziel) => [...CLICK_ID_TABLE[ziel].params]);
+    for (const name of alle) expect(name).toBe(name.toLowerCase());
+    expect(new Set(alle).size).toBe(alle.length);
+  });
+});
+
+describe("Der Vertrag von stripForeignClickIds", () => {
+  // V-a IST NICHT DER EINZIGE WAECHTER GEGEN "SIE WIRFT", und das ist gemessen (Mutation m6
+  // der Phase 11.7, S4: die Parse-Probe wirft weiter -> 103 rote Faelle statt zwei): Die
+  // HAEUFIGSTE Eingabe ist die LEERE Adresse — jeder Adapter-Aufruf ohne eventSourceUrl
+  // reicht "" herein, und `new URL("")` wirft. Die Zusage "wirft nie" ist fuer sie ueber
+  // den Bestand mitbewacht: rund hundert Adapter- und Ingest-Tests ohne Adresse werden
+  // dann rot, weil kein Forward mehr hinausgeht. Die Antwort des Ingest blieb dabei eine
+  // leere 204 (ingest.persist.test.ts, Fall (d)) — der Wurf wird im async-Adapter zur
+  // Ablehnung, und allSettled faengt sie.
+  it("V-a: sie wirft bei keiner feindlichen Eingabe und liefert immer eine Zeichenkette", () => {
+    const werfendesToString = {
+      toString(): string {
+        throw new Error("boom");
+      },
+    };
+    const eingaben: unknown[] = [
+      undefined,
+      null,
+      42,
+      true,
+      {},
+      [],
+      werfendesToString,
+      "",
+      "?",
+      "#",
+      "??&&==",
+      "http://[::1",
+      "%",
+      LONE_SURROGATE,
+      `https://x.com/?${LONE_SURROGATE}=1&gclid=2`,
+      `https://x.com/?${"&".repeat(100_000)}gclid=1`,
+      `https://x.com/?${"%".repeat(1_000)}=1`,
+      `https://x.com/?gc${TAB}lid=1`,
+    ];
+    for (const ziel of ZIELE) {
+      for (const eingabe of eingaben) {
+        expect(() => stripForeignClickIds(eingabe, ziel)).not.toThrow();
+        expect(typeof stripForeignClickIds(eingabe, ziel)).toBe("string");
+      }
+    }
+  });
+
+  it("V-b: wird nichts entfernt, ist die Ausgabe die Eingabe — auch unnormalisiert", () => {
+    for (const url of [
+      "HTTPS://EXAMPLE.COM:443/a b?x=1 2&y=%zz&z=a+b&&#f",
+      "https://x.com/p?",
+      "https://x.com/p?fbclid=EIGEN&utm_source=s",
+      "https://x.com/p",
+    ]) {
+      expect(stripForeignClickIds(url, "meta")).toBe(url);
+    }
+  });
+
+  it("V-c1: beim Entfernen bleibt jedes andere Zeichen erhalten", () => {
+    expect(
+      stripForeignClickIds(
+        "HTTPS://Example.COM:443/Pfad%20x?utm_source=a b&gclid=G1&x=%zz&y=a+b&&z#frag?gclid=H",
+        "meta",
+      ),
+    ).toBe("HTTPS://Example.COM:443/Pfad%20x?utm_source=a b&x=%zz&y=a+b&&z#frag?gclid=H");
+  });
+
+  it("V-c2: derselbe fremde Name mehrfach — jedes Vorkommen faellt", () => {
+    expect(stripForeignClickIds("https://x.com/p?gclid=1&a=2&gclid=3", "meta")).toBe(
+      "https://x.com/p?a=2",
+    );
+  });
+
+  it("V-c3: Stellung, Trenner und Parameter ohne Wert", () => {
+    const faelle: [string, string][] = [
+      ["https://x.com/p?gclid=1&a=2", "https://x.com/p?a=2"],
+      ["https://x.com/p?a=2&gclid", "https://x.com/p?a=2"],
+      ["https://x.com/p?a=2&gclid=&b=3", "https://x.com/p?a=2&b=3"],
+      ["https://x.com/p?&&gclid=1", "https://x.com/p?&"],
+      // Faellt das letzte Segment, bleibt das "?" (Zusage (c) ohne Ausnahme).
+      ["https://x.com/p?gclid=1", "https://x.com/p?"],
+      ["https://x.com/p?gclid=1#f", "https://x.com/p?#f"],
+    ];
+    for (const [ein, aus] of faelle) expect(stripForeignClickIds(ein, "meta")).toBe(aus);
+  });
+
+  it("V-c4: fremde Namen fallen in jeder Schreibung, die eigene bleibt in jeder", () => {
+    expect(
+      stripForeignClickIds(
+        "https://x.com/p?GCLID=1&Fbclid=2&TtClId=3&EPIK=4&Li_Fat_Id=5&GBraid=6&wBRAID=7&utm=8",
+        "pinterest",
+      ),
+    ).toBe("https://x.com/p?EPIK=4&utm=8");
+  });
+
+  it("V-c5: der Name wird verglichen, wie ein Standard-Parser ihn liest", () => {
+    // %67clid ist "gclid", ein rohes Tab entfaellt beim Parsen; gclid%3D1 ist
+    // "gclid=1" und gclid+ ist "gclid " — beide KEINE Kennung.
+    expect(
+      stripForeignClickIds(
+        `https://x.com/p?%67clid=1&gclid%3D1=2&gc${TAB}lid=3&gclid+=4`,
+        "meta",
+      ),
+    ).toBe("https://x.com/p?gclid%3D1=2&gclid+=4");
+  });
+
+  it("V-c6: je Ziel faellt genau das Fremde, das Eigene und das Unbekannte bleiben", () => {
+    const alle = ZIELE.flatMap((ziel) => ERWARTUNG[ziel].map((name) => `${name}=v`));
+    const url = `https://x.com/p?utm_source=u&${alle.join("&")}`;
+    for (const ziel of ZIELE) {
+      const soll = ["utm_source=u", ...ERWARTUNG[ziel].map((name) => `${name}=v`)];
+      expect(stripForeignClickIds(url, ziel)).toBe(`https://x.com/p?${soll.join("&")}`);
+    }
+  });
+
+  it("V-d: nicht parsebar — alles ab dem ersten ? oder # faellt, auch das Eigene", () => {
+    const faelle: [string, string][] = [
+      ["/relativ?gclid=1&a=2", "/relativ"],
+      ["http://[::1?gclid=1", "http://[::1"],
+      ["nicht parsebar#gclid=1", "nicht parsebar"],
+      ["/x?fbclid=EIGEN", "/x"],
+      ["/a#b?c", "/a"],
+      ["nicht parsebar", "nicht parsebar"],
+      ["?gclid=1", ""],
+    ];
+    for (const [ein, aus] of faelle) expect(stripForeignClickIds(ein, "meta")).toBe(aus);
+  });
+
+  it("V-e: keine Zeichenkette ergibt die leere Zeichenkette", () => {
+    for (const eingabe of [undefined, null, 42, {}, ["https://x.com/?gclid=1"]]) {
+      expect(stripForeignClickIds(eingabe, "meta")).toBe("");
+    }
+  });
+
+  it("V-f: das Fragment bleibt unberuehrt, auch mit einer Kennung darin", () => {
+    // EINZIGER TEST GEGEN "das Fragment wird mitbearbeitet" neben dem Fall "?gclid=1#f"
+    // in V-c3.
+    for (const url of [
+      "https://x.com/p?a=1#frag&gclid=G1",
+      "https://x.com/p#?gclid=1&ttclid=2",
+    ]) {
+      expect(stripForeignClickIds(url, "meta")).toBe(url);
+    }
+  });
+});
+
+// ===========================================================================
+// DER ZENTRALE WAECHTER W — ALLE FUENF ECHTEN ADAPTER.
+//
+// Jeder Adapter bekommt eine Adresse mit ALLEN Kennungen der Tabelle und einem
+// utm-Parameter; gesucht wird in dem, was tatsaechlich hinausgeht (URL + Rumpf), nach
+// dem WERT jeder Kennung. Die Werte sind eindeutig und kommen sonst nirgends vor.
+// POSITIVKONTROLLE: genau ein fetch je Adapter — sonst waere "fremd fehlt" trivial wahr.
+// ===========================================================================
+
+const IP = "203.0.113.7";
+const UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
+/** ERFUNDENES Testgeheimnis — kein echtes Zugangsdatum. */
+const TOKEN = "ERFUNDEN_s4_waechter_token_0001";
+
+/** Der gesendete WERT je Name — eindeutig, damit ein Treffer genau eine Kennung meint. */
+const wert = (name: string) => `WV${name.replace(/_/g, "")}Q`;
+const UTM = "WVutmQ";
+
+/** Die abweichende Schreibung je Name, VON HAND. */
+const ABWEICHEND: Record<string, string> = {
+  fbclid: "FBCLID",
+  epik: "Epik",
+  ttclid: "TtClId",
+  li_fat_id: "LI_Fat_ID",
+  gclid: "GClid",
+  gbraid: "GBRAID",
+  wbraid: "wBraid",
+};
+
+type Lauf = "tabelle" | "abweichend";
+
+function adresse(lauf: Lauf): string {
+  const teile = ZIELE.flatMap((ziel) =>
+    ERWARTUNG[ziel].map(
+      (name) => `${lauf === "tabelle" ? name : ABWEICHEND[name]}=${wert(name)}`,
+    ),
+  );
+  return `https://kunde.de/lp?utm_source=${UTM}&${teile.join("&")}`;
+}
+
+/**
+ * EIN FALL JE ZIEL. Die drei Erwartungen stammen aus der ENTSCHEIDUNG, nicht aus dem Code:
+ * VERMERK P11.7-15 (Adressfluss je Adapter) und die Zuschnitte D4, D7, D9 der Phase 11.7.
+ */
+type WaechterFall = {
+  senden: (adresse: string) => Promise<void>;
+  /** Reicht der Adapter die Adresse weiter? (meta, pinterest, tiktok) */
+  adresseGeht: boolean;
+  /** Steht die EIGENE Kennung in der Nutzlast? linkedin sendet li_fat_id nicht (D9). */
+  eigeneGeht: boolean;
+  /** Sendet er bei abweichender Schreibung? google liest exakt heraus (D4) und nicht. */
+  sendetAbweichend: boolean;
+};
+
+const rumpf = (eventSourceUrl: string) => ({
+  value: 49.9,
+  currency: "EUR",
+  eventSourceUrl,
+});
+
+const WAECHTER: Record<TrackingTarget, WaechterFall> = {
+  meta: {
+    senden: (a) =>
+      forwardToMeta({ pixelId: "PIXEL-S4", token: TOKEN }, "Purchase", "evt-s4", rumpf(a), IP, UA),
+    adresseGeht: true,
+    eigeneGeht: true,
+    sendetAbweichend: true,
+  },
+  pinterest: {
+    senden: (a) =>
+      forwardToPinterest(
+        { adAccountId: "123456789012", token: TOKEN },
+        "Purchase",
+        "evt-s4",
+        rumpf(a),
+        IP,
+        UA,
+      ),
+    adresseGeht: true,
+    eigeneGeht: true,
+    sendetAbweichend: true,
+  },
+  tiktok: {
+    senden: (a) =>
+      forwardToTiktok({ pixelId: "PIXEL-S4", token: TOKEN }, "Purchase", "evt-s4", rumpf(a), IP, UA),
+    adresseGeht: true,
+    eigeneGeht: true,
+    sendetAbweichend: true,
+  },
+  linkedin: {
+    senden: (a) =>
+      forwardToLinkedin(
+        { token: TOKEN, conversionRules: { Purchase: "urn:lla:llaPartnerConversion:987654" } },
+        "Purchase",
+        "evt-s4",
+        rumpf(a),
+        IP,
+      ),
+    adresseGeht: false,
+    eigeneGeht: false,
+    sendetAbweichend: true,
+  },
+  google: {
+    senden: (a) =>
+      forwardToGoogle(
+        {
+          operatingAccountId: "9876543210",
+          token: TOKEN,
+          conversionRules: { Purchase: "1234567890" },
+        },
+        "Purchase",
+        "evt-s4",
+        rumpf(a),
+      ),
+    adresseGeht: false,
+    eigeneGeht: true,
+    sendetAbweichend: false,
+  },
+};
+
+describe("Waechter W — was jeder echte Adapter hinausschickt", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            code: 0,
+            num_events_received: 1,
+            num_events_processed: 1,
+            events: [{ status: "processed" }],
+          }),
+          { status: 200 },
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  const faelle = ZIELE.flatMap((ziel) =>
+    (["tabelle", "abweichend"] as const).map((lauf) => [ziel, lauf] as const),
+  );
+
+  it.each(faelle)("W: %s, Schreibung %s", async (ziel, lauf) => {
+    const fall = WAECHTER[ziel];
+    await fall.senden(adresse(lauf));
+
+    if (lauf === "abweichend" && !fall.sendetAbweichend) {
+      expect(fetchMock).not.toHaveBeenCalled();
+      return;
+    }
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchMock.mock.calls[0] as [unknown, { body?: unknown }];
+    const hinaus = `${String(url)}\n${String(init.body)}`;
+
+    for (const andere of ZIELE) {
+      for (const name of ERWARTUNG[andere]) {
+        const soll = andere === ziel && fall.eigeneGeht;
+        expect(hinaus.includes(wert(name)), `${ziel}/${lauf}: ${name}`).toBe(soll);
+      }
+    }
+    expect(hinaus.includes(UTM), `${ziel}/${lauf}: utm_source`).toBe(fall.adresseGeht);
+  });
+});

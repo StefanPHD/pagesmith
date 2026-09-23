@@ -1,6 +1,7 @@
 import "server-only";
 import { errorName } from "@/lib/errors";
 import { redactOpaque } from "@/lib/redact";
+import { stripForeignClickIds } from "@/lib/capi/click-id-strip";
 import type { CapiConfig } from "@/lib/capi/token";
 
 /**
@@ -359,7 +360,12 @@ export async function forwardToTiktok(
       },
     };
 
-    const eventSourceUrl = asString(body.eventSourceUrl);
+    // FREMDE KLICK-KENNUNGEN FALLEN HIER WEG, die eigene (ttclid) bleibt — der Anbieter
+    // liest sie selbst aus page.url (s. Kopf von capi/click-id-strip.ts).
+    const eventSourceUrl = stripForeignClickIds(
+      asString(body.eventSourceUrl),
+      "tiktok",
+    );
     if (eventSourceUrl) eintrag.page = { url: eventSourceUrl };
 
     // --- properties: NUR was vorliegt ---

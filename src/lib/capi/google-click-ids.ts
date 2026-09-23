@@ -3,11 +3,11 @@
 // WAS DIESE DATEI IST: EINE reine Funktion ueber EINER Zeichenkette. Kein Netz, kein
 // DOM, keine Datenbank, kein Zustand. Mehr steht hier nicht.
 //
-// SIE HAT IM PRODUKTIVCODE HEUTE KEINEN AUFRUFER, und das ist der Zuschnitt und kein
-// Versehen: 'google' steht nicht in TRACKING_TARGETS (lib/settings.ts), es gibt also
-// weder einen Empfaenger noch einen Eintrag im Fan-Out. Wer hier einen Aufrufer
-// ergaenzt, baut nicht mehr diese Scheibe — s. die tragende Invariante des
-// Zuschnitts in docs/claude-history/phase-11.2-google.md.
+// ZWEI VERBRAUCHER: forwardToGoogle (capi/google-forward.ts) liest mit
+// extractGoogleClickIds die Kennungen HERAUS; CLICK_ID_TABLE (capi/click-id-strip.ts)
+// uebernimmt CLICK_ID_PARAMS, damit die Adapter von meta, pinterest und tiktok diese
+// Kennungen aus der weitergereichten Adresse ENTFERNEN. Wer CLICK_ID_PARAMS aendert,
+// aendert beides.
 //
 // ---------------------------------------------------------------------------
 // DER KOPFSATZ ZUR ABLAGE — WOERTLICH aus docs/claude-history/phase-11.2-google.md,
@@ -66,8 +66,12 @@ export type GoogleClickIds = {
  * Kennung wird vom Anbieter NICHT als Fehler gemeldet.
  * DER OFFENE PUNKT DAZU steht in docs/offene-punkte.md, Eintrag 4. Die erste
  * Messung nimmt ihn mit.
+ * EXPORTIERT FUER DIE ENTFERNUNGS-TABELLE (CLICK_ID_TABLE in capi/click-id-strip.ts):
+ * Die Schreibungs-Entscheidung darueber gilt dem HERAUSLESEN; beim ENTFERNEN wird ohne
+ * Ruecksicht auf Gross- und Kleinschreibung verglichen, weil dort ein Zuviel die sichere
+ * Richtung ist.
  */
-const CLICK_ID_PARAMS = ["gclid", "gbraid", "wbraid"] as const;
+export const CLICK_ID_PARAMS = ["gclid", "gbraid", "wbraid"] as const;
 
 /**
  * Loest die Klick-Kennungen aus einer Zeichenkette, die eine URL sein kann.

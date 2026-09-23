@@ -1,14 +1,14 @@
 import "server-only";
 import { errorName } from "@/lib/errors";
+import { stripForeignClickIds } from "@/lib/capi/click-id-strip";
 
 /**
  * DER ADAPTER FUER DAS ZWEITE ZIEL (Phase 11, zehnte Scheibe).
  *
- * ER WIRD VON NIEMANDEM GERUFEN. Das ist die tragende Zusage dieser Scheibe und
- * keine Uebergangslage: Die Zuordnung Ziel -> Adapter (dispatchForward in
- * src/lib/capi/ingest.ts) kennt weiterhin GENAU EINEN Empfaenger. Diese Datei ist
- * rein additiv — kein bestehender Pfad ist beruehrt, keine Zuordnung erweitert,
- * keine Oberflaeche angefasst. Das Verdrahten ist die ZWOELFTE Scheibe.
+ * ER IST VERDRAHTET: FORWARDER_BY_TARGET (src/lib/capi/ingest.ts) ruft ihn fuer das
+ * Ziel 'pinterest', ueber dispatchForward im Fan-Out. Hier stand bis zur Phase 11.7
+ * "ER WIRD VON NIEMANDEM GERUFEN" — das war die Zusage der zehnten Scheibe; das
+ * Verdrahten kam mit der zwoelften.
  *
  * WARUM EINE SCHEIBE, DIE NICHTS BEWIRKT, TROTZDEM EINE IST: Sie ist der einzige
  * Teil dieser Vierergruppe, der OHNE ein fremdes System vollstaendig pruefbar ist.
@@ -535,7 +535,12 @@ export async function forwardToPinterest(
       user_data: userData,
     };
 
-    const eventSourceUrl = asString(body.eventSourceUrl);
+    // FREMDE KLICK-KENNUNGEN FALLEN HIER WEG, die eigene (epik) bleibt — der Anbieter
+    // bittet um sie im Adressfeld (s. Kopf von capi/click-id-strip.ts).
+    const eventSourceUrl = stripForeignClickIds(
+      asString(body.eventSourceUrl),
+      "pinterest",
+    );
     if (eventSourceUrl) serverEvent.event_source_url = eventSourceUrl;
 
     // --- custom_data: DER WERT REIST ALS ZEICHENKETTE ---
@@ -565,7 +570,8 @@ export async function forwardToPinterest(
     // und keinen Fehlerkanal. Ein Wert mit "/", "?" oder "#" veraenderte sonst Pfad
     // und Query der aufgerufenen URL.
     // SIE PRUEFT NICHTS, UND DAS IST RICHTIG SO: Eine Formatpruefung machte die
-    // ungepruefte Stellenzahl aus dem Anbieter-Konto zur Bedingung.
+    // nur GELESENE, nie gemessene Stellenzahl (docs/ziel-befunde/pinterest.md, Teil
+    // (aj): `<= 18`, `^\d+$`) aus dem Anbieter-Konto zur Bedingung.
     // MELDEN, NICHT BAUEN: Der erste Adapter hat dieselbe Stelle OHNE Kodierung.
     // Backlog — er ist in dieser Scheibe unantastbar.
     //

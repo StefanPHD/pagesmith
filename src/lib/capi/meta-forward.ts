@@ -6,6 +6,7 @@ import { errorName } from "@/lib/errors";
 // behandelt wird, entscheiden die drei Aufbereitungen unten — das bleibt Metas
 // eigene Sache.
 import { redactOpaque } from "@/lib/redact";
+import { stripForeignClickIds } from "@/lib/capi/click-id-strip";
 import type { CapiConfig } from "@/lib/capi/token";
 
 /**
@@ -255,8 +256,9 @@ type MetaForwardBody = {
  *    · DAVOR (Payload-Bau, URL-Bau): NICHT umschlossen, sondern wurffrei, WEIL KEINE
  *      SEINER ANWEISUNGEN WERFEN KANN. Es sind ausschliesslich Feld-Lesungen auf einem
  *      bereits als Objekt geprueften Blob, typeof-Vergleiche, asString (reiner
- *      typeof/trim) und String-/Objekt-Bau. Kein JSON.parse, kein await, kein Zugriff,
- *      der einen fremden Getter ausloest.
+ *      typeof/trim), String-/Objekt-Bau und stripForeignClickIds (capi/click-id-strip.ts,
+ *      vertraglich wurffrei; der Waechter dafuer ist click-id-strip.test.ts, V-a). Kein
+ *      JSON.parse, kein await, kein Zugriff, der einen fremden Getter ausloest.
  *    AUFLAGE, und sie ist der Zweck dieser Unterscheidung: WER VOR DEM try EINE ZEILE
  *    ERGAENZT, DIE WERFEN KANN, BRICHT DAS 204-CONTAINMENT DES AUFRUFERS. Der Wurf
  *    verliesse diese Funktion, liefe durch das await in handleIngest und aus dem Handler
@@ -313,7 +315,9 @@ export async function forwardToMeta(
     action_source: "website",
     user_data: userData,
   };
-  const eventSourceUrl = asString(body.eventSourceUrl);
+  // FREMDE KLICK-KENNUNGEN FALLEN HIER WEG, die eigene (fbclid) bleibt — eine
+  // Klick-Kennung geht nur an ihren Urheber (s. Kopf von capi/click-id-strip.ts).
+  const eventSourceUrl = stripForeignClickIds(asString(body.eventSourceUrl), "meta");
   if (eventSourceUrl) serverEvent.event_source_url = eventSourceUrl;
   if (Object.keys(customData).length > 0) serverEvent.custom_data = customData;
 

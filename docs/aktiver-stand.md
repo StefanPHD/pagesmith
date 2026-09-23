@@ -77,7 +77,8 @@ Google-Transport (docs/offene-punkte.md, Posten "DIE PRÄMISSE VON PUNKT (a) DES
 DATENKLASSEN-BLOCKS IST TOT", Satz vom 2026-09-22). Achse: ALLE `console`-Aufrufe im
 Produktivcode unter `src/`, binärsicher gelesen, plus die Schreibpfade, mit
 Positivkontrolle. **BEIDE ACHSEN SIND ERHOBEN — die Log-Achse in VERMERK P11.7-8, die
-Schreibpfade in VERMERK P11.7-15;** der Posten schliesst mit dem Abschluss von S4.
+Schreibpfade in VERMERK P11.7-15, dazu das Hashen in VERMERK P11.7-16;** der Posten ist mit
+dem Abschluss von S4 geschlossen (VERMERK P11.7-16).
 
 ## Frist mit Termin — sie wartet nicht auf das Phasenende
 
@@ -129,10 +130,10 @@ Zuschnitts:**
 (h) Die Zahl VIER im Titel der Roadmap-Zeile war eine korrekte Momentaufnahme vom
     2026-08-20; `'google'` kam am 2026-08-31 zu `TRACKING_TARGETS` hinzu.
 
-**ZWEI "NICHT ENTSCHEIDBAR"-PUNKTE JENES TAGES SIND NOCH OFFEN** (die übrigen fünf sind
-durch die Entscheidungen P11.7-1 bis P11.7-4 erledigt): die TRANSIT-ONLY-Auflage im
-Google-Transport (Log-Achse in P11.7-8, Schreibpfade in P11.7-15 erhoben; der Posten schliesst
-mit S4) · der Volltext des
+**EIN "NICHT ENTSCHEIDBAR"-PUNKT JENES TAGES IST NOCH OFFEN** (fünf sind durch die
+Entscheidungen P11.7-1 bis P11.7-4 erledigt; die TRANSIT-ONLY-Auflage im Google-Transport ist
+mit S4 geschlossen — Log-Achse in P11.7-8, Schreibpfade in P11.7-15, Hashen in P11.7-16): der
+Volltext des
 `eventSourceUrl`-Befundes ist über den Zeiger in docs/offene-punkte.md nicht erreichbar
 (gedeckt vom Posten "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI").
 
@@ -659,6 +660,98 @@ pinterest.md 1 103 / 79 722 · Kopf docs/ziel-befunde.md 220 / 14 399 — zusamm
 **DER POSTEN "DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT" (docs/offene-punkte.md)
 BLEIBT OFFEN:** Beide Achsen sind erhoben; sein Abschluss gehört zum Abschluss von S4.
 
+**ZEIGER 2026-09-23 — DER TEXT DARÜBER BLEIBT, ER IST DER STAND VOR DEM BAU:** Der
+Randbefund ist beantwortet (ein Wurf vor dem `try` bricht die 204 NICHT, GEMESSEN), und der
+Posten ist geschlossen — beides VERMERK P11.7-16.
+
+### VERMERK P11.7-16 — Scheibe S4 gebaut und live geprüft vom 2026-09-23 (fremde Klick-Kennungen)
+
+**HARTE ANGABEN:** 2026-09-23 · **BAU-COMMIT `de88657`** (`fix(capi): fremde Klick-Kennungen
+aus der weitergereichten Adresse entfernen (11.7 S4)`) · NEU `src/lib/capi/click-id-strip.ts`
+(`CLICK_ID_TABLE`, `stripForeignClickIds`; sha256 am committeten Objekt
+`3333d0ee6ba7cf8fb21b5d3ed2671fdf9e3d2afa04bf84ecc928d854d218ce63`) und
+`src/lib/capi/click-id-strip.test.ts`
+(`e9506541aa9e73d3d1cbbd198539481a28eb4b78e69fd87ad52a6ae774e3c1d9`) · GEÄNDERT
+`meta-forward.ts`, `tiktok-forward.ts`, `pinterest-forward.ts` (Aufruf am Adressfeld; bei
+pinterest dazu Vorrat P11.7-4 und der überholte Kopfabsatz "ER WIRD VON NIEMANDEM GERUFEN"),
+`google-click-ids.ts` (`export` vor `CLICK_ID_PARAMS`, Vorrat P11.7-1) · Tests **2108 / 97 →
+2131 / 98** (GEMESSEN, CC) · tsc, lint, build grün · **KEINE `console`-Zeile im Diff**
+(GEMESSEN) · linkedin-forward.ts, google-forward.ts, ingest.ts und alle bestehenden
+Testdateien unberührt.
+**ARCHITEKTEN-ENTSCHEIDUNGEN DES STUFE-1-PLANS (2026-09-23), soweit sie über D1 bis D10
+hinausgehen:** Tabelle und Wächter-Fälle als `Record<TrackingTarget, …>` — ein neues Ziel
+kompiliert erst mit Zeile und Wächter-Fall · verglichen wird der Name, wie ihn ein
+Standard-Parser liest (Tab/LF/CR entfernt, Formdekodierung, dann Kleinschreibung) · fällt das
+letzte Segment, bleibt das "?" · eine Adresse nur aus Query-Teil ergibt "", und der Adapter
+lässt das leere Feld weg wie bisher.
+
+**DIE OFFENE FRAGE DES ZUSCHNITTS IST BEANTWORTET — GEMESSEN:** Alle fünf Adapter sind
+`async function`; ein Wurf in ihrem Rumpf, auch VOR dem `try`, wird zur Ablehnung, die
+`Promise.allSettled` fängt, und die Antwort bleibt die leere 204. Zwei Belege: eine
+`node -e`-Probe mit Gegenprobe (ein SYNCHRONER Adapter lässt den Handler rejecten) und die
+Mutation m6 (die Parse-Probe wirft weiter): **47 rote Fälle in den Ingest-Testdateien, KEINER
+an Status oder Rumpf**, jeder an einem fehlenden Forward; in `ingest.persist.test.ts`, Fall
+(d), mit ECHTEM Meta-Adapter, standen `status 204` und der leere Rumpf VOR der gescheiterten
+Zeile und bestanden. Die echte Wurfzone sind die SYNCHRONEN Glieder davor (die Lambdas in
+`FORWARDER_BY_TARGET`, `dispatchForward`, der map-Callback) — dort liegt der Aufruf nicht.
+**DER BEFUND AUS m6, der die Vorhersage (zwei rote Fälle) verfehlte, STOPP und Klärung:** m6
+machte 103 Fälle rot. Die HÄUFIGSTE Eingabe ist die LEERE Adresse, und `new URL("")` wirft;
+die Zusage "wirft nie" ist für sie über rund hundert bestehende Tests mitbewacht. Der
+Kommentar an V-a hält das fest.
+
+**MUTATIONSPROBEN — ZEHN, ALLE WIE (m6: WIE NACHGEZOGEN) VORHERGESAGT**, je voller Lauf über
+98 Dateien bzw. `tsc --noEmit`, je zurückgenommen und per sha256 gegen den Baustand belegt:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| m1 | Aufruf nur in tiktok entfernt | W-tiktok ×2 |
+| m2 | `tiktok.params: []` | T1, V-c4, V-c6, W-meta ×2, W-pinterest ×2 |
+| m3 | Vergleich ohne `toLowerCase` | V-c4, W-meta/-pinterest/-tiktok "abweichend" |
+| m4 | die eigene Kennung wird mitentfernt | V-b, V-c4, V-c6, W-meta/-pinterest/-tiktok ×2 |
+| m5 | Entfernen über `searchParams.delete` und `href` | V-b, V-c1, V-c3 |
+| m6 | die Parse-Probe wirft weiter | 103, zweimal identisch (s. oben) |
+| m7 | nicht parsebar → Eingabe unverändert | V-d |
+| m8 | der Query-Teil endet am Textende statt am "#" | V-c3, V-f |
+| m9 | `linkedin` fehlt in `CLICK_ID_TABLE` | tsc TS2741 |
+| m10 | `linkedin` fehlt im Record des Wächters | tsc TS2741 |
+
+**DER PFLICHT-NACHWEIS AUS "Was den Zuschnitt bindet" IST VOLLSTÄNDIG:** Ablage VERMERK
+P11.7-15 · Log VERMERK P11.7-8 (C1), seither unverändert (P11.7-15), der S4-Diff trägt keine
+`console`-Zeile · **HASHEN, GEMESSEN (CC, 2026-09-23):** Achse
+`createHash|subtle|digest|sha-?256|crypto|hash`, case-insensitiv, über `google-forward.ts`,
+`google-payload.ts`, `google-click-ids.ts`: je 0; über die 94 verfolgten Produktivdateien
+unter `src/` (ohne `.test.`) enthält KEINE einen Hasher-Aufruf
+(`createHash|subtle\.digest|crypto\.subtle`). POSITIVKONTROLLE: dieselbe Achse trifft fünf
+Testdateien und eine Probedatei ausserhalb des Repos. **GRENZE:** die laufende Datenbank ist
+nicht gemessen (wie P11.7-15).
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-23, Zeiten MESZ):**
+- VORHER: Meta letztes Server-Ereignis 11:29:25; LinkedIn "Data last received" September 23,
+  2026 11:29 AM.
+- R1, Seite ohne Query-Teil: eventID `6b7e8767-b56c-4929-9ee7-de4ac0db1a9b`, Meta Server
+  "Dedupliziert" 16:01:12; LinkedIn 4:01 PM.
+- S1, privates Fenster, Adresse
+  `https://meta-test-5nlm3e.publayer.net/?utm_source=s4probe&fbclid=S4fbclid01&ttclid=S4ttclid01&epik=S4epik01&li_fat_id=S4lifat01&gclid=S4gclid01&gbraid=S4gbraid01&wbraid=S4wbraid01`:
+  eventID `3858e1a6-822b-4bde-a26a-bd2d6a05f5db`, Meta Server "Dedupliziert" 16:06:12
+  (Testmodus an, `test_event_code` `TEST79707`); LinkedIn 4:06 PM; im Netzwerk-Tab drei
+  Beacons auf `/api/e`, je 204.
+- DAMIT BELEGT: gesendet wird weiter, auch mit einer Adresse voller Kennungen. **DAS ENTFERNEN
+  SELBST IST LIVE NICHT BELEGBAR:** die Test-Events-Ansicht zeigt die URL beider Ereignisse
+  ohne Query-Teil (docs/ziel-befunde/meta.md, Teil (ab)). Der Beweis ist der Wächter W.
+  UNGEKLÄRT: das Browser-Ereignis nennt trotz `fbclid` in der Adresse nur IP-Adresse und
+  User Agent als Abgleich-Parameter (ebenda, Teil (ac)).
+
+**DIE GRENZEN, BENANNT:** (D3) eine Kennung, die nicht in der Tabelle steht, reist weiter mit ·
+(D6) eine Kennung im Fragment reist mit · (D5) eine nicht parsebare Adresse verliert alles ab
+dem ersten "?" oder "#", auch die eigene Kennung · Cookie-Wege, `fbc` und eigene Felder sind
+nicht Teil von S4 (D9).
+
+**ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/meta.md, Teile (ab) und (ac) · der Posten "DIE
+PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT" in docs/offene-punkte.md gestrichen
+mit Beleg, Stub in CLAUDE.md entfernt · die Pflicht-Angabe an (E3) ebenda richtiggestellt ·
+Vorrat P11.7-1 und P11.7-4 geschlossen, Vorrat P11.7-8 neu · Entscheidung P11.7-3 und
+ZUSCHNITT-FRAGEN P11.7-5, -9, -15, -24, -25 nachgezogen.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -678,10 +771,14 @@ Produkt selbst gesetzte Kennung NIE.
 
 **P11.7-3 — EINE KLICK-KENNUNG GEHT NUR AN IHREN URHEBER.**
 Ort: ebenda, Teil (E3).
-Sie bindet jeden Adapter und jede Nutzlast. **DER HEUTIGE CODE VERLETZT SIE** — das steht
-am Ort der Entscheidung und wird hier nicht abgeschwächt. Umsetzung erst nach dem Crawl:
-ob ein Anbieter Kennungen aus der Seitenadresse SELBST ausliest, entscheidet die Gestalt
-und ist ungemessen.
+Sie bindet jeden Adapter und jede Nutzlast. **SEIT S4 IST SIE AM ADRESSFELD UMGESETZT**
+(Bau-Commit `de88657`, VERMERK P11.7-16): meta, tiktok und pinterest entfernen jede fremde
+Klick-Kennung der Tabelle `CLICK_ID_TABLE` aus der weitergereichten Adresse, die eigene
+bleibt. **DIE GRENZEN:** eine Kennung ausserhalb der Tabelle reist mit (D3), ebenso eine im
+Fragment (D6); eine nicht parsebare Adresse verliert alles ab dem ersten "?" oder "#" (D5).
+Hier stand bis dahin "DER HEUTIGE CODE VERLETZT SIE" — richtiggestellt wie am Ort der
+Entscheidung. Ob ein Anbieter Kennungen aus der Seitenadresse SELBST ausliest, ist auf
+Doku-Ebene je Ziel beantwortet (F4) und bleibt als Messung offen.
 
 **P11.7-4 — DAS ABLAGE- UND LOG-VERBOT GILT FÜR DEN USER-AGENT WIE FÜR DIE IP.**
 Ort: ebenda, Teil (E4).
@@ -698,24 +795,18 @@ dazu.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-**DREI SIND OFFEN (P11.7-1, -2, -4); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7 MIT
-S3.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
+**ZWEI SIND OFFEN (P11.7-2, -8); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7 MIT
+S3, P11.7-1 UND -4 MIT S4.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
 `a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
 2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
 **GEMESSEN IST, DASS SIE DASTEHEN — NICHT, DASS SIE NACHGEZOGEN WÄREN.** **KEINE
-EMPFEHLUNG** an keinem der sieben.
+EMPFEHLUNG** an keinem der acht.
 
 **P11.7-1 — DER KOPFKOMMENTAR VON `src/lib/capi/google-click-ids.ts` IST WIDERLEGT.**
-Seine Zeilen 6 bis 10 sagen, `extractGoogleClickIds` habe keinen Aufrufer und `'google'`
-stehe nicht in `TRACKING_TARGETS`. **ALLE DREI ANGABEN TREFFEN NICHT MEHR ZU:** ein
-Aufrufer (`forwardToGoogle`), `TRACKING_TARGETS` und `TARGETS_WITH_ADAPTER` führen
-`"google"`, `FORWARDER_BY_TARGET` trägt den Eintrag. Der Posten "DIE PRÄMISSE VON PUNKT (a)
-DES DATENKLASSEN-BLOCKS IST TOT" hält dieselben Widerlegungen fest — **aber über den
-DOKU-Satz, nicht über den KOMMENTAR IM CODE.**
-TRIGGER: die erste Bau-Scheibe, die eine Google- oder Kennungs-Datei berührt; spätestens
-das Phasenende.
-**ZEIGER 2026-09-23:** Der Trigger tritt mit S4 ein — S4 berührt `google-click-ids.ts` (Export
-von `CLICK_ID_PARAMS`, Zuschnitt D2) und nimmt diesen Kopfkommentar mit.
+**GESCHLOSSEN 2026-09-23 — BAU-COMMIT `de88657` (S4):** Der Absatz nennt jetzt die zwei
+Verbraucher per Symbolnamen — `forwardToGoogle` liest mit `extractGoogleClickIds` heraus,
+`CLICK_ID_TABLE` (`src/lib/capi/click-id-strip.ts`) übernimmt `CLICK_ID_PARAMS` zum Entfernen —
+und sagt, dass eine Änderung an `CLICK_ID_PARAMS` beides ändert. VERMERK P11.7-16.
 
 **P11.7-2 — DER HALBSATZ AN DER ROADMAP-ZEILE 11.9 TRÄGT DIE ENGERE BESCHREIBUNG DER
 DRITTEN DATENKLASSE.** Er lautet: *"Sie gilt fremdvergebenen KLICK-Kennungen, nicht einer
@@ -732,13 +823,11 @@ EINES USER-AGENT-FELDES ALS GEMESSEN, UND DIE ZITIERTEN TEILE TRAGEN DAS NICHT.*
 GEMESSEN bleibt allein die Form der Kennung. VERMERK P11.7-12.
 
 **P11.7-4 — DER KOPFKOMMENTAR DER URL-BILDUNG IN `src/lib/capi/pinterest-forward.ts`
-BEGRÜNDET DEN VERZICHT AUF EINE FORMATPRÜFUNG MIT EINER UNGEPRÜFTEN STELLENZAHL.** Die
-Stellenzahl ist nicht mehr ungeprüft: die Endpunkt-Referenz führt `ad_account_id` als
-`string`, `required`, `<= 18 characters`, Muster `^\d+$` (docs/ziel-befunde/pinterest.md,
-Teil (aj)). **SEINE SCHLUSSFOLGERUNG — nicht zu prüfen — STEHT UNBERÜHRT; überholt ist die
-TATSACHENANGABE.** **DIESER POSTEN SAGT NICHT, DASS EINE FORMATPRÜFUNG ZU BAUEN WÄRE.**
-Fundstelle `pinterest-forward.ts:567 f.`
-TRIGGER: die erste Bau-Scheibe, die diese Datei berührt; spätestens das Phasenende.
+BEGRÜNDET DEN VERZICHT AUF EINE FORMATPRÜFUNG MIT EINER UNGEPRÜFTEN STELLENZAHL.**
+**GESCHLOSSEN 2026-09-23 — BAU-COMMIT `de88657` (S4):** Aus "ungepruefte Stellenzahl" ist
+"nur GELESENE, nie gemessene Stellenzahl (docs/ziel-befunde/pinterest.md, Teil (aj): `<= 18`,
+`^\d+$`)" geworden; die Schlussfolgerung — nicht zu prüfen — steht unverändert. VERMERK
+P11.7-16.
 
 **P11.7-5 — DER KOPFKOMMENTAR VON `src/lib/capi/linkedin-forward.test.ts` FÜHRT DIE
 ENDPUNKT-ADRESSE ALS "NICHT gemessen".**
@@ -758,6 +847,19 @@ VORGABEWERT EINEN "stabile[n] Fallback".**
 jetzt die vom Wächter geprüfte Version (Verweis auf `TABELLE` per Symbolname, kein Datum im
 Code) und die Umgebungsvariable einen Notausgang, den der Wächter nicht sieht. VERMERK
 P11.7-14.
+
+**P11.7-8 — DER VERTRAGSSATZ "EIN WURF WIRD ZUM 500" IN DREI ADAPTERN IRRT FÜR
+ASYNC-ADAPTER UNTER `allSettled` — IN DER SICHEREN RICHTUNG.** Vertragssatz 1 in
+`src/lib/capi/meta-forward.ts` (AUFLAGE: der Wurf "liefe durch das await in handleIngest und
+aus dem Handler heraus"), in `src/lib/capi/tiktok-forward.ts` ("liefe durch dispatchForward
+und handleIngest") und in `src/lib/capi/pinterest-forward.ts` ("WARUM DAS ZAEHLT") sagt, ein
+Wurf im Adapter mache aus der leeren 204 einen 500. **GEMESSEN (VERMERK P11.7-16, Mutation
+m6):** Ein Wurf im Rumpf einer `async function` wird zur Ablehnung, `Promise.allSettled`
+fängt sie, die Antwort bleibt die leere 204. Der Satz fordert damit MEHR Vorsicht als nötig;
+er schwächt keinen Schutz. In S4 bewusst NICHT geändert (Architekten-Entscheidung E5,
+2026-09-23): ihn nebenbei in drei Adaptern umzuschreiben, schwächte eine Schutzregel ohne
+eigene Entscheidung. **KEIN FIX-VORSCHLAG.**
+TRIGGER: die nächste Scheibe, die einen dieser Vertragssätze ohnehin ändert.
 
 ## Hebungs-Kandidaten
 
@@ -875,8 +977,9 @@ in `src/lib/capi/version-deadlines.test.ts`; kein Posten.
 **FRAGEN UND GRENZEN, KEINE ENTSCHEIDUNGEN. KEINE EMPFEHLUNG an irgendeinem Punkt.**
 **STAND 2026-09-23: Der Zuschnitt legt Teile von P11.7-1, P11.7-15 und P11.7-25 fest (Abschnitt
 "Zuschnitt der Phase 11.7"); S1 hat P11.7-23 eingelöst und P11.7-13 für meta und linkedin
-(VERMERK P11.7-10); P11.7-17 ist mit S2 und S3 eingelöst (VERMERKE P11.7-12, P11.7-14). ALLE
-ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+(VERMERK P11.7-10); P11.7-17 ist mit S2 und S3 eingelöst (VERMERKE P11.7-12, P11.7-14); S4
+hat die festgelegten Teile von P11.7-15 und P11.7-25 gebaut und Teile von P11.7-5, P11.7-9 und
+P11.7-24 eingelöst (VERMERK P11.7-16; je ein Zeiger an der Frage). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -922,6 +1025,9 @@ NACH DEM GELESENEN VERTRÄGLICH.** Keine der neun Seiten sagt, dass Meta auslies
 diesem Feld** (Teil (r)). **KEINE ENTSCHEIDUNG über die Gestalt, keine Aussage über die
 vier übrigen Ziele.** **DIE GRENZE:** "verträglich nach dem Gelesenen" ist nicht "gemessen";
 bliebe ein `fbclid` in der Adresse und entfiele zugleich ein `fbc`, wäre (q) entscheidend.
+**ZEIGER 2026-09-23 — EINGELÖST DURCH S4 (VERMERK P11.7-16):** `event_source_url` geht ohne
+fremde Kennungen an meta, `fbclid` bleibt darin; der Live-Test kam an. **OFFEN BLEIBT:** ob
+Meta den `fbclid` aus der Adresse verwertet ((q)) — S5 baut `fbc` ausdrücklich.
 
 **ZUSCHNITT-FRAGE P11.7-6 — DER ADAPTER SENDET WEDER IP NOCH USER-AGENT, OBWOHL DER TRANSPORT ZWEI ORTE
 DAFÜR KENNT.** Google unterscheidet `eventDeviceInfo` (Ereignis-Zeitpunkt) und
@@ -953,6 +1059,9 @@ P11.7-3:** Ein `ttclid` in der an TikTok übergebenen Adresse geht an SEINEN Urh
 verträglich; ein `gclid` oder `fbclid` darin verletzt sie **unverändert**. OFFEN: ob
 zusätzlich `user.ttclid` gesendet wird — **ob ein Weg den anderen ersetzt, sagt keine
 gelesene Seite.**
+**ZEIGER 2026-09-23 — DIE E3-HÄLFTE IST DURCH S4 EINGELÖST (VERMERK P11.7-16):** `page.url`
+geht ohne fremde Kennungen an TikTok, `ttclid` bleibt darin. **OFFEN BLEIBT** die Frage nach
+`user.ttclid` (S6 bis S9, D9).
 
 **ZUSCHNITT-FRAGE P11.7-10 — DOPPELZÄHLUNG: EINE ABLEITUNG, UNGEMESSEN, UND SIE BETRIFFT MEHR ALS EIN
 ZIEL.** Der Adapter setzt `event_id` IMMER, der Cookie-Weg der Deduplizierung greift nur
@@ -1025,6 +1134,11 @@ einer UNBEKANNTEN täte · ob Entfernen und Setzen dieselbe Scheibe sind.
 11.7", D1 bis D9): sie kommt · sie liegt im Adapter (D7) · sie kennt die Kennungen der Tabelle
 (D2) · eine unbekannte reist weiter mit (D3) · Entfernen ist S4, Setzen eigener Felder liegt
 in S5 bis S9 (D9).
+**ZEIGER 2026-09-23 — GEBAUT MIT S4 (VERMERK P11.7-16):** `stripForeignClickIds` und
+`CLICK_ID_TABLE` in `src/lib/capi/click-id-strip.ts`, gerufen in den Adaptern von meta, tiktok
+und pinterest, bewacht vom Wächter W über alle fünf echten Adapter. **OFFEN BLEIBT** der
+zweite Teil der Gestalt — "jedes Ziel erhält nur die seines Urhebers" als eigenes Feld (S5
+bis S9).
 
 **ZUSCHNITT-FRAGE P11.7-16 — IPv6 BEI LINKEDIN: DER RIEGEL KÖNNTE DEN IP-EINTRAG AUSLASSEN, STATT DEN
 GANZEN FORWARD ZU VERWERFEN — WENN EINE ZWEITE KENNUNG VORLIEGT.** **DER GRUND DES RIEGELS
@@ -1114,6 +1228,11 @@ Handler kein einziges Mal berührt.** **DIE EINZIGE BEHANDLUNG IST EIN TRIM JE A
 Kennungen aus dieser Adresse zu ENTFERNEN — eine Stelle, die entfernt, ist zwangsläufig auch
 die erste, die den Wert ANFASST. **DIE SECHS KOPIEN WERDEN HIER NICHT ZUM VORHABEN GEMACHT**
 — der Kopfkommentar an mehreren führt die Doppelung ausdrücklich als gewollt.
+**ZEIGER 2026-09-23 — S4 IST DIESE ERSTE STELLE (VERMERK P11.7-16):** `stripForeignClickIds`
+nimmt den getrimmten Wert aus `asString` und prüft allein die Parsebarkeit; eine nicht
+parsebare Adresse verliert alles ab dem ersten "?" oder "#" (D5). **OFFEN BLEIBT:** eine
+Prüfung der Adresse im Handler gibt es weiterhin nicht, und die sechs `asString`-Kopien
+bestehen unverändert.
 
 **ZUSCHNITT-FRAGE P11.7-25 — DIE SIEBEN KANDIDATEN ZUR GEMEINSAMEN BAUFORM.** **SIE IST DIE CODE-SEITE VON
 P11.7-15** und ersetzt sie nicht: jene trägt die Gestalt und die Anbieter-Ungleichheit,
@@ -1151,6 +1270,10 @@ Anbieter-Achse, und P11.7-15 führt sie.
 bleibt die Adresse, Cookie-Wege sind nicht Teil von S4 (D9) · (3) sie entfernt (D1) · (4) Ort
 im Adapter, wirft nie (D1, D7) · (5) die `Forwarder`-Signatur wächst nicht (D7) · (6) Eingabe
 `unknown` (D1). Punkt (7) berührt keiner der Punkte D1 bis D10.
+**ZEIGER 2026-09-23 — GEBAUT MIT S4 (VERMERK P11.7-16):** Punkte (1) bis (6) wie festgelegt;
+zu (4) ist GEMESSEN, dass ein Wurf im Adapter die 204 nicht bricht, und der Aufruf liegt nicht
+in der synchronen Zone vor dem Fan-Out. **OFFEN BLEIBT** Punkt (7) — "Anwesenheit, nie Form"
+als Regel für alle Ziele ist nicht entschieden; die Entfernung prüft ohnehin nur Namen.
 
 **ZUSCHNITT-FRAGE P11.7-26 — DIE COOKIE-WEGE DER ANBIETER SIND ÜBER DIE HEUTIGE BEACON-FORM NICHT
 ERREICHBAR, UND DER WEG DORTHIN FÜHRT DURCH DEN `/api/e`-PFAD.**
@@ -1173,11 +1296,11 @@ gebündelt.
 2026-09-23. Entschieden sind die REIHENFOLGE und je Scheibe der GEGENSTAND. **Was unten als
 offen steht, bleibt offen** und wird im Stufe-1-Plan der jeweiligen Scheibe beantwortet; wo
 die Entscheidung eine Zuschnitt-Frage berührt, steht dabei, welcher Teil davon entschieden
-ist. **KEINE EMPFEHLUNG, KEINE GESTALT für S5; S4 ist zugeschnitten (ARCHITEKTEN-ENTSCHEIDUNGEN
-2026-09-23).** S1 ist gebaut (VERMERK P11.7-10). S2
+ist. **KEINE EMPFEHLUNG, KEINE GESTALT für S5.** S1 ist gebaut (VERMERK P11.7-10). S2
 ist mit der Zielversion `202609` gebaut und live bestätigt (VERMERK P11.7-12). S3 ist mit der
-Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). Die übrigen sind weder
-gebaut noch geplant.
+Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). S4 ist gebaut und live
+geprüft; das Entfernen selbst belegt der Wächter, nicht der Live-Test (VERMERK P11.7-16). Die
+übrigen sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -1217,7 +1340,9 @@ Zielversion eine Nutzlast-Folge mit, ist diese Einordnung im Stufe-1-Plan jener 
 zu prüfen** — der Pflicht-Nachweis bindet an die ERSTE solche Scheibe ("Was den Zuschnitt
 bindet"), nicht an eine Nummer.
 
-**S4 — GEMEINSAME STELLE FÜR KLICK-KENNUNGEN, samt Entscheidung P11.7-3.** Gegenstand: die
+**S4 — GEMEINSAME STELLE FÜR KLICK-KENNUNGEN, samt Entscheidung P11.7-3.**
+**ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-16** (Bau-Commit `de88657`). D1 bis D10 bleiben
+als bindende Entscheidungen stehen: sie beschreiben, wie gebaut ist. Gegenstand: die
 EINE Stelle aus ZUSCHNITT-FRAGE P11.7-15 und mit ihr die Umsetzung von Entscheidung P11.7-3
 (eine Klick-Kennung geht nur an ihren Urheber) — also auch das Entfernen fremder Kennungen
 aus der weitergereichten Adresse (P11.7-15; für meta ZUSCHNITT-FRAGE P11.7-5, für tiktok
@@ -1279,8 +1404,9 @@ erste Stelle, die die Adresse ANFASST (ZUSCHNITT-FRAGE P11.7-24); die sechs
 - **D10 — LADUNG:** meta, tiktok und pinterest voll plus der Kopf von docs/ziel-befunde.md,
   zusammen 234 269 Bytes (VERMERK P11.7-15). S4 läuft in einem Stück; trägt die Sitzung es
   nicht, wird sie je Ziel geschnitten.
-**OFFEN FÜR DEN STUFE-1-PLAN:** ob `ingest.ts` einen synchronen Wurf aus einem Adapter fängt
-(Randbefund meta, VERMERK P11.7-15).
+**IM STUFE-1-PLAN BEANTWORTET — GEMESSEN:** ob `ingest.ts` einen synchronen Wurf aus einem
+Adapter fängt (Randbefund meta, VERMERK P11.7-15). Ein Wurf im Rumpf eines async-Adapters wird
+zur Ablehnung, `allSettled` fängt sie, die 204 bleibt (VERMERK P11.7-16, Mutation m6).
 
 **S5 — META `fbc` ÜBER DEN ADRESSWEG (`fbclid`), erster Konsument von S4.** Berührt:
 ZUSCHNITT-FRAGE P11.7-1 — für DIESE Phase ist der Adressweg gewählt, der Cookie-Weg ist
@@ -1307,7 +1433,8 @@ Scheibe, die ihre Datei berührt, wie ihre Trigger es verlangen. **P11.7-3 geht 
 Anhebung ändert `linkedin-forward.ts` zwangsläufig. **P11.7-1 (`google-click-ids.ts`) geht in
 S4** (Zuschnitt D2). **Für P11.7-4 (`pinterest-forward.ts`) tritt der Trigger ebenfalls mit S4
 ein** — "die erste Bau-Scheibe, die diese Datei berührt", und S4 berührt sie nach D7. P11.7-2
-gehört nicht dazu: sein Trigger ist der Zuschnitt von GA4.
+gehört nicht dazu: sein Trigger ist der Zuschnitt von GA4. **ZEIGER 2026-09-23:** P11.7-1 und
+P11.7-4 sind mit S4 geschlossen (VERMERK P11.7-16).
 
 **AUSDRÜCKLICH NICHT TEIL DIESER PHASE:**
 - E-Mail, Telefon und alles übrige Personenbezogene — schon die Frage F3 nimmt sie aus.
@@ -1342,22 +1469,22 @@ binden:**
 
 ## Nächster Schritt
 
-**ALS NÄCHSTES DER STUFE-1-PLAN DER SCHEIBE S4, IN FRISCHER SITZUNG** — die gemeinsame Stelle
-für Klick-Kennungen samt Entscheidung P11.7-3, zugeschnitten am 2026-09-23 (Abschnitt
-"Zuschnitt der Phase 11.7", D1 bis D10; Material VERMERK P11.7-15). Ladung nach D10. S1, S2
-und S3 sind abgeschlossen (VERMERKE P11.7-10, P11.7-12, P11.7-14). Der Zuschnitt der
-Reihenfolge steht seit der Owner-Entscheidung vom 2026-09-22. Die Sperren, die ihn hielten, sind eingelöst: alle fünf
-Ziele sind durchlaufen (VERMERKE P11.7-2 bis P11.7-7), die Fragen an den eigenen Code sind
-am Code beantwortet (VERMERK P11.7-8), und die Ladung ist wieder leistbar (VERMERK
-P11.7-9).
+**ALS NÄCHSTES DER ZUSCHNITT DER SCHEIBE S5, IN FRISCHER SITZUNG** — Meta `fbc` über den
+Adressweg (`fbclid`), erster Konsument von S4 (Abschnitt "Zuschnitt der Phase 11.7", S5).
+PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus Kopf. S1 bis S4 sind abgeschlossen
+(VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16). Der Zuschnitt der Reihenfolge steht seit der
+Owner-Entscheidung vom 2026-09-22.
+**DAS INSTRUMENT FÜR DEN LIVE-TEST VON S5 IST OFFEN:** Die Test-Events-Ansicht nannte beim
+Live-Test von S4 für ein Browser-Ereignis mit `fbclid` in der Adresse nur IP-Adresse und User
+Agent als Abgleich-Parameter; als Instrument für `fbc` ist sie NICHT belegt
+(docs/ziel-befunde/meta.md, Teil (ac)), und die URL zeigt sie ohne Query-Teil (ebenda, Teil
+(ab)). Ein Zuschnitt von S5 braucht ein Instrument mit Positivkontrolle.
 
 **WAS DER ZUSCHNITT MITBRINGEN MUSS, und es ist kein Vorschlag seines Inhalts:** die
-VOLLLADUNG der Datei jedes berührten Ziels samt dem Kopf des Verzeichnisses · die
-sechsundzwanzig ZUSCHNITT-FRAGEN, deren vom Zuschnitt festgelegte Teile (P11.7-1, -13, -15,
--23, -25) im Abschnitt "Zuschnitt der Phase 11.7" benannt sind, alle übrigen offen · die vier Entscheidungen
-P11.7-1 bis P11.7-4 · und den Pflicht-Nachweis aus "Was den Zuschnitt bindet", also die
-Messung auf Ablage und Logausgabe am gebauten Google-Transport, deren beide Achsen erhoben
-sind (VERMERKE P11.7-8, P11.7-15). **KEINE EMPFEHLUNG**, welches Ziel oder welche Frage zuerst.
+VOLLLADUNG der Datei des Ziels samt dem Kopf des Verzeichnisses · die ZUSCHNITT-FRAGEN, die S5
+berühren (P11.7-1, -2, -5, -20; der Stand je Frage steht an ihr) · die Entscheidungen P11.7-2
+und P11.7-3 · die Abweichung (a) im Zuschnitt (keine Kennungs-Extraktion im Meta-Adapter vor
+S4 — S4 ist gebaut). **KEINE EMPFEHLUNG** zur Gestalt.
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK

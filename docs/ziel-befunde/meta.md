@@ -1275,3 +1275,46 @@ Adapter sind GEMESSEN am Repo (CC, 2026-09-23, HEAD `9778aca`).
      (F6, M4) — das zeigt nur die Kopfzeile aus (y), und sie ist nicht abgelesen. Eine
      Ankunft sagt nichts darüber, unter welcher Version sie verarbeitet wurde.
 
+### ABLESUNG 2026-09-23 an der Test-Events-Ansicht (Live-Test der Scheibe S4, Phase 11.7) — die Teile (ab) und (ac)
+
+**HERKUNFT (2026-09-23):** Eine Ablesung des Owners in der Test-Events-Ansicht des Meta Events
+Managers, belegt durch einen OWNER-SCREENSHOT, nach dem Deploy des Bau-Commits `de88657`. **KEIN
+Aufruf gegen die Schnittstelle von Hand, keine Doku-Lesung.** Die Angaben über unseren Adapter
+sind GEMESSEN am Repo (CC, 2026-09-23, HEAD `de88657`).
+**DER LAUF:** privates Browserfenster, Seitenadresse mit ERFUNDENEN Werten
+`https://meta-test-5nlm3e.publayer.net/?utm_source=s4probe&fbclid=S4fbclid01&ttclid=S4ttclid01&epik=S4epik01&li_fat_id=S4lifat01&gclid=S4gclid01&gbraid=S4gbraid01&wbraid=S4wbraid01`,
+Projekt-Testmodus für meta an (`test_event_code` `TEST79707`), ein Klick; eventID
+`3858e1a6-822b-4bde-a26a-bd2d6a05f5db`, Server "Dedupliziert" 16:06:12 (lokale Anzeige, MESZ
+laut Owner).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (aa) folgt (ab).
+
+(ab) DIE TEST-EVENTS-ANSICHT ZEIGT UNTER "URL" NUR SCHEMA, HOST UND PFAD — FÜR BROWSER- UND
+     SERVER-EREIGNIS GLEICH. SIE IST KEIN INSTRUMENT FÜR QUERY-PARAMETER.
+     · **ABGELESEN:** Für beide Einträge desselben Ereignisses steht unter "URL"
+       `https://meta-test-5nlm3e.publayer.net/` — ohne Query-Teil.
+     · **WARUM DAS EINE EIGENSCHAFT DER ANZEIGE IST UND NICHT UNSERER NUTZLAST:** Das
+       Browser-Ereignis stammt vom Pixel auf einer Seite, deren Adresse den Query-Teil trug
+       (Seitenadresse im Owner-Screenshot); auch bei ihm fehlt er in der Anzeige. Dass das
+       Pixel die volle Adresse übermittelt, ist eine FOLGERUNG, nicht gemessen.
+     · **DIE FOLGE:** Die Ansicht kann weder belegen noch widerlegen, welche Query-Parameter in
+       `event_source_url` ankommen. Für unseren Server-Forward — `utm_source` und `fbclid`
+       bleiben, die fremden Kennungen fallen (GEMESSEN am Repo: `stripForeignClickIds` in
+       `forwardToMeta`) — trägt der Wächter W in `src/lib/capi/click-id-strip.test.ts` den
+       Beleg, nicht diese Ansicht.
+     · **DIE GRENZE:** eine Ansicht, ein Lauf. Ob eine andere Ansicht des Events Managers den
+       Query-Teil zeigt, ist nicht abgelesen.
+
+(ac) BEOBACHTUNG, UNGEKLÄRT: EIN BROWSER-EREIGNIS MIT `fbclid` IN DER ADRESSE NENNT ALS
+     "PARAMETER FÜR DEN ERWEITERTEN ABGLEICH" NUR IP-ADRESSE UND USER AGENT.
+     · **ABGELESEN:** am Browser-Eintrag desselben Laufs; `fbc` erscheint dort nicht.
+     · **ZWEI LESARTEN, AN DER ANZEIGE NICHT ZU TRENNEN:** Die Ansicht listet `fbc` an dieser
+       Stelle nicht — oder Meta hat den erfundenen Wert verworfen bzw. das Pixel hat keinen
+       gebildet. Teil (h) sagt, dass das Pixel den ClickID-Wert im Cookie `_fbc` ablegt; ob
+       er dann in dieser Ansicht als Abgleich-Parameter erscheint, ist nicht gelesen.
+     · **UNSER SERVER-FORWARD SENDET KEIN `fbc`** (GEMESSEN am Repo: `forwardToMeta` setzt in
+       `user_data` nur `client_ip_address`, `client_user_agent` und `fbp`); über die
+       Server-Seite sagt diese Beobachtung also nichts.
+     · **DIE FOLGE FÜR EINEN SPÄTEREN `fbc`-TEST:** Diese Ansicht ist als Instrument für `fbc`
+       NICHT belegt. Wer `fbc` live nachweisen will, braucht zuerst ein Instrument mit
+       Positivkontrolle.
+

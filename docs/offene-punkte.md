@@ -320,14 +320,22 @@ aufeinander; sie liegen alle hier und finden einander.
        Jener Vermerk stellt fest, dass ein `gclid` im Query-String UNBENANNT an meta,
        pinterest und tiktok mitreist, und ordnet es ausdrücklich NICHT ein. Er bleibt
        wörtlich stehen; eingeordnet ist die Durchleitung ab jetzt hier.
-       PFLICHT-ANGABE, OHNE DIE SICH DIESER GRUNDSATZ ALS GELEBTER STAND LÄSE: DER
-       HEUTIGE CODE VERLETZT IHN. `eventSourceUrl` wird im Beacon als `location.href`
-       gesetzt, also EINSCHLIESSLICH Query-String, und drei Adapter reichen das Feld
-       weiter — `forwardToMeta` und `forwardToPinterest` als `event_source_url`,
-       `forwardToTiktok` als `page.url` (GEMESSEN am Code, CC, 2026-09-01, in der
-       Aufklärung der Phase 11.7 am 2026-09-22 bei HEAD 9abdd2a erneut erhoben). DIE
-       VERLETZUNG BESTEHT, BIS DIE PHASE 11.7 SIE BEHEBT; sie ist kein neuer Defekt,
-       sondern derselbe Sachverhalt unter einer Regel, die es vorher nicht gab.
+       PFLICHT-ANGABE ZUM GELEBTEN STAND — RICHTIGGESTELLT AM 2026-09-23, NICHT
+       GESTEMPELT. Hier stand: "DER HEUTIGE CODE VERLETZT IHN" — `eventSourceUrl` reiste
+       samt Query-String an `forwardToMeta` und `forwardToPinterest` (`event_source_url`)
+       und an `forwardToTiktok` (`page.url`), GEMESSEN am 2026-09-01 und am 2026-09-22
+       (HEAD 9abdd2a); "DIE VERLETZUNG BESTEHT, BIS DIE PHASE 11.7 SIE BEHEBT".
+       DER STAND SEIT DEM BAU-COMMIT `de88657` (Phase 11.7, Scheibe S4; GEMESSEN am Repo,
+       CC, 2026-09-23): Der Grundsatz ist AM ADRESSFELD UMGESETZT. Alle drei Adapter geben
+       die Adresse durch `stripForeignClickIds` (`src/lib/capi/click-id-strip.ts`); jede
+       fremde Klick-Kennung der Tabelle `CLICK_ID_TABLE` fällt, die eigene des Ziels
+       bleibt. Bewacht vom Wächter W über alle fünf echten Adapter
+       (`src/lib/capi/click-id-strip.test.ts`).
+       DREI GRENZEN, BENANNT: eine Kennung, die nicht in der Tabelle steht, reist weiter
+       mit · eine Kennung im Fragment der Adresse reist mit · eine nicht parsebare
+       Adresse verliert alles ab dem ersten "?" oder "#", auch die eigene Kennung. Live
+       ist das Entfernen nicht belegbar (docs/ziel-befunde/meta.md, Teil (ab)); der
+       Beweis ist der Wächter. Vermerk: VERMERK P11.7-16 der Phase 11.7.
        DIE GRENZE, UND OHNE SIE WIRD DER GRUNDSATZ VOREILIG UMGESETZT: WELCHE Parameter
        je Anbieter als Klick-Kennung gelten und OB ein Anbieter Kennungen aus der
        Seitenadresse selbst ausliest, ist UNGEMESSEN. Die zweite Hälfte entscheidet über
@@ -3179,7 +3187,9 @@ aufeinander; sie liegen alle hier und finden einander.
   **DIE NUMMERN IN KLAMMERN SIND DIE URSPRUNGS-NUMMERN DES VORRATS** und werden NICHT neu
   vergeben; die Lücken sind die Einträge, die ins Backlog gegangen sind.
   **DER TEXT JEDES EINTRAGS IST ZEICHENGLEICH ÜBERNOMMEN** — kein Wort umformuliert. Was
-  hinzugekommen ist, ist die Titel- und Trigger-Zeile darüber.
+  hinzugekommen ist, ist die Titel- und Trigger-Zeile darüber. AUSGENOMMEN ist ein seither
+  GESTRICHENER Eintrag ("DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT",
+  2026-09-23); sein Volltext steht unter dem Commit, den sein Streich-Vermerk nennt.
 
 - DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH AUF NICHTS GELESENES (Trigger: die erste Messung des Auto-Taggings — der Eintrag sagt es selbst, wörtlich: "DIE ERSTE MESSUNG NIMMT SIE MIT"):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 4, im Rahmen
@@ -4231,56 +4241,27 @@ unverändert.
 PROVENIENZ: die Kollision GEMESSEN am eigenen Lauf (CC, 2026-08-29); die Auslegung eine
 ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
 
-- DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet, ODER die erste Messung am gebauten Google-Transport auf Ablage und Logausgabe):
-  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 62, im Rahmen
-  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
-  NICHT umformuliert; die Nummer ist die des Vorrats.
-
-62. **DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT.**
-    Der Block vom 2026-08-28 in `docs/offene-punkte.md` (Eintrag "DATENKLASSEN-GRENZE VOR
-    DER ERSTEN PII-SCHEIBE") stellt unter Punkt (a) fest, die Auflage TRANSIT-ONLY sei für
-    die Klick-Kennung **"NOCH KEIN GELEBTER STAND, SONDERN EINE VORGABE AN DIE
-    TRANSPORT-SCHEIBE"**. **ER RUHT AUF ZWEI ANGABEN, UND BEIDE TRAFEN AN JENEM TAG ZU:**
-    `'google'` stehe nicht in `TRACKING_TARGETS`, und die zwei Produktivdateien
-    `google-click-ids.ts` und `google-payload.ts` hätten **keinen Aufrufer**.
-    **BEIDES TRIFFT NICHT MEHR ZU — GEMESSEN am Repo (CC, 2026-09-08):** `src/lib/settings.ts`
-    führt `"google"` in `TRACKING_TARGETS` (seit Scheibe 3), und `forwardToGoogle`
-    (`src/lib/capi/google-forward.ts`) ruft `buildGoogleEvent` und `extractGoogleClickIds`
-    (seit Scheibe 4). **DIE VORGABE IST DAMIT GEBAUTER TRANSPORT GEWORDEN.**
-    **WAS DARAUS FOLGT, IST NICHT ERHOBEN, UND DAS IST DER GANZE PUNKT DIESES EINTRAGS:**
-    Ob die Auflage TRANSIT-ONLY im gebauten Transport **tatsächlich eingehalten** wird — keine
-    Ablage, kein Log, kein Hashen —, **hat niemand nachgemessen.** Punkt (c) desselben Blocks
-    misst den Zustand VOR dem Transport; er ist nach Scheibe 4 nicht wiederholt worden.
-    **DER EINTRAG BEHAUPTET KEINEN VERSTOSS.** Er stellt fest, dass eine Aussage über den
-    gelebten Stand auf einer Prämisse ruht, die es nicht mehr gibt.
-    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder dazu, ob der Block in
-    `docs/offene-punkte.md` nachgezogen wird, noch dazu, wer die Messung fährt.
-    TRIGGER: **die nächste Runde, die `docs/offene-punkte.md` ohnehin öffnet**, ODER die
-    erste Messung am gebauten Google-Transport auf Ablage und Logausgabe.
-    PROVENIENZ: Die zwei widerlegten Angaben sind **GEMESSEN am Repo (CC, 2026-09-08)**. Dass
-    damit die Prämisse des Punktes (a) entfallen ist, ist eine **ABLEITUNG** aus diesen zwei
-    Messungen. Dass die Einhaltung ungemessen ist, ist ein **NICHT-TREFFER mit benannter
-    Achse** — Punkt (c) jenes Blocks trägt das Datum 2026-08-28 und keine spätere Wiederholung.
-    **2026-09-22 — DER ERSTE TRIGGER HAT MIT DEM PHASENENDE 11.11 GEFEUERT, UND DER POSTEN IST
-    BEWUSST NICHT ABGEARBEITET:** Was er verlangt, ist eine MESSUNG am gebauten
-    Google-Transport auf Ablage und Logausgabe — kein Doku-Vorgang, und eine Hebungs-Runde
-    ist nicht der Ort dafür. Seine zwei Angaben sind an diesem Tag am Repo nachgeprüft und
-    gelten unverändert (CC, 2026-09-22). **DER POSTEN BLEIBT OFFEN; DER ZWEITE TRIGGER GILT
-    WEITER.**
-    **2026-09-22, ZWEITER EINTRAG DESSELBEN TAGES — DIE VERLANGTE MESSUNG BEKOMMT EINEN
-    ORT:** Sie wird PFLICHT-NACHWEIS DER ERSTEN BAU-SCHEIBE DER PHASE 11.7, DIE EINE
-    KENNUNG DURCHLEITET — Ablage und Logausgabe am gebauten Transport, Achse ALLE
-    `console`-Aufrufe im Produktivcode unter `src/` (binärsicher gelesen) plus die
-    Schreibpfade, mit Positivkontrolle. Zeiger: docs/aktiver-stand.md, Vermerk P11.7-1 —
-    eine NUMMER mit Phasen-Präfix und AUSDRÜCKLICH KEIN Abschnittstitel, weil ein
-    Titel-Zeiger in der nächsten Standdatei wieder etwas träfe (s. den Posten "ZEIGER AUF
-    docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI", Nachtrag vom 2026-09-17).
-    **DER POSTEN BLEIBT OFFEN** — ein Ort ist keine
-    Messung, und die Scheibe ist am 2026-09-22 nicht zugeschnitten. Beide Trigger gelten
-    unverändert weiter; dieser Satz ersetzt keinen von ihnen.
-    VERMERK 2026-09-23 — DER ABSCHLUSS IST AN DIE SCHEIBE S4 DER PHASE 11.7 GEBUNDEN
-    (OWNER-ENTSCHEIDUNG): Dort steht der Pflicht-Nachweis zu den Schreibpfaden. Die Runde,
-    die diese Datei am 2026-09-23 öffnete (Abschluss von S2), hat den Posten nicht bearbeitet.
+- DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT — GESTRICHEN AM 2026-09-23,
+  SEINE SCHLIESSUNGSBEDINGUNG IST ERFÜLLT. Der Punkt hielt fest, dass die Aussage "NOCH KEIN
+  GELEBTER STAND" unter Punkt (a) jenes Blocks auf einer toten Prämisse ruhte, und dass
+  UNGEMESSEN war, ob der gebaute Google-Transport die Auflage TRANSIT-ONLY einhält — "keine
+  Ablage, kein Log, kein Hashen". Der Abschluss war an die Scheibe S4 der Phase 11.7 gebunden
+  (OWNER-ENTSCHEIDUNG 2026-09-23).
+  BELEG DER ERLEDIGUNG, JE ACHSE GEMESSEN am Repo (CC):
+  · ABLAGE — VERMERK P11.7-15 der Phase 11.7 (2026-09-23): Vom Ingest-Pfad wird an genau
+    zwei Stellen dauerhaft geschrieben (`persistEvent` mit fünf Feldern, das Token-Update in
+    `project_secrets`); keine erreicht Adresse, IP oder User-Agent. Positivkontrolle dort.
+  · LOG — VERMERK P11.7-8 der Phase 11.7 (2026-09-22), Zeile C1: die `console`-Zeilen des
+    Google-Transports führen Festtext, Grund, Status und Fehlernamen, den Antwort-Rumpf liest
+    er nicht; seither unverändert (VERMERK P11.7-15), und der Diff der Scheibe S4 trägt keine
+    `console`-Zeile (VERMERK P11.7-16).
+  · HASHEN — VERMERK P11.7-16 der Phase 11.7 (2026-09-23): 0 Treffer der Achse
+    `createHash|subtle|digest|sha-?256|crypto|hash` in `google-forward.ts`,
+    `google-payload.ts`, `google-click-ids.ts`; keine der 94 Produktivdateien unter `src/`
+    enthält einen Hasher-Aufruf; Positivkontrolle an fünf Testdateien.
+  · GRENZE: die laufende Datenbank ist nicht gemessen. Ob der Block vom 2026-08-28 seinen
+    Punkt (a) nachzieht, ist hier nicht entschieden — der Punkt empfahl das nie.
+  · Der gestrichene Volltext steht unter Commit `de88657`.
 
 <!-- Die Reste der Phase 11.2, gehoben 2026-09-08 -->
 

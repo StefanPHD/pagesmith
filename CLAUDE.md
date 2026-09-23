@@ -251,7 +251,8 @@ in docs/claude-md-herleitung.md.
   BESCHRIFTUNG, KEIN FILTER (Trigger: das erste weitere Ziel, das ein Browser-Tag mit
   Bestätigungs-Kanal ausliefert)
 
-**AUS DEM PHASENENDE 11.2 GEHOBEN (2026-09-08) — NEUNZEHN PUNKTE.**
+**AUS DEM PHASENENDE 11.2 GEHOBEN (2026-09-08) — NEUNZEHN PUNKTE.** Einer ist am 2026-09-23
+geschlossen und hier entfernt ("DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT").
 - DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN PRODUKTION" (Trigger: EINGETRETEN,
   und er trägt einen TERMIN — das Erneuerungs-Token stirbt am 2026-09-11 um 07:26:58 UTC.
   Ein Neu-Verbinden VERSCHIEBT ihn um sieben Tage und löst ihn NICHT; dauerhaft löst ihn
@@ -297,9 +298,6 @@ in docs/claude-md-herleitung.md.
   erste Kunde mit einer Google-Verbindung)
 - DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT (Trigger: die nächste Arbeit
   am Schreibpfad der Callback-Route)
-- DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT (Trigger: die nächste
-  Runde, die docs/offene-punkte.md ohnehin öffnet, ODER die erste Messung am gebauten
-  Google-Transport auf Ablage und Logausgabe)
 
 **AUS DEM PHASENENDE 11.3 GEHOBEN (2026-09-11) — VIER PUNKTE.** Vorrat (21) steht nicht
 hier, sondern als Ursache (5) unter "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT

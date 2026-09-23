@@ -39,6 +39,7 @@ DATEI MIT VERZEICHNIS NICHT").
 - Vorrat (gemeldet, nicht gebaut)
 - Offene Fragen an den Anbieter-Crawl
 - Fragen an den Zuschnitt (nach dem Meta-Crawl)
+- Zuschnitt der Phase 11.7
 - Nächster Schritt
 
 ## Gegenstand der Phase
@@ -59,8 +60,9 @@ Zielen, für die sie als Katalog-Lücken festgestellt wurden.
 
 ## Was den Zuschnitt bindet
 
-**ES IST NOCH NICHTS ZUGESCHNITTEN.** Diese Datei trägt am 2026-09-22 neun Vermerke und
-vier Entscheidungen, keine Scheibe.
+**DER ZUSCHNITT STEHT SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-22 IM ABSCHNITT "Zuschnitt der
+Phase 11.7".** Die Teile der Zuschnitt-Fragen P11.7-1, -13, -15 und -23, die er festlegt,
+sind dort benannt; alle übrigen bleiben offen.
 
 **DER PFLICHT-STOPP GILT** in der Form, die CLAUDE.md, "## Anbieter-Befunde der
 Fan-Out-Ziele", seit dem 2026-09-22 vorschreibt: VOLLLADUNG der Datei des Ziels unter
@@ -845,16 +847,156 @@ Unterscheidung trägt, entscheidet P11.7-2 und nicht diese Frage. **NICHT ENTSCH
 Cookie-Wege überhaupt zugeschnitten werden · welche Felder der Beacon trüge · je Ziel oder
 gebündelt.
 
+## Zuschnitt der Phase 11.7
+
+**OWNER-ENTSCHEIDUNG VOM 2026-09-22 — DIE REIHENFOLGE DER SCHEIBEN.** Festgehalten am
+2026-09-23. Entschieden sind die REIHENFOLGE und je Scheibe der GEGENSTAND. **Was unten als
+offen steht, bleibt offen** und wird im Stufe-1-Plan der jeweiligen Scheibe beantwortet; wo
+die Entscheidung eine Zuschnitt-Frage berührt, steht dabei, welcher Teil davon entschieden
+ist. **KEINE EMPFEHLUNG, KEINE ZIELVERSION, KEINE GESTALT für S4 und S5.** Keine Scheibe ist
+gebaut, keine hat einen Stufe-1-Plan.
+
+**S1 — WÄCHTER, REINE TEST-SCHEIBE.** Gegenstand: (1) der Vorgabewert von
+`META_GRAPH_VERSION`, geprüft über einen ECHTEN Import von `src/lib/capi/config.ts` statt über
+den Mock · (2) der LinkedIn-Endpunkt · (3) die Versions-/Termin-Tabelle aus ZUSCHNITT-FRAGE
+P11.7-13. **S1 löst ZUSCHNITT-FRAGE P11.7-23 ein:** Der Wächter entsteht VOR den Anhebungen
+und setzt an den beiden dort benannten Lücken an. Massstab ist der Befund dort — heute lässt
+eine Mutation des Vorgabewerts keinen Test rot werden.
+NICHT dazu: jeder Produktivcode, jede Anhebung. Da keine Kennung durchgeleitet wird, trägt S1
+**WEDER** den Pflicht-Nachweis aus "Was den Zuschnitt bindet" **NOCH** den Trigger der
+DATENKLASSEN-GRENZE (docs/offene-punkte.md).
+OFFEN, im Stufe-1-Plan zu beantworten: ob ZUSCHNITT-FRAGE P11.7-13 und P11.7-23 dieselbe
+Sache sind · aus P11.7-13 weiter: wo die Tabelle läge, welche Vorlaufzeit, was der Wächter
+täte, wo es keinen Termin gibt oder die Version in der Umgebung steht.
+
+**S2 — ANHEBUNG LINKEDIN, `202601` → Zielversion.** Zuerst unter den Anhebungen, weil ihr
+Termin der frühere ist (15.01.2027 gegen 2027-01-21, ZUSCHNITT-FRAGE P11.7-17) und weil sie
+ZWINGEND eine Code-Änderung ist: die Version ist eine Modul-Konstante ohne Env-Weg (Tabelle
+in P11.7-13).
+PFLICHT DAVOR: Volladung docs/ziel-befunde/linkedin.md plus der Kopf von
+docs/ziel-befunde.md · die Lesung der Migrations-/Änderungsseite des Anbieters (P11.7-17:
+"vor einem Zuschnitt zu lesen").
+NICHT ENTSCHIEDEN: die ZIELVERSION. Sie wird aus dem Gelesenen VORGESCHLAGEN, der Owner
+entscheidet. Bekannt und nicht bewertet: `202609` ist die jüngste aktive Version (linkedin,
+Teil (at)); dazwischen liegen mindestens zwei funktionale Änderungen (P11.7-17).
+NICHT dazu: `li_fat_id` (S6) · jede Meta-Änderung.
+**LÖST S2 DIE ANHEBUNG EIN**, wird der Posten "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM
+15.01.2027 ABGESCHALTET — DANN SCHEITERT DER FORWARD STILL" in docs/offene-punkte.md mit dem
+Beleg der Erledigung gestrichen und seine Stub-Zeile in CLAUDE.md im selben Zug entfernt —
+im Abschluss-Commit von S2.
+
+**S3 — ANHEBUNG META, `v21.0` → Zielversion.**
+PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus der Kopf von docs/ziel-befunde.md.
+NICHT ENTSCHIEDEN: die Zielversion · ob die Anhebung über die Umgebungsvariable oder den
+Vorgabewert läuft (dieselbe Offenheit steht im Abschnitt "Frist mit Termin").
+NICHT dazu: `fbc` (S5) · der Pflichtfeld-Riegel (ausgeschlossen, s. unten).
+
+**S2 UND S3 ÄNDERN NACH IHREM GEGENSTAND EINE VERSIONSANGABE, KEIN NUTZLAST-FELD.** Die
+Owner-Entscheidung führt S4 als erste Scheibe, die eine Kennung durchleitet. **Bringt eine
+Zielversion eine Nutzlast-Folge mit, ist diese Einordnung im Stufe-1-Plan jener Scheibe neu
+zu prüfen** — der Pflicht-Nachweis bindet an die ERSTE solche Scheibe ("Was den Zuschnitt
+bindet"), nicht an eine Nummer.
+
+**S4 — GEMEINSAME STELLE FÜR KLICK-KENNUNGEN, samt Entscheidung P11.7-3.** Gegenstand: die
+EINE Stelle aus ZUSCHNITT-FRAGE P11.7-15 und mit ihr die Umsetzung von Entscheidung P11.7-3
+(eine Klick-Kennung geht nur an ihren Urheber) — also auch das Entfernen fremder Kennungen
+aus der weitergereichten Adresse (P11.7-15; für meta ZUSCHNITT-FRAGE P11.7-5, für tiktok
+P11.7-9). Entschieden ist damit aus P11.7-15, DASS die Stelle kommt.
+**ERSTE SCHEIBE, DIE EINE KENNUNG DURCHLEITET (OWNER-EINORDNUNG).** Sie trägt:
+(a) den Pflicht-Nachweis aus "Was den Zuschnitt bindet" auf Ablage UND Logausgabe — die
+Log-Achse ist in VERMERK P11.7-8 erhoben, **die Schreibpfade sind es nicht und werden hier
+erhoben**; (b) die harte Auflage aus ZUSCHNITT-FRAGE P11.7-25, Punkt (4): **die Stelle darf
+nie werfen** — Punkt (4) begründet das für die beiden Orte vor dem Fan-Out
+(INGEST-204-CONTAINMENT).
+Sie berührt mehrere Ziele — meta, pinterest und tiktok reichen die Adresse weiter (VERMERK
+P11.7-1, Teil (g)); es gilt die Mehr-Ziele-Regel aus "Was den Zuschnitt bindet". Sie ist die
+erste Stelle, die die Adresse ANFASST (ZUSCHNITT-FRAGE P11.7-24); die sechs
+`asString`-Kopien werden dadurch nicht zum Vorhaben.
+OFFEN — die GESTALT (P11.7-15, P11.7-25): wo sie liegt · welche Kennungen sie kennt · was
+sie mit einer unbekannten tut · die Kandidaten (1) bis (7) aus P11.7-25.
+NICHT dazu: die Cookie-Wege (ausgeschlossen, s. unten).
+
+**S5 — META `fbc` ÜBER DEN ADRESSWEG (`fbclid`), erster Konsument von S4.** Berührt:
+ZUSCHNITT-FRAGE P11.7-1 — für DIESE Phase ist der Adressweg gewählt, der Cookie-Weg ist
+ausgeschlossen · P11.7-2 (Zuschnitt-Frage) — ohne eigene Ablage ist der Zeitanteil von `fbc`
+faktisch der Ereigniszeitpunkt, die Wirkung ungemessen · P11.7-5 · P11.7-20 — die Kennung
+ist nur verfügbar, solange die Adresse sie trägt · Entscheidung P11.7-2 (`fbc` gleich welchen
+Trägers unter TRANSIT-ONLY).
+PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus Kopf.
+OFFEN: die Gestalt, soweit sie aus S4 folgt.
+NICHT dazu: das `_fbc`-Cookie in beiden Formen · der Pflichtfeld-Riegel (je unten).
+
+**S6 BIS S9 — JE ZIEL; IHRE REIHENFOLGE UNTEREINANDER IST OFFEN.** Je Scheibe gilt der
+Pflicht-Stopp mit der Datei ihres Ziels.
+- linkedin `li_fat_id` — ZUSCHNITT-FRAGE P11.7-14 und ihre Folgefrage P11.7-16. T1-a wird
+  bei einem zweiten `userIds`-Eintrag rot (VERMERK P11.7-8, C10).
+- google IP/UA und DMA-Felder — ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4. **Ob
+  eine Sitzung die Volladung von docs/ziel-befunde/google.md trägt, ist ungemessen**
+  (ZUSCHNITT-FRAGE P11.7-8).
+- tiktok `ttclid` — ZUSCHNITT-FRAGE P11.7-9 (ob zusätzlich `user.ttclid`), P11.7-10.
+- pinterest `epik` — ZUSCHNITT-FRAGE P11.7-19.
+
+**MITZUNEHMEN — VORRAT P11.7-1, P11.7-3, P11.7-4 (Kopfkommentare)**, je in der ersten
+Scheibe, die ihre Datei berührt, wie ihre Trigger es verlangen. **P11.7-3 geht in S2** — die
+Anhebung ändert `linkedin-forward.ts` zwangsläufig. Für P11.7-1 (`google-click-ids.ts`) und
+P11.7-4 (`pinterest-forward.ts`) hängt es an der Gestalt von S4 und ist offen; spätestens die
+Scheibe ihres Ziels, spätestens das Phasenende. P11.7-2 gehört nicht dazu: sein Trigger ist
+der Zuschnitt von GA4.
+
+**AUSDRÜCKLICH NICHT TEIL DIESER PHASE:**
+- E-Mail, Telefon und alles übrige Personenbezogene — schon die Frage F3 nimmt sie aus.
+- `external_id` bzw. `externalIds` — der einzige selbst erzeugte Wert; worunter er fällt,
+  ist eine offene OWNER-Frage (ZUSCHNITT-FRAGE P11.7-4; Zeiger P11.7-12, P11.7-18).
+- ein eigenes `_fbc`-Cookie zu setzen — unter Entscheidung P11.7-2 legt dieses Produkt
+  nichts ab; ohne neue Owner-Entscheidung nicht baubar (ZUSCHNITT-FRAGE P11.7-2, P11.7-20).
+- der `_fbc`-Cookie-WEG und jedes neue Feld im Beacon-Rumpf — er führt durch `/api/e` und
+  berührt "/API/E-SCHLANKHEIT" an ihrem Kopf (ZUSCHNITT-FRAGE P11.7-26); ein neues
+  Beacon-Feld steht im ausgelieferten Text und wirkt erst nach Neu-Veröffentlichen
+  (docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY").
+- ein Meta-Pflichtfeld-Riegel für `client_user_agent`/`event_source_url` (ZUSCHNITT-FRAGE
+  P11.7-22) — ob ein fehlendes Pflichtfeld beim Anbieter ein Defekt oder eine Einbusse ist,
+  ist ungemessen, und ein Riegel könnte Conversions verwerfen, die der Anbieter annimmt; vor
+  einem Bau steht eine Messung.
+
+**DREI ABWEICHUNGEN VOM FRÜHEREN ARCHITEKTEN-VORSCHLAG — soweit sie eine spätere Handlung
+binden:**
+(a) **Meta-`fbc` steht NACH der gemeinsamen Stelle.** `fbclid` aus der Adresse zu lesen IST
+    Kennungs-Extraktion; zuerst im Adapter gebaut, würde sie von S4 wieder herausgerissen.
+    Bindet: keine Kennungs-Extraktion im Meta-Adapter vor S4.
+(b) **Der Adressweg wirkt auf bereits veröffentlichten Seiten OHNE Neu-Veröffentlichen, der
+    Cookie-Weg nicht** — das trennt S5 vom ausgeschlossenen Cookie-Weg. Tragend: der
+    Klick-Beacon sendet `eventSourceUrl` = `location.href` samt Query-String (VERMERK
+    P11.7-1, Teile (a), (g)). **GEMESSEN am Git-Verlauf (CC, 2026-09-23):** Das Feld steht in
+    `buildCapiBeaconStatement` seit Commit `6e2e4ba` (2026-07-06, "dedup beacon alongside
+    pixel"), dem ersten, der die Zeichenfolge in jener Datei trägt. **GRENZE:**
+    PageView-Emitter und Pixel-Bestätigung senden bare (Teil (c)) — der Adressweg erreicht
+    nur Ereignisse des Klick-Beacons.
+(c) **Der Pflichtfeld-Riegel ist von der Meta-Scheibe abgetrennt** (Grund oben). Bindet: S3
+    und S5 bauen ihn nicht mit.
+
+**AUFLAGE ZUR FRIST.** Löst S3 die Frist ein, die der Abschnitt "Frist mit Termin" führt,
+wird sie mit dem Beleg der Erledigung gestrichen; wird S3 vertagt oder verworfen, wird die
+Frist VOR dem Phasenende nach docs/offene-punkte.md gehoben, mit Titel und Trigger als
+Stub-Zeile in CLAUDE.md, im selben Zug. Jener Abschnitt bleibt wörtlich; hebt die nächste
+Runde, die docs/offene-punkte.md ohnehin öffnet, die Frist schon vorher dorthin, wird sie
+dort gestrichen.
+**FÜR S2 TRÄGT DIESE DATEI KEINE FRIST:** "Frist mit Termin" trägt genau einen Posten
+(meta); der LinkedIn-Termin 15.01.2027 steht bereits als Posten in docs/offene-punkte.md
+(Abschnitt "Offene Fragen an den Anbieter-Crawl", letzter Absatz). Eine Hebung entfällt;
+was die Erledigung durch S2 an jenem Posten bewirkt, steht an S2.
+
 ## Nächster Schritt
 
-**ALS NÄCHSTES DER ZUSCHNITT.** Die Sperren, die ihn hielten, sind eingelöst: alle fünf
+**ALS NÄCHSTES DER STUFE-1-PLAN DER SCHEIBE S1** (Abschnitt "Zuschnitt der Phase 11.7").
+Der Zuschnitt steht seit der Owner-Entscheidung vom 2026-09-22. Die Sperren, die ihn hielten, sind eingelöst: alle fünf
 Ziele sind durchlaufen (VERMERKE P11.7-2 bis P11.7-7), die Fragen an den eigenen Code sind
 am Code beantwortet (VERMERK P11.7-8), und die Ladung ist wieder leistbar (VERMERK
 P11.7-9).
 
 **WAS DER ZUSCHNITT MITBRINGEN MUSS, und es ist kein Vorschlag seines Inhalts:** die
 VOLLLADUNG der Datei jedes berührten Ziels samt dem Kopf des Verzeichnisses · die
-sechsundzwanzig ZUSCHNITT-FRAGEN, von denen keine entschieden ist · die vier Entscheidungen
+sechsundzwanzig ZUSCHNITT-FRAGEN, deren vom Zuschnitt festgelegte Teile (P11.7-1, -13, -15,
+-23) im Abschnitt "Zuschnitt der Phase 11.7" benannt sind, alle übrigen offen · die vier Entscheidungen
 P11.7-1 bis P11.7-4 · und den Pflicht-Nachweis aus "Was den Zuschnitt bindet", also die
 Messung auf Ablage und Logausgabe am gebauten Google-Transport, von der erst die Log-Achse
 erhoben ist. **KEINE EMPFEHLUNG**, welches Ziel oder welche Frage zuerst.

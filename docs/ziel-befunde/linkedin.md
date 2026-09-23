@@ -8,6 +8,12 @@ DER BELEG: sha256 = d0723536b82e7614bec29bbd8ef0c9cfae3b4dc9d60a209891b86c562860
 den übernommenen Abschnitt — also über alles ab der Zeile "## LinkedIn (Conversions API)"
 bis zum Dateiende, OHNE diesen Kopf. Wer prüfen will, ob hier jemand nachträglich ein Wort
 geändert hat, misst gegen diese Prüfsumme.
+ERGÄNZUNG 2026-09-23 — DIE PRÜFSUMME GILT DEM STAND DES COMMITS `11a44f7`, NICHT DEM HEUTIGEN
+DATEIENDE. Seit dem 2026-09-23 wird diese Datei fortgeschrieben (Abschnitt "Abschnitts-Lesung
+2026-09-23 …" hinten, dazu je ein datierter VORBEHALT an (ar) und (at)); über den heutigen
+Stand geht die Summe darum nicht mehr auf. Gemessen wird sie gegen
+`git show 11a44f7:docs/ziel-befunde/linkedin.md`, dort ab der Zeile "## LinkedIn
+(Conversions API)". Der Satz darüber bleibt wörtlich; er war am Tag der Aufteilung richtig.
 
 **WARUM ES DIE AUFTEILUNG GAB:** Die Sammel-Datei war für die VOLLLADUNG zu gross, die der
 Pflicht-Stopp vor einem Zuschnitt verlangt. Die Pflicht ist damit nicht gelockert, sondern
@@ -1462,6 +1468,9 @@ was. Wer einen Teil unten gegen einen Teil aus (aa) bis (al) hält, rechnet dami
      unter "GESEHEN, NICHT GEÖFFNET" und die Form ausdrücklich als **nicht gelesen**; die
      erste Hälfte ist damit — im Rahmen des Vorbehalts oben — eingelöst, die zweite
      (Messung am eigenen Endpunkt) bleibt offen. (r) und (z) werden NICHT umformuliert.
+     VORBEHALT (2026-09-23) — EINE ZWEITE QUELLE NENNT DIE 426 OHNE ENDPUNKT-BESCHRÄNKUNG,
+     UND SIE NENNT DIE KOPFZEILE ANDERS: s. unten (az). Die Messfrage oben bleibt offen. Der
+     Wortlaut oben wird NICHT umformuliert.
 
 (as) EINE VORGABE ZU WIEDERHOLUNGSVERSUCHEN NACH EINER 429 GIBT ES IM GELESENEN UMFANG
      NICHT — NICHT-TREFFER MIT BENANNTER REICHWEITE ÜBER DREI SEITEN, JE MIT
@@ -1538,6 +1547,14 @@ was. Wer einen Teil unten gegen einen Teil aus (aa) bis (al) hält, rechnet dami
      **STAND GEGENÜBER DEM BESTAND: BESTÄTIGT, unverändert.** (z) und (af) nennen den
      Abschalttermin 15.01.2027; er ist am 2026-09-22 an der Quelle gegengeprüft und
      stimmt. Die Liste der aktiven Versionen und die zwei funktionalen Folgen sind NEU.
+     VORBEHALT (2026-09-23) — DIE ATTRIBUTIONSFENSTER 180 UND 365 TAGE HÄNGEN NICHT AN
+     202608: Die Änderungsliste des Anbieters führt beide als "available on all active
+     versions" bzw. "released to all active versions" (365 Tage im Abschnitt 202505, 180 Tage
+     im Abschnitt 202609); an 202608 hängen allein die zwei Conversion-TYPEN, und die sind
+     Werte einer Conversion-REGEL an `/rest/conversions`, kein Feld von
+     `/rest/conversionEvents`. s. unten (ax). Die Termine und die Liste der aktiven Versionen
+     oben sind am 2026-09-23 erneut bestätigt, s. (au). Der Wortlaut oben wird NICHT
+     umformuliert.
 
 ### Der gelesene Umfang (2026-09-22) — LinkedIn, Klick-Kennung und Version
 
@@ -1633,4 +1650,299 @@ docs/immer-beachten.md als "DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT, AN
 EIN BEFUND VERSTECKT" führt. **SIE IST DAMIT INNERHALB VON ZWEI TAGEN AN DREI ZIELEN
 EINGETRETEN** — beim Meta-Crawl des 2026-09-22 an vier Parameter-Seiten, beim TikTok-Crawl
 desselben Tages an `Responses and errors`, und hier.
+
+### Abschnitts-Lesung 2026-09-23 der Versionierungs- und Migrationsseiten (S2 der Phase 11.7) — die Teile (au) bis (bb)
+
+**HERKUNFT (2026-09-23):** Eine Abschnitts-Lesung durch CC mit dem Browser-Werkzeug
+(Playwright-MCP), VORARBEIT zur Scheibe S2 der Phase 11.7 (Anhebung der gesendeten Version).
+Gelesen wurde durchgehend mit `textContent` von `<main>`, nie mit `innerText`, an der
+ENGLISCHEN Fassung; auf learn.microsoft.com in der Ansicht `view=li-lms-2026-09` — sie ist
+seit diesem Tag die VORGABE der Seite (ein Aufruf ohne Parameter landet dort), die Lesungen
+vom 2026-09-11 und 2026-09-22 liefen unter `li-lms-2026-08`. Umfang am Ende dieses
+Abschnitts unter "Der gelesene Umfang (2026-09-23) — LinkedIn, Versionierung".
+**KEIN AUFRUF GEGEN DIE SCHNITTSTELLE.** Keine Anmeldung, keine Eingabe auf einer fremden
+Seite, kein Download. Alles unten ist GELESEN 2026-09-23 und **ersetzt keine Messung** —
+AUSGENOMMEN die Nutzlast unseres Adapters in (ax), GEMESSEN am Repo (CC, 2026-09-23, HEAD
+`854dd39`), und der Ansichtsvergleich in (av), GEMESSEN am Werkzeug.
+**KEINE SEITE HAT VERSUCHT, DEN LESENDEN ANZUWEISEN.**
+**DIE FRAGEN, AUF DIE GELESEN WURDE**, vorher festgelegt: L1 aktive Versionen und Termine ·
+L2 was sich zwischen 202601 und jeder jüngeren aktiven Version an `/rest/conversionEvents`
+ändert · L3 ob Conversion-Regel und Zugangsdatum unter einer neuen Version gültig bleiben ·
+L4 ob 426/`NONEXISTENT_VERSION` auch für `/rest/conversionEvents` gilt · L5 ob sich an
+`X-Restli-Protocol-Version` etwas ändert.
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (at) folgt
+(au); auf (az) folgt (ba).
+
+(au) L1 — ELF AKTIVE VERSIONEN, DIE JÜNGSTE IST 202609, UND SIE TRÄGT DEN SPÄTESTEN TERMIN.
+     GELESEN 2026-09-23 an M1 (`marketing/integrations/migrations`, "Migrations",
+     Seitenstand 09/16/2026), Tabelle "API Migration Status", Spalten "Migration" · "Sunset
+     Date" · "Version Status", alle Werte als WÖRTER:
+     202609 — September 15, 2027 · 202608 — August 17, 2027 · 202607 — July 15, 2027 ·
+     202606 — June 15, 2027 · 202605 — May 15, 2027 · 202604 — April 15, 2027 · 202603 —
+     March 16, 2027 · 202602 — February 15, 2027 · **202601 — January 15, 2027** · 202511 —
+     November 16, 2026 · 202510 — October 15, 2026, alle "Active". Ab 202509 (September 15,
+     2026) abwärts "Deprecated"; 202512 kommt nicht vor.
+     · **DIE JÜNGSTE:** M2 (`marketing/versioning`) führt unter "Latest Version" genau eine
+       Zeile, "September 2026 | 202609"; M3 überschreibt ihren Abschnitt "September 2026 -
+       Version 202609 (Latest)". **DEN SPÄTESTEN TERMIN TRÄGT DIESELBE, 15.09.2027.**
+     · **DIE REGEL DAHINTER** (M2): "Our versioned API releases follow a monthly cycle. These
+       API versions are supported and stable for a minimum of one year before sunset." ·
+       "LinkedIn expects every versioned API call to specify a version; the latest version is
+       not applied by default." · Änderungen im Fenster nur "for any critical security,
+       privacy issues, or bug fixes".
+     · **WO DER TERMIN VON 202601 STEHT, UND WO NICHT:** allein in M1. M3 führt unter
+       "Version Sunset" je Abschnitt nur die zwei bis drei nächsten Abschaltungen; 202601
+       kommt dort bis heute nicht vor. **FOLGERUNG, NICHT GELESEN:** Die Termine liegen je
+       rund zwölf Monate nach dem Erscheinungsmonat, passend zu "minimum of one year".
+     **STAND GEGENÜBER DEM BESTAND: BESTÄTIGT, in allen elf Terminen übereinstimmend** mit
+     (at). Neu ist allein, dass M2 202609 ausdrücklich als "Latest" führt.
+
+(av) DIE VERSIONS-ANSICHT DER DOKU FILTERT DIE CONVERSIONS-SEITEN NICHT — EINE ÄNDERUNG
+     ZWISCHEN VERSIONEN IST NUR ALS TEXT IM FLIESSTEXT ZU FINDEN.
+     GEMESSEN 2026-09-23 AM WERKZEUG (CC; je Ansicht die Seite im Browser gerendert,
+     `textContent` von `<main>` normalisiert, Artikelrumpf bis vor den Feedback-Block,
+     sha256): S3 (`…/ads-reporting/conversions-api`) unter `li-lms-2026-01`, `-2026-08` und
+     `-2026-09` — dreimal 22 082 Zeichen, dreimal derselbe Hash (Präfix
+     `6a4e16f03965fe3b`). S4 (`…/conversions-api-schema`) unter denselben drei Ansichten —
+     `-2026-08` und `-2026-09` gleich (16 257 Zeichen); `-2026-01` wich im ersten Lauf um EIN
+     Zeichen ab; ein zweiter Lauf mit Differenz-Ortung fand die erste Abweichung erst im
+     Fussbereich nach dem Artikel (Zeichen 17 830 des ganzen `<main>`), der Artikeltext ist
+     gleich. **Die Ursache der Ein-Zeichen-Abweichung im ersten Lauf ist nicht erhoben.**
+     · **FOLGE FÜR JEDE LESUNG, AUSDRÜCKLICH:** Wer die Ansicht auf `li-lms-2026-01` stellt,
+       sieht NICHT das Schema von 202601, sondern das heutige — mit den Sätzen "Available
+       starting with the 202609 version" im Text. Ein Vergleich zweier Versions-Ansichten
+       beweist für diese Seiten nichts.
+     · M2 sagt dazu: "Each API resource has its own migration guide to help you navigate
+       major updates." **EINE MIGRATIONS-ANLEITUNG FÜR DIE CONVERSIONS API IST NICHT
+       GEFUNDEN** — Reichweite: die Navigations-Datenquelle `marketing/toc.json`, durchsucht
+       nach `version|migrat|change|concept|error|protocol|breaking|conversion`; die
+       Migrations-Einträge darin gelten Lead Sync und der Bing-Geo-Umstellung. M1 verlinkt
+       aus seiner Tabelle keine einzige Seite (0 Verweise in der Tabelle).
+
+(aw) L2 — WAS SICH ZWISCHEN 202601 UND DEN JÜNGEREN VERSIONEN AN DER CONVERSIONS API ÄNDERT:
+     SIEBEN EINTRÄGE, NUR ZWEI DAVON VERSIONSGEBUNDEN, UND NUR EINER AN `/rest/conversionEvents`.
+     GELESEN 2026-09-23 an M3 (`marketing/integrations/recent-changes`, "Recent Marketing API
+     Changes", Seitenstand 09/16/2026), die Abschnitte 202602 bis 202609 VOLLSTÄNDIG. Die
+     Unterscheidung in der rechten Spalte ist die des ANBIETERS, wörtlich übernommen:
+
+     | Abschnitt | Eintrag (Conversions API) | Endpunkt | Geltung laut M3 |
+     |---|---|---|---|
+     | 202605 | neue Kennungen `PLAINTEXT_IP_ADDRESS`, `GOOGLE_AID` in `userIds` | `/rest/conversionEvents` | "available on all active versions" |
+     | 202605 | Ereignis mit NUR `lead` als Kennung zulässig ("Previously, this returned a 400 validation error") | `/rest/conversionEvents` | "available on all active versions" |
+     | 202605 | Finder-Parameter `conversionOwnershipTypes`, Antwortfeld `ownershipType` | `/rest/conversions` (Finder) | versionsgebunden: "preserving existing behavior for version 202604 and earlier" |
+     | 202607 | neue Kennung `SHA256_IP_ADDRESS`, "Currently, only IPv4 addresses are supported" | `/rest/conversionEvents` | "available on all active versions" |
+     | 202608 | Regel-Typen `MARKETING_QUALIFIED_LEAD`, `SALES_QUALIFIED_LEAD` | `/rest/conversions` | versionsgebunden: "Starting with the 202608 version" |
+     | 202609 | `userInfo.hashedFirstName`, `userInfo.hashedLastName`, optional | `/rest/conversionEvents` | versionsgebunden: "Starting with the 202609 version" |
+     | 202609 | Attributionsfenster 180 Tage (neben 365) für sieben Regel-Typen | `/rest/conversions` | "available on all active versions" |
+
+     · **KEIN EINTRAG UNTER "Breaking Changes" BETRIFFT DIE CONVERSIONS API.** Die Abschnitte
+       202602 bis 202609 führen dort Abschaltlisten, dazu zwei fremde Brüche (Events
+       Management `endsAt` ab 202605, Member-Statistik `metricType` ab 202605).
+     · **NICHTS ÄNDERT SICH LAUT M3 AN KOPFZEILEN, STATUSCODES, FEHLERFORM ODER FORMAT DER
+       REGEL-KENNUNG.** Zählung über denselben Bereich (26 574 Zeichen): `header` 0 ·
+       `Restli` 0 · `token` 0 · `426` 0 · `idType` 0 · `eventId` 0 · `conversionHappenedAt`
+       0 · `conversionValue` 0. **Positivkontrolle im selben Lauf:** `conversionEvents` 4 ·
+       `all active versions` 4 · `conversion rule` 5. Über die GANZE Seite trifft
+       `LinkedIn-Version` 0 und `Restli`/`protocol version` 0.
+     · **S3 UND S4 BESTÄTIGEN DAS FÜR DEN HEUTIGEN TEXT:** Die einzigen Versionsangaben in
+       S4 sind "202609" (gehashte Namen, `userInfo`-Paarregel), "202608" (die zwei Typen)
+       und "202605" (`ownershipType`); S3 trägt dieselben plus die Finder-Angabe 202605.
+       Pflichtfelder, `userIds`-Symbole, Fehlertabelle und URN-Form
+       `urn:lla:llaPartnerConversion:<id>` tragen KEINE Versionsangabe.
+     **DIE GRENZE:** Das ist die ÄNDERUNGSLISTE des Anbieters, kein Schema-Vergleich — einen
+     Vergleich lässt die Doku nicht zu, s. (av). Was M3 nicht nennt, ist ein NICHT-TREFFER mit
+     der Reichweite dieser acht Abschnitte und keine Zusage.
+
+(ax) L2, GESONDERT — DIE ZWEI GENANNTEN NEUERUNGEN SIND FÜR EINE NUTZLAST OHNE `userInfo`
+     UND OHNE REGEL-ANLAGE OHNE BEZUG, NACH DEM GELESENEN.
+     · **GEHASHTE NAMEN (202609): OPTIONAL.** S4: "hashedFirstName (optional) … Note:
+       Available starting with the 202609 version", ebenso `hashedLastName`; M3: "two new
+       optional fields for matching". **VERSCHÄRFT WIRD NICHTS, GELOCKERT WIRD EINE REGEL:**
+       bis einschliesslich 202608 verlangt ein mitgesandtes `userInfo` `firstName` UND
+       `lastName` im Klartext, ab 202609 je Namensteil Klartext ODER Hash (S4, S11: "including
+       mixed pairs"). Die Regel greift nur, wenn `userInfo` gesendet wird ("If included, …").
+     · **NEUE CONVERSION-TYPEN (202608): KEIN NUTZLAST-FELD.** Es sind Werte von `type` einer
+       Conversion-REGEL an `/rest/conversions` (S4, Tabelle "Conversion Rule API Schema":
+       "supported only for API versions 202608 and later"). **EINE VORGESCHICHTE, DIE ZUR
+       ANGABE GEHÖRT:** M3 führt im Abschnitt 202408 "Deprecating MQL and SQL Conversion
+       Types" — "Starting with the 202408 version, we'll no longer support
+       MARKETING_QUALIFIED_LEAD and SALES_QUALIFIED_LEAD conversion types when creating a new
+       conversion rule". 202608 führt dieselben zwei Namen wieder ein.
+     · **DIE FENSTER 180/365 HÄNGEN AN KEINER VERSION** (M3, Abschnitt 202505: "This update
+       has been released to all active versions"; Abschnitt 202609: "This update is
+       available on all active versions"); sie sind Felder der REGEL. Darauf ruht der
+       Vorbehalt an (at).
+     · **UNSERE NUTZLAST — GEMESSEN am Repo (CC, 2026-09-23, HEAD `854dd39`):**
+       `forwardToLinkedin` (`src/lib/capi/linkedin-forward.ts`) sendet `conversion`,
+       `conversionHappenedAt`, `eventId`, `user.userIds` mit GENAU EINEM Eintrag
+       (`idType: LINKEDIN_ID_TYPE`) und `conversionValue` nur, wenn beide Hälften tragen;
+       **KEIN `userInfo`, KEIN `lead`, KEIN `externalIds`.** Der Adapter legt keine Regel an.
+     **FOLGERUNG, NICHT GEMESSEN:** Keine der beiden genannten Neuerungen berührt diese
+     Nutzlast. **OB SIE UNTER EINER JÜNGEREN VERSION MIT 201 ANGENOMMEN WIRD, BEANTWORTET NUR
+     EIN AUFRUF — MESSFRAGE.**
+
+(ay) L3 — ÜBER REGEL UND ZUGANGSDATUM BEI EINEM VERSIONSWECHSEL SAGT DIE DOKU NICHTS AUSSER
+     "KOPFZEILE ÄNDERN".
+     GELESEN 2026-09-23. **DIE EINZIGE POSITIVE AUSSAGE** steht in M2, "How do I migrate from
+     an older API version to a later version?": "To migrate your app from an older version to
+     a later version, simply update the older version's YYYYMM formatted value in the header
+     to the newer version's value." — mit dem Beispiel `202501` → `202601`.
+     · **NICHT-TREFFER MIT BENANNTER REICHWEITE:** Keine Stelle in M1, M2, M3 (Abschnitte
+       202602–202609), M7, S2, S3, S4, S11 und H4 sagt, dass eine bestehende Conversion-Regel
+       oder ein bestehendes Zugangsdatum beim Wechsel der Version neu anzulegen, neu zu
+       erzeugen oder umzustellen sei. In M3 trifft `token` im Bereich 202602–202609 0-mal.
+       **Positivkontrolle:** S2 trägt `token` (unverändert "The generated access tokens don't
+       expire."), H4 4-mal; M3 trägt `conversion rule` 5-mal.
+     · **EIN BEFUND ÜBER DIE ACHSEN:** Das Zugangsdatum ist an Mitglied, Werbekonto und
+       Bereiche gebunden (S2, S3), die Regel an ein Werbekonto (S4, `account`); an keiner
+       gelesenen Stelle an eine Version. Die Abschaltung einer Version (M3 "sunset and removed
+       from the platform") ist eine Aussage über die KOPFZEILE, nicht über die Objekte.
+     **MESSFRAGE:** ob der bestehende Zugang und die bestehende Regel-URN unter der neuen
+     Version angenommen werden. Ein 201 unter der neuen Kopfzeile, mit Ablesung am Zeitstempel
+     der Empfangsanzeige (s. (t)), beantwortet beides in EINEM Lauf.
+
+(az) L4 — EINE ZWEITE QUELLE NENNT DIE 426 FÜR ALLE AUFRUFE, UND SIE NENNT DIE KOPFZEILE
+     ANDERS. DIE MESSFRAGE BLEIBT.
+     GELESEN 2026-09-23 an M5 (`shared/api-guide/concepts/error-handling`, "LinkedIn API
+     Error Handling", Seitenstand 03/24/2025) — eine GETEILTE Seite, im Navigationsbaum des
+     Marketing-Zweigs unter "API Concepts > Errors" und "Error Handling > Overview":
+     "426 Version Header is Deprecated — This error indicates that the version passed in the
+     request header X-LinkedIn-Version has been deprecated (e.g., 202401). This occurs because
+     all versions are scheduled for deprecation after a specific time window (e.g., 12
+     months). Refer to the Sample Response for more information."
+     · **KEINE ENDPUNKT-BESCHRÄNKUNG** an dieser Stelle — anders als die Note in M6 ("These
+       updates are available for adCampaignGroups, adCampaigns and adAccounts endpoints
+       only"), die (ar) als Vorbehalt trägt.
+     · **DIE KOPFZEILE HEISST DORT `X-LinkedIn-Version`**, überall sonst `Linkedin-Version`
+       bzw. `LinkedIn-Version` (M2, S3, M6). Welche Schreibung M5 meint, ist am Dokument nicht
+       entscheidbar; gemessen ist allein, dass OHNE `LinkedIn-Version` 400/`VERSION_MISSING`
+       kommt (Teil (r)).
+     · M6 ist am 2026-09-23 erneut geöffnet: Seitenstand unverändert 10/16/2025, die Note und
+       die Beispiele 4 und 5 zeichengleich mit (ar).
+     · M2 verweist für "What happens if a deprecated Version Header is used" auf M6, Anker
+       `#example-5-version-header-is-deprecated`.
+     **FOLGERUNG, NICHT GEMESSEN:** Die allgemeine Aussage in M5 macht eine 426 auch an
+     `/rest/conversionEvents` wahrscheinlicher; die RUMPF-Form (`code`, `message`) bleibt für
+     diesen Endpunkt ungelesen. **MESSFRAGE — unverändert wie in (ar).**
+     **EIN NEBENBEFUND ZU (as), ohne ihn zu ändern:** M5 rät bei **504** zu "proper error
+     handling logic, such as caching and retry patterns"; zu **429** sagt sie "check if too
+     many redundant calls are being made" und nennt dieselbe Ausnahme wie X8 ("In rare cases,
+     LinkedIn may also return a 429 response as part of infrastructure protection"). Eine
+     Wiederholungs-Vorgabe NACH einer 429 nennt auch sie nicht. M5 lag ausserhalb der
+     Reichweite von (as).
+
+(ba) L5 — AN `X-Restli-Protocol-Version` ÄNDERT KEINE VERSION ETWAS; DIE SEITE DAZU IST VON
+     2023 UND BESCHREIBT URL-SYNTAX.
+     GELESEN 2026-09-23 an M4 (`shared/api-guide/concepts/protocol-version`, "LinkedIn API
+     Protocol Versions", Seitenstand 05/08/2023), vollständig:
+     · "To use version 2.0, you must pass X-Restli-Protocol-Version: 2.0.0 as the header in
+       your API requests. If you don't pass a header, your call will default to version 1.0."
+       · "LinkedIn plans to deprecate protocol version 1.0 in the near future."
+     · **WAS SICH ZWISCHEN 1.0 UND 2.0 UNTERSCHEIDET, IST DIE SCHREIBWEISE VON SCHLÜSSELN UND
+       PARAMETERN IN DER ADRESSE** — Einzelschlüssel URL-kodiert, `List(…)` für BATCH_GET,
+       komplexe Schlüssel, FINDER-Parameter. Über Rümpfe von POST-Aufrufen sagt die Seite
+       nichts.
+     · **KEINE VERSIONSBINDUNG:** M3 trifft `Restli` und `protocol version` über die GANZE
+       Seite 0-mal; S3 führt die Auflage unverändert ("X-Restli-Protocol-Version: 2.0.0 must
+       be passed as a request header in all your API requests"). M7 zählt "Addition of an
+       optional request header" zu den NICHT brechenden Änderungen.
+     **FOLGERUNG, NICHT GEMESSEN:** Unser Aufruf ist ein POST auf `/rest/conversionEvents`
+     ohne Schlüssel und ohne Query-Parameter; der Unterschied zwischen 1.0 und 2.0 berührt
+     nach M4 keinen seiner Teile. Dass der Adapter ohne die Kopfzeile angekommen ist, steht
+     GEMESSEN in (ai). **OB DER ANBIETER DIE AUFLAGE DURCHSETZT, BLEIBT MESSFRAGE** — die
+     Ankündigung "deprecate protocol version 1.0 in the near future" trägt kein Datum und steht
+     auf einer Seite mit Seitenstand 05/08/2023.
+
+(bb) WAS DER ANBIETER ALS BRECHEND ZÄHLT — DER MASSSTAB FÜR "ÄNDERT SICH FÜR UNS ETWAS".
+     GELESEN 2026-09-23 an M7 (`shared/breaking-change-policy`, "LinkedIn API Breaking Change
+     Policy", Seitenstand 05/08/2023 — X9 des Umfangs vom 2026-09-11), vollständig.
+     · BRECHEND u. a.: "Removal of an allowed parameter, request field or response field" ·
+       "Addition of a required parameter or request field without default values" ·
+       "Introduction of a new validation".
+     · NICHT BRECHEND u. a.: "New optional request fields or parameters" · "Addition of an
+       optional request header" · "Removal of redundant request header" · "Changes to error
+       messages. We do not recommend parsing error messages to perform business logic.
+       Instead, you should only rely on HTTP response codes and error codes."
+     · "We may make changes without prior notice if the change is considered non-breaking, or
+       if it is a breaking change being made to address critical product bugs or legal,
+       security, or privacy concerns." Mitteilung per E-Mail.
+     **FOLGERUNG, NICHT GEMESSEN:** Die zwei versionsgebundenen Neuerungen an
+     `/rest/conversionEvents` (optionale Felder) fallen nach dieser Definition unter "nicht
+     brechend"; M3 führt sie auch nicht unter "Breaking Changes". **UND DIE ZWEITE HÄLFTE:**
+     Änderungen an Fehlertexten kündigt der Anbieter nicht an — (ak) stellt eine gemessene
+     und eine dokumentierte Form desselben Fehlers gegenüber, und eine Auswertung, die den
+     TEXT liest, bricht nach dieser Seite ohne Vorwarnung.
+
+### Der gelesene Umfang (2026-09-23) — LinkedIn, Versionierung
+
+**OHNE DIESEN BLOCK HABEN DIE NICHT-TREFFER IN (av), (aw) UND (ay) KEINE REICHWEITE.** Alle
+Seiten am 2026-09-23 zwischen etwa 07:19 und 07:24 UTC abgerufen, `textContent` von
+`<main>`, ENGLISCHE Fassung. Learn-Pfade unter `https://learn.microsoft.com/en-us/linkedin/`,
+Ansicht `view=li-lms-2026-09`; Zeichenzahl = Länge des `<main>`-`textContent`.
+
+**DER ABSCHNITT "API Concepts > Versioning" DES MARKETING-ZWEIGS SAMT SEINER NACHBARN —
+GEÖFFNET (13 Seiten):**
+1. M1 `marketing/integrations/migrations` — "Migrations" — 09/16/2026 — 11 541 Z. —
+   vollständig. (X2 der früheren Umfänge.)
+2. M2 `marketing/versioning` — "LMS API Documentation Versioning" — 09/16/2026 — 9 375 Z. —
+   vollständig. (X1.) Ein Bild im Abschnitt "Versioned API Docs" ist ein Beispiel der
+   Versionsauswahl, keine Tabelle.
+3. M3 `marketing/integrations/recent-changes` — "Recent Marketing API Changes" — 09/16/2026 —
+   113 405 Z. — **die Abschnitte 202609 bis 202601 VOLLSTÄNDIG**; die älteren Abschnitte
+   (202511 bis 202401) nur über eine Suche (`365-day|365 day`, `Conversions API:`,
+   `conversionEvents`, `Restli|protocol version`, `LinkedIn-Version`), daraus wörtlich gelesen
+   die Einträge 202505 (365-Tage-Fenster) und 202408 (MQL/SQL). Drei `<details>`-Elemente,
+   geschlossen, 54/407/366 Zeichen, im `textContent` enthalten. (X6.)
+4. M4 `shared/api-guide/concepts/protocol-version` — "LinkedIn API Protocol Versions" —
+   05/08/2023 — 5 651 Z. — vollständig.
+5. M5 `shared/api-guide/concepts/error-handling` — "LinkedIn API Error Handling" —
+   03/24/2025 — 8 278 Z. — vollständig.
+6. M6 `marketing/error-responses` — "Updated Marketing API Error Responses" — 10/16/2025 —
+   25 207 Z. — Kopf, "Overview", Beispiele 4 und 5 und alle vier Treffer von `conversion`
+   (ein Kampagnen-Fehlercode) gelesen; vollständig gelesen am 2026-09-22 (Teil (ar)),
+   Seitenstand seither unverändert.
+7. M7 `shared/breaking-change-policy` — "LinkedIn API Breaking Change Policy" — 05/08/2023 —
+   4 801 Z. — vollständig. (X9.)
+8. S4 `marketing/integrations/ads-reporting/conversions-api-schema` — 09/16/2026 — 19 311 Z.
+   (Ansicht 2026-01) — vollständig; dazu der Ansichtsvergleich in (av).
+9. S3 `marketing/integrations/ads-reporting/conversions-api` — 09/16/2026 — 25 640 Z. —
+   vollständig; sechs Reiter-Gruppen `http`/`curl` (zwölf `[role=tab]`), vorausgewählt
+   `http`; **beide Inhalte je Gruppe stehen im `textContent`** und sind gelesen. Dazu der
+   Ansichtsvergleich in (av).
+10. S11 `marketing/conversions/conversions-faq` — 09/16/2026 — 10 118 Z. — vollständig.
+11. `marketing/lms-faq` — "Marketing API FAQ" — 02/11/2026 — 10 868 Z. — **SUCHLESUNG**
+    (`version|migrat|sunset|deprecat|conversion|restli|token|426`, 20 Treffer, alle gelesen:
+    Warnhinweis, Berechtigungen, Berichts-Schwellen) — keine Aussage zu L1–L5.
+12. S2 `marketing/conversions/getting-access-conversions` — 08/12/2026 — 8 351 Z. —
+    **SUCHLESUNG** (`version|expire|token|migrat`), beim Abgleich der Ausschlussliste für L3
+    geöffnet.
+13. H4 `https://www.linkedin.com/help/lms/answer/a1711116?lang=en` — "Set up and create
+    conversions using Direct API" — "Last updated: 1 month ago" — 6 294 Z. —
+    **SUCHLESUNG** für L3. **FALSCH-POSITIVE, BENANNT:** `version` traf dort ausschliesslich
+    das Teilwort in "con**version**"; mit Wortgrenze (`\bversions?\b`) 0 Treffer, `expir` 0,
+    `token` 4 (Positivkontrolle).
+
+**REITER-GRUPPEN:** nur S3 (s. dort). **SYMBOL-TABELLEN:** keine — alle Tabellen (Migrations-
+Status, Schema, Fehler, Schlüssel-Syntax) führen ihre Werte als Wörter; `table img, table
+svg` auf allen Learn-Seiten 0. **ÜBERSETZTE FASSUNGEN:** keine; H4 mit `?lang=en`.
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund, und gegen L1–L5 gehalten:**
+· `shared/api-guide/concepts` (Overview), `…/methods`, `…/data-formats`, `…/urns`,
+  `…/projections`, `…/pagination`, `…/query-tunneling` — Geschwister unter "API Concepts";
+  kein Titel trägt eine der Fragen. `…/rate-limits` (X8) am 2026-09-22 gelesen.
+· `marketing/getting-started` ("Key Concepts") — allgemeiner Einstieg, Titel trägt keine
+  Frage.
+· `lead-sync/lead-sync-api-migration-guide`, `integrations/ads/advertising-targeting/
+  bing-geo-migration-guide`, `community-management/shares/binggeo-migration-organic-targeting`
+  — der Titel trägt "Migration", aber für fremde Produkte; L2 fragt nach
+  `/rest/conversionEvents`.
+· M3, Abschnitt "Archived Marketing API Changes" — Änderungen vor 2024, keine zwischen 202601
+  und einer jüngeren Version.
+· Die übrigen Seiten des Conversions-Zweigs (S1, S5 bis S10, S12, S13) und die
+  Hilfe-Artikel H1 bis H3, H5 bis H7 — am 2026-09-11 bzw. 2026-09-22 gelesen; kein Titel
+  trägt L1–L5, und nach (av) trägt ihre Versions-Ansicht keine eigene Fassung.
+· Die in den früheren Umfängen nur als NUMMERN geführten Hilfe-Artikel — nach dem Titel NICHT
+  beurteilbar; **benannte Grenze, keine Entwarnung.**
+· Entwicklerportal, Payload Builder (Aufruf), Campaign Manager — hinter einer Anmeldung, nicht
+  betreten. In dieser Runde ist keine Anmeldeschranke aufgetreten.
 

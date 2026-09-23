@@ -449,6 +449,29 @@ Volladung von `docs/ziel-befunde/google.md` verlangt, deren Tragfähigkeit ungem
 **DIE GRENZEN DES WÄCHTERS STEHEN AM WÄCHTER SELBST** — Kopfkommentar von
 `src/lib/capi/version-deadlines.test.ts`, Punkte (1) bis (4). Hier steht keine Kopie.
 
+### VERMERK P11.7-11 — Crawl zur Scheibe S2 vom 2026-09-23 (VORARBEIT, KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-23 · HEAD `854dd39` · Arbeitsbaum sauber · **VOLLLADUNG** von
+docs/ziel-befunde/linkedin.md (1 636 Zeilen) plus Kopf von docs/ziel-befunde.md VOR der
+ersten Navigation · **DREIZEHN Seiten** geöffnet, davon acht vollständig, eine in einem
+benannten Bereich vollständig, eine erneut in Teilen, drei als Suchlesung · `textContent`,
+englische Fassung, Ansicht `view=li-lms-2026-09` · **KEIN Aufruf gegen die Schnittstelle** ·
+Werkzeug-Ablage vorab als ignoriert belegt · `src/lib/capi/version-deadlines.test.ts` nicht
+angefasst.
+
+**ZEIGER:** docs/ziel-befunde/linkedin.md, "Abschnitts-Lesung 2026-09-23 der Versionierungs-
+und Migrationsseiten (S2 der Phase 11.7) — die Teile (au) bis (bb)" samt Umfangs-Block.
+**ZWEI ÄLTERE TEILE HABEN EINEN DATIERTEN VORBEHALT BEKOMMEN**, Wortlaut unangetastet: (ar)
+und (at). **DER KOPF JENER DATEI HAT EINE DATIERTE ERGÄNZUNG:** seine Prüfsumme gilt dem
+Stand von `11a44f7`, weil die Datei seit diesem Tag fortgeschrieben wird.
+
+**ZUSCHNITT-FRAGE P11.7-17 RUHT AUF TEIL (at), UND (at) TRÄGT JETZT EINEN VORBEHALT** — die
+Wendung "zwei neue Conversion-Typen mit 180- und 365-Tage-Fenstern ab `202608`" ist dort
+nicht angefasst; wer sie für den Stufe-1-Plan von S2 heranzieht, liest (ax).
+
+**KEINE ZIELVERSION IST GEWÄHLT UND KEINE EMPFOHLEN.** Die Kandidaten mit ihren Tatsachen
+stehen in (au) und (aw); die Auswahl trifft der Owner.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;

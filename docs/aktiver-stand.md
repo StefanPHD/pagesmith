@@ -968,6 +968,14 @@ docs/ziel-befunde.md · die Lesung der Migrations-/Änderungsseite des Anbieters
 NICHT ENTSCHIEDEN: die ZIELVERSION. Sie wird aus dem Gelesenen VORGESCHLAGEN, der Owner
 entscheidet. Bekannt und nicht bewertet: `202609` ist die jüngste aktive Version (linkedin,
 Teil (at)); dazwischen liegen mindestens zwei funktionale Änderungen (P11.7-17).
+**ZIELVERSION `202609` — OWNER-ENTSCHEIDUNG 2026-09-23.** Der Satz "NICHT ENTSCHIEDEN"
+darüber ist damit überholt und bleibt als Stand vor der Entscheidung stehen. GRUND: Laut
+docs/ziel-befunde/linkedin.md, Teile (aw) und (ax), ändert keine Version zwischen `202601`
+und `202609` etwas an einer Nutzlast ohne `userInfo`; damit entscheidet die Laufzeit — bis
+15.09.2027 (Teil (au)). VERWORFEN: `202602` (Ablauf 15.02.2027, die zweite Anhebung stünde
+einen Monat nach der ersten an). GRENZE: Dass der Anbieter unsere Nutzlast unter `202609`
+annimmt, ist eine FOLGERUNG aus der Änderungsliste, keine Messung — der Live-Test von S2
+beantwortet sie.
 NICHT dazu: `li_fat_id` (S6) · jede Meta-Änderung.
 **LÖST S2 DIE ANHEBUNG EIN**, wird der Posten "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM
 15.01.2027 ABGESCHALTET — DANN SCHEITERT DER FORWARD STILL" in docs/offene-punkte.md mit dem

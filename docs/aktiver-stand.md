@@ -109,7 +109,7 @@ Validierungsregeln eine untergeschobene Version mitbringt, ist ungemessen.
 **OB DIE ANHEBUNG ÜBER DIE UMGEBUNG ODER DEN VORGABEWERT LÄUFT, IST NICHT ENTSCHIEDEN.
 KEINE EMPFEHLUNG.**
 
-**WO DIESER POSTEN AUF DAUER GETRAGEN WIRD — OWNER-ENTSCHEIDUNG 2026-09-23, ER WIRD NICHT
+**WO DIESER POSTEN AUF DAUER GETRAGEN WIRD — ARCHITEKTEN-ENTSCHEIDUNG 2026-09-23, ER WIRD NICHT
 NACH docs/offene-punkte.md GEHOBEN:** Die Frist trägt seit `4809cb5` der Wächter T1 in
 `src/lib/capi/version-deadlines.test.ts` (Vorlauf 60 Tage, rot ab 2026-11-22); **er überlebt
 das Phasenende.** Die Unsicherheit der zwei Versionstabellen tragen der Kopf jener Testdatei
@@ -524,6 +524,51 @@ der Teil (bc)"; dazu je ein datierter Zeiger an (ax) und (ay). **ABSCHLUSS IM SE
 Posten "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT
 DER FORWARD STILL" in docs/offene-punkte.md gestrichen mit Beleg, Stub in CLAUDE.md entfernt;
 Vorrat P11.7-3, -5, -6 geschlossen.
+
+### VERMERK P11.7-13 — Crawl zur Scheibe S3 vom 2026-09-23 (VORARBEIT, KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-23 · HEAD `811c15d` · Arbeitsbaum sauber · **VOLLLADUNG** von
+docs/ziel-befunde/meta.md (926 Zeilen) plus Kopf von docs/ziel-befunde.md (220 Zeilen) VOR
+der ersten Navigation · **DREISSIG Seiten** geöffnet, davon neunzehn vollständig, elf mit
+benannter Achse · `textContent`, englische Fassung · **KEIN Aufruf gegen die Schnittstelle** ·
+Werkzeug-Ablage vorab als ignoriert belegt (`.gitignore`, Zeile `.playwright-mcp/`) · `src/`
+nicht angefasst.
+
+**ZEIGER:** docs/ziel-befunde/meta.md, "Abschnitts-Lesung 2026-09-23 der Versionierungs- und
+Änderungsseiten (S3 der Phase 11.7) — die Teile (v) bis (z)" samt Umfangs-Block. **ZWEI
+ÄLTERE TEILE HABEN EINEN DATIERTEN VORBEHALT BEKOMMEN**, Wortlaut unangetastet: (s) und (t).
+
+**DIE ANTWORTEN, je mit Teil:**
+- **M1** — (w): Tabelle 1 (Graph) v22.0 2027-05-20 · v23.0 2027-10-08 · v24.0 2028-02-18 ·
+  v25.0 2028-07-29 · v26.0 TBD; Tabelle 2 (Marketing) v24.0 2026-10-06 · v25.0 TBD · v26.0
+  TBD. **In beiden mit Termin: allein `v24.0`.** Die Marketing-Einzelseite von `v21.0` führt
+  "Available until September 9, 2025".
+- **M2** — (x): In den versionierten Änderungslisten v22.0 bis v26.0 beider Zweige **kein
+  Eintrag** zu `/{PIXEL_ID}/events`. Zwei Protokoll-Abkündigungen gelten versionsunabhängig
+  und treffen den heutigen Aufruf nicht (GEMESSEN am Repo). **LÜCKE:** die
+  Out-of-cycle-Änderungen der Marketing API (GitHub, nicht geöffnet).
+- **M3** — (v): **BEANTWORTET AUF DOKU-EBENE** — für die Conversions API gilt der
+  Graph-Zeitplan, als ausdrückliche Ausnahme. F6 ist damit auf Doku-Ebene entschieden und
+  bleibt als MESSUNG offen.
+- **M4** — (y): Graph `facebook-api-version`, Marketing `X-Ad-Api-Version-Warning`. Der
+  Adapter liest keine von beiden (GEMESSEN am Repo). F6 ist mit EINEM Aufruf messbar.
+- **M5** — (z): Unter dem Marketing-Schema "fail or be upgraded", Hochstufung abschaltbar,
+  Widerspruch in derselben FAQ; für die Conversions API nach (v) nicht massgeblich.
+
+**WAS DAMIT IN DIESER DATEI ÜBERHOLT IST UND AUSDRÜCKLICH NICHT ANGEFASST WURDE** (Auftrag:
+ein Vermerk, im Abschnitt "Frist mit Termin" nur das Wort aus 0c): der Satz "Welche der
+beiden für `/{PIXEL_ID}/events` gilt, ist **UNGEMESSEN**" dort — weiterhin richtig als
+Aussage über die Messung, aber nicht mehr über die Doku · F6 im Abschnitt "Offene Fragen"
+("AUF DOKU-EBENE NICHT ENTSCHIEDEN") · die Tabellenzeile meta in ZUSCHNITT-FRAGE P11.7-13
+("welches gilt, ist ungemessen"). **Ob und wie sie nachgezogen werden, entscheidet der
+Architekt.**
+
+**EIN ZWEITES VORKOMMEN ZU 0c, NICHT ANGEFASST:** Der Absatz "AUFLAGE ZUR FRIST" im
+Abschnitt "Zuschnitt der Phase 11.7" nennt dieselbe Entscheidung weiterhin
+"OWNER-ENTSCHEIDUNG 2026-09-23". Der Auftrag galt allein dem Abschnitt "Frist mit Termin".
+
+**KEINE ZIELVERSION IST GEWÄHLT UND KEINE EMPFOHLEN; KEINE AUSSAGE ZU VORGABEWERT GEGEN
+UMGEBUNGSVARIABLE.** Die Kandidaten mit ihren Tatsachen stehen in (w) und (x).
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 

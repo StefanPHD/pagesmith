@@ -8,6 +8,12 @@ DER BELEG: sha256 = 66805dc9a268369dafd5bd78c13fcab4ecf03a1564c8976144ad18a1e9b5
 den übernommenen Abschnitt — also über alles ab der Zeile "## Meta (Conversions API)"
 bis zum Dateiende, OHNE diesen Kopf. Wer prüfen will, ob hier jemand nachträglich ein Wort
 geändert hat, misst gegen diese Prüfsumme.
+ERGÄNZUNG 2026-09-23 — DIE PRÜFSUMME GILT DEM STAND DES COMMITS `11a44f7`, NICHT DEM HEUTIGEN
+DATEIENDE. Bis `811c15d` ging sie über den heutigen Stand auf (GEMESSEN, CC, 2026-09-23);
+seither kamen ein Anhang und zwei datierte Vorbehalte nach der Konvention hinzu (Einzelheiten:
+git log). Gemessen wird sie gegen `git show 11a44f7:docs/ziel-befunde/meta.md`, dort ab der
+Zeile "## Meta (Conversions API)". Der Satz darüber bleibt wörtlich; er war am Tag der
+Aufteilung richtig.
 
 **WARUM ES DIE AUFTEILUNG GAB:** Die Sammel-Datei war für die VOLLLADUNG zu gross, die der
 Pflicht-Stopp vor einem Zuschnitt verlangt. Die Pflicht ist damit nicht gelockert, sondern
@@ -774,6 +780,15 @@ einen Doku-Wechsel.
     heute bedient wird. **Nach Tabelle 1 lebt es bis 2027-01-21, nach Tabelle 2 ist es nicht
     geführt.** Dieselbe Messung müsste zeigen, ob eine Antwort verrät, welche Version
     tatsächlich bedient wurde.
+    **VORBEHALT 2026-09-23 — DER WORTLAUT VON (s) BLEIBT UNVERÄNDERT; ZWEI SEINER SÄTZE SIND
+    AUF DOKU-EBENE ÜBERHOLT:** Der Satz "OB DAS NUR FÜR RATE-LIMITS GILT ODER AUCH FÜR DIE
+    VERSIONIERUNG, STEHT AUF KEINER DER GELESENEN SEITEN" trifft nicht mehr zu — dieselbe
+    Seite `/using-the-api` trägt eine ausdrückliche Aussage zur VERSIONIERUNG, s. **Teil
+    (v)**. Die Frage "welches der zwei Versions-Schemata `/{PIXEL_ID}/events` regiert" ist
+    damit auf DOKU-EBENE beantwortet (Graph-Schema) und bleibt als MESSUNG offen; die
+    Antwort-Kopfzeile, die das zeigen würde, steht in **Teil (y)**. Die Marketing-Tabelle
+    führt `v21.0` nicht — die Einzelseite der Version tut es, mit einem Termin, der
+    VERSTRICHEN ist, s. **Teil (w)**.
 
 (t) DER ABLAUF EINER VERSION ERZEUGT KEINEN FEHLER, SONDERN EINE STILLE UMLEITUNG — EIN
     EIGENER BEFUND, WEIL ER DIE FEHLERFORM BESTIMMT.
@@ -798,6 +813,11 @@ einen Doku-Wechsel.
     **DIE ANDERE RICHTUNG IST EBENSO UNGEMESSEN:** Unter dem Marketing-Schema kann dieselbe
     Anfrage statt dessen SCHEITERN. Welches von beidem für `/{PIXEL_ID}/events` gilt, ist
     genau die offene Frage aus (s).
+    **VORBEHALT 2026-09-23 — DER WORTLAUT VON (t) BLEIBT UNVERÄNDERT:** Die "offene Frage aus
+    (s)" ist auf DOKU-EBENE beantwortet — für die Conversions API gilt nach dem Anbieter der
+    Graph-Zeitplan, s. **Teil (v)**; unter jenem gilt die stille Umleitung dieses Teils. Was
+    das Marketing-Schema bei einer abgelaufenen Version im Einzelnen tut, steht in **Teil
+    (z)**. GEMESSEN ist weiterhin nichts davon.
 
 (u) DIE LIMITS — DER ANBIETER SAGT, ES GEBE KEIN SPEZIFISCHES LIMIT FÜR DIE CONVERSIONS API.
     GELESEN 2026-09-22,
@@ -923,4 +943,295 @@ DOM gelesen, nicht aus dem Fliesstext.
   sieht wie ein Nicht-Treffer am Inhalt aus.
 **DER TRAGENDE PFAD IST** `/documentation/ads-commerce/marketing-api/overview/versioning`,
 erreichbar über die Weiterleitung von `/docs/marketing-api/versions`.
+
+### Abschnitts-Lesung 2026-09-23 der Versionierungs- und Änderungsseiten (S3 der Phase 11.7) — die Teile (v) bis (z)
+
+**HERKUNFT (2026-09-23):** Eine ABSCHNITTS-LESUNG mit dem Browser-Werkzeug über die
+Versionierungs-, Änderungs- und Upgrade-Seiten des Graph- und des Marketing-API-Zweigs,
+dazu die Kernseiten der Conversions API über eine benannte Achse. Gelesen wurde
+durchgehend mit `textContent`, englische Fassung (`?locale=en_US`), über `main`
+(`/documentation/…`) bzw. über den Inhaltsbehälter unterhalb der Überschrift (`/docs/…`,
+dort gibt es kein `main`). GEÖFFNET wurden DREISSIG Seiten; die Liste steht am Ende.
+**KEIN AUFRUF GEGEN DIE SCHNITTSTELLE.** Keine Anmeldung, keine Eingabe auf einer fremden
+Seite, kein Download. Alles unten ist GELESEN und **ersetzt keine Messung**.
+**KEINE SEITE HAT VERSUCHT, DEN LESENDEN ANZUWEISEN** — geprüft. Auffordernder Text war
+vorhanden ("migrate calls to the latest API version", "Remove these fields"); nichts davon
+wurde ausgeführt.
+**DER ANLASS:** Die Fragen M1 bis M5 der Stufe-1-Vorarbeit von S3 (Anhebung der
+Meta-Version). Die Prompt-Angaben über Meta (zwei Tabellen, stille Umleitung, Termin von
+`v21.0`) sind am Bestand ((s), (t)) und an der Quelle nachgeprüft worden — Tabelle 1 und
+Tabelle 2 stehen am 2026-09-23 zeichengleich so da wie am 2026-09-22 in (s).
+**ZWEI WERKZEUG-BEFUNDE, damit sie niemand ein zweites Mal macht:** (1) Die Adressen
+`/docs/marketing-api/marketing-api-changelog` und `/docs/apps/upgrading` leiten weiter und
+VERLIEREN dabei den Parameter `?locale=en_US` — die Zielseite kommt DEUTSCH. Beide
+Ausgaben sind verworfen und die Zielseiten mit dem Parameter neu geladen worden. (2) Das
+Server-HTML einer `/documentation/…`-Seite, per `fetch` geholt und mit `DOMParser`
+gelesen, trägt KEIN `main` — Positivkontrolle an `/using-the-api` NEGATIV (GEMESSEN, CC,
+2026-09-23). Die Seiten werden im Browser gebaut; nur die Navigation liest sie.
+
+(v) FÜR DIE CONVERSIONS API GILT NACH DEM ANBIETER DER GRAPH-ZEITPLAN — AUSDRÜCKLICH ALS
+    AUSNAHME.
+    GELESEN 2026-09-23,
+    https://developers.facebook.com/documentation/ads-commerce/conversions-api/using-the-api
+    ("Using the API", Seitenstand "Updated: Jul 17, 2026", 16 661 Zeichen über `main`), im
+    ersten Absatz, wörtlich: "The Conversions API is based on Facebook’s Marketing API,
+    which was built on top of our Graph API. **Marketing and Graph APIs have different
+    version deprecation schedules. Our release cycle is aligned with the Graph API, so every
+    version is supported for at least two years. This exception is only valid for the
+    Conversions API.**"
+    **DAS BEANTWORTET F6 AUF DOKU-EBENE:** Für `/{PIXEL_ID}/events` regiert nach dieser
+    Aussage Tabelle 1 aus (s), nicht Tabelle 2 — und damit gilt für `v21.0` der
+    2027-01-21 und bei Ablauf die stille Umleitung aus (t), Graph-Wortlaut.
+    **DIE SPANNUNG IM SELBEN DOKUMENT, gemeldet statt geglättet:** Dieselbe Seite sagt im
+    Abschnitt "API Limits" "Conversions API calls are counted as Marketing API calls" (s.
+    (u)). Der erste Absatz grenzt die VERSIONIERUNG davon ausdrücklich aus ("This exception
+    …"); für die ZÄHLUNG bleibt der Satz aus (u) stehen.
+    **WAS AN DER LESUNG VOM 2026-09-22 DAMIT FALSCH IST, UND WAS NICHT ENTSCHEIDBAR IST:**
+    (s) hielt fest, auf keiner gelesenen Seite stehe, ob die Marketing-Zuordnung auch für
+    die Versionierung gelte — gelesen war dieselbe Seite. Der Seitenstand "Jul 17, 2026"
+    liegt VOR jener Lesung; dass der Absatz am 2026-09-22 dastand, ist damit eine
+    FOLGERUNG, nicht gemessen. Die Zeichenzahl von damals (18 344) und heute (16 661) ist
+    nicht vergleichbar: der Messbehälter ist in (s) nicht benannt.
+    **WAS DIESER TEIL NICHT BELEGT:** dass der Endpunkt sich so VERHÄLT. Das zeigt allein die
+    Antwort-Kopfzeile aus (y) an einem echten Aufruf.
+
+(w) VERSIONEN UND TERMINE — ZWEI TABELLEN, UND DIE SEITENKÖPFE DER EINZELVERSIONEN WEICHEN
+    VON BEIDEN AB.
+    GELESEN 2026-09-23, https://developers.facebook.com/docs/graph-api/changelog
+    ("Changelog - Graph API"), beide Tabellen **zeilenweise über `table tr`**:
+    · **TABELLE 1 "Available Graph API Versions"** (Einführung / Available Until): v26.0
+      July 29, 2026 / **TBD** · v25.0 February 18, 2026 / **July 29, 2028** · v24.0 October
+      8, 2025 / **February 18, 2028** · v23.0 May 29, 2025 / **October 8, 2027** · v22.0
+      January 21, 2025 / **May 20, 2027** · v21.0 October 2, 2024 / **January 21, 2027** ·
+      darunter v20.0 bis v13.0, alle mit Termin; v20.0 bis "September 24, 2026".
+    · **TABELLE 2 "Available Marketing API Versions"**, VOLLSTÄNDIG: v26.0 July 29, 2026 /
+      **TBD** · v25.0 February 18, 2026 / **TBD** · v24.0 October 8, 2025 / **October 6,
+      2026**. Darüber: "Marketing API version auto-upgrade will be released on July 29,
+      2026." Dieselbe Tabelle, zeichengleich, auf
+      `/documentation/ads-commerce/marketing-api/marketing-api-changelog` ("Updated: May 21,
+      2026").
+    · **IN BEIDEN TABELLEN MIT TERMIN (nicht "TBD") STEHT GENAU EINE VERSION: `v24.0`** —
+      Graph 2028-02-18, Marketing 2026-10-06. Sie ist damit auch die jüngste solche. `v25.0`
+      trägt nur in Tabelle 1 einen Termin, `v26.0` in keiner.
+    · **DIE SEITENKÖPFE DER MARKETING-EINZELSEITEN** (`/documentation/ads-commerce/
+      marketing-api/marketing-api-changelog/versionNN.0`, je eine Kopfzeile "Available
+      until …"): v21.0 **September 9, 2025** · v22.0 **February 19, 2026** · v23.0 **June 9,
+      2026** · v24.0 October 6, 2026 · v25.0 TBD · v26.0 TBD. **NACH DEM MARKETING-SCHEMA IST
+      `v21.0` SEIT DEM 2025-09-09 ABGELAUFEN.**
+    · **DIE SEITENKÖPFE DER GRAPH-EINZELSEITEN** (`/docs/graph-api/changelog/versionNN.0`)
+      führen für den Graph-Teil bei v22.0 bis v26.0 durchweg "Available until TBD" — **im
+      Widerspruch zu Tabelle 1**, die für v22.0 bis v25.0 Termine nennt. Die Marketing-Teile
+      derselben Seiten stimmen mit den Marketing-Einzelseiten überein (v22.0 February 19,
+      2026; v23.0 June 9, 2026). **Welche Angabe gilt, sagt keine Seite;** die Tabelle ist
+      die jüngere Form und die einzige, die v20.0 tatsächlich ablaufen lässt.
+    · **EINE ZWEITE DATUMSQUELLE FÜR `v21.0`, deckungsgleich mit Tabelle 1:** der Abschnitt
+      "API Version Deprecations" der Seite v26.0, wörtlich: "January 21, 2027: Graph API
+      v21.0 is deprecated and removed. To avoid disruption, migrate calls to the latest API
+      version."
+    **EINE BEOBACHTUNG, ALS FOLGERUNG GEKENNZEICHNET:** Der Meta-Forward ist am 2026-09-23
+    live angekommen (OWNER-ABLESUNG im Events Manager, Server "Dedupliziert";
+    docs/ziel-befunde/linkedin.md, Teil (bc), dort als Mitläufer). Sendet die Produktion `v21.0` — was am Repo NICHT feststellbar ist, weil die
+    Umgebungsvariable übersteuern kann —, dann wird eine nach dem Marketing-Schema seit über
+    einem Jahr abgelaufene Version angenommen: verträglich mit (v), ebenso mit einer
+    Umleitung nach (z). **Welches von beiden, entscheidet nur die Kopfzeile aus (y).**
+
+(x) WAS SICH ZWISCHEN `v21.0` UND DEN JÜNGEREN VERSIONEN FÜR `/{PIXEL_ID}/events` ÄNDERT —
+    IN DEN ÄNDERUNGSLISTEN NICHTS.
+    GELESEN 2026-09-23, **VOLLSTÄNDIG, nicht nach Stichworten:** die Graph-Änderungslisten
+    v22.0 (9 576 Z.), v23.0 (3 365 Z.), v24.0 (8 540 Z.), v25.0 (5 280 Z.), v26.0 (12 910 Z.,
+    inkl. Navigation) unter `/docs/graph-api/changelog/versionNN.0` — jede trägt einen
+    Graph-Teil UND einen Marketing-Teil —, dazu die Marketing-Änderungslisten v22.0 (6 599
+    Z.), v23.0 (2 945 Z.), v24.0 (7 704 Z.), v25.0 (1 418 Z.), v26.0 (5 416 Z.) unter
+    `/documentation/ads-commerce/marketing-api/marketing-api-changelog/versionNN.0`, und die
+    Out-of-cycle-Seite `/docs/graph-api/changelog/non-versioned-changes/nvc-2025` (1 357 Z.,
+    ein Eintrag: oEmbed).
+    · **KEIN EINZIGER EINTRAG BETRIFFT DIE CONVERSIONS API ODER `/{PIXEL_ID}/events`** —
+      nicht `user_data`, `action_source`, `event_source_url`, `custom_data`,
+      `test_event_code`, keinen Fehlercode, keine Abkündigung eines Feldes. Die Einträge
+      betreffen Commerce, Insights, Instagram, Pages, Werbeanzeigen, Zielgruppen,
+      Platzierungen, Kataloge. Achse zur Gegenprobe über den vollen Rumpf der Marketing-Seiten
+      v21.0 bis v24.0 (`onversions API`, `/events`, `user_data`, `action_source`,
+      `event_source_url`, `custom_data`, `test_event_code`, `pixel`/`Pixel`,
+      `dataset`/`Dataset`): **0 Treffer auf allen vier.** POSITIVKONTROLLE: die Graph-Seite
+      v26.0 trägt "Conversions API" — im SDK-Abschnitt, s. unten — und die Lesung hat es
+      gefunden.
+    · **DIE EINZIGE ERWÄHNUNG DER CONVERSIONS API** steht im Abschnitt "Meta Business SDKs
+      v26 Release" der Graph-Seite v26.0: das Business SDK sei "now integrated with open
+      sourced Conversions API Parameter Builder" und "Auto-generates (gated by preference set
+      by advertisers) and enhances parameters fbc, fbp, event_source_url, referrer_url,
+      client_ip_address". **DAS IST EINE ÄNDERUNG DES SDK, NICHT DES ENDPUNKTS** — dieses
+      Projekt benutzt weder SDK noch Bibliothek (s. (r)).
+    · **ZWEI ALLGEMEINE PROTOKOLL-ABKÜNDIGUNGEN, die jede Anfrage treffen könnten**, wörtlich
+      an der Graph-Seite v26.0, "Legacy Graph API protocol features deprecated": "Applies to
+      v26.0+ beginning July 29, 2026. **Applies to all remaining supported Graph API versions
+      beginning October 27, 2026.**" — der Parameter `pretty` wird ignoriert, `debug` wird
+      ignoriert, `date_format` liefert einen Fehler, `GET /?ids=…` liefert einen Fehler,
+      `If-None-Match` wird ignoriert, ETag- und 304-Verhalten entfallen. Und an der Seite
+      v25.0: "The metadata query parameter (metadata=1) is deprecated", für alle Versionen ab
+      May 19, 2026. **GEMESSEN am Repo (CC, 2026-09-23, HEAD `811c15d`):** die Adresse in
+      `forwardToMeta` (`src/lib/capi/meta-forward.ts`) lautet
+      `https://graph.facebook.com/${META_GRAPH_VERSION}/${config.pixelId}/events?access_token=…`;
+      `pretty`, `debug=`, `date_format`, `?ids=`, `If-None-Match`, `metadata=` treffen dort
+      und in `src/lib/capi/config.ts` **0-mal** (POSITIVKONTROLLE: `META_GRAPH_VERSION` und
+      `access_token` treffen). **Diese Abkündigungen gelten unabhängig von der gewählten
+      Version und berühren den heutigen Aufruf nach dem Gelesenen nicht.**
+    · **EINE ANGABE ZUM ZUGANGSDATUM, die eine Anhebung berührt.** GELESEN 2026-09-23,
+      `/documentation/ads-commerce/conversions-api/get-started` ("Updated: Jun 28, 2026"),
+      wörtlich: "Access tokens generated under the Conversions API settings tab in Events
+      Manager are no longer restricted to using the newest Graph API version that was
+      available at the time of token generation. Starting with v12.0, newly created access
+      tokens can be used with all available Graph API versions." **Ob das live verwendete
+      Zugangsdatum nach v12.0 erzeugt wurde, ist hier nicht erhoben.**
+    · **DIE KERNSEITEN DER CONVERSIONS API TRAGEN KEINE VERSIONSGEBUNDENE ÄNDERUNG** — Achse
+      `Graph API|Marketing API|\bversion|\bv\d{1,2}(\.0)?\b|changelog|deprecat|\bupgrade|
+      facebook-api-version|X-Ad-Api|header|no longer|starting with`, jeder Treffer im
+      Wortlaut gelesen, über `/best-practices`, `/parameters/server-event`,
+      `/parameters/customer-information-parameters`, `/parameters/custom-data`,
+      `/parameters/main-body`, `/parameters/fbp-and-fbc`, `/guides/end-to-end-implementation`,
+      `/get-started`, `/support`, die Übersicht. Einzige versionsgebundene Regel bleibt die
+      aus (m) ("Following the release of Graph API version 13.0") — POSITIVKONTROLLE, die
+      Achse hat sie auf zwei Seiten getroffen. `\bversion` trifft "conversion" NICHT; die
+      übrigen Treffer sind `extinfo`-Felder, das `fbc`/`fbp`-Präfix "version" und
+      Sprachversionen des SDK.
+    · **EINE EIGENE ÄNDERUNGSLISTE DER CONVERSIONS API GIBT ES NICHT** — der
+      Navigationsbaum der Übersicht (133 verschiedene Einträge unter `conversions-api`)
+      führt keine Seite "Versioning" oder "Changelog" außer
+      `/guides/gateway/changelog` (Gateway, ein anderes Produkt).
+    **DIE BENANNTE LÜCKE:** Die Out-of-cycle-Änderungen der Marketing API stehen laut ihrer
+    Änderungsseite NUR in einem "API spec"-Ordner auf GitHub ("automatically generated based
+    on the API changes"), erreicht über einen `l.facebook.com`-Umweg — **nicht geöffnet.**
+    Die Graph-Seite verlinkt Out-of-cycle-Änderungen nur für 2025; eine Seite für 2026 ist
+    nicht verlinkt. **"Nichts für `/events`" gilt über die VERSIONIERTEN Änderungen v22.0
+    bis v26.0 beider Zweige, nicht über die Out-of-cycle-Änderungen der Marketing API.**
+
+(y) WELCHE VERSION EINE ANFRAGE TATSÄCHLICH BEDIENT HAT, ZEIGT EINE ANTWORT-KOPFZEILE — ZWEI
+    VERSCHIEDENE, JE SCHEMA EINE.
+    · **GRAPH:** GELESEN 2026-09-23, `/docs/graph-api/guides/debugging` ("Debug Requests -
+      Graph API", 3 973 Z.), Abschnitt "Determining Version used by API Requests", wörtlich:
+      "The Graph API supplies a request header with any response called
+      **facebook-api-version** that indicates the exact version of the API that generated
+      the response. For example, a Graph API call that generates a request with v2.0
+      produces the following HTTP header: facebook-api-version:v2.0 This
+      facebook-api-version header allows you to determine whether API calls are being
+      returned from the version that you expect." (Der Anbieter nennt sie "request header",
+      meint nach dem Satz aber eine Kopfzeile der ANTWORT.)
+    · **MARKETING:** GELESEN 2026-09-23,
+      `/documentation/ads-commerce/marketing-api/overview/versioning` ("Updated: Jun 24,
+      2026", 10 491 Z.), FAQ "Can I check if any specific API call has been auto-upgraded?",
+      wörtlich: "an API response header is included for any call that has been
+      auto-upgraded." Beispiel: `X-Ad-Api-Version-Warning: 'The call has been auto-upgraded
+      to vXXX as vXXX has been deprecated'`.
+    **FOLGE FÜR F6, UND SIE IST DER GRUND DIESES TEILS:** F6 ist nach dem Gelesenen mit
+    EINEM Aufruf messbar — die beiden Kopfzeilen einer echten Antwort ablesen. **GEMESSEN am
+    Repo (CC, 2026-09-23, HEAD `811c15d`):** `src/lib/capi/meta-forward.ts` liest aus der
+    Antwort genau EINE Kopfzeile, `content-type`; weder `facebook-api-version` noch
+    `X-Ad-Api-Version-Warning` wird gelesen oder geloggt. **NICHT BEANTWORTET:** ob der
+    Endpunkt die Kopfzeilen tatsächlich sendet — das ist die Messung selbst.
+    **EIN NEBENBEFUND ZUR SELBEN SEITE:** Sie beschreibt weiter den Parameter `debug`, den die
+    Änderungsliste v26.0 für alle Versionen ab 2026-10-27 für wirkungslos erklärt (s. (x)).
+
+(z) DAS MARKETING-SCHEMA BEI EINER ABGELAUFENEN VERSION — "SCHEITERN ODER HOCHSTUFEN", MIT
+    EINEM WIDERSPRUCH IM SELBEN DOKUMENT.
+    GELESEN 2026-09-23, `/documentation/ads-commerce/marketing-api/overview/versioning`,
+    VOLLSTÄNDIG:
+    · Regel, wörtlich: "After the 90-day grace period ends, the deprecated version stops
+      working. Once a version is unavailable, any calls made to that version number **may
+      fail or be upgraded to the next available version**."
+    · Hochstufung, wörtlich: "Starting May 2024, Meta enables the auto-version upgrade
+      feature for Marketing API endpoints that are not affected between versions … if an
+      endpoint is not affected, the platform will upgrade the call to the next available
+      version, rather than directly failing the request." Ein von der Folgeversion
+      BETROFFENER Endpunkt scheitert (Beispiel des Anbieters: `POST /{adset-id}` mit v17.0).
+      Die Hochstufung gilt über mehrere Versionen hinweg: "if your app is making calls to
+      v15.0 after v16.0 is deprecated, the call will also be upgraded to v17.0 if the
+      endpoint is not listed as affected endpoint on both v16.0 and v17.0."
+    · **ABSCHALTBAR, und das ist eine Einstellung am Anbieter-Konto:** "You can disable the
+      version auto-upgrade via the Marketing API Version setting under Marketing API App
+      Product Page > Settings." Wie sie in der App des Owners steht, ist hinter einer
+      Anmeldung und NICHT erhoben.
+    · **DER WIDERSPRUCH, gemeldet statt geglättet:** Dieselbe FAQ sagt zwei Absätze weiter
+      ohne Vorbehalt "After v16.0 has been deprecated, calls to v16.0 will fail" bzw.
+      "calls to v17.0 will fail".
+    · **EINE ZWEITE BEDINGUNG, die nur das Marketing-Schema kennt:** "You can call the
+      version of the Marketing API that was the latest available when the app was created,
+      as long as it has not been deprecated" — und eine App, die vor dem Erscheinen einer
+      neueren Version keinen Aufruf gemacht hat, "will not have the ability to use those
+      versions". Das Graph-Schema trägt dieselbe Figur (`/docs/graph-api/guides/versioning`:
+      "as long as they are available and your app has made calls to that version").
+    **FÜR M5, zusammengezogen:** Unter dem Marketing-Schema antwortet eine abgelaufene Version
+    nach dem Gelesenen ENTWEDER mit einem Fehler ODER mit einer Hochstufung auf die nächste
+    VERFÜGBARE (also neuere) Version, samt Warn-Kopfzeile; unter dem Graph-Schema wird sie
+    still auf "the next oldest, usable version" gelegt (Wortlaut (t), heute unverändert
+    gelesen). **Für die Conversions API gilt nach (v) das Graph-Schema.** Welchen Fehlercode
+    eine gescheiterte Anfrage trüge, steht auf keiner der gelesenen Seiten —
+    `/docs/graph-api/guides/error-handling` (4 345 Z.) führt keinen Versions-Fehler (Achse
+    `version|deprecat|upgrade|header` über den vollen Rumpf: 0 Treffer; POSITIVKONTROLLE:
+    beide Fehlertabellen zeilenweise gelesen, 15 und 8 Zeilen).
+
+**DER GELESENE UMFANG (2026-09-23) — Meta, Versionierung und Änderungen**
+
+**GEÖFFNET UND VOLLSTÄNDIG GELESEN — NEUNZEHN Seiten**, alle mit `?locale=en_US`:
+1. `/docs/graph-api/changelog` — Übersicht, beide Tabellen über `table tr` — (w).
+2.–6. `/docs/graph-api/changelog/version26.0`, `…/version25.0`, `…/version24.0`,
+   `…/version23.0`, `…/version22.0` — (w), (x).
+7. `/documentation/ads-commerce/marketing-api/marketing-api-changelog` (1 744 Z.) — (w).
+8.–12. `…/marketing-api-changelog/version26.0`, `…/version25.0`, `…/version24.0`,
+   `…/version23.0`, `…/version22.0` — (w), (x).
+13. `/documentation/ads-commerce/marketing-api/overview/versioning` (10 491 Z.) — (y), (z).
+14. `/docs/graph-api/guides/versioning` (8 566 Z. inkl. Navigation) — (z); der Satz aus
+    (t) steht unverändert.
+15. `/docs/graph-api/advanced/api-upgrade` ("Upgrade - Graph API", 3 474 Z.) — keine
+    Aussage zu M1–M5 ausser dem Upgrade-Werkzeug hinter einer Anmeldung.
+16. `/docs/graph-api/guides/debugging` (3 973 Z.) — (y).
+17. `/docs/graph-api/changelog/non-versioned-changes/nvc-2025` (1 357 Z.) — (x).
+18. `/documentation/ads-commerce/conversions-api/support` (1 268 Z.) — keine
+    Versionsaussage.
+19. `/documentation/ads-commerce/conversions-api/parameters/main-body` (472 Z.) — keine.
+
+**GEÖFFNET UND MIT ACHSE DURCHSUCHT, jeder Treffer im Wortlaut gelesen — ELF Seiten:**
+`/documentation/ads-commerce/marketing-api/marketing-api-changelog/version21.0` (Kopf und
+Achse, 2 376 Z.) — (w) · `/docs/graph-api/guides/error-handling` — (z) · die Übersicht
+`/documentation/ads-commerce/conversions-api` samt Navigationsbaum — (x) ·
+`/using-the-api` — (v) · `/get-started` — (x) · `/best-practices` ·
+`/parameters/server-event` · `/parameters/customer-information-parameters` ·
+`/parameters/custom-data` · `/parameters/fbp-and-fbc` · `/guides/end-to-end-implementation`
+— je (x).
+**WEITERLEITUNG, KEINE EIGENE SEITE:** `/docs/apps/versions` führt auf Seite 14.
+
+**NACH DEM DURCHGANG DURCH DIE AUSSCHLUSS-LISTEN DOCH GEÖFFNET:** `/parameters/custom-data`
+— am 2026-09-22 "aus eigenem Grund" ausgeschlossen (Geschäftsdaten statt Match-Felder).
+Geöffnet, weil M2 `custom_data` ausdrücklich nennt. Ergebnis: keine versionsgebundene
+Aussage. Der Ausschluss war im Ergebnis richtig, gegen M2 aber nicht haltbar.
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund, gegen M1 bis M5 gehalten:**
+· Die Graph-Änderungslisten v21.0 und älter — `v21.0` ist die Ausgangsversion; was sie
+  einführte, gilt für den heutigen Aufruf bereits. Gegen M1 unerheblich (die Termine stehen
+  in Tabelle 1).
+· Der GitHub-Ordner "API spec" der Marketing-Out-of-cycle-Änderungen — externe Ablage über
+  einen Umweg, BUDGET-AUSSCHLUSS. **Er ist der Ort, an dem eine unversionierte Änderung an
+  `/events` stünde (M2); die Lücke ist in (x) benannt.**
+· `/guides/business-sdk-features`, `/parameter-builder-library/*` — SDK bzw. Bibliothek,
+  von diesem Projekt nicht benutzt; gegen M2 geprüft: die v26-Änderung betrifft das SDK.
+· `/parameters/app-data`, `/parameters/original-event` — nicht Teil unserer Nutzlast; gegen
+  M2 kein Bezug.
+· `/guides/gateway/changelog` und die übrige Gateway-Familie — anderes Produkt, anderer
+  Aufrufweg.
+· `/docs/graph-api/overview/rate-limiting` — Kopfzeilen dort betreffen die Nutzung, nicht
+  die Version; gegen M4 nach Titel und nach (u) kein Bezug.
+· Das API-Upgrade-Werkzeug, die App-Einstellungen "Upgrade API Version" und "Marketing API
+  Version" — hinter einer Anmeldung, nicht betreten.
+· **"Direct Integration Playbook for Developers (PDF)"** — ein DOWNLOAD, nicht geöffnet;
+  gegen M3 nach Titel möglich, **dieselbe benannte Lücke wie am 2026-09-08 und 2026-09-22.**
+**DIE AUSSCHLUSS-LISTEN VOM 2026-09-08 (Testmodus), 2026-09-21 (Browser-Tag) UND
+2026-09-22 (Match-Parameter) SIND GEGEN M1 BIS M5 GEHALTEN WORDEN;** ausser
+`/parameters/custom-data` (oben) und dem Playbook (Lücke) trägt keine dort ausgeschlossene
+Seite nach ihrem Titel eine dieser Fragen.
+
+**REITER UND SYMBOLE:** `[role="tab"]` trifft auf den `/documentation/…`-Seiten **0-mal**, auf
+den `/docs/…`-Seiten **3-mal** — die Kopfnavigation der Website, wie am 2026-09-22. Die
+Code-Beispiele auf `/docs/graph-api/guides/debugging` stehen in Sprach-Reitern (cURL,
+Android, Objective-C, Java, PHP); sie sind keine `role="tab"`-Elemente, ihr Text liegt
+vollständig im `textContent` und ist gelesen. **ZWEI GRAFIKEN OHNE TEXT, gemeldet:** die
+"timeline example" auf `/docs/graph-api/guides/versioning` und die "sample timeline" auf der
+Marketing-Versionierungsseite — ihr Inhalt ist NICHT erhoben. Keine Tabelle mit Symbolen.
 

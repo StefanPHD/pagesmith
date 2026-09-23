@@ -1071,8 +1071,18 @@ entfernt — im Abschluss-Commit von S2.
 
 **S3 — ANHEBUNG META, `v21.0` → Zielversion.**
 PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus der Kopf von docs/ziel-befunde.md.
-NICHT ENTSCHIEDEN: die Zielversion · ob die Anhebung über die Umgebungsvariable oder den
-Vorgabewert läuft (dieselbe Offenheit steht im Abschnitt "Frist mit Termin").
+**ZIELVERSION `v25.0`, ANHEBUNG ÜBER DEN VORGABEWERT in `src/lib/capi/config.ts` —
+OWNER-ENTSCHEIDUNG 2026-09-23.** GRÜNDE: (1) Laut docs/ziel-befunde/meta.md, Teil (v), folgt
+die Conversions API dem Graph-Zyklus; `v25.0` läuft dort bis 2028-07-29 (Teil (w)) und steht
+unter der Marketing-Tabelle auf "TBD", ist also auch dann tragfähig, wenn (v) nicht zuträfe.
+VERWORFEN: `v24.0` (Marketing-Termin 2026-10-06) · `v26.0` (kein Termin; der Wächter braucht
+einen mit Quelle). (2) Vorgabewert statt Umgebungsvariable, weil nur er vom Wächter gesehen
+wird (Kopf von `src/lib/capi/version-deadlines.test.ts`, Grenze (2)); die Variable bleibt als
+Notausgang. **GRENZE:** Die Annahme unter `v25.0` ist eine FOLGERUNG aus Teil (x), keine
+Messung — der Live-Test beantwortet sie.
+DAMIT ÜBERHOLT, HIER NICHT ANGEFASST: der Satz "OB DIE ANHEBUNG ÜBER DIE UMGEBUNG ODER DEN
+VORGABEWERT LÄUFT, IST NICHT ENTSCHIEDEN" im Abschnitt "Frist mit Termin"; er fällt mit dem
+Abschluss von S3.
 NICHT dazu: `fbc` (S5) · der Pflichtfeld-Riegel (ausgeschlossen, s. unten).
 
 **S2 UND S3 ÄNDERN NACH IHREM GEGENSTAND EINE VERSIONSANGABE, KEIN NUTZLAST-FELD.** Die

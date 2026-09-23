@@ -341,6 +341,11 @@ Läufe über Match-Felder, Adressfeld oder Endpunkt:
 | **linkedin** | **T1-a** (`toEqual` auf die GANZE Nutzlast — jeder zweite `userIds`-Eintrag wird rot) | **der ENDPUNKT ist von keinem Lauf gedeckt** (P11.7-23) |
 | **google** | **GF-1** (`toEqual` auf die GANZE Nutzlast, `url` per `toBe` inkl. `/v1/`) | keine auf dieser Achse |
 
+**ZEIGER 2026-09-23 — DIE TABELLE DARÜBER BLEIBT WÖRTLICH, SIE IST DIE MESSUNG BEI
+`a763716`:** Die zwei Lücken "der Vorgabewert der Version ist ungedeckt" (meta) und "der
+ENDPUNKT ist von keinem Lauf gedeckt" (linkedin) sind seit S1 gedeckt — VERMERK P11.7-10.
+Wer die Tabelle als Grundlage einer Mutationsprobe nimmt, liest dort weiter.
+
 **AUSGESCHLOSSEN ALS MESSFRAGEN** (kein Code beantwortet sie): F1 je Ziel (fachliche
 Annahme) · F4 an allen fünf · F5 · F6 · F7 · F8 · P11.7-10 · P11.7-21 · die fünf
 Messfragen aus "WAS EIN CRAWL FÜR LINKEDIN NICHT KLÄRT".
@@ -394,6 +399,56 @@ angefasst, Auflösung daneben in `foreign-signatures.test.ts`.
 und "Auslöser-geladen"; der alte Wortlaut war vorab als zeichengleich belegt) · diese
 Datei. **BAU-COMMIT `11a44f7`.**
 
+### VERMERK P11.7-10 — Scheibe S1 gebaut vom 2026-09-23 (REINE TEST-SCHEIBE)
+
+**HARTE ANGABEN:** 2026-09-23 · **BAU-COMMIT `4809cb5`** (`test(capi): Waechter ueber
+Version, Endpunkt und Abschalttermin (11.7 S1)`) · EINE neue Datei,
+`src/lib/capi/version-deadlines.test.ts`, 239 Zeilen, LF; sha256 am committeten Objekt
+`56a97c21f6b2485bcd8d7e42337af9a637be3fe449ae4e7335d5f32072cc3c69` · KEIN Produktivcode
+geändert · Tests **2100 / 96 Dateien → 2108 / 97** (GEMESSEN, CC) · CI-Lauf grün, 2108 von
+2108 (OWNER-ANGABE 2026-09-23):
+https://github.com/StefanPHD/pagesmith/actions/runs/35830025570
+
+**DER MASSSTAB AUS ZUSCHNITT-FRAGE P11.7-23 IST EINGELÖST:** Dort liess eine Mutation des
+Meta-Vorgabewerts KEINEN Test rot werden, und der LinkedIn-Endpunkt war von keinem Test
+gedeckt. Seit S1 fallen dafür V1 und V3 bzw. V4.
+
+**MUTATIONSPROBEN — ALLE NEUN WIE VORHERGESAGT**, je zurückgenommen und per sha256 gegen den
+Stand davor belegt; m1 bis m3, m5, m5b und m6 als voller Lauf über 97 Dateien:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| m1 | Vorgabewert `"v22.0"` | V1, V3 |
+| m5 | Vorgabewert `"v23.0"` | V1, V3 — V2 und V3b (Umgebungsfall) grün |
+| m5b | Umgebungszweig in `config.ts` entfernt | V2, V3b |
+| m6 | Literal `v21.0` statt `META_GRAPH_VERSION` in der Meta-Adresse | NUR V3b |
+| m2 | `LINKEDIN_ENDPOINT` verändert | NUR V4 |
+| m3 | `LINKEDIN_VERSION` `"202609"` | V4 und T1-c (`linkedin-forward.test.ts`) |
+| m4 | Uhr 2026-11-16T00:00:00Z | T1, nur Zeile linkedin |
+| m4b | Uhr 2026-11-22T00:00:00Z | T1, Zeilen meta und linkedin |
+| m4c | Uhr 2026-11-15T23:59:59Z | nichts |
+
+**DIE OFFENE FRAGE DES ZUSCHNITTS IST BEANTWORTET — KANDIDAT A (ARCHITEKT, 2026-09-23):
+EINE TABELLE IST DIE EINZIGE ERWARTUNG** für Versions- und Termin-Wächter; ZUSCHNITT-FRAGE
+P11.7-13 und P11.7-23 sind damit EINE Sache. Grund: getrennte Werte liessen die stille
+Richtung offen — Tabelle angehoben, Code nicht, und alles bliebe grün. Die Tabellenwerte
+sind vor dem Bau maschinell gegen ihre Quellzeilen geprüft: meta `v21.0` / 2027-01-21
+(docs/ziel-befunde/meta.md, Teil (s), Tabelle 1), linkedin `202601` / 15.01.2027
+(docs/ziel-befunde/linkedin.md, Teil (at)), der Endpunkt (ebenda, Teil (ab)), Host und Pfad
+der Meta-Adresse (meta.md, Teil (s)).
+
+**VORLAUF 60 TAGE** — rot ab 2026-11-16 (linkedin) bzw. 2026-11-22 (meta). Grund: die CI
+läuft nur beim Push.
+
+**DIE VERENGUNG AUF meta UND linkedin (ARCHITEKTEN-SETZUNG):** tiktok, google und pinterest
+haben KEINE Zeile — keiner der drei trägt einen Abschalttermin (tiktok "TBD", google und
+pinterest ohne dokumentierte Abschaltregel), und für google hätte der Pflicht-Stopp eine
+Volladung von `docs/ziel-befunde/google.md` verlangt, deren Tragfähigkeit ungemessen ist
+(ZUSCHNITT-FRAGE P11.7-8).
+
+**DIE GRENZEN DES WÄCHTERS STEHEN AM WÄCHTER SELBST** — Kopfkommentar von
+`src/lib/capi/version-deadlines.test.ts`, Punkte (1) bis (4). Hier steht keine Kopie.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -422,12 +477,22 @@ und ist ungemessen.
 Ort: ebenda, Teil (E4).
 Sie bindet jede Runde, die einen Schreibpfad oder eine Logzeile anlegt.
 
+**P11.7-5 — JEDE ANHEBUNG EINER VERSION AUS DER WÄCHTER-TABELLE ZIEHT DIE TABELLENZEILE IM
+SELBEN COMMIT NACH.**
+Ort: `src/lib/capi/version-deadlines.test.ts`, die Konstante `TABELLE` samt Kopfkommentar;
+Herkunft VERMERK P11.7-10 (ARCHITEKT, 2026-09-23).
+Sie bindet jede Runde, die eine dort geführte Version anhebt, **AUSDRÜCKLICH S2 UND S3**:
+neue Version, neuer Termin und neue Quelle mit Teil aus der Ziel-Datei im selben Commit;
+ein Termin wird nie ohne neue Quelle verschoben. Ein weiteres Ziel kommt als Tabellenzeile
+dazu.
+
 ## Vorrat (gemeldet, nicht gebaut)
 
-**ALLE VIER SIND OFFEN.** Ihr Stand ist am 2026-09-22 an HEAD `a763716` gegengeprüft
-(VERMERK P11.7-8, Zeilen C6 bis C8): jede der beanstandeten Stellen steht unverändert da.
+**ALLE SIEBEN SIND OFFEN.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
+`a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
+2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
 **GEMESSEN IST, DASS SIE DASTEHEN — NICHT, DASS SIE NACHGEZOGEN WÄREN.** **KEINE
-EMPFEHLUNG** an keinem der vier.
+EMPFEHLUNG** an keinem der sieben.
 
 **P11.7-1 — DER KOPFKOMMENTAR VON `src/lib/capi/google-click-ids.ts` IST WIDERLEGT.**
 Seine Zeilen 6 bis 10 sagen, `extractGoogleClickIds` habe keinen Aufrufer und `'google'`
@@ -465,6 +530,28 @@ Teil (aj)). **SEINE SCHLUSSFOLGERUNG — nicht zu prüfen — STEHT UNBERÜHRT; 
 TATSACHENANGABE.** **DIESER POSTEN SAGT NICHT, DASS EINE FORMATPRÜFUNG ZU BAUEN WÄRE.**
 Fundstelle `pinterest-forward.ts:567 f.`
 TRIGGER: die erste Bau-Scheibe, die diese Datei berührt; spätestens das Phasenende.
+
+**P11.7-5 — DER KOPFKOMMENTAR VON `src/lib/capi/linkedin-forward.test.ts` FÜHRT DIE
+ENDPUNKT-ADRESSE ALS "NICHT gemessen".** Wortlaut: "NICHT gemessen und deshalb hier auch
+nicht behauptet: die Adresse des Endpunkts und die Form der Autorisierungs-Kopfzeile."
+Seit S1 behauptet ein Test die Adresse (V4 in `src/lib/capi/version-deadlines.test.ts`),
+gestützt auf docs/ziel-befunde/linkedin.md, Teil (ab), und die Live-Ankunft vom 2026-08-19
+(Teil (ai)). **DER SATZ NENNT ZWEI DINGE; S1 BERÜHRT NUR DAS ERSTE** — über die
+Autorisierungs-Kopfzeile sagt diese Scheibe nichts. GEMESSEN am Repo (CC, 2026-09-23,
+HEAD `4809cb5`). **KEINE EMPFEHLUNG**, wie formuliert wird.
+TRIGGER: S2.
+
+**P11.7-6 — DER KOMMENTAR AN `LINKEDIN_ENDPOINT` (`src/lib/capi/linkedin-forward.ts`) SAGT
+"GELESEN, nicht als Befund erhoben".** Seit dem 2026-09-11 steht der Endpunkt als Befund in
+docs/ziel-befunde/linkedin.md, Teil (ab). GEMESSEN am Repo (CC, 2026-09-23, HEAD
+`4809cb5`). **KEINE EMPFEHLUNG**, wie formuliert wird.
+TRIGGER: S2.
+
+**P11.7-7 — DER KOMMENTAR AN `META_GRAPH_VERSION` (`src/lib/capi/config.ts`) NENNT DEN
+VORGABEWERT EINEN "stabile[n] Fallback".** Laut docs/ziel-befunde/meta.md, Teile (s) und
+(t), läuft `v21.0` spätestens am 2027-01-21 ab und wird danach still umgeleitet. GEMESSEN
+am Repo (CC, 2026-09-23, HEAD `4809cb5`). **KEINE EMPFEHLUNG**, wie formuliert wird.
+TRIGGER: S3.
 
 ## Offene Fragen an den Anbieter-Crawl
 
@@ -560,7 +647,9 @@ mit "Available until: TBD". **EIN GEGENSTÜCK ZUR META-FRIST GIBT ES NUR BEI LIN
 ## Fragen an den Zuschnitt (nach dem Meta-Crawl)
 
 **FRAGEN UND GRENZEN, KEINE ENTSCHEIDUNGEN. KEINE EMPFEHLUNG an irgendeinem Punkt.**
-**KEINE DER SECHSUNDZWANZIG IST ENTSCHIEDEN.** Wo ein Zusatz eine Hälfte am Code
+**STAND 2026-09-23: Der Zuschnitt legt Teile von P11.7-1 und P11.7-15 fest (Abschnitt
+"Zuschnitt der Phase 11.7"); S1 hat P11.7-23 eingelöst und P11.7-13 für meta und linkedin
+(VERMERK P11.7-10). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -659,10 +748,12 @@ STATT KOPIE.** Die Lage ist dieselbe wie bei meta, die Frage steht als **P11.7-4
 hinzukommt: **TikTok verlangt SHA-256 auch für Web** (tiktok, Teil (l)). **KEINE
 DATENKLASSEN-ZUORDNUNG.**
 
-**ZUSCHNITT-FRAGE P11.7-13 — EIN VERSIONS-WÄCHTER ÜBER ALLE ZIELE (ARCHITEKTEN-VORSCHLAG, NICHT
-ENTSCHIEDEN).** Gestalt: ein Test über eine Tabelle "Ziel · Version · Abschalttermin", der
-eine festgelegte Zeit vor jedem Termin rot wird. **DER GRUND: DIE ZIELE VERHALTEN SICH BEIM
-ABLAUF VERSCHIEDEN, UND HEUTE WIRD DAVON NICHTS ROT.**
+**ZUSCHNITT-FRAGE P11.7-13 — EIN VERSIONS-WÄCHTER ÜBER ALLE ZIELE — FÜR meta UND linkedin
+GEBAUT.** Beleg: VERMERK P11.7-10. **OFFEN BLEIBT:** tiktok, google und pinterest haben
+KEINE Zeile; keiner der drei trägt einen Abschalttermin (Tabelle unten). Pinterest kündigt
+Breaking Changes per E-Mail an die Kontakte einer registrierten App an — **ob das unseren
+Zugangsweg erreicht, ist UNGELESEN** (pinterest, Teil (ag)). Ein weiteres Ziel kommt nach
+Entscheidung P11.7-5 als Zeile dazu.
 
 | Ziel | Version | Termin | bei Ablauf | Form im Code |
 |---|---|---|---|---|
@@ -672,14 +763,6 @@ ABLAUF VERSCHIEDEN, UND HEUTE WIRD DAVON NICHTS ROT.**
 | google | `v1` | **KEINE dokumentierte Abschaltregel** — keine Zusage auf Unbefristetheit | **ungelesen** | Konstante für die ganze Adresse (`google-forward.ts:57 f.`) |
 | pinterest | `v5` | **KEINE dokumentierte Abschaltregel** (Nicht-Treffer über vier Seiten) | **gelesen und leer** | **inline im Template-Literal** (`pinterest-forward.ts:576`) |
 
-**FÜNF ZIELE, VIER FORMEN.** Laut Doku antwortet eine abgeschaltete LinkedIn-Version mit
-**HTTP 426 / `NONEXISTENT_VERSION`** — **mit einem Endpunkt-Vorbehalt IM Befund** (Teil
-(ar)): die Seite beschränkt ihre Neuerungen auf drei ANDERE Endpunkte, `/rest/conversionEvents`
-steht dort nicht. Die jüngste aktive LinkedIn-Version ist `202609` (Teil (at)). Pinterest
-kündigt Breaking Changes per E-Mail an die Kontakte einer registrierten App an — **ob das
-unseren Zugangsweg erreicht, ist UNGELESEN** (Teil (ag)).
-**NICHT ENTSCHIEDEN:** ob der Wächter gebaut wird · wo die Tabelle läge · welche Vorlaufzeit
-· was er täte, wo es keinen Termin gibt oder die Version in der Umgebung steht.
 
 **ZUSCHNITT-FRAGE P11.7-14 — `li_fat_id` ALS ZUSÄTZLICHER EINTRAG NEBEN DER IP: LAUT DOKU ZULÄSSIG UND
 EMPFOHLEN, AM ENDPUNKT UNGEMESSEN.** `user.userIds` ist eine Liste "of one or more"; der
@@ -773,20 +856,9 @@ beim Anbieter ein DEFEKT oder eine EINBUSSE ist, ist am Code nicht entscheidbar.
 DECKT DEN FALL** (P11.7-23).
 
 **ZUSCHNITT-FRAGE P11.7-23 — ZWEI DER FÜNF ZIELE HABEN KEINEN WÄCHTER ÜBER IHRE VERSION BZW. IHREN
-ENDPUNKT: EINE ANHEBUNG BLIEBE GRÜN, GLEICH WAS SIE TUT.** **DER META-VORGABEWERT IST VON
-KEINEM TEST GEDECKT:** ZWÖLF Testdateien mocken `@/lib/capi/config` und setzen
-`META_GRAPH_VERSION` selbst; **KEINE importiert das Modul.** Eine Mutation von `config.ts:15`
-lässt **KEINEN** Test rot werden — die Assertion in `route.test.ts:109` prüft den gemockten
-Wert gegen sich selbst. **DER LINKEDIN-ENDPUNKT IST VON KEINEM TEST GEDECKT** (null Treffer
-auf `api.linkedin`, `LINKEDIN_ENDPOINT`, `fetchCalls()[0][0]`; Positivkontrolle
-`LinkedIn-Version` trifft). **GEGENPROBE:** pinterest, tiktok und google nageln ihre volle
-Adresse inklusive Versionsanteil per `toBe` fest.
-**DIE VERSCHRÄNKUNG IST ÜBER KREUZ:** linkedin hat einen Wächter über die VERSION und
-keinen über die ADRESSE; bei den drei anderen steckt die Version IN der Adresse; meta hat
-für die Adresse einen Wächter, der seinen eigenen Mock prüft.
-**WARUM DAS JETZT ZÄHLT:** Zwei Anhebungen sind terminiert (P11.7-17). **EINE ANHEBUNG OHNE
-VORHERIGEN WÄCHTER BLIEBE AN ALLEN VIER GATES GRÜN.** **NICHT ENTSCHIEDEN:** ob ein Wächter
-vor der Anhebung entsteht · wo er ansetzte · ob er mit P11.7-13 dieselbe Sache ist.
+ENDPUNKT: EINE ANHEBUNG BLIEBE GRÜN, GLEICH WAS SIE TUT.** **EINGELÖST DURCH S1** — Beleg,
+Massstab und Mutationsergebnisse: VERMERK P11.7-10. Nichts bleibt offen. Die Messung vom
+2026-09-22 steht ungekürzt unter `11a44f7`.
 
 **ZUSCHNITT-FRAGE P11.7-24 — DIE SEITENADRESSE WIRD NIRGENDS GEPRÜFT, UND DAS URTEIL DARÜBER STEHT SECHSMAL
 ZEICHENGLEICH.** **SIE BETRITT DEN SERVER UNGEPRÜFT:** `handleIngest` typisiert
@@ -853,21 +925,15 @@ gebündelt.
 2026-09-23. Entschieden sind die REIHENFOLGE und je Scheibe der GEGENSTAND. **Was unten als
 offen steht, bleibt offen** und wird im Stufe-1-Plan der jeweiligen Scheibe beantwortet; wo
 die Entscheidung eine Zuschnitt-Frage berührt, steht dabei, welcher Teil davon entschieden
-ist. **KEINE EMPFEHLUNG, KEINE ZIELVERSION, KEINE GESTALT für S4 und S5.** Keine Scheibe ist
-gebaut, keine hat einen Stufe-1-Plan.
+ist. **KEINE EMPFEHLUNG, KEINE ZIELVERSION, KEINE GESTALT für S4 und S5.** S1 ist gebaut
+(VERMERK P11.7-10); die übrigen sind weder gebaut noch geplant.
 
-**S1 — WÄCHTER, REINE TEST-SCHEIBE.** Gegenstand: (1) der Vorgabewert von
-`META_GRAPH_VERSION`, geprüft über einen ECHTEN Import von `src/lib/capi/config.ts` statt über
-den Mock · (2) der LinkedIn-Endpunkt · (3) die Versions-/Termin-Tabelle aus ZUSCHNITT-FRAGE
-P11.7-13. **S1 löst ZUSCHNITT-FRAGE P11.7-23 ein:** Der Wächter entsteht VOR den Anhebungen
-und setzt an den beiden dort benannten Lücken an. Massstab ist der Befund dort — heute lässt
-eine Mutation des Vorgabewerts keinen Test rot werden.
-NICHT dazu: jeder Produktivcode, jede Anhebung. Da keine Kennung durchgeleitet wird, trägt S1
-**WEDER** den Pflicht-Nachweis aus "Was den Zuschnitt bindet" **NOCH** den Trigger der
-DATENKLASSEN-GRENZE (docs/offene-punkte.md).
-OFFEN, im Stufe-1-Plan zu beantworten: ob ZUSCHNITT-FRAGE P11.7-13 und P11.7-23 dieselbe
-Sache sind · aus P11.7-13 weiter: wo die Tabelle läge, welche Vorlaufzeit, was der Wächter
-täte, wo es keinen Termin gibt oder die Version in der Umgebung steht.
+**S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
+Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
+`src/lib/capi/config.ts`, der LinkedIn-Endpunkt und die Versions-/Termin-Tabelle aus
+ZUSCHNITT-FRAGE P11.7-13, für meta und linkedin. Eingelöst: ZUSCHNITT-FRAGE P11.7-23
+vollständig, P11.7-13 für meta und linkedin; Massstab und Mutationsergebnisse im Vermerk.
+**WAS DARÜBER HINAUS BINDET:** Entscheidung P11.7-5.
 
 **S2 — ANHEBUNG LINKEDIN, `202601` → Zielversion.** Zuerst unter den Anhebungen, weil ihr
 Termin der frühere ist (15.01.2027 gegen 2027-01-21, ZUSCHNITT-FRAGE P11.7-17) und weil sie
@@ -987,7 +1053,7 @@ was die Erledigung durch S2 an jenem Posten bewirkt, steht an S2.
 
 ## Nächster Schritt
 
-**ALS NÄCHSTES DER STUFE-1-PLAN DER SCHEIBE S1** (Abschnitt "Zuschnitt der Phase 11.7").
+**ALS NÄCHSTES DER STUFE-1-PLAN DER SCHEIBE S2** (Abschnitt "Zuschnitt der Phase 11.7").
 Der Zuschnitt steht seit der Owner-Entscheidung vom 2026-09-22. Die Sperren, die ihn hielten, sind eingelöst: alle fünf
 Ziele sind durchlaufen (VERMERKE P11.7-2 bis P11.7-7), die Fragen an den eigenen Code sind
 am Code beantwortet (VERMERK P11.7-8), und die Ladung ist wieder leistbar (VERMERK

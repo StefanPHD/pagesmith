@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 import type { TrackingTarget } from "@/lib/settings";
-import { CLICK_ID_TABLE, stripForeignClickIds } from "./click-id-strip";
+import { CLICK_ID_TABLE, extractFbclid, stripForeignClickIds } from "./click-id-strip";
 import { forwardToMeta } from "./meta-forward";
 import { forwardToPinterest } from "./pinterest-forward";
 import { forwardToTiktok } from "./tiktok-forward";
@@ -367,5 +367,137 @@ describe("Waechter W — was jeder echte Adapter hinausschickt", () => {
       }
     }
     expect(hinaus.includes(UTM), `${ziel}/${lauf}: utm_source`).toBe(fall.adresseGeht);
+  });
+});
+
+// ===========================================================================
+// META fbc UEBER DEN ADRESSWEG (Phase 11.7, S5) — DIE FUNKTION UND DER ADAPTER.
+//
+// W OBEN BEWACHT fbc NICHT: meta's eigener fbclid-Wert steht ohnehin in event_source_url,
+// W bliebe also ohne fbc gruen. Die Faelle hier fordern fbc POSITIV. Dass kein ANDERES
+// Ziel fbc traegt, deckt W unveraendert: ein fremdes fbc enthielte den fbclid-Wert, und W
+// sucht ihn im ganzen ausgehenden Text jedes anderen Ziels.
+// ===========================================================================
+
+describe("extractFbclid — exakt, wurffrei, ohne Formpruefung", () => {
+  it("X-a: sie wirft bei keiner feindlichen Eingabe und liefert immer eine Zeichenkette", () => {
+    const werfendesToString = {
+      toString(): string {
+        throw new Error("boom");
+      },
+    };
+    for (const eingabe of [
+      undefined,
+      null,
+      42,
+      {},
+      [],
+      werfendesToString,
+      "",
+      "?",
+      "#",
+      "http://[::1?fbclid=x",
+      "%",
+      LONE_SURROGATE,
+      `https://x.com/?fbclid=${LONE_SURROGATE}`,
+      `https://x.com/?${"&".repeat(100_000)}fbclid=x`,
+      `https://x.com/?fbclid=${"%".repeat(1_000)}`,
+    ]) {
+      expect(() => extractFbclid(eingabe)).not.toThrow();
+      expect(typeof extractFbclid(eingabe)).toBe("string");
+    }
+  });
+
+  it("X-b: der Wert kommt unveraendert heraus, auch in gemischter Schreibung", () => {
+    expect(extractFbclid("https://x.com/?utm_source=u&fbclid=AbC-_9")).toBe("AbC-_9");
+  });
+
+  it("X-c: der NAME wird exakt verglichen — FBCLID und Fbclid treffen nicht", () => {
+    expect(extractFbclid("https://x.com/?FBCLID=x")).toBe("");
+    expect(extractFbclid("https://x.com/?Fbclid=x")).toBe("");
+  });
+
+  it("X-d: leer oder fehlend ergibt die leere Zeichenkette", () => {
+    expect(extractFbclid("https://x.com/?fbclid=")).toBe("");
+    expect(extractFbclid("https://x.com/?utm_source=u")).toBe("");
+    expect(extractFbclid("https://x.com/")).toBe("");
+  });
+
+  it("X-e: mehrfach vorhanden — das erste Vorkommen", () => {
+    expect(extractFbclid("https://x.com/?fbclid=a&fbclid=b")).toBe("a");
+  });
+
+  it("X-f: der Wert kommt dekodiert, wie der Standard-Parser ihn liefert", () => {
+    expect(extractFbclid("https://x.com/?fbclid=a%2Bb+c")).toBe("a+b c");
+  });
+
+  it("X-g: nicht parsebar oder keine Zeichenkette ergibt die leere Zeichenkette", () => {
+    expect(extractFbclid("/relativ?fbclid=x")).toBe("");
+    expect(extractFbclid(undefined)).toBe("");
+    expect(extractFbclid(42)).toBe("");
+  });
+
+  it("X-h: das Fragment wird nicht gelesen", () => {
+    expect(extractFbclid("https://x.com/#fbclid=x")).toBe("");
+  });
+});
+
+describe("forwardToMeta — fbc in user_data", () => {
+  /** Die feste Uhr: Sekunden 1 800 000 000, dazu 123 Millisekunden. */
+  const JETZT_MS = 1_800_000_000_123;
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.useFakeTimers();
+    vi.setSystemTime(JETZT_MS);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  /** Sendet genau ein Ereignis mit dieser Adresse und liefert das gesendete Ereignis. */
+  async function gesendet(eventSourceUrl: string): Promise<Record<string, unknown>> {
+    await forwardToMeta(
+      { pixelId: "PIXEL-S5", token: TOKEN },
+      "Purchase",
+      "evt-s5",
+      { eventSourceUrl },
+      IP,
+      UA,
+    );
+    // POSITIVKONTROLLE: ohne genau einen Aufruf waere "kein fbc" trivial wahr.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [, init] = fetchMock.mock.calls[0] as [unknown, { body: string }];
+    const payload = JSON.parse(init.body) as { data: Record<string, unknown>[] };
+    return payload.data[0];
+  }
+
+  it("M-a: mit fbclid entsteht fbc exakt als fb.1.<Millisekunden>.<Wert>", async () => {
+    const ereignis = await gesendet("https://kunde.de/lp?utm_source=u&fbclid=AbC-_9");
+    const userData = ereignis.user_data as Record<string, unknown>;
+    expect(userData.fbc).toBe("fb.1.1800000000123.AbC-_9");
+    // DERSELBE MOMENT: event_time sind die Sekunden derselben Uhr-Lesung.
+    expect(ereignis.event_time).toBe(1_800_000_000);
+  });
+
+  it("M-b: ohne fbclid entsteht kein fbc", async () => {
+    const ereignis = await gesendet("https://kunde.de/lp?utm_source=u");
+    expect(ereignis.user_data as Record<string, unknown>).not.toHaveProperty("fbc");
+  });
+
+  it("M-c: FBCLID in anderer Schreibung ergibt kein fbc", async () => {
+    const ereignis = await gesendet("https://kunde.de/lp?FBCLID=AbC-_9");
+    expect(ereignis.user_data as Record<string, unknown>).not.toHaveProperty("fbc");
+  });
+
+  it("M-e: eine nicht parsebare Adresse ergibt kein fbc — und der Forward laeuft", async () => {
+    const ereignis = await gesendet("/lp?fbclid=AbC-_9");
+    expect(ereignis.user_data as Record<string, unknown>).not.toHaveProperty("fbc");
   });
 });

@@ -6,7 +6,7 @@ import { errorName } from "@/lib/errors";
 // behandelt wird, entscheiden die drei Aufbereitungen unten — das bleibt Metas
 // eigene Sache.
 import { redactOpaque } from "@/lib/redact";
-import { stripForeignClickIds } from "@/lib/capi/click-id-strip";
+import { extractFbclid, stripForeignClickIds } from "@/lib/capi/click-id-strip";
 import type { CapiConfig } from "@/lib/capi/token";
 
 /**
@@ -256,9 +256,10 @@ type MetaForwardBody = {
  *    · DAVOR (Payload-Bau, URL-Bau): NICHT umschlossen, sondern wurffrei, WEIL KEINE
  *      SEINER ANWEISUNGEN WERFEN KANN. Es sind ausschliesslich Feld-Lesungen auf einem
  *      bereits als Objekt geprueften Blob, typeof-Vergleiche, asString (reiner
- *      typeof/trim), String-/Objekt-Bau und stripForeignClickIds (capi/click-id-strip.ts,
- *      vertraglich wurffrei; der Waechter dafuer ist click-id-strip.test.ts, V-a). Kein
- *      JSON.parse, kein await, kein Zugriff, der einen fremden Getter ausloest.
+ *      typeof/trim), String-/Objekt-Bau, stripForeignClickIds und extractFbclid
+ *      (capi/click-id-strip.ts, beide vertraglich wurffrei; die Waechter dafuer sind
+ *      click-id-strip.test.ts, V-a und X-a). Kein JSON.parse, kein await, kein Zugriff, der
+ *      einen fremden Getter ausloest.
  *    AUFLAGE, und sie ist der Zweck dieser Unterscheidung: WER VOR DEM try EINE ZEILE
  *    ERGAENZT, DIE WERFEN KANN, BRICHT DAS 204-CONTAINMENT DES AUFRUFERS. Der Wurf
  *    verliesse diese Funktion, liefe durch das await in handleIngest und aus dem Handler
@@ -291,7 +292,10 @@ export async function forwardToMeta(
 ): Promise<void> {
   // --- Server-gesetztes Feld (NIE aus Client-Payload) ---
   // Metas Zeiteinheit sind SEKUNDEN, nicht Millisekunden.
-  const eventTime = Math.floor(Date.now() / 1000);
+  // EINE Lesung der Uhr: event_time (Sekunden) und der Zeitanteil von fbc (Millisekunden)
+  // beschreiben denselben Moment.
+  const now = Date.now();
+  const eventTime = Math.floor(now / 1000);
 
   // --- Meta-Payload zusammensetzen (undefined-Felder weglassen) ---
   const userData: Record<string, unknown> = {};
@@ -319,6 +323,14 @@ export async function forwardToMeta(
   // Klick-Kennung geht nur an ihren Urheber (s. Kopf von capi/click-id-strip.ts).
   const eventSourceUrl = stripForeignClickIds(asString(body.eventSourceUrl), "meta");
   if (eventSourceUrl) serverEvent.event_source_url = eventSourceUrl;
+  // fbc AUS DEM ADRESSWEG (docs/ziel-befunde/meta.md, Teil (h)): "fb", subdomainIndex 1 fuer
+  // die serverseitige Bildung ohne Cookie, Zeitanteil in MILLISEKUNDEN — der Moment, in dem
+  // der Server den fbclid empfaengt. Gelesen aus derselben Adresse, die gesendet wird.
+  // Ergaenzt wird das Objekt, auf das serverEvent.user_data bereits zeigt.
+  // TRANSIT-ONLY (docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE",
+  // Teil (E2)): fbc und fbclid werden nur gesendet — nie abgelegt, nie geloggt, nie gehasht.
+  const fbclid = extractFbclid(eventSourceUrl);
+  if (fbclid) userData.fbc = `fb.1.${now}.${fbclid}`;
   if (Object.keys(customData).length > 0) serverEvent.custom_data = customData;
 
   const payload: Record<string, unknown> = { data: [serverEvent] };

@@ -189,3 +189,35 @@ export function stripForeignClickIds(
     return cutAtQueryOrFragment(url);
   }
 }
+
+/**
+ * LIEST DIE KLICK-KENNUNG VON META (`fbclid`) AUS EINER ADRESSE — EXAKT (Phase 11.7, S5).
+ *
+ * DAS MUSTER IST extractGoogleClickIds (capi/google-click-ids.ts), und jene bleibt unberuehrt:
+ * eine eigene Funktion statt eines Umbaus am Google-Vertrag.
+ *
+ * EXAKT, NICHT OHNE SCHREIBUNG — anders als beim Entfernen oben. Beim HERAUSLESEN ist ein
+ * Zuviel die falsche Richtung: ein zufaellig gleichnamiger Parameter wuerde als Kennung
+ * gesendet. "Exakt" heisst dabei: exakt auf dem Namen, wie der Standard-Parser ihn
+ * DEKODIERT — `fb%63lid` trifft, `FBCLID` nicht.
+ *
+ * DER WERT, WIE DER STANDARD-PARSER IHN LIEFERT (dekodiert), OHNE FORMPRUEFUNG UND OHNE TRIM:
+ * Anwesenheit, nie Form. Zu Kodierung und Fehlform schweigt die Quelle
+ * (docs/ziel-befunde/meta.md, Teil (h)); echte Werte bestehen aus `[A-Za-z0-9_-]` und sind
+ * davon nicht beruehrt. Mehrfach vorhanden -> das ERSTE Vorkommen. Das Fragment liest der
+ * Parser nicht.
+ *
+ * SIE WIRFT NIE — sie laeuft in forwardToMeta VOR dessen try. Eine typeof-Weiche und ein
+ * try um den einzigen werfenden Ausdruck.
+ *
+ * @returns den Wert, oder "" wenn keiner vorliegt — fehlend, leer, nicht parsebar oder
+ *          keine Zeichenkette.
+ */
+export function extractFbclid(url: unknown): string {
+  if (typeof url !== "string") return "";
+  try {
+    return new URL(url).searchParams.get("fbclid") ?? "";
+  } catch {
+    return "";
+  }
+}

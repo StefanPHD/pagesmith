@@ -32,11 +32,11 @@ vi.mock("server-only", () => ({}));
 // (2) Eine in Vercel gesetzte Umgebungsvariable META_GRAPH_VERSION sieht er
 //     NICHT. Geprueft ist allein der Vorgabewert im Code; was die
 //     Produktionsumgebung sendet, ist am Repo nicht feststellbar.
-// (3) Die Meta-Grenze 2027-01-21 ist die SPAETESTMOEGLICHE: Sie stammt aus der
-//     Graph-Tabelle. Die Marketing-Tabelle derselben Seite fuehrt v21.0 gar nicht;
-//     welche der beiden fuer /{PIXEL_ID}/events gilt, ist UNGEMESSEN
-//     (docs/ziel-befunde/meta.md, Teil (s)). Gilt die Marketing-Tabelle, ist die
-//     echte Frist frueher, und dieser Waechter meldet sie nicht.
+// (3) Der Meta-Termin stammt aus der Graph-Tabelle; sie gilt laut
+//     docs/ziel-befunde/meta.md, Teil (v), fuer die Conversions API — GELESEN,
+//     nicht gemessen. Die Marketing-Tabelle fuehrt die Version mit "TBD", ein
+//     frueherer Termin ist nicht bekannt (ebenda, Teil (w)). Welche Version Meta
+//     tatsaechlich verarbeitet, zeigt erst eine Antwort des Anbieters (Teil (y)).
 // (4) `fetch` ist gestellt. Bewiesen wird, WAS unser Code sendet — nicht, dass
 //     der Anbieter es annimmt.
 // ===========================================================================
@@ -53,10 +53,10 @@ type Zeile = {
 const TABELLE: readonly Zeile[] = [
   {
     ziel: "meta",
-    // "v21.0 (October 2, 2024 / January 21, 2027)"
-    version: "v21.0",
-    termin: "2027-01-21T00:00:00Z",
-    quelle: "docs/ziel-befunde/meta.md, Teil (s), Tabelle 1 (Graph API)",
+    // "v25.0 February 18, 2026 / July 29, 2028"
+    version: "v25.0",
+    termin: "2028-07-29T00:00:00Z",
+    quelle: "docs/ziel-befunde/meta.md, Teil (w), Tabelle 1 (Graph API)",
   },
   {
     ziel: "linkedin",
@@ -107,9 +107,10 @@ function meldung(z: Zeile): string {
     `Befund: ${z.quelle}.`;
   if (z.ziel === "meta") {
     text +=
-      " Vorbehalte: Der Termin ist die SPAETESTMOEGLICHE Grenze (Graph-Tabelle); gilt " +
-      "die Marketing-Tabelle, ist die Frist frueher. Eine in Vercel gesetzte " +
-      "META_GRAPH_VERSION sieht dieser Test nicht.";
+      " Vorbehalte: Der Termin stammt aus der Graph-Tabelle; sie GILT LAUT TEIL (v) fuer " +
+      "die Conversions API — GELESEN, nicht gemessen. Welche Version Meta tatsaechlich " +
+      "verarbeitet, zeigt erst eine Antwort des Anbieters (Teil (y)). Eine in Vercel " +
+      "gesetzte META_GRAPH_VERSION sieht dieser Test nicht.";
   }
   return text;
 }
@@ -168,7 +169,7 @@ describe("V — die gesendete Version ist die der Tabelle", () => {
 
   it("V3: der echte Meta-Adapter sendet an die Adresse mit der Tabellen-Version", async () => {
     // WIRD ROT, WENN: der Vorgabewert sich aendert (m1). Deckt zusaetzlich Host und
-    // Pfad. Bleibt ALLEIN gruen, wenn der Adapter "v21.0" fest eintraegt — dafuer V3b.
+    // Pfad. Bleibt ALLEIN gruen, wenn der Adapter "v25.0" fest eintraegt — dafuer V3b.
     ohneMetaVersion();
     const { forwardToMeta } = await import("@/lib/capi/meta-forward");
     await forwardToMeta({ pixelId: PIXEL_ID, token: TOKEN }, "Purchase", "evt-1", {}, IP, UA);
@@ -233,8 +234,10 @@ describe("T — der Abschalttermin", () => {
       expect(treffer[0]).toContain(z.quelle);
       expect(faellig([z], grenze - 1000)).toEqual([]);
     }
+    // Die Marke steht NUR im Meta-Text seit S3 und trennt ihn vom Text davor
+    // (Mutationsprobe m6b: alter Text wieder eingesetzt -> rot).
     expect(faellig([zeile("meta")], Date.parse(zeile("meta").termin))[0]).toContain(
-      "SPAETESTMOEGLICHE",
+      "GILT LAUT TEIL (v)",
     );
   });
 });

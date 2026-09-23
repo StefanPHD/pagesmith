@@ -9,10 +9,13 @@ import "server-only";
  * noch mitgeschrieben (Rollback-Reserve), gelesen wird die neue.
  */
 
-// Meta-Graph-API-Version. Env-uebersteuerbar, damit ein Version-Bump ohne
-// Code-Aenderung geht; Default als stabiler Fallback. Format inkl. "v"-Praefix.
+// Meta-Graph-API-Version. Format inkl. "v"-Praefix. Der VORGABEWERT ist die
+// Version, die der Waechter prueft: TABELLE in src/lib/capi/version-deadlines.test.ts
+// fuehrt sie samt Abschalttermin und Quelle — wer ihn aendert, zieht die Zeile
+// "meta" im selben Commit nach. Die Umgebungsvariable gleichen Namens gewinnt
+// (getrimmt) und bleibt als NOTAUSGANG; der Waechter sieht sie NICHT.
 export const META_GRAPH_VERSION =
-  process.env.META_GRAPH_VERSION?.trim() || "v21.0";
+  process.env.META_GRAPH_VERSION?.trim() || "v25.0";
 
 /**
  * Der Meta-Test-Event-Code. NUR gesetzt, wenn die env-Variable existiert

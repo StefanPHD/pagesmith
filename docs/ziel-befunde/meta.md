@@ -10,7 +10,7 @@ bis zum Dateiende, OHNE diesen Kopf. Wer prüfen will, ob hier jemand nachträgl
 geändert hat, misst gegen diese Prüfsumme.
 ERGÄNZUNG 2026-09-23 — DIE PRÜFSUMME GILT DEM STAND DES COMMITS `11a44f7`, NICHT DEM HEUTIGEN
 DATEIENDE. Bis `811c15d` ging sie über den heutigen Stand auf (GEMESSEN, CC, 2026-09-23);
-seither kamen ein Anhang und zwei datierte Vorbehalte nach der Konvention hinzu (Einzelheiten:
+seither kamen Anhänge und datierte Vorbehalte nach der Konvention hinzu (Einzelheiten:
 git log). Gemessen wird sie gegen `git show 11a44f7:docs/ziel-befunde/meta.md`, dort ab der
 Zeile "## Meta (Conversions API)". Der Satz darüber bleibt wörtlich; er war am Tag der
 Aufteilung richtig.
@@ -1034,6 +1034,11 @@ gelesen, trägt KEIN `main` — Positivkontrolle an `/using-the-api` NEGATIV (GE
     Umgebungsvariable übersteuern kann —, dann wird eine nach dem Marketing-Schema seit über
     einem Jahr abgelaufene Version angenommen: verträglich mit (v), ebenso mit einer
     Umleitung nach (z). **Welches von beiden, entscheidet nur die Kopfzeile aus (y).**
+    **VORBEHALT 2026-09-23 — DER WORTLAUT VON (w) BLEIBT UNVERÄNDERT:** Der Halbsatz "die
+    Tabelle ist die jüngere Form" an den Seitenköpfen der Graph-Einzelseiten ist eine
+    FOLGERUNG OHNE BELEG — kein Stand der Tabelle ist gegen einen Stand der Einzelseiten
+    datiert verglichen worden. Belegt ist allein der zweite Halbsatz: nur die Tabelle lässt
+    `v20.0` ablaufen.
 
 (x) WAS SICH ZWISCHEN `v21.0` UND DEN JÜNGEREN VERSIONEN FÜR `/{PIXEL_ID}/events` ÄNDERT —
     IN DEN ÄNDERUNGSLISTEN NICHTS.
@@ -1234,4 +1239,39 @@ Android, Objective-C, Java, PHP); sie sind keine `role="tab"`-Elemente, ihr Text
 vollständig im `textContent` und ist gelesen. **ZWEI GRAFIKEN OHNE TEXT, gemeldet:** die
 "timeline example" auf `/docs/graph-api/guides/versioning` und die "sample timeline" auf der
 Marketing-Versionierungsseite — ihr Inhalt ist NICHT erhoben. Keine Tabelle mit Symbolen.
+
+### MESSUNG 2026-09-23 — Ankunft unter v25.0 (Live-Test der Scheibe S3, Phase 11.7) — der Teil (aa)
+
+**HERKUNFT (2026-09-23):** Ein Live-Test des Owners nach dem Deploy des Bau-Commits `9778aca`:
+EIN Klick auf einer veröffentlichten Seite, abgelesen im Meta Events Manager; LinkedIn als
+Mitläufer im Campaign Manager. **KEIN Terminal-Lauf, kein Statuscode und keine
+Antwort-Kopfzeile abgelesen, keine Log-Ablesung berichtet.** Die Angaben über den Anbieter
+sind OWNER-ABLESUNGEN mit Sekundenauflösung in lokaler Anzeige; die Angaben über unseren
+Adapter sind GEMESSEN am Repo (CC, 2026-09-23, HEAD `9778aca`).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (z) folgt (aa).
+
+(aa) UNSERE NUTZLAST KOMMT UNTER DEM VORGABEWERT `v25.0` AN — UNVERÄNDERT GEGENÜBER DER
+     NUTZLAST UNTER `v21.0`.
+     · **WAS GESENDET WURDE — GEMESSEN am Repo:** `META_GRAPH_VERSION` in
+       `src/lib/capi/config.ts` trägt den Vorgabewert `"v25.0"`; `forwardToMeta` setzt ihn in
+       den Pfad `https://graph.facebook.com/${META_GRAPH_VERSION}/${config.pixelId}/events`.
+       Die Nutzlast ist gegenüber `v21.0` nicht angefasst.
+     · **DASS DER VORGABEWERT GALT:** `META_GRAPH_VERSION` ist in Vercel nie angelegt worden
+       (OWNER-ANGABE, vor dem Deploy geprüft). Dass damit `v25.0` gesendet wurde, ist eine
+       FOLGERUNG aus dieser Angabe und dem Code, keine Ablesung am Aufruf.
+     · **VORHER** (abgelesen vor dem Deploy): letztes Server-Ereignis "Heute um 10:25:20".
+       **NACHHER:** Lead, eventID `372f8ffa-f6a1-4c05-a22d-1d993d5d67c4`, Browser
+       "Verarbeitet" 11:29:23, Server "Dedupliziert" 11:29:25 — lokale Anzeige, Zeitzone
+       VERMUTLICH MESZ, nicht erhoben.
+     · **DIE ANZEIGE IST GRUPPIERT:** Der Events Manager zeigt das Ereignis als Gruppenkopf
+       plus zwei Kind-Einträge (Browser, Server); ein scheinbar doppelter Browser-Eintrag in
+       kopiertem Text ist der Gruppenkopf (OWNER-SCREENSHOT desselben Ereignisses).
+     · **DER MITLÄUFER:** LinkedIn "Data last received" September 23, 2026 11:29 AM
+       (docs/ziel-befunde/linkedin.md, Teil (bc), zum Vorher-Wert).
+     **WAS DAMIT BEANTWORTET IST:** die Annahme-Frage aus (x) — unter `v25.0` nimmt der
+     Endpunkt unsere Nutzlast an; (x) hatte das nur als Abwesenheit einer Änderung gelesen.
+     Sie gilt für DIESE Nutzlast-Form und dieses Ereignis.
+     **WAS DAMIT NICHT BEANTWORTET IST:** welche Version Meta TATSÄCHLICH verarbeitet hat
+     (F6, M4) — das zeigt nur die Kopfzeile aus (y), und sie ist nicht abgelesen. Eine
+     Ankunft sagt nichts darüber, unter welcher Version sie verarbeitet wurde.
 

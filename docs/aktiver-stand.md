@@ -13,7 +13,7 @@ steht hier. Unterhalb von 4000 Zeilen wird nicht geteilt — das ist ein Verbot,
 Schwelle.
 
 **DIE NUMMERN TRAGEN DAS PRÄFIX `P11.7-n`**, laufen über alle Gattungen getrennt
-(Vermerk, Entscheidung, Vorrat, offene Frage) und werden NIE neu vergeben. Ein neuer
+(Vermerk, Entscheidung, Vorrat, offene Frage, Hebungs-Kandidat) und werden NIE neu vergeben. Ein neuer
 Eintrag tritt hinten an, auch wenn er der jüngste ist.
 
 **VERDICHTET AM 2026-09-22 (OWNER-ENTSCHEIDUNG, Token-Diät).** Sie wird von fast jedem
@@ -37,6 +37,7 @@ DATEI MIT VERZEICHNIS NICHT").
 - Vermerke
 - Entscheidungen, die über ihre Scheibe hinaus binden
 - Vorrat (gemeldet, nicht gebaut)
+- Hebungs-Kandidaten
 - Offene Fragen an den Anbieter-Crawl
 - Fragen an den Zuschnitt (nach dem Meta-Crawl)
 - Zuschnitt der Phase 11.7
@@ -80,40 +81,12 @@ ES NICHT** — wer den Posten früher schliesst, schliesst ihn auf einer halben 
 
 ## Frist mit Termin — sie wartet nicht auf das Phasenende
 
-**DIESER ABSCHNITT TRÄGT GENAU EINEN POSTEN, UND ER HAT EIN DATUM.** Er steht nicht im
-Vorrat, und das ist der ganze Zweck des eigenen Abschnitts: **der Vorrat wird am Phasenende
-gehoben, diese Frist kann das nicht abwarten.** Sie gilt unabhängig davon, ob die Phase 11.7
-zugeschnitten, gebaut oder verworfen wird.
-
-**DIE ANHEBUNG DER GRAPH-API-VERSION MUSS VOR DEM 2027-01-21 GEBAUT SEIN.**
-
-**DER ZUSTAND, GEMESSEN am Repo (CC, 2026-09-22, HEAD `354a6e5`):** Der Meta-Adapter sendet
-`v21.0`. `META_GRAPH_VERSION` (`src/lib/capi/config.ts`) trägt den Vorgabewert `"v21.0"` und
-ist über die Umgebungsvariable gleichen Namens übersteuerbar; verwendet in
-`src/lib/capi/meta-forward.ts`. **WAS IN DER PRODUKTIONSUMGEBUNG GESETZT IST, IST AM REPO
-NICHT FESTSTELLBAR und ausdrücklich nicht erhoben** — steht dort ein höherer Wert,
-verschiebt sich der Termin, und der Posten ist dann an der Umgebung neu zu prüfen.
-
-**DER TERMIN, GELESEN 2026-09-22** (docs/ziel-befunde/meta.md, Teil (s)): `v21.0` bis
-"January 21, 2027" nach der Graph-Tabelle; die Marketing-Tabelle derselben Seite führt
-`v21.0` überhaupt nicht. Welche der beiden für `/{PIXEL_ID}/events` gilt, ist **UNGEMESSEN**.
-**DER 2027-01-21 IST DIE SPÄTESTMÖGLICHE GRENZE, NICHT DIE WAHRSCHEINLICHSTE** — das
-Graph-Schema ist das mildere; wer auf die Messung wartet, kann die Frist nur verkürzen.
-
-**DER ABLAUF ERZEUGT KEINEN FEHLER** (ebenda, Teil (t)): Unter dem Graph-Schema wird ein
-Aufruf an eine abgelaufene Version "defaulted to the next oldest, usable version" — der
-Adapter bekommt **weiter eine Erfolgsantwort, von einer Version, die er nicht gewählt hat.**
-**Nichts im eigenen Code wird davon rot, und keine Logzeile entsteht.** Welche
-Validierungsregeln eine untergeschobene Version mitbringt, ist ungemessen.
-
-**OB DIE ANHEBUNG ÜBER DIE UMGEBUNG ODER DEN VORGABEWERT LÄUFT, IST NICHT ENTSCHIEDEN.
-KEINE EMPFEHLUNG.**
-
-**WO DIESER POSTEN AUF DAUER GETRAGEN WIRD — ARCHITEKTEN-ENTSCHEIDUNG 2026-09-23, ER WIRD NICHT
-NACH docs/offene-punkte.md GEHOBEN:** Die Frist trägt seit `4809cb5` der Wächter T1 in
-`src/lib/capi/version-deadlines.test.ts` (Vorlauf 60 Tage, rot ab 2026-11-22); **er überlebt
-das Phasenende.** Die Unsicherheit der zwei Versionstabellen tragen der Kopf jener Testdatei
-und docs/ziel-befunde/meta.md, Teile (s) und (t).
+**GEGENSTANDSLOS SEIT DEM 2026-09-23.** Der Abschnitt trug genau einen Posten: Die Anhebung
+der Meta-Graph-Version musste vor dem 2027-01-21 gebaut sein, dem Abschalttermin von `v21.0`
+(docs/ziel-befunde/meta.md, Teil (s)). **BELEG DER ERLEDIGUNG:** Bau-Commit `9778aca` hebt
+den Vorgabewert auf `v25.0`, live bestätigt — VERMERK P11.7-14. Den neuen Termin trägt der
+Wächter T1 in `src/lib/capi/version-deadlines.test.ts`. Der Wortlaut des Postens steht
+unter Commit `9365c7f`.
 
 ## Vermerke
 
@@ -516,8 +489,11 @@ Traffic gibt (CLAUDE.md, "## Modus").
 
 **BEOBACHTUNG — UNGEMESSEN, NICHT BEWERTET:** Der Meta Events Manager zeigt zum selben Klick
 ZWEI identische Browser-Einträge "Verarbeitet". Ob das ein Anzeige-Doppel ist oder ein
-zweimal feuerndes `fbq` (etwa ein eigenes Pixel auf der Seite), ist offen. Zeiger:
-ZUSCHNITT-FRAGE P11.7-10.
+zweimal feuerndes `fbq` (etwa ein eigenes Pixel auf der Seite), ist offen.
+**ZEIGER 2026-09-23 — AUFGELÖST ALS GRUPPENANZEIGE DES EVENTS MANAGERS:** Er zeigt ein
+Ereignis als GRUPPIERTE Zeile — Gruppenkopf plus zwei Kind-Einträge (Browser, Server); der
+scheinbar doppelte Browser-Eintrag ist der Gruppenkopf im kopierten Text (OWNER-SCREENSHOT
+2026-09-23, aufgenommen am Ereignis des Live-Tests von S3, VERMERK P11.7-14).
 
 **ZEIGER:** docs/ziel-befunde/linkedin.md, "MESSUNG 2026-09-23 — Ankunft unter 202609 …
 der Teil (bc)"; dazu je ein datierter Zeiger an (ax) und (ay). **ABSCHLUSS IM SELBEN ZUG:**
@@ -570,6 +546,54 @@ Abschnitt "Zuschnitt der Phase 11.7" nennt dieselbe Entscheidung weiterhin
 **KEINE ZIELVERSION IST GEWÄHLT UND KEINE EMPFOHLEN; KEINE AUSSAGE ZU VORGABEWERT GEGEN
 UMGEBUNGSVARIABLE.** Die Kandidaten mit ihren Tatsachen stehen in (w) und (x).
 
+### VERMERK P11.7-14 — Scheibe S3 gebaut und live bestätigt vom 2026-09-23 (Meta `v25.0`)
+
+**HARTE ANGABEN:** 2026-09-23 · **BAU-COMMIT `9778aca`** (`chore(capi): Meta-Graph-Version
+v21.0 -> v25.0 (11.7 S3)`) · zwei Dateien: `src/lib/capi/config.ts` (Vorgabewert `"v25.0"`,
+Kommentar nach Vorrat P11.7-7) und `src/lib/capi/version-deadlines.test.ts` (Zeile meta
+`v25.0` / `2028-07-29T00:00:00Z` / docs/ziel-befunde/meta.md, Teil (w), Tabelle 1; Grenze (3),
+`meldung()`, T3-Marke "GILT LAUT TEIL (v)", Beispiel-Literal an V3) · die Tabellenzeile vor
+dem Bau maschinell gegen die Quellzeile geprüft, mit Positivkontrolle (`v21.0` →
+2027-01-21) und Gegenprobe (Tabelle 2: `v25.0` "TBD") · Nutzlast unverändert, keine
+Kennung durchgeleitet, kein Adapter berührt · Tests **2108 / 97 vorher und nachher**
+(GEMESSEN, CC) · Zielversion und Weg: OWNER-ENTSCHEIDUNG 2026-09-23 (Abschnitt "Zuschnitt",
+S3; Doku-Commit `9365c7f`).
+
+**BEWUSST UNVERÄNDERT:** Die zwölf Config-Mocks und `route.test.ts` tragen weiter `v21.0` —
+sie prüfen ihren eigenen Wert; die einzige Erwartung an den Vorgabewert sind V1/V3.
+
+**MUTATIONSPROBEN — ALLE ACHT WIE VORHERGESAGT**, je als voller Lauf über 97 Dateien, je
+zurückgenommen und per sha256 gegen den Stand nach dem Bau belegt:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| m1 | Vorgabewert `"v21.0"` | V1, V3 |
+| m2 | Tabellenzeile version `"v21.0"` | V1, V3 |
+| m3 | Uhr in T1 2028-05-30T00:00:00Z | T1, Meldungen meta und linkedin |
+| m3b | Uhr 2028-05-29T23:59:59Z | T1, nur linkedin |
+| m4 | Uhr 2026-11-22T00:00:00Z (alte Meta-Grenze) | nichts |
+| m5 | Vorgabewert `"v26.0"` | V1, V3 — V2 und V3b grün |
+| m6 | Meta-Zweig in `meldung()` abgeschaltet | NUR T3 |
+| m6b | alter Meta-Text wörtlich wieder eingesetzt | NUR T3 |
+
+Der Inhalt der Meldungen bei m3/m3b ist mit einem gezielten Zusatzlauf der Wächter-Datei
+unter demselben Eingriff belegt — der JSON-Reporter kürzt das Array; das Muster trifft bei
+m3 beide Zeilen und ist damit die Kontrolle für "nur linkedin" bei m3b. m6b setzt den alten
+Text statt einer veränderten Marke ein (vor dem Lauf deklariert).
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-23):** `META_GRAPH_VERSION` ist in Vercel nie angelegt
+worden (vor dem Deploy geprüft) · vorher letztes Server-Ereignis im Events Manager "Heute um
+10:25:20" · nach dem Deploy Lead, eventID `372f8ffa-f6a1-4c05-a22d-1d993d5d67c4`, Browser
+"Verarbeitet" 11:29:23, Server "Dedupliziert" 11:29:25 (lokale Anzeige, Zeitzone vermutlich
+MESZ) · Regression S2: LinkedIn "Data last received" September 23, 2026 11:29 AM.
+**DIE GRENZE:** Angekommen ist unter dem Vorgabewert `v25.0`; welche Version Meta tatsächlich
+verarbeitet, bleibt Messfrage (docs/ziel-befunde/meta.md, Teil (y)).
+
+**ZEIGER:** docs/ziel-befunde/meta.md, "MESSUNG 2026-09-23 — Ankunft unter v25.0 … der Teil
+(aa)"; dazu ein datierter Vorbehalt an (w). **ABSCHLUSS IM SELBEN ZUG:** "Frist mit Termin"
+gegenstandslos; Vorrat P11.7-7 geschlossen; F6, ZUSCHNITT-FRAGE P11.7-13 und P11.7-17
+nachgezogen; die Beobachtung in VERMERK P11.7-12 aufgelöst; HEBUNGS-KANDIDAT P11.7-1 neu.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -609,7 +633,8 @@ dazu.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-**VIER SIND OFFEN (P11.7-1, -2, -4, -7); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
+**DREI SIND OFFEN (P11.7-1, -2, -4); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7 MIT
+S3.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
 `a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
 2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
 **GEMESSEN IST, DASS SIE DASTEHEN — NICHT, DASS SIE NACHGEZOGEN WÄREN.** **KEINE
@@ -661,10 +686,30 @@ und der Kopfabsatz, auf den er zeigte, sind im selben Zug nachgezogen — Befund
 Live-Ankunft in Teil (ai), Wächter V4. VERMERK P11.7-12.
 
 **P11.7-7 — DER KOMMENTAR AN `META_GRAPH_VERSION` (`src/lib/capi/config.ts`) NENNT DEN
-VORGABEWERT EINEN "stabile[n] Fallback".** Laut docs/ziel-befunde/meta.md, Teile (s) und
-(t), läuft `v21.0` spätestens am 2027-01-21 ab und wird danach still umgeleitet. GEMESSEN
-am Repo (CC, 2026-09-23, HEAD `4809cb5`). **KEINE EMPFEHLUNG**, wie formuliert wird.
-TRIGGER: S3.
+VORGABEWERT EINEN "stabile[n] Fallback".**
+**GESCHLOSSEN 2026-09-23 — BAU-COMMIT `9778aca` (S3):** Der Kommentar nennt den Vorgabewert
+jetzt die vom Wächter geprüfte Version (Verweis auf `TABELLE` per Symbolname, kein Datum im
+Code) und die Umgebungsvariable einen Notausgang, den der Wächter nicht sieht. VERMERK
+P11.7-14.
+
+## Hebungs-Kandidaten
+
+**WAS ÜBER DIE PHASE HINAUS GILT UND AM PHASENENDE GEHOBEN WIRD.** Je Eintrag: Befund mit
+Provenienz, Ziel der Hebung, Bedingung des Entfallens. Die Gattung ist am 2026-09-23
+angelegt (OWNER-ENTSCHEIDUNG); die Arbeitsweise zählt sie zu dem, was eine Standdatei trägt.
+
+**HEBUNGS-KANDIDAT P11.7-1 — GIT BASH WANDELT EIN ARGUMENT, DAS MIT `@/` BEGINNT, STILL IN
+EINEN WINDOWS-PFAD UM — EINE SUCHE MELDET DANN EINE ABWESENHEIT, DIE DER GEGENSTAND NICHT
+HERGIBT.** GEMESSEN (CC, 2026-09-23, Stufe-1-Plan von S3, Gate G1): eine Suche nach
+`'@/lib/capi/config'` über `src/` meldete **0** Treffer; mit `MSYS_NO_PATHCONV=1` — die
+Variable schaltet die Pfadumwandlung ab — waren es **15** Dateien (zwölf Config-Mocks, der
+Wächter, `ingest.ts`, `meta-forward.ts`). Kein Fehler, keine Warnung: das Muster kommt
+verändert beim Werkzeug an. ABHILFE: `MSYS_NO_PATHCONV=1` bei jedem Aufruf mit einem solchen
+Argument. VERWANDT: docs/immer-beachten.md, "`grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR
+NOCH FÜR DAS NUL — UND SEIN FEHLSCHLAG SIEHT AUS WIE EIN BEFUND" (die leere `$TMPDIR`) und
+"EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND".
+ZIEL DER HEBUNG: docs/immer-beachten.md (Weg 1), neben den Werkzeug-Regeln.
+ENTFÄLLT, wenn die Arbeitsumgebung nicht mehr Git Bash unter Windows ist.
 
 ## Offene Fragen an den Anbieter-Crawl
 
@@ -714,9 +759,9 @@ Schlüssel `[event_source_id, event, event_id]`, Verwurf binnen 48 h, Verschmelz
 5 min, gegen Browser-Pixel UND Events API; der `_ttp`-Weg greift nur OHNE `event_id`.
 **MESSUNG OFFEN.**
 
-**F6 — META, VERSIONSANGABE** (Katalog B2). **AUF DOKU-EBENE NICHT ENTSCHIEDEN — ZWEI
-TABELLEN** (Teile (s), (t)). **MESSUNG OFFEN.** Die Frist daraus steht im Abschnitt "Frist
-mit Termin".
+**F6 — META, VERSIONSANGABE** (Katalog B2). **AUF DOKU-EBENE ENTSCHIEDEN** — für die
+Conversions API gilt der Graph-Zeitplan (Teil (v)). **MESSUNG OFFEN:** welche Version Meta
+tatsächlich verarbeitet, zeigt erst die Antwort-Kopfzeile (Teil (y)).
 
 **F7 — RATE-LIMITS** (Katalog H3) für meta, tiktok und linkedin. NICHT zu verwechseln mit
 dem Per-Tenant-Limiting auf /api/e: jenes begrenzt, was ZU UNS hereinkommt, dieses, was der
@@ -763,7 +808,8 @@ in `src/lib/capi/version-deadlines.test.ts`; kein Posten.
 **FRAGEN UND GRENZEN, KEINE ENTSCHEIDUNGEN. KEINE EMPFEHLUNG an irgendeinem Punkt.**
 **STAND 2026-09-23: Der Zuschnitt legt Teile von P11.7-1 und P11.7-15 fest (Abschnitt
 "Zuschnitt der Phase 11.7"); S1 hat P11.7-23 eingelöst und P11.7-13 für meta und linkedin
-(VERMERK P11.7-10). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+(VERMERK P11.7-10); P11.7-17 ist mit S2 und S3 eingelöst (VERMERKE P11.7-12, P11.7-14). ALLE
+ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -880,6 +926,9 @@ Entscheidung P11.7-5 als Zeile dazu.
 **ZEIGER 2026-09-23 — DIE TABELLE DARÜBER BLEIBT WÖRTLICH:** Die Zeile linkedin gilt dem Stand
 vor S2. Seit dem Bau-Commit `5d5602e` sendet der Adapter `202609`, Termin 15.09.2027 (Teil
 (au)) — VERMERK P11.7-12.
+**ZEIGER 2026-09-23 — DIE ZEILE meta GILT DEM STAND VOR S3:** Seit dem Bau-Commit `9778aca`
+sendet der Adapter `v25.0`, Termin 2028-07-29 (Teil (w)); welches Schema gilt, ist auf
+Doku-Ebene entschieden (Teil (v)), gemessen nicht (Teil (y)) — VERMERK P11.7-14.
 
 
 **ZUSCHNITT-FRAGE P11.7-14 — `li_fat_id` ALS ZUSÄTZLICHER EINTRAG NEBEN DER IP: LAUT DOKU ZULÄSSIG UND
@@ -924,7 +973,9 @@ Migrations-Seite, und sie ist **vor** einem Zuschnitt zu lesen.
 FRÜH in die Phase. **FÜR LINKEDIN IST SIE ZWINGEND EINE CODE-ÄNDERUNG**, für meta offen.
 **ZEIGER 2026-09-23 — DIE LINKEDIN-HÄLFTE IST EINGELÖST:** `202609`, gebaut und live bestätigt
 (VERMERK P11.7-12); die Wendung zu den Conversion-Typen oben liest man mit dem Vorbehalt an
-Teil (at) und mit Teil (ax). **DIE META-HÄLFTE BLEIBT OFFEN** (S3).
+Teil (at) und mit Teil (ax).
+**ZEIGER 2026-09-23 — DIE META-HÄLFTE IST EINGELÖST, DAMIT DIE GANZE FRAGE:** `v25.0`, gebaut
+und live bestätigt (VERMERK P11.7-14).
 
 **ZUSCHNITT-FRAGE P11.7-18 — `externalIds` IST AUCH BEI LINKEDIN DER EINZIGE SELBST VERGEBENE WERT: ZEIGER
 STATT KOPIE.** Die Frage steht als **P11.7-4**. Was hinzukommt (linkedin, Teil (ap)):
@@ -1047,8 +1098,9 @@ gebündelt.
 offen steht, bleibt offen** und wird im Stufe-1-Plan der jeweiligen Scheibe beantwortet; wo
 die Entscheidung eine Zuschnitt-Frage berührt, steht dabei, welcher Teil davon entschieden
 ist. **KEINE EMPFEHLUNG, KEINE GESTALT für S4 und S5.** S1 ist gebaut (VERMERK P11.7-10). S2
-ist mit der Zielversion `202609` gebaut und live bestätigt (VERMERK P11.7-12). Die übrigen
-sind weder gebaut noch geplant.
+ist mit der Zielversion `202609` gebaut und live bestätigt (VERMERK P11.7-12). S3 ist mit der
+Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). Die übrigen sind weder
+gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -1069,21 +1121,18 @@ der Live-Test hat sie belegt (Teil (bc)).
 Der Posten zum 15.01.2027 ist in docs/offene-punkte.md gestrichen, sein Stub in CLAUDE.md
 entfernt — im Abschluss-Commit von S2.
 
-**S3 — ANHEBUNG META, `v21.0` → Zielversion.**
-PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus der Kopf von docs/ziel-befunde.md.
-**ZIELVERSION `v25.0`, ANHEBUNG ÜBER DEN VORGABEWERT in `src/lib/capi/config.ts` —
-OWNER-ENTSCHEIDUNG 2026-09-23.** GRÜNDE: (1) Laut docs/ziel-befunde/meta.md, Teil (v), folgt
-die Conversions API dem Graph-Zyklus; `v25.0` läuft dort bis 2028-07-29 (Teil (w)) und steht
-unter der Marketing-Tabelle auf "TBD", ist also auch dann tragfähig, wenn (v) nicht zuträfe.
+**S3 — ANHEBUNG META, `v21.0` → `v25.0`. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-14.**
+Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` in `src/lib/capi/config.ts` samt der
+Tabellenzeile meta im Versions-Wächter (Entscheidung P11.7-5); mitgenommen Vorrat P11.7-7.
+**ZIELVERSION `v25.0`, ANHEBUNG ÜBER DEN VORGABEWERT — OWNER-ENTSCHEIDUNG 2026-09-23.**
+GRÜNDE: (1) Laut docs/ziel-befunde/meta.md, Teil (v), folgt die Conversions API dem
+Graph-Zyklus; `v25.0` läuft dort bis 2028-07-29 (Teil (w)) und steht unter der
+Marketing-Tabelle auf "TBD", ist also auch dann tragfähig, wenn (v) nicht zuträfe.
 VERWORFEN: `v24.0` (Marketing-Termin 2026-10-06) · `v26.0` (kein Termin; der Wächter braucht
 einen mit Quelle). (2) Vorgabewert statt Umgebungsvariable, weil nur er vom Wächter gesehen
 wird (Kopf von `src/lib/capi/version-deadlines.test.ts`, Grenze (2)); die Variable bleibt als
-Notausgang. **GRENZE:** Die Annahme unter `v25.0` ist eine FOLGERUNG aus Teil (x), keine
-Messung — der Live-Test beantwortet sie.
-DAMIT ÜBERHOLT, HIER NICHT ANGEFASST: der Satz "OB DIE ANHEBUNG ÜBER DIE UMGEBUNG ODER DEN
-VORGABEWERT LÄUFT, IST NICHT ENTSCHIEDEN" im Abschnitt "Frist mit Termin"; er fällt mit dem
-Abschluss von S3.
-NICHT dazu: `fbc` (S5) · der Pflichtfeld-Riegel (ausgeschlossen, s. unten).
+Notausgang. Die Annahme unter `v25.0` war vor dem Bau eine FOLGERUNG aus Teil (x); der
+Live-Test hat sie belegt (Teil (aa)).
 
 **S2 UND S3 ÄNDERN NACH IHREM GEGENSTAND EINE VERSIONSANGABE, KEIN NUTZLAST-FELD.** Die
 Owner-Entscheidung führt S4 als erste Scheibe, die eine Kennung durchleitet. **Bringt eine
@@ -1168,18 +1217,13 @@ binden:**
 (c) **Der Pflichtfeld-Riegel ist von der Meta-Scheibe abgetrennt** (Grund oben). Bindet: S3
     und S5 bauen ihn nicht mit.
 
-**AUFLAGE ZUR FRIST.** Löst S3 die Frist ein, die der Abschnitt "Frist mit Termin" führt,
-wird sie mit dem Beleg der Erledigung gestrichen; wird S3 vertagt oder verworfen, trägt sie
-weiter der Wächter T1 in `src/lib/capi/version-deadlines.test.ts` (seit `4809cb5`, Vorlauf 60
-Tage, rot ab 2026-11-22) — ein Heben nach docs/offene-punkte.md entfällt (OWNER-ENTSCHEIDUNG
-2026-09-23, s. den Abschnitt "Frist mit Termin").
-
 ## Nächster Schritt
 
-**ALS NÄCHSTES DIE STUFE-1-VORARBEIT DER SCHEIBE S3 (META)** (Abschnitt "Zuschnitt der
-Phase 11.7"), mit der Volladung von docs/ziel-befunde/meta.md plus Kopf. S1 und S2 sind
-abgeschlossen (VERMERKE P11.7-10, P11.7-12). Der Zuschnitt steht seit der Owner-Entscheidung
-vom 2026-09-22. Die Sperren, die ihn hielten, sind eingelöst: alle fünf
+**ALS NÄCHSTES DER STUFE-1-PLAN DER SCHEIBE S4** — die gemeinsame Stelle für
+Klick-Kennungen samt Entscheidung P11.7-3 (Abschnitt "Zuschnitt der Phase 11.7"). Sie
+berührt meta, pinterest und tiktok; es gilt die Mehr-Ziele-Regel aus "Was den Zuschnitt
+bindet". S1, S2 und S3 sind abgeschlossen (VERMERKE P11.7-10, P11.7-12, P11.7-14). Der
+Zuschnitt steht seit der Owner-Entscheidung vom 2026-09-22. Die Sperren, die ihn hielten, sind eingelöst: alle fünf
 Ziele sind durchlaufen (VERMERKE P11.7-2 bis P11.7-7), die Fragen an den eigenen Code sind
 am Code beantwortet (VERMERK P11.7-8), und die Ladung ist wieder leistbar (VERMERK
 P11.7-9).

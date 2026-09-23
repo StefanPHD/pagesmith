@@ -805,6 +805,65 @@ Präfix und Zeitanteil um Metas Kennung) sagt sie nichts ausdrücklich.
 Zeilenumbruch läuft; über den geglätteten Text 1-mal. Die Nicht-Treffer oben sind am
 geglätteten Text erhoben.
 
+**ZEIGER 2026-09-23 — DER TEXT DARÜBER BLEIBT, ER IST DER STAND VOR DEM BAU:** "Keine
+Oberfläche, die ein empfangenes `fbc` anzeigt" gilt nicht mehr — die Liste
+"Benutzer-Datenschlüssel" am Server-Ereignis der Test-Events-Ansicht führt "Klick-ID", wenn
+`fbc` gesendet wird (VERMERK P11.7-18; docs/ziel-befunde/meta.md, Teil (ad)).
+
+### VERMERK P11.7-18 — Scheibe S5 gebaut und live bestätigt vom 2026-09-23 (Meta `fbc`)
+
+**HARTE ANGABEN:** 2026-09-23 · **BAU-COMMIT `37e3e46`** (`feat(capi): Meta erhaelt fbc aus
+dem fbclid der Seitenadresse (11.7 S5)`) · drei Dateien: `src/lib/capi/click-id-strip.ts`
+(neu `extractFbclid`, exakt, wurffrei, ohne Formprüfung), `src/lib/capi/meta-forward.ts` (eine
+Uhr-Lesung `now` für `event_time` in Sekunden und den Zeitanteil in Millisekunden;
+`userData.fbc = "fb.1.<now>.<fbclid>"` nach der bereinigten Adresse, vor dem `try`;
+Vertragssatz 1 nennt `extractFbclid`), `src/lib/capi/click-id-strip.test.ts` (zwölf neue
+Fälle X-a bis X-h, M-a bis M-c, M-e) · Tests **2131 / 98 → 2143 / 98** (GEMESSEN, CC) · tsc,
+lint, build grün · **KEINE `console`-Zeile im Diff** (GEMESSEN) · Entscheidungen des
+Stufe-1-Plans (ARCHITEKT, 2026-09-23): Einsatz nach der bereinigten Adresse, rein additiv;
+eine Uhr-Lesung; "exakt" heisst exakt auf dem vom Standard-Parser DEKODIERTEN Namen
+(`fb%63lid` trifft, `FBCLID` nicht).
+
+**MUTATIONSPROBEN — SECHS, ALLE WIE VORHERGESAGT**, je voller Lauf über 98 Dateien, je
+zurückgenommen und per sha256 gegen den Baustand belegt:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| m1 | fbc-Zeilen entfernt | M-a |
+| m2 | `fb.0.` statt `fb.1.` | M-a |
+| m3 | `eventTime` (Sekunden) statt `now` im Zeitanteil | M-a |
+| m4 | Name ohne Schreibung verglichen | X-c, M-c |
+| m5 | Wert kleingeschrieben | X-b, M-a |
+| m7 | das `catch` in `extractFbclid` wirft weiter | **57, VOR dem Lauf am Bestand gezählt, je Datei getroffen** |
+
+m7 je Datei: click-id-strip.test 3, meta-forward.test 8, version-deadlines 2, fan-out 10,
+ingest.confirm 8, ingest.forwardable 9, ingest.persist 4, ingest.test-mode 5,
+ingest.consent-targets 4, ingest.consent 2, ingest.timeout 2 — die Meta-Teilmenge der 103
+Fälle aus Mutation m6 von S4 (VERMERK P11.7-16).
+**m6 — "fbc aus der UNBEREINIGTEN Adresse" — IST ÄQUIVALENT UND ENTFALLEN:** Eine Einmal-Probe
+ausserhalb des Repos (Stufe-1-Plan, Gate G1) ergab für `fbclid` aus roher und bereinigter
+Adresse in 7 von 7 Fällen dasselbe; POSITIVKONTROLLE: mit Ziel `tiktok`, für das `fbclid` fremd
+ist, sah dieselbe Probe den Unterschied. Grund: S4 entfernt nur FREMDE Namen, `fbclid` gehört
+meta. F3 gilt durch den Einsatzpunkt — gelesen wird die Variable, die gesendet wird.
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-23, Zeiten MESZ, Meta-Testmodus an):**
+- VORHER: letztes Server-Ereignis 16:06:12.
+- R1, privates Fenster, ohne `fbclid`: eventID `de3c9dbb-acbe-4944-b753-73a45086d00b`,
+  17:05:52 — Server "Benutzer-Datenschlüssel: IP-Adresse, User Agent".
+- S1, NEUES privates Fenster, Adresse
+  `https://meta-test-5nlm3e.publayer.net/?utm_source=s5probe&fbclid=IwZXh0bgNhZW0CMTEAAR2S5liveTestFbclid0123456789abcdefghijklm`:
+  eventID `d8f3e8bf-8793-4c18-8602-06ad68b8f8fb`, 17:07:21 — Browser "Verarbeitet",
+  "Parameter für den erweiterten Abgleich: IP-Adresse, User Agent"; Server "Dedupliziert",
+  "Benutzer-Datenschlüssel: Klick-ID, IP-Adresse, User Agent". URL in beiden:
+  `https://meta-test-5nlm3e.publayer.net/`.
+**ERGEBNIS: `fbc` IST LIVE BELEGT** — die Klick-ID erscheint genau mit `fbclid` (S1), nicht
+ohne (R1). **DIE GRENZE:** Belegt sind Annahme und Erkennung als Klick-ID, NICHT ein Abgleich
+mit einem Anzeigenklick — der Wert ist erfunden.
+
+**ZEIGER / ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/meta.md, Teil (ad), dazu ein datierter
+Zeiger an (ac) · VERMERK P11.7-17 mit Zeiger · ZUSCHNITT-FRAGEN P11.7-1, -2, -5, -20
+nachgezogen · S5 ABGESCHLOSSEN.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1032,8 +1091,9 @@ in `src/lib/capi/version-deadlines.test.ts`; kein Posten.
 "Zuschnitt der Phase 11.7"); S1 hat P11.7-23 eingelöst und P11.7-13 für meta und linkedin
 (VERMERK P11.7-10); P11.7-17 ist mit S2 und S3 eingelöst (VERMERKE P11.7-12, P11.7-14); S4
 hat die festgelegten Teile von P11.7-15 und P11.7-25 gebaut und Teile von P11.7-5, P11.7-9 und
-P11.7-24 eingelöst (VERMERK P11.7-16; je ein Zeiger an der Frage); der Zuschnitt von S5 legt
-Teile von P11.7-1 und P11.7-2 fest (je ein Zeiger an der Frage). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+P11.7-24 eingelöst (VERMERK P11.7-16; je ein Zeiger an der Frage); S5 hat die festgelegten
+Teile von P11.7-1 und P11.7-2 gebaut und live belegt, dazu Zeiger an P11.7-5 und P11.7-20
+(VERMERK P11.7-18). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -1052,6 +1112,9 @@ Normalfall** (Adblocker-Verlustrate). OFFEN: ob der Zuschnitt beide Wege trägt,
 Adressweg, oder einen Vorrang.
 **ZEIGER 2026-09-23 — FÜR DIESE PHASE FESTGELEGT DURCH DEN ZUSCHNITT VON S5** (F1 bis F10):
 der Adressweg allein; der Cookie-Weg ist nicht Teil von S5.
+**ZEIGER 2026-09-23 — DER ADRESSWEG IST GEBAUT UND LIVE BELEGT (VERMERK P11.7-18):**
+`forwardToMeta` bildet `fbc` aus dem `fbclid` der Seitenadresse. Der Cookie-Weg bleibt
+weiter ausgeschlossen.
 
 **ZUSCHNITT-FRAGE P11.7-2 — METAS EIGENE EMPFEHLUNG ZUM `_fbc`-COOKIE KOLLIDIERT MIT DER GRENZE DER
 DRITTEN DATENKLASSE.** Der Anbieter empfiehlt, `_fbc` selbst als Cookie mit 90 Tagen zu
@@ -1063,6 +1126,9 @@ ist UNGEMESSEN.** Wer die Frage bearbeitet, liest zuerst (E2) im Wortlaut.
 **ZEIGER 2026-09-23 — DER ZUSCHNITT VON S5 NIMMT DIE FOLGE AN** (F2): `creationTime` ist der
 Verarbeitungszeitpunkt; eine zweite Conversion desselben Klicks bekommt einen späteren. Der
 Cookie-Weg bleibt ohne neue Owner-Entscheidung unbaubar; die Wirkung bleibt ungemessen.
+**ZEIGER 2026-09-23 — GEBAUT MIT S5 (VERMERK P11.7-18):** Der Zeitanteil ist der Moment, in
+dem der Server den `fbclid` empfängt. Die Grenze besteht fort: keine erste Beobachtung, und
+die Wirkung auf den Abgleich bleibt ungemessen — der Live-Test belegt nur die Annahme.
 
 **ZUSCHNITT-FRAGE P11.7-3 — OB DER ADAPTER `action_source` SENDET.** **ERSTE HÄLFTE EINGELÖST** (C2):
 `action_source: "website"` steht unbedingt in der Meta-Nutzlast (`meta-forward.ts:310`),
@@ -1087,6 +1153,9 @@ bliebe ein `fbclid` in der Adresse und entfiele zugleich ein `fbc`, wäre (q) en
 **ZEIGER 2026-09-23 — EINGELÖST DURCH S4 (VERMERK P11.7-16):** `event_source_url` geht ohne
 fremde Kennungen an meta, `fbclid` bleibt darin; der Live-Test kam an. **OFFEN BLEIBT:** ob
 Meta den `fbclid` aus der Adresse verwertet ((q)) — S5 baut `fbc` ausdrücklich.
+**ZEIGER 2026-09-23 — S5 GEBAUT (VERMERK P11.7-18):** `fbclid` bleibt in der Adresse, `fbc`
+wird zusätzlich gesendet. Der Fall "`fbclid` bleibt, `fbc` entfällt" tritt damit nicht mehr
+ein, sobald die Adresse die Kennung trägt; ob Meta (q) liest, bleibt offen.
 
 **ZUSCHNITT-FRAGE P11.7-6 — DER ADAPTER SENDET WEDER IP NOCH USER-AGENT, OBWOHL DER TRANSPORT ZWEI ORTE
 DAFÜR KENNT.** Google unterscheidet `eventDeviceInfo` (Ereignis-Zeitpunkt) und
@@ -1196,8 +1265,8 @@ in S5 bis S9 (D9).
 **ZEIGER 2026-09-23 — GEBAUT MIT S4 (VERMERK P11.7-16):** `stripForeignClickIds` und
 `CLICK_ID_TABLE` in `src/lib/capi/click-id-strip.ts`, gerufen in den Adaptern von meta, tiktok
 und pinterest, bewacht vom Wächter W über alle fünf echten Adapter. **OFFEN BLEIBT** der
-zweite Teil der Gestalt — "jedes Ziel erhält nur die seines Urhebers" als eigenes Feld (S5
-bis S9).
+zweite Teil der Gestalt — "jedes Ziel erhält nur die seines Urhebers" als eigenes Feld; für
+meta mit S5 gebaut (VERMERK P11.7-18), für die übrigen S6 bis S9.
 
 **ZUSCHNITT-FRAGE P11.7-16 — IPv6 BEI LINKEDIN: DER RIEGEL KÖNNTE DEN IP-EINTRAG AUSLASSEN, STATT DEN
 GANZEN FORWARD ZU VERWERFEN — WENN EINE ZWEITE KENNUNG VORLIEGT.** **DER GRUND DES RIEGELS
@@ -1248,6 +1317,8 @@ der Landeseite nicht** — und das ist phasiert: docs/roadmap.md, Roadmap-Zeile 
 (Multi-Page-Funnels). **DORT IST DIE AUFBEWAHRUNG EINE OWNER-FRAGE. HEUTE IST NICHTS ZU
 ENTSCHEIDEN UND NICHTS ZU BAUEN.** **GRENZE:** Dass die vier es EMPFEHLEN, ist GELESEN; wie
 gross der Verlust ohne Aufbewahrung ist, ist **UNGEMESSEN**.
+**ZEIGER 2026-09-23 — UNVERÄNDERT NACH S5 (VERMERK P11.7-18):** Auch das gebaute `fbc` ist nur
+verfügbar, solange die Adresse die Kennung trägt; S5 bewahrt nichts auf.
 
 **ZUSCHNITT-FRAGE P11.7-21 — EIN ANGEKÜNDIGTER, UNDATIERTER SCHEMA-WECHSEL KÖNNTE `evaluateSuccessBody`
 EINEN ANGEKOMMENEN FORWARD ALS FEHLSCHLAG WERTEN LASSEN.** Pinterest stellt sein
@@ -1355,12 +1426,13 @@ gebündelt.
 2026-09-23. Entschieden sind die REIHENFOLGE und je Scheibe der GEGENSTAND. **Was unten als
 offen steht, bleibt offen** und wird im Stufe-1-Plan der jeweiligen Scheibe beantwortet; wo
 die Entscheidung eine Zuschnitt-Frage berührt, steht dabei, welcher Teil davon entschieden
-ist. **S5 ist zugeschnitten (ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-23, F1 bis F10).** S1 ist
+ist. S1 ist
 gebaut (VERMERK P11.7-10). S2
 ist mit der Zielversion `202609` gebaut und live bestätigt (VERMERK P11.7-12). S3 ist mit der
 Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). S4 ist gebaut und live
-geprüft; das Entfernen selbst belegt der Wächter, nicht der Live-Test (VERMERK P11.7-16). Die
-übrigen sind weder gebaut noch geplant.
+geprüft; das Entfernen selbst belegt der Wächter, nicht der Live-Test (VERMERK P11.7-16). S5
+ist nach den Architekten-Entscheidungen F1 bis F10 gebaut, `fbc` ist live belegt (VERMERK
+P11.7-18). Die übrigen sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -1468,7 +1540,9 @@ erste Stelle, die die Adresse ANFASST (ZUSCHNITT-FRAGE P11.7-24); die sechs
 Adapter fängt (Randbefund meta, VERMERK P11.7-15). Ein Wurf im Rumpf eines async-Adapters wird
 zur Ablehnung, `allSettled` fängt sie, die 204 bleibt (VERMERK P11.7-16, Mutation m6).
 
-**S5 — META `fbc` ÜBER DEN ADRESSWEG (`fbclid`), erster Konsument von S4.** Berührt:
+**S5 — META `fbc` ÜBER DEN ADRESSWEG (`fbclid`), erster Konsument von S4. ABGESCHLOSSEN AM
+2026-09-23 — VERMERK P11.7-18** (gebaut in `37e3e46`, `fbc` live belegt; F1 bis F10 bleiben
+als bindende Entscheidungen stehen). Berührt:
 ZUSCHNITT-FRAGE P11.7-1 — für DIESE Phase ist der Adressweg gewählt, der Cookie-Weg ist
 ausgeschlossen · P11.7-2 (Zuschnitt-Frage) — ohne eigene Ablage ist der Zeitanteil von `fbc`
 faktisch der Ereigniszeitpunkt, die Wirkung ungemessen · P11.7-5 · P11.7-20 — die Kennung
@@ -1486,6 +1560,9 @@ NICHT dazu: das `_fbc`-Cookie in beiden Formen · der Pflichtfeld-Riegel (je unt
 - **F3 — HERAUSLESEN:** `fbclid` EXAKT unter dem Namen "fbclid" (D4), aus der von S4
   BEREINIGTEN Adresse; erstes Vorkommen; leer oder fehlend → kein `fbc`; nicht parsebar →
   kein `fbc`. Grund: beim Herauslesen ist ein Zuviel die falsche Richtung.
+  **ZEIGER 2026-09-23:** "aus der BEREINIGTEN Adresse" gilt durch den EINSATZPUNKT — gelesen
+  wird die Variable, die gesendet wird; eine Probe darauf ist äquivalent (Mutation m6
+  entfallen, VERMERK P11.7-18).
 - **F4 — DER WERT:** so, wie ein Standard-Parser ihn aus dem Query-String liefert (dekodiert);
   keine Formprüfung ("Anwesenheit, nie Form"). Grund: kein Riegel ohne gelesene Formregel.
   GRENZE: zu Kodierung und Fehlform schweigt die Quelle; echte Werte bestehen aus
@@ -1563,22 +1640,12 @@ binden:**
 
 ## Nächster Schritt
 
-**ALS NÄCHSTES DER STUFE-1-PLAN DER SCHEIBE S5** — Meta `fbc` über den Adressweg
-(`fbclid`), zugeschnitten am 2026-09-23 (Abschnitt "Zuschnitt der Phase 11.7", S5, F1 bis F10;
-Material VERMERK P11.7-17). PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus Kopf. S1
-bis S4 sind abgeschlossen (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16). Der Zuschnitt der
-Reihenfolge steht seit der Owner-Entscheidung vom 2026-09-22.
-**DAS INSTRUMENT FÜR DEN LIVE-TEST VON S5 IST OFFEN:** Die Test-Events-Ansicht nannte beim
-Live-Test von S4 für ein Browser-Ereignis mit `fbclid` in der Adresse nur IP-Adresse und User
-Agent als Abgleich-Parameter; als Instrument für `fbc` ist sie NICHT belegt
-(docs/ziel-befunde/meta.md, Teil (ac)), und die URL zeigt sie ohne Query-Teil (ebenda, Teil
-(ab)). F10 behandelt die Ablesung deshalb als MESSUNG DES INSTRUMENTS; der Beweis sind die
-Tests.
-
-**WAS DER STUFE-1-PLAN MITBRINGEN MUSS, und es ist kein Vorschlag seines Inhalts:** die
-VOLLLADUNG der Datei des Ziels samt dem Kopf des Verzeichnisses · F1 bis F10 samt ihren
-Grenzen · die Entscheidungen P11.7-2 und P11.7-3 · die Invarianten TRANSIT-ONLY,
-204-Containment und "vor dem `try` nur Wurffreies" in `forwardToMeta`.
+**S1 BIS S5 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
+P11.7-18). **ALS NÄCHSTES IST DIE REIHENFOLGE VON S6 BIS S9 ZU ENTSCHEIDEN — EINE
+OWNER-ENTSCHEIDUNG.** Die Owner-Entscheidung vom 2026-09-22 hat sie offen gelassen (Abschnitt
+"Zuschnitt der Phase 11.7", S6 bis S9). Die Datei trägt dazu keine Empfehlung.
+**FÜR DIE GEWÄHLTE SCHEIBE** gilt der Pflicht-Stopp mit der Datei ihres Ziels; ihr Zuschnitt
+folgt der Entscheidung.
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK

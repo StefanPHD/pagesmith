@@ -1317,4 +1317,38 @@ laut Owner).
      · **DIE FOLGE FÜR EINEN SPÄTEREN `fbc`-TEST:** Diese Ansicht ist als Instrument für `fbc`
        NICHT belegt. Wer `fbc` live nachweisen will, braucht zuerst ein Instrument mit
        Positivkontrolle.
+     · **ZEIGER 2026-09-23 — DER WORTLAUT DARÜBER BLEIBT:** Die Beobachtung ist als
+       UNTERSCHIED ZWEIER LISTEN aufgelöst — die Liste am Browser-Ereignis ("Parameter für
+       den erweiterten Abgleich") ist eine andere als die am Server-Ereignis
+       ("Benutzer-Datenschlüssel"), und die zweite führt "Klick-ID", wenn `fbc` gesendet
+       wird. Der Satz "UNSER SERVER-FORWARD SENDET KEIN `fbc`" beschreibt den Stand vor S5.
+       Siehe Teil (ad).
+
+### ABLESUNG 2026-09-23 an der Test-Events-Ansicht (Live-Test der Scheibe S5, Phase 11.7) — der Teil (ad)
+
+Provenienz: OWNER-ABLESUNG (Stefan, 2026-09-23, Zeiten MESZ, Meta-Testmodus an) an der
+Test-Events-Ansicht des Datasets hinter `https://meta-test-5nlm3e.publayer.net/`; gebaut ist
+Commit `37e3e46` (`forwardToMeta` setzt `user_data.fbc = "fb.1.<ms>.<fbclid>"`, wenn die
+bereinigte Seitenadresse ein `fbclid` trägt). Zwei Läufe in je einem NEUEN privaten Fenster:
+R1 ohne `fbclid` (eventID `de3c9dbb-acbe-4944-b753-73a45086d00b`, 17:05:52) und S1 mit
+`?utm_source=s5probe&fbclid=IwZXh0bgNhZW0CMTEAAR2S5liveTestFbclid0123456789abcdefghijklm`
+(eventID `d8f3e8bf-8793-4c18-8602-06ad68b8f8fb`, 17:07:21). Der `fbclid`-Wert ist ERFUNDEN.
+
+(ad) INSTRUMENT FÜR `fbc` BELEGT: DIE LISTE "BENUTZER-DATENSCHLÜSSEL" AM SERVER-EREIGNIS
+     FÜHRT "KLICK-ID", WENN `fbc` GESENDET WIRD — UND NICHT OHNE.
+     · **ABGELESEN, GEGENPROBE:** R1, Server-Ereignis: "Benutzer-Datenschlüssel: IP-Adresse,
+       User Agent". S1, Server-Ereignis, Status "Dedupliziert": "Benutzer-Datenschlüssel:
+       Klick-ID, IP-Adresse, User Agent". Der einzige Unterschied der beiden Läufe ist das
+       `fbclid` in der Adresse — und damit das gesendete `fbc`.
+     · **DIE LISTE AM BROWSER-EREIGNIS IST EINE ANDERE:** Sie heisst "Parameter für den
+       erweiterten Abgleich" und führte in S1 (Status "Verarbeitet") keine Klick-ID, nur
+       IP-Adresse und User Agent. Das löst die Beobachtung aus Teil (ac) als Unterschied
+       zweier Listen auf.
+     · **UNGEMESSEN:** ob das Pixel selbst `fbc` sandte. Die Browser-Liste führt es nicht; ob
+       sie es führen würde, ist nicht belegt.
+     · **META NAHM EIN ERFUNDENES `fbc` OHNE ABLEHNUNG AN:** das Server-Ereignis steht mit
+       Status "Dedupliziert" in der Ansicht und führt die Klick-ID.
+     · **DIE GRENZE:** Belegt sind Annahme und Erkennung als Klick-ID — NICHT ein Abgleich mit
+       einem Anzeigenklick; der Wert ist erfunden. Unter "URL" stand in beiden Einträgen
+       `https://meta-test-5nlm3e.publayer.net/` (wie Teil (ab)). Eine Ansicht, ein Lauf-Paar.
 

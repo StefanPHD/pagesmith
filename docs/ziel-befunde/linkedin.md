@@ -223,6 +223,9 @@ umsortiert.
     vom 2026-09-11 (Doku-Stand 2026-08-26) nennt SECHS; s. unten (aj). GEMESSEN bleiben
     unverändert ZWEI. Der Wortlaut oben wird NICHT umformuliert — er sagt, was am
     2026-08-17 am Doku-Stand 2026-05-15 gelesen wurde.
+    ZEIGER (2026-09-23) — GEMESSEN ANGENOMMEN SIND JETZT DREI SYMBOLE: dazu
+    `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` als zweiter Eintrag neben der IP, s. unten (bd).
+    Der Wortlaut oben bleibt.
 
 (j) DIE FORM DES KENNUNGS-WERTS WIRD NICHT GEPRÜFT.
     GEMESSEN 2026-08-17: Der idValue "999.999.999.999" bei sonst gültiger Nutzlast ergab
@@ -1308,6 +1311,9 @@ was. Wer einen Teil unten gegen einen Teil aus (aa) bis (al) hält, rechnet dami
      PRÄZISIERT** — sie gilt so nur für den ADRESS-Weg; der Cookie-Weg verlangt den
      Einbau. Cookie-Weg und Haltedauer sind NEU. Der Wortlaut von (ah) wird NICHT
      umformuliert.
+     ZEIGER (2026-09-23) — DAS FORMAT BLEIBT UNGELESEN: Die Messung in (bd) fuhr einen
+     ERFUNDENEN Wert in der Form der Beispielwerte; seine Annahme sagt nichts über das Format
+     eines echten `li_fat_id`. Der Wortlaut oben bleibt.
 
 (ao) PFLICHT UND EMPFEHLUNG JE KENNUNG — DIE TRENNUNG, FÜR DIE F3 GESTELLT IST, UND EINE
      DIVERGENZ IN DER ANBIETER-DOKU, DIE HIER BERICHTET UND NICHT AUFGELÖST WIRD.
@@ -1434,6 +1440,10 @@ was. Wer einen Teil unten gegen einen Teil aus (aa) bis (al) hält, rechnet dami
      `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` zu den VIER Symbolen gehört, die nie
      gesendet worden sind (s. (b), (i), (aj)). Der Wortlaut von (i) und (n) wird NICHT
      umformuliert.
+     ZEIGER (2026-09-23) — DIE ANNAHME AM ENDPUNKT IST GEMESSEN: eine Liste mit IP (Index 0)
+     und `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` (Index 1) wird unter 202609 angenommen, s.
+     unten (bd). Eine Liste NUR mit der Klick-Kennung ist weiter nicht gemessen. Der Wortlaut
+     oben bleibt.
 
 (ar) DIE ANTWORT AUF EINEN ABGESCHALTETEN VERSIONS-HEADER — 426 UND `NONEXISTENT_VERSION`,
      MIT EINEM ENDPUNKT-VORBEHALT, DER ZUM BEFUND GEHÖRT UND NICHT DANEBEN STEHT.
@@ -1994,4 +2004,55 @@ GEMESSEN am Repo (CC, 2026-09-23, HEAD `5d5602e`).
      gibt (CLAUDE.md, "## Modus") — sie ist eine FOLGERUNG, keine Messung. Ein einzelnes
      Ereignis; über Zählung, Zuordnung zu einer Person und Deduplizierung sagt der Lauf nichts
      (s. (h), (q), (t)).
+
+### MESSUNG 2026-09-23 — Annahme von `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` als zweiter Eintrag (Live-Test der Scheibe S6a, Phase 11.7) — der Teil (bd)
+
+**HERKUNFT (2026-09-23):** Ein Live-Test des Owners nach dem Deploy des Bau-Commits `09476b9`:
+ZWEI Klicks auf einer veröffentlichten Seite in je einem neuen privaten Fenster, abgelesen an
+der Anbieter-Oberfläche (Campaign Manager, "Data last received") und in den Logs der
+Produktionsumgebung (Vercel). **KEIN Terminal-Lauf, kein Statuscode abgelesen.** Die Angaben
+über den Anbieter und das Log sind OWNER-ABLESUNGEN (Zeiten laut Owner MESZ, die Anzeige mit
+Minutenauflösung); die Angaben über unseren Adapter sind GEMESSEN am Repo (CC, 2026-09-23,
+HEAD `09476b9`).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (bc) folgt (bd).
+
+(bd) LINKEDIN NIMMT EINE NUTZLAST MIT ZWEI `userIds`-EINTRÄGEN AN — `PLAINTEXT_IP_ADDRESS` AN
+     INDEX 0, `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` AN INDEX 1 —, UNTER 202609 UND MIT EINEM
+     ERFUNDENEN WERT.
+     · **WAS GESENDET WURDE — GEMESSEN am Repo:** `forwardToLinkedin`
+       (`src/lib/capi/linkedin-forward.ts`) baut `user.userIds` mit der IP an Index 0 und, wenn
+       die Seitenadresse `li_fat_id` trägt, einem zweiten Eintrag
+       `{ idType: "LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID", idValue: <Wert> }`; der Wert wird
+       exakt unter dem Namen `li_fat_id` gelesen, unverändert (`extractLiFatId`,
+       `src/lib/capi/click-id-strip.ts`). Kopfzeile `LinkedIn-Version` = `202609`; sonst ist die
+       Nutzlast die aus (bc).
+     · **VORHER:** "Data last received" September 23, 2026 5:07 PM.
+     · **R1** (privates Fenster, Adresse OHNE `li_fat_id`): Anzeige 6:15 PM.
+     · **S1** (neues privates Fenster), Adresse
+       `https://meta-test-5nlm3e.publayer.net/?utm_source=s6aprobe&li_fat_id=k7s6a2-lf4t7-pq8m3x-lvt6a1`:
+       Anzeige springt auf **6:17 PM**. Vercel-Log um 18:17: Anfrage an `/api/e` verarbeitet,
+       **KEINE Zeile "[capi] LinkedIn forward rejected"**.
+     · **DER WERT IST ERFUNDEN**, in der Form der Beispielwerte aus S3 und S10 (vier
+       bindestrichgetrennte Gruppen, 26 Zeichen; s. (an)).
+     **WAS DAS BEANTWORTET:** die Annahme am Endpunkt, die (aq) als NICHT BEANTWORTET führt — eine
+     Liste mit ZWEI Einträgen wird angenommen, und das Symbol
+     `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` ist damit das DRITTE gemessen angenommene (nach
+     `SHA256_EMAIL`, (b), und `PLAINTEXT_IP_ADDRESS`, (i)). **DER BELEG IST DAS PAAR aus Sprung
+     und fehlender Logzeile:** Der Sprung allein zeigte nur, dass irgendetwas ankam; eine
+     Ablehnung käme als 422 und erzeugte am Adapter genau eine Zeile "[capi] LinkedIn forward
+     rejected" (GEMESSEN am Code: `describeLinkedinError` bei `!res.ok`; die Schnittstelle weist
+     ein unbekanntes Symbol mit 422 ab und nennt den Feldpfad, (i)).
+     **DIE GRENZEN:**
+     · **KEIN ABGLEICH BELEGT** — der Wert ist erfunden; ob ein echter `li_fat_id` zu einem
+       Mitglied aufgelöst wird, sagt der Lauf nicht (s. (h)). Eine Aussage über das FORMAT folgt
+       daraus nicht: (j) zeigt für die IP, dass die Schnittstelle die Form eines Kennungs-Werts
+       nicht prüft — dass ein erfundener Wert angenommen wird, ist mit einer fehlenden
+       Formprüfung vereinbar.
+     · **MINUTENAUFLÖSUNG** — belegt ist der Sprung von 6:15 PM auf 6:17 PM, kein
+       Sekundenvergleich. Die Zuordnung zum Klick S1 trägt, weil es keinen fremden Traffic gibt
+       (CLAUDE.md, "## Modus") — eine FOLGERUNG, keine Messung.
+     · **`li_fat_id` ALLEIN IST WEITER UNGEMESSEN** — S1 trug beide Einträge; ob ein Ereignis nur
+       mit der Klick-Kennung angenommen wird, beantwortet dieser Lauf nicht.
+     · Ein Statuscode ist nicht abgelesen; das Fehlen der Logzeile passt zu einer 2xx-Antwort und
+       ist allein kein Beleg (s. (bc)).
 

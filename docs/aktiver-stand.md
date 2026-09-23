@@ -928,6 +928,52 @@ Herkunftskriterium "ANBIETERÜBERGREIFEND") und (E3).
 **NEBENBEFUND:** `linkedin-forward.ts` trägt denselben Vertragssatz "-> 500" wie die drei Adapter
 in Vorrat P11.7-8 und ist ebenfalls `async` — dort als vierter aufgenommen.
 
+### VERMERK P11.7-20 — Scheibe S6a gebaut und live bestätigt vom 2026-09-23 (LinkedIn `li_fat_id` als zweiter Eintrag)
+
+**HARTE ANGABEN:** 2026-09-23 · **BAU-COMMIT `09476b9`** (`feat(capi): LinkedIn erhaelt li_fat_id
+als zweiten userIds-Eintrag (11.7 S6a)`) · vier Dateien: `src/lib/capi/click-id-strip.ts`
+(modulprivater Kern `readClickIdExact`, `extractFbclid` delegiert — Vertrag unverändert —, neu
+`extractLiFatId`; Kopfsatz nach Freigabe F-b), `src/lib/capi/linkedin-forward.ts` (zweiter
+`userIds`-Eintrag nach Riegel 3 im `try`, IP an Index 0; `LinkedinForwardBody` um
+`eventSourceUrl`; Zusatzsatz am Kommentar von Riegel 1 nach Freigabe F-a; Riegel-Code, Logtexte
+und Vertragssatz 1 unverändert), `src/lib/capi/click-id-strip.test.ts` (L-a bis L-h; W je Lauf
+über `eigeneGehtAbweichend`, nur der Fall linkedin geändert), `src/lib/capi/linkedin-forward.test.ts`
+(T6-a bis T6-h; T1-a Zeichen für Zeichen unverändert) · Tests **2143 / 98 → 2159 / 98**
+(GEMESSEN, CC) · tsc, lint, build grün · **KEINE `console`-Zeile im Diff** (GEMESSEN) ·
+`meta-forward.ts`, `ingest.ts`, `google-click-ids.ts` unberührt.
+
+**MUTATIONSPROBEN — ACHT, ALLE WIE VORHERGESAGT**, die Vorhersage je Datei VOR dem Lauf gegen
+den gebauten Bestand angesagt; je voller Lauf über 98 Dateien, je zurückgenommen und per sha256
+gegen den Baustand belegt:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| m1 | zweiter Eintrag entfernt | 4 — T6-a, T6-d, T6-e, W-linkedin/tabelle |
+| m2 | idType `…_TRACKING_ID` | 3 — T6-a, T6-d, T6-e |
+| m3 | Kern vergleicht den Namen ohne Schreibung | 5 — X-c, M-c, L-c, W-linkedin/abweichend, T6-c |
+| m4 | Wert im Adapter kleingeschrieben | 4 — T6-a, T6-d, T6-e, W-linkedin/tabelle |
+| m5 | Reihenfolge vertauscht | 1 — NUR T6-a |
+| m6 | `catch` im Kern wirft weiter | **60**, je Datei wie angesagt: click-id-strip.test 5, meta-forward 8, version-deadlines 2, fan-out 10, ingest.confirm 8, ingest.forwardable 9, ingest.persist 4, ingest.test-mode 5, ingest.consent-targets 4, ingest.consent 2, ingest.timeout 2, linkedin-forward 1 |
+| m7a | Riegel 2 als Filter | 1 — NUR T6-g (T2-b grün: ohne Adresse) |
+| m7b | Riegel 1 als Filter | 1 — NUR T6-h (T2-a grün: ohne Adresse) |
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-23, Zeiten MESZ):**
+- VORHER: "Data last received" September 23, 2026 5:07 PM.
+- R1, privates Fenster, ohne `li_fat_id`: Anzeige 6:15 PM.
+- S1, neues privates Fenster, Adresse
+  `https://meta-test-5nlm3e.publayer.net/?utm_source=s6aprobe&li_fat_id=k7s6a2-lf4t7-pq8m3x-lvt6a1`:
+  Anzeige springt auf 6:17 PM; Vercel-Log um 18:17: Anfrage an `/api/e` verarbeitet, KEINE Zeile
+  "[capi] LinkedIn forward rejected".
+**ERGEBNIS: LINKEDIN NIMMT `userIds` MIT IP (INDEX 0) UND `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`
+(INDEX 1) AN.** Der Beleg ist der Sprung der Anzeige ZUSAMMEN mit dem Fehlen der rejected-Zeile —
+eine Ablehnung käme als 422 mit genau einer Logzeile (docs/ziel-befunde/linkedin.md, Teil (i)).
+**DIE GRENZEN:** kein Abgleich belegbar (der Wert ist erfunden) · Minutenauflösung · **`li_fat_id`
+ALLEIN IST WEITER UNGEMESSEN.**
+
+**ZEIGER / ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/linkedin.md, Teil (bd), dazu datierte
+Zeiger an (i), (an) und (aq) · ZUSCHNITT-FRAGEN P11.7-14 und P11.7-16, F1 und "WAS EIN CRAWL FÜR
+LINKEDIN NICHT KLÄRT" nachgezogen · S6a ABGESCHLOSSEN.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1079,6 +1125,9 @@ Aufruf. **DAS FORMAT IST BEI linkedin UND pinterest EIN NICHT-TREFFER** mit bena
 Reichweite. **BEI google IST DIE LÜCKE EINE ANDERE:** die Schreibung der
 Auto-Tagging-Parameter, geführt als Posten in docs/offene-punkte.md, der eine MESSUNG an
 einem echten Anzeigenklick verlangt.
+**ZEIGER 2026-09-23 — linkedin:** Die ANNAHME eines erfundenen `li_fat_id` als zweiter Eintrag
+neben der IP ist gemessen (VERMERK P11.7-20; linkedin, Teil (bd)); ob ein echter Wert fachlich
+abgeglichen wird, ist damit NICHT gezeigt, und das Format bleibt ungelesen.
 
 **F2 — DER ORT IN DER NUTZLAST:** In welchem Feld, auf welcher Ebene?
 **AUF DOKU-EBENE BEANTWORTET für alle fünf.** Zeiger: meta Teile (h), (i), (l) · tiktok
@@ -1135,6 +1184,10 @@ weil eine LESUNG sie nicht erreicht. Kein Eintrag ist ein Auftrag.
 - **OB `li_fat_id` FACHLICH ANGENOMMEN WIRD.** GEMESSEN angenommen sind **ZWEI von SECHS**
   Symbolen (`SHA256_EMAIL` 2026-08-15, `PLAINTEXT_IP_ADDRESS` 2026-08-17); die vier übrigen
   sind nie gesendet worden. Teile (b), (i), (aj).
+  **ZEIGER 2026-09-23 — ZUR HÄLFTE BEANTWORTET:** `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` ist als
+  zweiter Eintrag neben der IP gemessen angenommen, damit DREI von SECHS Symbolen (VERMERK
+  P11.7-20; Teil (bd)). OFFEN bleiben der fachliche Abgleich (der Wert war erfunden) und die
+  Annahme OHNE IP-Eintrag.
 - **OB DIE SCHNITTSTELLE EINE IPv6-ADRESSE ABWEIST. NIE PROBIERT** — Teil (j) sagt das
   ausdrücklich, und die Folgerung dort ist als nicht gemessen bezeichnet.
 - **WELCHES RATE-LIMIT TATSÄCHLICH GREIFT.** Teil (ag).
@@ -1161,7 +1214,8 @@ hat die festgelegten Teile von P11.7-15 und P11.7-25 gebaut und Teile von P11.7-
 P11.7-24 eingelöst (VERMERK P11.7-16; je ein Zeiger an der Frage); S5 hat die festgelegten
 Teile von P11.7-1 und P11.7-2 gebaut und live belegt, dazu Zeiger an P11.7-5 und P11.7-20
 (VERMERK P11.7-18); der Zuschnitt von S6 legt Teile von P11.7-14 und P11.7-16 fest (Abschnitt
-"Zuschnitt der Phase 11.7", L1 bis L7). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+"Zuschnitt der Phase 11.7", L1 bis L7), S6a hat den festgelegten Teil von P11.7-14 gebaut und live
+belegt, dazu ein Zeiger an P11.7-16 (VERMERK P11.7-20). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -1317,6 +1371,9 @@ Zusage und Auflage zugleich.
 Adresse und wird durch einen Eintrag aus der Adresse NICHT rot. **FESTGELEGT DURCH DEN
 ZUSCHNITT VON S6** (L1 bis L3): der Adressweg wird zugeschnitten, als ZWEITER Eintrag neben
 einer gültigen IPv4 (S6a).
+**ZEIGER 2026-09-23 — GEBAUT MIT S6a, DIE ANNAHME IST GEMESSEN (VERMERK P11.7-20):** eine Liste mit
+IP (Index 0) und `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` (Index 1) wird angenommen (linkedin,
+Teil (bd)). Der Abgleich ist mit dem erfundenen Wert nicht belegt; das Format bleibt ungelesen.
 
 **ZUSCHNITT-FRAGE P11.7-15 — EINE GEMEINSAME BAUFORM FÜR ALLE KLICK-KENNUNGEN (ARCHITEKTEN-VORSCHLAG,
 NICHT ENTSCHIEDEN).** Gestalt: **EINE** Stelle liest die bekannten Kennungen aus der
@@ -1347,6 +1404,9 @@ SIE GEGENSTANDSLOS.** Am Code bestätigt (C10): beide Riegel kehren **vor** dem 
 zurück, T2-a bis T2-c decken sie einzeln.
 **ZEIGER 2026-09-23 — FESTGELEGT DURCH DEN ZUSCHNITT VON S6** (L1): die Frage ist S6b, und ihr
 Zuschnitt folgt erst NACH dem Live-Beleg von S6a; S6a lässt beide Riegel unverändert.
+**ZEIGER 2026-09-23 — DIE VORAUSSETZUNG AUS L1 IST ERFÜLLT (VERMERK P11.7-20):** LinkedIn nimmt den
+zweiten Eintrag an. **OB `li_fat_id` ALLEIN — ohne IP-Eintrag — ANGENOMMEN WIRD, BLEIBT
+UNGEMESSEN** und ist die Messfrage von S6b.
 
 **ZUSCHNITT-FRAGE P11.7-17 — DIE VERSIONS-ANHEBUNG TRIFFT META UND LINKEDIN BEIDE IM JANUAR 2027.** meta
 `v21.0` bis **2027-01-21**, linkedin `202601` bis **2027-01-15** — **ZWEI ZIELE, SECHS TAGE
@@ -1506,8 +1566,9 @@ ist mit der Zielversion `202609` gebaut und live bestätigt (VERMERK P11.7-12). 
 Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). S4 ist gebaut und live
 geprüft; das Entfernen selbst belegt der Wächter, nicht der Live-Test (VERMERK P11.7-16). S5
 ist nach den Architekten-Entscheidungen F1 bis F10 gebaut, `fbc` ist live belegt (VERMERK
-P11.7-18). S6 (linkedin) ist zugeschnitten (L1 bis L7) und in S6a und S6b geteilt; S6a ist im
-Stufe-1-Plan. Die übrigen sind weder gebaut noch geplant.
+P11.7-18). S6 (linkedin) ist zugeschnitten (L1 bis L7) und in S6a und S6b geteilt; S6a ist
+gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b ist nicht
+zugeschnitten. Die übrigen sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -1673,6 +1734,9 @@ der Datei ihres Ziels.
 - **S6 — linkedin `li_fat_id`** — ZUSCHNITT-FRAGE P11.7-14 und ihre Folgefrage P11.7-16;
   Material VERMERK P11.7-19. T1-a fährt ohne Adresse und wird durch einen Eintrag aus der
   Adresse NICHT rot (Richtigstellung zu VERMERK P11.7-8, C10, in VERMERK P11.7-19).
+  **S6a ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-20** (Bau-Commit `09476b9`; die Annahme des
+  zweiten Eintrags ist live belegt). L1 bis L7 bleiben als bindende Entscheidungen stehen: sie
+  beschreiben, wie gebaut ist, und L1 bindet den Zuschnitt von S6b.
   **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-23:**
   - **L1 — TEILUNG:** S6a = `li_fat_id` als ZWEITER Eintrag neben einer gültigen IPv4, die
     Riegel bleiben unverändert (R-A). S6b = die Riegel als Filter je Eintrag (R-B,
@@ -1752,11 +1816,11 @@ binden:**
 
 ## Nächster Schritt
 
-**S1 BIS S5 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER, 2026-09-23): S6 linkedin,
-dann google, tiktok, pinterest.** **S6 IST ZUGESCHNITTEN (L1 bis L7) UND GETEILT; ALS NÄCHSTES
-STEHT DER STUFE-1-PLAN VON S6a**, danach Bau und Live-Beleg; der Zuschnitt von S6b folgt erst
-nach dem Live-Beleg von S6a (L1). Pflicht-Stopp: docs/ziel-befunde/linkedin.md voll plus Kopf
+**S1 BIS S5 UND S6a SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
+P11.7-18, P11.7-20). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER, 2026-09-23): S6
+linkedin, dann google, tiktok, pinterest.** **ALS NÄCHSTES STEHT DER ZUSCHNITT VON S6b** — die
+Riegel als Filter je Eintrag (ZUSCHNITT-FRAGE P11.7-16); seine Voraussetzung aus L1, der
+Live-Beleg von S6a, ist erfüllt. Pflicht-Stopp: docs/ziel-befunde/linkedin.md voll plus Kopf
 von docs/ziel-befunde.md.
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist

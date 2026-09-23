@@ -109,11 +109,11 @@ Validierungsregeln eine untergeschobene Version mitbringt, ist ungemessen.
 **OB DIE ANHEBUNG ÜBER DIE UMGEBUNG ODER DEN VORGABEWERT LÄUFT, IST NICHT ENTSCHIEDEN.
 KEINE EMPFEHLUNG.**
 
-**WO DIESER POSTEN AUF DAUER HINGEHÖRT, und er ist es heute nicht:** nach
-docs/offene-punkte.md, mit Titel und Trigger als Stub-Zeile in CLAUDE.md (Weg 3). **DIE
-NÄCHSTE RUNDE, DIE JENE DATEI OHNEHIN ÖFFNET, TRÄGT DIESE FRIST DORTHIN** — mit dem Termin
-im Trigger. Solange sie hier steht, stirbt sie mit dem Phasenende, und **die Archivierung
-der Standdatei ist keine Erledigung der Frist.**
+**WO DIESER POSTEN AUF DAUER GETRAGEN WIRD — OWNER-ENTSCHEIDUNG 2026-09-23, ER WIRD NICHT
+NACH docs/offene-punkte.md GEHOBEN:** Die Frist trägt seit `4809cb5` der Wächter T1 in
+`src/lib/capi/version-deadlines.test.ts` (Vorlauf 60 Tage, rot ab 2026-11-22); **er überlebt
+das Phasenende.** Die Unsicherheit der zwei Versionstabellen tragen der Kopf jener Testdatei
+und docs/ziel-befunde/meta.md, Teile (s) und (t).
 
 ## Vermerke
 
@@ -472,6 +472,59 @@ nicht angefasst; wer sie für den Stufe-1-Plan von S2 heranzieht, liest (ax).
 **KEINE ZIELVERSION IST GEWÄHLT UND KEINE EMPFOHLEN.** Die Kandidaten mit ihren Tatsachen
 stehen in (au) und (aw); die Auswahl trifft der Owner.
 
+**ZEIGER 2026-09-23 — DER TEXT DARÜBER BLEIBT, ER IST DER STAND VOR DER ENTSCHEIDUNG:** Die
+Zielversion `202609` ist gewählt (OWNER-ENTSCHEIDUNG 2026-09-23), gebaut und live bestätigt
+— VERMERK P11.7-12.
+
+### VERMERK P11.7-12 — Scheibe S2 gebaut und live bestätigt vom 2026-09-23 (LinkedIn `202609`)
+
+**HARTE ANGABEN:** 2026-09-23 · **BAU-COMMIT `5d5602e`** (`chore(capi): LinkedIn-Version
+202601 -> 202609 (11.7 S2)`) · drei Dateien: `src/lib/capi/linkedin-forward.ts`
+(`LINKEDIN_VERSION` = `"202609"`, Kommentare nach Vorrat P11.7-3 und P11.7-6 und am Wert
+selbst), `src/lib/capi/linkedin-forward.test.ts` (T1-c prüft nur noch die ANWESENHEIT der
+Kopfzeile; Kopf nach Vorrat P11.7-5), `src/lib/capi/version-deadlines.test.ts` (Zeile
+linkedin `202609` / `2027-09-15T00:00:00Z` / Teil (au), Kommentar an V4) · Nutzlast
+unverändert, keine Kennung neu durchgeleitet · Tests **2108 / 97 vorher und nachher**
+(GEMESSEN, CC) · Zielversion: OWNER-ENTSCHEIDUNG 2026-09-23 (Abschnitt "Zuschnitt", S2).
+
+**MUTATIONSPROBEN — ALLE SIEBEN WIE VORHERGESAGT**, je als voller Lauf über 97 Dateien, je
+zurückgenommen und per sha256 gegen den Stand nach dem Bau belegt:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| m0 | Kopfzeile `LinkedIn-Version` entfernt (nicht beauftragt, deklariert) | T1-c, V4 |
+| m1 | `LINKEDIN_VERSION` `"202601"` | NUR V4 |
+| m2 | Tabellenzeile version `"202601"` | NUR V4 |
+| m3 | Uhr in T1 2027-07-17T00:00:00Z | T1, Meldungen meta und linkedin |
+| m3b | Uhr 2027-07-16T23:59:59Z | T1, nur meta |
+| m4 | Uhr 2026-11-16T00:00:00Z (alte linkedin-Grenze) | nichts |
+| m4b | Uhr 2026-11-22T00:00:00Z | T1, nur meta |
+
+**DIE SUCHE `202601|2027-01-15` ÜBER `src/`: ZWEI TREFFER, BEIDE IM KOMMENTAR AN
+`LINKEDIN_VERSION`** — so vom Owner angenommen. Die Vorhersage aus dem Stufe-1-Plan lautete
+0; sie war vor dem Kommentar entstanden und vor dem Lauf nicht nachgezogen.
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-23):** "Data last received" im Campaign Manager vor
+dem Deploy September 21, 2026 12:23 PM, nach einem Klick auf der Live-Seite September 23,
+2026 10:25 AM · Mitläufer im Meta Events Manager: Lead, eventID
+`2407c919-1b19-4099-a767-ace2b824c99e`, Browser "Verarbeitet" 10:25:19, Server
+"Dedupliziert" 10:25:20 (lokale Anzeige, Zeitzone vermutlich MESZ) · Vercel-Logs: keine Zeile
+`[capi] LinkedIn forward`.
+**DIE GRENZE:** Die Anzeige hat Minutenauflösung; belegt ist der Sprung vom 21. auf den 23.
+September, nicht ein Sekundenvergleich. Die Zuordnung zum Klick trägt, weil es keinen fremden
+Traffic gibt (CLAUDE.md, "## Modus").
+
+**BEOBACHTUNG — UNGEMESSEN, NICHT BEWERTET:** Der Meta Events Manager zeigt zum selben Klick
+ZWEI identische Browser-Einträge "Verarbeitet". Ob das ein Anzeige-Doppel ist oder ein
+zweimal feuerndes `fbq` (etwa ein eigenes Pixel auf der Seite), ist offen. Zeiger:
+ZUSCHNITT-FRAGE P11.7-10.
+
+**ZEIGER:** docs/ziel-befunde/linkedin.md, "MESSUNG 2026-09-23 — Ankunft unter 202609 …
+der Teil (bc)"; dazu je ein datierter Zeiger an (ax) und (ay). **ABSCHLUSS IM SELBEN ZUG:**
+Posten "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT
+DER FORWARD STILL" in docs/offene-punkte.md gestrichen mit Beleg, Stub in CLAUDE.md entfernt;
+Vorrat P11.7-3, -5, -6 geschlossen.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -511,7 +564,7 @@ dazu.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-**ALLE SIEBEN SIND OFFEN.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
+**VIER SIND OFFEN (P11.7-1, -2, -4, -7); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
 `a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
 2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
 **GEMESSEN IST, DASS SIE DASTEHEN — NICHT, DASS SIE NACHGEZOGEN WÄREN.** **KEINE
@@ -536,14 +589,10 @@ TRIGGER: die nächste Runde, die die Roadmap-Zeile 11.9 ohnehin öffnet — der 
 GA4.
 
 **P11.7-3 — DER KOPFKOMMENTAR VON `src/lib/capi/linkedin-forward.ts` FÜHRT DIE ABWESENHEIT
-EINES USER-AGENT-FELDES ALS GEMESSEN, UND DIE ZITIERTEN TEILE TRAGEN DAS NICHT.** Die
-Teile (a), (i) und (n) messen Pflicht-FORM, ANNAHME eines Symbols und eine ANGENOMMENE
-Nutzlast; **KEINER erwähnt einen User-Agent**, und der ganze Abschnitt tut es nicht
-(Nicht-Treffer über sechs Schreibweisen, Positivkontrolle `userIds` 9). **DIE AUSSAGE IST
-EINE ABLEITUNG AUS EINER GEMESSENEN FELDLISTE, KEIN GEMESSENER NICHT-TREFFER** — sie ist
-nicht falsch, sie trägt eine höhere Provenienz-Stufe, als ihre Quelle hergibt. Beide
-Stellen: `linkedin-forward.ts:19` und `:364`.
-TRIGGER: die erste Bau-Scheibe, die diese Datei berührt; spätestens das Phasenende.
+EINES USER-AGENT-FELDES ALS GEMESSEN, UND DIE ZITIERTEN TEILE TRAGEN DAS NICHT.**
+**GESCHLOSSEN 2026-09-23 — BAU-COMMIT `5d5602e` (S2):** Beide Stellen tragen jetzt die Stufe
+"ABLEITUNG aus der gelesenen Feldliste (Teil (ab)), kein gemessener Nicht-Treffer";
+GEMESSEN bleibt allein die Form der Kennung. VERMERK P11.7-12.
 
 **P11.7-4 — DER KOPFKOMMENTAR DER URL-BILDUNG IN `src/lib/capi/pinterest-forward.ts`
 BEGRÜNDET DEN VERZICHT AUF EINE FORMATPRÜFUNG MIT EINER UNGEPRÜFTEN STELLENZAHL.** Die
@@ -555,20 +604,16 @@ Fundstelle `pinterest-forward.ts:567 f.`
 TRIGGER: die erste Bau-Scheibe, die diese Datei berührt; spätestens das Phasenende.
 
 **P11.7-5 — DER KOPFKOMMENTAR VON `src/lib/capi/linkedin-forward.test.ts` FÜHRT DIE
-ENDPUNKT-ADRESSE ALS "NICHT gemessen".** Wortlaut: "NICHT gemessen und deshalb hier auch
-nicht behauptet: die Adresse des Endpunkts und die Form der Autorisierungs-Kopfzeile."
-Seit S1 behauptet ein Test die Adresse (V4 in `src/lib/capi/version-deadlines.test.ts`),
-gestützt auf docs/ziel-befunde/linkedin.md, Teil (ab), und die Live-Ankunft vom 2026-08-19
-(Teil (ai)). **DER SATZ NENNT ZWEI DINGE; S1 BERÜHRT NUR DAS ERSTE** — über die
-Autorisierungs-Kopfzeile sagt diese Scheibe nichts. GEMESSEN am Repo (CC, 2026-09-23,
-HEAD `4809cb5`). **KEINE EMPFEHLUNG**, wie formuliert wird.
-TRIGGER: S2.
+ENDPUNKT-ADRESSE ALS "NICHT gemessen".**
+**GESCHLOSSEN 2026-09-23 — BAU-COMMIT `5d5602e` (S2):** Der Satz ist ganz durch Zeiger
+ersetzt — Adresse: Teil (ab), Live-Ankunft (Teil (ai)), Wächter V4; "Bearer": Teil (ai),
+das Senden prüft T1-c. VERMERK P11.7-12.
 
 **P11.7-6 — DER KOMMENTAR AN `LINKEDIN_ENDPOINT` (`src/lib/capi/linkedin-forward.ts`) SAGT
-"GELESEN, nicht als Befund erhoben".** Seit dem 2026-09-11 steht der Endpunkt als Befund in
-docs/ziel-befunde/linkedin.md, Teil (ab). GEMESSEN am Repo (CC, 2026-09-23, HEAD
-`4809cb5`). **KEINE EMPFEHLUNG**, wie formuliert wird.
-TRIGGER: S2.
+"GELESEN, nicht als Befund erhoben".**
+**GESCHLOSSEN 2026-09-23 — BAU-COMMIT `5d5602e` (S2):** Der Kommentar an `LINKEDIN_ENDPOINT`
+und der Kopfabsatz, auf den er zeigte, sind im selben Zug nachgezogen — Befund in Teil (ab),
+Live-Ankunft in Teil (ai), Wächter V4. VERMERK P11.7-12.
 
 **P11.7-7 — DER KOMMENTAR AN `META_GRAPH_VERSION` (`src/lib/capi/config.ts`) NENNT DEN
 VORGABEWERT EINEN "stabile[n] Fallback".** Laut docs/ziel-befunde/meta.md, Teile (s) und
@@ -665,7 +710,8 @@ weil eine LESUNG sie nicht erreicht. Kein Eintrag ist ein Auftrag.
 google und pinterest ist **KEINE ABSCHALTREGEL DOKUMENTIERT**, und das ist ausdrücklich
 keine Zusage auf Unbefristetheit (Teile (cm) bzw. (ag)); bei tiktok führt die Tabelle `v1.3`
 mit "Available until: TBD". **EIN GEGENSTÜCK ZUR META-FRIST GIBT ES NUR BEI LINKEDIN** —
-`202601`, Abschalttermin 15.01.2027, geführt in docs/offene-punkte.md.
+seit S2 `202609`, Abschalttermin 15.09.2027 (linkedin, Teil (au)), getragen vom Wächter T1
+in `src/lib/capi/version-deadlines.test.ts`; kein Posten.
 
 ## Fragen an den Zuschnitt (nach dem Meta-Crawl)
 
@@ -786,6 +832,10 @@ Entscheidung P11.7-5 als Zeile dazu.
 | google | `v1` | **KEINE dokumentierte Abschaltregel** — keine Zusage auf Unbefristetheit | **ungelesen** | Konstante für die ganze Adresse (`google-forward.ts:57 f.`) |
 | pinterest | `v5` | **KEINE dokumentierte Abschaltregel** (Nicht-Treffer über vier Seiten) | **gelesen und leer** | **inline im Template-Literal** (`pinterest-forward.ts:576`) |
 
+**ZEIGER 2026-09-23 — DIE TABELLE DARÜBER BLEIBT WÖRTLICH:** Die Zeile linkedin gilt dem Stand
+vor S2. Seit dem Bau-Commit `5d5602e` sendet der Adapter `202609`, Termin 15.09.2027 (Teil
+(au)) — VERMERK P11.7-12.
+
 
 **ZUSCHNITT-FRAGE P11.7-14 — `li_fat_id` ALS ZUSÄTZLICHER EINTRAG NEBEN DER IP: LAUT DOKU ZULÄSSIG UND
 EMPFOHLEN, AM ENDPUNKT UNGEMESSEN.** `user.userIds` ist eine Liste "of one or more"; der
@@ -827,6 +877,9 @@ bewertet. **WAS SICH SONST ÄNDERT, IST NICHT ERHOBEN** — der Anbieter führt 
 Migrations-Seite, und sie ist **vor** einem Zuschnitt zu lesen.
 **EIN REIHENFOLGE-HINWEIS, KEINE ENTSCHEIDUNG:** Eine Anhebung mit Nutzlast-Folge gehört
 FRÜH in die Phase. **FÜR LINKEDIN IST SIE ZWINGEND EINE CODE-ÄNDERUNG**, für meta offen.
+**ZEIGER 2026-09-23 — DIE LINKEDIN-HÄLFTE IST EINGELÖST:** `202609`, gebaut und live bestätigt
+(VERMERK P11.7-12); die Wendung zu den Conversion-Typen oben liest man mit dem Vorbehalt an
+Teil (at) und mit Teil (ax). **DIE META-HÄLFTE BLEIBT OFFEN** (S3).
 
 **ZUSCHNITT-FRAGE P11.7-18 — `externalIds` IST AUCH BEI LINKEDIN DER EINZIGE SELBST VERGEBENE WERT: ZEIGER
 STATT KOPIE.** Die Frage steht als **P11.7-4**. Was hinzukommt (linkedin, Teil (ap)):
@@ -948,8 +1001,9 @@ gebündelt.
 2026-09-23. Entschieden sind die REIHENFOLGE und je Scheibe der GEGENSTAND. **Was unten als
 offen steht, bleibt offen** und wird im Stufe-1-Plan der jeweiligen Scheibe beantwortet; wo
 die Entscheidung eine Zuschnitt-Frage berührt, steht dabei, welcher Teil davon entschieden
-ist. **KEINE EMPFEHLUNG, KEINE ZIELVERSION, KEINE GESTALT für S4 und S5.** S1 ist gebaut
-(VERMERK P11.7-10); die übrigen sind weder gebaut noch geplant.
+ist. **KEINE EMPFEHLUNG, KEINE GESTALT für S4 und S5.** S1 ist gebaut (VERMERK P11.7-10). S2
+ist mit der Zielversion `202609` gebaut und live bestätigt (VERMERK P11.7-12). Die übrigen
+sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -958,29 +1012,17 @@ ZUSCHNITT-FRAGE P11.7-13, für meta und linkedin. Eingelöst: ZUSCHNITT-FRAGE P1
 vollständig, P11.7-13 für meta und linkedin; Massstab und Mutationsergebnisse im Vermerk.
 **WAS DARÜBER HINAUS BINDET:** Entscheidung P11.7-5.
 
-**S2 — ANHEBUNG LINKEDIN, `202601` → Zielversion.** Zuerst unter den Anhebungen, weil ihr
-Termin der frühere ist (15.01.2027 gegen 2027-01-21, ZUSCHNITT-FRAGE P11.7-17) und weil sie
-ZWINGEND eine Code-Änderung ist: die Version ist eine Modul-Konstante ohne Env-Weg (Tabelle
-in P11.7-13).
-PFLICHT DAVOR: Volladung docs/ziel-befunde/linkedin.md plus der Kopf von
-docs/ziel-befunde.md · die Lesung der Migrations-/Änderungsseite des Anbieters (P11.7-17:
-"vor einem Zuschnitt zu lesen").
-NICHT ENTSCHIEDEN: die ZIELVERSION. Sie wird aus dem Gelesenen VORGESCHLAGEN, der Owner
-entscheidet. Bekannt und nicht bewertet: `202609` ist die jüngste aktive Version (linkedin,
-Teil (at)); dazwischen liegen mindestens zwei funktionale Änderungen (P11.7-17).
-**ZIELVERSION `202609` — OWNER-ENTSCHEIDUNG 2026-09-23.** Der Satz "NICHT ENTSCHIEDEN"
-darüber ist damit überholt und bleibt als Stand vor der Entscheidung stehen. GRUND: Laut
+**S2 — ANHEBUNG LINKEDIN, `202601` → `202609`. ABGESCHLOSSEN AM 2026-09-23 — VERMERK
+P11.7-12.** Gegenstand: die Modul-Konstante `LINKEDIN_VERSION` samt der Tabellenzeile
+linkedin im Versions-Wächter (Entscheidung P11.7-5); mitgenommen Vorrat P11.7-3, -5, -6.
+**ZIELVERSION `202609` — OWNER-ENTSCHEIDUNG 2026-09-23.** GRUND: Laut
 docs/ziel-befunde/linkedin.md, Teile (aw) und (ax), ändert keine Version zwischen `202601`
 und `202609` etwas an einer Nutzlast ohne `userInfo`; damit entscheidet die Laufzeit — bis
 15.09.2027 (Teil (au)). VERWORFEN: `202602` (Ablauf 15.02.2027, die zweite Anhebung stünde
-einen Monat nach der ersten an). GRENZE: Dass der Anbieter unsere Nutzlast unter `202609`
-annimmt, ist eine FOLGERUNG aus der Änderungsliste, keine Messung — der Live-Test von S2
-beantwortet sie.
-NICHT dazu: `li_fat_id` (S6) · jede Meta-Änderung.
-**LÖST S2 DIE ANHEBUNG EIN**, wird der Posten "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM
-15.01.2027 ABGESCHALTET — DANN SCHEITERT DER FORWARD STILL" in docs/offene-punkte.md mit dem
-Beleg der Erledigung gestrichen und seine Stub-Zeile in CLAUDE.md im selben Zug entfernt —
-im Abschluss-Commit von S2.
+einen Monat nach der ersten an). Die Annahme unter `202609` war vor dem Bau eine FOLGERUNG;
+der Live-Test hat sie belegt (Teil (bc)).
+Der Posten zum 15.01.2027 ist in docs/offene-punkte.md gestrichen, sein Stub in CLAUDE.md
+entfernt — im Abschluss-Commit von S2.
 
 **S3 — ANHEBUNG META, `v21.0` → Zielversion.**
 PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus der Kopf von docs/ziel-befunde.md.
@@ -1072,20 +1114,17 @@ binden:**
     und S5 bauen ihn nicht mit.
 
 **AUFLAGE ZUR FRIST.** Löst S3 die Frist ein, die der Abschnitt "Frist mit Termin" führt,
-wird sie mit dem Beleg der Erledigung gestrichen; wird S3 vertagt oder verworfen, wird die
-Frist VOR dem Phasenende nach docs/offene-punkte.md gehoben, mit Titel und Trigger als
-Stub-Zeile in CLAUDE.md, im selben Zug. Jener Abschnitt bleibt wörtlich; hebt die nächste
-Runde, die docs/offene-punkte.md ohnehin öffnet, die Frist schon vorher dorthin, wird sie
-dort gestrichen.
-**FÜR S2 TRÄGT DIESE DATEI KEINE FRIST:** "Frist mit Termin" trägt genau einen Posten
-(meta); der LinkedIn-Termin 15.01.2027 steht bereits als Posten in docs/offene-punkte.md
-(Abschnitt "Offene Fragen an den Anbieter-Crawl", letzter Absatz). Eine Hebung entfällt;
-was die Erledigung durch S2 an jenem Posten bewirkt, steht an S2.
+wird sie mit dem Beleg der Erledigung gestrichen; wird S3 vertagt oder verworfen, trägt sie
+weiter der Wächter T1 in `src/lib/capi/version-deadlines.test.ts` (seit `4809cb5`, Vorlauf 60
+Tage, rot ab 2026-11-22) — ein Heben nach docs/offene-punkte.md entfällt (OWNER-ENTSCHEIDUNG
+2026-09-23, s. den Abschnitt "Frist mit Termin").
 
 ## Nächster Schritt
 
-**ALS NÄCHSTES DER STUFE-1-PLAN DER SCHEIBE S2** (Abschnitt "Zuschnitt der Phase 11.7").
-Der Zuschnitt steht seit der Owner-Entscheidung vom 2026-09-22. Die Sperren, die ihn hielten, sind eingelöst: alle fünf
+**ALS NÄCHSTES DIE STUFE-1-VORARBEIT DER SCHEIBE S3 (META)** (Abschnitt "Zuschnitt der
+Phase 11.7"), mit der Volladung von docs/ziel-befunde/meta.md plus Kopf. S1 und S2 sind
+abgeschlossen (VERMERKE P11.7-10, P11.7-12). Der Zuschnitt steht seit der Owner-Entscheidung
+vom 2026-09-22. Die Sperren, die ihn hielten, sind eingelöst: alle fünf
 Ziele sind durchlaufen (VERMERKE P11.7-2 bis P11.7-7), die Fragen an den eigenen Code sind
 am Code beantwortet (VERMERK P11.7-8), und die Ladung ist wieder leistbar (VERMERK
 P11.7-9).

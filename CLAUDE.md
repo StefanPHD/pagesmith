@@ -244,9 +244,6 @@ in docs/claude-md-herleitung.md.
   Transport-Scheibe, also die Scheibe, die den Zugang tatsächlich benutzt — EINGETRETEN,
   GEMESSEN am Repo 2026-09-08. Ob ein Projekt OHNE Tracking-Schlüssel existiert, ist am
   Repo NICHT feststellbar und ausdrücklich nicht erhoben)
-- DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT
-  DER FORWARD STILL (Trigger: der 15.01.2027 — der Abschalttermin der Version 202601, die
-  der Adapter sendet)
 - OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST ERST AB MITTE OKTOBER 2026
   ENTSCHEIDBAR (Trigger: Mitte Oktober 2026 — abzulesen an der Direct-API-Seite im
   Campaign Manager, Anzeigen "Status" und "Data last received")

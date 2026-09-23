@@ -2347,6 +2347,8 @@ aufeinander; sie liegen alle hier und finden einander.
   FAN-OUT-STELLE VERFÜGBAR …" · "retry HAT KEINE OBERGRENZE …" · "ZWEI EINTRÄGE AUS DEM
   VORRAT DER PHASE 11.8 …" · "saveProject SCHREIBT settings UNVALIDIERT …" · "DER RESOLVER
   SCHREIBT BEI TOTEM ZUGANGSDATUM …". Mit dieser Zählung ist keine Sichtung gefahren.
+  VERMERK 2026-09-23 — BEWUSST NICHT GESICHTET: Die öffnende Runde war der Abschluss der
+  Scheibe S2 der Phase 11.7 (OWNER-ENTSCHEIDUNG); die Sichtung bekommt eine eigene Runde.
 - DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
   Arbeit an db-stand.sql oder am DB-Doku-Stand): CLAUDE.md hält im Abschnitt "## Aktueller
   DB-/Analytics-Stand" fest, jener Titel-Zeiger brauche die Regeltitel weiterhin an einem
@@ -3055,81 +3057,24 @@ aufeinander; sie liegen alle hier und finden einander.
   für ein Projekt ohne Schlüssel ist eine ABLEITUNG und keine Messung.
 
 - DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT
-  DER FORWARD STILL (Trigger: der 15.01.2027 — der Abschalttermin der Version 202601, die
-  der Adapter sendet):
-  ANGELEGT AM 2026-09-11, aus der Abschnitts-Lesung der LinkedIn-Dokumentation desselben
-  Tages (docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", Teil (af)).
-  **WAS AN DIESEM TAG GESCHIEHT, UND WARUM ES STILL IST:** Der Anbieter beantwortet einen
-  Aufruf mit einer abgeschalteten Version mit einer Fehlerantwort ("An error response is
-  returned when the version header is deprecated", GELESEN 2026-09-11 an der
-  Versionierungs-Seite; die Form dieser Antwort ist NICHT gelesen und NICHT gemessen). Der
-  Forward an LinkedIn scheitert damit bei jedem Ereignis. `handleIngest` antwortet dem
-  Besucher trotzdem weiterhin mit der leeren 204 — das verlangt die Regel
-  "INGEST-204-CONTAINMENT" (docs/immer-beachten.md) —, und `forwardToLinkedin` schreibt die
-  Ablehnung über `describeLinkedinError` ins Laufzeit-Log. **Ein Log, das niemand liest**
-  (s. Ursache (3) im Eintrag "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN —
-  DREI URSACHEN, DIE GETRENNT BLEIBEN"). Kein Fehler beim Kunden, keine rote Zahl, keine
-  Warnung an der Karte — es verschwinden nur Conversions.
-  **WO DER WERT SITZT:** in der modul-lokalen Konstante `LINKEDIN_VERSION` in
-  `src/lib/capi/linkedin-forward.ts`; `forwardToLinkedin` sendet sie als Kopfzeile
-  `LinkedIn-Version`. Der Test "T1-c: Versions-Header und Autorisierung stehen in den
-  Kopfzeilen" in `src/lib/capi/linkedin-forward.test.ts` hält den Wert fest. GEMESSEN am
-  Repo (CC, 2026-09-11).
-  **EIN FEST EINGETRAGENES LITERAL:** `"202601"` — nicht aus einer Umgebungsvariable, nicht
-  berechnet (ebenso docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", Teil (z)).
-  Der Kommentar an der Konstante nennt den Preis einer Änderung wörtlich: "Er ist zugleich
-  der, mit dem alle bisherigen Messungen gefahren wurden; ihn zu aendern heisst, gegen eine
-  ungemessene Version zu senden."
-  **DIE ABGRENZUNG — ZWEI ACHSEN, DIE BEIM SELBEN ZIEL ZUERST BEISSEN:** Der Eintrag "EIN
-  ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN — DREI URSACHEN, DIE GETRENNT
-  BLEIBEN" führt unter Ursache (4) den Zugang, der ohne Zutun des Kunden bricht — dort läuft
-  das ZUGANGSDATUM ab. **Hier läuft die VERSION ab.** Beide kippen ohne Handlung, beide
-  treffen `linkedin`, beide enden gleich still. **Wer sie zusammenzieht, erfüllt eine und
-  hält beide für erledigt:** Ein erneuertes Zugangsdatum heilt keine abgeschaltete Version,
-  und eine neue Version kein totes Zugangsdatum.
-  **WAS DEN TERMIN STÜTZT — UND WAS IHN UNTERGRÄBT, WENN MAN AN DER FALSCHEN STELLE LIEST:**
-  GELESEN 2026-09-11 an der Migrations-Tabelle des Anbieters
-  (learn.microsoft.com/en-us/linkedin/marketing/integrations/migrations, Tabelle "API
-  Migration Status"): 202601, Abschalttermin "January 15, 2027", Status "Active". **KEINE
-  Messung an der Schnittstelle.** Die Regel des Anbieters dahinter: Versionen sind
-  "supported and stable for a minimum of one year before sunset". DIE STÜTZE: Die Tabelle
-  wird gepflegt — eine dort geführte Version (202509) fällt am 15.09.2026, vier Tage nach
-  dem Lesetag. DIE WARNUNG: Der Hinweis-Banner derselben Seiten ist veraltet; er kündigt am
-  2026-09-11 die Abschaltung von 202508 "on August 17, 2026" in Zukunftsform an, obwohl die
-  Tabelle sie als "Deprecated" führt. **Wer den Banner statt der Tabelle liest, hält einen
-  alten Stand für aktuell.**
-  **KEINE EMPFEHLUNG**, auf welche Version zu wechseln ist. Die neueste ist 202608, laut
-  derselben Tabelle mit dem Abschalttermin 17.08.2027.
-  **EINE KOPPLUNG, KEIN EIGENER PUNKT — DIE ZWEITE, UNGELÖSTE DOKU-AUFLAGE AN DENSELBEN
-  AUFRUF:** Der Anbieter verlangt für alle Aufrufe zusätzlich die Kopfzeile
-  `X-Restli-Protocol-Version: 2.0.0` (GELESEN 2026-09-11); `forwardToLinkedin` sendet sie
-  NICHT (GEMESSEN am Repo, CC, 2026-09-11). Abgelegt in docs/ziel-befunde.md, Abschnitt
-  "LinkedIn (Conversions API)", Teil (ai).
-  **HEUTE IST KEIN SCHADEN GEMESSEN:** Der Adapter hat die Kopfzeile nie gesendet
-  (GEMESSEN am Repo, CC, 2026-09-11: `git log -S` über `src/lib/capi/linkedin-forward.ts`
-  findet keinen Commit, der sie je enthielt; Positivkontrolle auf `LinkedIn-Version` findet
-  den Bau-Commit `a4e680c`), und sein Forward ist am 2026-08-19 live angekommen — "Nach
-  Eintragen der VOLLSTÄNDIGEN URN springt der Zeitstempel der Empfangsanzeige beim Anbieter"
-  (GEMESSEN LIVE, Owner; docs/claude-history/phase-11.1-linkedin.md, Vermerk 6 zur Scheibe
-  11.1f). Ob das heute noch so ist, ist seither nicht erneut gemessen.
-  **DIE MESSPROTOKOLLE IN docs/ziel-befunde.md TRAGEN DIESE AUSSAGE NICHT:** Welche
-  Kopfzeilen die zwanzig Terminal-Läufe vom 2026-08-15, 2026-08-17 und 2026-08-19 trugen,
-  protokollieren sie nicht (Teil (ai)), und nicht jeder dieser Läufe bekam 201.
-  **WARUM ES HIER STEHT UND KEIN EIGENER PUNKT IST:** Wer den Versionswert wechselt, öffnet
-  genau diese Datei und genau diese Kopfzeilen-Liste — das ist der billigste Moment, die
-  zweite Auflage mitzuprüfen. Ohne diesen Absatz bräuchte es dafür eine eigene Runde.
-  **EIN ERGÄNZEN IST NICHT RISIKOFREI UND GESCHIEHT NICHT NEBENBEI:** Jeder Live-Nachweis
-  des Adapters ist OHNE die Kopfzeile gefahren. Eine hinzugefügte Kopfzeile verändert einen
-  bewiesenen Aufruf — dieselbe Figur wie der Preis, den der Kommentar an `LINKEDIN_VERSION`
-  für einen neuen Versionswert nennt.
-  **KEINE EMPFEHLUNG**, ob sie ergänzt wird. Der Absatz stellt die Kopplung her und
-  entscheidet nichts.
-  PROVENIENZ: Termin, Regel, Tabelle und Banner GELESEN 2026-09-11 (CC, Browser-Werkzeug;
-  docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", Teil (af)). Ort, Literal,
-  Kommentar und Test GEMESSEN am Repo (CC, 2026-09-11). Dass der Fehler still bleibt, ist
-  eine ABLEITUNG aus dem 204-Containment und dem Logpfad des Adapters, KEINE Messung an einer
-  abgeschalteten Version.
-
+  DER FORWARD STILL — GESTRICHEN AM 2026-09-23, DER GEGENSTAND IST ERLEDIGT. Der Punkt
+  hielt fest, dass der Adapter die Version 202601 sendete, die der Anbieter am 15.01.2027
+  abschaltet, und dass der Forward danach bei jedem Ereignis still gescheitert wäre.
+  BELEG DER ERLEDIGUNG:
+  · BAU-COMMIT `5d5602e` (Phase 11.7, Scheibe S2): `LINKEDIN_VERSION` in
+    `src/lib/capi/linkedin-forward.ts` sendet `202609`, laut Migrations-Tabelle des
+    Anbieters aktiv bis 15.09.2027 (docs/ziel-befunde/linkedin.md, Teil (au)); die
+    Zielversion ist eine OWNER-ENTSCHEIDUNG vom 2026-09-23. Den neuen Termin trägt der
+    Wächter T1 in `src/lib/capi/version-deadlines.test.ts`, rot 60 Tage vorher — deshalb
+    entsteht KEIN neuer Posten.
+  · LIVE-ANKUNFT (OWNER-ANGABE 2026-09-23): "Data last received" im Campaign Manager sprang
+    nach einem Klick auf der Live-Seite von September 21, 2026 12:23 PM auf September 23,
+    2026 10:25 AM; Minutenauflösung (docs/ziel-befunde/linkedin.md, Teil (bc)).
+  · DIE GEKOPPELTE KOPFZEILEN-AUFLAGE IST MITGEPRÜFT: `X-Restli-Protocol-Version` wird
+    weiterhin nicht gesendet, und die Ankunft unter 202609 kam ohne sie zustande (ebenda,
+    Teil (bc)). Ob der Anbieter sie durchsetzt, bleibt offen (ebenda, Teile (ai), (ba)).
+  · Der Vermerk steht als VERMERK P11.7-12 der Phase 11.7. Der gestrichene Volltext steht
+    unter Commit `5d5602e`.
 - OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST ERST AB MITTE OKTOBER 2026
   ENTSCHEIDBAR (Trigger: Mitte Oktober 2026 — abzulesen an der Direct-API-Seite im
   Campaign Manager, Anzeigen "Status" und "Data last received"):
@@ -4333,6 +4278,9 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     **DER POSTEN BLEIBT OFFEN** — ein Ort ist keine
     Messung, und die Scheibe ist am 2026-09-22 nicht zugeschnitten. Beide Trigger gelten
     unverändert weiter; dieser Satz ersetzt keinen von ihnen.
+    VERMERK 2026-09-23 — DER ABSCHLUSS IST AN DIE SCHEIBE S4 DER PHASE 11.7 GEBUNDEN
+    (OWNER-ENTSCHEIDUNG): Dort steht der Pflicht-Nachweis zu den Schreibpfaden. Die Runde,
+    die diese Datei am 2026-09-23 öffnete (Abschluss von S2), hat den Posten nicht bearbeitet.
 
 <!-- Die Reste der Phase 11.2, gehoben 2026-09-08 -->
 

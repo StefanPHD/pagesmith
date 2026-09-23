@@ -9,9 +9,8 @@ den übernommenen Abschnitt — also über alles ab der Zeile "## LinkedIn (Conv
 bis zum Dateiende, OHNE diesen Kopf. Wer prüfen will, ob hier jemand nachträglich ein Wort
 geändert hat, misst gegen diese Prüfsumme.
 ERGÄNZUNG 2026-09-23 — DIE PRÜFSUMME GILT DEM STAND DES COMMITS `11a44f7`, NICHT DEM HEUTIGEN
-DATEIENDE. Seit dem 2026-09-23 wird diese Datei fortgeschrieben (Abschnitt "Abschnitts-Lesung
-2026-09-23 …" hinten, dazu je ein datierter VORBEHALT an (ar) und (at)); über den heutigen
-Stand geht die Summe darum nicht mehr auf. Gemessen wird sie gegen
+DATEIENDE. Seither kamen nur Anhänge und datierte Vorbehalte und Zeiger nach der Konvention
+hinzu (Einzelheiten: git log); über den heutigen Stand geht die Summe darum nicht mehr auf. Gemessen wird sie gegen
 `git show 11a44f7:docs/ziel-befunde/linkedin.md`, dort ab der Zeile "## LinkedIn
 (Conversions API)". Der Satz darüber bleibt wörtlich; er war am Tag der Aufteilung richtig.
 
@@ -944,6 +943,10 @@ und darüber hinaus. NACHRANGIG: Versionierung, Mengen, Voraussetzungen auf der 
        docs/offene-punkte.md, Eintrag "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027
        ABGESCHALTET — DANN SCHEITERT DER FORWARD STILL".
      KEINE EMPFEHLUNG, ob die Kopfzeile ergänzt wird.
+     ZEIGER (2026-09-23) — JENER EINTRAG IST GESTRICHEN, der Versionswechsel auf 202609 ist
+     vollzogen: Die Kopplung ist dabei mitgeprüft, die Kopfzeile weiterhin nicht gesendet, und
+     die Ankunft kam ohne sie zustande (s. unten (bc)). Der gestrichene Volltext steht unter
+     Commit `5d5602e`. Der Wortlaut oben bleibt.
 
 (aj) EIN SECHSTES KENNUNGS-SYMBOL — UND IDENTITÄT OHNE EINTRAG IN `userIds`.
      GELESEN 2026-09-11 an S4 (Doku-Stand 2026-08-26): SECHS Symbole — `SHA256_EMAIL`,
@@ -1780,6 +1783,8 @@ L4 ob 426/`NONEXISTENT_VERSION` auch für `/rest/conversionEvents` gilt · L5 ob
      **FOLGERUNG, NICHT GEMESSEN:** Keine der beiden genannten Neuerungen berührt diese
      Nutzlast. **OB SIE UNTER EINER JÜNGEREN VERSION MIT 201 ANGENOMMEN WIRD, BEANTWORTET NUR
      EIN AUFRUF — MESSFRAGE.**
+     ZEIGER (2026-09-23) — FÜR 202609 IST DIE MESSFRAGE BEANTWORTET: s. unten (bc). Der
+     Wortlaut oben bleibt.
 
 (ay) L3 — ÜBER REGEL UND ZUGANGSDATUM BEI EINEM VERSIONSWECHSEL SAGT DIE DOKU NICHTS AUSSER
      "KOPFZEILE ÄNDERN".
@@ -1800,6 +1805,8 @@ L4 ob 426/`NONEXISTENT_VERSION` auch für `/rest/conversionEvents` gilt · L5 ob
      **MESSFRAGE:** ob der bestehende Zugang und die bestehende Regel-URN unter der neuen
      Version angenommen werden. Ein 201 unter der neuen Kopfzeile, mit Ablesung am Zeitstempel
      der Empfangsanzeige (s. (t)), beantwortet beides in EINEM Lauf.
+     ZEIGER (2026-09-23) — FÜR 202609 IST DIE MESSFRAGE BEANTWORTET: s. unten (bc). Der
+     Wortlaut oben bleibt.
 
 (az) L4 — EINE ZWEITE QUELLE NENNT DIE 426 FÜR ALLE AUFRUFE, UND SIE NENNT DIE KOPFZEILE
      ANDERS. DIE MESSFRAGE BLEIBT.
@@ -1945,4 +1952,46 @@ svg` auf allen Learn-Seiten 0. **ÜBERSETZTE FASSUNGEN:** keine; H4 mit `?lang=e
   beurteilbar; **benannte Grenze, keine Entwarnung.**
 · Entwicklerportal, Payload Builder (Aufruf), Campaign Manager — hinter einer Anmeldung, nicht
   betreten. In dieser Runde ist keine Anmeldeschranke aufgetreten.
+
+### MESSUNG 2026-09-23 — Ankunft unter 202609 (Live-Test der Scheibe S2, Phase 11.7) — der Teil (bc)
+
+**HERKUNFT (2026-09-23):** Ein Live-Test des Owners nach dem Deploy des Bau-Commits `5d5602e`:
+EIN Klick auf einer veröffentlichten Seite, abgelesen an der Anbieter-Oberfläche (Campaign
+Manager, "Data last received") und im Meta Events Manager als Mitläufer; dazu die Logs der
+Produktionsumgebung. **KEIN Terminal-Lauf, kein Statuscode abgelesen.** Die Angaben über den
+Anbieter sind OWNER-ABLESUNGEN mit Minutenauflösung; die Angaben über unseren Adapter sind
+GEMESSEN am Repo (CC, 2026-09-23, HEAD `5d5602e`).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (bb) folgt (bc).
+
+(bc) UNSERE NUTZLAST KOMMT UNTER 202609 AN — MIT DER BESTEHENDEN REGEL-URN UND DEM
+     BESTEHENDEN ZUGANGSDATUM, UND WIEDER OHNE `X-Restli-Protocol-Version`.
+     · **WAS GESENDET WURDE — GEMESSEN am Repo:** `forwardToLinkedin` setzt die Kopfzeilen
+       `Authorization`, `Content-Type` und `LinkedIn-Version` mit `LINKEDIN_VERSION` =
+       `"202609"`; `X-Restli-Protocol-Version` ist nicht darunter. Die Nutzlast ist dieselbe
+       wie in (ax) beschrieben (kein `userInfo`, genau ein `userIds`-Eintrag). An Regel-URN
+       und Zugangsdatum ist nichts geändert worden (OWNER-ANGABE).
+     · **VORHER** (abgelesen vor dem Deploy): "Data last received" September 21, 2026
+       12:23 PM. **NACHHER:** September 23, 2026 10:25 AM.
+     · **DER MITLÄUFER:** Im Meta Events Manager erscheint zum selben Klick das Ereignis
+       Lead, eventID `2407c919-1b19-4099-a767-ace2b824c99e`, Browser "Verarbeitet" um
+       10:25:19, Server "Dedupliziert" um 10:25:20 — lokale Anzeige, Zeitzone VERMUTLICH
+       MESZ, nicht erhoben.
+     · **DAS LOG:** keine Zeile `[capi] LinkedIn forward` in den Logs der
+       Produktionsumgebung (OWNER-ANGABE). GEMESSEN am Code: `forwardToLinkedin` schreibt bei
+       jeder Antwort ausser `res.ok` genau eine solche Zeile, ebenso bei jedem Riegel und
+       jedem Wurf — ihr Fehlen passt zu einer 2xx-Antwort und ist allein KEIN Beleg.
+     **WAS DAS BEANTWORTET:** die Messfragen aus (ax) und (ay) für 202609 — die Nutzlast ohne
+     `userInfo` wird angenommen, und die bestehende Regel-URN und das bestehende Zugangsdatum
+     tragen unter der neuen Version. **Der Beleg ist der EMPFANG** (Zeitstempel, s. (t)), kein
+     abgelesener Statuscode. (r) bleibt: gemessen ist dort allein das FEHLEN der Kopfzeile.
+     **WAS DAS ERGÄNZT, OHNE ES ZU BEANTWORTEN:** (ai) und (ba) — der Forward ist am
+     2026-09-23 erneut OHNE `X-Restli-Protocol-Version` angekommen, jetzt unter 202609. Ob der
+     Anbieter die Auflage durchsetzt, sagt das nicht; es sagt nur, dass sie an diesem Tag
+     nicht biss.
+     **DIE GRENZE:** Die Anzeige hat Minutenauflösung. Belegt ist der SPRUNG vom 21. auf den
+     23. September, kein Vergleich auf die Sekunde; die Zeitzone der Anzeige "10:25 AM" ist
+     nicht erhoben. Die Zuordnung des Sprungs zum Klick trägt, weil es keinen fremden Traffic
+     gibt (CLAUDE.md, "## Modus") — sie ist eine FOLGERUNG, keine Messung. Ein einzelnes
+     Ereignis; über Zählung, Zuordnung zu einer Person und Deduplizierung sagt der Lauf nichts
+     (s. (h), (q), (t)).
 

@@ -19,9 +19,11 @@ import { forwardToLinkedin } from "./linkedin-forward";
 //
 // DIE ANGABEN UEBER DEN ANBIETER SIND GEMESSEN (docs/ziel-befunde.md, Teile (n) bis
 // (s), neun Laeufe am 2026-08-19) — anders als beim zweiten Adapter, dessen
-// Testdatei-Kopf eine Transkription von Doku einraeumen muss. NICHT gemessen und
-// deshalb hier auch nicht behauptet: die Adresse des Endpunkts und die Form der
-// Autorisierungs-Kopfzeile.
+// Testdatei-Kopf eine Transkription von Doku einraeumen muss. Die Adresse des
+// Endpunkts steht als Befund in docs/ziel-befunde/linkedin.md, Teil (ab), ist live
+// angekommen (Teil (ai)) und wird von V4 in version-deadlines.test.ts bewacht. Das
+// "Bearer"-Praefix der Autorisierungs-Kopfzeile steht in Teil (ai); dass der Adapter
+// es SENDET, prueft T1-c.
 // ===========================================================================
 
 const TOKEN = "AQV_LANGES_GEHEIMNIS_ABCDEFGH1234";
@@ -109,10 +111,16 @@ describe("T1 — die Nutzlast traegt die gemessenen Felder", () => {
     // WIRD ROT, WENN: der Versions-Header fehlt. Er ist PFLICHT (GEMESSEN, Teil (r)):
     // ohne ihn antwortet das Gateway mit 400 und einer Rumpfform, die kein Mapping
     // kennt — ein Fehler, den dieser Test verhindert, bevor er live auftreten kann.
+    // DER WERT WIRD HIER BEWUSST NICHT GEPRUEFT, nur die ANWESENHEIT: Den Wert prueft
+    // allein V4 in version-deadlines.test.ts gegen die dortige Tabelle, die einzige
+    // Erwartung an Version und Abschalttermin. Ein zweites Literal hier waere eine
+    // zweite Stelle, die jede Anhebung nachziehen muss, ohne etwas zu fangen, was V4
+    // nicht faengt.
     await forwardToLinkedin(config(), "Purchase", "evt-3", {}, IP);
 
     const headers = fetchCalls()[0][1].headers;
-    expect(headers["LinkedIn-Version"]).toBe("202601");
+    expect(typeof headers["LinkedIn-Version"]).toBe("string");
+    expect(headers["LinkedIn-Version"].trim()).not.toBe("");
     expect(headers.Authorization).toBe(`Bearer ${TOKEN}`);
     expect(headers["Content-Type"]).toBe("application/json");
   });

@@ -60,10 +60,10 @@ const TABELLE: readonly Zeile[] = [
   },
   {
     ziel: "linkedin",
-    // "version 202601 (January 2026) ... | January 15, 2027 | Active"
-    version: "202601",
-    termin: "2027-01-15T00:00:00Z",
-    quelle: "docs/ziel-befunde/linkedin.md, Teil (at)",
+    // "202609 — September 15, 2027"
+    version: "202609",
+    termin: "2027-09-15T00:00:00Z",
+    quelle: "docs/ziel-befunde/linkedin.md, Teil (au)",
   },
 ];
 
@@ -188,8 +188,9 @@ describe("V — die gesendete Version ist die der Tabelle", () => {
 
   it("V4: der echte LinkedIn-Adapter trifft den Endpunkt mit der Tabellen-Version", async () => {
     // WIRD ROT, WENN: der Endpunkt sich aendert (m2) — der EINZIGE Test, der das
-    // faengt — oder die Version ohne Tabellenzeile angehoben wird (m3; dort faellt
-    // zusaetzlich T1-c in linkedin-forward.test.ts).
+    // faengt — oder die Version ohne Tabellenzeile angehoben wird. V4 ist die EINZIGE
+    // Werterwartung an die Version: T1-c in linkedin-forward.test.ts prueft seit S2
+    // nur noch die Anwesenheit der Kopfzeile.
     const { forwardToLinkedin } = await import("@/lib/capi/linkedin-forward");
     await forwardToLinkedin(
       { token: TOKEN, conversionRules: { Purchase: URN } },

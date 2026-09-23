@@ -16,8 +16,10 @@ import { redactOpaque } from "@/lib/redact";
  *     es eine Zuordnung Ereignisname -> Conversion-Regel-URN, und der Nachschlag
  *     geschieht IN DIESER DATEI (s. die Auflage an der Bauform F1 im Zuschnitt:
  *     docs/claude-history/phase-11.1-linkedin.md, Scheibe 11.1f).
- *  2. ES GIBT KEIN FELD FUER DEN USER-AGENT. Deshalb nimmt diese Funktion ihn gar
- *     nicht erst entgegen — s. den Absatz an der Signatur.
+ *  2. ES GIBT KEIN FELD FUER DEN USER-AGENT — eine ABLEITUNG aus der gelesenen
+ *     Feldliste der Nutzlast (docs/ziel-befunde/linkedin.md, Teil (ab)), kein
+ *     gemessener Nicht-Treffer. Deshalb nimmt diese Funktion ihn gar nicht erst
+ *     entgegen — s. den Absatz an der Signatur.
  *  3. DER BETRAG REIST ALS ZEICHENKETTE, UND DER TYP WIRD GEPRUEFT (GEMESSEN, Teil
  *     (o)): dieselbe Zahl als number ergibt 422. Der zweite Adapter sendet ebenfalls
  *     eine Zeichenkette, der dritte eine Zahl — die Falle liegt zwischen ihnen.
@@ -37,14 +39,13 @@ import { redactOpaque } from "@/lib/redact";
  * 2. SIE WIRD IM REQUEST ERWARTET. Das await beim Aufrufer bleibt.
  * 3. SIE GIBT NICHTS ZURUECK. Geloggt wird hier, nicht beim Aufrufer.
  *
- * DIE EINZIGE ANGABE IN DIESER DATEI, DIE DIE BEFUNDE NICHT DECKEN, und sie steht
- * hier ausdruecklich statt versteckt: DIE ADRESSE DES ENDPUNKTS UND DIE FORM DER
- * AUTORISIERUNGS-KOPFZEILE. docs/ziel-befunde.md protokolliert Statuscodes, Felder,
- * Rumpfformen und den NAMEN des Versions-Headers — die URL und das "Bearer"-Praefix
- * stehen dort NICHT. Beides ist GELESEN (Anbieter-Doku) und durch die neun Laeufe des
- * Owners MITTELBAR bestaetigt (ohne zutreffende Adresse und Autorisierung waeren die
- * gemessenen 201/401/403/422 nicht entstanden), aber es ist NICHT als eigener Befund
- * erhoben. Wer hier etwas aendert, misst zuerst.
+ * DIE ADRESSE DES ENDPUNKTS UND DIE FORM DER AUTORISIERUNGS-KOPFZEILE stehen als
+ * Befund in docs/ziel-befunde/linkedin.md: die Adresse in Teil (ab), das
+ * "Bearer"-Praefix in den curl-Beispielen des Anbieters, die Teil (ai) zitiert —
+ * beides GELESEN. Dass dieser Adapter mit genau dieser Adresse und dieser Kopfzeile
+ * ANKOMMT, ist live belegt (Teil (ai), Ankunft vom 2026-08-19). Die Adresse bewacht
+ * V4 in version-deadlines.test.ts, das Senden des Praefixes T1-c in
+ * linkedin-forward.test.ts. Wer hier etwas aendert, misst zuerst.
  */
 
 /**
@@ -89,7 +90,8 @@ const LINKEDIN_SHORT_MAX = 64;
  * Der Endpunkt. Feste Zeichenkette, KEINE Interpolation — weder Kennung noch
  * Zugangsdatum stehen im Pfad (beides reist im Rumpf bzw. in einer Kopfzeile). Es
  * gibt hier also keine Kodierungs-Frage wie beim zweiten Adapter.
- * PROVENIENZ: GELESEN, nicht als Befund erhoben — s. den Kopf dieser Datei.
+ * PROVENIENZ: GELESEN und als Befund erhoben (docs/ziel-befunde/linkedin.md, Teil
+ * (ab)), live angekommen (Teil (ai)); bewacht von V4 in version-deadlines.test.ts.
  */
 const LINKEDIN_ENDPOINT = "https://api.linkedin.com/rest/conversionEvents";
 
@@ -97,12 +99,19 @@ const LINKEDIN_ENDPOINT = "https://api.linkedin.com/rest/conversionEvents";
  * DER VERSIONS-HEADER IST PFLICHT (GEMESSEN, Teil (r)): Ohne ihn antwortet das
  * Gateway mit 400, {"status":400,"code":"VERSION_MISSING",...} und der Kopfzeile
  * X-Restli-Gateway-Error.
- * DER WERT IST EIN DATUM, und der Anbieter schaltet Versionen ab (GELESEN,
- * 2026-08-11) — dieser Wert ist also NICHT dauerhaft. Er ist zugleich der, mit dem
- * alle bisherigen Messungen gefahren wurden; ihn zu aendern heisst, gegen eine
- * ungemessene Version zu senden.
+ * DER WERT IST EIN DATUM, und der Anbieter schaltet Versionen ab — dieser Wert ist
+ * also NICHT dauerhaft. Version, Abschalttermin und Quelle fuehrt die TABELLE in
+ * version-deadlines.test.ts; sie ist die einzige Erwartung an diesen Wert (V4 prueft
+ * ihn gegen sie, T1 den Termin). Wer ihn anhebt, zieht die Tabellenzeile im selben
+ * Commit nach.
+ * 202609 IST EINE OWNER-ENTSCHEIDUNG VOM 2026-09-23: Laut Aenderungsliste des
+ * Anbieters aendert keine Version zwischen 202601 und 202609 etwas an einer Nutzlast
+ * ohne userInfo (docs/ziel-befunde/linkedin.md, Teile (aw), (ax)) — eine FOLGERUNG
+ * aus der Doku. Die Messprotokolle vom 2026-08-17 und 2026-08-19 (Teile (i) bis (s))
+ * liefen mit 202601 — AUSGENOMMEN Lauf G (Teil (r)), der absichtlich ohne die
+ * Kopfzeile lief; die Annahme unter 202609 ist dort NICHT gemessen.
  */
-const LINKEDIN_VERSION = "202601";
+const LINKEDIN_VERSION = "202609";
 
 /**
  * DAS KENNUNGS-SYMBOL. GEMESSEN angenommen (Teil (i)); die Schnittstelle weist ein
@@ -361,8 +370,10 @@ function describeLinkedinError(
  * Baut die Nutzlast und stellt sie zu.
  *
  * SIE NIMMT KEINEN USER-AGENT ENTGEGEN, und das ist eine Entscheidung mit Grund:
- * Die Nutzlast dieses Anbieters kennt KEIN Feld dafuer (GEMESSEN, Teile (a), (i),
- * (n): verlangt wird ein Paar aus Kennungs-TYP und Kennungs-WERT). Der Identitaets-
+ * Die Nutzlast dieses Anbieters kennt KEIN Feld dafuer — eine ABLEITUNG aus der
+ * gelesenen Feldliste (docs/ziel-befunde/linkedin.md, Teil (ab)), kein gemessener
+ * Nicht-Treffer. GEMESSEN ist allein die Form der Kennung: ein Paar aus Kennungs-TYP
+ * und Kennungs-WERT (Teile (a), (i), (n)). Der Identitaets-
  * Riegel der beiden juengsten Adapter prueft IP UND User-Agent, weil deren Anbieter
  * beide Felder fuehren; hier waere die zweite Haelfte ein selbstgemachter Verlust —
  * ein Beacon ohne User-Agent-Kopfzeile ist fuer DIESES Ziel vollstaendig.

@@ -321,6 +321,9 @@ Läufe über Match-Felder, Adressfeld oder Endpunkt:
 `a763716`:** Die zwei Lücken "der Vorgabewert der Version ist ungedeckt" (meta) und "der
 ENDPUNKT ist von keinem Lauf gedeckt" (linkedin) sind seit S1 gedeckt — VERMERK P11.7-10.
 Wer die Tabelle als Grundlage einer Mutationsprobe nimmt, liest dort weiter.
+**ZEIGER 2026-09-23 — C10 UND DIE ZEILE linkedin GELTEN NUR FÜR EINEN EINTRAG, DEN DIE FIXTURE
+TRÄGT:** T1-a fährt ohne Adresse; ein Eintrag aus der Adresse macht ihn nicht rot —
+Richtigstellung in VERMERK P11.7-19, (b).
 
 **AUSGESCHLOSSEN ALS MESSFRAGEN** (kein Code beantwortet sie): F1 je Ziel (fachliche
 Annahme) · F4 an allen fünf · F5 · F6 · F7 · F8 · P11.7-10 · P11.7-21 · die fünf
@@ -864,6 +867,67 @@ mit einem Anzeigenklick — der Wert ist erfunden.
 Zeiger an (ac) · VERMERK P11.7-17 mit Zeiger · ZUSCHNITT-FRAGEN P11.7-1, -2, -5, -20
 nachgezogen · S5 ABGESCHLOSSEN.
 
+### VERMERK P11.7-19 — Aufklärung zu S6 vom 2026-09-23 (KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-23 · HEAD `d86dd0f` · Arbeitsbaum sauber · READ-ONLY · **VOLLLADUNG**
+von docs/ziel-befunde/linkedin.md (1 997 Zeilen / 148 308 Bytes) plus docs/ziel-befunde.md (220 /
+14 399, die ganze Datei ist Kopf) · keine fremde Seite, kein Aufruf gegen die Schnittstelle.
+Nicht-Treffer am geglätteten Text (Zeilenumbrüche entfernt). Kein Bau-Commit.
+
+**DAS FORMAT, docs/ziel-befunde/linkedin.md:**
+- idType **`LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`** (Teile (i), (aj), (ao)); S11: "also known as
+  li_fat_id" (Teil (an)). Wert laut S4 `string` **ohne Auflage**, kein Hashen (Teile (an), (ao));
+  nur BEISPIELWERTE `df5gf5-gh6t7-ph4j7h-fgf6n1` (S3), `ufh8h5-gh6t7-ph4j7h-mkl86n1` (S10).
+- **NEBEN DER IP IN DERSELBEN LISTE LAUT DOKU ZULÄSSIG**, S3-Beispiel mit vier Einträgen; **KEINE
+  OBERGRENZE** genannt (Teil (aq)).
+- **ALLEIN ZULÄSSIG LAUT DOKU** — S11 "at least one of the following", S4 "Input Data Validation"
+  inhaltsgleich (Teil (ao)). **UNGEMESSEN:** das Symbol ist nie gesendet worden (Teile (i), (aq)).
+- 202609 gegen 202601: nichts Abweichendes dokumentiert — kein Eintrag in Teil (aw) (M3,
+  202602–202609; `idType` 0), `userIds`-Symbole ohne Versionsangabe; Grenze Teil (av).
+- **HERKUNFT, ADRESSWEG OHNE INSIGHT TAG** (Teil (an), S8): "not required to actually install
+  Insight Tag code"; Beispiel `new URLSearchParams(window.location.search).get("li_fat_id")`;
+  "View-though conversion attribution may be limited". Der Cookie-Weg verlangt das Tag.
+
+**NICHT-TREFFER, REICHWEITE die ganze Datei, geglättet:** zu Schreibung und Kodierung nichts
+(`decod` 1 = Cookie-Beispiel, `encod` 2 und `percent` 1 sachfremd) · zur Fehlform nichts
+(`malformed` 0; `invalid` 11, keiner zu diesem Symbol) · **keine Oberfläche, die zeigt, WELCHE
+Kennungstypen ein Ereignis trug** (`Klick-ID` 0, `Event Match` 0, `Kennungstyp` 0); H1 nennt je
+REGEL "Match rate percentage · Number of matching parameters", ohne Aufschlüsselung (Teil (ab)).
+POSITIVKONTROLLE: `li_fat_id` 13, `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` 11, `Data last
+received` 3, `Empfangsanzeige` 8, `match rate` 5. Ungelesen und nächstliegend: Hilfe-Artikel
+a476761.
+
+**DIE TEXTLAGE ZUR DATENKLASSE, ohne Einordnung:** (E2) nennt ausdrücklich nur `fbc` und "`fbp`
+UND GLEICHARTIGE KENNUNGEN, DIE DAS TAG DES ANBIETERS SETZT". `li_fat_id` trägt allein der Block
+vom 2026-08-28 ("künftige Klick-Kennungen anderer Anbieter (Meta, TikTok und weitere)",
+Herkunftskriterium "ANBIETERÜBERGREIFEND") und (E3).
+
+**AM CODE (GEMESSEN, HEAD `d86dd0f`):**
+- (a) `user.userIds` entsteht im Literal `payload` INNERHALB des `try`, nach den Riegeln 1 (keine
+  IP), 2 (kein IPv4) und 3 (keine URN) (`forwardToLinkedin`). `body.eventSourceUrl` ist zur
+  LAUFZEIT erreichbar — `FORWARDER_BY_TARGET.linkedin` (`ingest.ts`) reicht das ganze
+  `CapiRequestBody` —, im TYP `LinkedinForwardBody` (`value`, `currency`) nicht.
+- (b) **RICHTIGSTELLUNG ZU VERMERK P11.7-8, C10:** T1-a (`linkedin-forward.test.ts`) nagelt die
+  ganze Nutzlast per `toEqual` fest, fährt aber `body = {}` OHNE Adresse — ein Eintrag aus der
+  Adresse macht ihn **NICHT** rot. Kein anderer Test prüft `userIds`. Wächter W
+  (`click-id-strip.test.ts`) erwartet für linkedin `eigeneGeht: false` und wird im Lauf
+  "tabelle" am Namen `li_fat_id` rot, im Lauf "abweichend" nur bei einem Herauslesen ohne
+  Schreibung.
+- (c) Kandidaten für das Herauslesen: eine neue Funktion nach `extractFbclid` · ein
+  verallgemeinerter Kern · `extractGoogleClickIds` erweitern (Google-förmiger Rückgabetyp;
+  `CLICK_ID_PARAMS` speist `CLICK_ID_TABLE.google`).
+- (d) Grund der Riegel: Riegel 1 "Ohne Kennungs-Wert bliebe das Pflicht-Paar leer" (Teil (a));
+  Riegel 2 "die Schnittstelle prueft die Form nicht" (Teile (i), (j)). Logtexte "missing
+  identity", "identity is not IPv4".
+- (e) Fünf `console.error`-Zeilen im Adapter, vier fester Text bzw. `errorName`; die fünfte
+  (`describeLinkedinError`) loggt den Fremdtext des Anbieters über `redactOpaque` (ab 20 Zeichen
+  aus `[A-Za-z0-9_-]`). 422-Meldungen spiegeln den beanstandeten Wert zurück (GEMESSEN, Teile
+  (i), (o)); für ein `idValue` ungemessen. Die vier `console`-Zeilen in `ingest.ts` loggen Label
+  und `errorName`.
+
+**NEBENBEFUND:** `linkedin-forward.ts` trägt denselben Vertragssatz "-> 500" wie die drei Adapter
+in Vorrat P11.7-8 und ist ebenfalls `async` — dort als vierter aufgenommen.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -960,11 +1024,14 @@ jetzt die vom Wächter geprüfte Version (Verweis auf `TABELLE` per Symbolname, 
 Code) und die Umgebungsvariable einen Notausgang, den der Wächter nicht sieht. VERMERK
 P11.7-14.
 
-**P11.7-8 — DER VERTRAGSSATZ "EIN WURF WIRD ZUM 500" IN DREI ADAPTERN IRRT FÜR
+**P11.7-8 — DER VERTRAGSSATZ "EIN WURF WIRD ZUM 500" IN VIER ADAPTERN IRRT FÜR
 ASYNC-ADAPTER UNTER `allSettled` — IN DER SICHEREN RICHTUNG.** Vertragssatz 1 in
 `src/lib/capi/meta-forward.ts` (AUFLAGE: der Wurf "liefe durch das await in handleIngest und
 aus dem Handler heraus"), in `src/lib/capi/tiktok-forward.ts` ("liefe durch dispatchForward
-und handleIngest") und in `src/lib/capi/pinterest-forward.ts` ("WARUM DAS ZAEHLT") sagt, ein
+und handleIngest"), in `src/lib/capi/pinterest-forward.ts` ("WARUM DAS ZAEHLT") und in
+`src/lib/capi/linkedin-forward.ts` ("liefe durch dispatchForward und handleIngest und machte
+aus der garantierten LEEREN 204 einen 500"; als vierter aufgenommen am 2026-09-23, VERMERK
+P11.7-19 — auch dieser Adapter ist `async`) sagt, ein
 Wurf im Adapter mache aus der leeren 204 einen 500. **GEMESSEN (VERMERK P11.7-16, Mutation
 m6):** Ein Wurf im Rumpf einer `async function` wird zur Ablehnung, `Promise.allSettled`
 fängt sie, die Antwort bleibt die leere 204. Der Satz fordert damit MEHR Vorsicht als nötig;
@@ -1093,7 +1160,8 @@ in `src/lib/capi/version-deadlines.test.ts`; kein Posten.
 hat die festgelegten Teile von P11.7-15 und P11.7-25 gebaut und Teile von P11.7-5, P11.7-9 und
 P11.7-24 eingelöst (VERMERK P11.7-16; je ein Zeiger an der Frage); S5 hat die festgelegten
 Teile von P11.7-1 und P11.7-2 gebaut und live belegt, dazu Zeiger an P11.7-5 und P11.7-20
-(VERMERK P11.7-18). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+(VERMERK P11.7-18); der Zuschnitt von S6 legt Teile von P11.7-14 und P11.7-16 fest (Abschnitt
+"Zuschnitt der Phase 11.7", L1 bis L7). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -1245,6 +1313,10 @@ ob ein Tag nötig wäre, sondern ob der Adressweg zugeschnitten wird.** **GRENZE
 sind UNGEMESSEN, das Format nicht gelesen. **AM CODE BESTÄTIGT (C10):** T1-a prüft die
 GANZE Nutzlast per `toEqual` — **ein zweiter Eintrag wird rot.** Das ist für die Scheibe
 Zusage und Auflage zugleich.
+**ZEIGER 2026-09-23 — C10 IST RICHTIGGESTELLT (VERMERK P11.7-19, (b)):** T1-a fährt ohne
+Adresse und wird durch einen Eintrag aus der Adresse NICHT rot. **FESTGELEGT DURCH DEN
+ZUSCHNITT VON S6** (L1 bis L3): der Adressweg wird zugeschnitten, als ZWEITER Eintrag neben
+einer gültigen IPv4 (S6a).
 
 **ZUSCHNITT-FRAGE P11.7-15 — EINE GEMEINSAME BAUFORM FÜR ALLE KLICK-KENNUNGEN (ARCHITEKTEN-VORSCHLAG,
 NICHT ENTSCHIEDEN).** Gestalt: **EINE** Stelle liest die bekannten Kennungen aus der
@@ -1273,6 +1345,8 @@ GANZEN FORWARD ZU VERWERFEN — WENN EINE ZWEITE KENNUNG VORLIEGT.** **DER GRUND
 BLEIBT UNBERÜHRT** (s. VERMERK P11.7-5). **DAS IST EINE FOLGEFRAGE VON P11.7-14 UND OHNE
 SIE GEGENSTANDSLOS.** Am Code bestätigt (C10): beide Riegel kehren **vor** dem `fetch`
 zurück, T2-a bis T2-c decken sie einzeln.
+**ZEIGER 2026-09-23 — FESTGELEGT DURCH DEN ZUSCHNITT VON S6** (L1): die Frage ist S6b, und ihr
+Zuschnitt folgt erst NACH dem Live-Beleg von S6a; S6a lässt beide Riegel unverändert.
 
 **ZUSCHNITT-FRAGE P11.7-17 — DIE VERSIONS-ANHEBUNG TRIFFT META UND LINKEDIN BEIDE IM JANUAR 2027.** meta
 `v21.0` bis **2027-01-21**, linkedin `202601` bis **2027-01-15** — **ZWEI ZIELE, SECHS TAGE
@@ -1432,7 +1506,8 @@ ist mit der Zielversion `202609` gebaut und live bestätigt (VERMERK P11.7-12). 
 Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). S4 ist gebaut und live
 geprüft; das Entfernen selbst belegt der Wächter, nicht der Live-Test (VERMERK P11.7-16). S5
 ist nach den Architekten-Entscheidungen F1 bis F10 gebaut, `fbc` ist live belegt (VERMERK
-P11.7-18). Die übrigen sind weder gebaut noch geplant.
+P11.7-18). S6 (linkedin) ist zugeschnitten (L1 bis L7) und in S6a und S6b geteilt; S6a ist im
+Stufe-1-Plan. Die übrigen sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -1589,10 +1664,47 @@ NICHT dazu: das `_fbc`-Cookie in beiden Formen · der Pflichtfeld-Riegel (je unt
 **NICHT TEIL VON S5:** der `_fbc`-Cookie-Weg · ein eigenes Cookie · eine Lesung der
 dataset-quality-Seite · eine Formprüfung.
 
-**S6 BIS S9 — JE ZIEL; IHRE REIHENFOLGE UNTEREINANDER IST OFFEN.** Je Scheibe gilt der
-Pflicht-Stopp mit der Datei ihres Ziels.
-- linkedin `li_fat_id` — ZUSCHNITT-FRAGE P11.7-14 und ihre Folgefrage P11.7-16. T1-a wird
-  bei einem zweiten `userIds`-Eintrag rot (VERMERK P11.7-8, C10).
+**S6 BIS S9 — JE ZIEL, IN DIESER REIHENFOLGE: S6 linkedin, dann google, tiktok, pinterest.**
+**OWNER-ENTSCHEIDUNG 2026-09-23: LINKEDIN KOMMT ALS S6 ZUERST.** Grund: das einzige Ziel ohne
+jede Klick-Kennung; die übrigen bekommen ihre eigene schon über die Adresse (tiktok,
+pinterest) bzw. über `adIdentifiers` (google). Die Reihenfolge danach ist ein
+Architekten-Vorschlag, vom Owner mit der Wahl bestätigt. Je Scheibe gilt der Pflicht-Stopp mit
+der Datei ihres Ziels.
+- **S6 — linkedin `li_fat_id`** — ZUSCHNITT-FRAGE P11.7-14 und ihre Folgefrage P11.7-16;
+  Material VERMERK P11.7-19. T1-a fährt ohne Adresse und wird durch einen Eintrag aus der
+  Adresse NICHT rot (Richtigstellung zu VERMERK P11.7-8, C10, in VERMERK P11.7-19).
+  **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-23:**
+  - **L1 — TEILUNG:** S6a = `li_fat_id` als ZWEITER Eintrag neben einer gültigen IPv4, die
+    Riegel bleiben unverändert (R-A). S6b = die Riegel als Filter je Eintrag (R-B,
+    ZUSCHNITT-FRAGE P11.7-16), eigener Zuschnitt ERST NACH dem Live-Beleg von S6a. Grund: R-B
+    setzt voraus, dass LinkedIn den Eintrag annimmt; das misst erst S6a.
+  - **L2 — EINTRAG:** idType `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`, idValue der Wert
+    unverändert. Grund: docs/ziel-befunde/linkedin.md, Teile (i), (aj), (an), (ao).
+  - **L3 — HERAUSLESEN:** EXAKT unter dem Namen `li_fat_id` aus `body.eventSourceUrl`; erstes
+    Vorkommen; leer, fehlend oder nicht parsebar → kein Eintrag; der Wert wie vom
+    Standard-Parser dekodiert; keine Formprüfung. Grund: linkedin sendet keine Adresse, die
+    Bereinigung aus S4 betrifft es nicht, und beim Herauslesen ist ein Zuviel die falsche
+    Richtung (D4).
+  - **L4 — BAUSTEIN:** ein allgemeiner exakter, wurffreier Kern in
+    `src/lib/capi/click-id-strip.ts` (Name vom Plan); `extractFbclid` DELEGIERT daran — Name
+    und Vertrag unverändert, `meta-forward.ts` unberührt, X-a bis X-h bleiben als Nachweis.
+    Grund: zweiter Nutzer; S8 und S9 bringen zwei weitere.
+  - **L5 — DATENKLASSE:** TRANSIT-ONLY über den Block vom 2026-08-28 ("künftige
+    Klick-Kennungen anderer Anbieter", Herkunftskriterium) und (E3); keine Ablage, kein Log,
+    kein Hashen. Grund: fremde Urheberschaft, Rückgabe an den Urheber. GRENZE: in einer
+    422-Meldung zurückgespiegelt, schwärzt `redactOpaque` den Wert nur ab 20 Zeichen aus
+    `[A-Za-z0-9_-]`; das echte Format ist ungelesen.
+  - **L6 — TESTS:** T1-a bleibt als Fall OHNE Adresse; NEU ein erschöpfender Test MIT
+    Adresse, der die ganze Nutzlast mit beiden Einträgen festnagelt. Wächter W: die
+    linkedin-Erwartung wird je Lauf getrennt — Tabellen-Schreibung: die eigene Kennung GEHT
+    hinaus; abweichende Schreibung: nicht (exakt, L3); die Adresse selbst und utm gehen weiter
+    NICHT hinaus. Grund: T1-a deckt den Adressweg nicht (VERMERK P11.7-19, (b)).
+  - **L7 — LIVE:** Instrument ist die ANNAHME — "Data last received" springt, und es entsteht
+    keine Zeile "[capi] LinkedIn forward rejected"; ein realistischer erfundener Wert. NICHT
+    belegbar: der Abgleich (die Match-Rate braucht einen echten Wert). Grund: VERMERK
+    P11.7-19, Nicht-Treffer zum Instrument.
+  **NICHT TEIL VON S6a:** R-B/IPv6 (S6b) · der Cookie-Weg und das Insight Tag · `externalIds`
+  · die gehashten Namensfelder.
 - google IP/UA und DMA-Felder — ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4. **Ob
   eine Sitzung die Volladung von docs/ziel-befunde/google.md trägt, ist ungemessen**
   (ZUSCHNITT-FRAGE P11.7-8).
@@ -1641,11 +1753,11 @@ binden:**
 ## Nächster Schritt
 
 **S1 BIS S5 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18). **ALS NÄCHSTES IST DIE REIHENFOLGE VON S6 BIS S9 ZU ENTSCHEIDEN — EINE
-OWNER-ENTSCHEIDUNG.** Die Owner-Entscheidung vom 2026-09-22 hat sie offen gelassen (Abschnitt
-"Zuschnitt der Phase 11.7", S6 bis S9). Die Datei trägt dazu keine Empfehlung.
-**FÜR DIE GEWÄHLTE SCHEIBE** gilt der Pflicht-Stopp mit der Datei ihres Ziels; ihr Zuschnitt
-folgt der Entscheidung.
+P11.7-18). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER, 2026-09-23): S6 linkedin,
+dann google, tiktok, pinterest.** **S6 IST ZUGESCHNITTEN (L1 bis L7) UND GETEILT; ALS NÄCHSTES
+STEHT DER STUFE-1-PLAN VON S6a**, danach Bau und Live-Beleg; der Zuschnitt von S6b folgt erst
+nach dem Live-Beleg von S6a (L1). Pflicht-Stopp: docs/ziel-befunde/linkedin.md voll plus Kopf
+von docs/ziel-befunde.md.
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK

@@ -2355,8 +2355,11 @@ aufeinander; sie liegen alle hier und finden einander.
   FAN-OUT-STELLE VERFÜGBAR …" · "retry HAT KEINE OBERGRENZE …" · "ZWEI EINTRÄGE AUS DEM
   VORRAT DER PHASE 11.8 …" · "saveProject SCHREIBT settings UNVALIDIERT …" · "DER RESOLVER
   SCHREIBT BEI TOTEM ZUGANGSDATUM …". Mit dieser Zählung ist keine Sichtung gefahren.
-  VERMERK 2026-09-23 — BEWUSST NICHT GESICHTET: Die öffnende Runde war der Abschluss der
-  Scheibe S2 der Phase 11.7 (OWNER-ENTSCHEIDUNG); die Sichtung bekommt eine eigene Runde.
+  VERMERK 2026-09-23, ERSETZT AM SELBEN TAG — DIE SICHTUNG GESCHIEHT MIT DER HEBUNG AM ENDE
+  DER PHASE 11.7 (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-23): Jene Runde öffnet diese Datei ohnehin
+  und ordnet jeden Posten zu. Hier stand: "BEWUSST NICHT GESICHTET: Die öffnende Runde war der
+  Abschluss der Scheibe S2 der Phase 11.7 (OWNER-ENTSCHEIDUNG); die Sichtung bekommt eine
+  eigene Runde."
 - DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
   Arbeit an db-stand.sql oder am DB-Doku-Stand): CLAUDE.md hält im Abschnitt "## Aktueller
   DB-/Analytics-Stand" fest, jener Titel-Zeiger brauche die Regeltitel weiterhin an einem

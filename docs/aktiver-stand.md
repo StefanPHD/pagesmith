@@ -62,7 +62,7 @@ Zielen, für die sie als Katalog-Lücken festgestellt wurden.
 ## Was den Zuschnitt bindet
 
 **DER ZUSCHNITT STEHT SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-22 IM ABSCHNITT "Zuschnitt der
-Phase 11.7".** Die Teile der Zuschnitt-Fragen P11.7-1, -13, -15, -23 und -25, die er
+Phase 11.7".** Die Teile der Zuschnitt-Fragen P11.7-1, -2, -13, -15, -23 und -25, die er
 festlegt, sind dort benannt; alle übrigen bleiben offen.
 
 **DER PFLICHT-STOPP GILT** in der Form, die CLAUDE.md, "## Anbieter-Befunde der
@@ -752,6 +752,59 @@ mit Beleg, Stub in CLAUDE.md entfernt · die Pflicht-Angabe an (E3) ebenda richt
 Vorrat P11.7-1 und P11.7-4 geschlossen, Vorrat P11.7-8 neu · Entscheidung P11.7-3 und
 ZUSCHNITT-FRAGEN P11.7-5, -9, -15, -24, -25 nachgezogen.
 
+### VERMERK P11.7-17 — Aufklärung zu S5 vom 2026-09-23 (KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-23 · HEAD `b6cc518` · Arbeitsbaum sauber · READ-ONLY · **VOLLLADUNG**
+von docs/ziel-befunde/meta.md (1 320 Zeilen) plus Kopf von docs/ziel-befunde.md (220 Zeilen) ·
+keine fremde Seite, kein Aufruf gegen die Schnittstelle. Kein Bau-Commit.
+
+**DAS FORMAT, docs/ziel-befunde/meta.md, Teil (h), im Wortlaut:** "The formatted ClickID value
+must be of the form `version.subdomainIndex.creationTime.<fbclid>`"; `version` immer `fb` ·
+subdomainIndex: "If you're generating this field on a server, and not saving an _fbc cookie,
+use the value 1." · "`creationTime` is the UNIX time since epoch in milliseconds" · ohne Cookie:
+"use the timestamp when you first observed or received this fbclid value" · "ClickID value is
+case sensitive - do not apply any modifications before using, such as lower or upper case."
+**FOLGERUNG, NICHT GELESEN:** Beim ersten Ereignis fällt "received" mit der Verarbeitung
+zusammen (nur der Klick-Beacon trägt die Adresse); eine zweite Conversion desselben Klicks
+bekäme ohne Ablage einen späteren Zeitstempel — das ist die Abweichung, die ZUSCHNITT-FRAGE
+P11.7-2 meint.
+
+**NICHT-TREFFER, REICHWEITE meta.md Teile (h) bis (ac), am geglätteten Volltext:** zur
+Prozentkodierung des Werts nichts (`decod`, `encod`, `percent` je 0) · zu einem falsch
+gebildeten `fbc` nichts (`malformed` 0; `invalid` 1, nur die Kombinationsregel in (m), ohne
+`fbc`) · **keine Oberfläche, die ein empfangenes `fbc` anzeigt:** "Event Match Quality" steht
+einmal, als Nutzenangabe in (l); (o) sagt, dass die Test-Events-Ansicht `external_ids` nicht
+zeigt; (ac) sah kein `fbc`. Ungelesene Kandidaten: `dataset-quality-api.md` (am 2026-09-08 nur
+auf `test_event_code` durchsucht), EMQ im Events Manager, `/payload-helper`.
+
+**DIE TEXTLAGE ZUR DATENKLASSE, ohne Einordnung:** docs/offene-punkte.md, Eintrag
+"DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE", Teil (E2): "`fbc` — GLEICH OB AUS DEM
+KLICK-PARAMETER DER ADRESSE ODER AUS EINEM COOKIE GEBILDET" unter TRANSIT-ONLY; dazu die
+Grenze "NIE EINE KENNUNG, DIE DIESES PRODUKT SELBST ERZEUGT ODER SETZT" — zur Mischform (unser
+Präfix und Zeitanteil um Metas Kennung) sagt sie nichts ausdrücklich.
+
+**AM CODE (GEMESSEN, HEAD `b6cc518`):**
+- `user_data` entsteht in `forwardToMeta` VOR dem `try` (Vertragssatz 1: dort nur
+  Wurffreies); Felder `client_ip_address`, `client_user_agent`, `fbp` (aus `asString(body._fbp)`,
+  nur typeof/trim; Quelle das Cookie `_fbp` im Klick-Beacon, `src/lib/tracking/meta.ts`).
+  **KEIN Test nagelt `user_data` als Ganzes fest** (`route.test.ts` Feld für Feld,
+  `ingest.test-mode.test.ts` nur `toHaveProperty`).
+- `fbclid` liest heute niemand; exakt liest allein `extractGoogleClickIds`, fest auf
+  `CLICK_ID_PARAMS`. `click-id-strip.ts` vergleicht ohne Schreibung — für ein exaktes
+  Herauslesen nicht tauglich (D4). `searchParams.get` liefert den Wert DEKODIERT.
+- Zeit: `eventTime = Math.floor(Date.now() / 1000)` im Adapter, Sekunden; der Beacon trägt
+  keinen Zeitstempel, der Ingest reicht keinen durch.
+- Wächter W bleibt grün, wenn meta zusätzlich `fbc` sendet (der Wert ist sein eigener), und
+  wird rot, wenn ein anderes Ziel den `fbclid`-Wert trägt; **er bewacht `fbc` nicht.**
+- Log-Achse: keine der drei `console`-Zeilen gibt `user_data` oder die Nutzlast aus;
+  `describeMetaError` loggt Metas `message` über `redactOpaque` (`[A-Za-z0-9_-]{20,}`) — spiegelte
+  Meta `fbc` zurück, blieben der Zeitanteil und ein `fbclid` unter 20 Zeichen lesbar.
+  Ungemessen, ob Meta spiegelt.
+
+**WERKZEUGBEFUND:** `grep` meldete "Match Quality" 0-mal, weil der Ausdruck in (l) über einen
+Zeilenumbruch läuft; über den geglätteten Text 1-mal. Die Nicht-Treffer oben sind am
+geglätteten Text erhoben.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -979,7 +1032,8 @@ in `src/lib/capi/version-deadlines.test.ts`; kein Posten.
 "Zuschnitt der Phase 11.7"); S1 hat P11.7-23 eingelöst und P11.7-13 für meta und linkedin
 (VERMERK P11.7-10); P11.7-17 ist mit S2 und S3 eingelöst (VERMERKE P11.7-12, P11.7-14); S4
 hat die festgelegten Teile von P11.7-15 und P11.7-25 gebaut und Teile von P11.7-5, P11.7-9 und
-P11.7-24 eingelöst (VERMERK P11.7-16; je ein Zeiger an der Frage). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+P11.7-24 eingelöst (VERMERK P11.7-16; je ein Zeiger an der Frage); der Zuschnitt von S5 legt
+Teile von P11.7-1 und P11.7-2 fest (je ein Zeiger an der Frage). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -996,6 +1050,8 @@ WIRD.** Der Cookie-Weg setzt ein laufendes Meta-Pixel voraus, der Adressweg lies
 nicht gelesen. Für dieses Produkt ist der Fall ohne wirksames Pixel der **gemessene
 Normalfall** (Adblocker-Verlustrate). OFFEN: ob der Zuschnitt beide Wege trägt, nur den
 Adressweg, oder einen Vorrang.
+**ZEIGER 2026-09-23 — FÜR DIESE PHASE FESTGELEGT DURCH DEN ZUSCHNITT VON S5** (F1 bis F10):
+der Adressweg allein; der Cookie-Weg ist nicht Teil von S5.
 
 **ZUSCHNITT-FRAGE P11.7-2 — METAS EIGENE EMPFEHLUNG ZUM `_fbc`-COOKIE KOLLIDIERT MIT DER GRENZE DER
 DRITTEN DATENKLASSE.** Der Anbieter empfiehlt, `_fbc` selbst als Cookie mit 90 Tagen zu
@@ -1004,6 +1060,9 @@ TRANSIT-ONLY aus. **OHNE EINE NEUE OWNER-ENTSCHEIDUNG IST DER COOKIE-WEG NICHT B
 **DIE FOLGE DES VERZICHTS:** ohne eigene Ablage wäre der Zeitanteil von `fbc` faktisch der
 EREIGNISZEITPUNKT statt der ersten Beobachtung; **welche Wirkung das auf den Abgleich hat,
 ist UNGEMESSEN.** Wer die Frage bearbeitet, liest zuerst (E2) im Wortlaut.
+**ZEIGER 2026-09-23 — DER ZUSCHNITT VON S5 NIMMT DIE FOLGE AN** (F2): `creationTime` ist der
+Verarbeitungszeitpunkt; eine zweite Conversion desselben Klicks bekommt einen späteren. Der
+Cookie-Weg bleibt ohne neue Owner-Entscheidung unbaubar; die Wirkung bleibt ungemessen.
 
 **ZUSCHNITT-FRAGE P11.7-3 — OB DER ADAPTER `action_source` SENDET.** **ERSTE HÄLFTE EINGELÖST** (C2):
 `action_source: "website"` steht unbedingt in der Meta-Nutzlast (`meta-forward.ts:310`),
@@ -1296,7 +1355,8 @@ gebündelt.
 2026-09-23. Entschieden sind die REIHENFOLGE und je Scheibe der GEGENSTAND. **Was unten als
 offen steht, bleibt offen** und wird im Stufe-1-Plan der jeweiligen Scheibe beantwortet; wo
 die Entscheidung eine Zuschnitt-Frage berührt, steht dabei, welcher Teil davon entschieden
-ist. **KEINE EMPFEHLUNG, KEINE GESTALT für S5.** S1 ist gebaut (VERMERK P11.7-10). S2
+ist. **S5 ist zugeschnitten (ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-23, F1 bis F10).** S1 ist
+gebaut (VERMERK P11.7-10). S2
 ist mit der Zielversion `202609` gebaut und live bestätigt (VERMERK P11.7-12). S3 ist mit der
 Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). S4 ist gebaut und live
 geprüft; das Entfernen selbst belegt der Wächter, nicht der Live-Test (VERMERK P11.7-16). Die
@@ -1415,8 +1475,42 @@ faktisch der Ereigniszeitpunkt, die Wirkung ungemessen · P11.7-5 · P11.7-20 �
 ist nur verfügbar, solange die Adresse sie trägt · Entscheidung P11.7-2 (`fbc` gleich welchen
 Trägers unter TRANSIT-ONLY).
 PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus Kopf.
-OFFEN: die Gestalt, soweit sie aus S4 folgt.
 NICHT dazu: das `_fbc`-Cookie in beiden Formen · der Pflichtfeld-Riegel (je unten).
+**ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-23** (Material: VERMERK P11.7-17):
+- **F1 — FORMAT:** `fbc = "fb.1.<creationTime>.<fbclid>"`, subdomainIndex 1. Grund:
+  docs/ziel-befunde/meta.md, Teil (h), für die serverseitige Bildung ohne Cookie.
+- **F2 — ZEIT:** `creationTime = Date.now()` im Adapter, Millisekunden. Grund: der Server
+  empfängt den `fbclid` mit diesem Beacon zum ersten Mal ("first observed or received").
+  GRENZE: eine zweite Conversion desselben Klicks bekommt einen späteren Zeitpunkt
+  (ZUSCHNITT-FRAGE P11.7-2); ohne Ablage nicht vermeidbar.
+- **F3 — HERAUSLESEN:** `fbclid` EXAKT unter dem Namen "fbclid" (D4), aus der von S4
+  BEREINIGTEN Adresse; erstes Vorkommen; leer oder fehlend → kein `fbc`; nicht parsebar →
+  kein `fbc`. Grund: beim Herauslesen ist ein Zuviel die falsche Richtung.
+- **F4 — DER WERT:** so, wie ein Standard-Parser ihn aus dem Query-String liefert (dekodiert);
+  keine Formprüfung ("Anwesenheit, nie Form"). Grund: kein Riegel ohne gelesene Formregel.
+  GRENZE: zu Kodierung und Fehlform schweigt die Quelle; echte Werte bestehen aus
+  `[A-Za-z0-9_-]` und sind davon nicht berührt.
+- **F5 — ORT DER FUNKTION:** eine neue exportierte, exakte, wurffreie Funktion in
+  `src/lib/capi/click-id-strip.ts` nach dem Muster von `extractGoogleClickIds`; jene bleibt
+  unberührt. Grund: die Klick-Kennungen bleiben an einer Stelle, ohne den Google-Vertrag zu
+  öffnen.
+- **F6 — EINSATZ:** `user_data.fbc` nur, wenn ein `fbclid` vorliegt; gebaut, wo `user_data`
+  heute entsteht (vor dem `try` — daher F5 wurffrei), die Aufzählung in Vertragssatz 1 wird
+  nachgezogen. Grund: kein Umbau des Adapters für ein Feld.
+- **F7 — DATENKLASSE:** (E2) nennt `fbc` "aus dem Klick-Parameter der Adresse gebildet"
+  ausdrücklich unter TRANSIT-ONLY; Präfix und Zeitanteil sind Format, keine eigene Identität.
+  Keine Ablage, kein Log, kein Hashen. GRENZE: spiegelte Meta `fbc` in eine Fehlermeldung,
+  bliebe der Zeitanteil nach `redactOpaque` lesbar.
+- **F8 — BEACON UNVERÄNDERT:** `fbc` gibt es nur bei Ereignissen des Klick-Beacons; PageView
+  und Bestätigung tragen keine Adresse. Grund: kein neues Beacon-Feld in dieser Phase.
+- **F9 — EIGENE TESTS:** Tests, die `fbc` POSITIV fordern. Grund: kein bestehender Test nagelt
+  `user_data` fest, und W bleibt ohne `fbc` grün.
+- **F10 — LIVE:** ein realistischer `fbclid`; die Ablesung "Benutzer-Datenschlüssel" beim
+  Server-Ereignis ist eine MESSUNG DES INSTRUMENTS — erscheint eine Klick-ID, ist `fbc` live
+  belegt; sonst unentschieden, der Beweis bleiben die Tests. Grund: für `fbc` ist keine
+  Oberfläche belegt (VERMERK P11.7-17).
+**NICHT TEIL VON S5:** der `_fbc`-Cookie-Weg · ein eigenes Cookie · eine Lesung der
+dataset-quality-Seite · eine Formprüfung.
 
 **S6 BIS S9 — JE ZIEL; IHRE REIHENFOLGE UNTEREINANDER IST OFFEN.** Je Scheibe gilt der
 Pflicht-Stopp mit der Datei ihres Ziels.
@@ -1469,22 +1563,22 @@ binden:**
 
 ## Nächster Schritt
 
-**ALS NÄCHSTES DER ZUSCHNITT DER SCHEIBE S5, IN FRISCHER SITZUNG** — Meta `fbc` über den
-Adressweg (`fbclid`), erster Konsument von S4 (Abschnitt "Zuschnitt der Phase 11.7", S5).
-PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus Kopf. S1 bis S4 sind abgeschlossen
-(VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16). Der Zuschnitt der Reihenfolge steht seit der
-Owner-Entscheidung vom 2026-09-22.
+**ALS NÄCHSTES DER STUFE-1-PLAN DER SCHEIBE S5** — Meta `fbc` über den Adressweg
+(`fbclid`), zugeschnitten am 2026-09-23 (Abschnitt "Zuschnitt der Phase 11.7", S5, F1 bis F10;
+Material VERMERK P11.7-17). PFLICHT DAVOR: Volladung docs/ziel-befunde/meta.md plus Kopf. S1
+bis S4 sind abgeschlossen (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16). Der Zuschnitt der
+Reihenfolge steht seit der Owner-Entscheidung vom 2026-09-22.
 **DAS INSTRUMENT FÜR DEN LIVE-TEST VON S5 IST OFFEN:** Die Test-Events-Ansicht nannte beim
 Live-Test von S4 für ein Browser-Ereignis mit `fbclid` in der Adresse nur IP-Adresse und User
 Agent als Abgleich-Parameter; als Instrument für `fbc` ist sie NICHT belegt
 (docs/ziel-befunde/meta.md, Teil (ac)), und die URL zeigt sie ohne Query-Teil (ebenda, Teil
-(ab)). Ein Zuschnitt von S5 braucht ein Instrument mit Positivkontrolle.
+(ab)). F10 behandelt die Ablesung deshalb als MESSUNG DES INSTRUMENTS; der Beweis sind die
+Tests.
 
-**WAS DER ZUSCHNITT MITBRINGEN MUSS, und es ist kein Vorschlag seines Inhalts:** die
-VOLLLADUNG der Datei des Ziels samt dem Kopf des Verzeichnisses · die ZUSCHNITT-FRAGEN, die S5
-berühren (P11.7-1, -2, -5, -20; der Stand je Frage steht an ihr) · die Entscheidungen P11.7-2
-und P11.7-3 · die Abweichung (a) im Zuschnitt (keine Kennungs-Extraktion im Meta-Adapter vor
-S4 — S4 ist gebaut). **KEINE EMPFEHLUNG** zur Gestalt.
+**WAS DER STUFE-1-PLAN MITBRINGEN MUSS, und es ist kein Vorschlag seines Inhalts:** die
+VOLLLADUNG der Datei des Ziels samt dem Kopf des Verzeichnisses · F1 bis F10 samt ihren
+Grenzen · die Entscheidungen P11.7-2 und P11.7-3 · die Invarianten TRANSIT-ONLY,
+204-Containment und "vor dem `try` nur Wurffreies" in `forwardToMeta`.
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK

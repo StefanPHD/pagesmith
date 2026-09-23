@@ -12,9 +12,11 @@
 // sie, nicht umgekehrt. Ohne diesen Satz fuegt die naechste Aufraeumrunde server-only
 // hinzu.
 //
-// WAS SIE NICHT TUT, und jede Grenze ist eine Entscheidung:
+// WAS stripForeignClickIds NICHT TUT, und jede Grenze ist eine Entscheidung:
 //  - SIE ENTFERNT NUR, SIE SETZT NICHTS. Keine Kennung erreicht ueber sie ein Ziel, das
-//    sie vorher nicht bekam.
+//    sie vorher nicht bekam. DIE HUELLEN WEITER UNTEN (extractFbclid, extractLiFatId)
+//    LESEN HERAUS: Sie liefern einem Urheber seine EIGENE Kennung — linkedin bekommt die
+//    Adresse gar nicht und erhaelt li_fat_id allein ueber extractLiFatId (Phase 11.7, S6a).
 //  - NEGATIVLISTE: Entfernt werden nur Kennungen der Tabelle, die einem ANDEREN Ziel
 //    gehoeren. Die Adresse gehoert dem Betreiber; URL-basierte Regeln beim Anbieter
 //    braechen still, wenn hier mehr wegfiele. Eine Kennung, die nicht in der Tabelle
@@ -191,33 +193,72 @@ export function stripForeignClickIds(
 }
 
 /**
- * LIEST DIE KLICK-KENNUNG VON META (`fbclid`) AUS EINER ADRESSE — EXAKT (Phase 11.7, S5).
+ * DER GEMEINSAME KERN DES HERAUSLESENS — EXAKT, WURFFREI (Phase 11.7, S6a; bis dahin der
+ * Rumpf von extractFbclid, Zeichen fuer Zeichen mit dem Namen als Parameter).
  *
- * DAS MUSTER IST extractGoogleClickIds (capi/google-click-ids.ts), und jene bleibt unberuehrt:
- * eine eigene Funktion statt eines Umbaus am Google-Vertrag.
+ * MODULPRIVAT, UND DAS IST DIE ENTSCHEIDUNG: Ein freier Namens-Parameter nach aussen luede
+ * dazu ein, beliebige Namen herauszulesen. Nach aussen gehen allein die Huellen je
+ * Kennung; ein weiterer Urheber bekommt eine weitere Huelle.
  *
  * EXAKT, NICHT OHNE SCHREIBUNG — anders als beim Entfernen oben. Beim HERAUSLESEN ist ein
  * Zuviel die falsche Richtung: ein zufaellig gleichnamiger Parameter wuerde als Kennung
  * gesendet. "Exakt" heisst dabei: exakt auf dem Namen, wie der Standard-Parser ihn
- * DEKODIERT — `fb%63lid` trifft, `FBCLID` nicht.
+ * DEKODIERT.
  *
  * DER WERT, WIE DER STANDARD-PARSER IHN LIEFERT (dekodiert), OHNE FORMPRUEFUNG UND OHNE TRIM:
- * Anwesenheit, nie Form. Zu Kodierung und Fehlform schweigt die Quelle
- * (docs/ziel-befunde/meta.md, Teil (h)); echte Werte bestehen aus `[A-Za-z0-9_-]` und sind
- * davon nicht beruehrt. Mehrfach vorhanden -> das ERSTE Vorkommen. Das Fragment liest der
+ * Anwesenheit, nie Form. Mehrfach vorhanden -> das ERSTE Vorkommen. Das Fragment liest der
  * Parser nicht.
  *
- * SIE WIRFT NIE — sie laeuft in forwardToMeta VOR dessen try. Eine typeof-Weiche und ein
- * try um den einzigen werfenden Ausdruck.
+ * SIE WIRFT NIE. Eine typeof-Weiche und ein try um den einzigen werfenden Ausdruck.
+ *
+ * @returns den Wert, oder "" wenn keiner vorliegt — fehlend, leer, nicht parsebar oder
+ *          keine Zeichenkette.
+ */
+function readClickIdExact(url: unknown, name: string): string {
+  if (typeof url !== "string") return "";
+  try {
+    return new URL(url).searchParams.get(name) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * LIEST DIE KLICK-KENNUNG VON META (`fbclid`) AUS EINER ADRESSE — EXAKT (Phase 11.7, S5).
+ *
+ * DAS MUSTER IST extractGoogleClickIds (capi/google-click-ids.ts), und jene bleibt unberuehrt:
+ * eine eigene Funktion statt eines Umbaus am Google-Vertrag. SEIT S6a DELEGIERT SIE an
+ * readClickIdExact; ihr Vertrag ist unveraendert.
+ *
+ * "Exakt" heisst hier: `fb%63lid` trifft, `FBCLID` nicht.
+ *
+ * Zu Kodierung und Fehlform schweigt die Quelle (docs/ziel-befunde/meta.md, Teil (h)); echte
+ * Werte bestehen aus `[A-Za-z0-9_-]` und sind davon nicht beruehrt.
+ *
+ * SIE WIRFT NIE — sie laeuft in forwardToMeta VOR dessen try.
  *
  * @returns den Wert, oder "" wenn keiner vorliegt — fehlend, leer, nicht parsebar oder
  *          keine Zeichenkette.
  */
 export function extractFbclid(url: unknown): string {
-  if (typeof url !== "string") return "";
-  try {
-    return new URL(url).searchParams.get("fbclid") ?? "";
-  } catch {
-    return "";
-  }
+  return readClickIdExact(url, "fbclid");
+}
+
+/**
+ * LIEST DIE KLICK-KENNUNG VON LINKEDIN (`li_fat_id`) AUS EINER ADRESSE — EXAKT (Phase 11.7,
+ * S6a). Derselbe Kern, derselbe Vertrag wie extractFbclid.
+ *
+ * DER NAME: docs/ziel-befunde/linkedin.md, Teil (an) — das Beispiel des Anbieters liest
+ * `new URLSearchParams(window.location.search).get("li_fat_id")`. Zur Schreibung des Namens
+ * und zu Format und Kodierung des Werts nennt die Quelle nichts (ebenda); deshalb exakt und
+ * ohne Formpruefung.
+ *
+ * SIE WIRFT NIE — sie laeuft in forwardToLinkedin innerhalb des try, und die Zusage gilt
+ * trotzdem: sie ist die des Kerns.
+ *
+ * @returns den Wert, oder "" wenn keiner vorliegt — fehlend, leer, nicht parsebar oder
+ *          keine Zeichenkette.
+ */
+export function extractLiFatId(url: unknown): string {
+  return readClickIdExact(url, "li_fat_id");
 }

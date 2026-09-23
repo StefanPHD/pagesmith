@@ -1,6 +1,7 @@
 import "server-only";
 import { errorName } from "@/lib/errors";
 import { redactOpaque } from "@/lib/redact";
+import { extractLiFatId } from "@/lib/capi/click-id-strip";
 
 /**
  * DER ADAPTER FUER DAS VIERTE ZIEL (Scheibe 11.1f).
@@ -9,6 +10,8 @@ import { redactOpaque } from "@/lib/redact";
  * (Conversions API)", Teile (a) bis (s) — und sie sind zur HAELFTE GELESEN und zur
  * Haelfte GEMESSEN. Dieser Kopf nennt je Angabe, welches von beidem gilt; wer das
  * zusammenzieht, baut auf einer Doku-Lesung, als waere sie ein Messwert.
+ * Die Klick-Kennung li_fat_id als zweiter userIds-Eintrag (Phase 11.7, S6a) stuetzt sich
+ * auf die Teile (an), (ao) und (aq) der Datei docs/ziel-befunde/linkedin.md.
  *
  * WAS AN DIESEM ZIEL ANDERS IST ALS AN DEN DREI BESTEHENDEN — die Liste steht hier,
  * damit niemand abschreibt, was nicht passt:
@@ -114,12 +117,20 @@ const LINKEDIN_ENDPOINT = "https://api.linkedin.com/rest/conversionEvents";
 const LINKEDIN_VERSION = "202609";
 
 /**
- * DAS KENNUNGS-SYMBOL. GEMESSEN angenommen (Teil (i)); die Schnittstelle weist ein
+ * DAS KENNUNGS-SYMBOL DER IP. GEMESSEN angenommen (Teil (i)); die Schnittstelle weist ein
  * unbekanntes Symbol mit 422 ab und nennt dabei den Feldpfad.
  * DIE BESCHRAENKUNG AUF IPv4 IST GELESEN, NICHT GEMESSEN (Teil (i), Anbieter-Doku
  * 2026-08-17) — und sie ist der Grund fuer den IPv4-Riegel weiter unten.
  */
 const LINKEDIN_ID_TYPE = "PLAINTEXT_IP_ADDRESS";
+
+/**
+ * DAS KENNUNGS-SYMBOL DER KLICK-KENNUNG li_fat_id (Phase 11.7, S6a). GELESEN:
+ * docs/ziel-befunde/linkedin.md, Teile (i), (aj), (an), (ao) — der Wert ist dort ein
+ * `string` ohne Auflage und ohne Hash-Vorschrift. Ob der Endpunkt ihn annimmt, steht in
+ * derselben Datei, nicht hier.
+ */
+const LINKEDIN_CLICK_ID_TYPE = "LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID";
 
 /**
  * DIE NORMALISIERUNG — SIE STEHT VOR DEM GETEILTEN PRIMITIV, UND DAS IST PFLICHT.
@@ -401,6 +412,9 @@ export async function forwardToLinkedin(
     // den Aufruf ab (GEMESSEN, Teil (a): Typ UND Wert sind Pflicht). Der Fall ist
     // real: resolveClientIp (capi/ingest.ts) liefert undefined, sobald die vertraute
     // IP loopback oder leer ist.
+    // SEIT S6a (Phase 11.7) KANN EIN ZWEITER EINTRAG, li_fat_id, DAS PAAR FUELLEN — DER
+    // RIEGEL BLEIBT TROTZDEM, BEWUSST (Zuschnitt L1): ob li_fat_id ALLEIN genuegt, ist
+    // die Frage von S6b und erst nach dem Live-Beleg des zweiten Eintrags zu schneiden.
     if (!clientIp) {
       console.error("[capi] LinkedIn forward skipped: missing identity");
       return;
@@ -440,6 +454,23 @@ export async function forwardToLinkedin(
     // ein Zeitstempel aus dem Client-Blob wird hier BEWUSST nicht gelesen.
     const conversionHappenedAt = Date.now();
 
+    // --- userIds: die IP IMMER, li_fat_id NUR WENN DIE ADRESSE SIE TRAEGT (S6a) ---
+    //
+    // DIE IP STEHT AN INDEX 0: Das gemessene Paar bleibt, wo es gemessen wurde (Teile
+    // (i), (n)); ein 422 zum neuen Eintrag nennte den Pfad /user/userIds/1/... und waere
+    // vom IP-Eintrag unterscheidbar (die Meldungen nennen den Feldpfad, Teil (i)).
+    // Mehrere Eintraege sind laut Doku zulaessig und empfohlen (Teil (aq)).
+    // DIE ADRESSE SELBST GEHT NICHT HINAUS — gelesen wird aus ihr allein li_fat_id,
+    // EXAKT unter diesem Namen, erstes Vorkommen, der Wert unveraendert (Zuschnitt L3).
+    // TRANSIT-ONLY: Der Wert wird weder abgelegt noch geloggt noch gehasht.
+    const userIds: { idType: string; idValue: string }[] = [
+      { idType: LINKEDIN_ID_TYPE, idValue: clientIp },
+    ];
+    const liFatId = extractLiFatId(body.eventSourceUrl);
+    if (liFatId) {
+      userIds.push({ idType: LINKEDIN_CLICK_ID_TYPE, idValue: liFatId });
+    }
+
     const payload: Record<string, unknown> = {
       conversion,
       conversionHappenedAt,
@@ -451,9 +482,7 @@ export async function forwardToLinkedin(
       // die Anzeige-Zahlen reagieren auf Testdaten ueberhaupt nicht). Wer aus dieser
       // Zeile eine Zusage an den Kunden ableitet, leitet sie aus nichts ab.
       eventId: eventID,
-      user: {
-        userIds: [{ idType: LINKEDIN_ID_TYPE, idValue: clientIp }],
-      },
+      user: { userIds },
     };
 
     // --- conversionValue: NUR wenn BEIDE Haelften tragen ---
@@ -518,10 +547,14 @@ export async function forwardToLinkedin(
  * Das UNTRUSTED Client-Blob, SOWEIT die LinkedIn-Nutzlast es liest.
  *
  * BEWUSST EIGEN und NICHT MetaForwardBody: Jener fuehrt _fbp (Metas Cookie), das hier
- * nie gelesen wird. eventSourceUrl fehlt ebenfalls — die gemessene Nutzlast dieses
- * Anbieters kennt kein Feld dafuer.
+ * nie gelesen wird.
+ * eventSourceUrl STEHT HIER SEIT S6a (Phase 11.7), ABER NICHT ALS FELD DER NUTZLAST: Die
+ * Nutzlast dieses Anbieters kennt keines dafuer (docs/ziel-befunde/linkedin.md, Teil
+ * (ab)). Gelesen wird aus der Adresse allein li_fat_id (s. extractLiFatId); die Adresse
+ * selbst geht nicht hinaus.
  */
 export type LinkedinForwardBody = {
   value?: unknown;
   currency?: unknown;
+  eventSourceUrl?: unknown;
 };

@@ -428,3 +428,132 @@ describe("T5 — Deckel, Aufraeumen und der Nie-Wurf-Vertrag", () => {
     expect(logLines()[0]).toContain("body unreadable");
   });
 });
+
+// =====================================================================
+// T6 — li_fat_id AUS DER ADRESSE (Phase 11.7, S6a)
+//
+// T1-a FAEHRT OHNE ADRESSE und bleibt so — er deckt den Adressweg NICHT (VERMERK
+// P11.7-19 der Phase 11.7, (b)). Diese Faelle tragen die Adresse selbst. Die Werte sind
+// ERFUNDEN; das echte Format ist ungelesen (docs/ziel-befunde/linkedin.md, Teil (an)).
+// =====================================================================
+describe("T6 — li_fat_id als zweiter userIds-Eintrag", () => {
+  const CLICK_ID_TYPE = "LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID";
+
+  /** Sendet mit dieser Adresse und liefert die gesendete Nutzlast. */
+  async function mitAdresse(eventSourceUrl: string): Promise<Record<string, unknown>> {
+    await forwardToLinkedin(config(), "Purchase", "evt-s6a", { eventSourceUrl }, IP);
+    // POSITIVKONTROLLE: ohne genau einen Aufruf waere "kein Eintrag" trivial wahr.
+    expect(fetchCalls()).toHaveLength(1);
+    return sentPayload();
+  }
+
+  function userIds(payload: Record<string, unknown>) {
+    return (payload.user as { userIds: { idType: string; idValue: string }[] }).userIds;
+  }
+
+  /** Der Klick-Eintrag, gesucht ueber seinen Typ — NICHT ueber den Index (s. T6-a). */
+  function klickEintrag(payload: Record<string, unknown>) {
+    return userIds(payload).find((e) => e.idType === CLICK_ID_TYPE);
+  }
+
+  it("T6-a: die GANZE Nutzlast mit beiden Eintraegen, die IP an Index 0", async () => {
+    // WIRD ROT, WENN: der zweite Eintrag fehlt, seinen Typ oder Wert aendert, die
+    // Reihenfolge kippt — oder die Adresse bzw. utm_source in die Nutzlast geraet.
+    // EINZIGER TEST GEGEN "Reihenfolge vertauscht": T6-d und T6-e suchen ueber den Typ.
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-23T10:00:00.000Z"));
+    const expected = new Date("2026-09-23T10:00:00.000Z").getTime();
+
+    const payload = await mitAdresse(
+      "https://kunde.de/lp?utm_source=u&li_fat_id=Ab7-Xy_9",
+    );
+
+    expect(payload).toEqual({
+      conversion: URN,
+      conversionHappenedAt: expected,
+      eventId: "evt-s6a",
+      user: {
+        userIds: [
+          { idType: "PLAINTEXT_IP_ADDRESS", idValue: IP },
+          { idType: CLICK_ID_TYPE, idValue: "Ab7-Xy_9" },
+        ],
+      },
+    });
+  });
+
+  it("T6-b: ohne li_fat_id in der Adresse bleibt es bei der IP", async () => {
+    const payload = await mitAdresse("https://kunde.de/lp?utm_source=u");
+    expect(payload.user).toEqual({
+      userIds: [{ idType: "PLAINTEXT_IP_ADDRESS", idValue: IP }],
+    });
+  });
+
+  it("T6-c: LI_FAT_ID in anderer Schreibung ergibt KEINEN Eintrag", async () => {
+    // WIRD ROT, WENN: der Name ohne Schreibung verglichen wird (Zuschnitt L3, exakt).
+    const payload = await mitAdresse("https://kunde.de/lp?LI_FAT_ID=Ab7-Xy_9");
+    expect(klickEintrag(payload)).toBeUndefined();
+  });
+
+  it("T6-d: der Wert reist unveraendert — Schreibung bleibt, dekodiert wie der Parser", async () => {
+    // WIRD ROT, WENN: der Wert umgeformt wird (L2), oder der Typ falsch ist.
+    expect(
+      klickEintrag(await mitAdresse("https://kunde.de/lp?li_fat_id=AbC-dEf_9")),
+    ).toEqual({ idType: CLICK_ID_TYPE, idValue: "AbC-dEf_9" });
+    global.fetch = vi.fn(async () => response(201)) as unknown as typeof fetch;
+    expect(
+      klickEintrag(await mitAdresse("https://kunde.de/lp?li_fat_id=a%2Bb+c")),
+    ).toEqual({ idType: CLICK_ID_TYPE, idValue: "a+b c" });
+  });
+
+  it("T6-e: leer ergibt keinen Eintrag, mehrfach das ERSTE Vorkommen", async () => {
+    expect(
+      klickEintrag(await mitAdresse("https://kunde.de/lp?li_fat_id=")),
+    ).toBeUndefined();
+    global.fetch = vi.fn(async () => response(201)) as unknown as typeof fetch;
+    expect(
+      klickEintrag(
+        await mitAdresse("https://kunde.de/lp?li_fat_id=Erst&li_fat_id=Zwei"),
+      ),
+    ).toEqual({ idType: CLICK_ID_TYPE, idValue: "Erst" });
+  });
+
+  it("T6-f: eine nicht parsebare Adresse ergibt keinen Eintrag — und der Forward laeuft", async () => {
+    // WIRD ROT, WENN: das Herauslesen bei kaputter Eingabe wirft — der Wurf landete im
+    // catch des Adapters, und es ginge GAR NICHTS hinaus.
+    const payload = await mitAdresse("/lp?li_fat_id=Ab7-Xy_9");
+    expect(klickEintrag(payload)).toBeUndefined();
+  });
+
+  it("T6-g: eine IPv6-Adresse verwirft den Forward auch MIT li_fat_id (Riegel 2, L1)", async () => {
+    // WIRD ROT, WENN: der IPv4-Riegel zum Filter wird und li_fat_id allein sendet — das
+    // ist S6b und hier NICHT zugeschnitten. T2-b faengt das NICHT: er faehrt ohne Adresse.
+    await forwardToLinkedin(
+      config(),
+      "Purchase",
+      "evt-s6a-g",
+      { eventSourceUrl: "https://kunde.de/lp?li_fat_id=Ab7-Xy_9" },
+      "2001:db8::1",
+    );
+    expect(fetchCalls()).toHaveLength(0);
+    // Die Zeile ist fester Text — sie traegt den Wert nicht (TRANSIT-ONLY).
+    expect(logLines()).toEqual([
+      "[capi] LinkedIn forward skipped: identity is not IPv4",
+    ]);
+  });
+
+  it("T6-h: ohne IP verwirft der Riegel den Forward auch MIT li_fat_id (Riegel 1, L1)", async () => {
+    // WIRD ROT, WENN: der Identitaets-Riegel li_fat_id als Ersatz gelten laesst (S6b).
+    // T2-a faengt das NICHT: er faehrt ohne Adresse.
+    await forwardToLinkedin(
+      config(),
+      "Purchase",
+      "evt-s6a-h",
+      { eventSourceUrl: "https://kunde.de/lp?li_fat_id=Ab7-Xy_9" },
+      undefined,
+    );
+    expect(fetchCalls()).toHaveLength(0);
+    expect(logLines()).toEqual([
+      "[capi] LinkedIn forward skipped: missing identity",
+    ]);
+  });
+});

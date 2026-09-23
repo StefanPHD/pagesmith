@@ -3,7 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 import type { TrackingTarget } from "@/lib/settings";
-import { CLICK_ID_TABLE, extractFbclid, stripForeignClickIds } from "./click-id-strip";
+import {
+  CLICK_ID_TABLE,
+  extractFbclid,
+  extractLiFatId,
+  stripForeignClickIds,
+} from "./click-id-strip";
 import { forwardToMeta } from "./meta-forward";
 import { forwardToPinterest } from "./pinterest-forward";
 import { forwardToTiktok } from "./tiktok-forward";
@@ -241,14 +246,19 @@ function adresse(lauf: Lauf): string {
 
 /**
  * EIN FALL JE ZIEL. Die drei Erwartungen stammen aus der ENTSCHEIDUNG, nicht aus dem Code:
- * VERMERK P11.7-15 (Adressfluss je Adapter) und die Zuschnitte D4, D7, D9 der Phase 11.7.
+ * VERMERK P11.7-15 (Adressfluss je Adapter) und die Zuschnitte D4, D7, D9 der Phase 11.7;
+ * fuer linkedin seit S6a die Zuschnitte L3 und L6 (eigene Kennung je Lauf getrennt).
  */
 type WaechterFall = {
   senden: (adresse: string) => Promise<void>;
   /** Reicht der Adapter die Adresse weiter? (meta, pinterest, tiktok) */
   adresseGeht: boolean;
-  /** Steht die EIGENE Kennung in der Nutzlast? linkedin sendet li_fat_id nicht (D9). */
+  /** Steht die EIGENE Kennung in der Nutzlast (Lauf "tabelle", und "abweichend", wenn
+   *  eigeneGehtAbweichend fehlt)? linkedin sendet li_fat_id seit S6a der Phase 11.7. */
   eigeneGeht: boolean;
+  /** Abweichende Erwartung fuer den Lauf "abweichend". Nur linkedin: exakt gelesen (L3),
+   *  also geht LI_Fat_ID NICHT hinaus. Fehlt das Feld, gilt eigeneGeht. */
+  eigeneGehtAbweichend?: boolean;
   /** Sendet er bei abweichender Schreibung? google liest exakt heraus (D4) und nicht. */
   sendetAbweichend: boolean;
 };
@@ -298,7 +308,8 @@ const WAECHTER: Record<TrackingTarget, WaechterFall> = {
         IP,
       ),
     adresseGeht: false,
-    eigeneGeht: false,
+    eigeneGeht: true,
+    eigeneGehtAbweichend: false,
     sendetAbweichend: true,
   },
   google: {
@@ -360,9 +371,13 @@ describe("Waechter W — was jeder echte Adapter hinausschickt", () => {
     const [url, init] = fetchMock.mock.calls[0] as [unknown, { body?: unknown }];
     const hinaus = `${String(url)}\n${String(init.body)}`;
 
+    const eigeneGeht =
+      lauf === "abweichend"
+        ? (fall.eigeneGehtAbweichend ?? fall.eigeneGeht)
+        : fall.eigeneGeht;
     for (const andere of ZIELE) {
       for (const name of ERWARTUNG[andere]) {
-        const soll = andere === ziel && fall.eigeneGeht;
+        const soll = andere === ziel && eigeneGeht;
         expect(hinaus.includes(wert(name)), `${ziel}/${lauf}: ${name}`).toBe(soll);
       }
     }
@@ -439,6 +454,84 @@ describe("extractFbclid — exakt, wurffrei, ohne Formpruefung", () => {
 
   it("X-h: das Fragment wird nicht gelesen", () => {
     expect(extractFbclid("https://x.com/#fbclid=x")).toBe("");
+  });
+});
+
+// ===========================================================================
+// LINKEDIN li_fat_id UEBER DEN ADRESSWEG (Phase 11.7, S6a) — DIE ZWEITE HUELLE.
+//
+// Sie und extractFbclid teilen den modulprivaten Kern readClickIdExact. X-a bis X-h oben
+// bleiben unveraendert und belegen, dass die Delegation den Vertrag von extractFbclid
+// nicht beruehrt; L-a bis L-h belegen denselben Vertrag fuer den zweiten Namen.
+// ===========================================================================
+
+describe("extractLiFatId — exakt, wurffrei, ohne Formpruefung", () => {
+  it("L-a: sie wirft bei keiner feindlichen Eingabe und liefert immer eine Zeichenkette", () => {
+    // WIRD ROT, WENN: der Kern bei kaputter Eingabe weiterwirft.
+    const werfendesToString = {
+      toString(): string {
+        throw new Error("boom");
+      },
+    };
+    for (const eingabe of [
+      undefined,
+      null,
+      42,
+      {},
+      [],
+      werfendesToString,
+      "",
+      "?",
+      "#",
+      "http://[::1?li_fat_id=x",
+      "%",
+      LONE_SURROGATE,
+      `https://x.com/?li_fat_id=${LONE_SURROGATE}`,
+      `https://x.com/?${"&".repeat(100_000)}li_fat_id=x`,
+      `https://x.com/?li_fat_id=${"%".repeat(1_000)}`,
+    ]) {
+      expect(() => extractLiFatId(eingabe)).not.toThrow();
+      expect(typeof extractLiFatId(eingabe)).toBe("string");
+    }
+  });
+
+  it("L-b: der Wert kommt unveraendert heraus — Schreibung bleibt, dekodiert wie der Parser", () => {
+    expect(extractLiFatId("https://x.com/?utm_source=u&li_fat_id=Ab7-Xy_9")).toBe("Ab7-Xy_9");
+    expect(extractLiFatId("https://x.com/?li_fat_id=a%2Bb+c")).toBe("a+b c");
+  });
+
+  it("L-c: der NAME wird exakt verglichen — auf dem dekodierten Namen", () => {
+    // WIRD ROT, WENN: der Kern den Namen ohne Schreibung vergleicht (L3).
+    expect(extractLiFatId("https://x.com/?LI_FAT_ID=x")).toBe("");
+    expect(extractLiFatId("https://x.com/?Li_Fat_Id=x")).toBe("");
+    expect(extractLiFatId("https://x.com/?li%5Ffat%5Fid=x")).toBe("x");
+  });
+
+  it("L-d: leer oder fehlend ergibt die leere Zeichenkette", () => {
+    expect(extractLiFatId("https://x.com/?li_fat_id=")).toBe("");
+    expect(extractLiFatId("https://x.com/?utm_source=u")).toBe("");
+    expect(extractLiFatId("https://x.com/")).toBe("");
+  });
+
+  it("L-e: mehrfach vorhanden — das erste Vorkommen", () => {
+    expect(extractLiFatId("https://x.com/?li_fat_id=Erst&li_fat_id=Zwei")).toBe("Erst");
+  });
+
+  it("L-f: nicht parsebar oder keine Zeichenkette ergibt die leere Zeichenkette", () => {
+    expect(extractLiFatId("/relativ?li_fat_id=x")).toBe("");
+    expect(extractLiFatId(undefined)).toBe("");
+    expect(extractLiFatId(42)).toBe("");
+  });
+
+  it("L-g: das Fragment wird nicht gelesen", () => {
+    expect(extractLiFatId("https://x.com/#li_fat_id=x")).toBe("");
+  });
+
+  it("L-h: jede Huelle liest nur ihren eigenen Namen", () => {
+    // WIRD ROT, WENN: eine Huelle dem Kern den falschen Namen reicht.
+    const url = "https://x.com/?fbclid=a&li_fat_id=b";
+    expect(extractFbclid(url)).toBe("a");
+    expect(extractLiFatId(url)).toBe("b");
   });
 });
 

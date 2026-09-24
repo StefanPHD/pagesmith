@@ -610,7 +610,7 @@ aufeinander; sie liegen alle hier und finden einander.
     kostet, ist UNGEMESSEN — "kein Einfluss" wäre eine Behauptung ohne Messung.
   · ein Anbieter-Status wie "processed" als allgemeine Aussage — pinterest nimmt auch einen
     nicht registrierten Ereignisnamen als `processed` an (Teil (al)(ii)), und die Quittung
-    von tiktok ist für Feldnamen blind (docs/ziel-befunde/tiktok.md, Teil (r)). Ein
+    von tiktok ist für Feldnamen blind (docs/ziel-befunde/tiktok.md, Teil (q)). Ein
     Erfolgsstatus belegt die Annahme, nicht die Richtigkeit.
   WORAN ES HÄNGT: an Vorrat P11.7-9 der Phase 11.7 (ein Erfolgs-Instrument in der App) und an
   ZUSCHNITT-FRAGE P11.7-4 der Phase 11.7 (`external_id`) — beide verringerten die Warnungen

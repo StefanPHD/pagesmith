@@ -1165,6 +1165,10 @@ reine Zeilen-Zusätze; der Stand WÄHREND der Läufe ist nicht eigens per Hash b
     angenommene Aufrufe nicht. **EIN RÜCKBAU-TEST WURDE DESHALB BEWUSST NICHT GEFAHREN** (OWNER):
     er hätte dasselbe blinde Instrument benutzt. GRENZE: Nachablesung am 2026-09-25 ausstehend —
     laut Anbieter bis zu 24 Stunden Verarbeitung (linkedin.md, Teil (ag)).
+    **ZEIGER 2026-09-24 — DER TEXT DARÜBER BLEIBT:** Die Nutzlast im Fall "IPv4 ohne `li_fat_id`"
+    ist gemessen zeichengleich mit `5d5602e`; dazu ein Nachtrag (Ablesezeit, Ablesung "abends",
+    die Frage der Conversion-Identität) — VERMERK P11.7-32. Die Nachablesung folgt dem
+    Entscheidungsbaum unter "Nächster Schritt", Punkt 1.
 (d) **BEFUND OHNE BEWERTUNG:** Das Google-Geheimnis des Testprojekts ist
     `refresh_token_expired`.
 
@@ -1772,6 +1776,62 @@ mT5 gesetzt, ohne Zwischenprüfung; die Schlussprüfung ist OK.**
 Zeiger an (bc), (bd) und (be) · Q2 nachgezogen (das Wort "accepted") · Vorrat P11.7-9
 nachgezogen, Vorrat P11.7-11 neu · "Nächster Schritt" nachgezogen · S10a ABGESCHLOSSEN; S10b
 und S10c stehen aus.
+
+### VERMERK P11.7-32 — LinkedIn: Nutzlast-Vergleich 5d5602e gegen HEAD und ein Nachtrag vom 2026-09-24 (KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-24 · HEAD `0e35d13` · Arbeitsbaum sauber · READ-ONLY am Repo ·
+Anlass: die Frage, ob die Nutzlast im Fall "IPv4 OHNE `li_fat_id`" seit S2 gleich geblieben
+ist — am 2026-09-23 vormittags hat die Anzeige unter `5d5602e` reagiert (VERMERK P11.7-12).
+Kein Bau-Commit.
+
+**(a) DER VERGLEICH — GEMESSEN (CC, 2026-09-24), NICHT NUR GELESEN:** `linkedin-forward.ts`
+beider Stände per `git show` in ein Wegwerf-Verzeichnis AUSSERHALB des Repos, dazu ihre
+Abhängigkeiten desselben Stands (`errors.ts`, `redact.ts`; bei HEAD zusätzlich
+`click-id-strip.ts`, `google-click-ids.ts`). Geändert sind in den Kopien allein die
+Import-Zeilen (`server-only` entfernt, `@/lib/` auf relative Pfade) — per `diff` gegen die
+Commits belegt. Dieselbe Fixture durch BEIDE echten Adapter, feste Uhr, `fetch` gestellt;
+verglichen wird die Zeichenkette aus Adresse, Methode, Kopfzeilen und Rumpf.
+
+| Fall | Ergebnis |
+|---|---|
+| IPv4, Rumpf leer | **zeichengleich** |
+| IPv4, Adresse ohne `li_fat_id` (`?utm_source=s10a`) | **zeichengleich** |
+| IPv4, Adresse ohne `li_fat_id`, mit Betrag und Währung | **zeichengleich** |
+| POSITIVKONTROLLE: Adresse mit `li_fat_id` | **verschieden** (HEAD trägt den zweiten `userIds`-Eintrag) |
+
+Beide Stände senden: `POST https://api.linkedin.com/rest/conversionEvents`, Kopfzeilen
+`Authorization` (Bearer), `Content-Type`, `LinkedIn-Version` `202609`; Rumpf `conversion`,
+`conversionHappenedAt`, `eventId`, `user.userIds` mit GENAU dem IP-Eintrag, `conversionValue`
+nur mit Betrag und Währung. Das Verzeichnis ist danach gelöscht.
+**DER WEG BIS ZUM ADAPTER — GEMESSEN am Git-Verlauf:** das Lambda `FORWARDER_BY_TARGET.linkedin`
+(`src/lib/capi/ingest.ts`) ist zwischen `5d5602e` und HEAD zeichengleich; die Änderungen an
+`ingest.ts` mit "linkedin" sind Kommentarzeilen. `token.ts`, `tracking/meta.ts`,
+`tracking/consent-wire.ts` und `settings.ts` haben seit `5d5602e` keinen Commit. T1-a
+(`linkedin-forward.test.ts`, die ganze Nutzlast per `toEqual`, ohne Adresse) ist seit `5d5602e`
+zeichengleich und grün.
+**ERGEBNIS: KEIN UNTERSCHIED.** Im Fall "IPv4 ohne `li_fat_id`" sendet HEAD, was `5d5602e`
+sendete. **DIE GRENZE:** Der Vergleich gilt dem Adapter und dem Lambda; die Beacon-Seite
+(ausgelieferter Text) ist nicht Teil davon, und eine Ursache beim Anbieter misst er nicht.
+
+**(b) NACHTRAG — OWNER-ABLESUNGEN, übermittelt über die Übergabe der vorigen Chat-Instanz,
+ZWEITHAND.** Je Angabe gegen den Bestand geprüft:
+- Signal health "11 events · Attributed to 0 campaigns · Last seen 15h ago" — **STEHT SCHON**
+  (VERMERK P11.7-22; docs/ziel-befunde/linkedin.md, Teil (be)). **NEU ist allein die
+  Ablesezeit: 2026-09-24 gegen 09:00 MESZ.**
+- "Data last received" am 2026-09-24 **abends** weiter September 23, 6:27 PM — der Bestand führt
+  denselben Wert "vor dem Klick" von S10a (VERMERK P11.7-31, 17:25 MESZ). **OB "abends" DIESE
+  ABLESUNG MEINT ODER EINE SPÄTERE NACH DEM KLICK, SAGT DIE ÜBERGABE NICHT.** Nur im zweiten
+  Fall wäre es die erste Ablesung nach dem Anker; bis zur Klärung gilt sie als NICHT nach dem
+  Anker.
+- **UNGEKLÄRT, NEU:** ob die Terminal-Aufrufe vom 2026-09-24 (die URN im Terminal-Block,
+  `REGEL_URN`) dieselbe Conversion trafen, deren "Data last received" abgelesen wird.
+  **DAS IST EINE FRAGE, KEIN BEFUND** — sie berührt die Deutung von Teil (be), nicht seinen
+  Messwert.
+**DIE OWNER-HYPOTHESE "seit S6b kommt nichts an" BLEIBT EINE FRAGE** — (a) findet für den
+IPv4-Fall ohne `li_fat_id` keinen Unterschied zum Stand vor S6a/S6b.
+
+**ZEIGER / IM SELBEN ZUG:** docs/ziel-befunde/linkedin.md, Zusatz an Teil (be) · ein datierter
+Zeiger an VERMERK P11.7-22, (c) · "Nächster Schritt", Punkt 1, als Entscheidungsbaum.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -3010,13 +3070,25 @@ OWNER-ENTSCHEIDUNG E-d (Abschnitt "Gegenstand der Phase").
 **DIE OWNER-ENTSCHEIDUNGEN ZU SCHRITT (4) VON E-d SIND GETROFFEN:** E-e (Vorrat P11.7-9, K1 für
 alle fünf Ziele, zugeschnitten als S10) und E-f (ZUSCHNITT-FRAGE P11.7-11 geschlossen).
 **ALS NÄCHSTES, IN DIESER REIHENFOLGE:**
-1. **Die LinkedIn-Nachablesung** "Data last received" im Campaign Manager ab 2026-09-25, gegen
-   den ANKER 2026-09-24 15:25 UTC (der Klick von S10a, VERMERK P11.7-31; vorher stand die
-   Anzeige auf September 23, 2026 6:27 PM). Zeigt sie einen Zeitpunkt ab dem Klick: Die Anzeige
-   hing nach. Zeigt sie weiter den 23.09.: angenommen, aber nicht angezeigt — dann folgt eine
-   Aufklärung. **Die Owner-Hypothese, die Umbauten S6a/S6b könnten die Ursache sein, wird dort
-   als FRAGE geführt, nicht als Befund.** Die Zeitzone der Anzeige ist nicht erhoben; der
-   Vergleich rechnet damit.
+1. **Die LinkedIn-Nachablesung ab 2026-09-25, als ENTSCHEIDUNGSBAUM**, gegen den ANKER
+   2026-09-24 15:25 UTC (der Klick von S10a, VERMERK P11.7-31; vorher stand die Anzeige auf
+   September 23, 2026 6:27 PM). Die Zeitzone der Anzeige ist nicht erhoben; der Vergleich
+   rechnet damit.
+   (1) **ABLESEN:** "Data last received" UND "Signal health" im Campaign Manager.
+   (2) **VERGLEICHEN:** die ID der abgelesenen Conversion gegen die Regel auf der
+       LinkedIn-Karte der App UND gegen `REGEL_URN` des Terminal-Blocks (VERMERK P11.7-32, (b)).
+   (3) **ENTSCHEIDEN:**
+       · Die Anzeige zeigt einen Zeitpunkt AB dem Anker → Verzögerung; erledigt.
+       · Die IDs weichen ab → die RICHTIGE Conversion ablesen und den Baum ab (1) wiederholen.
+       · Die Anzeige steht weiter auf dem 23.09. UND die IDs stimmen → Gegenprobe (b): eine
+         NEUE Direct-API-Conversion und ein Terminal-Aufruf in S6a-Form dagegen (Owner, ohne
+         Code).
+   (4) **RÜCKBAU** (`git revert 007a772`) **NUR, WENN SICH EIN ZUSAMMENHANG MIT S6b ZEIGT** —
+       in einem eigenen Vermerk mit Rückweg. **Die Owner-Hypothese "seit S6b nichts" ist eine
+       FRAGE, kein Befund;** VERMERK P11.7-32, (a), findet für den Fall "IPv4 ohne `li_fat_id`"
+       keinen Unterschied zum Stand vor S6a.
+   Die Ergebnisse gehören an docs/ziel-befunde/linkedin.md, Teile (be) und (q), und an VERMERK
+   P11.7-22, (c).
 2. **S10b (meta + pinterest)**, in einer NEUEN Sitzung — Pflicht-Stopp: Volladung
    docs/ziel-befunde/meta.md und docs/ziel-befunde/pinterest.md plus Kopf; das Muster aus Q2
    ZEICHENGLEICH.

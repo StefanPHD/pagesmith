@@ -2117,6 +2117,20 @@ sind GEMESSEN am Repo (CC, 2026-09-24, HEAD `007a772`).
      ZEIGER (2026-09-24) — ÜBER UNSEREN ECHTEN WEG IST DIE ANNAHME SEIT S10a DIREKT GESEHEN
      (201, IPv4, ohne `li_fat_id`), während die Anzeige vor dem Klick weiter auf dem 23.09.
      stand; s. unten (bf). Der Wortlaut oben bleibt.
+     ZUSATZ (2026-09-24) — OWNER-ABLESUNGEN, übermittelt über die Übergabe der vorigen
+     Chat-Instanz, ZWEITHAND. Der Wortlaut oben bleibt.
+     · **DIE ABLESEZEIT von Signal health** ("11 events · Attributed to 0 campaigns · Last seen
+       15h ago"): 2026-09-24 gegen 09:00 MESZ.
+     · **"Data last received" am 2026-09-24 abends:** weiter September 23, 2026 6:27 PM. **Ob
+       das die Ablesung VOR dem Klick aus (bf) ist oder eine spätere danach, sagt die Übergabe
+       nicht**; bis zur Klärung gilt sie als NICHT nach dem Klick.
+     · **UNGEKLÄRT:** ob die zwei Terminal-Aufrufe oben dieselbe Conversion trafen, deren
+       Anzeige abgelesen wird. Eine FRAGE, kein Befund; an den 201-Messwerten ändert sie nichts,
+       an der Deutung "zwei angenommene Aufrufe bewegten die Anzeige nicht" womöglich schon.
+     · **GEMESSEN am Code (CC, 2026-09-24, HEAD `0e35d13`):** Die Nutzlast im Fall "IPv4 ohne
+       `li_fat_id`" ist zeichengleich mit dem Stand `5d5602e`, unter dem die Anzeige am
+       2026-09-23 reagierte (s. (bc)) — beide echten Adapter mit derselben Fixture, mit
+       Positivkontrolle. Einzelheiten: docs/aktiver-stand.md, VERMERK P11.7-32 der Phase 11.7.
 
 ### MESSUNG 2026-09-24 — Annahme über den echten Weg, sichtbar an der Erfolgszeile (Scheibe S10a, Phase 11.7) — der Teil (bf)
 

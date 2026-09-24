@@ -3353,6 +3353,19 @@ aufeinander; sie liegen alle hier und finden einander.
    die Ableitungen stehen oben zeichengleich, wie sie vor der Entscheidung dastanden; geändert
    hat sich ihr RANG, nicht ihr Inhalt.
 
+   **VERMERK 2026-09-24 — DER PUNKT `consent` IST ENTSCHIEDEN: WEGLASSEN (OWNER-ENTSCHEIDUNG
+   2026-09-24).** Der Text darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt
+   DANEBEN. Grund: Der Server kennt nur ein doppeldeutiges Einwilligungs-Bit — "google erlaubt"
+   heisst zugestimmt ODER kein Dialog —, und die Felder zu setzen hiesse, eine Einwilligung zu
+   behaupten, die er nicht kennt. Google stützt sich dann auf die Einstellungen im Konto des
+   Betreibers. Volltext, Grenze (EWR: Nicht-Treffer in der Quelle) und Messung: VERMERK
+   P11.7-23 der Phase 11.7 und der Zuschnitt von S7 in derselben Standdatei.
+   **DER POSTEN ENTFÄLLT DAMIT NICHT — GEPRÜFT AM BESTAND (CC, 2026-09-24):** Die zwei übrigen
+   Trigger sind nicht eingetreten — `reference` / `destinationReferences` (heute GENAU EIN
+   `destinations`-Element in `buildIngestEventsRequest`) und `eventName` (GA4 ist kein Ziel;
+   Roadmap-Zeile 11.9 offen). Der Satz "ER ENTFÄLLT ERST, WENN ALLE DREI EINGETRETEN UND
+   ABGEARBEITET SIND" trägt weiter.
+
 - eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE ANDERE (Trigger: "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT der URL, nicht mehr für ihre Verfügbarkeit" — EINGETRETEN, und der Eintrag ist ausdrücklich NICHT geschlossen):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 6, im Rahmen
   des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
@@ -4044,7 +4057,8 @@ aufeinander; sie liegen alle hier und finden einander.
       Token dann nur noch durch Ereignisse stirbt, ist **die UMKEHRUNG einer gelesenen
       Bedingung**, nicht die gelesene Bedingung selbst. Gelesen ist ausschliesslich der
       Satz des Anbieters über den **Testing**-Zustand ("…publishing status of 'Testing'
-      is issued a refresh token expiring in 7 days", docs/ziel-befunde.md, Teil (af)).
+      is issued a refresh token expiring in 7 days", docs/ziel-befunde.md, Teil (ae) —
+      RICHTIGGESTELLT AM 2026-09-24, hier stand "Teil (af)"; VERMERK P11.7-23 der Phase 11.7).
       **Aus "im Zustand A gilt X" folgt nicht "ausserhalb von A gilt X nicht"** — das ist
       genau der Schluss, den Teil (bx) für die Nachbaraussage schon einmal gezogen und
       dann als **widerlegt** protokolliert hat.
@@ -4304,7 +4318,9 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   PROVENIENZ: Der TERMIN ist GERECHNET (CC, 2026-09-04) aus
   `refreshTokenExpiresAt.epochSeconds` = 1789111618, GEMESSEN 2026-09-04 (OWNER) beim
   Live-Test der Scheibe 11.2b. Die FRIST selbst ist GELESEN (docs/ziel-befunde.md,
-  Google-Abschnitt, Teil (af)) und ausdrücklich NICHT gemessen — es ist kein Token bis zu
+  Google-Abschnitt, Teil (ae) — RICHTIGGESTELLT AM 2026-09-24, hier stand "Teil (af)"; (af)
+  trägt 2SV, Passkeys und Mehrparteien-Freigabe, VERMERK P11.7-23 der Phase 11.7) und
+  ausdrücklich NICHT gemessen — es ist kein Token bis zu
   seinem Ablauf beobachtet worden. Die zwei Neu-Verbindungen sind GEMESSEN (OWNER,
   2026-09-04). Die volle Herleitung stand in docs/aktiver-stand.md, Abschnitt "1b als
   Folgetask", Vorbedingung (iv), und liegt nach Schritt 2 im Archiv

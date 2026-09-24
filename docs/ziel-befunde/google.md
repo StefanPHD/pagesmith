@@ -13,8 +13,12 @@ nachträglich ein Wort geändert hat, misst gegen diese Prüfsumme.
 Pflicht-Stopp vor einem Zuschnitt verlangt. Die Pflicht ist damit nicht gelockert, sondern
 wieder erfüllbar geworden — sie gilt seither DIESER Datei.
 **EINE GRENZE, DIE GERADE FÜR DIESE DATEI MITMUSS:** Sie ist die mit Abstand grösste der
-fünf. **OB EINE SITZUNG SIE VOLL LÄDT UND DANACH NOCH EINEN ZUSCHNITT TRÄGT, IST
-UNGEMESSEN** — die Aufteilung hat die Frage VERKLEINERT, nicht beantwortet.
+fünf. **OB EINE SITZUNG SIE VOLL LÄDT UND DANACH NOCH ARBEIT TRÄGT, IST AM 2026-09-24
+GEMESSEN (OWNER, `/context`):** Volladung dieser Datei (408 302 Bytes), der Standdatei und
+des Kopfs samt einer vollständigen Aufklärung belegte 587,4k von 1M Token (59 %), frei
+379,6k — auf einem Modell mit 1M Kontext. Für ein Fenster von rund 200k trägt es nicht
+(ABLEITUNG aus den Zahlen). Nachweis: docs/aktiver-stand.md, VERMERK P11.7-23 der Phase
+11.7.
 
 **WAS IM ÜBERNOMMENEN TEXT "DIESE DATEI" HEISST: DIE SAMMEL-DATEI VOR DER AUFTEILUNG, NICHT
 DIESE HIER.** Der Text ist vor der Aufteilung geschrieben worden und ist nicht angefasst
@@ -3868,6 +3872,10 @@ ist und keine Beobachtung, steht das an der Angabe — s. besonders (bw).
      sieben vollen Tagen das ALTER der Autorisierung ist, folgt aus der Annahme, dass die
      Frist bei der Zustimmung zu laufen beginnt. **Das ist nicht gemessen** — der
      Zustimmungs-Zeitpunkt ist in diesem Lauf nicht erhoben worden.
+     VORBEHALT (2026-09-24) — DER ZEIGER "(af)" IM ABSATZ DARÜBER TRIFFT DEN FALSCHEN TEIL. Die
+     Sieben-Tage-Frist im Status "Testing" steht in (ae), dritter Spiegelstrich; (af) trägt
+     2SV, Passkeys und die Mehrparteien-Freigabe. Der Wortlaut oben bleibt stehen. GEMESSEN am
+     Dateitext (CC, 2026-09-24).
 
 (bx) **DIE GELESENE ERWARTUNG, `refresh_token_expires_in` TREFFE UNSEREN FLUSS NICHT, IST
      WIDERLEGT — DAS FELD KAM.** **NEU.**

@@ -1102,6 +1102,89 @@ reine Zeilen-Zusätze; der Stand WÄHREND der Läufe ist nicht eigens per Hash b
 Zeiger an (t), (aq) und (bd) · docs/ziel-befunde/meta.md, Teil (ae) · ZUSCHNITT-FRAGE P11.7-16
 eingelöst · Vorrat P11.7-9 neu · S6b ABGESCHLOSSEN, damit S6.
 
+### VERMERK P11.7-23 — Aufklärung zu S7 vom 2026-09-24 (KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-24 · HEAD `0a5bbf5` · Arbeitsbaum sauber · READ-ONLY · **VOLLLADUNG**
+von Anfang bis Ende: docs/aktiver-stand.md (2 034 Zeilen / 144 340 Bytes),
+docs/ziel-befunde/google.md (5 756 / 408 302) und docs/ziel-befunde.md (220 / 14 399, die ganze
+Datei ist Kopf) · keine fremde Seite, kein Aufruf gegen die Schnittstelle · Nicht-Treffer am
+geglätteten Text mit Positivkontrolle. Kein Bau-Commit.
+
+**DIE MESSUNG ZU ZUSCHNITT-FRAGE P11.7-8 (OWNER, `/context`, 2026-09-24):** nach der Volladung
+und der vollständigen Aufklärung **587,4k von 1M Token (59 %)** — Messages 471,3k, Memory files
+84,2k, frei 379,6k; Modell mit 1M Kontext. **DIE GRENZE:** gemessen ist EIN Modell mit 1M
+Kontext. Für ein Fenster von rund 200k trägt es nicht — allein die Messages übersteigen es
+(ABLEITUNG aus den Zahlen, nicht gemessen). Was Zuschnitt, Stufe-1-Plan und Bau zusätzlich
+belegen, ist nicht Teil dieser Messung.
+
+**(a) DER ABGELAUFENE SCHLÜSSEL (GEMESSEN am Code):** `refresh_token_expired` entsteht OHNE
+Netzruf, als Vergleich mit der eigenen Uhr — in `usableTokenFromRow` (`src/lib/capi/token.ts`:
+Uhr 1 tot und Uhr 2 `{kind:"at"}` mit `epochSeconds <= now`; Logzeile "[capi/resolve] secret
+unusable", Ausgang `unusable`) und in `refreshAccessToken`, Schritt (6)
+(`src/lib/oauth/token-refresh.ts`, Ausgang `dead`). Uhr 2 ist `receivedAt +
+floor(refresh_token_expires_in)` aus der Token-Antwort (`google-token.ts` beim Code-Tausch,
+`toRefreshedPayload` in `google-refresh.ts` bei der Erneuerung). `invalid_grant` ist ein
+eigener Grund. **QUELLE:** docs/ziel-befunde/google.md, Teil (ae): "Testing" → 7 Tage
+(GELESEN); Teil (bw): 581553 s, rund 6,73 Tage, und die Uhr läuft bei der Einlösung weiter
+(GEMESSEN; die Tage sind eine Rechnung); ob das Feld am Status "Testing" hängt, ist offen
+(Teil (bx)). **WARUM ÜBER NACHT, IST AM REPO NICHT ENTSCHEIDBAR:** Ein Neu-Verbinden verschiebt
+die Frist um sieben Tage (docs/offene-punkte.md, "DIE SIEBEN-TAGE-FRIST …"); der Zeitpunkt der
+letzten Verbindung ist nicht erhoben. Instrument: der Ablaufzeitpunkt auf der Karte, s. (b).
+
+**(b) WAS DER BETREIBER SIEHT — DIE KARTE, SONST NICHTS (GEMESSEN am Code):**
+`describeCredentialState` (`src/components/TargetCard.tsx`) zeigt "Zugang abgelaufen am … —
+bitte neu autorisieren", 48 h vorher "Zugang endet am …" (`CREDENTIAL_EXPIRY_WARN_SECONDS` =
+172 800, `credentialStateFrom` in `src/lib/tracking/credential-state.ts`); geladen über
+`listTargetCredentialStates` beim Projektladen, gezeigt in der Mess-Ansicht. Kein Signal
+ausserhalb der Karte, keine Benachrichtigung. Ob der Posten "STIRBT DAS ERNEUERUNGS-TOKEN, IST
+DER AUSFALL FÜR NIEMANDEN SICHTBAR" dadurch teils überholt ist, ist NICHT geprüft.
+
+**(c) "no destination for event" IST RIEGEL 2** in `forwardToGoogle` (`resolveDestinationId`,
+exakter Schlüssel = Ereignisname): Für dieses Ereignis fehlt die Zuordnung zur
+Conversion-Type-ID (numerisch, google.md, Teil (ca)/(b)). **KONFIGURATION, KEIN CODE.** Solange
+das Geheimnis `unusable` ist, erreicht kein Ereignis diesen Riegel.
+
+**(d) GERÄTEDATEN — GELESEN, NICHTS GESENDET ODER GEMESSEN:** zwei Orte,
+`adIdentifiers.landingPageDeviceInfo` und `eventDeviceInfo`, je `ipAddress`/`userAgent` (Teil
+(m)/E1); DeviceInfo trägt dazu `category` und `language_code` (Teil (w)/E1); zwei Momente, im
+Session-Attribut-Weg ist `landingPageDeviceInfo.userAgent` Pflicht (Teil (m)/E4); die IP reist
+ungehasht (Teil (m)/E2) und zählt als hinreichende Kennung (Teil (m)/E3); beide IP-Felder
+stehen in der Kennungsliste der Offline-Gestalt (Teil (cc)/(c)); Widerspruch 1 ist ungelöst,
+die Diagnose kennt `eventDeviceInfo` nicht (Teile (r), (u)). Was Google mit den Werten tut:
+Nicht-Treffer über die ganze Datei. AM CODE: `Forwarder` trägt `clientIp` und `userAgent`, das
+Lambda `FORWARDER_BY_TARGET.google` lässt beide fallen.
+
+**(e) DMA — GELESEN:** `Consent` mit `adUserData` und `adPersonalization`, beide Optional,
+Werte `CONSENT_STATUS_UNSPECIFIED` / `CONSENT_GRANTED` / `CONSENT_DENIED` (Teil (x)/I2); auf
+Anfrage- oder Ereignis-Ebene (Teile (l)/D1, (q)/I2); Verarbeitungsfehler `DENIED_CONSENT`,
+`NO_CONSENT`, `UNKNOWN_CONSENT` — letzterer nennt Zeilen-, Anfrage- und Konto-Einstellungen
+(Teil (x)/I2). **EWR: NICHT-TREFFER** (`EEA`, `EWR`, `Europe` je 0; Positivkontrolle `consent`
+58).
+
+**(f) DAS EINWILLIGUNGS-BIT — GEMESSEN am Code:** Der Adapter läuft nur bei `cns.google ===
+true` (`allowedTargets`, `consentAllows`; `LEGACY_CONSENT_ROLE.google` ist false). Mehr liegt
+nicht vor: eine Gruppe "Werbung" für alle Ziele (`CONSENT_GROUP_KEYS.ads`), und `true` heisst
+entweder "zugestimmt" oder "kein Hook" (`buildConsentAllRuntime`: `v === undefined` → alle
+erlaubt). **DER SERVER TRENNT DIE ZWEI NICHT.**
+
+**(g) TESTBESTAND:** GF-1 (`google-forward.test.ts`, `toEqual` auf die ganze Nutzlast) wird rot
+bei jedem Feld, das seine Eingabe setzt; seine Fixture trägt weder IP noch UA noch `cns`, und
+der Adapter wird mit vier Argumenten gerufen. `google-payload.test.ts` pinnt die
+Wurzel-Schlüssel (`destinations`, `events`), die Ereignis-Schlüssel und `adIdentifiers` =
+[`gclid`]. Wächter W (`click-id-strip.test.ts`) ruft mit vier Argumenten. `fan-out.test.ts`
+nagelt die Google-Nutzlast nicht fest. IP und UA fährt für google KEIN Test; `cns` fährt
+`ingest.refresh.test.ts`.
+
+**(h) DREI RANDBEFUNDE:** (1) der Zeiger "(af)" auf die Sieben-Tage-Frist — sie steht in Teil
+(ae) — in google.md, Teil (bw), in den Posten "DIE SIEBEN-TAGE-FRIST …" und "STIRBT DAS
+ERNEUERUNGS-TOKEN …" · (2) die Kommentare an `forwardToGoogle` und am Lambda begründen den
+Verzicht auf IP und UA mit "die Gestalt trägt KEIN Feld für eine Besucher-Adresse" — widerlegt
+durch die Teile (cc)/(c) und (m)/E1 · (3) CLAUDE.md nannte google.md mit 405 265 Bytes.
+**IM SELBEN ZUG ERLEDIGT:** (1) an den drei Stellen, (3) in CLAUDE.md; (2) ist G5 von S7. Eine
+Provenienz-Liste in docs/claude-md-herleitung.md (Abschnitt "## Modus") führt ebenfalls
+"(af)"; ob dort die Frist gemeint ist, ist nicht entscheidbar — nicht freigegeben, nicht
+angefasst.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1357,7 +1440,8 @@ Teile von P11.7-1 und P11.7-2 gebaut und live belegt, dazu Zeiger an P11.7-5 und
 (VERMERK P11.7-18); der Zuschnitt von S6 legt Teile von P11.7-14 und P11.7-16 fest (Abschnitt
 "Zuschnitt der Phase 11.7", L1 bis L7), S6a hat den festgelegten Teil von P11.7-14 gebaut und live
 belegt, dazu ein Zeiger an P11.7-16 (VERMERK P11.7-20); S6b hat P11.7-16 eingelöst (VERMERK
-P11.7-22). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+P11.7-22); der Zuschnitt von S7 legt Teile von P11.7-6 (G1) und P11.7-7 (Owner-Entscheidung vom
+2026-09-24) fest, P11.7-8 ist gemessen (VERMERK P11.7-23). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -1427,6 +1511,9 @@ DAFÜR KENNT.** Google unterscheidet `eventDeviceInfo` (Ereignis-Zeitpunkt) und
 (w)/E1). **DIE FRAGE IST NICHT "OB", SONDERN "WELCHES".** Am Code bestätigt (C9): beide
 Werte enden an der Signatur in `FORWARDER_BY_TARGET`; **welcher Ort passt, ist am Code nicht
 entscheidbar.** Beide Felder tragen IP und UA, für die P11.7-4 gilt.
+**ZEIGER 2026-09-24 — FESTGELEGT DURCH DEN ZUSCHNITT VON S7** (G1): allein
+`adIdentifiers.landingPageDeviceInfo`, `ipAddress` und `userAgent` je nur wenn vorhanden;
+`eventDeviceInfo` ist nicht Teil von S7.
 
 **ZUSCHNITT-FRAGE P11.7-7 — DIE ZWEI DMA-EINWILLIGUNGSFELDER EXISTIEREN, BEIDE OPTIONAL.** `Consent` trägt
 GENAU ZWEI Felder, `adUserData` und `adPersonalization`, ausweislich seiner Überschrift ein
@@ -1436,6 +1523,10 @@ GENAU ZWEI Felder, `adUserData` und `adPersonalization`, ausweislich seiner Übe
 TRANSPORT-SCHEIBE" nennt als Trigger für `consent` die Phase 11.5, und die ist
 abgeschlossen; **ob der Trigger damit eingetreten ist, ist nicht entschieden** — für den
 Entfall jenes Postens ohnehin unerheblich, er trägt drei Trigger.
+**ZEIGER 2026-09-24 — OWNER-ENTSCHEIDUNG: DIE FELDER WERDEN WEGGELASSEN** (Abschnitt "Zuschnitt
+der Phase 11.7", S7). Grund: Der Server kennt nur ein doppeldeutiges Bit (VERMERK P11.7-23,
+(f)). Die Frage nach dem Trigger jenes Postens ist damit gegenstandslos; der Punkt consent
+ist dort entschieden.
 
 **ZUSCHNITT-FRAGE P11.7-8 — OB EINE SITZUNG DIE VOLLLADUNG FÜR EINEN ZUSCHNITT TRÄGT, IST UNGEMESSEN.**
 **DIE AUFTEILUNG (P11.7-9) HAT DIE FRAGE VERKLEINERT, NICHT BEANTWORTET.** Der Pflicht-Stopp
@@ -1444,6 +1535,10 @@ verlangt seit dem 2026-09-22 die Volladung der **Datei des Ziels**; die grösste
 DIE ÜBRIGEN VIER IST DIE FRAGE PRAKTISCH KLEIN GEWORDEN, FÜR GOOGLE NICHT.** **WER SIE MIT
 DEM VOLLZUG FÜR ERLEDIGT ERKLÄRT, ERKLÄRT EINE ABLEITUNG ZUR MESSUNG.** Die Grenze steht
 seit dem 2026-09-22 auch in CLAUDE.md, damit sie das Phasenende überlebt.
+**ZEIGER 2026-09-24 — GEMESSEN (OWNER, `/context`), VERMERK P11.7-23:** Volladung der
+Standdatei, von google.md (408 302 Bytes) und des Kopfs samt vollständiger Aufklärung belegte
+587,4k von 1M Token (59 %), frei 379,6k — auf einem Modell mit 1M Kontext. Für ein Fenster von
+rund 200k trägt es nicht (ABLEITUNG). CLAUDE.md ist im selben Zug nachgezogen.
 
 **ZUSCHNITT-FRAGE P11.7-9 — E3 UND TIKTOK: DER URHEBER LIEST SELBST AUS, UND DAMIT TEILT SICH DIE FRAGE.**
 TikTok parst `ttclid` aus dem übergebenen `page.url` (tiktok, Teil (m)). **FOLGE FÜR
@@ -1720,7 +1815,8 @@ ist nach den Architekten-Entscheidungen F1 bis F10 gebaut, `fbc` ist live belegt
 P11.7-18). S6 (linkedin) ist zugeschnitten (L1 bis L7) und in S6a und S6b geteilt; S6a ist
 gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b ist gebaut,
 `li_fat_id` allein ist per Terminal angenommen, unser Pfad durch Tests, Mutationen und
-Ausschluss belegt (VERMERK P11.7-22). Die übrigen sind weder gebaut noch geplant.
+Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist zugeschnitten (G1 bis G5, Material
+VERMERK P11.7-23). Die übrigen sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -1971,9 +2067,36 @@ der Datei ihres Ziels.
   P11.7-21, Grenzen) — wenn ja, verwirft Riegel 2 deren LinkedIn-Conversions schon heute.
   **NICHT TEIL VON S6b:** eine IPv6-IP senden, in keiner Form · Riegel 3 (keine Regel-URN für
   das Ereignis) · der Cookie-Weg.
-- google IP/UA und DMA-Felder — ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4. **Ob
-  eine Sitzung die Volladung von docs/ziel-befunde/google.md trägt, ist ungemessen**
-  (ZUSCHNITT-FRAGE P11.7-8).
+- **S7 — google: Gerätedaten in `landingPageDeviceInfo`, DMA-Felder weggelassen. ZUGESCHNITTEN
+  AM 2026-09-24** — ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4; Material VERMERK
+  P11.7-23. PFLICHT DAVOR: Volladung docs/ziel-befunde/google.md plus Kopf — auf einem Modell
+  mit 1M Kontext gemessen tragbar (ZUSCHNITT-FRAGE P11.7-8).
+  **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24:**
+  - **G1 — GERÄTEDATEN NUR IN `adIdentifiers.landingPageDeviceInfo`:** `ipAddress` und
+    `userAgent`, je nur wenn vorhanden. Grund: Der Beacon feuert auf der Landeseite selbst; das
+    Feld liegt in der Diagnose-Kategorie `ad_identifiers`, ist im Session-Attribut-Weg Pflicht
+    und steht in der Kennungsliste der Gestalt (docs/ziel-befunde/google.md, Teile (m)/E1,
+    (m)/E4, (cc)/(c)), während die Diagnose `eventDeviceInfo` nicht kennt (Teile (r), (u)).
+    GRENZE: Was Google damit tut, ist ungelesen und ungemessen.
+  - **G2 — DER gclid-RIEGEL BLEIBT.** Grund: Ob eine IP ALLEIN genügt (Teil (m)/E3), ist eine
+    Folgefrage nach dem Live-Beleg von S7 — wie S6b nach S6a.
+  - **G3 — DAS LAMBDA `FORWARDER_BY_TARGET.google` REICHT `clientIp` UND `userAgent` WEITER;
+    DER TYP `Forwarder` BLEIBT UNVERÄNDERT.** Grund: Beide Werte stehen schon an der Signatur
+    und enden heute dort (VERMERK P11.7-23, (d)); dieselbe Lage wie bei linkedin.
+  - **G4 — IP UND UA SIND TRANSIT: NIE ABGELEGT, NIE GELOGGT.** Grund: DATENKLASSEN-GRENZE,
+    Präzisierung vom 2026-08-19, und Entscheidung P11.7-4.
+  - **G5 — DIE KOMMENTARE AN `forwardToGoogle` UND AM LAMBDA, DIE DEN VERZICHT MIT "die Gestalt
+    trägt KEIN Feld für eine Besucher-Adresse" BEGRÜNDEN, WERDEN RICHTIGGESTELLT.** Grund:
+    widerlegt durch die Teile (cc)/(c) und (m)/E1.
+  **OWNER-ENTSCHEIDUNG 2026-09-24 — DIE DMA-EINWILLIGUNGSFELDER WERDEN WEGGELASSEN** (an S7 und
+  an ZUSCHNITT-FRAGE P11.7-7). Grund: Der Server kennt nur ein doppeldeutiges Bit — "google
+  erlaubt" heisst zugestimmt ODER kein Dialog (VERMERK P11.7-23, (f)); die Felder zu setzen
+  hiesse, eine Einwilligung zu behaupten, die der Server nicht kennt — ein drittes Urteil.
+  Google stützt sich dann auf die Einstellungen im Konto des Betreibers (Wortlaut
+  `UNKNOWN_CONSENT`, Teil (x)/I2). GRENZE: Was Google für Nutzer im EWR ohne die Felder tut,
+  steht nicht in der Quelle.
+  **NICHT TEIL VON S7:** `eventDeviceInfo` · `category` · `language_code` · eine Änderung am
+  gclid-Riegel · die DMA-Felder.
 - tiktok `ttclid` — ZUSCHNITT-FRAGE P11.7-9 (ob zusätzlich `user.ttclid`), P11.7-10.
 - pinterest `epik` — ZUSCHNITT-FRAGE P11.7-19.
 
@@ -2020,13 +2143,15 @@ binden:**
 
 **S1 BIS S6 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
 P11.7-18, P11.7-20, P11.7-22). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER,
-2026-09-23): S6 linkedin, dann google, tiktok, pinterest.** **ALS NÄCHSTES STEHT S7 — google**
-(IP/UA und DMA-Felder; ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4).
-**VORAUSSETZUNG VOR JEDEM TEST:** die Google-Verbindung im Testprojekt neu herstellen — das
-Google-Geheimnis ist `refresh_token_expired` (VERMERK P11.7-22, (d)); die Aufklärung zu S7
-klärt, WARUM der Schlüssel über Nacht ablief. Pflicht-Stopp: docs/ziel-befunde/google.md voll
-plus Kopf von docs/ziel-befunde.md — ob eine Sitzung das trägt, ist ungemessen (ZUSCHNITT-FRAGE
-P11.7-8).
+2026-09-23): S6 linkedin, dann google, tiktok, pinterest.** **S7 — google — IST ZUGESCHNITTEN**
+(G1 bis G5 und die Owner-Entscheidung zu den DMA-Feldern, Abschnitt "Zuschnitt der Phase
+11.7"). **ALS NÄCHSTES STEHT DER STUFE-1-PLAN VON S7, in derselben Sitzung wie die Volladung**
+(VERMERK P11.7-23).
+**VORAUSSETZUNG VOR JEDEM LIVE-TEST:** die Google-Verbindung im Testprojekt neu herstellen — das
+Google-Geheimnis ist `refresh_token_expired`, und die Ursache ist die Sieben-Tage-Frist im
+Status "Testing" (VERMERK P11.7-23, (a)). Pflicht-Stopp: docs/ziel-befunde/google.md voll plus
+Kopf von docs/ziel-befunde.md — auf einem Modell mit 1M Kontext gemessen tragbar
+(ZUSCHNITT-FRAGE P11.7-8).
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK

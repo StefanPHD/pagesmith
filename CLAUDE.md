@@ -449,11 +449,12 @@ Fall, der sie ausgelöst hat, ergab die Suche fünf Treffer in zwei Zusammenhän
 IST DAS ERGEBNIS DICHT, WIRD DIE ARBEIT GETEILT UND NICHT DOCH NOCH IN EINE SITZUNG
 GEZWUNGEN: Eine Sitzung lädt die Datei des Ziels VOLLSTÄNDIG und hält fest, was sie
 über das Ziel trägt; der Crawl läuft in einer ZWEITEN.
-DIE ZWEITE GRENZE, UND SIE IST DIE WICHTIGERE: Die Google-Datei trägt 405 265 Bytes
-(GEMESSEN, CC, 2026-09-22) und bleibt die mit Abstand grösste. OB EINE SITZUNG SIE VOLL
-LÄDT UND DANACH NOCH EINEN ZUSCHNITT TRÄGT, IST UNGEMESSEN — DIE AUFTEILUNG HAT DIE FRAGE
-VERKLEINERT, NICHT BEANTWORTET. Wer sie mit dem Vollzug für erledigt erklärt, erklärt eine
-Ableitung zur Messung.
+DIE ZWEITE GRENZE, UND SIE IST DIE WICHTIGERE: Die Google-Datei trug am 2026-09-24
+408 302 Bytes (GEMESSEN, CC) und bleibt die mit Abstand grösste. OB EINE SITZUNG SIE VOLL
+LÄDT UND DANACH NOCH ARBEIT TRÄGT, IST AM 2026-09-24 GEMESSEN (OWNER, /context): Volladung
+samt Standdatei, Kopf und vollständiger Aufklärung belegte 587,4k von 1M Token (59 %), frei
+379,6k — AUF EINEM MODELL MIT 1M KONTEXT. Für ein Fenster von rund 200k trägt es nicht
+(ABLEITUNG aus den Zahlen). Nachweis: VERMERK P11.7-23 der Phase 11.7.
 UND AUCH DANN IST SIE KEINE QUELLE: Ein Dokument beschreibt ein fremdes System, es belegt
 es nicht. Was gilt, steht am ENDPUNKT DES ANBIETERS — gemessen wird mit einem Aufruf gegen
 die Schnittstelle, nicht abgelesen. Ein Anbieter kann sein Verhalten zudem ändern, ohne

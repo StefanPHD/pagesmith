@@ -151,6 +151,10 @@ am selben Tag eine eigene Konto-Oberfläche abgelesen.
     BESTÄTIGT WORDEN, nicht aufgelöst: zusätzlich zu den drei Seiten oben auch die
     Endpunkt-Referenz und die Fehlercode-Seite, je mit Positivkontrolle. Einzelheiten und
     Reichweite unten unter (ah).
+    ZEIGER (2026-09-24) — DER WIDERSPRUCH DER DREI ZAHLEN IST GEMESSEN AUFGELÖST: Die
+    Kopfzeilen dreier Antworten nennen 120 000 je 60 Sekunden, Kategorie
+    `ads_conversions_ad_account_id`, für das verwendete Zugangsdatum; Grenze: drei
+    Testanfragen. Unten unter (al)(iii). Der Wortlaut oben wird NICHT umformuliert.
 
 (f) DIE PRODUKT-FREIGABE — ZWEISTUFIG, MIT ECHTER PRÜFUNG (Katalog-Frage I1).
     GELESEN 2026-08-20, https://developers.pinterest.com/docs/getting-started/connect-app/,
@@ -532,6 +536,10 @@ am Werbekonto sind die des Owners an seinem eigenen Konto.
     die Teil (t) an der Qualitäts-Ansicht schon einmal gezeigt hat ("nicht eingerichtet"
     bei E-Mail, External ID, Product ID). Dort war der Prüfling leer; hier ist er es nicht
     mehr, und die Lücke ist dieselbe geblieben.
+    ZEIGER (2026-09-24) — DIE WARNZEILE IM VERCEL-LOG IST ERKLÄRT: Jede Antwort trägt die
+    Warnung "external_id is missing … click_id is missing" (GEMESSEN, drei Läufe mit
+    `?test=true`), und `evaluateSuccessBody` macht aus jeder nicht leeren Warnung eine
+    Logzeile. Unten unter (al)(iv). Der Wortlaut oben wird NICHT umformuliert.
 
 (y) EINE SPANNUNG ZUR ZUGRIFFSSTUFE — ABGELEGT UND NICHT BEWERTET.
     **GELESEN 2026-09-10 DURCH DIE CHAT-INSTANZ** (nicht durch CC, **NICHT GEMESSEN**),
@@ -930,6 +938,11 @@ beschreibt, steht GEMESSEN dabei.
      GELESEN. Ob der Endpunkt bei unserer echten Nutzlast genau diese Form liefert, zeigt
      erst ein Aufruf; die Doku ist hier der Massstab einer späteren Messung, **nicht ihr
      Ersatz**.
+     ZEIGER (2026-09-24) — DER ERFOLGSRUMPF IST GEMESSEN, UND DAS subscription-BEISPIEL IST
+     WIDERLEGT: Die Form oben deckt sich mit drei Antworten (GEMESSEN, `?test=true`);
+     `subscription` kam als `processed` mit "Unknown"-Warnung zurück, nicht als `failed`.
+     Ein Fehlerzweig "200 mit `failed`" ist damit nicht gemessen. Unten unter (al)(i) und
+     (ii). Der Wortlaut oben wird NICHT umformuliert.
 
 (ai) DREI DIVERGENZEN IN DER ANBIETER-DOKU SELBST — BERICHTET, NICHT AUFGELÖST.
      GELESEN 2026-09-22. Ohne Bewertung; keine der drei ist gemessen.
@@ -958,6 +971,9 @@ beschreibt, steht GEMESSEN dabei.
        minute per ad account**." **Ohne jeden Vorbehalt zum Träger des Zugangsdatums.**
      **WELCHE AUSSAGE FÜR EINEN GEGEBENEN ZUGANGSWEG GILT, IST UNGEMESSEN.** Teil (e) ist
      damit nicht widerlegt, sondern unvollständig; der Vorbehalt dort zeigt hierher.
+     ZEIGER (2026-09-24) — FÜR DAS VERWENDETE ZUGANGSDATUM GEMESSEN AUFGELÖST: 120 000 je
+     60 Sekunden, Kategorie `ads_conversions_ad_account_id`, aus den Kopfzeilen dreier
+     Testanfragen. Unten unter (al)(iii). Der Wortlaut oben wird NICHT umformuliert.
      **(3) DREI AUSSAGEN ZU `partner_name`.**
      · **Conversions-Seite:** "Syntax: `ss-companyname`. **For direct integration, use
        value `direct`.**"
@@ -1100,4 +1116,44 @@ TITEL DIE VERSIONSFRAGE:** Changelog und Übersichtsseite — geöffnet, Ergebni
   unberührt und unbewertet.
 · **HINTER EINER ANMELDESCHRANKE, NICHT BETRETEN:** Ads Manager, Conversion Tag Manager,
   "My apps", Token Debugger, Help-Center-Tickets, `community.pinterest.biz`.
+
+### MESSUNG 2026-09-24 gegen die Conversions API (F8 der Phase 11.7) — der Teil (al)
+
+**HERKUNFT (2026-09-24):** GEMESSEN vom **OWNER, 09:44 UTC, im Terminal** (Git Bash, `curl`),
+**alle drei Läufe mit `?test=true`**, gegen `POST /v5/ad_accounts/{id}/events`; die Befehle
+stammen aus der Mess-Vorbereitung der Phase 11.7 (docs/aktiver-stand.md, VERMERK P11.7-26),
+Rumpf in der Form von `forwardToPinterest` (`src/lib/capi/pinterest-forward.ts`), mit
+Antwort-Kopfzeilen (`-D -`). Testwerte: IP `203.0.113.9` (TEST-NET) und ein erfundener
+User-Agent — der Adapter sendet die echten Werte des Besuchers. **Hier steht kein
+Zugangsdatum, keine Werbekonto-Kennung und kein Anfrage-Bezeichner des Anbieters.**
+
+(al) DER ERFOLGSRUMPF IST GEMESSEN — UND EIN FREMDER EREIGNISNAME WIRD ANGENOMMEN, NICHT
+     ABGEWIESEN.
+     · **DIE DREI LÄUFE, im Wortlaut der Rückmeldung** (Auslassungen "…" wie übermittelt):
+       (a) gültiges Ereignis `lead`: HTTP 200;
+       `{"num_events_processed":1,"num_events_received":1,"events":[{"status":"processed","error_message":"","warning_message":"external_id is missing. We highly recommend this on all events. … ; click_id is missing"}]}`
+       (b) `subscription`: HTTP 200; 1/1, `status` `"processed"`, `error_message` `""`,
+       `warning_message` wie (a) plus "This event has a non-standard name and is currently
+       being labeled as an 'Unknown' event. …"
+       (c) Stapel aus (a) und (b) in einer Anfrage: HTTP 200; 2/2, beide `"processed"`,
+       Warnungen je wie oben.
+     · **(i) DIE FORM DES ERFOLGSRUMPFS IST GEMESSEN UND DECKT SICH MIT (ah):** die
+       Zählwerte `num_events_received` und `num_events_processed` als ZAHL, `events[]` mit
+       `status`, `error_message` als `""` und `warning_message` als TEXT. Katalog-Frage G1
+       ist damit für den Erfolgszweig beantwortet.
+     · **(ii) `event_name` "subscription" WIRD ANGENOMMEN** — `processed`, mit der
+       "Unknown"-Warnung. **DAS WIDERSPRICHT DEM BEISPIEL IN (ah)**, wo derselbe Name als
+       `failed` mit "Invalid event_name: subscription" steht. **EIN FEHLERZWEIG "HTTP 200
+       MIT `failed`" IST DAMIT NICHT GEMESSEN** — keiner der drei Läufe hat ihn erzeugt.
+     · **(iii) DAS RATE-LIMIT, AUS DEN KOPFZEILEN aller drei Antworten:**
+       `X-RateLimit-Limit: 120000, 120000;w=60;name="ads_conversions_ad_account_id"` ·
+       `X-RateLimit-Remaining` 119999 → 119998 → 119997 · `X-RateLimit-Reset` 58 / 56 / 53.
+       Also **120 000 je 60 Sekunden, Kategorie `ads_conversions_ad_account_id`** — für das
+       verwendete Zugangsdatum. **GRENZE: drei Testanfragen**; welcher der zwei Zugangswege
+       aus (a) das verwendete Datum ist, steht nicht in der Rückmeldung.
+     · **(iv) DIE WARNUNG "external_id is missing … click_id is missing" TRÄGT JEDE
+       ANTWORT** — alle drei Läufe, jedes Ereignis.
+     **DIE GRENZEN:** `?test=true` — die Quelle sagt, die Antwortform sei dieselbe wie ohne
+     (ah), gemessen ist nur der Testmodus · EINE Beobachtung an einem Tag · der Fehlerzweig
+     "200 mit `failed`" ist ungemessen.
 

@@ -77,6 +77,9 @@ BLEIBT.** Material: VERMERK P11.7-25.
 - **E-b — DER RATE-LIMIT-WIDERSPRUCH BEI PINTEREST** (drei Aussagen,
   docs/ziel-befunde/pinterest.md, Teil (ai)(2)) hat kein belegtes Instrument; er wird beim
   [x] als unbewiesen benannt.
+  **ZEIGER 2026-09-24 — AUFGELÖST DURCH MESSUNG (VERMERK P11.7-26; docs/ziel-befunde/
+  pinterest.md, Teil (al)(iii)):** 120 000 je 60 s, Kategorie `ads_conversions_ad_account_id`.
+  Beim [x] NICHT mehr als unbewiesen zu benennen.
 - **E-c — DIE UNBEHANDELTEN MATCH-FELDER GEHÖREN NICHT ZUM FÜNFTEN PUNKT**, je mit Grund —
   sie gehören zu anderen Kanälen als einer Landeseite oder sind dort nicht verfügbar:
   · meta `subscription_id`, `fb_login_id` — Abos bzw. Facebook-Login in Apps; `lead_id` —
@@ -1382,6 +1385,38 @@ SCHÄTZUNG; die Reihenfolge setzt E-d):
 14. Optional, nicht verlangt: Meta-EMQ nach S5 erneut ablesen (Anlass 4,4/10); die
     F6-Kopfzeile `facebook-api-version`.
 
+### VERMERK P11.7-26 — Messung F8 (pinterest, Erfolgsrumpf) vom 2026-09-24 (KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-24, 09:44 UTC · GEMESSEN vom OWNER im Terminal (Git Bash, `curl`)
+· alle drei Läufe mit `?test=true` gegen `POST /v5/ad_accounts/{id}/events` · Befehle aus
+der Mess-Vorbereitung derselben Sitzung (READ-ONLY, HEAD `4973967`; Volladung
+docs/ziel-befunde/pinterest.md plus Kopf von docs/ziel-befunde.md), Rumpf in der Form von
+`forwardToPinterest`, Antwort mit Kopfzeilen (`-D -`) · Testwerte: IP `203.0.113.9`
+(TEST-NET), erfundener User-Agent · kein Zugangsdatum, keine Werbekonto-Kennung und kein
+Anfrage-Bezeichner in dieser Datei. Kein Bau-Commit.
+
+**VORHERSAGE GEGEN ERGEBNIS, JE LAUF** (Vorhersage = was `evaluateSuccessBody` aus der laut
+Quelle erwarteten Antwort machen würde):
+
+| Lauf | Ergebnis | Vorhersage | Abgleich |
+|---|---|---|---|
+| (a) `lead` | HTTP 200; 1/1, `processed`, `error_message` `""`, `warning_message` "external_id is missing. We highly recommend this on all events. … ; click_id is missing" | `warning` mit Warnzeile | **WIE VORHERGESAGT** |
+| (b) `subscription` | HTTP 200; 1/1, `processed`, `error_message` `""`, Warnung wie (a) plus "This event has a non-standard name and is currently being labeled as an 'Unknown' event. …" | `failed`, Zeile `received=1 processed=0 entries=1 status=failed` | **`processed` STATT `failed`** |
+| (c) Stapel (a)+(b) | HTTP 200; 2/2, beide `processed`, Warnungen je wie oben | `failed`, Zeile `received=2 processed=1 entries=2` | **`processed` STATT `failed`** (2/2 statt 2/1) |
+
+**KOPFZEILEN, alle drei Antworten:** `X-RateLimit-Limit: 120000, 120000;w=60;name=
+"ads_conversions_ad_account_id"` · `X-RateLimit-Remaining` 119999 → 119998 → 119997 ·
+`X-RateLimit-Reset` 58 / 56 / 53.
+
+**ERGEBNIS:** Die Form des Erfolgsrumpfs deckt sich mit docs/ziel-befunde/pinterest.md, Teil
+(ah) · `subscription` wird angenommen, das Beispiel in (ah) ist für diesen Aufruf widerlegt ·
+Rate-Limit 120 000 je 60 s, Kategorie `ads_conversions_ad_account_id` · jede Antwort trägt die
+Warnung "external_id is missing … click_id is missing". Befund: docs/ziel-befunde/pinterest.md,
+Teil (al), dazu datierte Zeiger an (e), (x), (ah) und (ai)(2).
+**DIE GRENZEN:** `?test=true` — gleiche Antwortform wie ohne ist GELESEN (Teil (ah)), nicht
+gemessen · EINE Beobachtung · **der Fehlerzweig "HTTP 200 mit `failed`" ist UNGEMESSEN** —
+keiner der drei Läufe hat ihn erzeugt.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1504,6 +1539,9 @@ LinkedIn-Forward angekommen ist, ist heute an KEINER Stelle direkt zu sehen; S6b
 Ausschluss belegt.
 **DIE KANDIDATEN K1 BIS K4 STEHEN IM VERMERK P11.7-22 — KEINE AUSWAHL.**
 TRIGGER: vor dem Phasenende zu entscheiden (OWNER).
+**ZEIGER 2026-09-24 — DAS GEGENSTÜCK BEI PINTEREST:** Dort ist ein Erfolg heute sichtbar, aber
+nur über eine Warnzeile, die jede Antwort erzeugt — Befund an S9 im Abschnitt "Zuschnitt der
+Phase 11.7" (VERMERK P11.7-26).
 
 **P11.7-10 — IN DER LOKALEN ENTWICKLUNG REIST EINE PLATZHALTER-IP AN GOOGLE.** BEFUND vom
 2026-09-24 (Stufe-1-Plan von S7, GEMESSEN am Code): Ist die Client-Adresse leer oder Loopback
@@ -1599,12 +1637,20 @@ Nutzungs-Kopfzeilen einer echten Antwort.
 **DREI EINANDER WIDERSPRECHENDE AUSSAGEN** für denselben Endpunkt (120 000/min je
 Werbekonto je App · "unlimited" mit dem Conversion-Token · 5 000/min laut
 Endpunkt-Referenz); welche gilt, ist **UNGEMESSEN** (Teil (ai)(2), Vorbehalt an (e)).
+**ZEIGER 2026-09-24 — FÜR PINTEREST GEMESSEN (VERMERK P11.7-26; pinterest, Teil (al)(iii)):**
+120 000 je 60 s, Kategorie `ads_conversions_ad_account_id`, aus den Kopfzeilen dreier
+Testanfragen; Owner-Entscheidung E-b ist damit aufgelöst.
 
 **F8 — PINTEREST, ERFOLGSRUMPF** (Katalog G1). **DIE FORM IST GELESEN, DIE FRAGE BLEIBT
 EINE MESSFRAGE** (Teil (ah)): `num_events_received`, `num_events_processed`, `events[]` mit
 `status`/`error_message`/`warning_message`; ein dokumentierter **TEILERFOLG MIT HTTP 200**;
 `processed` und `failed` **ohne abschliessende Enum-Liste**. `evaluateSuccessBody` stimmt
-mit der dokumentierten Form überein. **WAS FEHLT, IST DER AUFRUF.**
+mit der dokumentierten Form überein. **DER AUFRUF IST AM 2026-09-24 GEFAHREN (VERMERK
+P11.7-26).**
+**ZEIGER 2026-09-24 — F8 IST ERFÜLLT:** Der Erfolgsrumpf ist gemessen (pinterest, Teil (al)(i));
+die Roadmap verlangt die Messung des Erfolgsrumpfs (Owner-Entscheidung E-a). **Der Fehlerzweig
+"HTTP 200 mit `failed`" ist UNGEMESSEN** — `subscription` wurde angenommen (Teil (al)(ii)) — und
+wird beim [x] als unbewiesen benannt.
 
 **WAS EIN CRAWL FÜR LINKEDIN NICHT KLÄRT — FÜNF OFFENE MESSFRAGEN.** Sie stehen getrennt,
 weil eine LESUNG sie nicht erreicht. Kein Eintrag ist ein Auftrag.
@@ -1698,6 +1744,9 @@ NICHT ENTSCHIEDEN:** ob eine selbst vergebene, über Kanäle stabile Besucher-Ke
 "fingerprint-artiges Merkmal" im Sinne der DATENKLASSEN-GRENZE ist. **DAS IST EINE
 OWNER-FRAGE, KEINE CC-EINORDNUNG.** Meta nutzt `fbp` ersatzweise, wenn `external_id` fehlt
 (Teil (j)) — eine Angabe des Anbieters, kein Ersatz für die Entscheidung.
+**ZEIGER 2026-09-24 — MATERIAL, KEINE ENTSCHEIDUNG:** Pinterest empfiehlt `external_id` in JEDER
+Antwort ausdrücklich — "external_id is missing. We highly recommend this on all events."
+(GEMESSEN, drei Läufe mit `?test=true`; VERMERK P11.7-26, pinterest, Teil (al)(iv)).
 
 **ZUSCHNITT-FRAGE P11.7-5 — E3 UND META: DAS ENTFERNEN FREMDER KLICK-KENNUNGEN AUS `event_source_url` IST
 NACH DEM GELESENEN VERTRÄGLICH.** Keine der neun Seiten sagt, dass Meta ausliest (Teil
@@ -2316,6 +2365,12 @@ der Datei ihres Ziels.
   gclid-Riegel · die DMA-Felder.
 - tiktok `ttclid` — ZUSCHNITT-FRAGE P11.7-9 (ob zusätzlich `user.ttclid`), P11.7-10.
 - pinterest `epik` — ZUSCHNITT-FRAGE P11.7-19.
+  **BEFUND 2026-09-24 — KEINE ENTSCHEIDUNG** (VERMERK P11.7-26; docs/ziel-befunde/pinterest.md,
+  Teil (al)(iv)): `evaluateSuccessBody` (`src/lib/capi/pinterest-forward.ts`) macht aus jeder
+  nicht leeren Warnung eine Logzeile, und jede Antwort trägt "external_id is missing" — **in
+  Produktion schreibt damit JEDER Pinterest-Forward eine Warnzeile**; nach S9 bleibt "external_id
+  is missing" stehen. Zwei Seiten: Rauschen, das echte Warnungen verdeckt · zugleich heute die
+  einzige Sichtbarkeit eines Erfolgs (Gegenstück bei LinkedIn: Vorrat P11.7-9).
 
 **MITZUNEHMEN — VORRAT P11.7-1, P11.7-3, P11.7-4 (Kopfkommentare)**, je in der ersten
 Scheibe, die ihre Datei berührt, wie ihre Trigger es verlangen. **P11.7-3 geht in S2** — die
@@ -2361,9 +2416,8 @@ binden:**
 **S1 BIS S7 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
 P11.7-18, P11.7-20, P11.7-22, P11.7-24). **DER ROADMAP-ABGLEICH IST GEMACHT (VERMERK
 P11.7-25); DIE REIHENFOLGE BIS ZUM PHASENENDE STEHT IN DER OWNER-ENTSCHEIDUNG E-d**
-(Abschnitt "Gegenstand der Phase"). **ALS NÄCHSTES: F8 MESSEN** — zuerst eine
-Mess-Vorbereitung: Volladung docs/ziel-befunde/pinterest.md, Terminal-Aufruf in der Form des
-Adapters.
+(Abschnitt "Gegenstand der Phase"). **F8 IST GEMESSEN UND ERFÜLLT (VERMERK P11.7-26). ALS
+NÄCHSTES: S8 tiktok** (E-d (2)).
 **DIE SIEBEN-TAGE-FRIST LÄUFT WEITER:** Die Google-Karte ist am 2026-09-24 neu autorisiert
 worden; im Status "Testing" stirbt das Erneuerungs-Token sieben Tage danach (VERMERK P11.7-23,
 (a)). Vor jedem weiteren Google-Live-Test den Ablaufzeitpunkt auf der Karte prüfen.

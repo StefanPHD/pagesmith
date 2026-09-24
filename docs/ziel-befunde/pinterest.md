@@ -319,6 +319,9 @@ DIESE Lesung galt sie noch.)
       `external_id`, `hashed_maids`. Unsere Zelle gilt für die zwei Merkmale, die der
       Adapter sendet — als Antwort auf "mit welchem Verfahren?" ist sie unvollständig.
     KEINE DER BEIDEN ABWEICHUNGEN BETRIFFT ETWAS, DAS DER ADAPTER HEUTE SENDET.
+    ZEIGER (2026-09-24) — DER SATZ DARÜBER GILT SEINEM TAG: Seit der Phase 11.7, S9, sendet
+    der Adapter aus der Merkmalsliste von E1 zusätzlich `click_id`; über den echten Weg
+    abgelesen unten unter (as). Der Wortlaut oben wird NICHT umformuliert.
 
 ### Zwei Beobachtungen, die keine Katalog-Frage beantworten — Teil (p)
 
@@ -551,6 +554,13 @@ am Werbekonto sind die des Owners an seinem eigenen Konto.
     Warnung "external_id is missing … click_id is missing" (GEMESSEN, drei Läufe mit
     `?test=true`), und `evaluateSuccessBody` macht aus jeder nicht leeren Warnung eine
     Logzeile. Unten unter (al)(iv). Der Wortlaut oben wird NICHT umformuliert.
+    ZEIGER (2026-09-24) — `click_id` WIRD SEITHER GELIEFERT: Der Adapter sendet die
+    Klick-Kennung `epik` aus der Seitenadresse als `user_data.click_id` (Phase 11.7, S9);
+    über den echten Weg entfällt dann die Warnung "click_id is missing", und die
+    Test-Ansicht führt "Klick-ID" — unten unter (as). Eingeordnet ist die Kennung als
+    fremdvergeben, TRANSIT-ONLY (docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN
+    PII-SCHEIBE", Block vom 2026-08-28). `external_id` bleibt ungeliefert. Der Wortlaut oben
+    wird NICHT umformuliert.
 
 (y) EINE SPANNUNG ZUR ZUGRIFFSSTUFE — ABGELEGT UND NICHT BEWERTET.
     **GELESEN 2026-09-10 DURCH DIE CHAT-INSTANZ** (nicht durch CC, **NICHT GEMESSEN**),
@@ -751,6 +761,9 @@ beschreibt, steht GEMESSEN dabei.
      (unten (ao)). Grenze: Testmodus, erfundener Wert, kein Abgleich — ob der Endpunkt einen
      ECHTEN Wert fachlich annimmt, bleibt offen, und gesendet hat das Terminal, nicht der
      Adapter. Der Wortlaut oben wird NICHT umformuliert.
+     ZEIGER (2026-09-24, später am Tag) — AUCH ÜBER DEN ADAPTER: Über den echten Weg zeigt
+     die Test-Ansicht die Klick-ID genau dann, wenn `epik` in der Adresse stand (unten
+     (as)). Ob ein echter Wert fachlich angenommen wird, bleibt offen.
      **EIN DRITTER COOKIE-NAME STEHT IN DERSELBEN DOKUMENTATION; s. unten (ai).**
 
 (ad) DAS BROWSER-TAG SETZT FIRST-PARTY-COOKIES — DASS DARUNTER `_epik` IST, IST NICHT
@@ -831,6 +844,9 @@ beschreibt, steht GEMESSEN dabei.
      `client_ip_address`, `client_user_agent` und `click_id` zugleich wird angenommen und
      verarbeitet (unten (am)); Grenze: Testmodus, erfundener Wert, gesendet per Terminal.
      Der Wortlaut oben wird NICHT umformuliert.
+     ZEIGER (2026-09-24, später am Tag) — AUCH ÜBER DEN ADAPTER: Ein Ereignis mit IP,
+     User-Agent und `click_id` kommt über den echten Weg an und wird mit "Klick-ID, User
+     Agent, IP-Adresse" angezeigt (unten (as)); Grenze: Testmodus, erfundener Wert.
      **EIN ZWEITER ORT FÜR DEN USER-AGENT, der leicht übersehen wird:**
      `app_info.user_agent` — "User Agent request header. Primarily used for Web events",
      `maxLength: 16384`. Er liegt NICHT in `user_data` und ist **kein** Mitglied der
@@ -1274,4 +1290,39 @@ Adapter.
      Zusatz passt er ganz; mit ihm endet die Logzeile nach 200 Zeichen auf "; click_i".**
      Die Warnzeile trennt die zwei Fälle damit nur über ein ABGESCHNITTENES Bruchstück.
      Gemessen an einer echten Logzeile ist das nicht.
+     ZEIGER (2026-09-24, später am Tag) — FÜR DEN FALL MIT FELD AN EINER ECHTEN LOGZEILE
+     ABGELESEN: Sie endet vollständig auf "3P cookie loss", ohne Kappung (unten (as)). Der
+     Fall OHNE Feld ("; click_i") ist an keiner echten Logzeile abgelesen. Der Wortlaut oben
+     wird NICHT umformuliert.
+
+### ABLESUNG 2026-09-24 über den echten Weg (Abschluss S9 der Phase 11.7) — der Teil (as)
+
+**HERKUNFT (2026-09-24):** ABGELESEN vom **OWNER** an der Test-Ansicht "Events testen" des
+eigenen Werbekontos (s. (aa)), Einzelansicht je Ereignis, und am Vercel-Log. Gesendet hat der
+ADAPTER über den echten Weg: ein Klick auf der Live-Seite, Beacon an `/api/e`, Fan-Out, mit
+dem Projekt-Testmodus für Pinterest. Der Bau ist der Commit `024678a` (docs/aktiver-stand.md,
+VERMERK P11.7-30). Der Beacon trug `cns` = {meta, pinterest, tiktok, linkedin, google} je
+`true`. **Hier steht keine IP, kein Zugangsdatum und keine Werbekonto-Kennung.**
+
+(as) ÜBER DEN ECHTEN WEG ZEIGT DIE ANSICHT DIE KLICK-ID GENAU DANN, WENN `epik` IN DER ADRESSE
+     STAND — R1 GEGEN S1.
+     ABGELESEN, OWNER, 2026-09-24, Zeiten UTC:
+     · **R1**, Empfang 13:56:57, `event_id` `d6aeba6a-4f26-4a9e-8ec0-a81bd4e195bd`, URL
+       `…/?utm_source=s9r1`: Nutzerdaten "User Agent, IP-Adresse"; Warnungen external_id und
+       click_id (2).
+     · **S1**, Empfang 13:58:38, `event_id` `2789ba71-900a-442c-9886-058b41ae3c82`, URL
+       `…/?utm_source=s9s1&epik=S9LiveEpik0001`: Nutzerdaten "Klick-ID, User Agent,
+       IP-Adresse"; Warnung nur external_id (1).
+     · **VERCEL-LOG**, 13:58:37.577 (zu S1): "[capi] Pinterest forward warning: external_id is
+       missing. … 3P cookie loss" — vollständig, ohne Kappung. Die Zeile zu R1 ist NICHT
+       abgelesen.
+     **DIE GRENZE, GETRENNT:**
+     · **GEMESSEN:** S1 zeigt "Klick-ID", R1 nicht. Die S1-Warnzeile passt unter die Kappung
+       unseres Logs — die Rechnung aus (ar) ist für den Fall MIT Feld bestätigt.
+     · **ABGELEITET (aus (ao)):** Die Klick-ID von S1 stammt aus dem Feld `user_data.click_id`,
+       nicht aus der Adresse — eine Kennung allein in der Adresse erkennt die Anzeige nicht.
+     · **UNBELEGT:** der Abgleich (der Wert ist erfunden) · die Form echter `epik`-Werte, also
+       ob Pinterest sie dekodiert oder roh erwartet · ob die Zuordnung die Adresse liest · die
+       Kappung auf "; click_i" für den Fall OHNE Feld, am Log nicht abgelesen · Fehlerzweige
+       und ein Echo darin.
 

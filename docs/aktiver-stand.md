@@ -1340,7 +1340,8 @@ Owner-Entscheidung E-a.
   `fbp`, `fbc` (S5) · tiktok `user.ip`, `user.user_agent`, `page.url` (bereinigt, `ttclid`
   bleibt, laut (m) parst der Anbieter), `user.ttclid` (S8, VERMERK P11.7-28), `event_id` ·
   pinterest `client_ip_address`,
-  `client_user_agent`, `event_source_url` (bereinigt, `epik` bleibt), `partner_name "direct"`
+  `client_user_agent`, `event_source_url` (bereinigt, `epik` bleibt), `partner_name "direct"`,
+  `user_data.click_id` (S9, VERMERK P11.7-30)
   · linkedin `PLAINTEXT_IP_ADDRESS` (nur IPv4), `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`
   (S6a/S6b) · google `gclid`/`gbraid`/`wbraid`, `landingPageDeviceInfo.ipAddress`/`userAgent`
   (S7).
@@ -1350,7 +1351,7 @@ Owner-Entscheidung E-a.
   Meta-Pflichtfeld-Riegel (ZUSCHNITT-FRAGE P11.7-22) — "vor einem Bau steht eine Messung" ·
   google DMA-`consent` (Owner 2026-09-24), `eventDeviceInfo`, `category`, `language_code`
   (G1, "NICHT TEIL VON S7") · Personenbezogenes — Roadmap-Grenze und F3.
-- **OFFEN:** pinterest `user_data.click_id` (S9, ZUSCHNITT-FRAGE P11.7-19) · google: ob die IP allein genügt (G2),
+- **OFFEN:** google: ob die IP allein genügt (G2),
   Schreibung der Auto-Tagging-Parameter (docs/offene-punkte.md, Messung an einem echten
   Anzeigenklick).
 - **UNBEHANDELT** (gelesen, hier weder ausgeschlossen noch offen geführt): meta (k)
@@ -1366,25 +1367,27 @@ Owner-Entscheidung E-a.
 SCHÄTZUNG; die Reihenfolge setzt E-d):
 1. S8 tiktok `user.ttclid` — ERLEDIGT: gebaut, im Test-Events-Reiter live belegt (VERMERK
    P11.7-28).
-2. S9 pinterest `click_id` — Bau — mittel. ZUGESCHNITTEN (VERMERK P11.7-29). Instrument:
-   die Test-Ansicht "Events testen", Nutzerdaten "Klick-ID" — GEMESSEN als feldspezifisch
-   (pinterest.md, Teile (am), (an)).
-3. F8 Erfolgsrumpf — Messung — klein, ein Aufruf. Instrument: Terminal-Aufruf wie S6b, auch
-   mit `?test=true` (ah). **DAS VERCEL-LOG TAUGT NICHT:** Erfolg 1/1 ist still
-   (`pinterest-forward.ts:611 f.`), und das Urteil käme vom Prüfling. Ob das Testprojekt ein
-   Pinterest-Zugangsdatum trägt, ist nicht erhoben.
-4. F5 Wirkung — Messung — klein bis mittel. Instrument: zwei Aufrufe mit gleicher `event_id`,
-   Anbieter-Metriken (n); Browser gegen Server ohne TikTok-Pixel nicht herstellbar ((k)).
-5. F7 je Ziel — Messung — klein, Kopfzeilen einer Antwort. meta "headers" (u), linkedin
-   Analytics-Reiter (ag), tiktok Kopfzeilen ungelesen (tiktok.md, "Abschnitts-Lesung 2026-09-22 … die Teile (j) bis (p)", Block "WAS NUR EIN AUFRUF ZEIGT", Punkt "welches Limit real greift …"); die Grenze auszulösen
-   ist kein Instrument.
-6. Pinterest-Rate-Limit-Widerspruch — Messung oder Owner-Einordnung — kein belegtes Instrument.
+2. S9 pinterest `click_id` — ERLEDIGT: gebaut (`024678a`), in "Events testen" live belegt
+   (VERMERK P11.7-30).
+3. F8 Erfolgsrumpf — ERLEDIGT: gemessen (VERMERK P11.7-26); der Zweig "200 mit `failed`"
+   bleibt ungemessen und wird beim [x] benannt (E-a).
+4. F5 Wirkung — NICHT VERLANGT: F5 ist durch die Lesung erfüllt, die Messung wird beim [x]
+   als unbewiesen benannt (E-a). Instrument, falls sie je gefahren wird: zwei Aufrufe mit
+   gleicher `event_id`, Anbieter-Metriken (n); Browser gegen Server ohne TikTok-Pixel nicht
+   herstellbar ((k)).
+5. F7 je Ziel — NICHT VERLANGT: F7 ist durch die Lesung erfüllt, die Messung wird beim [x] als
+   unbewiesen benannt (E-a). Instrument, falls sie je gefahren wird: Kopfzeilen einer Antwort —
+   meta "headers" (u), linkedin Analytics-Reiter (ag), tiktok Kopfzeilen ungelesen (tiktok.md,
+   "Abschnitts-Lesung 2026-09-22 … die Teile (j) bis (p)", Block "WAS NUR EIN AUFRUF ZEIGT",
+   Punkt "welches Limit real greift …"); die Grenze auszulösen ist kein Instrument.
+6. Pinterest-Rate-Limit-Widerspruch — ERLEDIGT: gemessen aufgelöst, 120 000 je 60 s (VERMERK
+   P11.7-26; E-b).
 7. ZUSCHNITT-FRAGE P11.7-11 — Owner-Entscheidung, ob gebaut wird; kein Instrument (Drosselung
    nicht herstellbar).
 8. Vorrat P11.7-9 (K1–K4) — Owner-Entscheidung, Trigger "vor dem Phasenende".
 9. LinkedIn-Nachablesung "Data last received" (VERMERK P11.7-22, (c)) — Messung — Campaign
    Manager ab 2026-09-25.
-10. Unbehandelte Felder aus Punkt 5 — Owner-Entscheidung, ob sie dazugehören.
+10. Unbehandelte Felder aus Punkt 5 — ERLEDIGT: eingeordnet durch Owner-Entscheidung E-c.
 11. Matrix-Fortschreibung B2, G1, H2, H3 in docs/ziel-fragenkatalog.md — Doku; heute keine
     Fortschreibung für 11.7 (Suche nach "2026-09-2": 0 Treffer); Pflicht ist nicht geregelt.
 12. Auflage beim [x]: das Unbewiesene in der Roadmap-Zeile nennen (u. a. F5/F7/F8,
@@ -1614,6 +1617,79 @@ Zeiger an (p)(2), (ac), (ae) und (af), Ergänzung an der Prüfsumme im Kopf · Z
 (Abschnitt "Zuschnitt der Phase 11.7", N1 bis N9) · Entscheidung P11.7-7 neu · E-c und
 ZUSCHNITT-FRAGE P11.7-19 mit Zeiger · VERMERK P11.7-25, Liste Nr. 2, und "Nächster Schritt"
 nachgezogen.
+
+### VERMERK P11.7-30 — Scheibe S9 gebaut und live belegt vom 2026-09-24 (pinterest `user_data.click_id`)
+
+**HARTE ANGABEN:** 2026-09-24 · **BAU-COMMIT `024678a`** (`feat(capi): pinterest sendet epik
+zusaetzlich als user_data.click_id (Phase 11.7, S9)`) · vier Dateien:
+`src/lib/capi/click-id-strip.ts` (neue Hülle `extractEpik` am Kern `readClickIdExact`; Kopfsatz
+der Hüllen nachgezogen), `src/lib/capi/pinterest-forward.ts` (`userData.click_id` nach der
+bereinigten Adresse im `try`, nur bei nicht leerem Wert; Kommentare nach N8),
+`src/lib/capi/pinterest-forward.test.ts` (Kopf nach N8; PC-a bis PC-i),
+`src/lib/capi/click-id-strip.test.ts` (EX-a bis EX-h; Titel von TX-h ohne Stückzahl) · Tests
+**2 195 → 2 212 / 98** (GEMESSEN, CC) · tsc, lint (0 Fehler; die bestehende Warnung in
+`consent.test.ts`), build grün · **KEINE `console`-Zeile im Diff** (GEMESSEN, mit
+Positivkontrolle) · der Code von `sanitizeProviderText`, `describeErrorBody`,
+`evaluateSuccessBody`, `readBody` und der drei `console.error` unverändert; ingest.ts, Beacon,
+Erzeuger, Schema und die übrigen Adapter unberührt.
+
+**MUTATIONSPROBEN — ELF, ALLE WIE VORHERGESAGT**, die Vorhersage vor dem Lauf am gebauten
+Bestand nachgezählt (m2 dabei von 4 auf 5 nachgezogen, PC-e); je voller Lauf über 2 212 Tests,
+je zurückgenommen und per sha256 gegen den Baustand belegt:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| k1 | Hülle liest `"epik_"` | 8 — EX-b, EX-c, EX-e, EX-h, PC-a, PC-d, PC-e, PC-f |
+| k2 | Kern vergleicht den Namen ohne Schreibung | 9 — X-c, L-c, M-c, T6-c, W-linkedin/abweichend, TX-c, TT-f, EX-c, PC-e; W-tiktok und W-pinterest grün |
+| k3 | Hülle `.slice(0, 500)` | 2 — EX-b, PC-d |
+| k4 | Hülle `^[A-Za-z0-9_-]+$` | 2 — EX-b, PC-e |
+| m1 | Extraktion im Adapter entfernt | 4 — PC-a, PC-d, PC-e, PC-f |
+| m2 | Feld unbedingt gesetzt | 5 — T8, PC-b, PC-c, PC-e, PC-g |
+| m3 | `epik` aus dem gesendeten `event_source_url` entfernt | 4 — PC-a, PC-c, PC-d, PC-e; W-pinterest grün (verdeckt) |
+| m4 | Lesung aus `body.eventSourceUrl` vor dem `try` | **1 — NUR T19** |
+| m5 | Feldname `clickId` | 4 — PC-a, PC-d, PC-e, PC-f |
+| m6 | Adapter `.slice(0, 255)` | 1 — PC-d |
+| m7 | Riegel lässt mit `epik` durch | 2 — PC-h, PC-i; T6 und T7 grün |
+
+**ZU m7:** Die Probe bewegt zwei Achsen (Ort der Lesung und Riegel). Die Deklaration der
+zweiten Achse — gelesen im `try` vor dem Riegel, aus der unbereinigten Adresse, allein vom
+Riegel verwendet — war vor dem Lauf im Probenskript festgelegt, aber dem Owner NICHT vorab
+vorgelegt.
+
+**ZWEI KOMMENTAR-KORREKTUREN VOR DEM COMMIT (OWNER):** Der Kommentar am Paar-Riegel stützt den
+Riegel auf die GELESENE Mindestregel und die Kosten auf dem meistgetroffenen Pfad statt auf eine
+behauptete Wirkung beim Anbieter · der Kopf von `extractEpik` nennt keine Anzahl der Hüllen
+mehr. Nur Kommentarzeilen; die Pipeline danach erneut grün, 2 212 / 98.
+
+**EIN VERFAHRENSBEFUND AM COMMIT:** Die Secret-Suche vor dem Commit lief im selben Befehl wie
+Commit und Push, und ihre Positivkontrolle meldete 0 — das Muster traf den erfundenen
+Test-Token nicht (er trägt `_`). **Nachgeprüft am gepushten Commit** mit erweitertem Muster:
+Positivkontrolle 1, Treffer in den hinzugefügten Zeilen 0.
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-24, Zeiten UTC):** Beacon an `/api/e` mit `cns` =
+{meta, pinterest, tiktok, linkedin, google} je `true`. "Events testen", Einzelansicht:
+- R1: Empfang 13:56:57, eventID `d6aeba6a-4f26-4a9e-8ec0-a81bd4e195bd`, URL `…/?utm_source=s9r1`
+  — Nutzerdaten "User Agent, IP-Adresse"; Warnungen external_id und click_id (2).
+- S1: Empfang 13:58:38, eventID `2789ba71-900a-442c-9886-058b41ae3c82`, URL
+  `…/?utm_source=s9s1&epik=S9LiveEpik0001` — Nutzerdaten "Klick-ID, User Agent, IP-Adresse";
+  Warnung nur external_id (1).
+- Vercel-Log 13:58:37.577: "[capi] Pinterest forward warning: external_id is missing. … 3P
+  cookie loss", vollständig, ohne Kappung. Die Zeile zu R1 ist NICHT abgelesen.
+Keine IP des Owners in dieser Datei.
+
+**DIE GRENZE, GETRENNT:**
+- **GEMESSEN:** S1 zeigt "Klick-ID", R1 nicht. Die S1-Warnzeile im Log passt unter die
+  Kappung — die Rechnung aus pinterest.md, Teil (ar), ist für den Fall MIT Feld bestätigt.
+- **ABGELEITET (aus Teil (ao)):** Die Klick-ID von S1 stammt aus unserem Feld — eine Kennung
+  allein in der Adresse erkennt die Anzeige nicht.
+- **UNBELEGT:** der Abgleich (die Werte sind erfunden) · die Form echter `epik`-Werte
+  (dekodiert gegen roh) · ob die Zuordnung die Adresse liest · die Kappung auf "; click_i" für
+  den Fall OHNE Feld, am Log nicht abgelesen · Fehlerzweige und ein Echo darin.
+
+**ZEIGER / ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/pinterest.md, Teil (as), dazu datierte
+Zeiger an (o), (x), (ac), (ae) und (ar) · Zuschnitt S9 verdichtet (N7 und N8 entfallen) ·
+ZUSCHNITT-FRAGE P11.7-15 und P11.7-19 nachgezogen · VERMERK P11.7-25 (Punkt 5, Liste) und
+"Nächster Schritt" nachgezogen · S9 ABGESCHLOSSEN.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -1920,8 +1996,8 @@ belegt, dazu ein Zeiger an P11.7-16 (VERMERK P11.7-20); S6b hat P11.7-16 eingel�
 P11.7-22); der Zuschnitt von S7 legt Teile von P11.7-6 (G1) und P11.7-7 (Owner-Entscheidung vom
 2026-09-24) fest, P11.7-8 ist gemessen (VERMERK P11.7-23); S7 hat P11.7-6 für
 `landingPageDeviceInfo` eingelöst und P11.7-7 so gebaut, wie entschieden (VERMERK P11.7-24);
-S8 hat P11.7-9 eingelöst (T1; VERMERK P11.7-28); der Zuschnitt von S9 legt P11.7-19 fest
-(N1; VERMERK P11.7-29).
+S8 hat P11.7-9 eingelöst (T1; VERMERK P11.7-28); S9 hat den festgelegten Teil von P11.7-19
+gebaut und live belegt (N1; VERMERK P11.7-30).
 ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
@@ -2127,7 +2203,9 @@ in S5 bis S9 (D9).
 und pinterest, bewacht vom Wächter W über alle fünf echten Adapter. **OFFEN BLEIBT** der
 zweite Teil der Gestalt — "jedes Ziel erhält nur die seines Urhebers" als eigenes Feld; gebaut
 für meta mit S5 (VERMERK P11.7-18), für linkedin mit S6 (VERMERKE P11.7-20, P11.7-22) und für
-tiktok mit S8 (VERMERK P11.7-28); offen allein pinterest (S9).
+tiktok mit S8 (VERMERK P11.7-28) und für pinterest mit S9 (VERMERK P11.7-30). Damit ist die
+Gestalt für alle Ziele gebaut; google liest seine Kennungen seit jeher über
+`extractGoogleClickIds`.
 
 **ZUSCHNITT-FRAGE P11.7-16 — IPv6 BEI LINKEDIN: DER RIEGEL KÖNNTE DEN IP-EINTRAG AUSLASSEN, STATT DEN
 GANZEN FORWARD ZU VERWERFEN — WENN EINE ZWEITE KENNUNG VORLIEGT.** **DER GRUND DES RIEGELS
@@ -2183,6 +2261,10 @@ Warnung "click_id is missing" entfällt, die Test-Ansicht führt "Klick-ID"); de
 allein als `&epik=` in der Adresse wird es nicht. **DER ADRESSWEG ERSETZT DAS FELD NICHT.** Ob
 die Zuordnung die Adresse später liest — also ob beide sich ergänzen oder doppeln —, bleibt
 OFFEN. Festgelegt für diese Phase durch den Zuschnitt von S9 (N1).
+**ZEIGER 2026-09-24 — GEBAUT UND LIVE BELEGT (VERMERK P11.7-30):** `user_data.click_id` wird
+zusätzlich zur Adresse gesendet (`024678a`); über den echten Weg zeigt "Events testen" die
+Klick-ID genau dann, wenn `epik` in der Adresse stand (pinterest, Teil (as)). Ob sich Feld und
+Adresse in der Zuordnung ergänzen oder doppeln, bleibt OFFEN.
 
 **ZUSCHNITT-FRAGE P11.7-20 — JEDES ZIEL MIT KLICK-KENNUNG EMPFIEHLT, SIE IM BROWSER AUFZUBEWAHREN — UND
 DIESES PRODUKT BEWAHRT NICHTS AUF.** **ARCHITEKT 2026-09-22 — BEFUND, KEINE ENTSCHEIDUNG.**
@@ -2319,8 +2401,8 @@ gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b
 Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist nach G1 bis G5 gebaut,
 `landingPageDeviceInfo` ist auf Schema-Ebene gemessen angenommen (VERMERK P11.7-24). S8
 (tiktok) ist nach T1 bis T5 gebaut, `user.ttclid` ist im Test-Events-Reiter live belegt
-(VERMERK P11.7-28). S9 (pinterest) ist nach N1 bis N9 zugeschnitten und nicht gebaut
-(VERMERK P11.7-29).
+(VERMERK P11.7-28). S9 (pinterest) ist nach N1 bis N6 und N9 gebaut, `user_data.click_id` ist in
+"Events testen" live belegt (VERMERK P11.7-30).
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -2642,20 +2724,18 @@ der Datei ihres Ziels.
   Produktion schreibt damit JEDER Pinterest-Forward eine Warnzeile**; nach S9 bleibt "external_id
   is missing" stehen. Zwei Seiten: Rauschen, das echte Warnungen verdeckt · zugleich heute die
   einzige Sichtbarkeit eines Erfolgs (Gegenstück bei LinkedIn: Vorrat P11.7-9).
-  **MITZUNEHMEN IN S9 — KEINE ENTSCHEIDUNG** (vorgemerkt 2026-09-24):
-  · der Kopf von docs/ziel-befunde/pinterest.md: eine datierte Ergänzung an der Prüfsumme — sie
-    gilt dem Stand `11a44f7` (Muster VERMERK P11.7-11);
-  · der Kopfkommentar in `src/lib/capi/pinterest-forward.ts` "DER ERFOLGS-RUMPF IST NIE GEMESSEN"
-    ist seit VERMERK P11.7-26 falsch;
-  · ein Zeiger an docs/ziel-befunde/pinterest.md, Teil (p)(2), auf Teil (al)(ii) (eigene
-    Ereignisnamen).
-  **ZEIGER 2026-09-24 — ZUGESCHNITTEN:** s. "S9 — ZUGESCHNITTEN AM 2026-09-24" direkt
-  darunter. Prüfsumme und Zeiger (p)(2) sind mit VERMERK P11.7-29 erledigt; der
-  Kopfkommentar geht in den Bau (N8).
+  **DIE DREI VORMERKUNGEN FÜR S9 SIND ERLEDIGT:** Prüfsumme im Kopf und Zeiger an (p)(2) von
+  docs/ziel-befunde/pinterest.md mit VERMERK P11.7-29, der Kopfkommentar zum Erfolgs-Rumpf im
+  Bau-Commit `024678a` (VERMERK P11.7-30). Ihr Wortlaut steht unter Commit `e588c77`.
 
 **S9 — ZUGESCHNITTEN AM 2026-09-24 — pinterest `user_data.click_id` aus `epik`.**
 ZUSCHNITT-FRAGE P11.7-19; Material VERMERK P11.7-29 und die Aufklärung desselben Tages.
-PFLICHT DAVOR: Volladung docs/ziel-befunde/pinterest.md plus Kopf. **Nicht gebaut.**
+**ABGESCHLOSSEN AM 2026-09-24 — VERMERK P11.7-30** (Bau-Commit `024678a`; `user_data.click_id` in
+"Events testen" live belegt). N1 bis N6 und N9 bleiben als bindende Entscheidungen stehen: sie
+beschreiben, wie gebaut ist. Dazu Entscheidung P11.7-7 (Paar-Riegel). **N7 (das Live-Instrument)
+und N8 (die Mitnahme in den Bau) sind mit dem Abschluss entfallen** — sie wiesen allein S9 an;
+ihr Ergebnis steht in VERMERK P11.7-30 und in docs/ziel-befunde/pinterest.md, Teil (as), ihr
+Wortlaut unter Commit `e588c77`. Ein Zeiger auf "N1 bis N9" landet hier.
 **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24** (Kennbuchstaben N, frei im Bestand):
 - **N1 — `user_data.click_id` WIRD ZUSÄTZLICH GESENDET; `event_source_url` BEHÄLT `epik` ROH
   (S4).** Grund GEMESSEN: Eine Kennung allein in der Adresse wird für Warnung und Anzeige
@@ -2663,9 +2743,9 @@ PFLICHT DAVOR: Volladung docs/ziel-befunde/pinterest.md plus Kopf. **Nicht gebau
   Zuordnung die Adresse später liest, bleibt offen; das Feld zu senden hängt daran nicht.
 - **N2 — GELESEN ÜBER EINE HÜLLE AM KERN `readClickIdExact` FÜR `epik`:** exakt, erstes
   Vorkommen, `""` → kein Feld, der Wert dekodiert. Gelesen wird die BEREINIGTE Adresse im
-  `try`, nach ihrem Bau in `forwardToPinterest`; `userData` wird dort ergänzt. Name und Form
-  legt der Stufe-1-Plan fest. Grund: vierter Nutzer des Kerns, bestehende Verträge bleiben
-  unberührt (wie T2 von S8).
+  `try`, nach ihrem Bau in `forwardToPinterest`; `userData` wird dort ergänzt. Gebaut als
+  `extractEpik` (`src/lib/capi/click-id-strip.ts`). Grund: vierter Nutzer des Kerns,
+  bestehende Verträge bleiben unberührt (wie T2 von S8).
 - **N3 — KEINE KÜRZUNG, KEINE FORMPRÜFUNG.** Grund: Der Bestand trägt keine Formregel (Teil
   (ac)), und ein Wert mit `+` und `%2B` wird angenommen (Teil (ap)).
   **DEKODIER-GRENZE:** Die Hülle liefert den Wert dekodiert; ein `+` wird zum Leerzeichen.
@@ -2685,24 +2765,9 @@ PFLICHT DAVOR: Volladung docs/ziel-befunde/pinterest.md plus Kopf. **Nicht gebau
 - **N6 — TESTS:** Fälle MIT Adresse halten `user_data` als Ganzes fest; T8
   (`pinterest-forward.test.ts`) bleibt der Fall ohne Adresse; Wächter W bewacht `click_id`
   NICHT (der Wert steht ohnehin in `event_source_url`), er deckt weiter, dass kein anderes
-  Ziel `epik` trägt. Für den Einsatzpunkt im `try` ist T19 (werfender Getter) das Pendant zu
-  T20 bei tiktok; ob er eine Lesung VOR dem `try` schon allein fängt oder ein eigener Fall
-  nötig ist, belegt die Mutationsprobe des Plans (FOLGERUNG: eine Lesung vor dem `try` wirft
-  aus der Funktion, T19 würde rot).
-- **N7 — LIVE: NUR DER ECHTE WEG** — R1 ohne `epik`, S1 mit `?epik=` auf der Live-Seite.
-  Instrument: "Events testen", Nutzerdaten "Klick-ID", GEMESSEN als feldspezifisch (Teile
-  (am), (an)). **PFLICHT-STOPP: Die Ansicht ist VOR dem Klick offen** (Live-Strom ohne
-  Rückschau, Teil (w)); der Projekt-Testmodus steht für Pinterest an, weil die Ansicht aus
-  dem Testmodus gespeist wird (GELESEN, Teil (m)(1)). Die Warnzeile im Vercel-Log ist nur zweites Instrument: mit fehlendem
-  `click_id` endet sie auf "; click_i", sonst auf "cookie loss" (GERECHNET, Teil (ar)).
-- **N8 — MITNAHME IN DEN BAU:** die drei falschen Stellen zum Erfolgsrumpf — Kopf von
-  `pinterest-forward.ts` ("DER ERFOLGS-RUMPF IST NIE GEMESSEN WORDEN"), der Typ-Kommentar am
-  Erfolgs-Rumpf vor `evaluateSuccessBody` (`PinterestSuccessBody`, "NIE GEMESSEN"), Kopf von
-  `pinterest-forward.test.ts` — mit der Grenze "Endpunkt gemessen (Teil (al)), Adapter nicht,
-  200 mit `failed` ungemessen" · der Kommentar an `pinterestEventName` ("Eine Messung an unserem
-  Konto gibt es nicht") nach Teil (al)(ii) · die Riegel-Kommentare, die "ohne Kennung" bzw.
-  "ohne jede Identitaet" sagen (Kopfpunkt 3 und der Kommentar am Paar-Riegel) · die
-  Hüllen-Aufzählung im Kopf von `click-id-strip.ts`.
+  Ziel `epik` trägt. Das Feld tragen PC-a bis PC-i (`pinterest-forward.test.ts`), die Hülle
+  EX-a bis EX-h (`click-id-strip.test.ts`). Den Einsatzpunkt im `try` fängt allein T19
+  (werfender Getter), das Pendant zu T20 bei tiktok (VERMERK P11.7-30, m4).
 - **N9 — NICHT TEIL VON S9**, je mit Grund: `external_id` — offene Owner-Frage
   (ZUSCHNITT-FRAGE P11.7-4) · Personendaten — Roadmap-Grenze und F3 · `customer_type`,
   `app_info` — E-c · `partner_id` — "Use only if you are a Pinterest integration partner"
@@ -2752,13 +2817,31 @@ binden:**
 
 ## Nächster Schritt
 
-**S1 BIS S8 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28). **DER ROADMAP-ABGLEICH IST GEMACHT (VERMERK
-P11.7-25); DIE REIHENFOLGE BIS ZUM PHASENENDE STEHT IN DER OWNER-ENTSCHEIDUNG E-d**
-(Abschnitt "Gegenstand der Phase"). **F8 IST GEMESSEN UND ERFÜLLT (VERMERK P11.7-26). S9
-pinterest IST ZUGESCHNITTEN (N1 bis N9, VERMERK P11.7-29). ALS NÄCHSTES: DER STUFE-1-PLAN VON
-S9** — Pflicht-Stopp: Volladung docs/ziel-befunde/pinterest.md plus Kopf. Die Mitnahme steht
-in N8 (Abschnitt "Zuschnitt der Phase 11.7", "S9 — ZUGESCHNITTEN AM 2026-09-24").
+**S1 BIS S9 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
+P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28, P11.7-30). **ALLE FÜNF PUNKTE DER
+ROADMAP-ZEILE 11.7 SIND BEARBEITET:** F5, F6 und F7 durch die Lesung (E-a), F8 gemessen
+(VERMERK P11.7-26), Punkt 5 mit S4 bis S9. Die Reihenfolge bis zum Phasenende steht in der
+OWNER-ENTSCHEIDUNG E-d (Abschnitt "Gegenstand der Phase").
+**ALS NÄCHSTES:** die Owner-Entscheidungen zu Vorrat P11.7-9 (K1–K4) und ZUSCHNITT-FRAGE
+P11.7-11 · die LinkedIn-Nachablesung "Data last received" ab 2026-09-25 (VERMERK P11.7-22, (c))
+· danach das Phasenende nach E-d (6).
+**WEITERE OFFENE ZUSCHNITT-FRAGEN IM BESTAND**, je mit dem Stand an der Frage (Abschnitt
+"Fragen an den Zuschnitt (nach dem Meta-Crawl)"):
+- P11.7-4 (dazu P11.7-12 und P11.7-18) — `external_id`, offene OWNER-Frage; für diese Phase
+  ausgeschlossen.
+- P11.7-10 — Doppelzählung mit einem eigenen Pixel des Betreibers: Ableitung, ungemessen; in S8
+  nicht bearbeitet.
+- P11.7-13 — kein Versions-Wächter für tiktok, google und pinterest; keiner der drei trägt einen
+  Abschalttermin.
+- P11.7-21 — der angekündigte, undatierte Schema-Wechsel bei Pinterest: ungemessen; beim [x] zu
+  benennen (VERMERK P11.7-25, Liste Nr. 12).
+- P11.7-22 — Meta sendet zwei verlangte Felder nur bedingt; für diese Phase ausgeschlossen, vor
+  einem Bau steht eine Messung.
+- P11.7-24 — die Seitenadresse wird im Handler nicht geprüft; die sechs `asString`-Kopien
+  bestehen.
+- P11.7-25, Punkt (7) — "Anwesenheit, nie Form" als Regel für alle Ziele ist nicht entschieden.
+- P11.7-2, P11.7-20, P11.7-26 — Cookie-Wege und Aufbewahrung: für diese Phase ausgeschlossen
+  bzw. an die Phase 17 verwiesen; als Fragen offen.
 **DIE SIEBEN-TAGE-FRIST LÄUFT WEITER:** Die Google-Karte ist am 2026-09-24 neu autorisiert
 worden; im Status "Testing" stirbt das Erneuerungs-Token sieben Tage danach (VERMERK P11.7-23,
 (a)). Vor jedem weiteren Google-Live-Test den Ablaufzeitpunkt auf der Karte prüfen.

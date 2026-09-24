@@ -8,6 +8,11 @@ DER BELEG: sha256 = 70ce633f1db0ab7bee02b94a412d44bf08eb370d2c333ef339e20a2a23bc
 den übernommenen Abschnitt — also über alles ab der Zeile "## TikTok (Events API 2.0)"
 bis zum Dateiende, OHNE diesen Kopf. Wer prüfen will, ob hier jemand nachträglich ein Wort
 geändert hat, misst gegen diese Prüfsumme.
+ERGÄNZUNG 2026-09-24 — DIE PRÜFSUMME GILT DEM STAND DES COMMITS `11a44f7`, NICHT DEM HEUTIGEN
+DATEIENDE. Seither kamen nur Anhänge und datierte Zeiger nach der Konvention hinzu
+(Einzelheiten: git log); über den heutigen Stand geht die Summe darum nicht mehr auf. Gemessen
+wird sie gegen `git show 11a44f7:docs/ziel-befunde/tiktok.md`, dort ab der Zeile "## TikTok
+(Events API 2.0)". Der Satz darüber bleibt wörtlich; er war am Tag der Aufteilung richtig.
 
 **WARUM ES DIE AUFTEILUNG GAB:** Die Sammel-Datei war für die VOLLLADUNG zu gross, die der
 Pflicht-Stopp vor einem Zuschnitt verlangt. Die Pflicht ist damit nicht gelockert, sondern
@@ -553,6 +558,14 @@ nicht als Nebenbemerkung:
 · ob die 48-Stunden- und die 5-Minuten-Frist aus (n) so wirken;
 · ob ein Aufruf gegen eine abgelaufene Version scheitert, wie (p) es liest.
 
+**ZEIGER 2026-09-24 — ZUM ERSTEN UND ZWEITEN PUNKT DIESER LISTE; die Liste bleibt wörtlich:**
+`user.ttclid` ist im Testmodus mit `code 0` quittiert und im Test-Events-Reiter als Parameter
+angezeigt worden (Teile (q), (r)); die Quittung allein belegt das nicht, sie ist für Feldnamen
+blind (Teil (q)). OFFEN bleiben, ob TikTok den Wert fachlich verwertet (der Wert war erfunden),
+und `user.ttp` unverändert. Zum zweiten Punkt: Eine Kennung allein in `page.url` zeigt der
+Reiter NICHT als Parameter — der Satz aus (m) ist damit weder bestätigt noch widerlegt (Teil
+(r)).
+
 ### Der gelesene Umfang (2026-09-22) — TikTok, Transport
 
 **GEÖFFNET UND GELESEN (9 Seiten), je mit der Zeichenzahl des gerenderten Artikel-Rumpfes:**
@@ -620,3 +633,46 @@ WIDERSPRECHEN:** Teil (c) nennt für die Parameter-Seite "71 789 Zeichen gerende
 Lesung 35 679. **VERSCHIEDENE ACHSE, KEIN WIDERSPRUCH** — jene Zahl ist über den vollen
 Seitenrumpf erhoben (am 2026-09-22 dort gemessen: 75 911), diese über den Artikel-Rumpf
 `.doc-content-body`.
+
+### MESSUNG 2026-09-24 gegen /event/track/ im Testmodus und Ablesung am Test-Events-Reiter (S8 der Phase 11.7) — die Teile (q) bis (s)
+
+**HERKUNFT (2026-09-24):** GEMESSEN vom OWNER im Terminal (Git Bash, `curl`), VIER Aufrufe in
+EINEM Lauf gegen `POST https://business-api.tiktok.com/open_api/v1.3/event/track/` — Endpunkt,
+Kopfzeile `Access-Token` und Rumpfform wie in `forwardToTiktok`, dazu `test_event_code` auf der
+Wurzelebene (Teil (a)). Ereignis `Lead`, `event_id` `s8-A-1790252376` bis `s8-D-1790252376`,
+Empfang laut Reiter 12:20:05 bis 12:20:06 UTC. `user.ip` `203.0.113.9` (TEST-NET), ein erfundener
+User-Agent, der erfundene Kennungswert `E.C.P.S8TerminalProbe1790252376`. Die Reiter-Angaben
+sind vom OWNER an der Einzelansicht des Reiters "Test Events" ABGELESEN (Weg dorthin: Teil (b)).
+Kein Zugangsdatum und keine Pixel-Kennung in dieser Datei. **EIN Lauf, NUR Testmodus.**
+Die vier Aufrufe: **A** `user.ttclid`, `page.url` ohne Kennung · **B** ohne Kennung · **C**
+`user.ttclidX` statt `user.ttclid` · **D** die Kennung NUR als Parameter in `page.url`.
+
+(q) DIE ANTWORT IST FÜR FELDNAMEN IM `user`-OBJEKT BLIND — AUCH EIN UNBEKANNTES FELD BEKOMMT
+    `code 0`.
+    GEMESSEN 2026-09-24 (OWNER): A, B, C und D antworten je mit HTTP 200 und
+    `{"code": 0, "message": "OK"}` — auch C, dessen Feld `user.ttclidX` es laut Teil (l) nicht
+    gibt.
+    **FOLGE:** Eine Erfolgsquittung belegt NICHT, dass ein Feld im `user`-Objekt erkannt wurde.
+    Ein Tippfehler im Feldnamen geht als Erfolg hinaus.
+    **GRENZE:** gemessen im Testmodus; ob der Endpunkt ohne `test_event_code` ebenso antwortet,
+    ist ungemessen.
+
+(r) DER TEST-EVENTS-REITER ZEIGT `user.ttclid` ALS PARAMETER "ttclid" — EIN UNBEKANNTES FELD
+    NICHT, UND EINE KENNUNG ALLEIN IN `page.url` AUCH NICHT.
+    ABGELESEN 2026-09-24 (OWNER), Einzelansicht je Ereignis: NUR A zeigt unter "Parameters" den
+    Eintrag "ttclid: E.C.P.S8TerminalProbe1790252376". B, C und D zeigen keinen ttclid-Eintrag;
+    bei D steht die Kennung nur als Teil der URL.
+    **FOLGE:** Der Reiter ist ein Instrument für `user.ttclid` — er trennt das Feld von einem
+    falsch benannten (C) und von der Adresse (D), wo die Antwort nach (q) nichts trennt.
+    **WEG (m) — DAS PARSEN AUS `page.url` — IST DAMIT WEDER BESTÄTIGT NOCH WIDERLEGT:** Dass der
+    Reiter aus D keinen Parameter macht, sagt nichts darüber, ob das Backend die Kennung
+    später aus der Adresse zieht.
+    **GRENZE:** Der Wert ist erfunden; ein ABGLEICH mit einem Anzeigenklick ist nicht belegt.
+    Ob TikTok den Wert FACHLICH verwertet, bleibt offen.
+
+(s) DIE TEST-IP 203.0.113.9 WIRD ANGENOMMEN UND ANGEZEIGT.
+    GEMESSEN bzw. ABGELESEN 2026-09-24 (OWNER): Alle vier Aufrufe mit `user.ip` `203.0.113.9`
+    (Dokumentations-Adressbereich TEST-NET-3) antworten mit `code 0` (Teil (q)), und bei allen
+    vier steht die IP im Reiter unter "Customer information parameters".
+    **GRENZE:** Das sagt nur, dass der Endpunkt eine solche Adresse nicht ablehnt; über ihren
+    Nutzen für die Zuordnung sagt es nichts.

@@ -974,6 +974,40 @@ ALLEIN IST WEITER UNGEMESSEN.**
 Zeiger an (i), (an) und (aq) · ZUSCHNITT-FRAGEN P11.7-14 und P11.7-16, F1 und "WAS EIN CRAWL FÜR
 LINKEDIN NICHT KLÄRT" nachgezogen · S6a ABGESCHLOSSEN.
 
+### VERMERK P11.7-21 — Messung zum AAAA-Befund vom 2026-09-24 (KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-24 · HEAD `dea8487` · Arbeitsbaum sauber · READ-ONLY · Instrument
+`nslookup` (Windows), je `-type=AAAA` und `-type=A`, gegen drei Resolver: den Router-Resolver
+der Maschine (`fe80::7ac5:7dff:fec6:3720`), `1.1.1.1`, `8.8.8.8`. Anlass: der Stufe-1-Plan von
+S6b. Kein Bau-Commit.
+
+**A1 — DIE LABEL-HOSTS (GEMESSEN):** `meta-test-5nlm3e.publayer.net`, `publayer.net` und der
+Zufallshost `zz-s6b-probe-1833414406.publayer.net` (Wildcard-Probe) — in allen NEUN
+AAAA-Abfragen KEIN AAAA-Eintrag; die A-Abfragen liefern je zwei Adressen aus `216.198.79.1`,
+`216.198.79.65`, `64.29.17.1`, `64.29.17.65`. Die Resolver widersprechen sich nicht.
+**A2 — POSITIVKONTROLLE:** `google.com` liefert über alle drei Resolver AAAA-Einträge (je vier
+Adressen unter `2a00:1450:4025:`).
+**A3 — DREI INGEST-WEGE (GEMESSEN am Code):**
+- GEHOSTETE Seiten relativ an ihre Serving-Domain: Klick-Beacon und Bestätigung
+  (`buildCapiBeaconStatement`, `buildPixelConfirmStatement` in `src/lib/tracking/meta.ts`)
+  bekommen aus `handlePublish` (`src/components/CodeImporter.tsx`) den Pfad `"/api/e"`; der
+  PageView sendet fest an `'/api/e'` (`buildPageViewScript`,
+  `src/lib/analytics/pageview-emitter.ts`).
+- EXPORTIERTE Seiten absolut an `NEXT_PUBLIC_APP_URL` (`buildExportDocument` →
+  `getCapiProxyUrl`, `src/lib/capi/proxy.ts`).
+- ALTE Exporte an den Alias `/api/capi` (absolut eingebacken; docs/immer-beachten.md,
+  "PERMANENTER Alias /api/capi darf NIE entfernt werden").
+**GRENZEN:** Der Produktionswert von `NEXT_PUBLIC_APP_URL` ist am Repo nicht feststellbar
+(`.env.local` trägt `http://localhost:3000`); der Kandidat `pagesmith-delta.vercel.app` hat über
+alle drei Resolver keinen AAAA-Eintrag, ist als Produktionswert aber NICHT belegt.
+Kunden-Domains sind NICHT gemessen. Gemessen per DNS, nicht an einem echten Besuch.
+
+**ZEIGER:** docs/plattform-befunde.md, Abschnitt "Vercel (Hosting · Ausspielung · Deploy ·
+zeitgesteuerte Auslöser)", Teil (h) — eingeschränkt auf gehostete Seiten auf Label-Hosts
+(OWNER-ENTSCHEIDUNG 2026-09-24, Weg (b)). **IM SELBEN ZUG:** die Owner-Entscheidung zum Bau von
+S6b und B7 ersetzt (Abschnitt "Zuschnitt der Phase 11.7", S6b); ein Zeiger an ZUSCHNITT-FRAGE
+P11.7-16 nachgezogen.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1409,7 +1443,10 @@ zweiten Eintrag an. **OB `li_fat_id` ALLEIN — ohne IP-Eintrag — ANGENOMMEN W
 UNGEMESSEN** und ist die Messfrage von S6b.
 **ZEIGER 2026-09-24 — ZUGESCHNITTEN (Abschnitt "Zuschnitt der Phase 11.7", S6b, B1 bis B7):**
 Riegel 1 und 2 brechen nur noch ohne `li_fat_id` ab; mit ihm entfällt allein der IP-Eintrag,
-eine IPv6-IP wird nie gesendet (B4). Die Messfrage beantwortet der Live-Test nach B7.
+eine IPv6-IP wird nie gesendet (B4). Die Messfrage — ob `li_fat_id` allein angenommen wird —
+misst nach B7 in der Fassung vom 2026-09-24 ein Terminal-Aufruf des Owners gegen die
+Schnittstelle; über gehostete Seiten auf Label-Hosts ist sie live nicht erreichbar (VERMERK
+P11.7-21).
 
 **ZUSCHNITT-FRAGE P11.7-17 — DIE VERSIONS-ANHEBUNG TRIFFT META UND LINKEDIN BEIDE IM JANUAR 2027.** meta
 `v21.0` bis **2027-01-21**, linkedin `202601` bis **2027-01-15** — **ZWEI ZIELE, SECHS TAGE
@@ -1802,13 +1839,22 @@ der Datei ihres Ziels.
     nebenbei umgeschrieben, schwächte eine Schutzregel ohne eigene Entscheidung (wie E5 in S4) —
     und der Satz verlangt nur, dass Riegel und Nutzlast-Bau INNERHALB des `try` liegen, wo
     `extractLiFatId` heute schon steht (GEMESSEN am Code).
-  - **B7 — LIVE AUS EINEM IPv6-NETZ:** R1 ohne `li_fat_id` ist die POSITIVKONTROLLE — Logzeile
-    "[capi] LinkedIn forward skipped: identity is not IPv4", die Anzeige "Data last received"
-    springt NICHT; S1 mit `li_fat_id` ist der BELEG — keine skipped-, keine rejected-Zeile, die
-    Anzeige springt. Gemessen wird: `li_fat_id` ALLEIN wird angenommen. Grund: ohne R1 wäre
-    nicht belegt, dass die Anfrage mit einer IPv6-Adresse am Adapter ankommt — `resolveClientIp`
-    reicht sie unverändert durch (GEMESSEN am Code), aber welche Adresse das Netz liefert, sagt
-    erst die Logzeile, und über eine IPv4 mit zwei Einträgen sähe S1 genauso aus.
+  - **B7 — DER NACHWEIS (ERSETZT AM 2026-09-24, SACHKORREKTUR NACH VERMERK P11.7-21):** Für
+    gehostete Seiten auf Label-Hosts ist ein Live-Beleg der neuen Zweige nicht möglich; unser
+    Pfad wird durch die Tests und die Mutationen belegt. Ob LinkedIn eine Nutzlast mit NUR
+    `li_fat_id` annimmt, misst der Owner per Terminal-Aufruf direkt gegen die Schnittstelle —
+    das misst den ANBIETER, nicht unseren Code-Pfad. Dazu eine Regression über die Live-Seite
+    (IPv4, mit `li_fat_id`, wie S6a). Ein Live-Beleg über eine exportierte Seite oder eine
+    Kunden-Domain mit IPv6 ist NICHT Teil von S6b. Grund: die Label-Hosts haben keinen
+    AAAA-Eintrag, eine gehostete Seite liefert dem Ingest also heute keine IPv6-Adresse
+    (docs/plattform-befunde.md, Abschnitt "Vercel …", Teil (h)). Die frühere Fassung — Live aus
+    einem IPv6-Netz, R1 als Positivkontrolle, S1 als Beleg — steht unter Commit `dea8487`.
+  **OWNER-ENTSCHEIDUNG 2026-09-24 — S6b WIRD GEBAUT, AUCH WENN DIE NEUEN ZWEIGE FÜR GEHOSTETE
+  SEITEN AUF LABEL-HOSTS HEUTE NICHT ERREICHBAR SIND.** Grund: Bekommt die Serving-Domain IPv6,
+  wären IPv6-Besucher mit LinkedIn-Anzeige sonst ab diesem Tag still verloren; der gebaute
+  Filter deckt das vorab ab und macht einen offenen Punkt mit Trigger überflüssig. Dazu: Für
+  exportierte Seiten und Kunden-Domains ist offen, ob IPv6 heute schon ankommt (VERMERK
+  P11.7-21, Grenzen) — wenn ja, verwirft Riegel 2 deren LinkedIn-Conversions schon heute.
   **NICHT TEIL VON S6b:** eine IPv6-IP senden, in keiner Form · Riegel 3 (keine Regel-URN für
   das Ereignis) · der Cookie-Weg.
 - google IP/UA und DMA-Felder — ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4. **Ob
@@ -1860,9 +1906,10 @@ binden:**
 
 **S1 BIS S5 UND S6a SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
 P11.7-18, P11.7-20). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER, 2026-09-23): S6
-linkedin, dann google, tiktok, pinterest.** **ALS NÄCHSTES STEHT DER STUFE-1-PLAN VON S6b** —
-zugeschnitten mit B1 bis B7 (Abschnitt "Zuschnitt der Phase 11.7", S6): die Riegel 1 und 2
-brechen nur noch ohne `li_fat_id` ab (ZUSCHNITT-FRAGE P11.7-16). Pflicht-Stopp:
+linkedin, dann google, tiktok, pinterest.** **ALS NÄCHSTES STEHT DER BAU VON S6b NACH DEM
+STUFE-1-PLAN VOM 2026-09-24** — zugeschnitten mit B1 bis B7, B7 in der Fassung vom 2026-09-24
+(Abschnitt "Zuschnitt der Phase 11.7", S6): die Riegel 1 und 2 brechen nur noch ohne
+`li_fat_id` ab (ZUSCHNITT-FRAGE P11.7-16). Pflicht-Stopp:
 docs/ziel-befunde/linkedin.md voll plus Kopf von docs/ziel-befunde.md.
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist

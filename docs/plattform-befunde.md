@@ -88,6 +88,7 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
 · Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
   · Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-
     Grenzen, Absicherung) — die Teile (a) bis (g)
+  · Messung 2026-09-24 der DNS-Einträge der Label-Hosts (AAAA) — der Teil (h)
 
 ## DIE HERKUNFT DIESER DATEI
 
@@ -1616,3 +1617,44 @@ GELESEN 2026-09-02.
 eigene Vorgehen — die Zeichenzahlen in (f) und die HTTP-Status in (e), GEMESSEN am eigenen Lauf
 (CC, 2026-09-02). **KEINE Messung an einer Vercel-Schnittstelle, KEINE am eigenen Dashboard,
 und KEINE Aussage darüber, wie sich dieses Projekt tatsächlich verhält.**
+
+### Messung 2026-09-24 der DNS-Einträge der Label-Hosts (AAAA) — der Teil (h)
+
+**HERKUNFT: GEMESSEN 2026-09-24 (CC), `nslookup` unter Windows, je `-type=AAAA` und
+`-type=A`, gegen drei Resolver** — den Router-Resolver der Maschine
+(`fe80::7ac5:7dff:fec6:3720`), `1.1.1.1` und `8.8.8.8`. **KEINE Doku-Lesung, KEIN echter
+Besuch einer Seite.** Anlass war der Stufe-1-Plan der Scheibe S6b der Phase 11.7
+(docs/aktiver-stand.md, VERMERK P11.7-21); der Befund gehört keiner Phase.
+**WARUM ER IN DIESEM ABSCHNITT STEHT:** Die Label-Hosts sind die Ausspielung. **Wer die
+DNS-Zone von `publayer.net` führt und ob die gemessenen A-Adressen zu Vercel gehören, ist
+NICHT erhoben.**
+**DIE BUCHSTABEN LAUFEN IM VERCEL-ABSCHNITT FORT:** Auf (g) folgt (h).
+
+**(h) DIE LABEL-HOSTS UNTER `*.publayer.net` HABEN KEINEN AAAA-EINTRAG — EINE GEHOSTETE SEITE
+AUF EINEM LABEL-HOST LIEFERT DEM INGEST HEUTE KEINE IPv6-ADRESSE.** **NEU.**
+- **GEMESSEN:** `meta-test-5nlm3e.publayer.net` (ein Label-Host), `publayer.net` und ein
+  zufälliger, nicht vergebener Label-Host `zz-s6b-probe-1833414406.publayer.net`
+  (Wildcard-Probe) — in allen NEUN AAAA-Abfragen (drei Hosts, drei Resolver) KEIN
+  AAAA-Eintrag; die Antwort nennt nur den Namen. Die A-Abfragen liefern je zwei Adressen aus
+  `216.198.79.1`, `216.198.79.65`, `64.29.17.1`, `64.29.17.65`, je nach Resolver in anderer
+  Auswahl. **Die Resolver widersprechen sich nicht.**
+- **POSITIVKONTROLLE im selben Lauf:** `google.com` liefert über alle drei Resolver
+  AAAA-Einträge (je vier Adressen unter `2a00:1450:4025:`). Der Weg findet also einen
+  AAAA-Eintrag, wo es einen gibt.
+- **WARUM DAS DEN INGEST BETRIFFT — GEMESSEN am Code (CC, 2026-09-24):** Eine gehostete Seite
+  sendet ihre Beacons RELATIV an `/api/e`, also an ihren eigenen Host (`handlePublish` in
+  `src/components/CodeImporter.tsx`; `buildPageViewScript` in
+  `src/lib/analytics/pageview-emitter.ts`).
+- **FOLGERUNG, NICHT GEMESSEN:** Ohne AAAA-Eintrag verbindet sich ein Browser über IPv4 — auch
+  ein Besucher in einem reinen IPv6-Netz erreicht den Host nur über eine Übersetzung auf
+  IPv4 —, und die vertraute Adresse, die `resolveClientIp` (`src/lib/capi/ingest.ts`) liest,
+  ist dann eine IPv4. **Der Riegel 2 ("identity is not IPv4") in `forwardToLinkedin`
+  (`src/lib/capi/linkedin-forward.ts`) ist für gehostete Seiten auf Label-Hosts in Produktion
+  heute nicht erreichbar.**
+- **BENANNTE LÜCKEN — für beide ist offen, ob IPv6 heute ankommt:** (1) EXPORTIERTE Seiten
+  senden absolut an `NEXT_PUBLIC_APP_URL` (`getCapiProxyUrl`, `src/lib/capi/proxy.ts`); der
+  Produktionswert ist am Repo nicht feststellbar, und der Kandidat `pagesmith-delta.vercel.app`
+  hat über dieselben drei Resolver keinen AAAA-Eintrag, ist als Produktionswert aber NICHT
+  belegt. (2) KUNDEN-DOMAINS (`custom_host`) — ihr DNS führt der Kunde; NICHT gemessen.
+- **GRENZE:** gemessen per DNS, nicht an einem echten Besuch. Der Befund kippt, sobald Vercel
+  oder die DNS-Konfiguration IPv6 einführt — **und kein Instrument in diesem Repo meldet das.**

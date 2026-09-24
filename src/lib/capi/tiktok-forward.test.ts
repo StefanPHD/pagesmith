@@ -61,9 +61,17 @@ function logLines(): string[] {
   );
 }
 
+/** Alle Zeilen, die in console.info gelandet sind (die Erfolgszeile, S10a). */
+function infoLines(): string[] {
+  return (console.info as unknown as ReturnType<typeof vi.fn>).mock.calls.map(
+    (c) => String(c[0]),
+  );
+}
+
 beforeEach(() => {
   global.fetch = vi.fn(async () => jsonResponse(okBody())) as unknown as typeof fetch;
   vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(console, "info").mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -182,7 +190,7 @@ describe("TikTok — Schwaerzung und Diagnose", () => {
 // ===========================================================================
 
 describe("TikTok — der Rumpf-Leser", () => {
-  it("T5: ERFOLG SCHWEIGT — HTTP 200 mit code 0 erzeugt KEINE Zeile", async () => {
+  it("T5: ERFOLG ERZEUGT KEINE FEHLERZEILE — HTTP 200 mit code 0", async () => {
     await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
     // POSITIVKONTROLLE: der Aufruf hat wirklich stattgefunden. Ohne sie waere
     // "keine Zeile" auch dann wahr, wenn gar nichts gesendet wurde.
@@ -563,5 +571,160 @@ describe("TikTok — user.ttclid ueber den Adressweg", () => {
     await forwardToTiktok(CONFIG, "Purchase", "evt-1", body, IP, "");
     await forwardToTiktok(CONFIG, "Purchase", "evt-1", body, undefined, UA);
     expect(global.fetch).not.toHaveBeenCalled();
+  });
+});
+
+// ===========================================================================
+// DIE ERFOLGSZEILE (Phase 11.7, S10a).
+//
+// Das bestehende Erfolgsurteil — res.ok, lesbares JSON, code 0 — schreibt GENAU EINE
+// console.info-Zeile mit Ziel und HTTP-Status, sonst nichts. Das Muster ist fuer alle
+// fuenf Ziele zeichengleich. Die Faelle lesen BEIDE Kanaele: info fuer die Zeile, error
+// dafuer, dass sie nicht auf der falschen Stufe steht.
+// ===========================================================================
+
+describe("TikTok — die Erfolgszeile (S10a)", () => {
+  const ZEILE_200 = "[capi] TikTok forward accepted: HTTP 200";
+
+  it("TS-a: HTTP 200 mit code 0 -> genau EINE Info-Zeile, keine Fehlerzeile", async () => {
+    // WIRD ROT, WENN: die Zeile fehlt, doppelt kommt, auf error steht oder mehr traegt.
+    await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(infoLines()).toEqual([ZEILE_200]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("TS-b: der Status kommt aus der Antwort — 201 mit code 0 ergibt 'HTTP 201'", async () => {
+    // WIRD ROT, WENN: der Status festgeschrieben statt gelesen wird. EINZIGER TEST GEGEN
+    // einen festgeschriebenen Status (Mutation mT6 der Scheibe S10a).
+    global.fetch = vi.fn(async () =>
+      jsonResponse(okBody(), 201),
+    ) as unknown as typeof fetch;
+    await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(infoLines()).toEqual(["[capi] TikTok forward accepted: HTTP 201"]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("TS-c: KEIN Wert aus Anfrage oder Antwort steht in einer Zeile — mit Positivkontrolle", async () => {
+    // WIRD ROT, WENN: IP, User-Agent, Kennung, Zugangsdatum, ttclid, eventID, Adresse,
+    // Betrag, Waehrung, Testcode oder ein Feld der Antwort in die Zeile geraten
+    // (TRANSIT-ONLY; aus der Antwort allein der Status).
+    const TTCLID = "E.C.P.ErfundenS10aWert-0001";
+    const EVT = "evt-s10a-c-kennung";
+    const TESTCODE = "TT-PROJ-S10A";
+    global.fetch = vi.fn(async () =>
+      jsonResponse(okBody({ request_id: "REQ-S10A-ANTWORT" })),
+    ) as unknown as typeof fetch;
+    await forwardToTiktok(
+      CONFIG,
+      "Purchase",
+      EVT,
+      {
+        value: 49.9,
+        currency: "EUR",
+        eventSourceUrl: `https://kunde.de/lp?utm_source=s10a&ttclid=${TTCLID}`,
+      },
+      IP,
+      UA,
+      TESTCODE,
+    );
+
+    // POSITIVKONTROLLE: jeder gesuchte Wert ist tatsaechlich hinausgegangen — sonst
+    // waere seine Abwesenheit in der Zeile trivial wahr.
+    const [, init] = fetchCalls()[0];
+    for (const wert of [IP, UA, CONFIG.pixelId, TTCLID, EVT, "kunde.de", "49.9", "EUR", TESTCODE]) {
+      expect(init.body).toContain(wert);
+    }
+    expect(init.headers["Access-Token"]).toBe(TOKEN);
+    expect(infoLines()).toEqual([ZEILE_200]);
+
+    const alle = [...infoLines(), ...logLines()].join("\n");
+    for (const wert of [
+      TOKEN, IP, UA, CONFIG.pixelId, TTCLID, EVT, "kunde.de", "utm_source",
+      "49.9", "EUR", TESTCODE, "REQ-S10A-ANTWORT", "OK",
+    ]) {
+      expect(alle).not.toContain(wert);
+    }
+  });
+
+  it.each<[string, () => Promise<void>, boolean]>([
+    ["Riegel ohne IP", () =>
+      forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, undefined, UA), true],
+    ["Riegel ohne User-Agent", () =>
+      forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, ""), true],
+    ["HTTP 401 mit JSON", async () => {
+      global.fetch = vi.fn(async () =>
+        jsonResponse({ code: 40104, message: "Access token is empty", request_id: "R" }, 401),
+      ) as unknown as typeof fetch;
+      await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    }, false],
+    ["HTTP 200 mit code ungleich 0", async () => {
+      global.fetch = vi.fn(async () =>
+        jsonResponse({ code: 40105, message: "Invalid access token", request_id: "R" }),
+      ) as unknown as typeof fetch;
+      await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    }, false],
+    ["HTTP 200 ohne JSON", async () => {
+      global.fetch = vi.fn(async () =>
+        new Response("<html>x</html>", { status: 200 }),
+      ) as unknown as typeof fetch;
+      await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    }, false],
+    ["HTTP 200 mit unlesbarem Rumpf", async () => {
+      global.fetch = vi.fn(async () => ({
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        text: async () => {
+          throw new Error("stream broken");
+        },
+      })) as unknown as typeof fetch;
+      await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    }, false],
+    ["fetch wirft", async () => {
+      global.fetch = vi.fn(async () => {
+        throw new TypeError("network down");
+      }) as unknown as typeof fetch;
+      await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    }, false],
+    ["werfender Getter im Body", () =>
+      forwardToTiktok(
+        CONFIG,
+        "Purchase",
+        "evt-1",
+        {
+          get eventSourceUrl(): string {
+            throw new Error("boom");
+          },
+        },
+        IP,
+        UA,
+      ), false],
+  ])("TS-d: %s -> KEINE Info-Zeile", async (_name, lauf, istRiegel) => {
+    // WIRD ROT, WENN: die Zeile ausserhalb des Erfolgsurteils entsteht (Mutation mT2).
+    await lauf();
+    expect(infoLines()).toEqual([]);
+    if (!istRiegel) {
+      // POSITIVKONTROLLE: genau eine Fehlerzeile — der Pfad wurde wirklich betreten.
+      expect(logLines()).toHaveLength(1);
+      return;
+    }
+    // DER RIEGEL IST STILL — er loggt nichts, eine Fehlerzeile gibt es als Kontrolle
+    // nicht. POSITIVKONTROLLE statt dessen: KEIN Aufruf, und DERSELBE Aufruf mit beiden
+    // Werten erzeugt die Zeile — sonst waere "keine Info-Zeile" trivial wahr.
+    expect(global.fetch).not.toHaveBeenCalled();
+    await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(infoLines()).toEqual([ZEILE_200]);
+  });
+
+  it("TS-e: im Testmodus dieselbe Zeile — ohne Testcode", async () => {
+    // WIRD ROT, WENN: die Zeile den Testmodus oder den Code traegt (Q7: keine Projekt-
+    // Angaben in der Zeile). Das Ereignis landet im Testmodus beim Anbieter nur im
+    // Reiter "Test Events" (docs/ziel-befunde/tiktok.md, Teil (h)); die Zeile sagt das
+    // nicht, und das ist gewollt.
+    await forwardToTiktok(CONFIG, "Purchase", "evt-1", {}, IP, UA, "TT-PROJ-TESTMODUS");
+    expect(sentPayload().test_event_code).toBe("TT-PROJ-TESTMODUS");
+    expect(infoLines()).toEqual([ZEILE_200]);
+    expect(logLines()).toEqual([]);
   });
 });

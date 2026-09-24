@@ -10,12 +10,10 @@ import { forwardToLinkedin } from "./linkedin-forward";
 // DIE GRENZE, DIE VOR ALLEN TESTS STEHT — und sie ist bei diesem Ziel schaerfer als
 // bei den drei davor: `fetch` ist gestellt. Diese Datei prueft, WELCHE NUTZLAST
 // entsteht und WANN gar keine entsteht — sie prueft NICHT, ob der Anbieter sie
-// annimmt. Das ist hier mehr als eine Formalie, denn AN UNSERER SEITE IST EIN
-// HINAUSGEGANGENER FORWARD NICHT BEOBACHTBAR (GEMESSEN 2026-08-19, s.
-// docs/claude-history/phase-11.1-linkedin.md, Scheibe 11.1f): kein Erfolgs-Log,
-// keine Ziel-Dimension in
-// events, kein Rueckgabewert. Der Beweis, dass die RICHTIGE Nutzlast entsteht, liegt
-// deshalb HIER und nur hier.
+// annimmt. Das ist hier mehr als eine Formalie: An UNSERER Seite zeigt ein angenommener
+// Forward seit S10a (Phase 11.7) genau EINE Info-Zeile mit Ziel und HTTP-Status — NICHT
+// die Nutzlast; events traegt keine Ziel-Dimension, und es gibt keinen Rueckgabewert.
+// Der Beweis, dass die RICHTIGE Nutzlast entsteht, liegt deshalb HIER und nur hier.
 //
 // DIE ANGABEN UEBER DEN ANBIETER SIND GEMESSEN (docs/ziel-befunde.md, Teile (n) bis
 // (s), neun Laeufe am 2026-08-19) — anders als beim zweiten Adapter, dessen
@@ -57,10 +55,18 @@ function logLines(): string[] {
   );
 }
 
+/** Alle Zeilen, die in console.info gelandet sind (die Erfolgszeile, S10a). */
+function infoLines(): string[] {
+  return (console.info as unknown as ReturnType<typeof vi.fn>).mock.calls.map(
+    (c) => String(c[0]),
+  );
+}
+
 beforeEach(() => {
   // 201 mit LEEREM Rumpf — die gemessene Erfolgsantwort (Teil (d)/(n)).
   global.fetch = vi.fn(async () => response(201)) as unknown as typeof fetch;
   vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(console, "info").mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -376,7 +382,7 @@ describe("T4 — vier gemessene Klassen plus Rest-Zweig", () => {
     expect(line).toContain("<redacted>");
   });
 
-  it("T4-h: ein Erfolg (201, leerer Rumpf) erzeugt KEINE Logzeile", async () => {
+  it("T4-h: ein Erfolg (201, leerer Rumpf) erzeugt KEINE Fehlerzeile", async () => {
     // DIE POSITIVKONTROLLE ZU DEN SIEBEN DARUEBER: Ohne sie waere "es wird geloggt"
     // von "es wird immer geloggt" nicht zu unterscheiden.
     await forwardToLinkedin(config(), "Purchase", "evt-ok", {}, IP);
@@ -526,7 +532,9 @@ describe("T6 — li_fat_id als zweiter userIds-Eintrag", () => {
 
   it("T6-g: eine IPv6-Adresse entfaellt, li_fat_id geht ALLEIN hinaus (Riegel 2 als Filter, S6b)", async () => {
     // WIRD ROT, WENN: Riegel 2 den Forward trotz li_fat_id verwirft, die IPv6-Adresse doch
-    // als Eintrag hinausgeht, eine Logzeile entsteht oder der Klick-Eintrag fehlt.
+    // als Eintrag hinausgeht, eine Fehlerzeile entsteht oder der Klick-Eintrag fehlt.
+    // Den Info-Kanal fuer denselben Fall (genau die Erfolgszeile, keine Filter-Zeile)
+    // prueft T8-e.
     // EINZIGER TEST GEGEN VIER FEHLERKLASSEN (Mutationen m1, m3, m4, m5 der Scheibe S6b):
     // T2-b und T7-c fahren IPv6 OHNE li_fat_id, dort bricht der Riegel weiter ab.
     // Bis S6a nagelte dieser Test das Gegenteil fest (Verwurf auch MIT li_fat_id, B5).
@@ -669,5 +677,131 @@ describe("T7 — die Riegel als Filter je Eintrag", () => {
     expect(logLines()).toEqual([
       "[capi] LinkedIn forward skipped: no conversion rule for event",
     ]);
+  });
+});
+
+// =====================================================================
+// T8 — DIE ERFOLGSZEILE (Phase 11.7, S10a)
+//
+// Eine angenommene Antwort (res.ok — das bestehende Erfolgsurteil, kein neues) schreibt
+// GENAU EINE console.info-Zeile mit Ziel und HTTP-Status, sonst nichts. Das Muster ist
+// fuer alle fuenf Ziele zeichengleich. Die Faelle lesen BEIDE Kanaele: info fuer die
+// Zeile, error dafuer, dass sie nicht auf der falschen Stufe steht.
+// =====================================================================
+describe("T8 — die Erfolgszeile (S10a)", () => {
+  const ZEILE_201 = "[capi] LinkedIn forward accepted: HTTP 201";
+  const OHNE_LI = { eventSourceUrl: "https://kunde.de/lp?utm_source=u" };
+
+  /** Stellt fetch auf GENAU diese Antwort und sendet einen gueltigen Forward. */
+  async function mitAntwort(antwort: () => Response | Promise<Response>) {
+    global.fetch = vi.fn(async () => antwort()) as unknown as typeof fetch;
+    await forwardToLinkedin(config(), "Purchase", "evt-s10a-d", {}, IP);
+  }
+
+  it("T8-a: 201 -> genau EINE Info-Zeile mit Ziel und Status, keine Fehlerzeile", async () => {
+    // WIRD ROT, WENN: die Zeile fehlt, doppelt kommt, auf error steht oder mehr traegt.
+    await forwardToLinkedin(config(), "Purchase", "evt-s10a-a", {}, IP);
+    expect(fetchCalls()).toHaveLength(1);
+    expect(infoLines()).toEqual([ZEILE_201]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("T8-b: der Status kommt aus der Antwort — 200 ergibt 'HTTP 200'", async () => {
+    // WIRD ROT, WENN: der Status festgeschrieben statt gelesen wird. Jede Antwort mit
+    // res.ok gilt als angenommen, nicht nur die gemessene 201. EINZIGER TEST GEGEN
+    // einen festgeschriebenen Status (Mutation mL6 der Scheibe S10a).
+    global.fetch = vi.fn(async () => response(200)) as unknown as typeof fetch;
+    await forwardToLinkedin(config(), "Purchase", "evt-s10a-b", {}, IP);
+    expect(infoLines()).toEqual(["[capi] LinkedIn forward accepted: HTTP 200"]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("T8-c: KEIN Wert aus der Anfrage steht in einer Zeile — mit Positivkontrolle", async () => {
+    // WIRD ROT, WENN: IP, Klick-Kennung, URN, eventId, Betrag, Waehrung, Adresse oder
+    // Zugangsdatum in die Zeile geraten (TRANSIT-ONLY). Einen User-Agent nimmt dieser
+    // Adapter nicht entgegen — die UA-Achse deckt TS-c in tiktok-forward.test.ts.
+    const LI = "Ab7-Xy_9-s10a";
+    const EVT = "evt-s10a-c-kennung";
+    await forwardToLinkedin(
+      config(),
+      "Purchase",
+      EVT,
+      {
+        value: 19.9,
+        currency: "EUR",
+        eventSourceUrl: `https://kunde.de/lp?utm_source=s10a&li_fat_id=${LI}`,
+      },
+      IP,
+    );
+
+    // POSITIVKONTROLLE: jeder gesuchte Wert ist tatsaechlich hinausgegangen — sonst
+    // waere seine Abwesenheit in der Zeile trivial wahr. Die Adresse selbst geht nicht
+    // hinaus; dass sie gelesen wurde, belegt LI im Rumpf.
+    const [, init] = fetchCalls()[0];
+    for (const wert of [IP, LI, URN, EVT, "19.9", "EUR"]) {
+      expect(init.body).toContain(wert);
+    }
+    expect(init.headers.Authorization).toContain(TOKEN);
+    expect(infoLines()).toEqual([ZEILE_201]);
+
+    const alle = [...infoLines(), ...logLines()].join("\n");
+    for (const wert of [TOKEN, URN, IP, LI, EVT, "19.9", "EUR", "kunde.de", "utm_source"]) {
+      expect(alle).not.toContain(wert);
+    }
+  });
+
+  it.each<[string, () => Promise<void>]>([
+    ["Riegel 1, keine Identitaet", () =>
+      forwardToLinkedin(config(), "Purchase", "evt-s10a-d", OHNE_LI, undefined)],
+    ["Riegel 2, keine IPv4", () =>
+      forwardToLinkedin(config(), "Purchase", "evt-s10a-d", OHNE_LI, "2001:db8::1")],
+    ["Riegel 3, keine Regel", () =>
+      forwardToLinkedin(config(), "Lead", "evt-s10a-d", OHNE_LI, IP)],
+    ["HTTP 401", () =>
+      mitAntwort(() => response(401, { status: 401, message: "Invalid access token" }))],
+    ["HTTP 403", () =>
+      mitAntwort(() => response(403, { status: 403, message: "No ad accounts found" }))],
+    ["HTTP 422", () =>
+      mitAntwort(() => response(422, { status: 422, message: "ERROR :: /conversion" }))],
+    ["HTTP 502 ohne JSON", () =>
+      mitAntwort(() => new Response("<html>gateway</html>", { status: 502 }))],
+    ["HTTP 500 mit unlesbarem Rumpf", () =>
+      mitAntwort(
+        () =>
+          ({
+            ok: false,
+            status: 500,
+            headers: new Headers(),
+            text: async () => {
+              throw new Error("stream broken");
+            },
+          }) as unknown as Response,
+      )],
+    ["fetch wirft", () =>
+      mitAntwort(() => {
+        throw new TypeError("network down");
+      })],
+  ])("T8-d: %s -> KEINE Info-Zeile, genau eine Fehlerzeile", async (_name, lauf) => {
+    // WIRD ROT, WENN: die Zeile ausserhalb des Erfolgsurteils entsteht (Mutation mL2).
+    // POSITIVKONTROLLE: genau eine Fehlerzeile — der Pfad wurde wirklich betreten.
+    await lauf();
+    expect(logLines()).toHaveLength(1);
+    expect(infoLines()).toEqual([]);
+  });
+
+  it("T8-e: IPv6 + li_fat_id (B3) -> genau die Erfolgszeile, keine Filter-Zeile, keine IPv6", async () => {
+    // WIRD ROT, WENN: im Filter-Fall eine Zeile ueber den entfallenen IP-Eintrag entsteht
+    // — auch auf dem Info-Kanal (B3) — oder die IPv6-Adresse in eine Zeile geraet.
+    await forwardToLinkedin(
+      config(),
+      "Purchase",
+      "evt-s10a-e",
+      { eventSourceUrl: "https://kunde.de/lp?li_fat_id=Ab7-Xy_9" },
+      "2001:db8::1",
+    );
+    expect(fetchCalls()).toHaveLength(1);
+    expect(infoLines()).toEqual([ZEILE_201]);
+    expect(logLines()).toEqual([]);
+    expect([...infoLines(), ...logLines()].join("\n")).not.toContain("2001:db8");
   });
 });

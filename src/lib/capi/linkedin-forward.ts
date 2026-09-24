@@ -438,9 +438,11 @@ export async function forwardToLinkedin(
     //
     // s. isIpv4 — die Schnittstelle prueft die Form nicht, also pruefen wir sie.
     // SEIT S6b IST ER EIN FILTER JE EINTRAG: Liegt li_fat_id vor, entfaellt allein der
-    // IP-Eintrag — OHNE Logzeile (B3: der Normalfall eines IPv6-Besuchers, eine Zeile je
-    // Ereignis waere Rauschen). Eine IPv6-Adresse wird NIE gesendet, nur weggelassen
-    // (B4). Abgebrochen wird nur ohne li_fat_id; dann ist der Logtext wahr (B2).
+    // IP-Eintrag — OHNE eigene Zeile ueber den Filter (B3: der Normalfall eines
+    // IPv6-Besuchers, eine Zeile je Ereignis waere Rauschen). Die Erfolgszeile nach der
+    // Antwort (S10a) sagt nichts ueber den IP-Eintrag. Eine IPv6-Adresse wird NIE
+    // gesendet, nur weggelassen (B4). Abgebrochen wird nur ohne li_fat_id; dann ist der
+    // Logtext wahr (B2).
     if (clientIp && !ipv4 && !liFatId) {
       console.error("[capi] LinkedIn forward skipped: identity is not IPv4");
       return;
@@ -541,13 +543,19 @@ export async function forwardToLinkedin(
     // lesen — kein Zaehlwerk, keine Ereignis-Kennung, keinen Status im Rumpf. Der
     // Statuscode ist die ganze Auskunft, und deshalb gibt es hier auch keine
     // Erfolgs-Auswertung wie beim zweiten Adapter.
-    // WAS DAS FUER DIE BEOBACHTBARKEIT HEISST, und der Satz gehoert hierher: Ein
-    // gelungener Forward hinterlaesst an UNSERER Seite nichts — kein Log, keine
-    // Zeile in events (die Tabelle traegt keine Ziel-Dimension). Sichtbar ist er
-    // allein am Zeitstempel der Empfangsanzeige des Anbieters.
+    // WAS DAS FUER DIE BEOBACHTBARKEIT HEISST (Phase 11.7, S10a): Eine angenommene
+    // Antwort — jede mit res.ok, kein neues Urteil — schreibt GENAU EINE Info-Zeile mit
+    // Ziel und HTTP-Status und sonst nichts: keine Nutzlast, keine IP, keine Kennung,
+    // kein Zugangsdatum (TRANSIT-ONLY). "accepted" heisst ANGENOMMEN, nicht verarbeitet:
+    // Der Anbieter quittiert auch eine fachlich falsche Nutzlast mit 201
+    // (docs/ziel-befunde/linkedin.md, Teile (e), (j)), und eine 201 bewegte die
+    // Empfangsanzeige nicht zwingend (Teil (be)). In events entsteht weiterhin keine
+    // Zeile — die Tabelle traegt keine Ziel-Dimension.
     if (!res.ok) {
       const { raw, parsed } = await readBody(res);
       console.error(describeLinkedinError(res, raw, parsed));
+    } else {
+      console.info(`[capi] LinkedIn forward accepted: HTTP ${res.status}`);
     }
   } catch (err) {
     // Nur der Fehler-NAME. errorName liest ausschliesslich .name — nie die Message,

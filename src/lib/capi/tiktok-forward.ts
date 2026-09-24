@@ -34,8 +34,11 @@ import type { CapiConfig } from "@/lib/capi/token";
  *  3. FEHLER- UND ERFOLGSFORM SIND IDENTISCH AUFGEBAUT (code, message, request_id;
  *     im Erfolg zusaetzlich ein leeres data). Beim zweiten Adapter sind es zwei
  *     verschiedene Formen — deshalb hat er zwei Deutungs-Funktionen und dieser eine.
- *  4. DER HTTP-STATUS TRENNT DIE FEHLERKLASSEN NICHT: zwei verschiedene Codes teilen
- *     sich HTTP 401 (gemessen). Das code-Feld ist die tragende Angabe.
+ *  4. DER HTTP-STATUS TRENNT DIE FEHLERKLASSEN NICHT: 40100 (Drosselung) und 40104
+ *     (leeres Zugangsdatum) kommen beide mit HTTP 401 (GELESEN,
+ *     docs/ziel-befunde/tiktok.md, Teil (o)). Gemessen ist am 2026-08-11 allein HTTP 401
+ *     mit lesbarem Code bei falschem Zugangsdatum; welcher Code, ist nicht festgehalten.
+ *     Das code-Feld ist die tragende Angabe.
  *  5. DER WERT REIST ALS ZAHL. Der zweite Adapter erwartet eine Zeichenkette.
  *  6. event_source ist ein ENUM mit dem Wert "web" (gemessen: andere Werte werden
  *     mit einem Schema-Fehler abgewiesen). Metas Feld heisst action_source und
@@ -445,10 +448,10 @@ export async function forwardToTiktok(
     //  · Eine fachliche Ablehnung kommt mit ERFOLGSSTATUS und traegt ihren Grund im
     //    code-Feld. Wer nur den Status liest, haelt sie fuer einen Erfolg — dieselbe
     //    Falle wie beim zweiten Ziel, an einem anderen Anbieter.
-    //  · Der Status trennt auch die FEHLERKLASSEN nicht: zwei verschiedene Codes
-    //    teilen sich HTTP 401. Ein Adapter, der auf den Status verzweigt,
-    //    unterscheidet "falsche Kennung" nicht von "falschem Zugangsdatum" — und
-    //    genau diese beiden muss der Betreiber-Support auseinanderhalten koennen.
+    //  · Der Status trennt auch die FEHLERKLASSEN nicht: 40100 (Drosselung) und 40104
+    //    (leeres Zugangsdatum) kommen beide mit HTTP 401 (GELESEN, tiktok.md, Teil
+    //    (o)). Wer auf den Status verzweigt, trennt eine Drosselung nicht von einem
+    //    fehlenden Zugangsdatum; im Log trennt sie code= (describeRejection).
     const { raw, parsed } = await readBody(res);
     if (!res.ok) {
       console.error(describeRejection(res, raw, parsed));
@@ -456,8 +459,16 @@ export async function forwardToTiktok(
     }
     // Erfolgsstatus: der RUMPF entscheidet. Was nicht eindeutig Erfolg meldet, ist
     // keiner — ein unlesbarer oder nicht-JSON-Rumpf faellt hier ebenfalls heraus.
+    // DIE ERFOLGSZEILE (Phase 11.7, S10a) steht NUR in diesem Zweig, dem bestehenden
+    // Erfolgsurteil — kein neues. Sie traegt Ziel und HTTP-Status und sonst nichts: nichts
+    // aus der Anfrage (TRANSIT-ONLY), nichts aus der Antwort ausser dem Status.
+    // "accepted" heisst ANGENOMMEN, nicht verarbeitet: code 0 kommt auch fuer ein
+    // unbekanntes Feld und im Testmodus (docs/ziel-befunde/tiktok.md, Teile (q), (h)).
     const code = (parsed ?? {}) as TiktokBody;
-    if (parsed !== undefined && code.code === TIKTOK_OK_CODE) return;
+    if (parsed !== undefined && code.code === TIKTOK_OK_CODE) {
+      console.info(`[capi] TikTok forward accepted: HTTP ${res.status}`);
+      return;
+    }
     console.error(describeRejection(res, raw, parsed));
   } catch (err) {
     // Nur der Fehler-NAME. errorName liest ausschliesslich .name — nie die Message,

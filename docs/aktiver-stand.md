@@ -68,6 +68,35 @@ F7 und F8 bisher NICHT; **DAS IST EIN VERSÄUMNIS DES ZUSCHNITTS VOM 2026-09-22,
 BESCHLUSS.** Ein Roadmap-Abgleich — der Wortlaut der Roadmap-Zeile 11.7 gegen den Stand je
 Punkt — folgt als NÄCHSTER Schritt, VOR S8 (Abschnitt "Nächster Schritt").
 
+**OWNER-ENTSCHEIDUNGEN 2026-09-24 NACH DEM ROADMAP-ABGLEICH — ADDITIV, DER TEXT DARÜBER
+BLEIBT.** Material: VERMERK P11.7-25.
+- **E-a — WAS DIE ROADMAP JE PUNKT VERLANGT:** für F5, F6 und F7 eine LESUNG, für F8 eine
+  MESSUNG (docs/roadmap.md, Roadmap-Zeile 11.7). **F5, F6 UND F7 SIND DURCH DIE LESUNG
+  ERFÜLLT;** ihre weitergehenden Messungen verlangt die Roadmap nicht — sie werden beim [x]
+  als unbewiesen benannt. **F8 WIRD GEMESSEN, NICHT GEHOBEN.**
+- **E-b — DER RATE-LIMIT-WIDERSPRUCH BEI PINTEREST** (drei Aussagen,
+  docs/ziel-befunde/pinterest.md, Teil (ai)(2)) hat kein belegtes Instrument; er wird beim
+  [x] als unbewiesen benannt.
+- **E-c — DIE UNBEHANDELTEN MATCH-FELDER GEHÖREN NICHT ZUM FÜNFTEN PUNKT**, je mit Grund —
+  sie gehören zu anderen Kanälen als einer Landeseite oder sind dort nicht verfügbar:
+  · meta `subscription_id`, `fb_login_id` — Abos bzw. Facebook-Login in Apps; `lead_id` —
+    Lead-Formulare in Meta; `page_id`, `page_scoped_user_id`, `ctwa_clid`, `ig_account_id`,
+    `ig_sid` — Messenger, WhatsApp, Instagram.
+  · linkedin `lead` — Lead-Formulare in LinkedIn; `ACXIOM_ID` — Kennung eines
+    Datenhändlers; `GOOGLE_AID` — Werbe-ID von Android-Geräten; `SHA256_IP_ADDRESS` — die IP
+    geht bereits im Klartext.
+  · pinterest `customer_type` — neu/wiederkehrend ist uns nicht bekannt; `app_info` — für
+    Apps.
+  · tiktok `ad.campaign_id`/`ad_id`/`creative_id` — Werte des Anbieters, nicht der Seite;
+    `locale` — nicht erhoben, geringer Nutzen; `page.referrer` — bräuchte ein neues
+    Beacon-Feld, in dieser Phase ausgeschlossen (/api/e-Schlankheit).
+  Für google wurde die Feldliste in S7 entschieden (G1, "NICHT TEIL VON S7").
+- **E-d — REIHENFOLGE BIS ZUM PHASENENDE:** (1) F8 messen · (2) S8 tiktok · (3) S9
+  pinterest · (4) Owner-Entscheidungen: Vorrat P11.7-9 (K1–K4) und ZUSCHNITT-FRAGE
+  P11.7-11 · (5) LinkedIn-Nachablesung (VERMERK P11.7-22, (c)) · (6) Phasenende: Matrix in
+  docs/ziel-fragenkatalog.md fortschreiben (B2, G1, H2, H3), beim [x] das Unbewiesene
+  benennen, Hebung, Archivierung.
+
 ## Was den Zuschnitt bindet
 
 **DER ZUSCHNITT STEHT SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-22 IM ABSCHNITT "Zuschnitt der
@@ -1252,6 +1281,107 @@ Produktion ist nicht gefahren (keine AAAA-Einträge der Label-Hosts, VERMERK P11
 **ABSCHLUSS IM SELBEN ZUG:** ZUSCHNITT-FRAGE P11.7-6 und P11.7-7 nachgezogen · Vorrat P11.7-10
 neu · S7 ABGESCHLOSSEN.
 
+### VERMERK P11.7-25 — Roadmap-Abgleich der Phase 11.7 vom 2026-09-24 (KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-24 · HEAD `21667ac` · Arbeitsbaum sauber · READ-ONLY · VOLLSTÄNDIG
+gelesen: docs/aktiver-stand.md (2 244 Zeilen) und docs/roadmap.md Z. 1723–1835 (Roadmap-Zeile
+11.7, 113 Zeilen, sha256 `67b2bfd73cabb2b366317d1ab72fc4afcfce1809d4aaa7514531c67fa8f4cdf1`).
+**GRENZE: DIE ZIEL-DATEIEN SIND NUR GEZIELT GELESEN** — tiktok.md (j)–(p) · meta.md (k), (l),
+(u) · pinterest.md (ae)–(ai) · linkedin.md (ag), (ao), (as) —, **google.md GAR NICHT**; die
+Google-Angaben stammen aus dieser Datei. Dazu die Matrix in docs/ziel-fragenkatalog.md. Kein
+Pflicht-Stopp-Fall (kein Zuschnitt, kein Bau, keine Recherche). Kein Bau-Commit. Die
+Owner-Entscheidungen aus diesem Abgleich: E-a bis E-d im Abschnitt "Gegenstand der Phase".
+
+**DER WORTLAUT DER ROADMAP-ZEILE, JE PUNKT (Auszug, docs/roadmap.md):**
+- F5: "TIKTOK, DEDUPLIZIERUNG (Katalog H2): NIE GESTELLT. … was der Anbieter damit tut, steht
+  nirgends. … Für TikTok ist es UNENTSCHIEDEN." (Z. 1732–1738)
+- F6: "META, VERSIONSANGABE (Katalog B2): … OB DER ANBIETER DIESE VERSION NOCH BEDIENT, STEHT
+  NIRGENDS." (Z. 1741–1744)
+- F7: "RATE-LIMITS (Katalog H3) FÜR META, TIKTOK UND LINKEDIN: NIE GESTELLT bei allen dreien.
+  Für Pinterest am 2026-08-20 beantwortet (… Teil (e))." (Z. 1745–1747)
+- F8: "PINTEREST, ERFOLGSRUMPF (Katalog G1): NIE GEMESSEN … DAS IST DIE EINZIGE DER VIER, DIE
+  EINE MESSUNG VERLANGT; die übrigen drei sind aus der Anbieter-Dokumentation beantwortbar."
+  (Z. 1753–1757)
+- Klammer: "Das TRACKING WIRD ABGESCHLOSSEN, bevor die nächste Phase beginnt." Ausgenommen
+  "ALLES, WAS AN DER RECHTSFORM HÄNGT". (Z. 1760–1763)
+- Punkt 5: "JEDES NETZWERK SOLL DIE DATEN BEKOMMEN, MIT DENEN ES BESTMÖGLICH OPTIMIERT"; drei
+  Grenzen — E-Mail und Telefon nicht · "verlangt oder nur empfohlen … UNGEMESSEN" · ohne
+  Anzeigenklick ist eine fehlende Klick-Kennung korrekt; "KEIN Zuschnitt". (Z. 1781–1831)
+
+**ABGLEICH JE PUNKT:**
+
+| Punkt | Roadmap verlangt | Erledigt (Beleg) | Offen | Scheibe |
+|---|---|---|---|---|
+| F5 tiktok Dedup | LESUNG ("aus der Doku beantwortbar") | tiktok.md (n): Schlüssel `[event_source_id, event, event_id]`, 48 h / 5 min (VERMERK P11.7-4) | Wirkung ungemessen (tiktok.md:553) · Doppelzählung mit eigenem Betreiber-Pixel nur Ableitung (ZUSCHNITT-FRAGE P11.7-10) · Matrix H2 tiktok "NIE GESTELLT" (docs/ziel-fragenkatalog.md:560) | keine; P11.7-10 hängt an S8 |
+| F6 meta Version | LESUNG | Doku (v)/(w); `v25.0` gebaut `9778aca`, live bestätigt (VERMERK P11.7-14); Wächter V1/V3/T1 | Messung der verarbeiteten Version (meta.md (y)), vom Wortlaut nicht verlangt | S1 + S3 |
+| F7 meta/tiktok/linkedin | LESUNG | meta (u) "no specific rate limit", 1 000 Ereignisse je Aufruf, BUC-Zahlen nicht gelesen · tiktok (o) beziffert · linkedin (ag) schon 2026-09-11 (docs/ziel-fragenkatalog.md:776), (as) | ob metas "kein Limit" ohne Zahl als Antwort zählt, NICHT ENTSCHEIDBAR · Messung · ZUSCHNITT-FRAGE P11.7-11 (40100 und 40104 beide HTTP 401) · Matrix H3 meta/tiktok "NIE GESTELLT" | keine |
+| F7 Pinterest-Widerspruch | NICHT im Wortlaut (dort "beantwortet", Teil (e)); erst die Owner-Klarstellung vom 2026-09-24 | pinterest.md (ai)(2): 120 000/min · "unlimited" · 5 000/min; Vorbehalt an (e) | welche gilt: UNGEMESSEN; eine Doku-Antwort gibt es nicht (drei widersprechen sich) | keine |
+| F8 pinterest Erfolgsrumpf | MESSUNG ("DIE EINZIGE … DIE EINE MESSUNG VERLANGT") | Form gelesen (ah); deckt sich mit `evaluateSuccessBody` (GEMESSEN am Repo, `8cab827`) | der Aufruf — (ah): die Doku ist "nicht ihr Ersatz"; ZUSCHNITT-FRAGE P11.7-21 hängt daran | keine; S9 ist `epik`, nicht F8 |
+
+**DIE SPANNUNG, DIE DER ABGLEICH NICHT AUFLÖSTE:** CLAUDE.md, "WANN [x] GESETZT WIRD" —
+Messungen werden "GEHOBEN, nicht abgewartet", und die Roadmap-Zeile nennt beim [x] das
+Unbewiesene — gegen die Owner-Klarstellung "WERDEN VOR DEM PHASENENDE ERFÜLLT". Ob "erfüllt"
+bei F8 den Aufruf verlangt oder das Heben zulässt, war NICHT ENTSCHEIDBAR. Aufgelöst durch
+Owner-Entscheidung E-a.
+
+**PUNKT 5, JE ZIEL (gegen F3):**
+- **GESENDET** (Belege VERMERKE P11.7-1 (d), P11.7-16, -18, -20, -22, -24): meta
+  `action_source`, `event_source_url` (bereinigt), `client_ip_address`, `client_user_agent`,
+  `fbp`, `fbc` (S5) · tiktok `user.ip`, `user.user_agent`, `page.url` (bereinigt, `ttclid`
+  bleibt, laut (m) parst der Anbieter), `event_id` · pinterest `client_ip_address`,
+  `client_user_agent`, `event_source_url` (bereinigt, `epik` bleibt), `partner_name "direct"`
+  · linkedin `PLAINTEXT_IP_ADDRESS` (nur IPv4), `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`
+  (S6a/S6b) · google `gclid`/`gbraid`/`wbraid`, `landingPageDeviceInfo.ipAddress`/`userAgent`
+  (S7).
+- **AUSGESCHLOSSEN, MIT GRUND:** `external_id`/`externalIds` bei allen — Owner-Frage
+  (ZUSCHNITT-FRAGE P11.7-4, -12, -18) · Cookie-Wege `_fbc`, `_ttp`/`user.ttp`, `_epik`,
+  Insight Tag — Entscheidung P11.7-2, ZUSCHNITT-FRAGE P11.7-20, -26 (/api/e-Schlankheit) ·
+  Meta-Pflichtfeld-Riegel (ZUSCHNITT-FRAGE P11.7-22) — "vor einem Bau steht eine Messung" ·
+  google DMA-`consent` (Owner 2026-09-24), `eventDeviceInfo`, `category`, `language_code`
+  (G1, "NICHT TEIL VON S7") · Personenbezogenes — Roadmap-Grenze und F3.
+- **OFFEN:** tiktok `user.ttclid` (S8, ZUSCHNITT-FRAGE P11.7-9) · pinterest
+  `user_data.click_id` (S9, ZUSCHNITT-FRAGE P11.7-19) · google: ob die IP allein genügt (G2),
+  Schreibung der Auto-Tagging-Parameter (docs/offene-punkte.md, Messung an einem echten
+  Anzeigenklick).
+- **UNBEHANDELT** (gelesen, hier weder ausgeschlossen noch offen geführt): meta (k)
+  `subscription_id`, `fb_login_id`, `lead_id`, `page_id`, `page_scoped_user_id`, `ctwa_clid`,
+  `ig_account_id`, `ig_sid` · tiktok `page.referrer` (m), `ad.campaign_id`/`ad_id`/
+  `creative_id`, `locale` (l) · pinterest `customer_type`, `app_info.user_agent` (ae) ·
+  linkedin `lead`, `ACXIOM_ID`, `GOOGLE_AID`, `SHA256_IP_ADDRESS` (ao) · google nicht erhoben
+  (google.md nicht gelesen). **Eingeordnet durch Owner-Entscheidung E-c.**
+- Beide F3-Divergenzen (google, linkedin) sind ungelöst; die Roadmap-Grenze "verlangt oder
+  empfohlen … ungemessen" ist heute GELESEN, nicht gemessen.
+
+**OFFENE ARBEIT BIS ZUM PHASENENDE, WIE AM 2026-09-24 ERHOBEN** (ohne Reihenfolge; Aufwand
+SCHÄTZUNG; die Reihenfolge setzt E-d):
+1. S8 tiktok `user.ttclid` — Bau (Volladung tiktok.md) — mittel. Instrument: Testmodus mit
+   `test_event_code` (Phase 11.3); ob die Anzeige `ttclid` zeigt, ist ungelesen.
+2. S9 pinterest `click_id` — Bau — mittel. Instrument: eine Oberfläche ungelesen;
+   `?test=true` antwortet ohne Aufzeichnung (ah).
+3. F8 Erfolgsrumpf — Messung — klein, ein Aufruf. Instrument: Terminal-Aufruf wie S6b, auch
+   mit `?test=true` (ah). **DAS VERCEL-LOG TAUGT NICHT:** Erfolg 1/1 ist still
+   (`pinterest-forward.ts:611 f.`), und das Urteil käme vom Prüfling. Ob das Testprojekt ein
+   Pinterest-Zugangsdatum trägt, ist nicht erhoben.
+4. F5 Wirkung — Messung — klein bis mittel. Instrument: zwei Aufrufe mit gleicher `event_id`,
+   Anbieter-Metriken (n); Browser gegen Server ohne TikTok-Pixel nicht herstellbar ((k)).
+5. F7 je Ziel — Messung — klein, Kopfzeilen einer Antwort. meta "headers" (u), linkedin
+   Analytics-Reiter (ag), tiktok Kopfzeilen ungelesen (tiktok.md:552); die Grenze auszulösen
+   ist kein Instrument.
+6. Pinterest-Rate-Limit-Widerspruch — Messung oder Owner-Einordnung — kein belegtes Instrument.
+7. ZUSCHNITT-FRAGE P11.7-11 — Owner-Entscheidung, ob gebaut wird; kein Instrument (Drosselung
+   nicht herstellbar).
+8. Vorrat P11.7-9 (K1–K4) — Owner-Entscheidung, Trigger "vor dem Phasenende".
+9. LinkedIn-Nachablesung "Data last received" (VERMERK P11.7-22, (c)) — Messung — Campaign
+   Manager ab 2026-09-25.
+10. Unbehandelte Felder aus Punkt 5 — Owner-Entscheidung, ob sie dazugehören.
+11. Matrix-Fortschreibung B2, G1, H2, H3 in docs/ziel-fragenkatalog.md — Doku; heute keine
+    Fortschreibung für 11.7 (Suche nach "2026-09-2": 0 Treffer); Pflicht ist nicht geregelt.
+12. Auflage beim [x]: das Unbewiesene in der Roadmap-Zeile nennen (u. a. F5/F7/F8,
+    ZUSCHNITT-FRAGE P11.7-21) — Doku.
+13. Phasenende: Hebung (HEBUNGS-KANDIDAT P11.7-1), Archivierung nach docs/arbeitsweise.md — Doku.
+14. Optional, nicht verlangt: Meta-EMQ nach S5 erneut ablesen (Anlass 4,4/10); die
+    F6-Kopfzeile `facebook-api-version`.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -2229,11 +2359,11 @@ binden:**
 ## Nächster Schritt
 
 **S1 BIS S7 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18, P11.7-20, P11.7-22, P11.7-24). **ALS NÄCHSTES STEHT DER ROADMAP-ABGLEICH DER PHASE
-11.7, READ-ONLY:** der Wortlaut der Roadmap-Zeile 11.7 gegen den Stand je Punkt — Anlass ist
-die Owner-Klarstellung vom 2026-09-24 im Abschnitt "Gegenstand der Phase" (F5, F7 und F8 trägt
-der Zuschnitt bisher nicht). **ERST DANACH WIRD DIE REIHENFOLGE DER RESTLICHEN ARBEIT
-FESTGELEGT; S8 (tiktok) UND S9 (pinterest) STEHEN BIS DAHIN.**
+P11.7-18, P11.7-20, P11.7-22, P11.7-24). **DER ROADMAP-ABGLEICH IST GEMACHT (VERMERK
+P11.7-25); DIE REIHENFOLGE BIS ZUM PHASENENDE STEHT IN DER OWNER-ENTSCHEIDUNG E-d**
+(Abschnitt "Gegenstand der Phase"). **ALS NÄCHSTES: F8 MESSEN** — zuerst eine
+Mess-Vorbereitung: Volladung docs/ziel-befunde/pinterest.md, Terminal-Aufruf in der Form des
+Adapters.
 **DIE SIEBEN-TAGE-FRIST LÄUFT WEITER:** Die Google-Karte ist am 2026-09-24 neu autorisiert
 worden; im Status "Testing" stirbt das Erneuerungs-Token sieben Tage danach (VERMERK P11.7-23,
 (a)). Vor jedem weiteren Google-Live-Test den Ablaufzeitpunkt auf der Karte prüfen.

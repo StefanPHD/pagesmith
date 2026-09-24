@@ -8,6 +8,13 @@ DER BELEG: sha256 = 6401ff186ff06ff5d61b79dbea48fc6cc3937c1d38f313cef87cde3eed85
 den übernommenen Abschnitt — also über alles ab der Zeile "## Pinterest (Conversions API)"
 bis zum Dateiende, OHNE diesen Kopf. Wer prüfen will, ob hier jemand nachträglich ein Wort
 geändert hat, misst gegen diese Prüfsumme.
+ERGÄNZUNG 2026-09-24 — DIE PRÜFSUMME GILT DEM STAND DES COMMITS `11a44f7`, NICHT DEM HEUTIGEN
+DATEIENDE. Seither kamen nur Anhänge und datierte Vorbehalte und Zeiger nach der Konvention
+hinzu (Einzelheiten: git log); über den heutigen Stand geht die Summe darum nicht mehr auf
+(GEMESSEN, CC, 2026-09-24: am Stand `11a44f7` ergibt der Schnitt den Wert oben, am Stand
+`da794d0` nicht). Gemessen wird sie gegen `git show 11a44f7:docs/ziel-befunde/pinterest.md`,
+dort ab der Zeile "## Pinterest (Conversions API)". Der Satz darüber bleibt wörtlich; er war
+am Tag der Aufteilung richtig.
 
 **WARUM ES DIE AUFTEILUNG GAB:** Die Sammel-Datei war für die VOLLLADUNG zu gross, die der
 Pflicht-Stopp vor einem Zuschnitt verlangt. Die Pflicht ist damit nicht gelockert, sondern
@@ -325,6 +332,10 @@ DIESE Lesung galt sie noch.)
         Beispiel-Antwort auf derselben Seite zeigt einen frei gewählten Namen als
         abgewiesen: `"status": "failed", "error_message": "Invalid event_name: subscription.
         Use a supported conversion event_name (for example subscribe, checkout)."`
+        ZEIGER (2026-09-24) — FÜR DEN AUFRUF GEMESSEN: `subscription` kam als `processed` mit
+        einer "Unknown"-Warnung zurück, nicht als `failed`; das Beispiel der Seite ist für
+        diesen Aufruf widerlegt, die Spannung in der Doku besteht fort. Unten unter
+        (al)(ii). Der Wortlaut oben wird NICHT umformuliert.
 
 ### Die zweite Gegenüberstellung: Doku gegen den gebauten Adapter — Teil (q)
 
@@ -733,6 +744,13 @@ beschreibt, steht GEMESSEN dabei.
      **NICHT BEANTWORTET, WEIL NUR EIN AUFRUF ES ZEIGT:** ob der Endpunkt einen Wert dieser
      Form fachlich annimmt. Gemessen gesendet hat unser Adapter bisher kein `click_id` —
      Teil (x) protokolliert die Live-Warnung "click_id is missing".
+     ZEIGER (2026-09-24) — DAS FELD IST GEMESSEN ANGENOMMEN UND ERKANNT, DER ADRESSWEG NICHT:
+     Ein erfundener Wert in `user_data.click_id` wird angenommen, die Warnung "click_id is
+     missing" entfällt, und die Test-Ansicht führt "Klick-ID" (unten (am)); derselbe Wert
+     allein als `&epik=` in `event_source_url` wird für Warnung und Anzeige NICHT erkannt
+     (unten (ao)). Grenze: Testmodus, erfundener Wert, kein Abgleich — ob der Endpunkt einen
+     ECHTEN Wert fachlich annimmt, bleibt offen, und gesendet hat das Terminal, nicht der
+     Adapter. Der Wortlaut oben wird NICHT umformuliert.
      **EIN DRITTER COOKIE-NAME STEHT IN DERSELBEN DOKUMENTATION; s. unten (ai).**
 
 (ad) DAS BROWSER-TAG SETZT FIRST-PARTY-COOKIES — DASS DARUNTER `_epik` IST, IST NICHT
@@ -809,6 +827,10 @@ beschreibt, steht GEMESSEN dabei.
      Gemessen gesendet hat unser Adapter bisher genau das Paar `client_ip_address` +
      `client_user_agent`; ein Ereignis mit einer dritten Kennung ist nie gesendet worden.
      **NICHT BEANTWORTET, WEIL NUR EIN AUFRUF ES ZEIGT.**
+     ZEIGER (2026-09-24) — FÜR `click_id` NEBEN DEM PAAR GEMESSEN: Ein Ereignis mit
+     `client_ip_address`, `client_user_agent` und `click_id` zugleich wird angenommen und
+     verarbeitet (unten (am)); Grenze: Testmodus, erfundener Wert, gesendet per Terminal.
+     Der Wortlaut oben wird NICHT umformuliert.
      **EIN ZWEITER ORT FÜR DEN USER-AGENT, der leicht übersehen wird:**
      `app_info.user_agent` — "User Agent request header. Primarily used for Web events",
      `maxLength: 16384`. Er liegt NICHT in `user_data` und ist **kein** Mitglied der
@@ -849,6 +871,12 @@ beschreibt, steht GEMESSEN dabei.
      "TikTok (Events API 2.0)", Teil (m)); **hier steht er nicht.** **MESSUNG OFFEN.**
      **OB DAS BENANNTE FELD `user_data.click_id` UND DER ADRESSWEG EINANDER ERSETZEN,
      ERGÄNZEN ODER DOPPELN, SAGT KEINE GELESENE SEITE.**
+     ZEIGER (2026-09-24) — AM ENDPUNKT GEMESSEN, SOWEIT WARNUNG UND ANZEIGE REICHEN: Eine
+     Kennung allein als `&epik=` in `event_source_url` wird WEDER für die Warnung "click_id
+     is missing" NOCH für die Nutzerdaten der Test-Ansicht erkannt; das benannte Feld wird
+     es (unten (am), (ao)). Der Adressweg ERSETZT das Feld damit nicht. OB DIE ZUORDNUNG
+     die Adresse später dennoch liest, bleibt OFFEN. Der Wortlaut oben wird NICHT
+     umformuliert.
 
 (ag) DIE VERSIONIERUNG — KEIN LEBENSZYKLUS, KEIN TERMIN, UND DIE ANKÜNDIGUNG HÄNGT AN
      EINER REGISTRIERTEN APP.
@@ -1156,4 +1184,94 @@ Zugangsdatum, keine Werbekonto-Kennung und kein Anfrage-Bezeichner des Anbieters
      **DIE GRENZEN:** `?test=true` — die Quelle sagt, die Antwortform sei dieselbe wie ohne
      (ah), gemessen ist nur der Testmodus · EINE Beobachtung an einem Tag · der Fehlerzweig
      "200 mit `failed`" ist ungemessen.
+
+### MESSUNG 2026-09-24 zu Klick-Kennung und Adresse (S9 der Phase 11.7) — die Teile (am) bis (ar)
+
+**HERKUNFT (2026-09-24):** GEMESSEN vom **OWNER, 13:05:31 bis 13:05:38 UTC, im Terminal**
+(Git Bash, `curl`), **alle fünf Läufe mit `?test=true`**, gegen `POST
+/v5/ad_accounts/{id}/events`, je ein Aufruf mit eigener `event_id` (`s9-A-1790255129` bis
+`s9-E-1790255129`), `event_name` `lead`, IP `203.0.113.9` (TEST-NET), ein erfundener
+User-Agent. Die Probe ist ein Entwurf von CC aus der Vorbereitung von S9, UNVERÄNDERT
+gefahren; ihre Form steht hier und in docs/aktiver-stand.md, VERMERK P11.7-29 (das Skript
+selbst liegt nicht im Repo). Endpunkt, Kopfzeilen und Rumpf in der Form von
+`forwardToPinterest` (`src/lib/capi/pinterest-forward.ts`). Dazu **ABGELESEN, OWNER,
+dieselben Minuten:** die Test-Ansicht "Events testen" des eigenen Werbekontos (s. (aa)),
+vor dem ersten Aufruf geöffnet. **Hier steht kein Zugangsdatum, keine Werbekonto-Kennung
+und kein Anfrage-Bezeichner des Anbieters.**
+**DIE FÜNF LÄUFE:** A `user_data.click_id` = erfundener Wert, Adresse ohne `epik` · B
+weder `click_id` noch `epik` (Mitläufer) · C `user_data.click_idX` mit demselben Wert
+statt `click_id` · D derselbe Wert NUR als `&epik=` in `event_source_url` · E wie A, der
+Wert trägt `+` und `%2B`.
+**ALLE FÜNF:** HTTP 200, `num_events_processed` 1, `status` `"processed"`,
+`error_message` `""`. Die Kopfzeilen bestätigen `X-RateLimit` 120 000 je 60 Sekunden wie
+unter (al)(iii).
+**DIE GRENZE ALLER TEILE UNTEN:** Testmodus · nur der Erfolgszweig · erfundene Werte, also
+KEIN Abgleich · EINE Beobachtung · gesendet hat das Terminal in Adapterform, nicht der
+Adapter.
+
+(am) DAS FELD `user_data.click_id` WIRD ANGENOMMEN UND ALS KLICK-KENNUNG ERKANNT — A
+     GEGEN B.
+     GEMESSEN (Rumpf) und ABGELESEN (Test-Ansicht), OWNER, 2026-09-24.
+     · **RUMPF:** A trägt "external_id is missing. …" OHNE "; click_id is missing"; B trägt
+       beides. Content-Length 315 gegen 336.
+     · **TEST-ANSICHT, Nutzerdaten:** A zeigt "Klick-ID, User Agent, IP-Adresse", B nur
+       "User Agent, IP-Adresse". Warnliste: A external_id (1), B external_id und click_id (2).
+     **DAMIT IST DIE ANZEIGE EIN FELDSPEZIFISCHES INSTRUMENT** — zusammen mit (an), das den
+     Einwand "irgendein Zusatzfeld" ausschliesst. Ein Ereignis mit IP, User-Agent UND
+     `click_id` zugleich wird verarbeitet.
+
+(an) EIN UNBEKANNTER FELDNAME IN `user_data` WIRD STILL IGNORIERT — C.
+     GEMESSEN und ABGELESEN, OWNER, 2026-09-24.
+     C (`click_idX`) verhält sich wie B: HTTP 200, `processed`, Warnung MIT "; click_id is
+     missing", Content-Length 336; die Test-Ansicht zeigt nur "User Agent, IP-Adresse" und
+     zwei Warnungen. **KEINE ABLEHNUNG, KEINE WARNUNG ZUM UNBEKANNTEN NAMEN.**
+     FOLGE FÜR JEDE LIVE-PROBE, als FOLGERUNG: Ein Tippfehler im Feldnamen ist an Status
+     und Verarbeitung NICHT zu erkennen — nur an der fortbestehenden Warnung bzw. der
+     fehlenden "Klick-ID".
+
+(ao) EINE KENNUNG ALLEIN IN DER ADRESSE WIRD WEDER FÜR DIE WARNUNG NOCH FÜR DIE ANZEIGE
+     ERKANNT — D.
+     GEMESSEN und ABGELESEN, OWNER, 2026-09-24.
+     D verhält sich in Rumpf und Nutzerdaten wie B (Warnung MIT "; click_id is missing",
+     Content-Length 336; Nutzerdaten "User Agent, IP-Adresse"; zwei Warnungen). Die
+     Test-Ansicht zeigt die `epik`-Adresse unter "URL" — die Adresse IST angekommen.
+     **DAMIT ERSETZT DER ADRESSWEG DAS BENANNTE FELD NICHT**, soweit Warnung und Anzeige
+     reichen (Frage aus (af)). **OB DIE ZUORDNUNG `epik` AUS DER ADRESSE SPÄTER DOCH LIEST,
+     IST OFFEN** — Warnung und Anzeige sind nicht die Zuordnung. Das Gegenstück beim
+     dritten Ziel, wo die Doku das Auslesen wörtlich zusagt, steht unter Abschnitt "TikTok
+     (Events API 2.0)", Teil (m); hier ist es weder zugesagt noch beobachtet.
+
+(ap) KEINE ZEICHENPRÜFUNG FÜR "+" UND "%" IM FELD — E.
+     GEMESSEN und ABGELESEN, OWNER, 2026-09-24.
+     E verhält sich wie A: `processed`, Warnung OHNE "; click_id is missing",
+     Content-Length 315, Nutzerdaten "Klick-ID, User Agent, IP-Adresse".
+     **DIE GRENZE, UND SIE IST ENG:** E zeigt nur, dass ein Wert mit `+` und `%2B` weder
+     abgewiesen noch beanstandet wird. OB PINTEREST EINEN ECHTEN WERT ROH ODER DEKODIERT
+     ERWARTET, ZEIGT E NICHT — der Wert war erfunden, und nichts wurde abgeglichen.
+
+(aq) KEIN ECHO DES WERTS IN FÜNF LÄUFEN.
+     GEMESSEN, OWNER, 2026-09-24, mit dem Bash-Vergleich der Probe über Kopfzeilen UND Rumpf
+     jeder Antwort; die Positivkontrolle der Prüfung meldete "ok".
+     In KEINER der fünf Antworten taucht die Marke des erfundenen Werts auf — weder im Feld
+     (A, E) noch im unbekannten Feld (C) noch in der Adresse (D).
+     **GRENZE:** nur der Erfolgszweig. Ob eine Fehlerantwort (400, 422 u. a.) den Wert
+     zurückspiegelt, ist UNGEMESSEN.
+
+(ar) DER VOLLE WARNUNGSTEXT UND SEINE LÄNGE.
+     GEMESSEN (Wortlaut, Content-Length), OWNER, 2026-09-24:
+     "external_id is missing. We highly recommend this on all events. It may improve
+     reporting performance such as ROAS/CPA and make your performance resilient to signal
+     loss such as 3P cookie loss" — bei A und E allein; bei B, C und D gefolgt von
+     "; click_id is missing".
+     **GERECHNET (CC, 2026-09-24), als Rechnung und nicht als Messung:** Der Text allein ist
+     **191 Zeichen** lang, mit "; click_id is missing" **212**. Die Differenz der zwei
+     Content-Length-Werte (336 − 315 = 21) ist genau die Länge des Zusatzes, und ein
+     kompakter Rumpf in der Feldfolge von (al) mit diesem Text ergibt genau 315 bzw. 336
+     Bytes — die Abschrift ist damit gegen die Kopfzeile gegengeprüft.
+     **FOLGE FÜR UNSER LOG, GERECHNET** mit der Regel von `sanitizeProviderText`
+     (`src/lib/capi/pinterest-forward.ts`: Schwärzung ab 20 Zeichen aus `[A-Za-z0-9_-]`,
+     dann Kappung auf 200): Der Text trägt keine Folge, die geschwärzt würde. **Ohne den
+     Zusatz passt er ganz; mit ihm endet die Logzeile nach 200 Zeichen auf "; click_i".**
+     Die Warnzeile trennt die zwei Fälle damit nur über ein ABGESCHNITTENES Bruchstück.
+     Gemessen an einer echten Logzeile ist das nicht.
 

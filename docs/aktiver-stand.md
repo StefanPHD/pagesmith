@@ -90,6 +90,13 @@ BLEIBT.** Material: VERMERK P11.7-25.
     geht bereits im Klartext.
   · pinterest `customer_type` — neu/wiederkehrend ist uns nicht bekannt; `app_info` — für
     Apps.
+    **BEFUND-ZEIGER 2026-09-24 — `app_info`, DER WORTLAUT DARÜBER BLEIBT:** Das Ergebnis
+    steht, weil der User-Agent schon als `user_data.client_user_agent` an Pinterest geht
+    (`userData` in `forwardToPinterest`, `src/lib/capi/pinterest-forward.ts`; GEMESSEN am
+    Code, `app_info` kommt in `src/` nicht vor) — `app_info.user_agent` wäre ein zweiter Ort
+    für denselben Wert und gehört nicht zur Mindestregel. Die Begründung "für Apps"
+    widerspricht dagegen docs/ziel-befunde/pinterest.md, Teil (ae): "Primarily used for Web
+    events". VERMERK P11.7-29.
   · tiktok `ad.campaign_id`/`ad_id`/`creative_id` — Werte des Anbieters, nicht der Seite;
     `locale` — nicht erhoben, geringer Nutzen; `page.referrer` — bräuchte ein neues
     Beacon-Feld, in dieser Phase ausgeschlossen (/api/e-Schlankheit).
@@ -1359,8 +1366,9 @@ Owner-Entscheidung E-a.
 SCHÄTZUNG; die Reihenfolge setzt E-d):
 1. S8 tiktok `user.ttclid` — ERLEDIGT: gebaut, im Test-Events-Reiter live belegt (VERMERK
    P11.7-28).
-2. S9 pinterest `click_id` — Bau — mittel. Instrument: eine Oberfläche ungelesen;
-   `?test=true` antwortet ohne Aufzeichnung (ah).
+2. S9 pinterest `click_id` — Bau — mittel. ZUGESCHNITTEN (VERMERK P11.7-29). Instrument:
+   die Test-Ansicht "Events testen", Nutzerdaten "Klick-ID" — GEMESSEN als feldspezifisch
+   (pinterest.md, Teile (am), (an)).
 3. F8 Erfolgsrumpf — Messung — klein, ein Aufruf. Instrument: Terminal-Aufruf wie S6b, auch
    mit `?test=true` (ah). **DAS VERCEL-LOG TAUGT NICHT:** Erfolg 1/1 ist still
    (`pinterest-forward.ts:611 f.`), und das Urteil käme vom Prüfling. Ob das Testprojekt ein
@@ -1558,6 +1566,55 @@ datierter Zeiger an der Liste "WAS NUR EIN AUFRUF ZEIGT" und eine datierte Ergä
 Prüfsumme im Kopf · VERMERK P11.7-27 mit Zeiger · Entscheidung P11.7-6 neu · ZUSCHNITT-FRAGE
 P11.7-9 eingelöst · Zuschnitt S8 verdichtet (T6 entfallen) · S8 ABGESCHLOSSEN.
 
+### VERMERK P11.7-29 — Messung und Zuschnitt zu S9 vom 2026-09-24 (pinterest `click_id`, KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-24 · Aufklärung READ-ONLY an HEAD `da794d0` (VOLLLADUNG
+docs/ziel-befunde/pinterest.md, 1 159 Zeilen, plus Kopf von docs/ziel-befunde.md) · danach
+eine Terminal-Probe, von CC entworfen und vom OWNER UNVERÄNDERT gefahren, 13:05:31 bis
+13:05:38 UTC, Git Bash, `curl`, alle fünf Läufe mit `?test=true` · Form je Lauf wie
+`forwardToPinterest` (`src/lib/capi/pinterest-forward.ts`: Endpunkt mit Kennung im Pfad,
+`Authorization: Bearer`, Hülle `{"data":[…]}`, `action_source` "web", `partner_name`
+"direct", `user_data` mit IP und User-Agent, `event_source_url`), `event_name` `lead`, IP
+`203.0.113.9`, `event_id` `s9-A-1790255129` bis `s9-E-1790255129` · das Zugangsdatum per
+`read -rs` und über `curl --config -`, also in keinem Programm-Argument · kein
+Zugangsdatum, keine Werbekonto-Kennung und kein Anfrage-Bezeichner in dieser Datei. Kein
+Bau-Commit.
+
+**DIE FÜNF LÄUFE UND DAS ERGEBNIS** (Befund: docs/ziel-befunde/pinterest.md, Teile (am) bis
+(ar)):
+
+| Lauf | Nutzlast | Warnung "; click_id is missing" | Test-Ansicht, Nutzerdaten |
+|---|---|---|---|
+| A | `user_data.click_id` = erfundener Wert, Adresse ohne `epik` | **fehlt** (Content-Length 315) | **Klick-ID**, User Agent, IP-Adresse |
+| B | weder noch (Mitläufer) | steht (336) | User Agent, IP-Adresse |
+| C | `user_data.click_idX` | steht (336) | User Agent, IP-Adresse |
+| D | derselbe Wert nur als `&epik=` in `event_source_url` | steht (336) | User Agent, IP-Adresse; die `epik`-Adresse unter "URL" |
+| E | wie A, der Wert trägt `+` und `%2B` | **fehlt** (315) | **Klick-ID**, User Agent, IP-Adresse |
+
+Alle fünf: HTTP 200, `processed`, `error_message` `""`; in keiner Antwort die Marke des
+Werts (Positivkontrolle "ok"); `X-RateLimit` 120 000 je 60 Sekunden wie VERMERK P11.7-26.
+
+**DIE AUSSAGEN, je mit Grenze:** das Feld wird erkannt (A gegen B) · ein unbekannter Name
+wird still ignoriert (C) — damit ist die Anzeige FELDSPEZIFISCH · eine Kennung allein in der
+Adresse wird für Warnung und Anzeige NICHT erkannt (D); ob die Zuordnung sie später liest,
+bleibt OFFEN · keine Zeichenprüfung für `+` und `%` (E), über roh gegen dekodiert sagt E
+nichts · kein Echo im Erfolgszweig; Fehlerzweige ungemessen. GRENZE aller Teile: Testmodus,
+erfundene Werte, KEIN Abgleich, gesendet hat das Terminal, nicht der Adapter.
+
+**RICHTIGGESTELLT GEGEN DIE ÜBERGABE, GERECHNET (CC):** Die Übergabe nannte den Text OHNE
+`click_id`-Zusatz 212 Zeichen lang. Er ist **191** lang; **212** ist die Länge MIT "; click_id
+is missing". Gegenprobe: 336 − 315 = 21 = Länge des Zusatzes, und ein kompakter Rumpf in der
+Feldfolge von (al) mit diesem Text ergibt genau 315 bzw. 336 Bytes. **FOLGE, GERECHNET mit der
+Regel von `sanitizeProviderText`:** ohne Zusatz passt die Warnung ganz in die 200-Zeichen-
+Kappung; mit ihm endet unsere Logzeile auf "; click_i". Die Warnzeile trennt die Fälle also,
+aber nur über ein abgeschnittenes Bruchstück (pinterest.md, Teil (ar)).
+
+**ZEIGER / IM SELBEN ZUG:** docs/ziel-befunde/pinterest.md — Teile (am) bis (ar), datierte
+Zeiger an (p)(2), (ac), (ae) und (af), Ergänzung an der Prüfsumme im Kopf · Zuschnitt S9
+(Abschnitt "Zuschnitt der Phase 11.7", N1 bis N9) · Entscheidung P11.7-7 neu · E-c und
+ZUSCHNITT-FRAGE P11.7-19 mit Zeiger · VERMERK P11.7-25, Liste Nr. 2, und "Nächster Schritt"
+nachgezogen.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1608,6 +1665,17 @@ Anzeigen-Traffic (Gate 1 von S8); dass TikTok ein Ereignis allein über `ttclid`
 ungemessen.
 Kippbedingung: steht am Riegel, Absatz "WANN SIE NEU ZU TREFFEN IST" — hier nicht kopiert.
 Sie bindet jede Runde, die den TikTok-Riegel oder die Herkunft von IP und User-Agent berührt.
+
+**P11.7-7 — DER PAAR-RIEGEL BEI PINTEREST BLEIBT MIT `user_data.click_id`.**
+Ort: `src/lib/capi/pinterest-forward.ts`, der Riegel in `forwardToPinterest` samt Kommentar.
+Herkunft: ARCHITEKTEN-ENTSCHEIDUNG, Zuschnitt von S9 (2026-09-24); Material VERMERK P11.7-29.
+Grund, GELESEN: Laut docs/ziel-befunde/pinterest.md, Teil (ae), verlangt `user_data`
+mindestens `em`, `hashed_maids` oder das Paar aus IP und User-Agent — `click_id` erfüllt die
+Mindestregel NICHT. Ob Pinterest ein Ereignis allein mit `click_id` annimmt, ist UNGEMESSEN;
+gemessen ist nur `click_id` NEBEN dem Paar (Teil (am)).
+Kippbedingung: eine Messung, dass Pinterest ein Ereignis nur mit `click_id` annimmt und
+zuordnet, oder eine geänderte Mindestregel an der Quelle.
+Sie bindet jede Runde, die den Pinterest-Riegel oder `user_data` berührt.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -1852,7 +1920,8 @@ belegt, dazu ein Zeiger an P11.7-16 (VERMERK P11.7-20); S6b hat P11.7-16 eingel�
 P11.7-22); der Zuschnitt von S7 legt Teile von P11.7-6 (G1) und P11.7-7 (Owner-Entscheidung vom
 2026-09-24) fest, P11.7-8 ist gemessen (VERMERK P11.7-23); S7 hat P11.7-6 für
 `landingPageDeviceInfo` eingelöst und P11.7-7 so gebaut, wie entschieden (VERMERK P11.7-24);
-S8 hat P11.7-9 eingelöst (T1; VERMERK P11.7-28).
+S8 hat P11.7-9 eingelöst (T1; VERMERK P11.7-28); der Zuschnitt von S9 legt P11.7-19 fest
+(N1; VERMERK P11.7-29).
 ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
@@ -2108,6 +2177,12 @@ ANBIETER BITTET UM BEIDE.** `user_data.click_id` — **und dieselbe Doku verlang
 `&epik` im Adressfeld (pinterest, Teile (ac), (af)). **OB EINES DAS ANDERE ERSETZT, ERGÄNZT
 ODER DOPPELT, SAGT KEINE GELESENE SEITE**, und ob der Anbieter die Adresse selbst ausliest,
 ist ausdrücklich nicht beantwortet. Einordnung in eine gemeinsame Bauform: **P11.7-15**.
+**ZEIGER 2026-09-24 — GEMESSEN BEANTWORTET, SOWEIT WARNUNG UND ANZEIGE REICHEN (VERMERK
+P11.7-29; pinterest, Teile (am), (ao)):** Das Feld `user_data.click_id` wird erkannt (die
+Warnung "click_id is missing" entfällt, die Test-Ansicht führt "Klick-ID"); derselbe Wert
+allein als `&epik=` in der Adresse wird es nicht. **DER ADRESSWEG ERSETZT DAS FELD NICHT.** Ob
+die Zuordnung die Adresse später liest — also ob beide sich ergänzen oder doppeln —, bleibt
+OFFEN. Festgelegt für diese Phase durch den Zuschnitt von S9 (N1).
 
 **ZUSCHNITT-FRAGE P11.7-20 — JEDES ZIEL MIT KLICK-KENNUNG EMPFIEHLT, SIE IM BROWSER AUFZUBEWAHREN — UND
 DIESES PRODUKT BEWAHRT NICHTS AUF.** **ARCHITEKT 2026-09-22 — BEFUND, KEINE ENTSCHEIDUNG.**
@@ -2244,7 +2319,8 @@ gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b
 Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist nach G1 bis G5 gebaut,
 `landingPageDeviceInfo` ist auf Schema-Ebene gemessen angenommen (VERMERK P11.7-24). S8
 (tiktok) ist nach T1 bis T5 gebaut, `user.ttclid` ist im Test-Events-Reiter live belegt
-(VERMERK P11.7-28). S9 ist weder gebaut noch geplant.
+(VERMERK P11.7-28). S9 (pinterest) ist nach N1 bis N9 zugeschnitten und nicht gebaut
+(VERMERK P11.7-29).
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -2573,6 +2649,67 @@ der Datei ihres Ziels.
     ist seit VERMERK P11.7-26 falsch;
   · ein Zeiger an docs/ziel-befunde/pinterest.md, Teil (p)(2), auf Teil (al)(ii) (eigene
     Ereignisnamen).
+  **ZEIGER 2026-09-24 — ZUGESCHNITTEN:** s. "S9 — ZUGESCHNITTEN AM 2026-09-24" direkt
+  darunter. Prüfsumme und Zeiger (p)(2) sind mit VERMERK P11.7-29 erledigt; der
+  Kopfkommentar geht in den Bau (N8).
+
+**S9 — ZUGESCHNITTEN AM 2026-09-24 — pinterest `user_data.click_id` aus `epik`.**
+ZUSCHNITT-FRAGE P11.7-19; Material VERMERK P11.7-29 und die Aufklärung desselben Tages.
+PFLICHT DAVOR: Volladung docs/ziel-befunde/pinterest.md plus Kopf. **Nicht gebaut.**
+**ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24** (Kennbuchstaben N, frei im Bestand):
+- **N1 — `user_data.click_id` WIRD ZUSÄTZLICH GESENDET; `event_source_url` BEHÄLT `epik` ROH
+  (S4).** Grund GEMESSEN: Eine Kennung allein in der Adresse wird für Warnung und Anzeige
+  nicht erkannt, das Feld schon (docs/ziel-befunde/pinterest.md, Teile (am), (ao)). Ob die
+  Zuordnung die Adresse später liest, bleibt offen; das Feld zu senden hängt daran nicht.
+- **N2 — GELESEN ÜBER EINE HÜLLE AM KERN `readClickIdExact` FÜR `epik`:** exakt, erstes
+  Vorkommen, `""` → kein Feld, der Wert dekodiert. Gelesen wird die BEREINIGTE Adresse im
+  `try`, nach ihrem Bau in `forwardToPinterest`; `userData` wird dort ergänzt. Name und Form
+  legt der Stufe-1-Plan fest. Grund: vierter Nutzer des Kerns, bestehende Verträge bleiben
+  unberührt (wie T2 von S8).
+- **N3 — KEINE KÜRZUNG, KEINE FORMPRÜFUNG.** Grund: Der Bestand trägt keine Formregel (Teil
+  (ac)), und ein Wert mit `+` und `%2B` wird angenommen (Teil (ap)).
+  **DEKODIER-GRENZE:** Die Hülle liefert den Wert dekodiert; ein `+` wird zum Leerzeichen.
+  Anders als bei tiktok ist die rohe Form in der Adresse bei Pinterest als Rückfall NICHT
+  belegt — die Adresse allein wird nicht erkannt (Teil (ao)). Teil (ap) sagt nichts über roh
+  gegen dekodiert. Die Grenze wird neu bewertet, sobald ein ECHTER `epik`-Wert beobachtet ist.
+- **N4 — TRANSIT-ONLY.** Grund: der Block vom 2026-08-28 (Kriterium HERKUNFT, "künftige
+  Klick-Kennungen anderer Anbieter … und weitere") und (E3) (docs/offene-punkte.md,
+  "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"); kein Hashen, Teil (ae) "Hashen: nein".
+  GRENZE: Ein Echo in unsere Logzeile ist nur im ERFOLGSZWEIG ausgeschlossen (Teil (aq));
+  Fehlerzweige sind ungemessen, und `sanitizeProviderText` schwärzt erst ab 20 Zeichen aus
+  `[A-Za-z0-9_-]`.
+- **N5 — AUF ALLEN FORWARDBAREN EREIGNISSEN, NICHT NUR AUF DEN ACHT AUS (ac).** Grund: Die
+  Kennung gehört zum Besuch, nicht zum Ereignistyp, und ein Verbot für andere Typen ist nicht
+  gelesen. Faktisch trägt sie nur ein Ereignis des Klick-Beacons, weil nur er die Adresse
+  sendet (VERMERK P11.7-1, (a), (c)).
+- **N6 — TESTS:** Fälle MIT Adresse halten `user_data` als Ganzes fest; T8
+  (`pinterest-forward.test.ts`) bleibt der Fall ohne Adresse; Wächter W bewacht `click_id`
+  NICHT (der Wert steht ohnehin in `event_source_url`), er deckt weiter, dass kein anderes
+  Ziel `epik` trägt. Für den Einsatzpunkt im `try` ist T19 (werfender Getter) das Pendant zu
+  T20 bei tiktok; ob er eine Lesung VOR dem `try` schon allein fängt oder ein eigener Fall
+  nötig ist, belegt die Mutationsprobe des Plans (FOLGERUNG: eine Lesung vor dem `try` wirft
+  aus der Funktion, T19 würde rot).
+- **N7 — LIVE: NUR DER ECHTE WEG** — R1 ohne `epik`, S1 mit `?epik=` auf der Live-Seite.
+  Instrument: "Events testen", Nutzerdaten "Klick-ID", GEMESSEN als feldspezifisch (Teile
+  (am), (an)). **PFLICHT-STOPP: Die Ansicht ist VOR dem Klick offen** (Live-Strom ohne
+  Rückschau, Teil (w)); der Projekt-Testmodus steht für Pinterest an, weil die Ansicht aus
+  dem Testmodus gespeist wird (GELESEN, Teil (m)(1)). Die Warnzeile im Vercel-Log ist nur zweites Instrument: mit fehlendem
+  `click_id` endet sie auf "; click_i", sonst auf "cookie loss" (GERECHNET, Teil (ar)).
+- **N8 — MITNAHME IN DEN BAU:** die drei falschen Stellen zum Erfolgsrumpf — Kopf von
+  `pinterest-forward.ts` ("DER ERFOLGS-RUMPF IST NIE GEMESSEN WORDEN"), der Typ-Kommentar am
+  Erfolgs-Rumpf vor `evaluateSuccessBody` (`PinterestSuccessBody`, "NIE GEMESSEN"), Kopf von
+  `pinterest-forward.test.ts` — mit der Grenze "Endpunkt gemessen (Teil (al)), Adapter nicht,
+  200 mit `failed` ungemessen" · der Kommentar an `pinterestEventName` ("Eine Messung an unserem
+  Konto gibt es nicht") nach Teil (al)(ii) · die Riegel-Kommentare, die "ohne Kennung" bzw.
+  "ohne jede Identitaet" sagen (Kopfpunkt 3 und der Kommentar am Paar-Riegel) · die
+  Hüllen-Aufzählung im Kopf von `click-id-strip.ts`.
+- **N9 — NICHT TEIL VON S9**, je mit Grund: `external_id` — offene Owner-Frage
+  (ZUSCHNITT-FRAGE P11.7-4) · Personendaten — Roadmap-Grenze und F3 · `customer_type`,
+  `app_info` — E-c · `partner_id` — "Use only if you are a Pinterest integration partner"
+  (Teil (ae)), das sind wir nicht · der Cookie-Weg `_epik` und seine Namensvariante `ptk`
+  (Teile (ac), (ai)(1)) — ZUSCHNITT-FRAGE P11.7-26 · jede Änderung an der Warnzeile oder an
+  `sanitizeProviderText` — Vorrat P11.7-9.
+Dazu Entscheidung P11.7-7 (Paar-Riegel bleibt).
 
 **MITZUNEHMEN — VORRAT P11.7-1, P11.7-3, P11.7-4 (Kopfkommentare)**, je in der ersten
 Scheibe, die ihre Datei berührt, wie ihre Trigger es verlangen. **P11.7-3 geht in S2** — die
@@ -2618,10 +2755,10 @@ binden:**
 **S1 BIS S8 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
 P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28). **DER ROADMAP-ABGLEICH IST GEMACHT (VERMERK
 P11.7-25); DIE REIHENFOLGE BIS ZUM PHASENENDE STEHT IN DER OWNER-ENTSCHEIDUNG E-d**
-(Abschnitt "Gegenstand der Phase"). **F8 IST GEMESSEN UND ERFÜLLT (VERMERK P11.7-26). ALS
-NÄCHSTES: DIE AUFKLÄRUNG ZU S9 pinterest (`epik`, ZUSCHNITT-FRAGE P11.7-19), in einer NEUEN
-Sitzung** — Pflicht-Stopp: Volladung docs/ziel-befunde/pinterest.md plus Kopf. Mitzunehmen ist
-vorgemerkt (Abschnitt "Zuschnitt der Phase 11.7", pinterest).
+(Abschnitt "Gegenstand der Phase"). **F8 IST GEMESSEN UND ERFÜLLT (VERMERK P11.7-26). S9
+pinterest IST ZUGESCHNITTEN (N1 bis N9, VERMERK P11.7-29). ALS NÄCHSTES: DER STUFE-1-PLAN VON
+S9** — Pflicht-Stopp: Volladung docs/ziel-befunde/pinterest.md plus Kopf. Die Mitnahme steht
+in N8 (Abschnitt "Zuschnitt der Phase 11.7", "S9 — ZUGESCHNITTEN AM 2026-09-24").
 **DIE SIEBEN-TAGE-FRIST LÄUFT WEITER:** Die Google-Karte ist am 2026-09-24 neu autorisiert
 worden; im Status "Testing" stirbt das Erneuerungs-Token sieben Tage danach (VERMERK P11.7-23,
 (a)). Vor jedem weiteren Google-Live-Test den Ablaufzeitpunkt auf der Karte prüfen.

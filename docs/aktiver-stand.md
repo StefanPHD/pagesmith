@@ -1315,9 +1315,9 @@ Owner-Entscheidungen aus diesem Abgleich: E-a bis E-d im Abschnitt "Gegenstand d
 
 | Punkt | Roadmap verlangt | Erledigt (Beleg) | Offen | Scheibe |
 |---|---|---|---|---|
-| F5 tiktok Dedup | LESUNG ("aus der Doku beantwortbar") | tiktok.md (n): Schlüssel `[event_source_id, event, event_id]`, 48 h / 5 min (VERMERK P11.7-4) | Wirkung ungemessen (tiktok.md:553) · Doppelzählung mit eigenem Betreiber-Pixel nur Ableitung (ZUSCHNITT-FRAGE P11.7-10) · Matrix H2 tiktok "NIE GESTELLT" (docs/ziel-fragenkatalog.md:560) | keine; P11.7-10 war S8 zugeordnet und ist dort nicht bearbeitet (VERMERK P11.7-28) |
+| F5 tiktok Dedup | LESUNG ("aus der Doku beantwortbar") | tiktok.md (n): Schlüssel `[event_source_id, event, event_id]`, 48 h / 5 min (VERMERK P11.7-4) | Wirkung ungemessen (tiktok.md, "Abschnitts-Lesung 2026-09-22 … die Teile (j) bis (p)", Block "WAS NUR EIN AUFRUF ZEIGT", Punkt "ob die 48-Stunden- und die 5-Minuten-Frist …") · Doppelzählung mit eigenem Betreiber-Pixel nur Ableitung (ZUSCHNITT-FRAGE P11.7-10) · Matrix H2 tiktok "NIE GESTELLT" (docs/ziel-fragenkatalog.md, "## Die Matrix — Stand 2026-08-20", Zeile H2) | keine; P11.7-10 war S8 zugeordnet und ist dort nicht bearbeitet (VERMERK P11.7-28) |
 | F6 meta Version | LESUNG | Doku (v)/(w); `v25.0` gebaut `9778aca`, live bestätigt (VERMERK P11.7-14); Wächter V1/V3/T1 | Messung der verarbeiteten Version (meta.md (y)), vom Wortlaut nicht verlangt | S1 + S3 |
-| F7 meta/tiktok/linkedin | LESUNG | meta (u) "no specific rate limit", 1 000 Ereignisse je Aufruf, BUC-Zahlen nicht gelesen · tiktok (o) beziffert · linkedin (ag) schon 2026-09-11 (docs/ziel-fragenkatalog.md:776), (as) | ob metas "kein Limit" ohne Zahl als Antwort zählt, NICHT ENTSCHEIDBAR · Messung · ZUSCHNITT-FRAGE P11.7-11 (40100 und 40104 beide HTTP 401) · Matrix H3 meta/tiktok "NIE GESTELLT" | keine |
+| F7 meta/tiktok/linkedin | LESUNG | meta (u) "no specific rate limit", 1 000 Ereignisse je Aufruf, BUC-Zahlen nicht gelesen · tiktok (o) beziffert · linkedin (ag) schon 2026-09-11 (docs/ziel-fragenkatalog.md, "## Fortschreibung der Matrix — 2026-09-11, Ziel LINKEDIN", Zeile H3), (as) | ob metas "kein Limit" ohne Zahl als Antwort zählt, NICHT ENTSCHEIDBAR · Messung · ZUSCHNITT-FRAGE P11.7-11 (40100 und 40104 beide HTTP 401) · Matrix H3 meta/tiktok "NIE GESTELLT" | keine |
 | F7 Pinterest-Widerspruch | NICHT im Wortlaut (dort "beantwortet", Teil (e)); erst die Owner-Klarstellung vom 2026-09-24 | pinterest.md (ai)(2): 120 000/min · "unlimited" · 5 000/min; Vorbehalt an (e) | welche gilt: UNGEMESSEN; eine Doku-Antwort gibt es nicht (drei widersprechen sich) | keine |
 | F8 pinterest Erfolgsrumpf | MESSUNG ("DIE EINZIGE … DIE EINE MESSUNG VERLANGT") | Form gelesen (ah); deckt sich mit `evaluateSuccessBody` (GEMESSEN am Repo, `8cab827`) | der Aufruf — (ah): die Doku ist "nicht ihr Ersatz"; ZUSCHNITT-FRAGE P11.7-21 hängt daran | keine; S9 ist `epik`, nicht F8 |
 
@@ -1368,7 +1368,7 @@ SCHÄTZUNG; die Reihenfolge setzt E-d):
 4. F5 Wirkung — Messung — klein bis mittel. Instrument: zwei Aufrufe mit gleicher `event_id`,
    Anbieter-Metriken (n); Browser gegen Server ohne TikTok-Pixel nicht herstellbar ((k)).
 5. F7 je Ziel — Messung — klein, Kopfzeilen einer Antwort. meta "headers" (u), linkedin
-   Analytics-Reiter (ag), tiktok Kopfzeilen ungelesen (tiktok.md:552); die Grenze auszulösen
+   Analytics-Reiter (ag), tiktok Kopfzeilen ungelesen (tiktok.md, "Abschnitts-Lesung 2026-09-22 … die Teile (j) bis (p)", Block "WAS NUR EIN AUFRUF ZEIGT", Punkt "welches Limit real greift …"); die Grenze auszulösen
    ist kein Instrument.
 6. Pinterest-Rate-Limit-Widerspruch — Messung oder Owner-Einordnung — kein belegtes Instrument.
 7. ZUSCHNITT-FRAGE P11.7-11 — Owner-Entscheidung, ob gebaut wird; kein Instrument (Drosselung

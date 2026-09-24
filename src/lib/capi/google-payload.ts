@@ -4,9 +4,10 @@
 // Zustand, kein Zugangsdatum, kein Aufruf. Sie SENDET nichts — der Transport ist eine
 // eigene, spaetere Scheibe.
 //
-// SIE HAT IM PRODUKTIVCODE HEUTE KEINEN AUFRUFER — derselbe Grund wie bei
-// google-click-ids.ts, und dieselbe Invariante: Wer einen ergaenzt, baut nicht mehr
-// diese Scheibe.
+// IHR EINZIGER AUFRUFER IM PRODUKTIVCODE IST forwardToGoogle (capi/google-forward.ts),
+// seit Scheibe 4 der Phase 11.2. RICHTIGGESTELLT IN S7 DER PHASE 11.7: Hier stand "SIE
+// HAT IM PRODUKTIVCODE HEUTE KEINEN AUFRUFER" — das war der Stand von Scheibe 11.2a und
+// ist seit dem Transport falsch.
 //
 // ---------------------------------------------------------------------------
 // DER KOPFSATZ ZUR ABLAGE — WOERTLICH aus docs/claude-history/phase-11.2-google.md,
@@ -32,8 +33,10 @@
 // (bu)). Der Satz oben zerfaellt seither in zwei Haelften, und sie haben
 // verschiedenen Rang:
 //   GEMESSEN, ALSO NICHT MEHR BLOSS GELESEN — die NAMEN und die FORMEN:
-//   · saemtliche DREIZEHN Schluesselnamen dieser Datei sind angenommen, in BEIDEN
-//     Schreibweisen (Teil (bq));
+//   · die DREIZEHN Schluesselnamen, die B1 gesendet hat, sind angenommen, in BEIDEN
+//     Schreibweisen (Teil (bq)). NICHT DARUNTER, und seit S7 der Phase 11.7 in dieser
+//     Datei: landingPageDeviceInfo, ipAddress und userAgent — GELESEN (Teile (m)/E1,
+//     (w)/E1), NIE GEMESSEN;
 //   · die Gestalt des Zeitstempels aus toISOString() ist angenommen (Teil (bs));
 //   · eventSource ist ein ENUM und kein freier String (Teil (br));
 //   · operatingAccount.accountId muss NUMERISCH sein (Teil (bt)).
@@ -137,13 +140,51 @@ export type GoogleEventInput = {
   conversionValue?: number;
   currency?: string;
   transactionId?: string;
+  /**
+   * IP und User-Agent der LANDESEITE (S7 der Phase 11.7). OPTIONAL, und sie ZAEHLEN
+   * NICHT ALS KENNUNG: Die Pruefung auf eine Klick-Kennung laeuft VOR ihnen und sieht
+   * sie nicht — der gclid-Riegel bleibt, was er war (Entscheidung G2 des Zuschnitts).
+   */
+  landingPageDeviceInfo?: GoogleDeviceInfo;
+};
+
+/**
+ * Die Geraetedaten der Landeseite (S7 der Phase 11.7).
+ *
+ * FELDNAMEN UND ORT GELESEN, NIE GEMESSEN: docs/ziel-befunde/google.md, Teil (m)/E1
+ * (`adIdentifiers.landingPageDeviceInfo` mit `ipAddress` und `userAgent`) und Teil
+ * (w)/E1 (DeviceInfo, dort mit vier Feldern; `category` und `language_code` gehoeren
+ * NICHT zu dieser Scheibe). Die ECAPI-Zuordnung nennt denselben Pfad
+ * (`ad_identifiers.landing_page_device_info.ip_address`, Teil (r)).
+ * WARUM DIESER ORT UND NICHT `eventDeviceInfo`: Der Beacon feuert auf der Landeseite
+ * selbst, und `eventDeviceInfo` kennt die Diagnose nicht (Teile (r), (u)) —
+ * Entscheidung G1 des Zuschnitts von S7.
+ * KEINE FORMPRUEFUNG: Die Quelle nennt fuer keinen der beiden Werte eine Form- oder
+ * Laengenregel, auch nicht IPv4 gegen IPv6 (Nicht-Treffer mit Positivkontrolle,
+ * VERMERK P11.7-23 der Phase 11.7). Eine IPv6-Adresse reist unveraendert.
+ * TRANSIT-ONLY (Entscheidung G4): Die Werte stehen in der Nutzlast und sonst nirgends.
+ */
+export type GoogleDeviceInfo = {
+  ipAddress?: string;
+  userAgent?: string;
+};
+
+/**
+ * Die Merkmale an `adIdentifiers`: die Klick-Kennungen plus, optional, die
+ * Geraetedaten der Landeseite. EIN EIGENER TYP, damit GoogleClickIds
+ * (google-click-ids.ts) unberuehrt bleibt — jener beschreibt, was die Adresse
+ * hergibt, dieser, was an den Anbieter geht.
+ */
+export type GoogleAdIdentifiers = GoogleClickIds & {
+  landingPageDeviceInfo?: GoogleDeviceInfo;
 };
 
 /**
  * EIN gebautes Event, so wie es im Array `events` der Anfrage steht.
  *
- * Feldnamen GELESEN an Teil (l)/D2 und Teil (w)/D2. Optionale Felder sind NUR gesetzt,
- * wenn der Aufrufer sie geliefert hat — kein Schluessel traegt `undefined`.
+ * Feldnamen GELESEN an Teil (l)/D2 und Teil (w)/D2, die Geraetedaten an Teil (m)/E1
+ * und Teil (w)/E1. Optionale Felder sind NUR gesetzt, wenn der Aufrufer sie geliefert
+ * hat — kein Schluessel traegt `undefined`.
  */
 export type GoogleEvent = {
   /**
@@ -161,7 +202,7 @@ export type GoogleEvent = {
    */
   eventTimestamp: string;
   eventSource: string;
-  adIdentifiers: GoogleClickIds;
+  adIdentifiers: GoogleAdIdentifiers;
   conversionValue?: number;
   currency?: string;
   transactionId?: string;
@@ -215,7 +256,10 @@ export type GoogleDestination = {
  *   Scheibe baut KEIN userData.
  * · `consent` — das Einwilligungs-URTEIL wird im Browser gefaellt; tracking/consent-wire.ts
  *   haelt fest "HIER STEHT KEIN ZWEITES URTEIL", ein Google-eigenes Consent-Feld waere
- *   ein DRITTES. Offen, s. docs/offene-punkte.md, Eintrag 5.
+ *   ein DRITTES. ENTSCHIEDEN: WEGGELASSEN (OWNER-ENTSCHEIDUNG 2026-09-24) — der Server
+ *   kennt nur ein doppeldeutiges Bit ("google erlaubt" heisst zugestimmt ODER kein
+ *   Dialog). Hier stand "Offen"; Volltext: VERMERK P11.7-23 der Phase 11.7 und der
+ *   Zuschnitt von S7.
  * · `validateOnly` — ein Instrument der MESSUNG, nicht der Nutzlast.
  *
  * VIER PRUEFUNGEN FEHLEN EBENFALLS BEWUSST, und der Grund ist jedes Mal derselbe: Es
@@ -253,6 +297,31 @@ function pickClickIds(source: GoogleClickIds): GoogleClickIds {
 }
 
 /**
+ * Uebernimmt die vorhandenen Geraetedaten — oder gibt `undefined`, wenn keines da ist.
+ *
+ * DIESELBE REGEL WIE pickClickIds: ANWESENHEIT, NICHT FORM. Verworfen wird allein die
+ * exakt leere Zeichenkette und alles, was keine Zeichenkette ist; nichts wird getrimmt,
+ * nichts geprueft. Nur IP ergibt `{ipAddress}`, nur UA `{userAgent}`, keines ergibt
+ * `undefined` — und dann traegt `adIdentifiers` den Schluessel gar nicht, die Nutzlast
+ * ist also ZEICHENGLEICH mit der vor S7.
+ * `typeof` STATT WAHRHEITSWERT, und der Grund ist der Aufrufer: Die Werte kommen aus
+ * einer Signatur, deren Typ zur Laufzeit keine Zusage ist.
+ */
+function pickDeviceInfo(
+  source: GoogleDeviceInfo | undefined,
+): GoogleDeviceInfo | undefined {
+  if (!source) return undefined;
+  const picked: GoogleDeviceInfo = {};
+  if (typeof source.ipAddress === "string" && source.ipAddress !== "") {
+    picked.ipAddress = source.ipAddress;
+  }
+  if (typeof source.userAgent === "string" && source.userAgent !== "") {
+    picked.userAgent = source.userAgent;
+  }
+  return Object.keys(picked).length > 0 ? picked : undefined;
+}
+
+/**
  * Baut EIN Event — oder verwirft.
  *
  * KEINE NUTZLAST OHNE KLICK-KENNUNG (bindende Entscheidung (3) des Zuschnitts): Traegt
@@ -276,6 +345,14 @@ export function buildGoogleEvent(input: GoogleEventInput): GoogleBuildResult {
     return { ok: false, reason: "no_click_id" };
   }
 
+  // DIE GERAETEDATEN KOMMEN ERST HIER DAZU — NACH der Pruefung darueber, und das ist
+  // der ganze Punkt (Entscheidung G2 des Zuschnitts von S7): Sie zaehlen NICHT als
+  // Kennung. Ohne Klick-Kennung entsteht weiterhin kein Event, auch wenn IP und UA da sind.
+  const device = pickDeviceInfo(input.landingPageDeviceInfo);
+  const merkmale: GoogleAdIdentifiers = device
+    ? { ...adIdentifiers, landingPageDeviceInfo: device }
+    : adIdentifiers;
+
   const event: GoogleEvent = {
     // toISOString liefert genau die verlangte Gestalt: Z-normalisiert, drei
     // Nachkommastellen. KEINE Epochen-Zahl — s. den Kommentar am Feld.
@@ -283,7 +360,7 @@ export function buildGoogleEvent(input: GoogleEventInput): GoogleBuildResult {
     // UNVERAENDERT AUS DER EINGABE, nicht geprueft und nicht gegen das Enum gehalten:
     // welcher Wert gilt, ist nicht belegt (bindende Entscheidung (2)).
     eventSource: input.eventSource,
-    adIdentifiers,
+    adIdentifiers: merkmale,
   };
 
   // Optionale Felder NUR bei gelieferten Werten — kein Schluessel mit `undefined`.

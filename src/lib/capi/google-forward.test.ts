@@ -345,3 +345,145 @@ describe("forwardToGoogle — Deckel, Containment und TRANSIT-ONLY", () => {
     expect(ausgaben).toContain("no_click_id");
   });
 });
+
+// ===========================================================================
+// DIE GERAETEDATEN DER LANDESEITE (S7 der Phase 11.7).
+//
+// DIE ERWARTUNG IST AUS DER ENTSCHEIDUNG GESCHRIEBEN (G1 des Zuschnitts), nicht aus dem
+// Code: `adIdentifiers.landingPageDeviceInfo`, je Wert nur wenn vorhanden, KEIN
+// consent-Feld (Owner-Entscheidung 2026-09-24). GF-1 oben faehrt OHNE Geraetedaten und
+// ist seit S7 fuer diesen Adapter KEIN erschoepfender Mengen-Waechter mehr — diese
+// Rolle traegt GF-9.
+// ===========================================================================
+
+describe("forwardToGoogle — landingPageDeviceInfo (S7)", () => {
+  const IP = "203.0.113.88";
+  const UA = "Mozilla/5.0 (ERFUNDEN-UA-GF-S7)";
+
+  function ereignis(): Record<string, unknown> {
+    return (gesendet().events as Record<string, unknown>[])[0];
+  }
+
+  it("GF-9: IP und UA — die GANZE Nutzlast", async () => {
+    // WIRD ROT, WENN: das Feld fehlt, woanders steht, IP und UA vertauscht sind, ein
+    // consent-Feld dazukommt oder sich irgendetwas anderes an der Nutzlast aendert.
+    await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+
+    expect(gesendet()).toEqual({
+      destinations: [
+        {
+          operatingAccount: { accountType: "GOOGLE_ADS", accountId: KUNDENNUMMER },
+          productDestinationId: ZIEL_KENNUNG,
+        },
+      ],
+      events: [
+        {
+          eventTimestamp: new Date(JETZT * 1000).toISOString(),
+          eventSource: "WEB",
+          adIdentifiers: {
+            gclid: GCLID,
+            landingPageDeviceInfo: { ipAddress: IP, userAgent: UA },
+          },
+          transactionId: "evt-1",
+        },
+      ],
+    });
+  });
+
+  it("GF-9b: nur IP (UA leer, wie ihn der Ingest ohne Kopfzeile liefert)", async () => {
+    // WIRD ROT, WENN: ein leerer userAgent in die Nutzlast gelangt oder die IP fehlt.
+    await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, "");
+    expect(ereignis().adIdentifiers).toEqual({
+      gclid: GCLID,
+      landingPageDeviceInfo: { ipAddress: IP },
+    });
+  });
+
+  it("GF-9c: nur UA (keine IP)", async () => {
+    // WIRD ROT, WENN: ein ipAddress-Schluessel ohne Wert entsteht oder der UA fehlt.
+    await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), undefined, UA);
+    expect(ereignis().adIdentifiers).toEqual({
+      gclid: GCLID,
+      landingPageDeviceInfo: { userAgent: UA },
+    });
+  });
+
+  it("GF-9d: keins (undefined und leer) -> adIdentifiers wie vor S7", async () => {
+    // WIRD ROT, WENN: ein leeres landingPageDeviceInfo entsteht.
+    await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), undefined, "");
+    expect(ereignis().adIdentifiers).toEqual({ gclid: GCLID });
+  });
+
+  it("GF-9e: IPv6 reist unveraendert", async () => {
+    // WIRD ROT, WENN: eine IPv4-Pruefung oder Normalisierung eingebaut wird.
+    const V6 = "2001:db8::1"; // Dokumentations-Praefix (RFC 3849)
+    await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), V6, UA);
+    expect(ereignis().adIdentifiers).toEqual({
+      gclid: GCLID,
+      landingPageDeviceInfo: { ipAddress: V6, userAgent: UA },
+    });
+  });
+
+  it("GF-9f: IP und UA OHNE Klick-Kennung -> KEIN fetch (der gclid-Riegel bleibt)", async () => {
+    // WIRD ROT, WENN: IP oder UA als Kennung gezaehlt werden (Entscheidung G2).
+    // POSITIVKONTROLLE: dieselben Werte MIT gclid senden (GF-9).
+    await forwardToGoogle(
+      config(),
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.example/danke" },
+      IP,
+      UA,
+    );
+    expect(aufrufe).toHaveLength(0);
+  });
+
+  it("GF-9g: KEIN consent-Feld — weder an der Anfrage noch am Ereignis, in keinem Fall", async () => {
+    // WIRD ROT, WENN: jemand die DMA-Felder setzt (Owner-Entscheidung 2026-09-24).
+    // POSITIVKONTROLLE: jeder Durchgang sendet genau einmal (gesendet()).
+    const faelle: [string | undefined, string | undefined][] = [
+      [IP, UA],
+      [IP, ""],
+      [undefined, UA],
+      [undefined, undefined],
+    ];
+    for (const [ip, ua] of faelle) {
+      aufrufe = [];
+      await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), ip, ua);
+      const anfrage = gesendet();
+      expect("consent" in anfrage).toBe(false);
+      expect("consent" in ereignis()).toBe(false);
+      expect(String(aufrufe[0].init.body)).not.toMatch(/consent|adUserData|adPersonalization/i);
+    }
+  });
+
+  it("GF-7c (TRANSIT-ONLY): weder IP noch UA in einer Logzeile — Riegel, HTTP-Fehler, Wurf", async () => {
+    // WIRD ROT, WENN: eine Logzeile IP oder UA ausgibt (Entscheidung G4).
+    // POSITIVKONTROLLE: es entstehen tatsaechlich Logzeilen (mindestens vier).
+    const fehler = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await forwardToGoogle(config({ operatingAccountId: "" }), "Purchase", "e", rumpf(), IP, UA);
+    await forwardToGoogle(config({ conversionRules: {} }), "Purchase", "e", rumpf(), IP, UA);
+    await forwardToGoogle(
+      config(),
+      "Purchase",
+      "e",
+      { eventSourceUrl: "https://k.example/d" },
+      IP,
+      UA,
+    );
+    antwort = async () =>
+      new Response(JSON.stringify({ error: { message: `${IP} ${UA}` } }), { status: 400 });
+    await forwardToGoogle(config(), "Purchase", "e", rumpf(), IP, UA);
+    antwort = async () => {
+      throw new Error(`boom ${IP} ${UA}`);
+    };
+    await forwardToGoogle(config(), "Purchase", "e", rumpf(), IP, UA);
+
+    expect(fehler.mock.calls.length).toBeGreaterThanOrEqual(4);
+    const ausgaben = fehler.mock.calls.map((a) => JSON.stringify(a)).join("\n");
+    expect(ausgaben).toContain("HTTP 400");
+    expect(ausgaben).not.toContain(IP);
+    expect(ausgaben).not.toContain(UA);
+  });
+});

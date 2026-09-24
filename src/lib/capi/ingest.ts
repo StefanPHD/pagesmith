@@ -285,10 +285,13 @@ type Forwarder = (
   // Zustands, und die koennten auseinanderlaufen.
   //
   // WAS SICH DADURCH NICHT AENDERT, und das ist der Grund, warum er NACHGESTELLT ist:
-  // Die zwei Adapter, die ihn nicht brauchen (linkedin, google), bleiben BYTE-GLEICH —
-  // und ihre Pfeil-Ausdruecke unten ebenfalls. Eine Funktion mit weniger Parametern
-  // erfuellt die laengere Signatur; genau dieselbe Lage wie bei userAgent (linkedin)
-  // und clientIp (google).
+  // Die zwei Adapter, die ihn nicht brauchen (linkedin, google), blieben damit
+  // BYTE-GLEICH. Eine Funktion mit weniger Parametern erfuellt die laengere Signatur;
+  // dieselbe Lage wie bei userAgent (linkedin).
+  // RICHTIGGESTELLT IN S7 DER PHASE 11.7, NICHT GESTEMPELT (nur dieser Text; der Typ ist
+  // byte-gleich): Hier stand zusaetzlich "und ihre Pfeil-Ausdruecke unten ebenfalls" und
+  // "und clientIp (google)". Seit S7 nimmt google clientIp UND userAgent entgegen; nur
+  // den siebten Wert braucht es weiterhin nicht.
   //
   // -------------------------------------------------------------------------
   // NACHGEZOGEN 11.3e — ER TRUG BIS HIERHER DEN CODE (`testEventCode: string |
@@ -462,17 +465,19 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
   //      conversionRules). Die Umbenennung geschieht HIER, am Verbraucher — der Slot
   //      in CapiConfig bleibt unangetastet, wie schon bei Pinterests
   //      adAccountId.
-  //  (2) ZWEI ARGUMENTE WENIGER: WEDER clientIp NOCH userAgent werden weitergereicht.
-  //      Die gewaehlte Gestalt (Offline Conversion Import auf Basis der
-  //      Klick-Kennungen) traegt KEIN Feld fuer eine Besucher-Adresse — kein
-  //      landingPageDeviceInfo, kein eventDeviceInfo, kein userData. Beide zu
-  //      verlangen waere ein selbstgemachter Verlust an Merkmalen, die dieses Ziel
-  //      nicht kennt. TypeScript deckt das: eine Funktion mit weniger Parametern
-  //      erfuellt die laengere Signatur.
+  //  (2) clientIp UND userAgent WERDEN WEITERGEREICHT (S7 der Phase 11.7, Entscheidung
+  //      G3 des Zuschnitts) — der Adapter setzt sie als
+  //      adIdentifiers.landingPageDeviceInfo. RICHTIGGESTELLT, NICHT GESTEMPELT: Hier
+  //      stand "ZWEI ARGUMENTE WENIGER", weil die Gestalt "KEIN Feld fuer eine
+  //      Besucher-Adresse" trage; das ist widerlegt (docs/ziel-befunde/google.md, Teile
+  //      (cc)/(c), (m)/E1).
+  //      DER COMPILER SICHERT DIESE WEITERGABE NICHT: Beide Parameter des Adapters sind
+  //      optional, ein Weglassen hier kompilierte und sendete still ohne sie. Den
+  //      Waechter stellt T10-google in capi/fan-out.test.ts — er wird auch rot, wenn die
+  //      beiden Werte hier VERTAUSCHT werden.
   //
-  // DER TYP Forwarder IST DAFUER NICHT GEAENDERT WORDEN, und das gehoert hierher,
-  // damit es niemand fuer eine Auslassung haelt: Er musste es nicht. Dieselbe Lage wie
-  // beim vierten Ziel, nur eine Stelle weiter.
+  // DER TYP Forwarder IST DAFUER NICHT GEAENDERT WORDEN: Er traegt beide Werte seit
+  // Phase 11; google reicht nur den siebten (testMode) nicht weiter.
   //
   // WAS HIER STEHT, KANN NICHT WERFEN — dieselbe Auflage wie an der linkedin-Zeile:
   // Diese Zeile laeuft SYNCHRON (dispatchForward ist keine async-Funktion), und alles,
@@ -482,7 +487,7 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
   // ResolvedTarget optional (11.1e uebersetzt "leere Zuordnung" in "Feld nicht
   // gesetzt"). Fuer ein Ziel OHNE Zuordnung entstuende hier sonst undefined — und der
   // Riegel im Adapter faende nichts vor, was er lesen koennte.
-  google: (entry, event, eventID, body) =>
+  google: (entry, event, eventID, body, clientIp, userAgent) =>
     forwardToGoogle(
       {
         operatingAccountId: entry.config.pixelId,
@@ -492,6 +497,8 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
       event,
       eventID,
       body,
+      clientIp,
+      userAgent,
     ),
 };
 

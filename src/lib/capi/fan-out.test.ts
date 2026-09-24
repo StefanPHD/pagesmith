@@ -1138,3 +1138,63 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     expect(SPY_BY_TARGET.tiktok).not.toHaveBeenCalled();
   });
 });
+
+// ===========================================================================
+// T10-google — DAS LAMBDA REICHT IP UND UA WEITER (S7 der Phase 11.7, Freigabe F-d).
+//
+// WARUM ES DIESEN LAUF BRAUCHT: Die zwei Parameter von forwardToGoogle sind OPTIONAL
+// (Freigabe F-b). Laesst das Lambda in FORWARDER_BY_TARGET sie weg oder VERTAUSCHT es
+// sie, kompiliert alles, und kein Adapter-Test merkt es — die rufen den Adapter direkt.
+// Nur ein Lauf ueber den Handler mit dem ECHTEN Adapter sieht, was hinausgeht.
+// DER SCHALTER goOverride WIRD HIER GELEERT: Der Kreuzvergleich oben setzt ihn in
+// seinem beforeEach, und das globale beforeEach setzt ihn nicht zurueck.
+// ===========================================================================
+
+describe("Fan-Out — T10-google: das Lambda reicht clientIp und userAgent weiter", () => {
+  const IP = "203.0.113.7";
+  const UA = "Mozilla/5.0 (T10-google)";
+
+  beforeEach(() => {
+    goOverride.fn = null;
+    getCapiConfigByTrackingKey.mockResolvedValue(
+      resolution([
+        {
+          target: "google",
+          config: { pixelId: "9876543210", token: "GSECRET-T10G" },
+          conversionRules: { Purchase: "1234567890" },
+        },
+      ]),
+    );
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  it("T10-google: der ausgehende Rumpf traegt GENAU {ipAddress, userAgent} aus den Kopfzeilen — und kein consent", async () => {
+    // WIRD ROT, WENN: das Lambda clientIp oder userAgent nicht weiterreicht, sie
+    // VERTAUSCHT, der Adapter sie nicht setzt oder ein consent-Feld hinzukommt.
+    const req = new Request("http://localhost/api/e", {
+      method: "POST",
+      headers: { "user-agent": UA, "x-vercel-forwarded-for": IP },
+      body: JSON.stringify({
+        trackingKey: "tk-abc",
+        eventID: "evt-t10g",
+        event: "Purchase",
+        eventSourceUrl: "https://kunde.example/danke?gclid=GCLID-ERFUNDEN-T10G",
+        [CONSENT_WIRE_FIELD]: { [CONSENT_KEY_BY_TARGET.google]: true },
+      }),
+    });
+
+    const res = await handleIngest(req);
+
+    expect(res.status).toBe(204);
+    const google = fetchCalls().find(([url]) => String(url).includes("datamanager.googleapis.com"));
+    expect(google).toBeDefined();
+    const rumpf = JSON.parse(String((google?.[1] as { body?: unknown }).body)) as {
+      events: { adIdentifiers: unknown }[];
+    };
+    expect(rumpf.events[0].adIdentifiers).toEqual({
+      gclid: "GCLID-ERFUNDEN-T10G",
+      landingPageDeviceInfo: { ipAddress: IP, userAgent: UA },
+    });
+    expect("consent" in rumpf).toBe(false);
+  });
+});

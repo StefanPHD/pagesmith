@@ -240,3 +240,91 @@ describe("buildGoogleEvent: was NICHT gebaut wird", () => {
     expect(mit.currency).toBe("EUR");
   });
 });
+
+// ===========================================================================
+// DIE GERAETEDATEN DER LANDESEITE (S7 der Phase 11.7).
+//
+// ORT UND NAMEN SIND GELESEN, NIE GEMESSEN (docs/ziel-befunde/google.md, Teile (m)/E1,
+// (w)/E1); die Erwartungen unten sind aus der ENTSCHEIDUNG G1 des Zuschnitts
+// geschrieben, nicht aus dem Code: `adIdentifiers.landingPageDeviceInfo` mit
+// `ipAddress` und `userAgent`, je nur wenn vorhanden, NACH der Kennungspruefung.
+// ===========================================================================
+
+describe("buildGoogleEvent: landingPageDeviceInfo (S7)", () => {
+  const IP = "203.0.113.77";
+  const UA = "Mozilla/5.0 (ERFUNDEN-UA-S7)";
+
+  function mit(device: { ipAddress?: string; userAgent?: string } | undefined) {
+    return ok(
+      buildGoogleEvent({
+        adIdentifiers: IDS,
+        eventTimestamp: T,
+        eventSource: "WEB",
+        transactionId: "TX-ERFUNDEN-S7",
+        landingPageDeviceInfo: device,
+      }),
+    );
+  }
+
+  it("P-a: IP und UA — das GANZE Ereignis, Geraetedaten IN adIdentifiers", () => {
+    // WIRD ROT, WENN: das Feld fehlt, an einem anderen Ort steht (etwa eventDeviceInfo),
+    // IP und UA vertauscht sind oder ein weiteres Feld (etwa consent) dazukommt.
+    expect(mit({ ipAddress: IP, userAgent: UA })).toEqual({
+      eventTimestamp: T.toISOString(),
+      eventSource: "WEB",
+      adIdentifiers: {
+        gclid: IDS.gclid,
+        landingPageDeviceInfo: { ipAddress: IP, userAgent: UA },
+      },
+      transactionId: "TX-ERFUNDEN-S7",
+    });
+  });
+
+  it("P-b: nur IP -> {ipAddress}", () => {
+    // WIRD ROT, WENN: ein leerer userAgent-Schluessel entsteht oder die IP unter dem
+    // falschen Namen steht.
+    expect(mit({ ipAddress: IP }).adIdentifiers).toEqual({
+      gclid: IDS.gclid,
+      landingPageDeviceInfo: { ipAddress: IP },
+    });
+  });
+
+  it("P-c: nur UA -> {userAgent}", () => {
+    // WIRD ROT, WENN: ein leerer ipAddress-Schluessel entsteht oder der UA unter dem
+    // falschen Namen steht.
+    expect(mit({ userAgent: UA }).adIdentifiers).toEqual({
+      gclid: IDS.gclid,
+      landingPageDeviceInfo: { userAgent: UA },
+    });
+  });
+
+  it("P-d: keins oder leer -> KEIN landingPageDeviceInfo, adIdentifiers wie vor S7", () => {
+    // WIRD ROT, WENN: ein leeres Objekt oder eine leere Zeichenkette in die Nutzlast
+    // gelangt. POSITIVKONTROLLE: gclid steht in jedem Fall da.
+    for (const device of [undefined, {}, { ipAddress: "", userAgent: "" }]) {
+      expect(mit(device).adIdentifiers).toEqual({ gclid: IDS.gclid });
+    }
+  });
+
+  it("P-e: Geraetedaten OHNE Klick-Kennung -> no_click_id (der Riegel greift unveraendert)", () => {
+    // WIRD ROT, WENN: IP oder UA als Kennung gezaehlt werden (Entscheidung G2).
+    expect(
+      buildGoogleEvent({
+        adIdentifiers: {},
+        eventTimestamp: T,
+        eventSource: "WEB",
+        landingPageDeviceInfo: { ipAddress: IP, userAgent: UA },
+      }),
+    ).toEqual({ ok: false, reason: "no_click_id" });
+  });
+
+  it("P-f: eine IPv6-Adresse reist UNVERAENDERT (keine Formpruefung)", () => {
+    // WIRD ROT, WENN: jemand eine IPv4-Pruefung, eine Normalisierung oder eine Kappung
+    // einbaut — die Quelle nennt keine Formregel (VERMERK P11.7-23).
+    const V6 = "2001:db8::1"; // Dokumentations-Praefix (RFC 3849), kein echter Anschluss
+    expect(mit({ ipAddress: V6, userAgent: UA }).adIdentifiers).toEqual({
+      gclid: IDS.gclid,
+      landingPageDeviceInfo: { ipAddress: V6, userAgent: UA },
+    });
+  });
+});

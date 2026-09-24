@@ -26,6 +26,10 @@ import { errorName } from "@/lib/errors";
  * TRANSIT-ONLY IST DIE TRAGENDE INVARIANTE DIESER DATEI (Owner, 2026-09-01, strikt).
  * Die Klick-Kennung geht in die Nutzlast und sonst NIRGENDWOHIN: kein Feld in events,
  * keine Logzeile, kein Fehlerpfad, der sie traegt.
+ * SEIT S7 DER PHASE 11.7 GILT DASSELBE FUER IP UND USER-AGENT (Entscheidung G4 des
+ * Zuschnitts; DATENKLASSEN-GRENZE, Praezisierung vom 2026-08-19, und Entscheidung
+ * P11.7-4): Sie stehen in `adIdentifiers.landingPageDeviceInfo` und in keiner
+ * Logzeile. Ein Lauf haelt das fest (GF-7c).
  * DAS SCHAERFSTE STUECK DAVON IST EIN VERZICHT: DIESER ADAPTER LIEST DEN
  * ANBIETER-RUMPF NICHT. Kein res.text(), kein res.json(), keine describe*-Funktion.
  * Die drei bestehenden Adapter tun es (describeMetaError, describeErrorBody,
@@ -173,15 +177,21 @@ function resolveDestinationId(
 /**
  * Baut die Nutzlast und stellt sie zu.
  *
- * SIE NIMMT WEDER clientIp NOCH userAgent ENTGEGEN, und das ist eine Entscheidung mit
- * Grund: Die gewaehlte Gestalt (OFFLINE CONVERSION IMPORT auf Basis der
- * Klick-Kennungen) traegt KEIN Feld fuer eine Besucher-Adresse — kein
- * landingPageDeviceInfo, kein eventDeviceInfo, kein userData. Beide zu verlangen waere
- * ein selbstgemachter Verlust an Merkmalen, die dieses Ziel gar nicht kennt.
- * DER AUFRUFER REICHT DESHALB ZWEI PARAMETER WENIGER: Der Eintrag in
- * FORWARDER_BY_TARGET bekommt sechs Argumente und gibt vier weiter — TypeScript deckt
- * das, eine Funktion mit weniger Parametern erfuellt die laengere Signatur. Dieselbe
- * Lage wie beim vierten Ziel, nur eine Stelle weiter.
+ * SIE NIMMT clientIp UND userAgent ENTGEGEN, SEIT S7 DER PHASE 11.7, und setzt sie als
+ * `adIdentifiers.landingPageDeviceInfo` (Entscheidung G1 des Zuschnitts; GELESEN,
+ * docs/ziel-befunde/google.md, Teile (m)/E1, (m)/E4, (cc)/(c)).
+ * RICHTIGGESTELLT, NICHT GESTEMPELT: Hier stand, die gewaehlte Gestalt trage "KEIN Feld
+ * fuer eine Besucher-Adresse — kein landingPageDeviceInfo, kein eventDeviceInfo, kein
+ * userData", und der Aufrufer reiche deshalb zwei Parameter weniger. Das ist durch die
+ * Teile (cc)/(c) und (m)/E1 WIDERLEGT: beide IP-Felder stehen in der Kennungsliste der
+ * Offline-Gestalt.
+ * BEIDE PARAMETER SIND OPTIONAL UND HINTEN ANGEHAENGT (Freigabe F-b): Bestehende Aufrufe
+ * mit vier Argumenten bleiben gueltig und senden wie vor S7. Dass das Lambda in
+ * FORWARDER_BY_TARGET sie tatsaechlich weiterreicht, prueft T10-google in
+ * capi/fan-out.test.ts — der Compiler prueft es NICHT.
+ * SIE ZAEHLEN NICHT ALS KENNUNG: Ohne Klick-Kennung sendet dieser Adapter weiterhin
+ * nichts (Entscheidung G2). KEINE FORMPRUEFUNG, auch nicht IPv4 gegen IPv6: Die Quelle
+ * nennt keine Regel.
  *
  * transactionId WIRD GESENDET, UND SEIN WERT IST eventID.
  *
@@ -237,6 +247,8 @@ export async function forwardToGoogle(
   event: string,
   eventID: string,
   body: GoogleForwardBody,
+  clientIp?: string,
+  userAgent?: string,
 ): Promise<void> {
   // DIE EINZIGE ANWEISUNG VOR DEM try, UND SIE IST EINE REINE DEKLARATION: sie wertet
   // nichts aus und kann nicht werfen. Sie steht hier, damit finally sie sieht.
@@ -289,6 +301,9 @@ export async function forwardToGoogle(
       ...(asString(body.currency)
         ? { currency: asString(body.currency) }
         : {}),
+      // IP UND UA DER LANDESEITE — UNGEPRUEFT UEBERGEBEN; der Bauer uebernimmt nur, was
+      // eine nicht-leere Zeichenkette ist, und setzt sie NACH der Kennungspruefung.
+      landingPageDeviceInfo: { ipAddress: clientIp, userAgent },
     });
     if (!built.ok) {
       console.error(

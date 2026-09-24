@@ -7,15 +7,14 @@ import { forwardToPinterest } from "./pinterest-forward";
 // ===========================================================================
 // DER ADAPTER FUER DAS ZWEITE ZIEL (Phase 11, zehnte Scheibe).
 //
-// DIE GRENZE, DIE VOR ALLEN TESTS STEHT: `fetch` ist gestellt, und die Angaben
-// ueber den Anbieter sind ANBIETER-DOKU (2026-08-10), nicht gemessen. GEMESSEN
-// wurde am 2026-08-07 ausschliesslich der FEHLER-Rumpf bei ungueltigem Geheimnis;
-// DER ERFOLGS-RUMPF IST NIE GEMESSEN WORDEN — und genau er traegt die Auswertung,
-// die hier geprueft wird.
-// DIESE DATEI MISST ALSO DIE TREUE DES CODES ZU EINER TRANSKRIPTION, NICHT ZUM
-// VERTRAG. Ist eine Angabe falsch aufgenommen, sind diese Tests GRUEN und der
-// Adapter FALSCH — und nichts in dieser Scheibe kann es entdecken, weil sie keinen
-// Aufrufer hat. Die erste Gelegenheit zur Pruefung ist die ZWOELFTE Scheibe.
+// DIE GRENZE, DIE VOR ALLEN TESTS STEHT: `fetch` ist gestellt. Die Form, gegen die
+// hier geprueft wird, stammt aus der Doku-Lesung (2026-08-10) und aus Messungen AM
+// ENDPUNKT — per Hand bzw. per Terminal in der Form des Adapters, nicht am Adapter:
+// der FEHLER-Rumpf (2026-08-07), der ERFOLGS-Rumpf und das Feld user_data.click_id
+// (docs/ziel-befunde/pinterest.md, Teile (al)(i) und (am), im Testmodus).
+// DIESE DATEI MISST DIE TREUE DES CODES ZU DIESER FORM, NICHT DAS VERHALTEN DES
+// ANBIETERS. T3 prueft eine nur GELESENE Form: einen Erfolgsstatus mit "failed" im
+// Rumpf hat keine Messung erzeugt.
 // ===========================================================================
 
 const CONFIG = { adAccountId: "549755885175", token: "pina_LANGES_GEHEIMNIS_AAAA1234" };
@@ -573,5 +572,184 @@ describe("Pinterest-Adapter — sie wirft nie", () => {
     ).resolves.toBeUndefined();
     expect(global.fetch).not.toHaveBeenCalled();
     expect(logLines()[0]).toContain("Error");
+  });
+});
+
+// ===========================================================================
+// user_data.click_id UEBER DEN ADRESSWEG (Phase 11.7, S9).
+//
+// T8 FAEHRT OHNE ADRESSE, und der Waechter W in click-id-strip.test.ts bewacht click_id
+// NICHT: der eigene Wert steht ohnehin in event_source_url. Die Faelle hier fordern das
+// Feld POSITIV und nageln user_data UND event_source_url fest.
+// Das Feld ist am Endpunkt GEMESSEN (docs/ziel-befunde/pinterest.md, Teil (am), im
+// Testmodus, per Terminal) — hier geprueft wird, dass der Adapter es so baut.
+// DEN EINSATZPUNKT IM try FAENGT T19: eine Lesung aus body.eventSourceUrl VOR dem try
+// liesse den werfenden Getter aus der Funktion heraus.
+// ===========================================================================
+
+describe("Pinterest — user_data.click_id ueber den Adressweg", () => {
+  /** ERFUNDENE Kennung, nur aus [A-Za-z0-9_-] — die Form prueft ein eigener Fall (PC-e). */
+  const EPIK = "dj0yJnU9S9ErfundenEpik-0001_abc";
+
+  it("PC-a: mit epik — user_data traegt click_id, event_source_url behaelt epik, das Fremde faellt", async () => {
+    // WIRD ROT, WENN: die Extraktion fehlt, Name oder Ort des Feldes falsch sind, der
+    // Wert veraendert wird, ODER event_source_url die eigene Kennung verliert.
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: `https://kunde.de/lp?utm_source=s9&gclid=FREMD-GCLID-1&epik=${EPIK}` },
+      IP,
+      UA,
+    );
+    expect(sentEvent().user_data).toEqual({
+      client_ip_address: IP,
+      client_user_agent: UA,
+      click_id: EPIK,
+    });
+    expect(sentEvent().event_source_url).toBe(`https://kunde.de/lp?utm_source=s9&epik=${EPIK}`);
+  });
+
+  it("PC-b: Adresse ohne epik — kein Feld", async () => {
+    // WIRD ROT, WENN: das Feld unbedingt gesetzt wird.
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.de/lp?utm_source=s9" },
+      IP,
+      UA,
+    );
+    expect(sentEvent().user_data).toEqual({ client_ip_address: IP, client_user_agent: UA });
+    expect(sentEvent().event_source_url).toBe("https://kunde.de/lp?utm_source=s9");
+  });
+
+  it("PC-c: leerer Wert — der Schluessel fehlt ganz, die Adresse behaelt das Segment", async () => {
+    // WIRD ROT, WENN: ein leerer Wert als click_id: "" hinausgeht, ODER das eigene
+    // Segment aus der Adresse faellt.
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.de/lp?epik=&utm=u" },
+      IP,
+      UA,
+    );
+    expect(sentEvent().user_data).not.toHaveProperty("click_id");
+    expect(sentEvent().user_data).toEqual({ client_ip_address: IP, client_user_agent: UA });
+    expect(sentEvent().event_source_url).toBe("https://kunde.de/lp?epik=&utm=u");
+  });
+
+  it("PC-d: 1 000 Zeichen — nichts wird gekuerzt, weder im Feld noch in der Adresse", async () => {
+    // WIRD ROT, WENN: irgendwo auf dem Weg gekuerzt wird oder eine Laengengrenze unter
+    // 1 000 greift. Eine Laenge nennt die Quelle nicht (Teil (ac)); 1 000 ist eine
+    // gewaehlte Probe, keine gelesene Grenze. Der Wert prueft allein die LAENGE.
+    const lang = ("dj0y" + "Ab9_-x".repeat(200)).slice(0, 1_000);
+    expect(lang.length).toBe(1_000);
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: `https://kunde.de/lp?epik=${lang}` },
+      IP,
+      UA,
+    );
+    const ud = sentEvent().user_data as Record<string, unknown>;
+    expect(ud.click_id).toBe(lang);
+    expect(String(ud.click_id).length).toBe(1_000);
+    expect(sentEvent().event_source_url).toBe(`https://kunde.de/lp?epik=${lang}`);
+  });
+
+  it("PC-e: Schreibung und Form — der Name exakt, der Wert ohne Formpruefung, die Adresse roh", async () => {
+    // WIRD ROT, WENN: der Name ohne Schreibung verglichen wird (1), der dekodierte Name
+    // nicht trifft (2), eine Formpruefung einen ungewoehnlichen Wert verwirft (3) ODER
+    // die rohe Form in der Adresse verlorengeht (1, 3).
+    // (1) EPIK ist nicht epik: kein Feld — aber die Adresse behaelt das Segment (S4 laesst
+    //     die eigene Kennung in jeder Schreibung stehen).
+    const abweichend = `https://kunde.de/lp?EPIK=${EPIK}`;
+    await forwardToPinterest(CONFIG, "Purchase", "evt-1", { eventSourceUrl: abweichend }, IP, UA);
+    expect(sentEvent().user_data).not.toHaveProperty("click_id");
+    expect(sentEvent().event_source_url).toBe(abweichend);
+
+    // (2) Der Name wird verglichen, wie der Standard-Parser ihn dekodiert.
+    global.fetch = vi.fn(async () => jsonResponse(okBody())) as unknown as typeof fetch;
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.de/lp?ep%69k=x" },
+      IP,
+      UA,
+    );
+    expect((sentEvent().user_data as Record<string, unknown>).click_id).toBe("x");
+
+    // (3) "+" und "%2B": das Feld traegt den Wert DEKODIERT, die Adresse ROH.
+    global.fetch = vi.fn(async () => jsonResponse(okBody())) as unknown as typeof fetch;
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.de/lp?epik=a%2Bb+c" },
+      IP,
+      UA,
+    );
+    expect((sentEvent().user_data as Record<string, unknown>).click_id).toBe("a+b c");
+    expect(sentEvent().event_source_url).toBe("https://kunde.de/lp?epik=a%2Bb+c");
+  });
+
+  it("PC-f: mehrfach vorhanden — das erste Vorkommen", async () => {
+    // WIRD ROT, WENN: das letzte oder alle Vorkommen gelesen werden.
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.de/lp?epik=Erst&epik=Zwei" },
+      IP,
+      UA,
+    );
+    expect((sentEvent().user_data as Record<string, unknown>).click_id).toBe("Erst");
+  });
+
+  it("PC-g: nicht parsebare Adresse — kein Feld, und der Forward laeuft", async () => {
+    // WIRD ROT, WENN: das Herauslesen bei einer relativen Adresse wirft oder auf den
+    // Rohtext zurueckfaellt. Die Adresse verliert alles ab dem "?" (S4, D5).
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: `/lp?epik=${EPIK}` },
+      IP,
+      UA,
+    );
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(sentEvent().user_data).toEqual({ client_ip_address: IP, client_user_agent: UA });
+    expect(sentEvent().event_source_url).toBe("/lp");
+  });
+
+  it("PC-h: der Paar-Riegel gilt auch mit epik — nur die IP -> KEIN Aufruf", async () => {
+    // WIRD ROT, WENN: eine vorhandene Klick-Kennung den Riegel aufweicht. click_id
+    // erfuellt die Mindestregel nicht (Teil (ae)). GETRENNT von PC-i aus demselben Grund
+    // wie T6 und T7.
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: `https://kunde.de/lp?epik=${EPIK}` },
+      IP,
+      "",
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("PC-i: der Paar-Riegel gilt auch mit epik — nur der User-Agent -> KEIN Aufruf", async () => {
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: `https://kunde.de/lp?epik=${EPIK}` },
+      undefined,
+      UA,
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });

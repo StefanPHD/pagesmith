@@ -1,6 +1,6 @@
 import "server-only";
 import { errorName } from "@/lib/errors";
-import { stripForeignClickIds } from "@/lib/capi/click-id-strip";
+import { extractEpik, stripForeignClickIds } from "@/lib/capi/click-id-strip";
 
 /**
  * DER ADAPTER FUER DAS ZWEITE ZIEL (Phase 11, zehnte Scheibe).
@@ -24,7 +24,9 @@ import { stripForeignClickIds } from "@/lib/capi/click-id-strip";
  *     nur den Status liest, haelt eine Ablehnung fuer einen Erfolg.
  *  2. DER WERT: Meta sendet eine ZAHL, dieser Anbieter erwartet eine ZEICHENKETTE.
  *  3. DAS IDENTITAETS-PAAR: Meta laesst jede Haelfte EINZELN weg. Hier gilt beides
- *     oder keines — und ohne Kennung wird gar nicht gesendet.
+ *     oder keines — ohne das Paar wird gar nicht gesendet, auch nicht mit click_id: die
+ *     Klick-Kennung zaehlt laut Anbieter nicht zur Mindestregel
+ *     (docs/ziel-befunde/pinterest.md, Teil (ae)).
  *  4. DER TESTMODUS: Metas Test-Code wandert in die NUTZLAST, dieser hier in den
  *     QUERY-STRING.
  *  5. action_source: Meta kennt "website", dieses Enum kennt nur "web".
@@ -46,12 +48,15 @@ import { stripForeignClickIds } from "@/lib/capi/click-id-strip";
  * WER DIESE LISTE ERWEITERT, TRAEGT DEN PUNKT AUCH HIER EIN, nicht nur dort, wo er
  * gefunden wurde.
  *
- * DIE ANGABEN UEBER DEN ANBIETER SIND ANBIETER-DOKU, NICHT GEMESSEN. Endpunkt,
- * Feldnamen, Enum-Werte, beide Rumpfformen und der Testmodus-Parameter stammen aus
- * der Doku-Lesung vom 2026-08-10; GEMESSEN wurde am 2026-08-07 ausschliesslich der
- * FEHLER-Rumpf bei ungueltigem Geheimnis (Handmessung). DER ERFOLGS-RUMPF IST NIE
- * GEMESSEN WORDEN — und genau er traegt die Auswertung unten. Die Tests dieser
- * Datei messen die Treue dieses Codes zu einer TRANSKRIPTION, nicht zum Vertrag.
+ * WOHER DIE ANGABEN UEBER DEN ANBIETER STAMMEN: Endpunkt, Feldnamen, Enum-Werte, beide
+ * Rumpfformen und der Testmodus-Parameter aus der Doku-Lesung vom 2026-08-10. GEMESSEN
+ * AM ENDPUNKT — per Hand bzw. per Terminal in der Form dieses Adapters, NICHT am Adapter
+ * selbst: der FEHLER-Rumpf bei ungueltigem Geheimnis (2026-08-07), der Testmodus
+ * `?test=true` (docs/ziel-befunde/pinterest.md, Teil (u)), der ERFOLGS-Rumpf 1/1 und 2/2
+ * (Teil (al)(i), im Testmodus) und das Feld user_data.click_id (Teil (am), im Testmodus).
+ * UNGEMESSEN ist ein Erfolgsstatus mit "failed" im Rumpf: fuer diesen Zweig der Auswertung
+ * unten traegt weiter allein die Doku. Die Tests dieser Datei messen die Treue dieses
+ * Codes zu dieser Form, nicht das Verhalten des Anbieters.
  *
  * DER VERTRAG, in drei Saetzen — zwei davon woertlich wie beim ersten Adapter, der
  * erste ABSICHTLICH SCHAERFER:
@@ -214,10 +219,11 @@ const EVENT_MAP: ReadonlyMap<string, string> = new Map([
  * umzuschreiben erzeugte einen Namen, den der Betreiber nie registriert hat und in
  * seinem Konto nicht wiederfindet.
  *
- * WAS NICHT GEMESSEN IST und deshalb hier steht: Ob ein nicht registrierter EIGENER
- * Name laut abgewiesen oder still nicht ausgewertet wird, sagt die Doku fuer den
- * Beispielfall (laut, mit Fehlermeldung). Eine Messung an unserem Konto gibt es
- * nicht.
+ * GEMESSEN AM ENDPUNKT (docs/ziel-befunde/pinterest.md, Teil (al)(ii), im Testmodus):
+ * Der nicht registrierte Name `subscription` wird NICHT abgewiesen, sondern kommt als
+ * `processed` zurueck, mit der Warnung, er werde als "Unknown" gefuehrt — entgegen dem
+ * Beispiel der Doku, das ihn als `failed` zeigt. Ein Name, der die Zeichen-Regel
+ * verletzt, ist UNGEMESSEN; fuer ihn gilt der Absatz darueber als GELESEN.
  */
 function pinterestEventName(event: string): string {
   return EVENT_MAP.get(event) ?? event;
@@ -289,7 +295,10 @@ type PinterestErrorBody = {
   status?: unknown;
 };
 
-/** Der Erfolgs-Rumpf. NIE GEMESSEN — die Form stammt aus der Anbieter-Doku. */
+/**
+ * Der Erfolgs-Rumpf. Form GEMESSEN am Endpunkt (docs/ziel-befunde/pinterest.md, Teil
+ * (al)(i), im Testmodus); ein Erfolgsstatus mit "failed" im Rumpf ist UNGEMESSEN.
+ */
 type PinterestSuccessBody = {
   num_events_received?: unknown;
   num_events_processed?: unknown;
@@ -501,11 +510,13 @@ export async function forwardToPinterest(
     // mindestens einer Kennung — em, hashed_maids ODER dem Paar. Wir haben weder
     // em noch hashed_maids, also traegt das Paar allein.
     //
-    // BLEIBT KEINE KENNUNG UEBRIG, WIRD GAR NICHT GESENDET: ein Aufruf ohne jede
-    // Identitaet kann beim Anbieter nichts bewirken und kostet auf dem
-    // meistgetroffenen Pfad der Plattform. Der Riegel ist damit nicht nur eine
-    // Sparmassnahme, sondern das, was uns regelkonform haelt — ohne ihn entstuende
-    // ein LEERES Pflicht-Objekt.
+    // FEHLT DAS PAAR, WIRD GAR NICHT GESENDET, AUCH MIT click_id: Die Klick-Kennung
+    // erfuellt die Mindestregel nicht (docs/ziel-befunde/pinterest.md, Teil (ae)); ob der
+    // Anbieter ein Ereignis allein mit ihr annimmt, ist ungemessen. Der Riegel stuetzt
+    // sich darum NICHT auf eine behauptete Wirkung beim Anbieter, sondern auf zwei
+    // Dinge: auf die GELESENE Mindestregel — ohne ihn entstuende ein Pflicht-Objekt ohne
+    // ein Merkmal der Mindestregel — und auf die Kosten eines solchen Aufrufs auf dem
+    // meistgetroffenen Pfad der Plattform.
     //
     // DER FALL IST REAL, NICHT THEORETISCH: In Produktion liefert die IP-Aufloesung
     // undefined, sobald die vertraute IP loopback oder leer ist.
@@ -542,6 +553,20 @@ export async function forwardToPinterest(
       "pinterest",
     );
     if (eventSourceUrl) serverEvent.event_source_url = eventSourceUrl;
+
+    // --- DIE EIGENE KLICK-KENNUNG ZUSAETZLICH ALS user_data.click_id (Phase 11.7, S9) ---
+    //
+    // Gelesen aus der BEREINIGTEN Adresse, die eben gesendet wird — die eigene Kennung
+    // steht darin unveraendert, roh und bereinigt sind fuer sie gleich. ZUSAETZLICH und
+    // nicht statt der Adresse: Eine Kennung allein in event_source_url erkennt der Anbieter
+    // weder fuer seine Warnung noch fuer seine Anzeige, das benannte Feld schon
+    // (docs/ziel-befunde/pinterest.md, Teile (am), (ao), GEMESSEN im Testmodus); ob seine
+    // Zuordnung die Adresse spaeter liest, ist offen.
+    // userData ist dasselbe Objekt, das serverEvent.user_data traegt; die Ergaenzung wirkt
+    // im gesendeten Rumpf. Kein Kuerzen, keine Formpruefung, ein leerer Wert ergibt kein
+    // Feld (s. extractEpik). Der Paar-Riegel darueber bleibt davon unberuehrt.
+    const epik = extractEpik(eventSourceUrl);
+    if (epik) userData.click_id = epik;
 
     // --- custom_data: DER WERT REIST ALS ZEICHENKETTE ---
     //

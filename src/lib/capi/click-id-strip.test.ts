@@ -5,6 +5,7 @@ vi.mock("server-only", () => ({}));
 import type { TrackingTarget } from "@/lib/settings";
 import {
   CLICK_ID_TABLE,
+  extractEpik,
   extractFbclid,
   extractLiFatId,
   extractTtclid,
@@ -610,12 +611,96 @@ describe("extractTtclid — exakt, wurffrei, ohne Formpruefung", () => {
     expect(extractTtclid("https://x.com/#ttclid=x")).toBe("");
   });
 
-  it("TX-h: jede der drei Huellen liest nur ihren eigenen Namen", () => {
+  it("TX-h: extractFbclid, extractLiFatId und extractTtclid lesen je nur ihren eigenen Namen", () => {
     // WIRD ROT, WENN: eine Huelle dem Kern den falschen Namen reicht.
     const url = "https://x.com/?fbclid=a&li_fat_id=b&ttclid=c";
     expect(extractFbclid(url)).toBe("a");
     expect(extractLiFatId(url)).toBe("b");
     expect(extractTtclid(url)).toBe("c");
+  });
+});
+
+// ===========================================================================
+// PINTEREST epik UEBER DEN ADRESSWEG (Phase 11.7, S9) — DIE VIERTE HUELLE.
+//
+// Derselbe Kern wie die Huellen darueber; deren Faelle bleiben unveraendert. W OBEN
+// BEWACHT user_data.click_id NICHT: pinterests eigener Wert steht ohnehin in
+// event_source_url, W bliebe ohne das Feld gruen. Das Feld selbst fordern PC-a bis PC-i in
+// pinterest-forward.test.ts. Dass kein ANDERES Ziel epik traegt, deckt W unveraendert.
+// ===========================================================================
+
+describe("extractEpik — exakt, wurffrei, ohne Formpruefung", () => {
+  it("EX-a: sie wirft bei keiner feindlichen Eingabe und liefert immer eine Zeichenkette", () => {
+    // WIRD ROT, WENN: der Kern bei kaputter Eingabe weiterwirft.
+    const werfendesToString = {
+      toString(): string {
+        throw new Error("boom");
+      },
+    };
+    for (const eingabe of [
+      undefined,
+      null,
+      42,
+      {},
+      [],
+      werfendesToString,
+      "",
+      "?",
+      "#",
+      "http://[::1?epik=x",
+      "%",
+      LONE_SURROGATE,
+      `https://x.com/?epik=${LONE_SURROGATE}`,
+      `https://x.com/?${"&".repeat(100_000)}epik=x`,
+      `https://x.com/?epik=${"%".repeat(1_000)}`,
+    ]) {
+      expect(() => extractEpik(eingabe)).not.toThrow();
+      expect(typeof extractEpik(eingabe)).toBe("string");
+    }
+  });
+
+  it("EX-b: der Wert kommt unveraendert heraus — Schreibung, Laenge, dekodiert wie der Parser", () => {
+    // WIRD ROT, WENN: gekuerzt, eine Form geprueft oder die Schreibung veraendert wird.
+    expect(extractEpik("https://x.com/?utm_source=u&epik=Ab7-Xy_9")).toBe("Ab7-Xy_9");
+    expect(extractEpik("https://x.com/?epik=a%2Bb+c")).toBe("a+b c");
+    const lang = ("dj0y" + "Ab9_-x".repeat(200)).slice(0, 1_000);
+    expect(extractEpik(`https://x.com/?epik=${lang}`)).toBe(lang);
+  });
+
+  it("EX-c: der NAME wird exakt verglichen — auf dem dekodierten Namen", () => {
+    // WIRD ROT, WENN: der Kern den Namen ohne Schreibung vergleicht.
+    expect(extractEpik("https://x.com/?EPIK=x")).toBe("");
+    expect(extractEpik("https://x.com/?Epik=x")).toBe("");
+    expect(extractEpik("https://x.com/?ep%69k=x")).toBe("x");
+  });
+
+  it("EX-d: leer oder fehlend ergibt die leere Zeichenkette", () => {
+    expect(extractEpik("https://x.com/?epik=")).toBe("");
+    expect(extractEpik("https://x.com/?utm_source=u")).toBe("");
+    expect(extractEpik("https://x.com/")).toBe("");
+  });
+
+  it("EX-e: mehrfach vorhanden — das erste Vorkommen", () => {
+    expect(extractEpik("https://x.com/?epik=Erst&epik=Zwei")).toBe("Erst");
+  });
+
+  it("EX-f: nicht parsebar oder keine Zeichenkette ergibt die leere Zeichenkette", () => {
+    expect(extractEpik("/relativ?epik=x")).toBe("");
+    expect(extractEpik(undefined)).toBe("");
+    expect(extractEpik(42)).toBe("");
+  });
+
+  it("EX-g: das Fragment wird nicht gelesen", () => {
+    expect(extractEpik("https://x.com/#epik=x")).toBe("");
+  });
+
+  it("EX-h: jede Huelle liest nur ihren eigenen Namen", () => {
+    // WIRD ROT, WENN: eine Huelle dem Kern den falschen Namen reicht.
+    const url = "https://x.com/?fbclid=a&li_fat_id=b&ttclid=c&epik=d";
+    expect(extractFbclid(url)).toBe("a");
+    expect(extractLiFatId(url)).toBe("b");
+    expect(extractTtclid(url)).toBe("c");
+    expect(extractEpik(url)).toBe("d");
   });
 });
 

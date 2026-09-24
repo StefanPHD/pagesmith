@@ -15,10 +15,11 @@
 // WAS stripForeignClickIds NICHT TUT, und jede Grenze ist eine Entscheidung:
 //  - SIE ENTFERNT NUR, SIE SETZT NICHTS. Keine Kennung erreicht ueber sie ein Ziel, das
 //    sie vorher nicht bekam. DIE HUELLEN WEITER UNTEN (extractFbclid, extractLiFatId,
-//    extractTtclid) LESEN HERAUS: Sie liefern einem Urheber seine EIGENE Kennung —
-//    linkedin bekommt die Adresse gar nicht und erhaelt li_fat_id allein ueber
+//    extractTtclid, extractEpik) LESEN HERAUS: Sie liefern einem Urheber seine EIGENE
+//    Kennung — linkedin bekommt die Adresse gar nicht und erhaelt li_fat_id allein ueber
 //    extractLiFatId (Phase 11.7, S6a); tiktok erhaelt ttclid zusaetzlich zur Adresse
-//    ueber extractTtclid (S8).
+//    ueber extractTtclid (S8); pinterest erhaelt epik zusaetzlich zur Adresse als
+//    user_data.click_id ueber extractEpik (S9).
 //  - NEGATIVLISTE: Entfernt werden nur Kennungen der Tabelle, die einem ANDEREN Ziel
 //    gehoeren. Die Adresse gehoert dem Betreiber; URL-basierte Regeln beim Anbieter
 //    braechen still, wenn hier mehr wegfiele. Eine Kennung, die nicht in der Tabelle
@@ -288,4 +289,30 @@ export function extractLiFatId(url: unknown): string {
  */
 export function extractTtclid(url: unknown): string {
   return readClickIdExact(url, "ttclid");
+}
+
+/**
+ * LIEST DIE KLICK-KENNUNG VON PINTEREST (`epik`) AUS EINER ADRESSE — EXAKT (Phase 11.7, S9).
+ * Derselbe Kern, derselbe Vertrag wie die Huellen darueber.
+ *
+ * DIE QUELLE: docs/ziel-befunde/pinterest.md, Teil (ac) — der Parameter heisst `epik`, der
+ * Wert gehoert in `user_data.click_id`, eine Zeichenkette, ungehasht. Eine Formregel oder
+ * Laenge nennt die Quelle nicht, zu Schreibung und Kodierung schweigt sie; deshalb exakt,
+ * ohne Kuerzung und ohne Formpruefung.
+ *
+ * ZWEI FORMEN DERSELBEN KENNUNG IN EINER NUTZLAST: Diese Huelle liefert den Wert DEKODIERT
+ * (ein "+" wird zum Leerzeichen), in `event_source_url` steht er ROH. Anders als bei tiktok
+ * ist die rohe Form dort KEIN belegter Rueckfall: eine Kennung allein in der Adresse erkennt
+ * Pinterest weder fuer seine Warnung noch fuer seine Anzeige (Teil (ao), GEMESSEN im
+ * Testmodus). Ob Pinterest einen echten Wert roh oder dekodiert erwartet, ist ungemessen;
+ * ein Wert mit "+" und "%" wird jedenfalls angenommen (Teil (ap)).
+ *
+ * SIE WIRFT NIE — sie laeuft in forwardToPinterest innerhalb des try; die Zusage ist die des
+ * Kerns.
+ *
+ * @returns den Wert, oder "" wenn keiner vorliegt — fehlend, leer, nicht parsebar oder
+ *          keine Zeichenkette.
+ */
+export function extractEpik(url: unknown): string {
+  return readClickIdExact(url, "epik");
 }

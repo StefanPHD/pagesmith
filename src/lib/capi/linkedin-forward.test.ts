@@ -524,36 +524,150 @@ describe("T6 — li_fat_id als zweiter userIds-Eintrag", () => {
     expect(klickEintrag(payload)).toBeUndefined();
   });
 
-  it("T6-g: eine IPv6-Adresse verwirft den Forward auch MIT li_fat_id (Riegel 2, L1)", async () => {
-    // WIRD ROT, WENN: der IPv4-Riegel zum Filter wird und li_fat_id allein sendet — das
-    // ist S6b und hier NICHT zugeschnitten. T2-b faengt das NICHT: er faehrt ohne Adresse.
+  it("T6-g: eine IPv6-Adresse entfaellt, li_fat_id geht ALLEIN hinaus (Riegel 2 als Filter, S6b)", async () => {
+    // WIRD ROT, WENN: Riegel 2 den Forward trotz li_fat_id verwirft, die IPv6-Adresse doch
+    // als Eintrag hinausgeht, eine Logzeile entsteht oder der Klick-Eintrag fehlt.
+    // EINZIGER TEST GEGEN VIER FEHLERKLASSEN (Mutationen m1, m3, m4, m5 der Scheibe S6b):
+    // T2-b und T7-c fahren IPv6 OHNE li_fat_id, dort bricht der Riegel weiter ab.
+    // Bis S6a nagelte dieser Test das Gegenteil fest (Verwurf auch MIT li_fat_id, B5).
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-24T10:00:00.000Z"));
+    const expected = new Date("2026-09-24T10:00:00.000Z").getTime();
+
     await forwardToLinkedin(
       config(),
       "Purchase",
-      "evt-s6a-g",
-      { eventSourceUrl: "https://kunde.de/lp?li_fat_id=Ab7-Xy_9" },
+      "evt-s6b-g",
+      { eventSourceUrl: "https://kunde.de/lp?utm_source=u&li_fat_id=Ab7-Xy_9" },
+      "2001:db8::1",
+    );
+
+    expect(fetchCalls()).toHaveLength(1);
+    expect(sentPayload()).toEqual({
+      conversion: URN,
+      conversionHappenedAt: expected,
+      eventId: "evt-s6b-g",
+      user: { userIds: [{ idType: CLICK_ID_TYPE, idValue: "Ab7-Xy_9" }] },
+    });
+    expect(logLines()).toEqual([]);
+    // DIE IPv6-ADRESSE GEHT NIE HINAUS (B4) — weder im Rumpf noch in einer Kopfzeile.
+    // Positivkontrolle derselben Pruefung: T7-b findet die IPv4 im Rumpf.
+    const [, init] = fetchCalls()[0];
+    expect(init.body).not.toContain("2001:db8");
+    expect(JSON.stringify(init.headers)).not.toContain("2001:db8");
+  });
+
+  it("T6-h: ohne IP geht li_fat_id ALLEIN hinaus (Riegel 1, S6b)", async () => {
+    // WIRD ROT, WENN: der Identitaets-Riegel li_fat_id nicht als Kennung gelten laesst.
+    // T2-a und T7-d fahren OHNE li_fat_id, dort bricht der Riegel weiter ab.
+    // Bis S6a nagelte dieser Test das Gegenteil fest (Verwurf auch MIT li_fat_id, B5).
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-24T10:00:00.000Z"));
+    const expected = new Date("2026-09-24T10:00:00.000Z").getTime();
+
+    await forwardToLinkedin(
+      config(),
+      "Purchase",
+      "evt-s6b-h",
+      { eventSourceUrl: "https://kunde.de/lp?utm_source=u&li_fat_id=Ab7-Xy_9" },
+      undefined,
+    );
+
+    expect(fetchCalls()).toHaveLength(1);
+    expect(sentPayload()).toEqual({
+      conversion: URN,
+      conversionHappenedAt: expected,
+      eventId: "evt-s6b-h",
+      user: { userIds: [{ idType: CLICK_ID_TYPE, idValue: "Ab7-Xy_9" }] },
+    });
+    expect(logLines()).toEqual([]);
+  });
+});
+
+// =====================================================================
+// T7 — DIE RIEGEL ALS FILTER JE EINTRAG (Phase 11.7, S6b)
+//
+// Die uebrigen Faelle der Sechser-Tabelle aus dem Zuschnitt (B1 bis B4), JE MIT ADRESSE —
+// anders als T2, der ohne Adresse faehrt. Die Faelle "IPv6 + li" und "keine IP + li" tragen
+// T6-g und T6-h. Werte ERFUNDEN (s. T6).
+// =====================================================================
+describe("T7 — die Riegel als Filter je Eintrag", () => {
+  const CLICK_ID_TYPE = "LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID";
+  const MIT_LI = "https://kunde.de/lp?utm_source=u&li_fat_id=Ab7-Xy_9";
+  const OHNE_LI = "https://kunde.de/lp?utm_source=u";
+
+  function userIds() {
+    return (sentPayload().user as { userIds: unknown }).userIds;
+  }
+
+  it("T7-a: IPv4 + li_fat_id -> [IP, Klick], keine Logzeile", async () => {
+    // WIRD ROT, WENN: der IP-Eintrag trotz gueltiger IPv4 entfaellt, die Reihenfolge kippt
+    // oder eine Logzeile entsteht.
+    await forwardToLinkedin(config(), "Purchase", "evt-s6b-a", { eventSourceUrl: MIT_LI }, IP);
+    expect(fetchCalls()).toHaveLength(1);
+    expect(userIds()).toEqual([
+      { idType: "PLAINTEXT_IP_ADDRESS", idValue: IP },
+      { idType: CLICK_ID_TYPE, idValue: "Ab7-Xy_9" },
+    ]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("T7-b: IPv4 ohne li_fat_id -> [IP], keine Logzeile", async () => {
+    // WIRD ROT, WENN: ohne Klick-Kennung abgebrochen wird oder die IP fehlt — Invariante
+    // (2) der Scheibe: ohne li_fat_id ist das Verhalten IDENTISCH mit vorher.
+    // POSITIVKONTROLLE zu T6-g: dieselbe Suche findet hier die IP im Rumpf.
+    await forwardToLinkedin(config(), "Purchase", "evt-s6b-b", { eventSourceUrl: OHNE_LI }, IP);
+    expect(fetchCalls()).toHaveLength(1);
+    expect(userIds()).toEqual([{ idType: "PLAINTEXT_IP_ADDRESS", idValue: IP }]);
+    expect(logLines()).toEqual([]);
+    expect(fetchCalls()[0][1].body).toContain(IP);
+  });
+
+  it("T7-c: IPv6 ohne li_fat_id -> kein Aufruf, 'identity is not IPv4'", async () => {
+    // WIRD ROT, WENN: Riegel 2 ohne Klick-Kennung nicht mehr abbricht — dann ginge eine
+    // leere Liste oder die IPv6-Adresse hinaus.
+    await forwardToLinkedin(
+      config(),
+      "Purchase",
+      "evt-s6b-c",
+      { eventSourceUrl: OHNE_LI },
       "2001:db8::1",
     );
     expect(fetchCalls()).toHaveLength(0);
-    // Die Zeile ist fester Text — sie traegt den Wert nicht (TRANSIT-ONLY).
     expect(logLines()).toEqual([
       "[capi] LinkedIn forward skipped: identity is not IPv4",
     ]);
   });
 
-  it("T6-h: ohne IP verwirft der Riegel den Forward auch MIT li_fat_id (Riegel 1, L1)", async () => {
-    // WIRD ROT, WENN: der Identitaets-Riegel li_fat_id als Ersatz gelten laesst (S6b).
-    // T2-a faengt das NICHT: er faehrt ohne Adresse.
+  it("T7-d: keine IP ohne li_fat_id -> kein Aufruf, 'missing identity'", async () => {
+    // WIRD ROT, WENN: Riegel 1 ohne Klick-Kennung nicht mehr abbricht.
     await forwardToLinkedin(
       config(),
       "Purchase",
-      "evt-s6a-h",
-      { eventSourceUrl: "https://kunde.de/lp?li_fat_id=Ab7-Xy_9" },
+      "evt-s6b-d",
+      { eventSourceUrl: OHNE_LI },
       undefined,
     );
     expect(fetchCalls()).toHaveLength(0);
     expect(logLines()).toEqual([
       "[capi] LinkedIn forward skipped: missing identity",
+    ]);
+  });
+
+  it("T7-e: keine IP + li_fat_id, Ereignis ohne Regel -> Riegel 3 greift", async () => {
+    // BEWACHT DIE REIHENFOLGE DER RIEGEL: Mit li_fat_id passiert Riegel 1, und der Forward
+    // endet erst an Riegel 3. WIRD ROT, WENN: Riegel 1 li_fat_id nicht als Kennung gelten
+    // laesst (dann kaeme "missing identity").
+    await forwardToLinkedin(
+      config(),
+      "Lead",
+      "evt-s6b-e",
+      { eventSourceUrl: MIT_LI },
+      undefined,
+    );
+    expect(fetchCalls()).toHaveLength(0);
+    expect(logLines()).toEqual([
+      "[capi] LinkedIn forward skipped: no conversion rule for event",
     ]);
   });
 });

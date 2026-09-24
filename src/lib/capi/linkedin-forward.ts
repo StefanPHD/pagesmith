@@ -10,8 +10,9 @@ import { extractLiFatId } from "@/lib/capi/click-id-strip";
  * (Conversions API)", Teile (a) bis (s) — und sie sind zur HAELFTE GELESEN und zur
  * Haelfte GEMESSEN. Dieser Kopf nennt je Angabe, welches von beidem gilt; wer das
  * zusammenzieht, baut auf einer Doku-Lesung, als waere sie ein Messwert.
- * Die Klick-Kennung li_fat_id als zweiter userIds-Eintrag (Phase 11.7, S6a) stuetzt sich
- * auf die Teile (an), (ao) und (aq) der Datei docs/ziel-befunde/linkedin.md.
+ * Die Klick-Kennung li_fat_id als zweiter userIds-Eintrag (Phase 11.7, S6a) — und ohne
+ * verwendbare IPv4 als einziger (S6b) — stuetzt sich auf die Teile (an), (ao) und (aq) der
+ * Datei docs/ziel-befunde/linkedin.md.
  *
  * WAS AN DIESEM ZIEL ANDERS IST ALS AN DEN DREI BESTEHENDEN — die Liste steht hier,
  * damit niemand abschreibt, was nicht passt:
@@ -406,16 +407,29 @@ export async function forwardToLinkedin(
   // wertet nichts aus und kann nicht werfen. Sie steht hier, damit finally sie sieht.
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
+    // --- DIE KLICK-KENNUNG ZUERST (S6b) ---
+    //
+    // Sie steht VOR den Riegeln, weil beide Riegel sie brauchen: li_fat_id allein ist
+    // eine Kennung (Oder-Liste, docs/ziel-befunde/linkedin.md, Teil (ao)). Sie liegt
+    // INNERHALB des try (Vertragssatz 1) und ist ohnehin wurffrei (s. extractLiFatId).
+    // Gelesen wird aus der Adresse allein li_fat_id, EXAKT unter diesem Namen, erstes
+    // Vorkommen, der Wert unveraendert (Zuschnitt L3). TRANSIT-ONLY: Der Wert wird
+    // weder abgelegt noch geloggt noch gehasht.
+    const liFatId = extractLiFatId(body.eventSourceUrl);
+    // Die IP taugt NUR als IPv4 — s. isIpv4. Einmal berechnet, von Riegel 2 und vom
+    // userIds-Aufbau gelesen.
+    const ipv4 = !!clientIp && isIpv4(clientIp);
+
     // --- RIEGEL 1: KEINE IDENTITAET ---
     //
     // Ohne Kennungs-Wert bliebe das Pflicht-Paar leer, und die Schnittstelle wiese
     // den Aufruf ab (GEMESSEN, Teil (a): Typ UND Wert sind Pflicht). Der Fall ist
     // real: resolveClientIp (capi/ingest.ts) liefert undefined, sobald die vertraute
     // IP loopback oder leer ist.
-    // SEIT S6a (Phase 11.7) KANN EIN ZWEITER EINTRAG, li_fat_id, DAS PAAR FUELLEN — DER
-    // RIEGEL BLEIBT TROTZDEM, BEWUSST (Zuschnitt L1): ob li_fat_id ALLEIN genuegt, ist
-    // die Frage von S6b und erst nach dem Live-Beleg des zweiten Eintrags zu schneiden.
-    if (!clientIp) {
+    // SEIT S6b (Phase 11.7) FUELLT AUCH li_fat_id DAS PAAR: Der Riegel greift nur, wenn
+    // WEDER eine IP NOCH li_fat_id vorliegt (Zuschnitt B1). Der Logtext bleibt wahr —
+    // ohne Klick-Kennung ist die IP die einzige Kennung, und sie fehlt (B2).
+    if (!clientIp && !liFatId) {
       console.error("[capi] LinkedIn forward skipped: missing identity");
       return;
     }
@@ -423,7 +437,11 @@ export async function forwardToLinkedin(
     // --- RIEGEL 2: KEIN IPv4 ---
     //
     // s. isIpv4 — die Schnittstelle prueft die Form nicht, also pruefen wir sie.
-    if (!isIpv4(clientIp)) {
+    // SEIT S6b IST ER EIN FILTER JE EINTRAG: Liegt li_fat_id vor, entfaellt allein der
+    // IP-Eintrag — OHNE Logzeile (B3: der Normalfall eines IPv6-Besuchers, eine Zeile je
+    // Ereignis waere Rauschen). Eine IPv6-Adresse wird NIE gesendet, nur weggelassen
+    // (B4). Abgebrochen wird nur ohne li_fat_id; dann ist der Logtext wahr (B2).
+    if (clientIp && !ipv4 && !liFatId) {
       console.error("[capi] LinkedIn forward skipped: identity is not IPv4");
       return;
     }
@@ -454,19 +472,20 @@ export async function forwardToLinkedin(
     // ein Zeitstempel aus dem Client-Blob wird hier BEWUSST nicht gelesen.
     const conversionHappenedAt = Date.now();
 
-    // --- userIds: die IP IMMER, li_fat_id NUR WENN DIE ADRESSE SIE TRAEGT (S6a) ---
+    // --- userIds: die IP NUR ALS IPv4, li_fat_id NUR WENN DIE ADRESSE SIE TRAEGT ---
     //
-    // DIE IP STEHT AN INDEX 0: Das gemessene Paar bleibt, wo es gemessen wurde (Teile
-    // (i), (n)); ein 422 zum neuen Eintrag nennte den Pfad /user/userIds/1/... und waere
-    // vom IP-Eintrag unterscheidbar (die Meldungen nennen den Feldpfad, Teil (i)).
-    // Mehrere Eintraege sind laut Doku zulaessig und empfohlen (Teil (aq)).
-    // DIE ADRESSE SELBST GEHT NICHT HINAUS — gelesen wird aus ihr allein li_fat_id,
-    // EXAKT unter diesem Namen, erstes Vorkommen, der Wert unveraendert (Zuschnitt L3).
-    // TRANSIT-ONLY: Der Wert wird weder abgelegt noch geloggt noch gehasht.
-    const userIds: { idType: string; idValue: string }[] = [
-      { idType: LINKEDIN_ID_TYPE, idValue: clientIp },
-    ];
-    const liFatId = extractLiFatId(body.eventSourceUrl);
+    // TRAGEN BEIDE, STEHT DIE IP AN INDEX 0: Das gemessene Paar bleibt, wo es gemessen
+    // wurde (Teile (i), (n)); ein 422 zum Klick-Eintrag nennte den Pfad
+    // /user/userIds/1/... und waere vom IP-Eintrag unterscheidbar (die Meldungen nennen
+    // den Feldpfad, Teil (i)). Mehrere Eintraege sind laut Doku zulaessig und empfohlen
+    // (Teil (aq)).
+    // OHNE VERWENDBARE IPv4 STEHT li_fat_id ALLEIN (S6b) — laut Doku zulaessig (Teil
+    // (ao)). LEER WIRD DIE LISTE NIE: ohne beides haben Riegel 1 oder 2 abgebrochen.
+    // DIE ADRESSE SELBST GEHT NICHT HINAUS — gelesen wird aus ihr allein li_fat_id (s. oben).
+    const userIds: { idType: string; idValue: string }[] = [];
+    if (ipv4 && clientIp) {
+      userIds.push({ idType: LINKEDIN_ID_TYPE, idValue: clientIp });
+    }
     if (liFatId) {
       userIds.push({ idType: LINKEDIN_CLICK_ID_TYPE, idValue: liFatId });
     }

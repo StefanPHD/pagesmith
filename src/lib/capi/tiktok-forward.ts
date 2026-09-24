@@ -1,7 +1,7 @@
 import "server-only";
 import { errorName } from "@/lib/errors";
 import { redactOpaque } from "@/lib/redact";
-import { stripForeignClickIds } from "@/lib/capi/click-id-strip";
+import { extractTtclid, stripForeignClickIds } from "@/lib/capi/click-id-strip";
 import type { CapiConfig } from "@/lib/capi/token";
 
 /**
@@ -15,6 +15,8 @@ import type { CapiConfig } from "@/lib/capi/token";
  * sind zusaetzlich im Test-Ereignis-Tab des Anbieters als verarbeitet bestaetigt.
  * WAS DAS NICHT HEISST: gemessen ist das VERHALTEN DES ANBIETERS, nicht dieser Code.
  * Was dieser Adapter daraus macht, sichern seine Tests.
+ * EINE ANGABE IST NUR GELESEN, NICHT GEMESSEN: das Feld user.ttclid (Phase 11.7, S8) —
+ * docs/ziel-befunde/tiktok.md, Teil (j). Ob der Endpunkt es auswertet, fuehrt jene Datei.
  *
  * KEINE ABSTRAKTION, ZUM DRITTEN MAL — und diesmal mit einer Aenderung: Die
  * formbasierte SCHWAERZUNG ist beim dritten Fall in eine reine geteilte Datei gezogen
@@ -334,9 +336,15 @@ export async function forwardToTiktok(
     // Concurrency-Slot auf dem meistgetroffenen Pfad der Plattform, multipliziert
     // ueber ALLE Kunden.
     //
-    // WANN SIE NEU ZU TREFFEN IST: sobald ein Ereignis ohne IP und User-Agent fuer
-    // uns einen Wert bekaeme (etwa mit einer anderen Kennung, die wir dann erheben),
-    // ODER sobald die Slot-Kosten anders bewertet werden.
+    // MIT user.ttclid (Phase 11.7, S8) GEPRUEFT, UND DER RIEGEL BLEIBT: Ein Klick-Beacon
+    // mit Kennung kommt ueber denselben Weg wie jeder andere: die IP aus der Kopfzeile der
+    // Plattform, der User-Agent aus der Kopfzeile des Browsers (FOLGERUNG am Code, nicht
+    // gemessen). Ein Ereignis mit ttclid, aber ohne IP oder User-Agent, entfaellt damit
+    // weiterhin.
+    // WANN SIE NEU ZU TREFFEN IST: sobald ein Weg GEMESSEN ist, auf dem ein ttclid ohne
+    // IP oder User-Agent ankommt, ODER sobald GEMESSEN ist, dass der Anbieter ein
+    // Ereignis allein ueber ttclid zuordnet — oder sobald die Slot-Kosten anders
+    // bewertet werden.
     //
     // EINE Bedingung mit ZWEI Termen, nicht zwei unabhaengige if — der Riegel ist
     // EINE Entscheidung und soll als eine sichtbar bleiben.
@@ -348,25 +356,36 @@ export async function forwardToTiktok(
     // GANZZAHLIGE SEKUNDEN (gemessen, TAB).
     const eventTime = Math.floor(Date.now() / 1000);
 
+    // EIN BENANNTES OBJEKT, damit user.ttclid unten nach der bereinigten Adresse
+    // dazukommen kann — dasselbe Muster wie userData in capi/meta-forward.ts.
+    const user: Record<string, unknown> = {
+      // Roh, NICHT gehasht. Gemessen: die beiden allein GENUEGEN fuer einen
+      // angenommenen und verarbeiteten Aufruf.
+      ip: clientIp,
+      user_agent: userAgent,
+    };
+
     const eintrag: Record<string, unknown> = {
       event: tiktokEventName(event),
       event_time: eventTime,
       event_id: eventID,
-      user: {
-        // Roh, NICHT gehasht. Gemessen: die beiden allein GENUEGEN fuer einen
-        // angenommenen und verarbeiteten Aufruf.
-        ip: clientIp,
-        user_agent: userAgent,
-      },
+      user,
     };
 
     // FREMDE KLICK-KENNUNGEN FALLEN HIER WEG, die eigene (ttclid) bleibt — der Anbieter
-    // liest sie selbst aus page.url (s. Kopf von capi/click-id-strip.ts).
+    // liest sie laut docs/ziel-befunde/tiktok.md, Teil (m), selbst aus page.url (s. Kopf
+    // von capi/click-id-strip.ts). ZUSAETZLICH geht sie als user.ttclid hinaus, gelesen
+    // aus DERSELBEN Adresse, die gesendet wird (Teil (j), Phase 11.7, S8). Nur wenn ein
+    // Wert vorliegt; sonst fehlt der Schluessel ganz. TRANSIT-ONLY: nie abgelegt, nie
+    // geloggt, nie gehasht (docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN
+    // PII-SCHEIBE", Block vom 2026-08-28).
     const eventSourceUrl = stripForeignClickIds(
       asString(body.eventSourceUrl),
       "tiktok",
     );
     if (eventSourceUrl) eintrag.page = { url: eventSourceUrl };
+    const ttclid = extractTtclid(eventSourceUrl);
+    if (ttclid) user.ttclid = ttclid;
 
     // --- properties: NUR was vorliegt ---
     //

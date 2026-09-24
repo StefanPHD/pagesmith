@@ -11,9 +11,11 @@ import { META_STANDARD_EVENTS } from "@/lib/tracking/meta";
 //
 // DIE GRENZE VOR ALLEN TESTS: `fetch` ist gestellt. Was diese Datei prueft, ist der
 // ADAPTER — nicht der Anbieter. Die Wire-Form, gegen die er gebaut ist, wurde am
-// 2026-08-11 von Hand gegen den laufenden Endpunkt GEMESSEN (nicht recherchiert);
-// dass sie richtig transkribiert ist, kann kein Test hier zeigen. Das zeigt der
-// Live-Test.
+// 2026-08-11 von Hand gegen den laufenden Endpunkt GEMESSEN (nicht recherchiert) —
+// mit einer Ausnahme: das Feld user.ttclid (Phase 11.7, S8) ist GELESEN
+// (docs/ziel-befunde/tiktok.md, Teil (j)); ob der Endpunkt es auswertet, fuehrt jene
+// Datei. Dass die Wire-Form richtig transkribiert ist, kann kein Test hier zeigen. Das
+// zeigt der Live-Test.
 // ===========================================================================
 
 /**
@@ -411,5 +413,155 @@ describe("TikTok — sie wirft nie", () => {
     ).resolves.toBeUndefined();
     expect(global.fetch).not.toHaveBeenCalled();
     expect(logLines()[0]).toContain("Error");
+  });
+});
+
+// ===========================================================================
+// user.ttclid UEBER DEN ADRESSWEG (Phase 11.7, S8).
+//
+// T10 FAEHRT OHNE ADRESSE, T15 MIT EINER ADRESSE OHNE QUERY-TEIL, und der Waechter W in
+// click-id-strip.test.ts bewacht user.ttclid NICHT: der eigene Wert steht ohnehin in
+// page.url. Die Faelle hier fordern das Feld POSITIV und nageln user UND page fest.
+// Das Feld ist GELESEN (docs/ziel-befunde/tiktok.md, Teil (j)), nicht gemessen.
+//
+// DIE WERTE der positiven Faelle beginnen mit "E.C.P." (die Form des Beispiels in Teil
+// (j)), ausser dort, wo ein Fall gerade eine andere Form prueft (TT-f).
+// ===========================================================================
+
+describe("TikTok — user.ttclid ueber den Adressweg", () => {
+  /** ERFUNDENE Kennung in der Form des Beispiels aus Teil (j). */
+  const TTCLID = "E.C.P.ErfundenS8Wert-0001_abc";
+
+  it("TT-a: mit ttclid — user traegt die Kennung, page.url behaelt sie, das Fremde faellt", async () => {
+    // WIRD ROT, WENN: die Extraktion fehlt, Name oder Ort des Feldes falsch sind, der
+    // Wert veraendert wird, ODER page.url die eigene Kennung verliert.
+    await forwardToTiktok(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      {
+        eventSourceUrl: `https://kunde.de/lp?utm_source=s8&ttclid=${TTCLID}&gclid=FREMD-GCLID-1`,
+      },
+      IP,
+      UA,
+    );
+    expect(sentEvent().user).toEqual({ ip: IP, user_agent: UA, ttclid: TTCLID });
+    expect(sentEvent().page).toEqual({
+      url: `https://kunde.de/lp?utm_source=s8&ttclid=${TTCLID}`,
+    });
+  });
+
+  it("TT-c: Adresse ohne ttclid — kein Feld", async () => {
+    // WIRD ROT, WENN: das Feld unbedingt gesetzt wird.
+    await forwardToTiktok(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.de/lp?utm_source=s8" },
+      IP,
+      UA,
+    );
+    expect(sentEvent().user).toEqual({ ip: IP, user_agent: UA });
+    expect(sentEvent().page).toEqual({ url: "https://kunde.de/lp?utm_source=s8" });
+  });
+
+  it("TT-d: leerer Wert — der Schluessel fehlt ganz, kein leerer Eintrag", async () => {
+    // WIRD ROT, WENN: ein leerer Wert als ttclid: "" hinausgeht.
+    await forwardToTiktok(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.de/lp?ttclid=" },
+      IP,
+      UA,
+    );
+    expect(sentEvent().user).not.toHaveProperty("ttclid");
+    expect(sentEvent().user).toEqual({ ip: IP, user_agent: UA });
+  });
+
+  it("TT-e: 1 000 Zeichen — nichts wird gekuerzt, weder im Feld noch in page.url", async () => {
+    // WIRD ROT, WENN: irgendwo auf dem Weg gekuerzt wird oder eine Laengengrenze unter
+    // 1 000 greift. Teil (j): "up to 1,000 characters long … don't truncate it".
+    // DER WERT BESTEHT NUR AUS [A-Za-z0-9._-] und beginnt mit "E.C.P." — der Fall prueft
+    // allein die LAENGE, keine Form.
+    const lang = ("E.C.P." + "Ab9_-x".repeat(200)).slice(0, 1_000);
+    expect(lang.length).toBe(1_000);
+    await forwardToTiktok(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: `https://kunde.de/lp?ttclid=${lang}` },
+      IP,
+      UA,
+    );
+    const user = sentEvent().user as Record<string, unknown>;
+    expect(user.ttclid).toBe(lang);
+    expect(String(user.ttclid).length).toBe(1_000);
+    expect(sentEvent().page).toEqual({ url: `https://kunde.de/lp?ttclid=${lang}` });
+  });
+
+  it("TT-f: Schreibung und Form — der Name exakt, der Wert ohne Formpruefung", async () => {
+    // WIRD ROT, WENN: der Name ohne Schreibung verglichen wird (1) ODER eine
+    // Formpruefung einen ungewoehnlichen Wert verwirft (2, 3).
+    // (1) TtClId ist nicht ttclid: kein Feld — aber page.url behaelt das Segment (S4
+    //     laesst die eigene Kennung in jeder Schreibung stehen).
+    const abweichend = `https://kunde.de/lp?TtClId=${TTCLID}`;
+    await forwardToTiktok(CONFIG, "Purchase", "evt-1", { eventSourceUrl: abweichend }, IP, UA);
+    expect(sentEvent().user).not.toHaveProperty("ttclid");
+    expect(sentEvent().page).toEqual({ url: abweichend });
+
+    // (2), (3) Werte, die nicht wie das Beispiel aussehen, gehen unveraendert hinaus.
+    for (const wert of ["x", "a.B-_~"]) {
+      global.fetch = vi.fn(async () =>
+        jsonResponse(okBody()),
+      ) as unknown as typeof fetch;
+      await forwardToTiktok(
+        CONFIG,
+        "Purchase",
+        "evt-1",
+        { eventSourceUrl: `https://kunde.de/lp?ttclid=${wert}` },
+        IP,
+        UA,
+      );
+      expect((sentEvent().user as Record<string, unknown>).ttclid).toBe(wert);
+    }
+  });
+
+  it("TT-g: mehrfach vorhanden — das erste Vorkommen", async () => {
+    // WIRD ROT, WENN: das letzte oder alle Vorkommen gelesen werden.
+    await forwardToTiktok(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: "https://kunde.de/lp?ttclid=E.C.P.Erst&ttclid=E.C.P.Zwei" },
+      IP,
+      UA,
+    );
+    expect((sentEvent().user as Record<string, unknown>).ttclid).toBe("E.C.P.Erst");
+  });
+
+  it("TT-i: nicht parsebare Adresse — kein Feld, und der Forward laeuft", async () => {
+    // WIRD ROT, WENN: das Herauslesen bei einer relativen Adresse wirft oder auf den
+    // Rohtext zurueckfaellt. page.url verliert alles ab dem "?" (S4, D5).
+    await forwardToTiktok(
+      CONFIG,
+      "Purchase",
+      "evt-1",
+      { eventSourceUrl: `/lp?ttclid=${TTCLID}` },
+      IP,
+      UA,
+    );
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(sentEvent().user).toEqual({ ip: IP, user_agent: UA });
+    expect(sentEvent().page).toEqual({ url: "/lp" });
+  });
+
+  it("TT-j: der Paar-Riegel gilt auch mit ttclid — ohne IP oder User-Agent KEIN Aufruf", async () => {
+    // WIRD ROT, WENN: eine vorhandene Kennung den Riegel aufweicht. Die Entscheidung
+    // steht am Riegel in forwardToTiktok, samt Bedingung, wann sie neu zu treffen ist.
+    const body = { eventSourceUrl: `https://kunde.de/lp?ttclid=${TTCLID}` };
+    await forwardToTiktok(CONFIG, "Purchase", "evt-1", body, IP, "");
+    await forwardToTiktok(CONFIG, "Purchase", "evt-1", body, undefined, UA);
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });

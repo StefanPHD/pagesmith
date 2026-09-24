@@ -7,6 +7,7 @@ import {
   CLICK_ID_TABLE,
   extractFbclid,
   extractLiFatId,
+  extractTtclid,
   stripForeignClickIds,
 } from "./click-id-strip";
 import { forwardToMeta } from "./meta-forward";
@@ -532,6 +533,89 @@ describe("extractLiFatId — exakt, wurffrei, ohne Formpruefung", () => {
     const url = "https://x.com/?fbclid=a&li_fat_id=b";
     expect(extractFbclid(url)).toBe("a");
     expect(extractLiFatId(url)).toBe("b");
+  });
+});
+
+// ===========================================================================
+// TIKTOK ttclid UEBER DEN ADRESSWEG (Phase 11.7, S8) — DIE DRITTE HUELLE.
+//
+// Derselbe Kern wie extractFbclid und extractLiFatId; X-a bis X-h und L-a bis L-h bleiben
+// unveraendert. W OBEN BEWACHT user.ttclid NICHT: tiktoks eigener Wert steht ohnehin in
+// page.url, W bliebe ohne das Feld gruen. Das Feld selbst fordern TT-a bis TT-j in
+// tiktok-forward.test.ts. Dass kein ANDERES Ziel ttclid traegt, deckt W unveraendert.
+// ===========================================================================
+
+describe("extractTtclid — exakt, wurffrei, ohne Formpruefung", () => {
+  it("TX-a: sie wirft bei keiner feindlichen Eingabe und liefert immer eine Zeichenkette", () => {
+    // WIRD ROT, WENN: der Kern bei kaputter Eingabe weiterwirft.
+    const werfendesToString = {
+      toString(): string {
+        throw new Error("boom");
+      },
+    };
+    for (const eingabe of [
+      undefined,
+      null,
+      42,
+      {},
+      [],
+      werfendesToString,
+      "",
+      "?",
+      "#",
+      "http://[::1?ttclid=x",
+      "%",
+      LONE_SURROGATE,
+      `https://x.com/?ttclid=${LONE_SURROGATE}`,
+      `https://x.com/?${"&".repeat(100_000)}ttclid=x`,
+      `https://x.com/?ttclid=${"%".repeat(1_000)}`,
+    ]) {
+      expect(() => extractTtclid(eingabe)).not.toThrow();
+      expect(typeof extractTtclid(eingabe)).toBe("string");
+    }
+  });
+
+  it("TX-b: der Wert kommt unveraendert heraus — Schreibung, Laenge, dekodiert wie der Parser", () => {
+    // WIRD ROT, WENN: gekuerzt, eine Form geprueft oder die Schreibung veraendert wird.
+    expect(extractTtclid("https://x.com/?utm_source=u&ttclid=Ab7-Xy_9")).toBe("Ab7-Xy_9");
+    expect(extractTtclid("https://x.com/?ttclid=a%2Bb+c")).toBe("a+b c");
+    const lang = ("E.C.P." + "Ab9_-x".repeat(200)).slice(0, 1_000);
+    expect(extractTtclid(`https://x.com/?ttclid=${lang}`)).toBe(lang);
+  });
+
+  it("TX-c: der NAME wird exakt verglichen — auf dem dekodierten Namen", () => {
+    // WIRD ROT, WENN: der Kern den Namen ohne Schreibung vergleicht.
+    expect(extractTtclid("https://x.com/?TTCLID=x")).toBe("");
+    expect(extractTtclid("https://x.com/?TtClId=x")).toBe("");
+    expect(extractTtclid("https://x.com/?tt%63lid=x")).toBe("x");
+  });
+
+  it("TX-d: leer oder fehlend ergibt die leere Zeichenkette", () => {
+    expect(extractTtclid("https://x.com/?ttclid=")).toBe("");
+    expect(extractTtclid("https://x.com/?utm_source=u")).toBe("");
+    expect(extractTtclid("https://x.com/")).toBe("");
+  });
+
+  it("TX-e: mehrfach vorhanden — das erste Vorkommen", () => {
+    expect(extractTtclid("https://x.com/?ttclid=Erst&ttclid=Zwei")).toBe("Erst");
+  });
+
+  it("TX-f: nicht parsebar oder keine Zeichenkette ergibt die leere Zeichenkette", () => {
+    expect(extractTtclid("/relativ?ttclid=x")).toBe("");
+    expect(extractTtclid(undefined)).toBe("");
+    expect(extractTtclid(42)).toBe("");
+  });
+
+  it("TX-g: das Fragment wird nicht gelesen", () => {
+    expect(extractTtclid("https://x.com/#ttclid=x")).toBe("");
+  });
+
+  it("TX-h: jede der drei Huellen liest nur ihren eigenen Namen", () => {
+    // WIRD ROT, WENN: eine Huelle dem Kern den falschen Namen reicht.
+    const url = "https://x.com/?fbclid=a&li_fat_id=b&ttclid=c";
+    expect(extractFbclid(url)).toBe("a");
+    expect(extractLiFatId(url)).toBe("b");
+    expect(extractTtclid(url)).toBe("c");
   });
 });
 

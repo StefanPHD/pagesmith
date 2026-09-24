@@ -14,9 +14,11 @@
 //
 // WAS stripForeignClickIds NICHT TUT, und jede Grenze ist eine Entscheidung:
 //  - SIE ENTFERNT NUR, SIE SETZT NICHTS. Keine Kennung erreicht ueber sie ein Ziel, das
-//    sie vorher nicht bekam. DIE HUELLEN WEITER UNTEN (extractFbclid, extractLiFatId)
-//    LESEN HERAUS: Sie liefern einem Urheber seine EIGENE Kennung — linkedin bekommt die
-//    Adresse gar nicht und erhaelt li_fat_id allein ueber extractLiFatId (Phase 11.7, S6a).
+//    sie vorher nicht bekam. DIE HUELLEN WEITER UNTEN (extractFbclid, extractLiFatId,
+//    extractTtclid) LESEN HERAUS: Sie liefern einem Urheber seine EIGENE Kennung —
+//    linkedin bekommt die Adresse gar nicht und erhaelt li_fat_id allein ueber
+//    extractLiFatId (Phase 11.7, S6a); tiktok erhaelt ttclid zusaetzlich zur Adresse
+//    ueber extractTtclid (S8).
 //  - NEGATIVLISTE: Entfernt werden nur Kennungen der Tabelle, die einem ANDEREN Ziel
 //    gehoeren. Die Adresse gehoert dem Betreiber; URL-basierte Regeln beim Anbieter
 //    braechen still, wenn hier mehr wegfiele. Eine Kennung, die nicht in der Tabelle
@@ -261,4 +263,29 @@ export function extractFbclid(url: unknown): string {
  */
 export function extractLiFatId(url: unknown): string {
   return readClickIdExact(url, "li_fat_id");
+}
+
+/**
+ * LIEST DIE KLICK-KENNUNG VON TIKTOK (`ttclid`) AUS EINER ADRESSE — EXAKT (Phase 11.7, S8).
+ * Derselbe Kern, derselbe Vertrag wie extractFbclid und extractLiFatId.
+ *
+ * DIE QUELLE: docs/ziel-befunde/tiktok.md, Teil (j) — der Parameter heisst `ttclid`, der
+ * Wert gehoert in `user.ttclid`, und er kann bis zu 1 000 Zeichen lang sein ("you need to
+ * ensure that you don't truncate it"). Deshalb weder Kuerzung noch Formpruefung; zu
+ * Schreibung und Kodierung nennt die Quelle nichts.
+ *
+ * ZWEI FORMEN DERSELBEN KENNUNG IN EINER NUTZLAST: Diese Huelle liefert den Wert DEKODIERT,
+ * wie der Standard-Parser ihn liest — Prozent-Folgen aufgeloest, ein "+" als Leerzeichen.
+ * In `page.url` steht dieselbe Kennung ROH, weil stripForeignClickIds die eigene Kennung
+ * unveraendert stehen laesst. Traegt ein Wert "%" oder "+", sind die beiden Zeichenketten
+ * verschieden.
+ *
+ * SIE WIRFT NIE — sie laeuft in forwardToTiktok innerhalb des try; die Zusage ist die des
+ * Kerns.
+ *
+ * @returns den Wert, oder "" wenn keiner vorliegt — fehlend, leer, nicht parsebar oder
+ *          keine Zeichenkette.
+ */
+export function extractTtclid(url: unknown): string {
+  return readClickIdExact(url, "ttclid");
 }

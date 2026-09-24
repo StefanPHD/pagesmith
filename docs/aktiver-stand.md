@@ -107,6 +107,28 @@ BLEIBT.** Material: VERMERK P11.7-25.
   docs/ziel-fragenkatalog.md fortschreiben (B2, G1, H2, H3), beim [x] das Unbewiesene
   benennen, Hebung, Archivierung.
 
+**OWNER-ENTSCHEIDUNGEN 2026-09-24 ZU SCHRITT (4) VON E-d — ADDITIV, DER TEXT DARÜBER BLEIBT.**
+Material: der Entscheidungsbericht desselben Tages (Vorrat P11.7-9, VERMERK P11.7-22).
+- **E-e — ZU VORRAT P11.7-9: K1 FÜR ALLE FÜNF ZIELE, NICHT NUR LINKEDIN.** Grund: Bei vier von
+  fünf Zielen ist ein Erfolg heute still (GEMESSEN am Code, 2026-09-24: meta, tiktok, linkedin
+  und google loggen nur Ablehnung, Riegel und Wurf), und die Pinterest-Spur hängt an der Warnung
+  "external_id is missing", die mit ZUSCHNITT-FRAGE P11.7-4 entfiele.
+  VERWORFEN: **K1b** — ein Umgebungs-Schalter bliebe unbeobachtet (Muster des Postens "DER CODE
+  TRÄGT EINEN DEPLOYMENT-WEITEN TESTMODUS-HEBEL …" in docs/offene-punkte.md) · **K3** — mehr
+  Aufwand für denselben Zweck.
+  **K4 IST DIE BETREIBER-ANTWORT UND GEHÖRT NICHT IN 11.7:** Sie wird beim Phasenende nach
+  docs/offene-punkte.md gehoben, Trigger "vor echtem Ad-Traffic".
+  DIE GRENZE VON K1: nur für den Owner sichtbar · Logs eine Stunde auf Hobby
+  (docs/plattform-befunde.md, Vercel-Abschnitt, GELESEN) · eine 2xx-Antwort belegt die
+  ANNAHME, nicht die Verarbeitung. Zugeschnitten als S10 (Abschnitt "Zuschnitt der Phase
+  11.7").
+- **E-f — ZUSCHNITT-FRAGE P11.7-11 IST GESCHLOSSEN.** Im Log sind `40100` und `40104` über
+  `code=` trennbar (`describeRejection`, `src/lib/capi/tiktok-forward.ts`). Eine
+  Kontrollfluss-Unterscheidung — erneut senden — bräuchte eine Hintergrund-Zustellung, deren
+  Trigger nach "/API/E-SCHLANKHEIT" und nach der B-Leitplanke "QUEUE-TOOLS / ASYNC-INFRASTRUKTUR"
+  (CLAUDE.md) nicht eingetreten ist. Die Anzeige-Hälfte geht an K4. Welche zwei Codes der
+  Kopfkommentar im TikTok-Adapter meint, nimmt S10 mit (Q6).
+
 ## Was den Zuschnitt bindet
 
 **DER ZUSCHNITT STEHT SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-22 IM ABSCHNITT "Zuschnitt der
@@ -1382,9 +1404,9 @@ SCHÄTZUNG; die Reihenfolge setzt E-d):
    Punkt "welches Limit real greift …"); die Grenze auszulösen ist kein Instrument.
 6. Pinterest-Rate-Limit-Widerspruch — ERLEDIGT: gemessen aufgelöst, 120 000 je 60 s (VERMERK
    P11.7-26; E-b).
-7. ZUSCHNITT-FRAGE P11.7-11 — Owner-Entscheidung, ob gebaut wird; kein Instrument (Drosselung
-   nicht herstellbar).
-8. Vorrat P11.7-9 (K1–K4) — Owner-Entscheidung, Trigger "vor dem Phasenende".
+7. ZUSCHNITT-FRAGE P11.7-11 — ERLEDIGT: geschlossen durch OWNER-ENTSCHEIDUNG E-f.
+8. Vorrat P11.7-9 (K1–K4) — ENTSCHIEDEN (E-e): K1 für alle fünf Ziele, zugeschnitten als S10;
+   K4 wird beim Phasenende gehoben.
 9. LinkedIn-Nachablesung "Data last received" (VERMERK P11.7-22, (c)) — Messung — Campaign
    Manager ab 2026-09-25.
 10. Unbehandelte Felder aus Punkt 5 — ERLEDIGT: eingeordnet durch Owner-Entscheidung E-c.
@@ -1832,8 +1854,10 @@ taugt nicht als Ersatz — "Data last received" bewegte sich am 2026-09-24 nach 
 201 angenommenen Aufrufen nicht (docs/ziel-befunde/linkedin.md, Teil (be)). **FOLGE:** Ob ein
 LinkedIn-Forward angekommen ist, ist heute an KEINER Stelle direkt zu sehen; S6b ist nur durch
 Ausschluss belegt.
-**DIE KANDIDATEN K1 BIS K4 STEHEN IM VERMERK P11.7-22 — KEINE AUSWAHL.**
-TRIGGER: vor dem Phasenende zu entscheiden (OWNER).
+**ENTSCHIEDEN (OWNER-ENTSCHEIDUNG E-e, 2026-09-24): K1 FÜR ALLE FÜNF ZIELE**, zugeschnitten als
+S10; K4 wird beim Phasenende nach docs/offene-punkte.md gehoben. Die Kandidaten K1 bis K4
+stehen im VERMERK P11.7-22.
+TRIGGER: eingetreten und entschieden; der Eintrag schliesst mit dem Bau von S10.
 **ZEIGER 2026-09-24 — DAS GEGENSTÜCK BEI PINTEREST:** Dort ist ein Erfolg heute sichtbar, aber
 nur über eine Warnzeile, die jede Antwort erzeugt — Befund an S9 im Abschnitt "Zuschnitt der
 Phase 11.7" (VERMERK P11.7-26).
@@ -1997,7 +2021,8 @@ P11.7-22); der Zuschnitt von S7 legt Teile von P11.7-6 (G1) und P11.7-7 (Owner-E
 2026-09-24) fest, P11.7-8 ist gemessen (VERMERK P11.7-23); S7 hat P11.7-6 für
 `landingPageDeviceInfo` eingelöst und P11.7-7 so gebaut, wie entschieden (VERMERK P11.7-24);
 S8 hat P11.7-9 eingelöst (T1; VERMERK P11.7-28); S9 hat den festgelegten Teil von P11.7-19
-gebaut und live belegt (N1; VERMERK P11.7-30).
+gebaut und live belegt (N1; VERMERK P11.7-30); P11.7-11 ist durch die OWNER-ENTSCHEIDUNG E-f
+geschlossen.
 ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
@@ -2135,6 +2160,9 @@ lesbar. **IM KONTROLLFLUSS NICHT** — der Adapter verzweigt nicht auf den Code.
 **DIE ZWEITE HÄLFTE BLEIBT UNGEPRÜFT UND IST AM CODE NICHT ENTSCHEIDBAR:** ob die im
 Kopfkommentar gemeinten "zwei verschiedenen Codes" dieselben sind — der Kommentar nennt
 andere Beispiele, und welche Codes die Messung vom 2026-08-11 ergab, steht im Code nirgends.
+**GESCHLOSSEN 2026-09-24 — OWNER-ENTSCHEIDUNG E-f** (Abschnitt "Gegenstand der Phase"): im Log
+trennbar, eine Kontrollfluss-Unterscheidung ohne eingetretenen Trigger, die Anzeige-Hälfte bei
+K4. Die zweite Hälfte oben — welche Codes der Kopfkommentar meint — nimmt S10 mit (Q6).
 
 **ZUSCHNITT-FRAGE P11.7-12 — `external_id` IST AUCH BEI TIKTOK DER EINZIGE SELBST ERZEUGTE WERT: ZEIGER
 STATT KOPIE.** Die Lage ist dieselbe wie bei meta, die Frage steht als **P11.7-4**. Was
@@ -2402,7 +2430,8 @@ Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist nach G1 bis G5 gebaut,
 `landingPageDeviceInfo` ist auf Schema-Ebene gemessen angenommen (VERMERK P11.7-24). S8
 (tiktok) ist nach T1 bis T5 gebaut, `user.ttclid` ist im Test-Events-Reiter live belegt
 (VERMERK P11.7-28). S9 (pinterest) ist nach N1 bis N6 und N9 gebaut, `user_data.click_id` ist in
-"Events testen" live belegt (VERMERK P11.7-30).
+"Events testen" live belegt (VERMERK P11.7-30). S10 (eine Zeile je angenommenem Forward, alle
+fünf Ziele) ist nach Q1 bis Q9 zugeschnitten und nicht gebaut (OWNER-ENTSCHEIDUNG E-e).
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -2776,6 +2805,78 @@ Wortlaut unter Commit `e588c77`. Ein Zeiger auf "N1 bis N9" landet hier.
   `sanitizeProviderText` — Vorrat P11.7-9.
 Dazu Entscheidung P11.7-7 (Paar-Riegel bleibt).
 
+**S10 — ZUGESCHNITTEN AM 2026-09-24 — eine Zeile je angenommenem Forward, alle fünf Ziele.**
+Vorrat P11.7-9, OWNER-ENTSCHEIDUNG E-e (K1); Material der Entscheidungsbericht desselben Tages.
+**Nicht gebaut.** NICHT ZU VERWECHSELN mit dem Seiten-Kürzel "S10" im LinkedIn-Crawl (VERMERK
+P11.7-19); dort sind S1 bis S11 Doku-Seiten, keine Scheiben.
+**ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24** (Kennbuchstaben Q, frei im Bestand —
+GEMESSEN, CC: `\bQ[0-9]` 0 Treffer vor dieser Runde). Sie sind ZIELÜBERGREIFEND formuliert und
+treffen keine Aussage über ein einzelnes Ziel:
+- **Q1 — JE ADAPTER GENAU EINE ZEILE, WENN EINE ANTWORT ANGENOMMEN IST.** "Angenommen" ist GENAU
+  der Zweig, den der Adapter heute als Erfolg wertet — KEIN neues Urteil. Welcher Zweig das je
+  Ziel ist, stellt der Stufe-1-Plan der Teilscheibe fest, unter Volladung der Ziel-Datei.
+  Grund: E-e; eine Zeile, die ein eigenes Urteil fällte, wäre eine zweite Auswertung neben der
+  bestehenden.
+- **Q2 — INHALT:** das Präfix der bestehenden Zeilen, das Ziel, der HTTP-Status. Das Wort sagt
+  "angenommen", NICHT "erfolgreich" oder "gesendet" — ein Meldungstext behauptet kein Ergebnis
+  (docs/immer-beachten.md, safeAction-Regel, letzter Absatz), und eine 2xx-Antwort belegt die
+  Annahme, nicht die Verarbeitung (E-e). NICHTS aus Anfrage oder Antwort: keine Nutzlast, keine
+  IP, kein User-Agent, keine Kennung, kein Zugangsdatum — TRANSIT-ONLY (docs/offene-punkte.md,
+  "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"; Entscheidung P11.7-4).
+- **Q3 — LOG-STUFE INFO, NICHT ERROR.** Präzedenz im Bestand: `console.info` für die
+  Erfolgszeile der OAuth-Rückkehr (`src/app/api/oauth/google/callback/route.ts`, GEMESSEN).
+  Bestehende Fehler- und Warnzeilen bleiben unverändert, auch die Pinterest-Warnzeile und
+  `sanitizeProviderText`.
+- **Q4 — GRENZE UND KIPPBEDINGUNG:** eine Zeile je angenommenem Forward, also je Conversion und
+  Ziel, auf dem meistgetroffenen Pfad. Neu zu bewerten bei echtem Traffic oder bei einer
+  Log-Grenze des Plans — dann K4 oder eine Stichprobe.
+- **Q5 — TESTS JE ADAPTER:** die Zeile genau EINMAL bei Erfolg, mit POSITIVKONTROLLE auf Ziel und
+  Status, und die Abwesenheit jedes Werts aus der Anfrage. In KEINEM Fehler- oder Riegel-Pfad
+  entsteht die Zeile. Bestehende Tests, die die STILLE im Erfolg festhalten, benennt der Plan
+  einzeln mit ihrem Grund (bekannt ist T1 in `pinterest-forward.test.ts`, "verarbeitet, keine
+  Warnung -> KEINE Meldung"; er liest nur `console.error`).
+- **Q6 — MITNAHME:** der Kopfkommentar von `src/lib/capi/tiktok-forward.ts`, Punkt 4 ("zwei
+  verschiedene Codes teilen sich HTTP 401 (gemessen)"), und der Kommentar im Antwort-Zweig von
+  `forwardToTiktok` ("falsche Kennung" gegen "falsches Zugangsdatum") — nach dem, was
+  docs/ziel-befunde/tiktok.md belegt: `40100` und `40104` je HTTP 401, GELESEN (Teil (o)).
+  Welche Codes die Messung vom 2026-08-11 ergab, ist nicht festgehalten
+  (docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Live-Test: "HTTP 401, der
+  Fehlercode lesbar").
+- **Q7 — NICHT TEIL VON S10:** K4 · ein erneutes Senden · jede Änderung an bestehenden
+  Fehlerzeilen · Ereignis- oder Projekt-Kennungen in der Zeile.
+- **Q8 — SCHNITT JE ZIEL (Pflicht-Stopp Ziel-Befunde, CLAUDE.md).** GEMESSEN (CC, 2026-09-24,
+  `wc -c`): google.md 414 115 · linkedin.md 157 040 · meta.md 103 472 · pinterest.md 96 503 ·
+  tiktok.md 48 559 · Kopf docs/ziel-befunde.md 14 399 · diese Standdatei 206 649 Bytes (vor
+  dieser Runde).
+  **GERECHNET, als obere Schranke:** Nach VERMERK P11.7-23 belegten Nachrichten mit 567 041
+  Bytes geladenen Dateien 471,3k Token; die Nachrichten enthielten mehr als die Dateien, also
+  gilt für diese Dateien höchstens 0,831 Token je Byte. Fester Teil je Sitzung (Standdatei plus
+  Kopf, 221 048 Bytes): ≤ 183,7k.
+  · die vier kleineren zusammen: 405 574 Bytes, so viel wie google.md allein (414 115) — NICHT
+    klar darunter, also NICHT in einer Sitzung;
+  · **S10a — linkedin + tiktok:** 205 599 Bytes, mit festem Teil ≤ 354,6k Token;
+  · **S10b — meta + pinterest:** 199 975 Bytes, mit festem Teil ≤ 349,9k Token;
+  · **S10c — google allein:** 414 115 Bytes, mit festem Teil ≤ 527,9k Token.
+  Jede Gruppe liegt damit unter dem gemessenen Fall von VERMERK P11.7-23 (587,4k samt
+  Aufklärung, Modell mit 1M Kontext); S10a und S10b tragen je rund die Hälfte von google.md.
+  Die Code-Dateien kommen hinzu; die Schranke ist eine Rechnung, keine Messung.
+  **REIHENFOLGE:** S10a zuerst — LinkedIn ist der Anlass von Vorrat P11.7-9, und die
+  Nachablesung ab 2026-09-25 (VERMERK P11.7-22, (c)) kann eine gebaute Zeile schon nutzen. Die
+  erste Teilscheibe legt die gemeinsame Form der Zeile fest; die übrigen folgen ihr.
+  **KIPPBEDINGUNG:** Trägt eine Sitzung ihre Gruppe nicht, wird weiter JE ZIEL geteilt — nicht
+  die Ladung verkürzt.
+- **Q9 — PFLICHT-GATE VOR DEM PLAN DER ERSTEN TEILSCHEIBE:** Gibt es eine Entscheidung, eine
+  Dauerregel oder einen Test, der die STILLE im Erfolg ABSICHTLICH festlegt, und mit welchem
+  Grund? Eine solche Festlegung wird nicht still überschrieben.
+  **VORAB-SUCHE (CC, 2026-09-24) — KEINE FESTLEGUNG GEFUNDEN**, Reichweite: `docs/`, `CLAUDE.md`
+  und `src/` (`.md`, `.ts`) mit einer Achse aus Formulierungen für "still im Erfolg" und "loggt
+  nur", dazu `eslint.config.mjs` (keine `console`-Regel). Gefunden sind zwei BEFUNDE, die die
+  Stille FESTSTELLEN, nicht verlangen: docs/claude-history/phase-11.1-linkedin.md ("KEIN ADAPTER
+  LOGGT IM ERFOLGSFALL", GEMESSEN 2026-08-19) und
+  docs/claude-history/phase-11-multi-tracking-aktiver-stand.md ("DER ADAPTER SCHWEIGT BEIM
+  ERFOLG: keine Zeile im Log, also `code 0`" — dort als Live-Test-Instrument benutzt). Eine
+  Suche ist kein Beweis der Abwesenheit; das Gate prüft vor dem Plan erneut, dazu die Tests.
+
 **MITZUNEHMEN — VORRAT P11.7-1, P11.7-3, P11.7-4 (Kopfkommentare)**, je in der ersten
 Scheibe, die ihre Datei berührt, wie ihre Trigger es verlangen. **P11.7-3 geht in S2** — die
 Anhebung ändert `linkedin-forward.ts` zwangsläufig. **P11.7-1 (`google-click-ids.ts`) geht in
@@ -2822,9 +2923,13 @@ P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28, P11.7-30). **ALLE FÜNF PUNKTE
 ROADMAP-ZEILE 11.7 SIND BEARBEITET:** F5, F6 und F7 durch die Lesung (E-a), F8 gemessen
 (VERMERK P11.7-26), Punkt 5 mit S4 bis S9. Die Reihenfolge bis zum Phasenende steht in der
 OWNER-ENTSCHEIDUNG E-d (Abschnitt "Gegenstand der Phase").
-**ALS NÄCHSTES:** die Owner-Entscheidungen zu Vorrat P11.7-9 (K1–K4) und ZUSCHNITT-FRAGE
-P11.7-11 · die LinkedIn-Nachablesung "Data last received" ab 2026-09-25 (VERMERK P11.7-22, (c))
-· danach das Phasenende nach E-d (6).
+**DIE OWNER-ENTSCHEIDUNGEN ZU SCHRITT (4) VON E-d SIND GETROFFEN:** E-e (Vorrat P11.7-9, K1 für
+alle fünf Ziele, zugeschnitten als S10) und E-f (ZUSCHNITT-FRAGE P11.7-11 geschlossen).
+**ALS NÄCHSTES:** der Stufe-1-Plan der ersten Teilscheibe von S10, **S10a (linkedin + tiktok)**,
+in einer NEUEN Sitzung — Pflicht-Stopp: Volladung docs/ziel-befunde/linkedin.md und
+docs/ziel-befunde/tiktok.md plus Kopf; davor das Gate Q9 · danach die LinkedIn-Nachablesung
+"Data last received" ab 2026-09-25 (VERMERK P11.7-22, (c)) · dann S10b und S10c · danach das
+Phasenende nach E-d (6).
 **WEITERE OFFENE ZUSCHNITT-FRAGEN IM BESTAND**, je mit dem Stand an der Frage (Abschnitt
 "Fragen an den Zuschnitt (nach dem Meta-Crawl)"):
 - P11.7-4 (dazu P11.7-12 und P11.7-18) — `external_id`, offene OWNER-Frage; für diese Phase

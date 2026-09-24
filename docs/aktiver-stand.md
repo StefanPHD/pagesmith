@@ -1417,6 +1417,77 @@ Teil (al), dazu datierte Zeiger an (e), (x), (ah) und (ai)(2).
 gemessen · EINE Beobachtung · **der Fehlerzweig "HTTP 200 mit `failed`" ist UNGEMESSEN** —
 keiner der drei Läufe hat ihn erzeugt.
 
+### VERMERK P11.7-27 — Aufklärung zu S8 vom 2026-09-24 (KEIN BAU)
+
+**HARTE ANGABEN:** 2026-09-24 · HEAD `0180fd1` · Arbeitsbaum sauber · READ-ONLY · **VOLLLADUNG**
+von docs/ziel-befunde/tiktok.md (622 Zeilen) plus Kopf von docs/ziel-befunde.md (220 Zeilen) ·
+keine fremde Seite, kein Aufruf gegen die Schnittstelle · Nicht-Treffer am geglätteten Text von
+tiktok.md, Positivkontrolle `ttclid` 27, `test_event_code` 10, `Response` 4. Kein Bau-Commit.
+
+**DAS FELD (docs/ziel-befunde/tiktok.md):**
+- **`user.ttclid`** — (j): "Report the user's events with ttclid inserted into Events API
+  user.ttclid field via /event/track/." Ebene: das `user`-Objekt je Ereignis in `data[]`; (l):
+  "web only, kein Hash". **EMPFOHLEN, NICHT VERLANGT:** "It is strongly recommended to send back
+  the ttclid via Events API 2.0 for all events" (j), Häkchen in der Spalte "Recommended ?" (l);
+  keine Seite nennt es Required. Form: keine Grammatik; allein "ttclid can be up to 1,000
+  characters long, so you need to ensure that you don't truncate it" (j).
+- **(m):** "The API backend will parse the Click ID if it detects the presence of a ttclid
+  parameter in the page.url." (j) nennt drei Herkunftswege und "It's highly recommended to
+  implement at least one of the above three options."
+- **NICHT-TREFFER ZU VORRANG UND WIDERSPRUCH:** `instead`, `priority`, `prefer`, `overrid`,
+  `take precedence` je 0; die drei `both`-Treffer gelten ip/UA und `event_id`. Zum Abschnitt
+  "Remove ttclid from landing page URLs" nennt (j) keine Folge für die Zuordnung.
+- **NICHT-TREFFER ZU SCHREIBUNG UND KODIERUNG:** `uppercase`, `lowercase`, `encod`, `decod`,
+  `percent` je 0; `case` 2, beide eigene Achsen-Vermerke. Vorhanden: der Beispielwert
+  `?ttclid=E.C.P.v3fQ2RHacdksKfofPmlyuStIIHJ4Af1tKYxF9zz2c2PLx1Oaw15oHpcfl5AH` (j) und die
+  1 000-Zeichen-Angabe.
+
+**DAS INSTRUMENT — KEIN BELEGTES:** tiktok.md trägt keine Aussage, welche Kennungen oder
+Match-Felder eine Oberfläche je Ereignis zeigt (`Event Match` 0, `match quality` 0, `matched` 0,
+`Diagnos` 0; `Test Events` 3, nur als Ort des Testcodes in (b) und im Zitat in (h)); (n) nennt
+Metriken "Browser", "Server", "Server & Browser" und "Event Health". Die Erfolgsantwort
+beschreibt die Datei nicht. **ZWEITHAND AUS CODE-KOMMENTAREN, nicht aus der Befund-Datei:**
+`src/lib/capi/tiktok-forward.ts` Kopf ("im Test-Ereignis-Tab des Anbieters als verarbeitet
+bestaetigt"), Kommentar an `properties` (der Test-Tab beanstandet `content_id`), `TIKTOK_OK_CODE`
+(HTTP 200, `code: 0`), Kommentar an `EVENT_MAP` (ein Custom-Name bekommt `code 0`, "die Quittung
+sagt das NICHT") — gemessen laut Kommentar am 2026-08-11. Ob der Tab `user.ttclid` ausweist, ist
+UNGELESEN und ungemessen; die Erfolgsantwort taugt nicht als Instrument für ein Feld (FOLGERUNG).
+
+**AM CODE (GEMESSEN, HEAD `0180fd1`):**
+- (a) `forwardToTiktok`: vor dem `try` allein `let timer`; `user` entsteht IM `try` im Literal
+  `eintrag` nach dem Paar-Riegel, heute `ip`, `user_agent`; `page.url` aus
+  `stripForeignClickIds(asString(body.eventSourceUrl), "tiktok")` — `ttclid` bleibt als eigene
+  Kennung darin.
+- (b) T10 (`tiktok-forward.test.ts`) prüft `user` per `toEqual({ ip, user_agent })` mit Rumpf
+  `{}`, OHNE Adresse — ein `user.ttclid` aus der Adresse macht ihn NICHT rot. T15 prüft `page`
+  mit `https://kunde.de/lp` ohne Query-Teil und `user` nicht. KEIN Test nagelt die ganze
+  TikTok-Nutzlast per `toEqual` fest; `ingest.test-mode.test.ts` TM5/TM7 prüfen nur
+  `test_event_code`, `fan-out.test.ts` keine TikTok-Nutzlast. Eine Adresse mit `ttclid` fährt
+  allein Wächter W.
+- (c) **W BLIEBE GRÜN, in beiden Läufen:** Er sucht den Wert je Kennung im ganzen ausgehenden
+  Text; der eigene steht ohnehin in `page.url` (Lauf "tabelle"), und `TtClId=` bleibt dort in
+  jeder Schreibung (V-c4, Lauf "abweichend"). **W BEWACHT `user.ttclid` NICHT** — wie bei `fbc`;
+  dass kein anderes Ziel `ttclid` trägt, deckt W weiter.
+- (d) `readClickIdExact` (`src/lib/capi/click-id-strip.ts`) ist modulprivat, exakt auf dem
+  dekodierten Namen, wurffrei, `""` wenn nichts vorliegt; ihr Kopf: "ein weiterer Urheber bekommt
+  eine weitere Huelle". Eine Hülle `extractTtclid` nach dem Muster von `extractLiFatId` liesse
+  `extractFbclid`, `extractLiFatId`, `stripForeignClickIds` und `CLICK_ID_TABLE` unberührt.
+- (e) Drei `console.error`-Zeilen: zweimal `describeRejection` (Status, `content-type`, Länge,
+  `code`, `request_id`, `message` — je über `redactOpaque`, gekappt; nichts aus der Anfrage),
+  einmal `errorName(err)`. Ein `ttclid` erschiene nur, wenn TikTok ihn in `message` spiegelt —
+  für `event_source_id` ist ein Echo gemessen (Kommentar an `describeRejection`), für `ttclid`
+  ungemessen. Am Beispielwert bliebe nach `redactOpaque` der Vorsatz `E.C.P.` lesbar (FOLGERUNG).
+
+**DATENKLASSE — DIE TEXTLAGE (docs/offene-punkte.md, Eintrag "DATENKLASSEN-GRENZE VOR DER ERSTEN
+PII-SCHEIBE"):** `ttclid` steht dort nur als Suchbegriff. Der Block vom 2026-08-28 nennt TikTok
+ausdrücklich — "gclid, gbraid, wbraid — und künftige Klick-Kennungen anderer Anbieter (Meta,
+TikTok und weitere)", TRANSIT-ONLY, "ANBIETERÜBERGREIFEND … ihr Kriterium ist die HERKUNFT". (E2)
+nennt allein `fbc` und `fbp` samt gleichartigen Tag-Kennungen; (E3) trägt den Grundsatz "EINE
+KLICK-KENNUNG GEHT NUR AN IHREN URHEBER".
+
+**IM SELBEN ZUG:** Zuschnitt von S8 (T1 bis T6, Abschnitt "Zuschnitt der Phase 11.7") und
+Mitzunehmendes an S9.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1693,7 +1764,8 @@ Teile von P11.7-1 und P11.7-2 gebaut und live belegt, dazu Zeiger an P11.7-5 und
 belegt, dazu ein Zeiger an P11.7-16 (VERMERK P11.7-20); S6b hat P11.7-16 eingelöst (VERMERK
 P11.7-22); der Zuschnitt von S7 legt Teile von P11.7-6 (G1) und P11.7-7 (Owner-Entscheidung vom
 2026-09-24) fest, P11.7-8 ist gemessen (VERMERK P11.7-23); S7 hat P11.7-6 für
-`landingPageDeviceInfo` eingelöst und P11.7-7 so gebaut, wie entschieden (VERMERK P11.7-24).
+`landingPageDeviceInfo` eingelöst und P11.7-7 so gebaut, wie entschieden (VERMERK P11.7-24);
+der Zuschnitt von S8 legt P11.7-9 fest (T1; VERMERK P11.7-27).
 ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
@@ -1810,6 +1882,9 @@ gelesene Seite.**
 **ZEIGER 2026-09-23 — DIE E3-HÄLFTE IST DURCH S4 EINGELÖST (VERMERK P11.7-16):** `page.url`
 geht ohne fremde Kennungen an TikTok, `ttclid` bleibt darin. **OFFEN BLEIBT** die Frage nach
 `user.ttclid` (S6 bis S9, D9).
+**ZEIGER 2026-09-24 — FESTGELEGT DURCH DEN ZUSCHNITT VON S8** (Abschnitt "Zuschnitt der Phase
+11.7", T1): `user.ttclid` wird zusätzlich gesendet, `page.url` behält die eigene Kennung. Ob ein
+Weg den anderen ersetzt, bleibt ungelesen (VERMERK P11.7-27).
 
 **ZUSCHNITT-FRAGE P11.7-10 — DOPPELZÄHLUNG: EINE ABLEITUNG, UNGEMESSEN, UND SIE BETRIFFT MEHR ALS EIN
 ZIEL.** Der Adapter setzt `event_id` IMMER, der Cookie-Weg der Deduplizierung greift nur
@@ -2077,8 +2152,9 @@ P11.7-18). S6 (linkedin) ist zugeschnitten (L1 bis L7) und in S6a und S6b geteil
 gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b ist gebaut,
 `li_fat_id` allein ist per Terminal angenommen, unser Pfad durch Tests, Mutationen und
 Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist nach G1 bis G5 gebaut,
-`landingPageDeviceInfo` ist auf Schema-Ebene gemessen angenommen (VERMERK P11.7-24). Die
-übrigen sind weder gebaut noch geplant.
+`landingPageDeviceInfo` ist auf Schema-Ebene gemessen angenommen (VERMERK P11.7-24). S8
+(tiktok) ist nach T1 bis T6 zugeschnitten, nicht gebaut (VERMERK P11.7-27). S9 ist weder gebaut
+noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -2364,6 +2440,33 @@ der Datei ihres Ziels.
   **NICHT TEIL VON S7:** `eventDeviceInfo` · `category` · `language_code` · eine Änderung am
   gclid-Riegel · die DMA-Felder.
 - tiktok `ttclid` — ZUSCHNITT-FRAGE P11.7-9 (ob zusätzlich `user.ttclid`), P11.7-10.
+  **S8 — ZUGESCHNITTEN AM 2026-09-24**, nicht gebaut. Material: VERMERK P11.7-27. PFLICHT DAVOR:
+  Volladung docs/ziel-befunde/tiktok.md plus Kopf.
+  **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24:**
+  - **T1 — `user.ttclid` WIRD ZUSÄTZLICH GESENDET; `page.url` BEHÄLT DIE EIGENE KENNUNG (S4).**
+    Grund: docs/ziel-befunde/tiktok.md, Teil (j), empfiehlt `user.ttclid` für alle Ereignisse;
+    zu einem Widerspruch beider Wege sagt die Quelle nichts (Nicht-Treffer, VERMERK P11.7-27).
+  - **T2 — GELESEN ÜBER EINE NEUE HÜLLE `extractTtclid` AM KERN `readClickIdExact`**, aus der
+    Adresse, die `page.url` bildet; exakt, erstes Vorkommen, `""` → kein Feld. Roh und bereinigt
+    sind für die eigene Kennung gleich (FOLGERUNG wie S5, Mutation m6) — keine Probe dafür.
+    Grund: dritter Nutzer des Kerns, bestehende Verträge bleiben unberührt (VERMERK P11.7-27, (d)).
+  - **T3 — KEINE FORMPRÜFUNG, KEIN KÜRZEN.** Grund: die Quelle nennt bis 1 000 Zeichen und
+    verlangt, nicht abzuschneiden (Teil (j)). Der Stufe-1-Plan prüft, ob auf unserem Weg
+    irgendwo gekürzt wird.
+  - **T4 — TRANSIT-ONLY.** Grund: der Block vom 2026-08-28 nennt TikTok ausdrücklich, dazu (E3)
+    (docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"). GRENZE: in einer
+    gespiegelten Fehlermeldung bliebe ein Vorsatz wie `E.C.P.` nach `redactOpaque` lesbar
+    (FOLGERUNG am Beispielwert).
+  - **T5 — TESTS: EIN NEUER ERSCHÖPFENDER TEST MIT ADRESSE FÜR `user`;** T10 bleibt der Fall ohne
+    Adresse. Grund: T10 fährt ohne Adresse, und W bewacht `user.ttclid` nicht — eigene Fälle.
+  - **T6 — LIVE: TIKTOK-TESTMODUS (`test_event_code`); DER TEST-EVENTS-TAB WIRD ALS MESSUNG DES
+    INSTRUMENTS ABGELESEN:** weist er `user.ttclid` aus, ist das Feld live belegt; sonst belegen
+    es die Tests. Grund: kein belegtes Instrument (VERMERK P11.7-27).
+  **FELDER IN `user.*`, DIE S8 NICHT SENDET, je mit Grund (erledigt, nicht offen):** `ttp` —
+  Cookie-Weg, ausgeschlossen (ZUSCHNITT-FRAGE P11.7-26) · `email`, `phone`, `first_name`,
+  `last_name`, `city`, `state`, `country`, `zip_code` — Personendaten, durch die Roadmap-Grenze
+  ausgeschlossen · `external_id` — offene Owner-Frage (ZUSCHNITT-FRAGE P11.7-4) · `idfa`, `idfv`,
+  `gaid`, `att_status` — Kennungen von Apps.
 - pinterest `epik` — ZUSCHNITT-FRAGE P11.7-19.
   **BEFUND 2026-09-24 — KEINE ENTSCHEIDUNG** (VERMERK P11.7-26; docs/ziel-befunde/pinterest.md,
   Teil (al)(iv)): `evaluateSuccessBody` (`src/lib/capi/pinterest-forward.ts`) macht aus jeder
@@ -2371,6 +2474,13 @@ der Datei ihres Ziels.
   Produktion schreibt damit JEDER Pinterest-Forward eine Warnzeile**; nach S9 bleibt "external_id
   is missing" stehen. Zwei Seiten: Rauschen, das echte Warnungen verdeckt · zugleich heute die
   einzige Sichtbarkeit eines Erfolgs (Gegenstück bei LinkedIn: Vorrat P11.7-9).
+  **MITZUNEHMEN IN S9 — KEINE ENTSCHEIDUNG** (vorgemerkt 2026-09-24):
+  · der Kopf von docs/ziel-befunde/pinterest.md: eine datierte Ergänzung an der Prüfsumme — sie
+    gilt dem Stand `11a44f7` (Muster VERMERK P11.7-11);
+  · der Kopfkommentar in `src/lib/capi/pinterest-forward.ts` "DER ERFOLGS-RUMPF IST NIE GEMESSEN"
+    ist seit VERMERK P11.7-26 falsch;
+  · ein Zeiger an docs/ziel-befunde/pinterest.md, Teil (p)(2), auf Teil (al)(ii) (eigene
+    Ereignisnamen).
 
 **MITZUNEHMEN — VORRAT P11.7-1, P11.7-3, P11.7-4 (Kopfkommentare)**, je in der ersten
 Scheibe, die ihre Datei berührt, wie ihre Trigger es verlangen. **P11.7-3 geht in S2** — die
@@ -2416,8 +2526,9 @@ binden:**
 **S1 BIS S7 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
 P11.7-18, P11.7-20, P11.7-22, P11.7-24). **DER ROADMAP-ABGLEICH IST GEMACHT (VERMERK
 P11.7-25); DIE REIHENFOLGE BIS ZUM PHASENENDE STEHT IN DER OWNER-ENTSCHEIDUNG E-d**
-(Abschnitt "Gegenstand der Phase"). **F8 IST GEMESSEN UND ERFÜLLT (VERMERK P11.7-26). ALS
-NÄCHSTES: S8 tiktok** (E-d (2)).
+(Abschnitt "Gegenstand der Phase"). **F8 IST GEMESSEN UND ERFÜLLT (VERMERK P11.7-26). S8
+tiktok IST ZUGESCHNITTEN (T1 bis T6, VERMERK P11.7-27). ALS NÄCHSTES: DER STUFE-1-PLAN VON S8, in
+einer NEUEN Sitzung** — Pflicht-Stopp: Volladung docs/ziel-befunde/tiktok.md plus Kopf.
 **DIE SIEBEN-TAGE-FRIST LÄUFT WEITER:** Die Google-Karte ist am 2026-09-24 neu autorisiert
 worden; im Status "Testing" stirbt das Erneuerungs-Token sieben Tage danach (VERMERK P11.7-23,
 (a)). Vor jedem weiteren Google-Live-Test den Ablaufzeitpunkt auf der Karte prüfen.

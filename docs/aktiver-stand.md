@@ -1713,6 +1713,66 @@ Zeiger an (o), (x), (ac), (ae) und (ar) · Zuschnitt S9 verdichtet (N7 und N8 en
 ZUSCHNITT-FRAGE P11.7-15 und P11.7-19 nachgezogen · VERMERK P11.7-25 (Punkt 5, Liste) und
 "Nächster Schritt" nachgezogen · S9 ABGESCHLOSSEN.
 
+### VERMERK P11.7-31 — Teilscheibe S10a gebaut und live beobachtet vom 2026-09-24 (Erfolgszeile linkedin und tiktok)
+
+**HARTE ANGABEN:** 2026-09-24 · **BAU-COMMIT `7f44ef5`** (`feat(capi): Erfolgszeile fuer
+linkedin und tiktok (Phase 11.7, S10a)`) · vier Dateien: `src/lib/capi/linkedin-forward.ts`
+(`else`-Zweig an `if (!res.ok)`), `src/lib/capi/tiktok-forward.ts` (das Erfolgs-`if` als Block;
+dazu Q6 an zwei Kommentarstellen), `src/lib/capi/linkedin-forward.test.ts` (T8-a bis T8-e,
+T8-d mit neun Zeilen), `src/lib/capi/tiktok-forward.test.ts` (TS-a bis TS-e, TS-d mit acht
+Zeilen) · die Zeile: `[capi] ${ZIEL} forward accepted: HTTP ${res.status}`, `console.info`,
+ein Argument · Tests **2 212 → 2 237 / 98** (GEMESSEN, CC) · tsc, lint (0 Fehler; die
+bestehende Warnung in `consent.test.ts`), build grün · **GENAU ZWEI neue `console`-Zeilen im
+Diff, keine entfernt; jede bestehende Fehler- und Warnzeile byte-gleich** (GEMESSEN, mit
+Positivkontrolle) · ingest.ts, die übrigen drei Adapter, fan-out.test.ts, W und V4 unberührt.
+
+**MUTATIONSPROBEN — ZWÖLF, ALLE WIE VORHERGESAGT**, die Vorhersage je Probe VOR dem Lauf am
+gebauten Bestand nachgezählt, KEINE danach geändert; je voller Lauf über 2 237 Tests, je
+zurückgenommen und per sha256 gegen den Baustand belegt — **AUSGENOMMEN mT6: aus dem Stand von
+mT5 gesetzt, ohne Zwischenprüfung; die Schlussprüfung ist OK.**
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| mL1 | Zeile entfernt | 4 — T8-a, T8-b, T8-c, T8-e |
+| mL2 | Zeile unbedingt hinter den `if` | 5 — T8-d: HTTP 401, 403, 422, 502 ohne JSON, 500 unlesbar |
+| mL3 | `conversion` angehängt | 4 — T8-a, T8-b, T8-c, T8-e |
+| mL4 | Stufe `error` | 9 — T4-h, T6-g, T6-h, T7-a, T7-b, T8-a, T8-b, T8-c, T8-e; ausserhalb 0 |
+| mL5 | Zeile doppelt | 4 — T8-a, T8-b, T8-c, T8-e |
+| mL6 | "HTTP 201" festgeschrieben | 1 — NUR T8-b |
+| mT1 | Zeile entfernt | 6 — TS-a, TS-b, TS-c, TS-e, TS-d (beide Riegel) |
+| mT2 | Zeile vor das Rumpf-Urteil gezogen | 3 — TS-d: 200 mit code ungleich 0, 200 ohne JSON, 200 unlesbar |
+| mT3 | `clientIp` angehängt | 6 — wie mT1 |
+| mT4 | Stufe `error` | 7 — wie mT1, dazu T5; ausserhalb 0 |
+| mT5 | Zeile doppelt | 6 — wie mT1 |
+| mT6 | "HTTP 200" festgeschrieben | 1 — NUR TS-b |
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-24):**
+- VORHER: Vercel-Suche "forward accepted", Zeitraum "Last hour", VOR dem Deploy: 0 Treffer.
+  LinkedIn "Data last received" vor dem Klick: September 23, 2026 6:27 PM (so angezeigt;
+  Zeitzone der Anzeige nicht erhoben). Deployment S10a auf Production "Ready".
+- KLICK: 17:25 Ortszeit (UTC+2, also 15:25 UTC) auf
+  `https://meta-test-5nlm3e.publayer.net/?utm_source=s10a`, eventID
+  `f027d6b5-38dc-4ce4-9a9f-cc37af4cd7ac`; `/api/e` 204; `cns` für alle fünf Ziele `true`.
+- VERCEL, Klick-Minute: "[capi] TikTok forward accepted: HTTP 200" und "[capi] LinkedIn
+  forward accepted: HTTP 201"; "forward rejected" 0, "forward error" 0.
+- NICHT ABGELESEN: der Mitläufer (Pinterest-Warnzeile bzw. Meta-Server-Ereignis derselben
+  Minute). NICHT GEMELDET: der Zustand des TikTok-Testmodus.
+
+**DIE GRENZE, GETRENNT:**
+- **GEMESSEN:** Beide Adapter haben über den echten Weg eine angenommene Antwort erhalten.
+  **Für LinkedIn ist das die ERSTE direkte Beobachtung** — VERMERK P11.7-22, (b), führte sie
+  als "NICHT DIREKT BEOBACHTET".
+- **GESTÜTZT, NICHT GEMESSEN:** Die Zuordnung der zwei Zeilen zum Klick ruht auf einem
+  einzigen Klick in dieser Minute und darauf, dass es keinen fremden Traffic gibt (CLAUDE.md,
+  "## Modus"); der Mitläufer fehlt.
+- **UNBELEGT:** die Verarbeitung bei LinkedIn und die Anzeige in "Data last received". Das
+  entscheidet die Nachablesung (Abschnitt "Nächster Schritt").
+
+**ZEIGER / ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/linkedin.md, Teil (bf), dazu datierte
+Zeiger an (bc), (bd) und (be) · Q2 nachgezogen (das Wort "accepted") · Vorrat P11.7-9
+nachgezogen, Vorrat P11.7-11 neu · "Nächster Schritt" nachgezogen · S10a ABGESCHLOSSEN; S10b
+und S10c stehen aus.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1777,7 +1837,7 @@ Sie bindet jede Runde, die den Pinterest-Riegel oder `user_data` berührt.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-**VIER SIND OFFEN (P11.7-2, -8, -9, -10); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7
+**FÜNF SIND OFFEN (P11.7-2, -8, -9, -10, -11); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7
 MIT S3, P11.7-1 UND -4 MIT S4.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
 `a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
 2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
@@ -1857,7 +1917,10 @@ Ausschluss belegt.
 **ENTSCHIEDEN (OWNER-ENTSCHEIDUNG E-e, 2026-09-24): K1 FÜR ALLE FÜNF ZIELE**, zugeschnitten als
 S10; K4 wird beim Phasenende nach docs/offene-punkte.md gehoben. Die Kandidaten K1 bis K4
 stehen im VERMERK P11.7-22.
-TRIGGER: eingetreten und entschieden; der Eintrag schliesst mit dem Bau von S10.
+TRIGGER: eingetreten und entschieden. **DIE LINKEDIN-HÄLFTE IST BEANTWORTET** (VERMERK
+P11.7-31): Seit S10a ist eine angenommene Antwort an der Zeile "[capi] LinkedIn forward
+accepted" direkt zu sehen, live beobachtet am 2026-09-24. Die stillen Ausgänge VOR dem Adapter
+bleiben still. Der Eintrag schliesst weiterhin mit S10 insgesamt, also mit S10b und S10c.
 **ZEIGER 2026-09-24 — DAS GEGENSTÜCK BEI PINTEREST:** Dort ist ein Erfolg heute sichtbar, aber
 nur über eine Warnzeile, die jede Antwort erzeugt — Befund an S9 im Abschnitt "Zuschnitt der
 Phase 11.7" (VERMERK P11.7-26).
@@ -1869,6 +1932,14 @@ Platzhalter-IP `123.123.123.123`; seit S7 reist sie als `landingPageDeviceInfo.i
 an Google. **IN DER PRODUKTION OHNE FOLGE** — dort kommt die Adresse aus der Kopfzeile.
 **KEIN FIX-VORSCHLAG.**
 TRIGGER: die nächste Scheibe, die `resolveClientIp` oder den Google-Adapter berührt.
+
+**P11.7-11 — DIE TITEL VON T7-a UND T7-b IN `src/lib/capi/linkedin-forward.test.ts` VERSPRECHEN
+"keine Logzeile" UND PRÜFEN NUR `console.error`.** BEFUND vom 2026-09-24 (VERMERK P11.7-31,
+Mutation mL4): Beide lesen allein den Fehlerkanal; seit S10a entsteht in ihrem Fall eine
+Info-Zeile, und der Titel behauptet mehr, als der Test deckt. T4-h und T5 (tiktok) sind in S10a
+aus demselben Grund geschärft worden; T7-a und T7-b lagen ausserhalb der Freigabe.
+**KEIN FIX-VORSCHLAG.**
+TRIGGER: die nächste Runde, die `src/lib/capi/linkedin-forward.test.ts` öffnet.
 
 ## Hebungs-Kandidaten
 
@@ -2431,7 +2502,8 @@ Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist nach G1 bis G5 gebaut,
 (tiktok) ist nach T1 bis T5 gebaut, `user.ttclid` ist im Test-Events-Reiter live belegt
 (VERMERK P11.7-28). S9 (pinterest) ist nach N1 bis N6 und N9 gebaut, `user_data.click_id` ist in
 "Events testen" live belegt (VERMERK P11.7-30). S10 (eine Zeile je angenommenem Forward, alle
-fünf Ziele) ist nach Q1 bis Q9 zugeschnitten und nicht gebaut (OWNER-ENTSCHEIDUNG E-e).
+fünf Ziele) ist nach Q1 bis Q9 zugeschnitten (OWNER-ENTSCHEIDUNG E-e); S10a (linkedin, tiktok)
+ist gebaut und live beobachtet (VERMERK P11.7-31), S10b und S10c sind nicht gebaut.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -2807,8 +2879,10 @@ Dazu Entscheidung P11.7-7 (Paar-Riegel bleibt).
 
 **S10 — ZUGESCHNITTEN AM 2026-09-24 — eine Zeile je angenommenem Forward, alle fünf Ziele.**
 Vorrat P11.7-9, OWNER-ENTSCHEIDUNG E-e (K1); Material der Entscheidungsbericht desselben Tages.
-**Nicht gebaut.** NICHT ZU VERWECHSELN mit dem Seiten-Kürzel "S10" im LinkedIn-Crawl (VERMERK
-P11.7-19); dort sind S1 bis S11 Doku-Seiten, keine Scheiben.
+**S10a ABGESCHLOSSEN AM 2026-09-24 — VERMERK P11.7-31** (Bau-Commit `7f44ef5`; beide Zeilen live
+beobachtet). **S10b und S10c sind nicht gebaut.** Q1 bis Q9 bleiben als bindende
+Entscheidungen stehen: sie binden S10b und S10c. NICHT ZU VERWECHSELN mit dem Seiten-Kürzel
+"S10" im LinkedIn-Crawl (VERMERK P11.7-19); dort sind S1 bis S11 Doku-Seiten, keine Scheiben.
 **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24** (Kennbuchstaben Q, frei im Bestand —
 GEMESSEN, CC: `\bQ[0-9]` 0 Treffer vor dieser Runde). Sie sind ZIELÜBERGREIFEND formuliert und
 treffen keine Aussage über ein einzelnes Ziel:
@@ -2817,10 +2891,15 @@ treffen keine Aussage über ein einzelnes Ziel:
   Ziel ist, stellt der Stufe-1-Plan der Teilscheibe fest, unter Volladung der Ziel-Datei.
   Grund: E-e; eine Zeile, die ein eigenes Urteil fällte, wäre eine zweite Auswertung neben der
   bestehenden.
-- **Q2 — INHALT:** das Präfix der bestehenden Zeilen, das Ziel, der HTTP-Status. Das Wort sagt
-  "angenommen", NICHT "erfolgreich" oder "gesendet" — ein Meldungstext behauptet kein Ergebnis
+- **Q2 — INHALT:** das Präfix der bestehenden Zeilen, das Ziel, der HTTP-Status. Das Wort ist
+  "accepted" (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-24): alle bestehenden Zeilen sind englisch, und
+  "forward accepted"/"forward rejected" ist ein Suchpaar. Es heisst ANGENOMMEN, NICHT
+  "erfolgreich" oder "gesendet" — ein Meldungstext behauptet kein Ergebnis
   (docs/immer-beachten.md, safeAction-Regel, letzter Absatz), und eine 2xx-Antwort belegt die
-  Annahme, nicht die Verarbeitung (E-e). NICHTS aus Anfrage oder Antwort: keine Nutzlast, keine
+  Annahme, nicht die Verarbeitung (E-e). **DAS MUSTER** `[capi] ${ZIEL} forward accepted: HTTP
+  ${res.status}` — `console.info`, ein Argument, `ZIEL` der Anzeigename aller bestehenden
+  Zeilen des Adapters (`Meta`, `Pinterest`, `TikTok`, `LinkedIn`, `Google`) — **BINDET S10b UND
+  S10c ZEICHENGLEICH**; gebaut in S10a (VERMERK P11.7-31). NICHTS aus Anfrage oder Antwort: keine Nutzlast, keine
   IP, kein User-Agent, keine Kennung, kein Zugangsdatum — TRANSIT-ONLY (docs/offene-punkte.md,
   "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"; Entscheidung P11.7-4).
 - **Q3 — LOG-STUFE INFO, NICHT ERROR.** Präzedenz im Bestand: `console.info` für die
@@ -2844,6 +2923,10 @@ treffen keine Aussage über ein einzelnes Ziel:
   Fehlercode lesbar").
 - **Q7 — NICHT TEIL VON S10:** K4 · ein erneutes Senden · jede Änderung an bestehenden
   Fehlerzeilen · Ereignis- oder Projekt-Kennungen in der Zeile.
+  **MITNAHME FÜR S10c (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-24):** Die Info-Zeilen landen im
+  Testprotokoll von `fan-out.test.ts`, Wächter W (`click-id-strip.test.ts`) und V4
+  (`version-deadlines.test.ts`), weil dort kein `console.info`-Spion steht; S10a hat das
+  bewusst nicht angefasst. Es wird EINMAL am Ende geschlossen, in S10c.
 - **Q8 — SCHNITT JE ZIEL (Pflicht-Stopp Ziel-Befunde, CLAUDE.md).** GEMESSEN (CC, 2026-09-24,
   `wc -c`): google.md 414 115 · linkedin.md 157 040 · meta.md 103 472 · pinterest.md 96 503 ·
   tiktok.md 48 559 · Kopf docs/ziel-befunde.md 14 399 · diese Standdatei 206 649 Bytes (vor
@@ -2919,17 +3002,27 @@ binden:**
 ## Nächster Schritt
 
 **S1 BIS S9 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28, P11.7-30). **ALLE FÜNF PUNKTE DER
-ROADMAP-ZEILE 11.7 SIND BEARBEITET:** F5, F6 und F7 durch die Lesung (E-a), F8 gemessen
+P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28, P11.7-30), **DAZU S10a** (VERMERK P11.7-31).
+**ALLE FÜNF PUNKTE DER ROADMAP-ZEILE 11.7 SIND BEARBEITET:** F5, F6 und F7 durch die Lesung
+(E-a), F8 gemessen
 (VERMERK P11.7-26), Punkt 5 mit S4 bis S9. Die Reihenfolge bis zum Phasenende steht in der
 OWNER-ENTSCHEIDUNG E-d (Abschnitt "Gegenstand der Phase").
 **DIE OWNER-ENTSCHEIDUNGEN ZU SCHRITT (4) VON E-d SIND GETROFFEN:** E-e (Vorrat P11.7-9, K1 für
 alle fünf Ziele, zugeschnitten als S10) und E-f (ZUSCHNITT-FRAGE P11.7-11 geschlossen).
-**ALS NÄCHSTES:** der Stufe-1-Plan der ersten Teilscheibe von S10, **S10a (linkedin + tiktok)**,
-in einer NEUEN Sitzung — Pflicht-Stopp: Volladung docs/ziel-befunde/linkedin.md und
-docs/ziel-befunde/tiktok.md plus Kopf; davor das Gate Q9 · danach die LinkedIn-Nachablesung
-"Data last received" ab 2026-09-25 (VERMERK P11.7-22, (c)) · dann S10b und S10c · danach das
-Phasenende nach E-d (6).
+**ALS NÄCHSTES, IN DIESER REIHENFOLGE:**
+1. **Die LinkedIn-Nachablesung** "Data last received" im Campaign Manager ab 2026-09-25, gegen
+   den ANKER 2026-09-24 15:25 UTC (der Klick von S10a, VERMERK P11.7-31; vorher stand die
+   Anzeige auf September 23, 2026 6:27 PM). Zeigt sie einen Zeitpunkt ab dem Klick: Die Anzeige
+   hing nach. Zeigt sie weiter den 23.09.: angenommen, aber nicht angezeigt — dann folgt eine
+   Aufklärung. **Die Owner-Hypothese, die Umbauten S6a/S6b könnten die Ursache sein, wird dort
+   als FRAGE geführt, nicht als Befund.** Die Zeitzone der Anzeige ist nicht erhoben; der
+   Vergleich rechnet damit.
+2. **S10b (meta + pinterest)**, in einer NEUEN Sitzung — Pflicht-Stopp: Volladung
+   docs/ziel-befunde/meta.md und docs/ziel-befunde/pinterest.md plus Kopf; das Muster aus Q2
+   ZEICHENGLEICH.
+3. **S10c (google)** — Volladung docs/ziel-befunde/google.md plus Kopf; dazu die Mitnahme an
+   Q7 (das Rauschen im Testprotokoll).
+4. **Das Phasenende** nach E-d (6).
 **WEITERE OFFENE ZUSCHNITT-FRAGEN IM BESTAND**, je mit dem Stand an der Frage (Abschnitt
 "Fragen an den Zuschnitt (nach dem Meta-Crawl)"):
 - P11.7-4 (dazu P11.7-12 und P11.7-18) — `external_id`, offene OWNER-Frage; für diese Phase

@@ -2009,6 +2009,10 @@ GEMESSEN am Repo (CC, 2026-09-23, HEAD `5d5602e`).
      gibt (CLAUDE.md, "## Modus") — sie ist eine FOLGERUNG, keine Messung. Ein einzelnes
      Ereignis; über Zählung, Zuordnung zu einer Person und Deduplizierung sagt der Lauf nichts
      (s. (h), (q), (t)).
+     ZEIGER (2026-09-24) — DAS INSTRUMENT "fehlende Zeile `[capi] LinkedIn forward`" IST SEIT
+     S10a ÜBERHOLT: Eine angenommene Antwort schreibt seither die Zeile "[capi] LinkedIn forward
+     accepted: HTTP <Status>"; eine Erfolgsprüfung sucht "forward accepted" gegen "forward
+     rejected", s. unten (bf). Der Wortlaut oben bleibt.
 
 ### MESSUNG 2026-09-23 — Annahme von `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` als zweiter Eintrag (Live-Test der Scheibe S6a, Phase 11.7) — der Teil (bd)
 
@@ -2063,6 +2067,10 @@ HEAD `09476b9`).
      ZEIGER (2026-09-24) — "`li_fat_id` ALLEIN IST WEITER UNGEMESSEN" GILT NICHT MEHR: per
      Terminal mit 201 angenommen, s. unten (be). Dort steht auch, dass die Anzeige, auf der der
      Beleg hier ruht, am 2026-09-24 nicht mehr reagierte. Der Wortlaut oben bleibt.
+     ZEIGER (2026-09-24), ZWEITER — DAS INSTRUMENT "fehlende Zeile `[capi] LinkedIn forward
+     rejected`" IST SEIT S10a ÜBERHOLT: Eine angenommene Antwort ist seither an der Zeile
+     "[capi] LinkedIn forward accepted: HTTP <Status>" direkt zu sehen; eine Erfolgsprüfung sucht
+     "forward accepted" gegen "forward rejected", s. unten (bf). Der Wortlaut oben bleibt.
 
 ### MESSUNG 2026-09-24 — `li_fat_id` allein und die S6a-Form per Terminal, dazu ein Befund zur Empfangsanzeige (Scheibe S6b, Phase 11.7) — der Teil (be)
 
@@ -2106,4 +2114,46 @@ sind GEMESSEN am Repo (CC, 2026-09-24, HEAD `007a772`).
        später nachzieht, ist offen; laut Anbieter dauert die Verarbeitung bis zu 24 Stunden
        (s. (ag)). Eine Nachablesung am 2026-09-25 steht aus.
      · **DIE GRENZE:** Die Ursache des Stillstands ist nicht erhoben; ein Tag, eine Anzeige.
+     ZEIGER (2026-09-24) — ÜBER UNSEREN ECHTEN WEG IST DIE ANNAHME SEIT S10a DIREKT GESEHEN
+     (201, IPv4, ohne `li_fat_id`), während die Anzeige vor dem Klick weiter auf dem 23.09.
+     stand; s. unten (bf). Der Wortlaut oben bleibt.
+
+### MESSUNG 2026-09-24 — Annahme über den echten Weg, sichtbar an der Erfolgszeile (Scheibe S10a, Phase 11.7) — der Teil (bf)
+
+**HERKUNFT (2026-09-24):** Ein Live-Test des Owners nach dem Deploy des Bau-Commits `7f44ef5`:
+EIN Klick auf einer veröffentlichten Seite, abgelesen in den Logs der Produktionsumgebung
+(Vercel) und an der Anbieter-Oberfläche (Campaign Manager, "Data last received"). **KEIN
+Terminal-Lauf.** Die Angaben über Log, Anzeige und Klick sind OWNER-ABLESUNGEN; die Angaben über
+unseren Adapter sind GEMESSEN am Repo (CC, 2026-09-24, HEAD `7f44ef5`).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (be) folgt (bf).
+
+(bf) DER ENDPUNKT NIMMT EIN EREIGNIS ÜBER UNSEREN ECHTEN WEG MIT 201 AN — ERSTMALS DIREKT
+     GESEHEN, AN DER ERFOLGSZEILE AUS S10a.
+     · **WAS DER ADAPTER SEIT S10a TUT — GEMESSEN am Repo:** `forwardToLinkedin`
+       (`src/lib/capi/linkedin-forward.ts`) schreibt bei jeder Antwort mit `res.ok` genau eine
+       Zeile `[capi] LinkedIn forward accepted: HTTP <Status>` über `console.info`, ohne einen
+       Wert aus Anfrage oder Antwort ausser dem Status; bei jeder anderen Antwort weiterhin
+       genau eine Zeile "[capi] LinkedIn forward rejected: …".
+     · **VORHER:** Vercel-Suche "forward accepted", Zeitraum "Last hour", VOR dem Deploy: 0
+       Treffer. "Data last received" vor dem Klick: **September 23, 2026 6:27 PM** (so
+       angezeigt; Zeitzone der Anzeige nicht erhoben).
+     · **DER KLICK:** 2026-09-24, 17:25 Ortszeit (UTC+2, also 15:25 UTC), Label-Seite
+       `https://meta-test-5nlm3e.publayer.net/?utm_source=s10a` — IPv4 (die Label-Hosts tragen
+       keinen AAAA-Eintrag, docs/plattform-befunde.md, Vercel-Abschnitt, Teil (h)), OHNE
+       `li_fat_id`; eventID `f027d6b5-38dc-4ce4-9a9f-cc37af4cd7ac`; `/api/e` 204; `cns` für alle
+       fünf Ziele `true`.
+     · **DAS LOG, Klick-Minute:** "[capi] LinkedIn forward accepted: HTTP 201" (daneben
+       "[capi] TikTok forward accepted: HTTP 200"); "forward rejected" 0, "forward error" 0.
+     **WAS DAS BEANTWORTET:** dass unsere Nutzlast (`userIds` mit genau dem IP-Eintrag, (bc))
+     über den echten Weg vom Endpunkt mit **201** angenommen wird — **abgelesen als
+     Statuscode**, nicht mehr erschlossen aus Sprung und fehlender Logzeile wie in (bc), (bd).
+     **DIE GRENZEN:**
+     · **GESTÜTZT, NICHT GEMESSEN:** Die Zuordnung der Zeile zum Klick ruht auf einem einzigen
+       Klick in dieser Minute und darauf, dass es keinen fremden Traffic gibt (CLAUDE.md,
+       "## Modus"); ein Mitläufer derselben Minute ist nicht abgelesen.
+     · **UNBELEGT:** die Verarbeitung beim Anbieter und die Anzeige in "Data last received" nach
+       dem Klick — die Ablesung steht aus. Eine 201 bewegte die Anzeige am 2026-09-24 nicht
+       zwingend (s. (be)).
+     · Belegt ist der Weg IPv4 OHNE `li_fat_id`. Die Wege mit `li_fat_id` und `li_fat_id` allein
+       sind über diese Seite nicht mitgefahren.
 

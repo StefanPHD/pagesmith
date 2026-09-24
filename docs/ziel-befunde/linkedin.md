@@ -477,6 +477,9 @@ DANEBEN und schreibt ihn nicht um.
     hours"; bis zu vollständigen Berichtsdaten bis zu 72 Stunden. s. unten (ab) und (ag).
     "Unerhoben" oben bleibt richtig — eine Doku-Angabe ist keine gemessene Latenz. Der
     Wortlaut oben wird NICHT umformuliert.
+    ZEIGER (2026-09-24) — "DER ZEITSTEMPEL ZEIGT EMPFANG SOFORT" HIELT AM 2026-09-24 NICHT: nach
+    zwei direkt mit 201 angenommenen Aufrufen bewegte sich "Data last received" nicht; s. unten
+    (be). Der Wortlaut oben bleibt.
 
 ### Beobachtung 2026-08-20 am Token-Generator der Anbieter-Oberfläche — der Teil (u)
 
@@ -1444,6 +1447,8 @@ was. Wer einen Teil unten gegen einen Teil aus (aa) bis (al) hält, rechnet dami
      und `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` (Index 1) wird unter 202609 angenommen, s.
      unten (bd). Eine Liste NUR mit der Klick-Kennung ist weiter nicht gemessen. Der Wortlaut
      oben bleibt.
+     ZEIGER (2026-09-24) — AUCH EINE LISTE NUR MIT `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` WIRD
+     ANGENOMMEN (201 per Terminal), s. unten (be). Der Wortlaut oben bleibt.
 
 (ar) DIE ANTWORT AUF EINEN ABGESCHALTETEN VERSIONS-HEADER — 426 UND `NONEXISTENT_VERSION`,
      MIT EINEM ENDPUNKT-VORBEHALT, DER ZUM BEFUND GEHÖRT UND NICHT DANEBEN STEHT.
@@ -2055,4 +2060,50 @@ HEAD `09476b9`).
        mit der Klick-Kennung angenommen wird, beantwortet dieser Lauf nicht.
      · Ein Statuscode ist nicht abgelesen; das Fehlen der Logzeile passt zu einer 2xx-Antwort und
        ist allein kein Beleg (s. (bc)).
+     ZEIGER (2026-09-24) — "`li_fat_id` ALLEIN IST WEITER UNGEMESSEN" GILT NICHT MEHR: per
+     Terminal mit 201 angenommen, s. unten (be). Dort steht auch, dass die Anzeige, auf der der
+     Beleg hier ruht, am 2026-09-24 nicht mehr reagierte. Der Wortlaut oben bleibt.
+
+### MESSUNG 2026-09-24 — `li_fat_id` allein und die S6a-Form per Terminal, dazu ein Befund zur Empfangsanzeige (Scheibe S6b, Phase 11.7) — der Teil (be)
+
+**HERKUNFT (2026-09-24):** Zwei Aufrufe des Owners im Terminal (`curl`) direkt gegen
+`/rest/conversionEvents`, HTTP-Status über die Ausgabe von `curl` abgelesen; dazu Ablesungen
+an der Anbieter-Oberfläche (Campaign Manager) und ein Live-Klick auf einer veröffentlichten
+Seite nach dem Deploy des Bau-Commits `007a772`. **ALLE ANGABEN ÜBER DEN ANBIETER SIND
+OWNER-ANGABEN**, lokale Zeit. Die Form der Nutzlast folgte offenbar der Vorlage aus dem
+Bau-Bericht zu S6b (ohne `X-Restli-Protocol-Version`, ohne `conversionValue`) — FOLGERUNG aus
+dem wörtlichen Platzhalter im ersten, gescheiterten Versuch. Die Angaben über unseren Adapter
+sind GEMESSEN am Repo (CC, 2026-09-24, HEAD `007a772`).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (bd) folgt (be).
+
+(be) EINE NUTZLAST MIT `userIds` NUR AUS `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` WIRD UNTER
+     202609 MIT 201 ANGENOMMEN — UND DIE EMPFANGSANZEIGE TAUGTE AN DIESEM TAG NICHT ALS
+     ECHTZEIT-INSTRUMENT.
+     **MESSUNG:**
+     · **TERMINAL 1:** `userIds` NUR mit `li_fat_id` (erfundener Wert), echte Regel-URN,
+       Kopfzeile `LinkedIn-Version` `202609` → **HTTP 201.** Davor ein Versuch mit dem
+       wörtlichen Platzhalter statt der URN → **422** "Invalid Urn format. Invalid prefix." —
+       dieselbe Meldung wie in (l), also die URN-Prüfung vor der Annahme.
+     · **TERMINAL 2:** die Form von S6a — `PLAINTEXT_IP_ADDRESS` `203.0.113.9` an Index 0,
+       `li_fat_id` an Index 1 → **HTTP 201.**
+     · **WAS UNSER ADAPTER IM FALL OHNE VERWENDBARE IPv4 SENDET — GEMESSEN am Repo:**
+       `forwardToLinkedin` baut `userIds` seit S6b mit dem IP-Eintrag NUR bei einer IPv4 und dem
+       Klick-Eintrag NUR, wenn die Adresse `li_fat_id` trägt; ohne IPv4 steht der Klick-Eintrag
+       allein — die Form von TERMINAL 1.
+     **WAS DAS BEANTWORTET:** die Frage aus (aq) und (bd), ob `li_fat_id` OHNE IP-Eintrag
+     angenommen wird — **ja, per Statuscode.** Damit gilt die Oder-Liste aus (ao) für dieses
+     Symbol auch am Endpunkt.
+     **DIE GRENZEN:** Gemessen ist der ANBIETER, nicht unser Code-Pfad — den belegen die Tests
+     des Adapters. Der Wert war erfunden: kein Abgleich belegt (s. (h)); über das Format folgt
+     nichts, weil die Schnittstelle die Form eines Kennungs-Werts nicht prüft (s. (j)).
+     **BEFUND ZUM INSTRUMENT:**
+     · "Data last received" stand nach einem Live-Klick (~08:21, IPv4 + `li_fat_id`) UND nach
+       beiden Terminal-Aufrufen unverändert auf **September 23, 2026 6:27 PM** (nach Neuladen); Signal health: "11 events · Attributed to 0 campaigns · Last seen 15h ago".
+     · Am 2026-09-23 sprang dieselbe Anzeige binnen Minuten (s. (bc), (bd)).
+     · **DIE FOLGE:** Zwei Aufrufe, die der Endpunkt nachweislich mit 201 annahm, bewegten die
+       Anzeige nicht. **"Data last received" und Signal health sind damit KEIN verlässliches
+       Echtzeit-Instrument** — ein ausbleibender Sprung belegt keinen Fehlschlag. Ob die Anzeige
+       später nachzieht, ist offen; laut Anbieter dauert die Verarbeitung bis zu 24 Stunden
+       (s. (ag)). Eine Nachablesung am 2026-09-25 steht aus.
+     · **DIE GRENZE:** Die Ursache des Stillstands ist nicht erhoben; ein Tag, eine Anzeige.
 

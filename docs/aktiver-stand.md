@@ -1008,6 +1008,100 @@ zeitgesteuerte Auslöser)", Teil (h) — eingeschränkt auf gehostete Seiten auf
 S6b und B7 ersetzt (Abschnitt "Zuschnitt der Phase 11.7", S6b); ein Zeiger an ZUSCHNITT-FRAGE
 P11.7-16 nachgezogen.
 
+### VERMERK P11.7-22 — Scheibe S6b gebaut und abgeschlossen vom 2026-09-24 (LinkedIn `li_fat_id` auch ohne verwendbare IPv4)
+
+**HARTE ANGABEN:** 2026-09-24 · **BAU-COMMIT `007a772`** (`feat(capi): LinkedIn sendet li_fat_id
+auch ohne verwendbare IPv4 (11.7 S6b)`) · zwei Dateien: `src/lib/capi/linkedin-forward.ts`
+(`extractLiFatId` an den Anfang des `try`, `ipv4` einmal berechnet, Riegel 1 und 2 mit
+`&& !liFatId`, `userIds` aus zwei bedingten Einträgen; Logtexte, Riegel 3 und Vertragssatz 1
+unverändert) und `src/lib/capi/linkedin-forward.test.ts` (T6-g, T6-h umgeschrieben; neu T7-a bis
+T7-e) · Tests **2159 / 98 → 2164 / 98** (GEMESSEN, CC) · tsc, lint (0 Fehler; eine bestehende
+Warnung ausserhalb, `consent.test.ts`), build grün · **KEINE `console`-Zeile im Diff** (GEMESSEN).
+
+**MUTATIONSPROBEN — SECHS, ALLE WIE VORHERGESAGT**, die Vorhersage je Datei VOR dem Lauf am
+gebauten Bestand nachgezogen; je voller Lauf über 98 Dateien:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| m1 | Riegel 2 ohne `&& !liFatId` | 1 — T6-g |
+| m2 | Riegel 1 ohne `&& !liFatId` | 2 — T6-h, T7-e |
+| m3 | IP-Eintrag bei `clientIp` statt bei `ipv4` | 1 — T6-g |
+| m4 | Logzeile im Zweig IPv6 + `li_fat_id` | 1 — T6-g |
+| m5 | Klick-Eintrag entfällt bei IPv6 | 1 — T6-g |
+| m6 | nach Riegel 3 `if (ipv4 && !liFatId) return;` ohne Log | **26** — linkedin-forward.test 24, version-deadlines 1 (V4), click-id-strip 1 (W-linkedin/abweichend), fan-out 0 |
+
+**ZWEI RÜCKNAHME-PANNEN, BEHOBEN:** Bei m4 und bei m6 hat das ZURÜCKNEHMEN je eine Leerzeile
+mitgenommen; der sha256-Vergleich gegen den Baustand hat beide gefunden, die Leerzeile ist
+wiederhergestellt und der Baustand per sha256 belegt. Die Einfügungen der Mutationen waren
+reine Zeilen-Zusätze; der Stand WÄHREND der Läufe ist nicht eigens per Hash belegt.
+
+**ERGEBNISSE (OWNER-ANGABEN, 2026-09-24, lokale Zeit):**
+- TERMINAL 1: `curl` direkt an die Schnittstelle, `userIds` NUR mit `li_fat_id`, echte Regel-URN,
+  `LinkedIn-Version` 202609 → **HTTP 201**. Davor ein Versuch mit dem wörtlichen Platzhalter
+  statt der URN → 422 "Invalid Urn format. Invalid prefix."
+- TERMINAL 2: die Form von S6a (`PLAINTEXT_IP_ADDRESS` `203.0.113.9` an Index 0, `li_fat_id` an
+  Index 1) → **HTTP 201**.
+- LIVE-REGRESSION ~08:21 (IPv4 + `li_fat_id`): `/api/e` 204; KEINE Vercel-Zeile zu "LinkedIn
+  forward"; jede Anfrage loggt "[capi/resolve] secret unusable { target: 'google', reason:
+  'refresh_token_expired' }".
+- Beacon-Rumpf eines erneuten Klicks (Netzwerk-Tab): `cns` = {meta, pinterest, tiktok, linkedin,
+  google} je `true`; `event` "Lead"; `eventSourceUrl` gesetzt. Zweiter Beacon: `obs`
+  "__ps_browser" (Pixel-Bestätigung).
+- LinkedIn-Karte in der App: Kennung, Regel und Zugangsdatum gesetzt.
+- LinkedIn "Data last received" September 23, 2026 6:27 PM — unverändert nach dem Klick UND
+  nach beiden Terminal-Aufrufen (Neuladen); Signal health "11 events · Attributed to 0
+  campaigns · Last seen 15h ago". Am 2026-09-23 reagierte die Anzeige binnen Minuten.
+- Meta: Übersicht "Zuletzt erhalten: vor 14 Stunden", obwohl das Pixel um 08:21 mit 200
+  antwortete; MIT Test-Code ein Server-Ereignis "Dedupliziert" unter "Events testen".
+
+**DIE AUFKLÄRUNG DIESES TAGES (GEMESSEN am Code, HEAD `007a772`, READ-ONLY):**
+- STILLE AUSGÄNGE VOR DEM ADAPTER (`handleIngest`, `src/lib/capi/ingest.ts`, sofern nicht
+  anders genannt): unbekannter trackingKey (`getCapiConfigByTrackingKey` gibt null) · Kill-Switch
+  (`resolution.blocked`) · Bestätigungs-Beacon (`isBrowserConfirm`, früher Ausgang) · linkedin
+  ohne Kennung bzw. Regel (`withPixel` in `getCapiConfigByTrackingKey`, `src/lib/capi/token.ts`)
+  · keine Geheimnis-Zeile oder Lesefehler (ebenda) · Ereignis nicht forwardbar (`isForwardable`)
+  · Einwilligung: `cns` fehlt → allein meta (`allowedTargets` über `LEGACY_CONSENT_ROLE`,
+  linkedin `false`), `cns.linkedin` nicht `true` (`consentAllows`,
+  `src/lib/tracking/consent-wire.ts`) · kein Empfänger übrig. **ALLE STILL.** GELOGGT wird
+  allein ein unbrauchbares Geheimnis (`usableTokenFromRow`: "[capi/resolve] secret unusable").
+  Die Auflösung läuft JE ZIEL; ein totes Google-Geheimnis nimmt nur google heraus.
+- AUSGÄNGE IM ADAPTER (`forwardToLinkedin`): Riegel 1, 2, 3 · kein `res.ok` →
+  `describeLinkedinError` · Wurf oder Zeitlimit → "LinkedIn forward error" — **alle geloggt.
+  EINZIGER STILLER AUSGANG: jede 2xx-Antwort.** `fetch` setzt keine `redirect`-Option, folgt
+  also einer Weiterleitung.
+- S6b IM FALL IPv4 + `li_fat_id`: dieselbe Nutzlast wie S6a — [IP, Klick], Kopfzeilen und
+  `fetch` unverändert; T6-a ist seit `09476b9` zeichengleich und grün. Unter `src/` hat sich
+  zwischen `09476b9` und `007a772` allein S6b geändert.
+- DIE KANDIDATEN FÜR EIN ERFOLGS-INSTRUMENT, KEINE AUSWAHL: **K1** eine Statuszeile im Erfolg,
+  allein Ziel und HTTP-Status (belegt die 2xx; eine Zeile je Conversion; Logs auf Hobby eine
+  Stunde) · **K1b** dieselbe befristet über eine Umgebungsvariable (ein unbeobachteter Schalter,
+  dasselbe Muster wie der offene Punkt zum deployment-weiten Testmodus-Hebel) · **K2** die
+  Statuszeile nur bei aktivem Testmodus des Projekts (das linkedin-Lambda nähme den Testzustand
+  an; berührt "SICHTBARKEIT STATT ISOLATION") · **K3** ein lokaler Lauf des echten Adapters gegen
+  die Schnittstelle, der den Status mitschreibt (eine neue Datei, Owner-Entscheidung; lokale
+  Verwahrung des Zugangsdatums; ein Ereignis in der Produktion) · **K4** das Ergebnis je Ziel
+  ablegen (Migration; berührt "TRACKING-source = BEOBACHTUNGS-ORT" und die Einordnung eines
+  gescheiterten Forwards als VORKOMMNIS).
+
+**ERGEBNIS, JE MIT GRENZE:**
+(a) **`li_fat_id` ALLEIN WIRD ANGENOMMEN** — gemessen per Terminal (201; docs/ziel-befunde/
+    linkedin.md, Teil (be)). GRENZE: das misst den ANBIETER, nicht unseren Code-Pfad; unser Pfad
+    ist durch T6-g, T6-h und die Mutationen belegt. Der Wert war erfunden — kein Abgleich belegt.
+(b) **UNSER PFAD BIS ZUR ERFOLGSANTWORT IST DURCH AUSSCHLUSS BELEGT:** jeder stille Ausgang vor
+    dem Adapter ist einzeln ausgeschlossen — `cns.linkedin` `true` im Beacon · Karte vollständig
+    · keine secret-unusable-Zeile für linkedin · das Zugangsdatum trägt (Terminal 201) —, und
+    jeder Ausgang im Adapter ausser 2xx loggt. GRENZE: **NICHT DIREKT BEOBACHTET.**
+(c) **DIE LINKEDIN-ANZEIGE ZÄHLTE SEIT 2026-09-23 18:27 NICHTS MEHR**, auch zwei direkt mit 201
+    angenommene Aufrufe nicht. **EIN RÜCKBAU-TEST WURDE DESHALB BEWUSST NICHT GEFAHREN** (OWNER):
+    er hätte dasselbe blinde Instrument benutzt. GRENZE: Nachablesung am 2026-09-25 ausstehend —
+    laut Anbieter bis zu 24 Stunden Verarbeitung (linkedin.md, Teil (ag)).
+(d) **BEFUND OHNE BEWERTUNG:** Das Google-Geheimnis des Testprojekts ist
+    `refresh_token_expired`.
+
+**ZEIGER / ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/linkedin.md, Teil (be), dazu datierte
+Zeiger an (t), (aq) und (bd) · docs/ziel-befunde/meta.md, Teil (ae) · ZUSCHNITT-FRAGE P11.7-16
+eingelöst · Vorrat P11.7-9 neu · S6b ABGESCHLOSSEN, damit S6.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1051,12 +1145,12 @@ dazu.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-**ZWEI SIND OFFEN (P11.7-2, -8); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7 MIT
+**DREI SIND OFFEN (P11.7-2, -8, -9); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7 MIT
 S3, P11.7-1 UND -4 MIT S4.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
 `a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
 2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
 **GEMESSEN IST, DASS SIE DASTEHEN — NICHT, DASS SIE NACHGEZOGEN WÄREN.** **KEINE
-EMPFEHLUNG** an keinem der acht.
+EMPFEHLUNG** an keinem der neun.
 
 **P11.7-1 — DER KOPFKOMMENTAR VON `src/lib/capi/google-click-ids.ts` IST WIDERLEGT.**
 **GESCHLOSSEN 2026-09-23 — BAU-COMMIT `de88657` (S4):** Der Absatz nennt jetzt die zwei
@@ -1119,6 +1213,17 @@ er schwächt keinen Schutz. In S4 bewusst NICHT geändert (Architekten-Entscheid
 2026-09-23): ihn nebenbei in drei Adaptern umzuschreiben, schwächte eine Schutzregel ohne
 eigene Entscheidung. **KEIN FIX-VORSCHLAG.**
 TRIGGER: die nächste Scheibe, die einen dieser Vertragssätze ohnehin ändert.
+
+**P11.7-9 — EIN LINKEDIN-FORWARD IST IM ERFOLG UND IN MEHREREN STILLEN AUSGÄNGEN VOR DEM
+ADAPTER UNSICHTBAR.** BEFUND vom 2026-09-24 (VERMERK P11.7-22, GEMESSEN am Code, HEAD
+`007a772`): `forwardToLinkedin` loggt jeden Ausgang ausser einer 2xx-Antwort; vor dem Adapter
+enden mehrere Ausgänge STILL in der leeren 204 (die Liste steht im Vermerk). Die Anbieter-Anzeige
+taugt nicht als Ersatz — "Data last received" bewegte sich am 2026-09-24 nach zwei direkt mit
+201 angenommenen Aufrufen nicht (docs/ziel-befunde/linkedin.md, Teil (be)). **FOLGE:** Ob ein
+LinkedIn-Forward angekommen ist, ist heute an KEINER Stelle direkt zu sehen; S6b ist nur durch
+Ausschluss belegt.
+**DIE KANDIDATEN K1 BIS K4 STEHEN IM VERMERK P11.7-22 — KEINE AUSWAHL.**
+TRIGGER: vor dem Phasenende zu entscheiden (OWNER).
 
 ## Hebungs-Kandidaten
 
@@ -1222,6 +1327,8 @@ weil eine LESUNG sie nicht erreicht. Kein Eintrag ist ein Auftrag.
   zweiter Eintrag neben der IP gemessen angenommen, damit DREI von SECHS Symbolen (VERMERK
   P11.7-20; Teil (bd)). OFFEN bleiben der fachliche Abgleich (der Wert war erfunden) und die
   Annahme OHNE IP-Eintrag.
+  **ZEIGER 2026-09-24 — DIE ANNAHME OHNE IP-EINTRAG IST GEMESSEN:** ein Terminal-Aufruf mit NUR
+  `li_fat_id` ergab 201 (VERMERK P11.7-22; Teil (be)). OFFEN bleibt der fachliche Abgleich.
 - **OB DIE SCHNITTSTELLE EINE IPv6-ADRESSE ABWEIST. NIE PROBIERT** — Teil (j) sagt das
   ausdrücklich, und die Folgerung dort ist als nicht gemessen bezeichnet.
 - **WELCHES RATE-LIMIT TATSÄCHLICH GREIFT.** Teil (ag).
@@ -1249,7 +1356,8 @@ P11.7-24 eingelöst (VERMERK P11.7-16; je ein Zeiger an der Frage); S5 hat die f
 Teile von P11.7-1 und P11.7-2 gebaut und live belegt, dazu Zeiger an P11.7-5 und P11.7-20
 (VERMERK P11.7-18); der Zuschnitt von S6 legt Teile von P11.7-14 und P11.7-16 fest (Abschnitt
 "Zuschnitt der Phase 11.7", L1 bis L7), S6a hat den festgelegten Teil von P11.7-14 gebaut und live
-belegt, dazu ein Zeiger an P11.7-16 (VERMERK P11.7-20). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+belegt, dazu ein Zeiger an P11.7-16 (VERMERK P11.7-20); S6b hat P11.7-16 eingelöst (VERMERK
+P11.7-22). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -1447,6 +1555,9 @@ eine IPv6-IP wird nie gesendet (B4). Die Messfrage — ob `li_fat_id` allein ang
 misst nach B7 in der Fassung vom 2026-09-24 ein Terminal-Aufruf des Owners gegen die
 Schnittstelle; über gehostete Seiten auf Label-Hosts ist sie live nicht erreichbar (VERMERK
 P11.7-21).
+**ZEIGER 2026-09-24 — EINGELÖST (VERMERK P11.7-22):** gebaut in `007a772`; `li_fat_id` allein ist
+per Terminal mit 201 angenommen (linkedin, Teil (be)) — das misst den Anbieter; unser Pfad ist
+durch T6-g, T6-h und die Mutationen belegt, bis zur Erfolgsantwort durch Ausschluss.
 
 **ZUSCHNITT-FRAGE P11.7-17 — DIE VERSIONS-ANHEBUNG TRIFFT META UND LINKEDIN BEIDE IM JANUAR 2027.** meta
 `v21.0` bis **2027-01-21**, linkedin `202601` bis **2027-01-15** — **ZWEI ZIELE, SECHS TAGE
@@ -1607,8 +1718,9 @@ Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). S4 ist gebaut
 geprüft; das Entfernen selbst belegt der Wächter, nicht der Live-Test (VERMERK P11.7-16). S5
 ist nach den Architekten-Entscheidungen F1 bis F10 gebaut, `fbc` ist live belegt (VERMERK
 P11.7-18). S6 (linkedin) ist zugeschnitten (L1 bis L7) und in S6a und S6b geteilt; S6a ist
-gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b ist
-zugeschnitten (B1 bis B7), nicht gebaut. Die übrigen sind weder gebaut noch geplant.
+gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b ist gebaut,
+`li_fat_id` allein ist per Terminal angenommen, unser Pfad durch Tests, Mutationen und
+Ausschluss belegt (VERMERK P11.7-22). Die übrigen sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -1809,7 +1921,9 @@ der Datei ihres Ziels.
     P11.7-19, Nicht-Treffer zum Instrument.
   **NICHT TEIL VON S6a:** R-B/IPv6 (S6b) · der Cookie-Weg und das Insight Tag · `externalIds`
   · die gehashten Namensfelder.
-  **S6b — `li_fat_id` ALLEIN, WENN DIE IP NICHT TRÄGT. ZUGESCHNITTEN, NICHT GEBAUT.**
+  **S6b — `li_fat_id` ALLEIN, WENN DIE IP NICHT TRÄGT. ABGESCHLOSSEN AM 2026-09-24 — VERMERK
+  P11.7-22** (Bau-Commit `007a772`). B1 bis B7 bleiben als bindende Entscheidungen stehen: sie
+  beschreiben, wie gebaut ist. Mit S6b ist S6 abgeschlossen.
   Gegenstand: die Riegel 1 und 2 als Filter je Eintrag (L1, R-B; ZUSCHNITT-FRAGE P11.7-16);
   die Voraussetzung aus L1 ist erfüllt (VERMERK P11.7-20).
   **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-23** (festgehalten am 2026-09-24; Material:
@@ -1904,13 +2018,15 @@ binden:**
 
 ## Nächster Schritt
 
-**S1 BIS S5 UND S6a SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18, P11.7-20). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER, 2026-09-23): S6
-linkedin, dann google, tiktok, pinterest.** **ALS NÄCHSTES STEHT DER BAU VON S6b NACH DEM
-STUFE-1-PLAN VOM 2026-09-24** — zugeschnitten mit B1 bis B7, B7 in der Fassung vom 2026-09-24
-(Abschnitt "Zuschnitt der Phase 11.7", S6): die Riegel 1 und 2 brechen nur noch ohne
-`li_fat_id` ab (ZUSCHNITT-FRAGE P11.7-16). Pflicht-Stopp:
-docs/ziel-befunde/linkedin.md voll plus Kopf von docs/ziel-befunde.md.
+**S1 BIS S6 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
+P11.7-18, P11.7-20, P11.7-22). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER,
+2026-09-23): S6 linkedin, dann google, tiktok, pinterest.** **ALS NÄCHSTES STEHT S7 — google**
+(IP/UA und DMA-Felder; ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4).
+**VORAUSSETZUNG VOR JEDEM TEST:** die Google-Verbindung im Testprojekt neu herstellen — das
+Google-Geheimnis ist `refresh_token_expired` (VERMERK P11.7-22, (d)); die Aufklärung zu S7
+klärt, WARUM der Schlüssel über Nacht ablief. Pflicht-Stopp: docs/ziel-befunde/google.md voll
+plus Kopf von docs/ziel-befunde.md — ob eine Sitzung das trägt, ist ungemessen (ZUSCHNITT-FRAGE
+P11.7-8).
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK

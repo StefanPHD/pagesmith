@@ -1352,3 +1352,28 @@ R1 ohne `fbclid` (eventID `de3c9dbb-acbe-4944-b753-73a45086d00b`, 17:05:52) und 
        einem Anzeigenklick; der Wert ist erfunden. Unter "URL" stand in beiden Einträgen
        `https://meta-test-5nlm3e.publayer.net/` (wie Teil (ab)). Eine Ansicht, ein Lauf-Paar.
 
+### ABLESUNG 2026-09-24 an der Übersicht und an "Events testen" (Regression nach S6b, Phase 11.7) — der Teil (ae)
+
+Provenienz: OWNER-ABLESUNGEN (2026-09-24, lokale Zeit) am Meta Events Manager und im
+Netzwerk-Tab des Browsers, während der Live-Regression nach dem Deploy des Bau-Commits
+`007a772` (einer LinkedIn-Scheibe; der Meta-Adapter ist darin nicht berührt, GEMESSEN am Repo).
+**KEIN Aufruf gegen die Schnittstelle von Hand, keine Doku-Lesung.**
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (ad) folgt (ae).
+
+(ae) DIE ÜBERSICHT "ZULETZT ERHALTEN" ZÄHLT VERZÖGERT — DAS ECHTZEIT-INSTRUMENT IST "EVENTS
+     TESTEN" MIT TEST-CODE.
+     · **ABGELESEN:** Die Pixel-Anfrage (`tr/?id=…&ev=Lead`) antwortete um 08:21 mit HTTP 200
+       (Netzwerk-Tab). Die Übersicht zeigte um ~08:25 "Zuletzt erhalten: vor 14 Stunden".
+     · **MIT TEST-CODE**, erneuter Klick: in "Events testen" ein Server-Ereignis mit Status
+       "Dedupliziert" — dieselbe Ansicht wie in (ab) bis (ad).
+     · **DIE FOLGE:** Die Übersicht bildete ein Ereignis, das das Pixel vier Minuten zuvor mit
+       200 abgeliefert hatte, nicht ab; sie taugt nicht als Echtzeit-Instrument. Tauglich ist
+       "Events testen" mit Test-Code — dort erscheint ein Ereignis sofort (so auch (ad)).
+       Test-Code-Ereignisse fliessen nach (a) ohnehin in die Zählung ein; die Wahl des
+       Instruments ändert daran nichts.
+     · **DIE GRENZEN:** Wie lange die Übersicht verzögert, ist NICHT gemessen — eine Ablesung,
+       vier Minuten nach dem Klick. Ob der Server-Forward des Klicks um 08:21 (OHNE Test-Code)
+       ankam, zeigt diese Ablesung nicht; belegt ist die Ankunft allein für den erneuten Klick
+       mit Test-Code. Dass die Pixel-Antwort 200 eine Verarbeitung belegt, ist nicht gesagt —
+       sie belegt die Auslieferung der Anfrage.
+

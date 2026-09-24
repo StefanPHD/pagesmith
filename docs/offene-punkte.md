@@ -572,6 +572,52 @@ aufeinander; sie liegen alle hier und finden einander.
   Was still kaputtgeht: Alle fünf sind LAUTLOS. Der Betreiber sieht kein Fehlerbild, sondern
   Zahlen, die nicht stimmen — oder Conversions, die fehlen. KEINE EMPFEHLUNG, wie die Sätze
   lauten oder wo in der Oberfläche sie stehen sollen.
+  (5) WARNUNGEN IN DEN OBERFLÄCHEN DER NETZWERKE — ERGÄNZT AM 2026-09-24, OWNER-VORGABE.
+  ANLASS: Betreiber sehen in den Oberflächen der Netzwerke Hinweise wie "external_id is
+  missing" und halten sie für einen Fehler von Pagesmith. Die Betreiber-Hilfe muss das
+  auffangen, BEVOR fremde Kunden kommen. Was still kaputtgeht: Der Betreiber sucht einen
+  Fehler, den es nicht gibt, oder hält einen echten für einen Hinweis — beides endet als
+  Support-Fall oder als verlorenes Vertrauen, nicht als Fehlermeldung.
+  WAS DIE HILFE TRENNEN MUSS — ZWEI FRAGEN, NICHT EINE:
+  · "KOMMT ES AN?" — je Netzwerk das GEMESSENE Instrument, mit Verweis auf die Ziel-Befunde:
+    meta die Test-Events-Ansicht mit "Benutzer-Datenschlüssel" am Server-Ereignis
+    (docs/ziel-befunde/meta.md, Teile (ab), (ad)) · tiktok der Reiter "Test Events"
+    (docs/ziel-befunde/tiktok.md, Teile (q), (r)) · pinterest "Events testen", ein Live-Strom
+    ohne Rückschau, VOR dem Auslösen zu öffnen (docs/ziel-befunde/pinterest.md, Teile (w),
+    (am), (as)) · linkedin: KEIN belegtes Instrument — "Data last received" hat am 2026-09-24
+    auf zwei direkt angenommene Aufrufe nicht reagiert (docs/ziel-befunde/linkedin.md, Teil
+    (be)) · google: das Instrument ist aus docs/ziel-befunde/google.md zu erheben (laut
+    Verzeichnis u. a. MESSUNG G, Teile (cf), (cg)); HIER NICHT GELESEN.
+  · "WAS BEDEUTEN DIE HINWEISE?" — die Warnungen sind EMPFEHLUNGEN des Anbieters für mehr
+    Signale, keine Ablehnung und kein Fehler: pinterest verarbeitet das Ereignis und meldet
+    "external_id is missing" in JEDER Antwort (GEMESSEN, docs/ziel-befunde/pinterest.md,
+    Teile (al)(iv), (ar)).
+  EHRLICH, JE ZIEL: was Pagesmith sendet und was nicht, und warum. Die Aufstellung dessen,
+  was gesendet, was ausgeschlossen und was offen ist, steht je Ziel im Archiv der Phase 11.7
+  (heute: docs/aktiver-stand.md, VERMERK P11.7-25, "PUNKT 5, JE ZIEL", fortgeschrieben bis
+  VERMERK P11.7-30); die Hilfe übernimmt sie nicht ungeprüft, sondern misst sie beim Schreiben
+  am Code nach.
+  VERBOTEN, WEIL UNWAHR (ARCHITEKTEN-BEFUND zum Owner-Entwurf, 2026-09-24):
+  · "100 % der verfügbaren Signale" — E-Mail und Telefon werden bewusst NICHT gesendet
+    (Roadmap-Zeile 11.7, Grenze des fünften Punktes; der Eintrag "DATENKLASSEN-GRENZE VOR DER
+    ERSTEN PII-SCHEIBE" oben), das übrige Personenbezogene ebenso nicht (Frage F3 der Phase
+    11.7), `external_id` ebenso nicht — eine
+    offene Owner-Frage (ZUSCHNITT-FRAGE P11.7-4 der Phase 11.7) —, dazu die Cookie-Wege der
+    Anbieter.
+  · "kein negativer Einfluss" — die Anbieter nennen selbst eine Wirkung: pinterest schreibt
+    zu `external_id` "It may improve reporting performance such as ROAS/CPA"
+    (docs/ziel-befunde/pinterest.md, Teil (ar)). Was ein fehlendes Signal tatsächlich
+    kostet, ist UNGEMESSEN — "kein Einfluss" wäre eine Behauptung ohne Messung.
+  · ein Anbieter-Status wie "processed" als allgemeine Aussage — pinterest nimmt auch einen
+    nicht registrierten Ereignisnamen als `processed` an (Teil (al)(ii)), und die Quittung
+    von tiktok ist für Feldnamen blind (docs/ziel-befunde/tiktok.md, Teil (r)). Ein
+    Erfolgsstatus belegt die Annahme, nicht die Richtigkeit.
+  WORAN ES HÄNGT: an Vorrat P11.7-9 der Phase 11.7 (ein Erfolgs-Instrument in der App) und an
+  ZUSCHNITT-FRAGE P11.7-4 der Phase 11.7 (`external_id`) — beide verringerten die Warnungen
+  bzw. die Nachfragen, und jede Entscheidung dort ändert, was die Hilfe sagen muss.
+  WANN DER TEXT ENTSTEHT: ERST vor dem Launch, nicht jetzt — die Warntexte der Anbieter
+  ändern sich, und ein früh geschriebener Text zitierte dann Meldungen, die es nicht mehr
+  gibt. Der Trigger ist der des Postens.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   Grund: kein realer Konsument. TRIGGER,
   wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE

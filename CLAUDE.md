@@ -179,7 +179,8 @@ in docs/claude-md-herleitung.md.
 - BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE (ZWEI TRIGGER: (1) vor dem öffentlichen
   Launch — wie der COOKIE-DOKU-SCHNIPSEL darüber eine PRODUKTPFLICHT, kein Nice-to-have;
   (2) TRIGGER FÜR DIE KLÄRUNG: sobald echter Traffic eine Zuordnung zu einer echten Person
-  erzeugt. Der Eintrag trägt seit dem 2026-09-19 einen PUNKT (4) aus der Phase 11.6)
+  erzeugt. Der Eintrag trägt seit dem 2026-09-19 einen PUNKT (4) aus der Phase 11.6 und seit
+  dem 2026-09-24 einen PUNKT (5), Warnungen in den Oberflächen der Netzwerke)
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden")
   (TRIGGER, wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine
   Kennung JE EREIGNISTYP trägt. — EINGETRETEN, nachgezogen am 2026-08-31)

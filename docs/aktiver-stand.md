@@ -1407,6 +1407,9 @@ Zuschnitt folgt erst NACH dem Live-Beleg von S6a; S6a lässt beide Riegel unver�
 **ZEIGER 2026-09-23 — DIE VORAUSSETZUNG AUS L1 IST ERFÜLLT (VERMERK P11.7-20):** LinkedIn nimmt den
 zweiten Eintrag an. **OB `li_fat_id` ALLEIN — ohne IP-Eintrag — ANGENOMMEN WIRD, BLEIBT
 UNGEMESSEN** und ist die Messfrage von S6b.
+**ZEIGER 2026-09-24 — ZUGESCHNITTEN (Abschnitt "Zuschnitt der Phase 11.7", S6b, B1 bis B7):**
+Riegel 1 und 2 brechen nur noch ohne `li_fat_id` ab; mit ihm entfällt allein der IP-Eintrag,
+eine IPv6-IP wird nie gesendet (B4). Die Messfrage beantwortet der Live-Test nach B7.
 
 **ZUSCHNITT-FRAGE P11.7-17 — DIE VERSIONS-ANHEBUNG TRIFFT META UND LINKEDIN BEIDE IM JANUAR 2027.** meta
 `v21.0` bis **2027-01-21**, linkedin `202601` bis **2027-01-15** — **ZWEI ZIELE, SECHS TAGE
@@ -1567,8 +1570,8 @@ Zielversion `v25.0` gebaut und live bestätigt (VERMERK P11.7-14). S4 ist gebaut
 geprüft; das Entfernen selbst belegt der Wächter, nicht der Live-Test (VERMERK P11.7-16). S5
 ist nach den Architekten-Entscheidungen F1 bis F10 gebaut, `fbc` ist live belegt (VERMERK
 P11.7-18). S6 (linkedin) ist zugeschnitten (L1 bis L7) und in S6a und S6b geteilt; S6a ist
-gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b ist nicht
-zugeschnitten. Die übrigen sind weder gebaut noch geplant.
+gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b ist
+zugeschnitten (B1 bis B7), nicht gebaut. Die übrigen sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -1769,6 +1772,45 @@ der Datei ihres Ziels.
     P11.7-19, Nicht-Treffer zum Instrument.
   **NICHT TEIL VON S6a:** R-B/IPv6 (S6b) · der Cookie-Weg und das Insight Tag · `externalIds`
   · die gehashten Namensfelder.
+  **S6b — `li_fat_id` ALLEIN, WENN DIE IP NICHT TRÄGT. ZUGESCHNITTEN, NICHT GEBAUT.**
+  Gegenstand: die Riegel 1 und 2 als Filter je Eintrag (L1, R-B; ZUSCHNITT-FRAGE P11.7-16);
+  die Voraussetzung aus L1 ist erfüllt (VERMERK P11.7-20).
+  **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-23** (festgehalten am 2026-09-24; Material:
+  VERMERKE P11.7-19, P11.7-20):
+  - **B1 — RIEGEL 1 UND 2 BRECHEN NUR NOCH OHNE `li_fat_id` AB:** Fehlt die IP (Riegel 1) oder
+    ist sie nicht IPv4 (Riegel 2), bricht der Forward nur noch ab, wenn ZUSÄTZLICH kein
+    `li_fat_id` vorliegt; liegt eines vor, entfällt allein der IP-Eintrag, und `userIds` trägt
+    nur `li_fat_id`. Grund: laut docs/ziel-befunde/linkedin.md, Teil (ao), genügt EINE Kennung
+    der Oder-Liste, und ein Riegel, der trotz gültiger Kennung den ganzen Forward verwirft,
+    verliert die Conversion ohne Not — ob der Endpunkt das annimmt, ist ungemessen und misst B7.
+  - **B2 — DIE LOGTEXTE BLEIBEN UNVERÄNDERT:** "missing identity" und "identity is not IPv4"
+    fallen nur noch im Fall ohne Klick-Kennung; T2-a und T2-b bleiben unverändert. Grund: ohne
+    Klick-Kennung ist die IP die einzige Kennung, also sagt jeder Text genau das, was in seinem
+    Fall zutrifft — und beide Tests fahren ohne Adresse (Rumpf `{}`, GEMESSEN am Test).
+  - **B3 — KEINE LOGZEILE, WENN DER IP-EINTRAG ENTFÄLLT UND DER FORWARD LÄUFT.** Grund: das ist
+    der Normalfall eines IPv6-Besuchers mit LinkedIn-Anzeige, und eine Zeile je Ereignis wäre
+    Rauschen, an das keine Entscheidung knüpft.
+  - **B4 — EINE IPv6-IP WIRD NIE GESENDET, NUR WEGGELASSEN; DER GRUND VON RIEGEL 2 BLEIBT.**
+    Grund: die Schnittstelle prüft die Form des Kennungs-Werts nicht (Teil (j)), und beide
+    IP-Symbole nennen nur IPv4 (Teil (ao)) — ein IPv6-Wert ginge als Erfolg hinaus und liefe
+    ins Leere.
+  - **B5 — T6-g UND T6-h WERDEN BEWUSST UMGESCHRIEBEN;** ihre Änderung ist der sichtbare Kern
+    des Diffs. Grund: sie nageln das Verhalten von S6a fest — je genau einer von ihnen fing in
+    S6a die Mutation "Riegel als Filter" (m7a, m7b, VERMERK P11.7-20).
+  - **B6 — VERTRAGSSATZ 1 von `linkedin-forward.ts` WIRD NUR ANGEFASST, WENN DER BAU ES
+    VERLANGT;** sonst bleibt Vorrat P11.7-8 bei seinem Trigger. Grund: ein Vertragssatz,
+    nebenbei umgeschrieben, schwächte eine Schutzregel ohne eigene Entscheidung (wie E5 in S4) —
+    und der Satz verlangt nur, dass Riegel und Nutzlast-Bau INNERHALB des `try` liegen, wo
+    `extractLiFatId` heute schon steht (GEMESSEN am Code).
+  - **B7 — LIVE AUS EINEM IPv6-NETZ:** R1 ohne `li_fat_id` ist die POSITIVKONTROLLE — Logzeile
+    "[capi] LinkedIn forward skipped: identity is not IPv4", die Anzeige "Data last received"
+    springt NICHT; S1 mit `li_fat_id` ist der BELEG — keine skipped-, keine rejected-Zeile, die
+    Anzeige springt. Gemessen wird: `li_fat_id` ALLEIN wird angenommen. Grund: ohne R1 wäre
+    nicht belegt, dass die Anfrage mit einer IPv6-Adresse am Adapter ankommt — `resolveClientIp`
+    reicht sie unverändert durch (GEMESSEN am Code), aber welche Adresse das Netz liefert, sagt
+    erst die Logzeile, und über eine IPv4 mit zwei Einträgen sähe S1 genauso aus.
+  **NICHT TEIL VON S6b:** eine IPv6-IP senden, in keiner Form · Riegel 3 (keine Regel-URN für
+  das Ereignis) · der Cookie-Weg.
 - google IP/UA und DMA-Felder — ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4. **Ob
   eine Sitzung die Volladung von docs/ziel-befunde/google.md trägt, ist ungemessen**
   (ZUSCHNITT-FRAGE P11.7-8).
@@ -1818,10 +1860,10 @@ binden:**
 
 **S1 BIS S5 UND S6a SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
 P11.7-18, P11.7-20). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER, 2026-09-23): S6
-linkedin, dann google, tiktok, pinterest.** **ALS NÄCHSTES STEHT DER ZUSCHNITT VON S6b** — die
-Riegel als Filter je Eintrag (ZUSCHNITT-FRAGE P11.7-16); seine Voraussetzung aus L1, der
-Live-Beleg von S6a, ist erfüllt. Pflicht-Stopp: docs/ziel-befunde/linkedin.md voll plus Kopf
-von docs/ziel-befunde.md.
+linkedin, dann google, tiktok, pinterest.** **ALS NÄCHSTES STEHT DER STUFE-1-PLAN VON S6b** —
+zugeschnitten mit B1 bis B7 (Abschnitt "Zuschnitt der Phase 11.7", S6): die Riegel 1 und 2
+brechen nur noch ohne `li_fat_id` ab (ZUSCHNITT-FRAGE P11.7-16). Pflicht-Stopp:
+docs/ziel-befunde/linkedin.md voll plus Kopf von docs/ziel-befunde.md.
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK

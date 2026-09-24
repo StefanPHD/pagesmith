@@ -724,6 +724,8 @@ abgesucht, obwohl sie es nie war.
     GRENZE: Die ABSCHLIESSENDE Feldliste steht in der Referenz (UserData, AdIdentifiers,
     DeviceInfo) und damit in Lauf 2. Die obige Liste ist aus den Leitfäden zusammengetragen
     und NICHT als abschliessend belegt.
+    ZEIGER (2026-09-24) — `landingPageDeviceInfo` MIT `ipAddress` UND `userAgent` IST AUF
+    SCHEMA-EBENE GEMESSEN ANGENOMMEN, s. unten (cu). Der Wortlaut oben bleibt.
 
     E2 · ROH ODER GEHASHT, UND MIT WELCHEM VERFAHREN — BEANTWORTET.
     GELESEN 2026-08-24, /devguides/concepts/formatting (Stand 2026-07-30) und
@@ -1650,6 +1652,9 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
       Conversion-Aufruf.
     · EncryptedUserId — vier Felder, ALLE VIER Required: "All fields are required if this is
       used."
+    ZEIGER (2026-09-24) — VON DEN VIER DeviceInfo-FELDERN SIND `ipAddress` UND `userAgent` AN
+    `adIdentifiers.landingPageDeviceInfo` AUF SCHEMA-EBENE GEMESSEN ANGENOMMEN, auch mit einer
+    IPv6-Adresse; `category` und `language_code` sind nicht gesendet. S. unten (cu).
 
     E2 · BESTÄTIGT und an einer Stelle geschärft — BEANTWORTET.
     GELESEN 2026-08-24, /reference/rest/v1/Encoding (Doku-Stand 2025-03-06): Das Enum kennt
@@ -3660,6 +3665,9 @@ steht das an der Angabe. Wo etwas ABGELEITET ist, steht auch das dort — s. bes
        hierher:** Er ist für 1 und 7 erhoben, NICHT für 2 und 3. Für 2 und 3 trägt allein der
        erste Marker. Wer beide Marker als gleich weit liest, schreibt sich eine Beobachtung
        auf, die an zwei Aufrufen nicht gemacht wurde.
+     ZEIGER (2026-09-24) — DIE STRENGE DES PARSERS IST ERNEUT BELEGT, diesmal eine Ebene tiefer
+     und unter `validateOnly`: ein unbekannter Name INNERHALB von `adIdentifiers` wird beim
+     Namen genannt und abgewiesen, s. unten (cu), Aufruf (b). Der Wortlaut oben bleibt.
 
 (bo) **DIE ZWEI FEHLERKLASSEN SIND AN DER ANTWORTGESTALT UNTERSCHEIDBAR.** **NEU.**
 
@@ -5761,4 +5769,71 @@ deshalb getrennt.
   Server-Side sind eigene Einbauwege mit womöglich eigener Gestalt.
 · Die Google-Ads-Oberfläche, `tagmanager.google.com` und `tagassistant.google.com` — hinter
   einer Anmeldung, nicht betreten.
+
+### MESSUNG H gegen events:ingest mit validateOnly (2026-09-24) — der Teil (cu)
+
+**HERKUNFT: GEMESSEN 2026-09-24 (OWNER), Handaufruf mit `curl` unter Git Bash, drei Aufrufe in
+EINEM Lauf, live gegen `https://datamanager.googleapis.com/v1/events:ingest`, JEDER mit
+`validateOnly: true`.** Zugangsdatum aus dem OAuth-Playground, Bereich
+`https://www.googleapis.com/auth/datamanager`, per `read -rs` eingelesen und in keiner Ausgabe
+erschienen. Kopfzeilen `Authorization: Bearer …` und `Content-Type: application/json`, OHNE
+`x-goog-user-project`. Anlass: der Live-Test der Scheibe S7 der Phase 11.7
+(docs/aktiver-stand.md, VERMERK P11.7-24). **Kundennummer, Conversion-Type-ID und requestId
+stehen hier NICHT** — dieselbe Handhabung wie in (cb).
+
+(cu) **`adIdentifiers.landingPageDeviceInfo` MIT `ipAddress` UND `userAgent` IST AUF
+     SCHEMA-EBENE ANGENOMMEN — AUCH MIT EINER IPv6-ADRESSE.** **NEU.**
+
+     **DIE FESTEN WERTE ÜBER ALLE DREI AUFRUFE** (Angabe aus erster Hand, OWNER): echte,
+     normalisierte Kundennummer · numerische Conversion-Type-ID · `eventSource` `"WEB"` ·
+     `eventTimestamp` in der Gestalt von `toISOString()` · eine je Aufruf eigene
+     `transactionId` · `adIdentifiers.gclid` ERFUNDEN (`"S7TestGclid0001"`) · `userAgent`
+     `"Mozilla/5.0 (S7-Handaufruf)"`. Variiert wurde allein der Name des Feldes bzw. der Wert
+     von `ipAddress`.
+
+     **DIE DREI AUFRUFE:**
+      (a) `landingPageDeviceInfo` mit `ipAddress` `203.0.113.9` und `userAgent` → **HTTP 200**,
+          Rumpf `{"requestId": "v-…"}`.
+      (b) **MITLÄUFER** — derselbe Rumpf, der Name falsch geschrieben
+          (`landingPageDeviceInfoX`) → **HTTP 400**, `INVALID_ARGUMENT`, Meldung wörtlich:
+          `Unknown name "landingPageDeviceInfoX" at 'events[0].ad_identifiers': Cannot find
+          field.`
+      (c) `landingPageDeviceInfo` mit `ipAddress` `2001:db8::1` (Dokumentations-Präfix) und
+          `userAgent` → **HTTP 200**.
+
+     **DIE BEWEISFIGUR, UND SIE TRÄGT NUR MIT DEM MITLÄUFER:** (b) zeigt, dass der Parser
+     unter `validateOnly` einen unbekannten Namen INNERHALB von `adIdentifiers` beim Namen
+     nennt und abweist — dieselbe Strenge, die (bn) auf der Wurzel- und Ereignis-Ebene belegt.
+     Ohne (b) wäre das 200 aus (a) auch mit einem Parser vereinbar, der unbekannte Felder
+     ignoriert. **MIT (b) HEISST DAS 200 AUS (a): `landingPageDeviceInfo`, `ipAddress` und
+     `userAgent` SIND BEKANNTE NAMEN AN DIESER STELLE, und ihre Werte haben die Validierung
+     bestanden.** Für (c) gilt dasselbe für eine IPv6-Adresse.
+
+     **WAS DAMIT VON GELESEN AUF GEMESSEN WECHSELT:** Ort und Namen aus (m)/E1 und (w)/E1 —
+     beide tragen einen Zeiger hierher; ihr Wortlaut bleibt. Die Pfad-Schreibweise in der
+     Fehlermeldung ist snake_case (`ad_identifiers`), obwohl der Rumpf camelCase trug — dasselbe
+     Bild wie der Nebenbefund zu Widerspruch 2 in (r).
+
+     **EINE FORMBEOBACHTUNG, NICHT GEDEUTET:** Die requestId der Antwort auf (a) trägt das
+     Präfix `v-`. (cb)/(f) führt `t-` an Fehlerantworten; ob `v-` die validateOnly-Antwort
+     kennzeichnet, sagt keine gelesene Seite. (cj) führte es als AM DOKUMENT NICHT
+     ENTSCHEIDBAR, ob eine Antwort unter `validateOnly` überhaupt eine requestId trägt — **SIE
+     TRÄGT EINE**, GEMESSEN an diesem einen Aufruf.
+
+     **DIE GRENZEN, UND SIE SIND DER TEIL, DEN MAN SPÄTER ÜBERLIEST:**
+     · **`validateOnly` PRÜFT DAS SCHEMA, NICHT DIE VERWENDUNG.** Ob Google IP und UA der
+       Landeseite zur Zuordnung heranzieht, ist weder gelesen noch gemessen; (x)/G1: "Only
+       errors are returned, not results."
+     · **KEIN ABGLEICH BELEGBAR:** Die Klick-Kennung war erfunden. Der Produktivlauf desselben
+       Tages mit derselben erfundenen Kennung wird in der Diagnose als
+       `PROCESSING_ERROR_REASON_INVALID_GCLID` erwartet (s. (cb), (cc)/(a)) — das ist kein Befund
+       über die Gerätedaten.
+     · **DASS IP UND UA IM PRODUKTIVPFAD MITREISEN, BELEGT DIESER TEIL NICHT** — die Aufrufe
+       sind von Hand gebaut. Das belegen die Tests der Scheibe (T10-google, GF-9), s. VERMERK
+       P11.7-24.
+     · **IPv6 IST AUF SCHEMA-EBENE ANGENOMMEN, NICHT IN DER PRODUKTION GEFAHREN:** Die
+       Label-Hosts haben keinen AAAA-Eintrag (docs/plattform-befunde.md, Abschnitt "Vercel …",
+       Teil (h)).
+     · Ein Anbieter kann sein Verhalten ändern, ohne dass hier etwas rot wird. Diese Messung
+       datiert vom 2026-09-24.
 

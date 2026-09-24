@@ -59,6 +59,15 @@ Punkte im Text vom 2026-08-20, der fünfte in der ERWEITERUNG VOM 2026-09-22.
 **GOOGLE GEHÖRT NUR ZUM FÜNFTEN PUNKT.** Die vier Punkte darüber bleiben bei den vier
 Zielen, für die sie als Katalog-Lücken festgestellt wurden.
 
+**OWNER-KLARSTELLUNG 2026-09-24 — ADDITIV, DER TEXT DARÜBER BLEIBT:** Die Klick-Kennungen und
+Match-Felder (der fünfte Punkt) sind **EINER VON FÜNF PUNKTEN, NICHT DAS HAUPTTHEMA DER
+PHASE.** Die vier ursprünglichen Punkte — tiktok Deduplizierung (F5), meta Versionsangabe
+(F6), Rate-Limits meta/tiktok/linkedin samt der Pinterest-Widersprüche (F7), pinterest
+Erfolgsrumpf (F8) — **WERDEN VOR DEM PHASENENDE ERFÜLLT.** Der Zuschnitt S1 bis S9 trägt F5,
+F7 und F8 bisher NICHT; **DAS IST EIN VERSÄUMNIS DES ZUSCHNITTS VOM 2026-09-22, KEIN
+BESCHLUSS.** Ein Roadmap-Abgleich — der Wortlaut der Roadmap-Zeile 11.7 gegen den Stand je
+Punkt — folgt als NÄCHSTER Schritt, VOR S8 (Abschnitt "Nächster Schritt").
+
 ## Was den Zuschnitt bindet
 
 **DER ZUSCHNITT STEHT SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-22 IM ABSCHNITT "Zuschnitt der
@@ -1185,6 +1194,64 @@ Provenienz-Liste in docs/claude-md-herleitung.md (Abschnitt "## Modus") führt e
 "(af)"; ob dort die Frist gemeint ist, ist nicht entscheidbar — nicht freigegeben, nicht
 angefasst.
 
+### VERMERK P11.7-24 — Scheibe S7 gebaut und live belegt vom 2026-09-24 (google `landingPageDeviceInfo`)
+
+**HARTE ANGABEN:** 2026-09-24 · **BAU-COMMIT `883993d`** (`feat(capi): Google erhaelt IP und
+User-Agent der Landeseite (11.7 S7)`) · sechs Dateien: `src/lib/capi/google-payload.ts`
+(Typen `GoogleDeviceInfo` und `GoogleAdIdentifiers`, `pickDeviceInfo`, das Feld NACH der
+Kennungsprüfung; Kommentare G6 (3) bis (5) und Freigabe F-c), `src/lib/capi/google-forward.ts`
+(zwei optionale, hinten angehängte Parameter, Freigabe F-b; Kommentare (1) und (6)),
+`src/lib/capi/ingest.ts` (allein das Lambda `FORWARDER_BY_TARGET.google` und der Kommentartext
+am Typ `Forwarder`, Freigabe F-a; der Typ ist byte-gleich), dazu `google-payload.test.ts`
+(P-a bis P-f), `google-forward.test.ts` (GF-9 bis GF-9g, GF-7c) und `fan-out.test.ts`
+(T10-google, Freigabe F-d) · Tests **2164 / 98 → 2179 / 98** (GEMESSEN, CC; massgeblich ist
+die Liste in P2 des Stufe-1-Plans — P6 hatte sieben statt acht Forward-Tests gezählt) · tsc,
+lint (0 Fehler; die bestehende Warnung in `consent.test.ts`), build grün · **KEINE
+`console`-Zeile im Diff** (GEMESSEN) · am committeten Objekt alle sechs `i/lf`, CR 0.
+
+**MUTATIONSPROBEN — ACHT, ALLE WIE VORHERGESAGT**, die Vorhersage je Datei VOR dem Lauf am
+gebauten Bestand nachgezählt; je voller Lauf über 98 Dateien, je zurückgenommen und per
+sha256 gegen den Baustand belegt:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| m1 | der Bauer setzt das Feld nicht | 9 — P-a, P-b, P-c, P-f, GF-9, GF-9b, GF-9c, GF-9e, T10-google |
+| m2 | Werte in `eventDeviceInfo` statt `landingPageDeviceInfo` | 9 — dieselben |
+| m3 | IP und UA im Bauer vertauscht | 9 — dieselben |
+| m3b | IP und UA im LAMBDA vertauscht | 1 — NUR T10-google |
+| m4 | Gerätedaten zählen als Kennung | 2 — P-e, GF-9f |
+| m5 | `consent` an der Anfrage gesetzt | 5 — Hüllen-Test (Wurzel-Schlüssel), GF-1, GF-9, GF-9g, T10-google |
+| m6 | IP in der HTTP-Fehlerzeile | 1 — NUR GF-7c |
+| m7 | das Lambda reicht nichts weiter | 1 — NUR T10-google |
+
+m3b und m7 belegen, warum T10-google nötig ist: Die Parameter sind optional, und nur ein Lauf
+über den Handler mit dem echten Adapter sieht einen Fehler im Lambda.
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-24):**
+- VORBEREITUNG: `cns.google` `true` im Beacon · "Lead" einer numerischen Conversion-Type-ID
+  zugeordnet · Google-Karte neu autorisiert (`[oauth/google/callback] ok`), vorher
+  `access_token_expired`.
+- R1, ohne gclid: Logzeile "[capi] Google forward skipped: no_click_id" — der Adapter wird
+  erreicht.
+- S1, `?gclid=S7TestGclid0001`: Forward an `datamanager.googleapis.com/v1/events:ingest` ohne
+  Fehlerzeile, HTTP 200.
+- HANDAUFRUF mit `validateOnly=true`, Git Bash: (a) mit `landingPageDeviceInfo` → 200,
+  `{"requestId": "v-…"}` · (b) Mitläufer `landingPageDeviceInfoX` → 400 `INVALID_ARGUMENT`,
+  "Unknown name \"landingPageDeviceInfoX\" at 'events[0].ad_identifiers': Cannot find field." ·
+  (c) `ipAddress` `2001:db8::1` → 200.
+
+**ERGEBNIS: `landingPageDeviceInfo` MIT `ipAddress` UND `userAgent` IST AUF SCHEMA-EBENE
+GEMESSEN ANGENOMMEN** — Beleg ist (a) zusammen mit dem Mitläufer (b), der zeigt, dass der
+Parser Namen streng prüft; **IPv6 ist dort angenommen** (c). Befund: docs/ziel-befunde/google.md,
+Teil (cu), dazu datierte Zeiger an (m)/E1, (w)/E1 und (bn).
+**DIE GRENZEN:** `validateOnly` prüft das Schema, nicht die Verwendung · kein Abgleich
+belegbar — der gclid war erfunden, `INVALID_GCLID` am Folgetag ist erwartet · dass IP und UA im
+Produktivpfad mitreisen, belegen T10-google und GF-9, NICHT der Live-Test · IPv6 in der
+Produktion ist nicht gefahren (keine AAAA-Einträge der Label-Hosts, VERMERK P11.7-21).
+
+**ABSCHLUSS IM SELBEN ZUG:** ZUSCHNITT-FRAGE P11.7-6 und P11.7-7 nachgezogen · Vorrat P11.7-10
+neu · S7 ABGESCHLOSSEN.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -1228,8 +1295,8 @@ dazu.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-**DREI SIND OFFEN (P11.7-2, -8, -9); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7 MIT
-S3, P11.7-1 UND -4 MIT S4.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
+**VIER SIND OFFEN (P11.7-2, -8, -9, -10); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7
+MIT S3, P11.7-1 UND -4 MIT S4.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
 `a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
 2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
 **GEMESSEN IST, DASS SIE DASTEHEN — NICHT, DASS SIE NACHGEZOGEN WÄREN.** **KEINE
@@ -1307,6 +1374,14 @@ LinkedIn-Forward angekommen ist, ist heute an KEINER Stelle direkt zu sehen; S6b
 Ausschluss belegt.
 **DIE KANDIDATEN K1 BIS K4 STEHEN IM VERMERK P11.7-22 — KEINE AUSWAHL.**
 TRIGGER: vor dem Phasenende zu entscheiden (OWNER).
+
+**P11.7-10 — IN DER LOKALEN ENTWICKLUNG REIST EINE PLATZHALTER-IP AN GOOGLE.** BEFUND vom
+2026-09-24 (Stufe-1-Plan von S7, GEMESSEN am Code): Ist die Client-Adresse leer oder Loopback
+und `META_TEST_EVENT_CODE` gesetzt, liefert `resolveClientIp` (`src/lib/capi/ingest.ts`) die
+Platzhalter-IP `123.123.123.123`; seit S7 reist sie als `landingPageDeviceInfo.ipAddress` auch
+an Google. **IN DER PRODUKTION OHNE FOLGE** — dort kommt die Adresse aus der Kopfzeile.
+**KEIN FIX-VORSCHLAG.**
+TRIGGER: die nächste Scheibe, die `resolveClientIp` oder den Google-Adapter berührt.
 
 ## Hebungs-Kandidaten
 
@@ -1441,7 +1516,9 @@ Teile von P11.7-1 und P11.7-2 gebaut und live belegt, dazu Zeiger an P11.7-5 und
 "Zuschnitt der Phase 11.7", L1 bis L7), S6a hat den festgelegten Teil von P11.7-14 gebaut und live
 belegt, dazu ein Zeiger an P11.7-16 (VERMERK P11.7-20); S6b hat P11.7-16 eingelöst (VERMERK
 P11.7-22); der Zuschnitt von S7 legt Teile von P11.7-6 (G1) und P11.7-7 (Owner-Entscheidung vom
-2026-09-24) fest, P11.7-8 ist gemessen (VERMERK P11.7-23). ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
+2026-09-24) fest, P11.7-8 ist gemessen (VERMERK P11.7-23); S7 hat P11.7-6 für
+`landingPageDeviceInfo` eingelöst und P11.7-7 so gebaut, wie entschieden (VERMERK P11.7-24).
+ALLE ÜBRIGEN SIND OFFEN.** Wo ein Zusatz eine Hälfte am Code
 beantwortet, steht es an der Frage.
 
 **ZUR NUMMERNFORM:** Diese Gattung zählt als `ZUSCHNITT-FRAGE P11.7-n`; die Gattung darüber
@@ -1514,6 +1591,9 @@ entscheidbar.** Beide Felder tragen IP und UA, für die P11.7-4 gilt.
 **ZEIGER 2026-09-24 — FESTGELEGT DURCH DEN ZUSCHNITT VON S7** (G1): allein
 `adIdentifiers.landingPageDeviceInfo`, `ipAddress` und `userAgent` je nur wenn vorhanden;
 `eventDeviceInfo` ist nicht Teil von S7.
+**ZEIGER 2026-09-24 — EINGELÖST FÜR `landingPageDeviceInfo` (VERMERK P11.7-24):** gebaut in
+`883993d`, auf Schema-Ebene gemessen angenommen (google, Teil (cu)). `eventDeviceInfo` bleibt
+ausgeschlossen (G1).
 
 **ZUSCHNITT-FRAGE P11.7-7 — DIE ZWEI DMA-EINWILLIGUNGSFELDER EXISTIEREN, BEIDE OPTIONAL.** `Consent` trägt
 GENAU ZWEI Felder, `adUserData` und `adPersonalization`, ausweislich seiner Überschrift ein
@@ -1527,6 +1607,8 @@ Entfall jenes Postens ohnehin unerheblich, er trägt drei Trigger.
 der Phase 11.7", S7). Grund: Der Server kennt nur ein doppeldeutiges Bit (VERMERK P11.7-23,
 (f)). Die Frage nach dem Trigger jenes Postens ist damit gegenstandslos; der Punkt consent
 ist dort entschieden.
+**ZEIGER 2026-09-24 — ENTSCHIEDEN UND SO GEBAUT (VERMERK P11.7-24):** S7 sendet kein
+consent-Feld; GF-9g und T10-google halten das fest.
 
 **ZUSCHNITT-FRAGE P11.7-8 — OB EINE SITZUNG DIE VOLLLADUNG FÜR EINEN ZUSCHNITT TRÄGT, IST UNGEMESSEN.**
 **DIE AUFTEILUNG (P11.7-9) HAT DIE FRAGE VERKLEINERT, NICHT BEANTWORTET.** Der Pflicht-Stopp
@@ -1815,8 +1897,9 @@ ist nach den Architekten-Entscheidungen F1 bis F10 gebaut, `fbc` ist live belegt
 P11.7-18). S6 (linkedin) ist zugeschnitten (L1 bis L7) und in S6a und S6b geteilt; S6a ist
 gebaut, die Annahme des zweiten Eintrags ist live belegt (VERMERK P11.7-20); S6b ist gebaut,
 `li_fat_id` allein ist per Terminal angenommen, unser Pfad durch Tests, Mutationen und
-Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist zugeschnitten (G1 bis G5, Material
-VERMERK P11.7-23). Die übrigen sind weder gebaut noch geplant.
+Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist nach G1 bis G5 gebaut,
+`landingPageDeviceInfo` ist auf Schema-Ebene gemessen angenommen (VERMERK P11.7-24). Die
+übrigen sind weder gebaut noch geplant.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -2069,7 +2152,11 @@ der Datei ihres Ziels.
   das Ereignis) · der Cookie-Weg.
 - **S7 — google: Gerätedaten in `landingPageDeviceInfo`, DMA-Felder weggelassen. ZUGESCHNITTEN
   AM 2026-09-24** — ZUSCHNITT-FRAGE P11.7-6, P11.7-7; Entscheidung P11.7-4; Material VERMERK
-  P11.7-23. PFLICHT DAVOR: Volladung docs/ziel-befunde/google.md plus Kopf — auf einem Modell
+  P11.7-23.
+  **ABGESCHLOSSEN AM 2026-09-24 — VERMERK P11.7-24** (Bau-Commit `883993d`;
+  `landingPageDeviceInfo` auf Schema-Ebene gemessen angenommen). G1 bis G5 und die
+  Owner-Entscheidung zu den DMA-Feldern bleiben als bindende Entscheidungen stehen: sie
+  beschreiben, wie gebaut ist. PFLICHT DAVOR: Volladung docs/ziel-befunde/google.md plus Kopf — auf einem Modell
   mit 1M Kontext gemessen tragbar (ZUSCHNITT-FRAGE P11.7-8).
   **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24:**
   - **G1 — GERÄTEDATEN NUR IN `adIdentifiers.landingPageDeviceInfo`:** `ipAddress` und
@@ -2141,17 +2228,15 @@ binden:**
 
 ## Nächster Schritt
 
-**S1 BIS S6 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18, P11.7-20, P11.7-22). **DIE REIHENFOLGE VON S6 BIS S9 IST ENTSCHIEDEN (OWNER,
-2026-09-23): S6 linkedin, dann google, tiktok, pinterest.** **S7 — google — IST ZUGESCHNITTEN**
-(G1 bis G5 und die Owner-Entscheidung zu den DMA-Feldern, Abschnitt "Zuschnitt der Phase
-11.7"). **ALS NÄCHSTES STEHT DER STUFE-1-PLAN VON S7, in derselben Sitzung wie die Volladung**
-(VERMERK P11.7-23).
-**VORAUSSETZUNG VOR JEDEM LIVE-TEST:** die Google-Verbindung im Testprojekt neu herstellen — das
-Google-Geheimnis ist `refresh_token_expired`, und die Ursache ist die Sieben-Tage-Frist im
-Status "Testing" (VERMERK P11.7-23, (a)). Pflicht-Stopp: docs/ziel-befunde/google.md voll plus
-Kopf von docs/ziel-befunde.md — auf einem Modell mit 1M Kontext gemessen tragbar
-(ZUSCHNITT-FRAGE P11.7-8).
+**S1 BIS S7 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
+P11.7-18, P11.7-20, P11.7-22, P11.7-24). **ALS NÄCHSTES STEHT DER ROADMAP-ABGLEICH DER PHASE
+11.7, READ-ONLY:** der Wortlaut der Roadmap-Zeile 11.7 gegen den Stand je Punkt — Anlass ist
+die Owner-Klarstellung vom 2026-09-24 im Abschnitt "Gegenstand der Phase" (F5, F7 und F8 trägt
+der Zuschnitt bisher nicht). **ERST DANACH WIRD DIE REIHENFOLGE DER RESTLICHEN ARBEIT
+FESTGELEGT; S8 (tiktok) UND S9 (pinterest) STEHEN BIS DAHIN.**
+**DIE SIEBEN-TAGE-FRIST LÄUFT WEITER:** Die Google-Karte ist am 2026-09-24 neu autorisiert
+worden; im Status "Testing" stirbt das Erneuerungs-Token sieben Tage danach (VERMERK P11.7-23,
+(a)). Vor jedem weiteren Google-Live-Test den Ablaufzeitpunkt auf der Karte prüfen.
 
 **KEIN ZUSCHNITT GEGEN UNGEPRÜFTE ANNAHMEN.** Der Satz "KEIN ZUSCHNITT VOR DEM CRAWL" ist
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK

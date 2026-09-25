@@ -1,4 +1,136 @@
-# Aktiver Stand — Phase 11.7
+# Phase 11.7 — Anbieter-Befunde nachziehen: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 11.7 — das, was jeweils galt, nicht
+das, was geworden ist. **Sie hiess bis zum Phasenende `docs/aktiver-stand.md`** und war das
+Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der Phase arbeitete. IHR NAME IST
+OWNER-ENTSCHEIDUNG (2026-09-25); er folgt dem Titel der Roadmap-Zeile, wie es die Inventur
+des Phasenendes vorgeschlagen hatte — die Klick-Kennungen tragen den meisten Code, sind aber
+einer von fünf Punkten.
+
+**ZEITRAUM UND UMFANG:** angelegt am 2026-09-22 (`354a6e5`), archiviert am 2026-09-25 — **die
+Phase hat vier Tage gedauert**, 59 Commits bis zum Beginn des Phasenendes. ZEHN Scheiben,
+alle gebaut und live bestätigt: **S1** der Wächter über Version, Endpunkt und Abschalttermin
+(`4809cb5`), **S2** LinkedIn auf `202609` (`5d5602e`), **S3** Meta auf `v25.0` (`9778aca`),
+**S4** das Entfernen fremder Klick-Kennungen aus der weitergereichten Adresse (`de88657`),
+**S5** meta `fbc` (`37e3e46`), **S6a** und **S6b** linkedin `li_fat_id` (`09476b9`,
+`007a772`), **S7** google IP und User-Agent der Landeseite (`883993d`), **S8** tiktok
+`user.ttclid` (`b503711`), **S9** pinterest `user_data.click_id` (`024678a`), **S10** die
+Erfolgszeile je Ziel in drei Teilscheiben (`7f44ef5`, `ed3008b`, `cefe636`, dazu der Filter
+im Testprotokoll `c37a41c`). **34** Vermerke, SIEBEN Entscheidungen P11.7-1 bis -7, SECHS
+Owner-Entscheidungen E-a bis E-f, die Zuschnitt-Buchstaben D, F, L, B, G, T, N und Q, ZWÖLF
+Vorrats-Einträge, EIN Hebungs-Kandidat, 26 Zuschnitt-Fragen und die Crawl-Fragen F1 bis F8.
+**DIE UNGEKÜRZTE FASSUNG DES RUMPFES STEHT UNTER COMMIT `11a44f7`** — der Rumpf ist am
+2026-09-22 verdichtet worden, und sein Kopf sagt das selbst.
+
+**WARUM ES DIESE PHASE GAB — ZWEI SÄTZE, DIE MIT DEM KOLLABIEREN DER ROADMAP-ZEILE IHREN ORT
+VERLIEREN UND DESHALB HIER WÖRTLICH STEHEN** (Quelle: Roadmap-Zeile 11.7 im Commit `b0c076b`):
+- DIE KLAMMER: "DIE KLAMMER, UND SIE IST DER GRUND FÜR DIE POSITION DIESER ZEILE
+  (OWNER-ENTSCHEIDUNG, 2026-08-20): Das TRACKING WIRD ABGESCHLOSSEN, bevor die nächste Phase
+  beginnt. Ein halb geprüftes Tracking mitzunehmen heisst, jeden späteren Fehler zwischen zwei
+  Phasen suchen zu müssen."
+- DER ANLASS DES FÜNFTEN PUNKTS: "ANLASS — OWNER-ANGABE, VON CC NICHT PRÜFBAR: Der
+  Meta-Events-Manager meldet eine Match-Qualität von 4,4/10 und "Server sendet keine Klick-ID
+  (fbc)". Diese Angabe ist NICHT am Repo und NICHT an einer Anbieter-Schnittstelle gemessen
+  worden; sie ist der Auslöser, nicht der Befund. WER SIE ALS MESSWERT ZITIERT, ZITIERT EINE
+  BILDSCHIRMLESUNG."
+Die Match-Qualität ist nach S5 NICHT erneut abgelesen worden (VERMERK P11.7-25); ob der
+Anlass behoben ist, ist damit unbelegt.
+
+**DER MESSWERT NACH docs/arbeitsweise.md, ABSCHNITT 2b** (GEMESSEN am Repo, CC, 2026-09-25,
+`git log --numstat`, Summen aus Einfügungen und Löschungen je Pfadpräfix; in der Spanne
+führt git keine Datei als binär):
+
+| Lesart, Spanne `354a6e5^..3e080b2` | `docs/` | `src/` | Verhältnis docs : src |
+|---|---|---|---|
+| gesamt | 41 191 | 3 755 | **10,97 : 1** |
+| ohne die zwei phasenfremden Teilungen (`22deb39` 7 282 · `cccc23f` 1 593) | 32 316 | 3 755 | **8,61 : 1** |
+| zusätzlich ohne `11a44f7` (Aufteilung der Ziel-Befunde, phasenzugehörig, reiner Umbau, 20 114) | 12 202 | 3 755 | **3,25 : 1** |
+
+**DIE SPANNE ENDET VOR DEN PHASENENDE-COMMITS**, wie in den Archiven 11.6, 11.11 und 11.13.
+**MIT dem Hebungs-Commit (`b0c076b`) wären es 43 967, 35 092 bzw. 14 978 zu 3 755, also
+11,71, 9,35 bzw. 3,99 : 1** (GEMESSEN, CC, 2026-09-25) — die Zahlen stehen hier, damit
+niemand sie für einen Messfehler hält, wenn er die Spanne anders zieht. Ausserhalb von
+`docs/` und `src/` liegen `CLAUDE.md` (1 691 Zeilen, davon 1 552 aus `cccc23f`) und
+`vitest.config.ts` (26).
+**DER BEFUND DER ARBEITSWEISE TRITT EIN: DAS VERHÄLTNIS IST ZUM ZWEITEN MAL IN FOLGE
+GESTIEGEN, UND ZWAR IN JEDER DER DREI LESARTEN.** Die Reihe: 11.12 1,54 → 11.13 0,89 → 11.6
+0,62 → 11.11 0,65 → **11.7 ≥ 3,25**. DREI GRENZEN, je benannt: Die Werte der Vorphasen sind
+aus dem Kopf von docs/claude-history/phase-11.11-import-bereinigung.md übernommen und NICHT
+nachgemessen · dass `11a44f7` abgezogen wird, ist eine Wahl dieser Messung · `b295ab1` und
+`c815567` (Punkt (5) der Betreiber-Doku, 47 bzw. 2 Zeilen) tragen "11.7" nicht im Betreff und
+sind mitgezählt; ihre Zuordnung zur Phase ist am Bestand nicht entscheidbar.
+**OWNER-ENTSCHEIDUNG 2026-09-25 DAZU: FÜR DIE PHASE 11.9 WIRD GEGENGESTEUERT — IHRE VERMERKE
+TRAGEN NUR HARTE ANGABEN** (docs/arbeitsweise.md, Kadenz). Ihr Archiv erhebt den Messwert
+erneut und vergleicht ihn mit diesem; die Entscheidung steht an der Roadmap-Zeile 11.9.
+
+**WIE SIE ENDETE:** Ihr Marker steht auf `[x]`, und das heisst **BAU-FERTIG** — nicht "das
+Tracking ist abgeschlossen". **WAS AM HAKEN UNBEWIESEN ODER ALS MANGELHAFT BEKANNT IST, STEHT
+AN DER ROADMAP-ZEILE 11.7** (docs/roadmap.md) und wird hier NICHT verdoppelt; der tragende
+Punkt: **keine Klick-Kennung ist an einem echten Anzeigenklick geprüft** — jeder Live-Beleg
+fuhr einen erfundenen Wert.
+
+**DAS PROTOKOLL DER HEBUNG — 2026-09-25, EIN COMMIT (`b0c076b`).** Das REGISTER steht im
+Abschnitt "Vollzogen — was hier stand und wohin es gegangen ist" am Ende des Rumpfes: je
+Eintrag Nummer mit Gattung, Ziel und Fundstelle; an den Einträgen selbst steht KEIN
+Einzelzeiger. Grundlage waren die Inventur desselben Tages (87 Einträge in neun Gattungen)
+und die Architekten-Entscheidungen A7-1 bis A7-16. **DIE BILANZ: 87 = DR 3 · OP 6 · BL 16 ·
+ERL 17 · NG 45.** Im selben Commit ist die Liste der offenen Punkte gesichtet worden; was
+dort gestrichen, verschoben oder nachgezogen ist, steht im Register unter "AUSSERHALB DER
+BILANZ".
+**DIE GEGENPROBE VOR DER ARCHIVIERUNG — AM BESTAND DER ZIELDATEIEN, JE EINTRAG, NICHT GEGEN
+DAS REGISTER** (GEMESSEN, CC, 2026-09-25, Skript über die Dateien, leerraum-normalisiert):
+
+| Ziel | Soll | gefunden | geprüft am Bestand |
+|---|---|---|---|
+| DR | 3 | 3 | Kern-Titel je 1× in docs/immer-beachten.md; Volltext-Titel und Verzeichnis-Zeile je 1× in docs/immer-beachten-herleitung.md; die Ergänzung an "COMMIT-KONVENTIONEN" in Kern und Volltext, dort mit VERMERK P11.7-30 |
+| OP | 6 | 6 | Posten in docs/offene-punkte.md mit der Marke des Eintrags im Rumpf (N3, P11.7-2/-20/-26, K4, m6 mit P11.7-16) und Stub in CLAUDE.md |
+| BL | 16 | 16 | eigener Eintrag in Teil A des Backlog-Abschnitts "Aus Phase 11.7 gehoben (2026-09-25) …"; Eintrag 65 mit seinem ZEIGER (2026-09-25) |
+| ERL | 17 | 17 | Eintrag steht in dieser Datei; jeder Beleg-Commit existiert (`git cat-file`); Nachtrag an der Roadmap-Zeile 11.9, VERMERK P11.7-16/-14/-23, E-f und der Vermerk vom 2026-09-04 (`7288f90`) am Posten "STIRBT DAS ERNEUERUNGS-TOKEN …" nachgewiesen |
+| NG | 45 | 45 | Anker des Eintrags in dieser Datei; die Q7-Zeiger in drei Testdateien unter `src/` |
+| **Summe** | **87** | **87** | Register-Pfeile je Ziel ebenfalls 3 · 6 · 16 · 17 · 45 |
+
+ZWEI FEHLTREFFER DES ERSTEN LAUFS LAGEN AM INSTRUMENT, NICHT AM BESTAND, und sind vor der
+Wertung behoben: Die Verzeichnis-Zeile der Erfolgszeilen-Regel ist VOR dem Wort
+"ERFOLGSZEILE" gekürzt, der volle Titel steht dort also nur einmal (die Erwartung lautete
+fälschlich zweimal); und der Q7-Zeiger bricht in allen drei Testdateien über das Zeilenende,
+eine zeilenweise Suche fand ihn deshalb nicht. Ebenso zählte die Register-Probe über
+Zeilenumbrüche zu niedrig, bis sie normalisiert lief. NEGATIVKONTROLLE: fünf erfundene Anker
+ergaben je 0; ein sechster war schlecht gewählt — `P11.7-8` gibt es als Vorrats-Eintrag —
+und zählt nicht. DIE GEGENPROBE DER VERSCHIEBUNG aus dem Hebungs-Commit bleibt daneben
+stehen: die vier aus docs/offene-punkte.md ins Backlog verschobenen Posten wiedergefunden,
+Absatz für Absatz und Zeile für Zeile (1+1+3+6 Absätze, 264 Zeilen), mit Positivkontrolle an
+drei gestrichenen Posten (41 Absätze, 0 gefunden).
+
+**ZEIGER AUF `docs/aktiver-stand.md`, DIE DIESE PHASE MEINEN — GEMESSEN VOR DEM UMZUG (CC,
+2026-09-25)**, Achse `docs/aktiver-stand.md` über alle verfolgten Dateien, auch über einen
+Zeilenumbruch hinweg; je Treffer der Kontext auf `11.7` bzw. `P11.7-` geprüft, dazu jeder
+übrige Treffer ausserhalb der Archive mit einem Datum vom 2026-09-22 bis -25 im Kontext
+(ein weiterer Kandidat, er meint Phase 11.11). Nach der Regel "EINE ABLAGE MIT
+HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE" ist JEDER nachgezogen, beschreibend wie
+handlungsbindend — **VIERZEHN**:
+- **DREIZEHN NACHGEZOGEN** auf diesen Pfad: docs/claude-history/backlog-polish.md (Eintrag
+  65) · docs/offene-punkte.md zweimal (Teil (E2) des Datenklassen-Postens, "Vorrat P11.7-2";
+  Punkt (5) der Betreiber-Dokumentation, VERMERK P11.7-25) · docs/plattform-befunde.md
+  (VERMERK P11.7-21) · docs/roadmap.md (Auflage an der Zeile 11.9, VERMERK P11.7-34) ·
+  docs/ziel-befunde/google.md zweimal · docs/ziel-befunde/linkedin.md zweimal ·
+  docs/ziel-befunde/pinterest.md viermal.
+- **EINER ENTFALLEN**: der Zeiger auf VERMERK P11.7-1 in der Roadmap-Zeile 11.7, mit dem
+  Kollabieren jener Zeile — die Zeile sagt das selbst.
+- **IN `src/`, `supabase/` UND `vitest.config.ts` MEINT KEINER DIESE PHASE.** Die dortigen
+  Treffer meinen frühere Standdateien; die Stellen "Phase 11.7" und "P11.7-n" im Code lösen
+  über die Phasennummer auf und brauchen keinen Nachzug.
+- **ZEIGER DER FORM "Archiv der Phase 11.7, …"** — in den Texten der Hebung, unter anderem
+  in docs/immer-beachten-herleitung.md und docs/offene-punkte.md — lösen über die
+  Phasennummer hierher auf und sind bewusst nicht angefasst.
+
+**DIE VIER TREFFER AUF `docs/aktiver-stand.md` IM RUMPF DIESER DATEI BLEIBEN STEHEN** — ein
+zitierter Posten-Titel, zwei Lesebelege mit Zeilen- und Byte-Zahl und der letzte Satz des
+Registers. Sie sind Zeitdokumente und waren richtig, als sie geschrieben wurden; sonst ist am
+Rumpf nichts umformuliert.
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **DIESE DATEI IST DAS PFLICHT-GATE.** Ab jetzt liest JEDE Sitzung, die an dieser Phase
 arbeitet, sie ZUERST und VOLLSTÄNDIG — als "Auftrag 0" jedes Bau- und

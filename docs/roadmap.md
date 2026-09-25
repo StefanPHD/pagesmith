@@ -1720,119 +1720,110 @@ liegen beide hier und finden einander.
       "OB EINE BESTEHENDE TAG-CONVERSION IM KUNDENKONTO VORAUSGESETZT IST UND WIE SIE
       DORTHIN KOMMT". KEINE EMPFEHLUNG, und ausdrücklich keine Aussage darüber, ob der
       Hybrid-Ausschluss zu ändern ist.
-- [ ] Phase 11.7 — Anbieter-Befunde nachziehen: die VIER GEBAUTEN ZIELE.
-      DIE NUMMER IST DIE NÄCHSTE FREIE (Präzedenz: 4.5, 10.5, 11.1 bis 11.6) und
-      trägt KEINE Reihenfolge-Aussage — sie steht hinter 11.5, weil davor nichts
-      mehr frei war, nicht weil dieses Vorhaben später käme. KEINE bestehende
-      Nummer wird verschoben.
-      GEGENSTAND: Für die vier BEREITS GEBAUTEN Ziele sind Fragen des Katalogs
-      unbeantwortet, die beim Bau NIE GESTELLT wurden. Sie betreffen LAUFENDE
-      Adapter. VIER PUNKTE, EINZELN AUFGEFÜHRT — eine Sammelzeile ist in zwei
-      Wochen nicht mehr abarbeitbar:
-      · TIKTOK, DEDUPLIZIERUNG (Katalog H2): NIE GESTELLT. Der Adapter sendet eine
-        Ereignis-Kennung; was der Anbieter damit tut, steht nirgends. DIE BEIDEN
-        NACHBARN ZEIGEN, DASS DIE ANTWORT IN BEIDE RICHTUNGEN AUSFALLEN KANN: Bei
-        LinkedIn hat dieselbe Lücke ergeben, dass die Zusage NICHT zutrifft
-        (docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", Teil (y));
-        bei Pinterest, dass sie ZUTRIFFT (ebenda, Abschnitt "Pinterest (Conversions
-        API)", Teil (d)). Für TikTok ist es UNENTSCHIEDEN.
-        Matrix: docs/ziel-fragenkatalog.md, "## Die Matrix — Stand 2026-08-20",
-        Zeile H2.
-      · META, VERSIONSANGABE (Katalog B2): Der Adapter sendet eine Version aus der
-        Umgebung mit einem festen Vorgabewert (META_GRAPH_VERSION in
-        src/lib/capi/config.ts). OB DER ANBIETER DIESE VERSION NOCH BEDIENT, STEHT
-        NIRGENDS. Matrix: docs/ziel-fragenkatalog.md, Zeile B2.
-      · RATE-LIMITS (Katalog H3) FÜR META, TIKTOK UND LINKEDIN: NIE GESTELLT bei
-        allen dreien. Für Pinterest am 2026-08-20 beantwortet
-        (docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teil (e)).
-        NICHT ZU VERWECHSELN mit dem Per-Tenant-Rate-Limiting auf /api/e und
-        /api/capi (Phase 14 und Sicherheits-Manifest Tier 1): jenes begrenzt, was
-        ZU UNS hereinkommt, dieses betrifft, was der ANBIETER von uns annimmt.
-        Zwei entgegengesetzte Richtungen, gleicher Name.
-        Matrix: docs/ziel-fragenkatalog.md, Zeile H3.
-      · PINTEREST, ERFOLGSRUMPF (Katalog G1): NIE GEMESSEN — und die Auswertung
-        hängt daran: evaluateSuccessBody (src/lib/capi/pinterest-forward.ts)
-        entscheidet auf dieser Grundlage über Erfolg oder Fehlschlag.
-        DAS IST DIE EINZIGE DER VIER, DIE EINE MESSUNG VERLANGT; die übrigen drei
-        sind aus der Anbieter-Dokumentation beantwortbar.
-        Matrix: docs/ziel-fragenkatalog.md, Zeile G1.
-      DIE KLAMMER, UND SIE IST DER GRUND FÜR DIE POSITION DIESER ZEILE
-      (OWNER-ENTSCHEIDUNG, 2026-08-20): Das TRACKING WIRD ABGESCHLOSSEN, bevor die
-      nächste Phase beginnt. Ein halb geprüftes Tracking mitzunehmen heisst, jeden
-      späteren Fehler zwischen zwei Phasen suchen zu müssen.
-      AUSGENOMMEN von "abgeschlossen" ist ausdrücklich ALLES, WAS AN DER RECHTSFORM
-      HÄNGT — s. "## Modus", Absatz vom 2026-08-20: bauen und mit eigenen Konten
-      messen geht ohne, fremde Kundenkonten anbinden nicht. Das ist KEINE offene
-      Arbeit, sondern eine REIHENFOLGE.
-      WAS DIESE ZEILE NICHT IST: KEIN Defekt-Befund. ALLE VIER ADAPTER SENDEN.
-      Und KEINE Empfehlung zur Reihenfolge innerhalb der Zeile.
-      PROVENIENZ: die vier Punkte sind GELESEN an der Matrix (Stand 2026-08-20);
-      die Klammer ist OWNER-ENTSCHEIDUNG (2026-08-20). KEINE Messung.
+- [x] Phase 11.7 — Anbieter-Befunde nachziehen: die VIER GEBAUTEN ZIELE.
+      ABGESCHLOSSEN (2026-09-22 bis 2026-09-25, an VIER Tagen). Die Anbieter-Befunde der
+      gebauten Ziele sind nachgezogen: die vier Katalog-Lücken vom 2026-08-20 — tiktok H2,
+      meta B2, die Rate-Limits H3, pinterest G1 — durch Lesung bzw. Messung, und der fünfte
+      Punkt vom 2026-09-22 — Klick-Kennungen und Match-Felder ALLER gebauten Ziele — durch Bau.
+      DER TITEL BLEIBT WÖRTLICH und untertreibt seit dem 2026-09-22: der fünfte Punkt schliesst
+      google ein. ZEHN Scheiben, alle gebaut und live bewiesen: S1 der Wächter über Version,
+      Endpunkt und Abschalttermin (`4809cb5`), S2 LinkedIn auf `202609` (`5d5602e`), S3 Meta auf
+      `v25.0` (`9778aca`), S4 das Entfernen fremder Klick-Kennungen aus der weitergereichten
+      Adresse (`de88657`), S5 meta `fbc` aus `fbclid` (`37e3e46`), S6a und S6b linkedin
+      `li_fat_id` (`09476b9`, `007a772`), S7 google IP und User-Agent der Landeseite
+      (`883993d`), S8 tiktok `user.ttclid` (`b503711`), S9 pinterest `user_data.click_id` aus
+      `epik` (`024678a`), S10 die Erfolgszeile je Ziel (`7f44ef5`, `ed3008b`, `cefe636`, dazu
+      der Filter im Testprotokoll `c37a41c`).
+      VERWEIS: Gegenstand, die 34 Vermerke, die Entscheidungen, der Vorrat, die
+      Zuschnitt-Fragen und das Protokoll der Hebung stehen in
+      docs/claude-history/phase-11.7-anbieter-befunde.md. Dort stehen auch der ANLASS des
+      fünften Punkts (Metas Match-Qualität 4,4/10 — eine OWNER-ANGABE, eine Bildschirmlesung),
+      die KLAMMER "DAS TRACKING WIRD ABGESCHLOSSEN" im Wortlaut und der Messwert aus
+      docs/arbeitsweise.md, Abschnitt 2b.
 
-      ERWEITERUNG VOM 2026-09-22 (OWNER) — EIN FÜNFTER PUNKT. DER GESAMTE TEXT DARÜBER
-      BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; er ist am 2026-08-20 geschrieben und beschreibt
-      seinen Tag richtig. DER SATZ "VIER PUNKTE, EINZELN AUFGEFÜHRT" WIRD DADURCH NICHT
-      FALSCH, SONDERN ALT: Er zählt die Katalog-Lücken, die am 2026-08-20 festgestellt
-      waren. DER PUNKT UNTEN TRITT DANEBEN und wird bewusst NICHT in jene Liste
-      eingeschoben — eingeschoben machte er einen Satz unwahr, den niemand angefasst hat.
-      DASSELBE GILT FÜR DEN TITEL DER ZEILE: Er sagt "die VIER GEBAUTEN ZIELE" und bleibt
-      so; seit dem 2026-09-22 untertreibt er, und dieser Absatz ist die Auflösung.
+      BEIM [x] UNBEWIESEN ODER ALS MANGELHAFT BEKANNT — der Haken heisst BAU-FERTIG, nicht
+      "das Tracking ist abgeschlossen". Das Kriterium und seine Auflage stehen in CLAUDE.md,
+      "## Roadmap & aktueller Stand", unter "WANN [x] GESETZT WIRD — DAS KRITERIUM"; sie werden
+      hier NICHT wiederholt, sondern eingelöst, je Punkt mit Fundstelle. Ein VERMERK oder eine
+      Zuschnitt-Frage meint die des Archivs der Phase.
+      UNBEWIESEN — ACHT PUNKTE, NACH RANG:
+      1. KEINE KLICK-KENNUNG IST AN EINEM ECHTEN ANZEIGENKLICK GEPRÜFT. Jeder Live-Beleg fuhr
+         einen erfundenen Wert; belegt sind Annahme und Erkennung beim Anbieter — NICHT die
+         Zuordnung zu einem Anzeigenklick und NICHT die Form eines echten Werts (jede Kennung
+         geht DEKODIERT hinaus, ein `+` wird zum Leerzeichen). Fundstelle: offener Punkt "KEINE
+         KLICK-KENNUNG IST AN EINEM ECHTEN ANZEIGENKLICK GEPRÜFT — WEDER IHRE FORM NOCH DER
+         ABGLEICH" (docs/offene-punkte.md, Stub in CLAUDE.md).
+      2. DIE WIRKUNG AUF DIE OPTIMIERUNG IST UNGEMESSEN. Metas Match-Qualität ist nach S5 nicht
+         erneut abgelesen, und ob ein Anbieter ein Feld VERLANGT oder nur EMPFIEHLT, ist
+         gelesen, nicht gemessen. Fundstelle: VERMERK P11.7-25.
+      3. DIE ERFOLGSZEILE BELEGT DIE ANNAHME, NICHT DIE VERARBEITUNG — an allen fünf Zielen.
+         Bei google sind ein Status ausser 200 und "200 mit fieldWarnings" ungemessen, bei meta
+         der Status ohne Test-Code. Fundstelle: die Dauerregel "JEDER FAN-OUT-ADAPTER SCHREIBT
+         BEI EINER ANGENOMMENEN ANTWORT GENAU EINE ERFOLGSZEILE — SIE BELEGT DIE ANNAHME, NICHT
+         DIE VERARBEITUNG" (docs/immer-beachten.md); VERMERKE P11.7-33 und P11.7-34.
+      4. DIE PUNKTE F5 BIS F8 SIND GELESEN BZW. EINMAL GEMESSEN, IHRE WIRKUNG NICHT: die
+         Deduplizierung bei tiktok (docs/ziel-befunde/tiktok.md, Teil (n); die Doppelzählung
+         mit einem eigenen Pixel des Betreibers ist nur ABGELEITET, Backlog, Zuschnitt-Frage
+         P11.7-10) · welche Meta-Version tatsächlich verarbeitet wird (meta.md, Teil (y)) ·
+         welches Rate-Limit bei meta, tiktok und linkedin greift (meta.md (u), tiktok.md (o),
+         linkedin.md (as)) · der Zweig "HTTP 200 mit `failed`" bei pinterest, und ohne
+         Testmodus eine einzige Beobachtung ohne Warnung (VERMERK P11.7-26; pinterest.md,
+         Teil (at)).
+      5. GOOGLE: die Schreibung der Auto-Tagging-Parameter ist nicht gelesen (offener Punkt "DIE
+         SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH AUF NICHTS GELESENES") ·
+         `landingPageDeviceInfo` ist nur auf Schema-Ebene angenommen (VERMERK P11.7-24) · was
+         Google im EWR ohne die DMA-Felder tut, steht nicht in der Quelle (Zuschnitt S7).
+      6. OB meta, tiktok UND pinterest KENNUNGEN SELBST AUS DER ADRESSE LESEN, und ob sich Feld
+         und Adresse ergänzen oder doppeln, ist offen (F4; Zuschnitt-Fragen P11.7-9 und
+         P11.7-19).
+      7. LINKEDIN: Die Ereignisse vom 2026-09-24 sind in der Anbieter-Anzeige nie erschienen,
+         die Ursache ist unbelegt (VERMERK P11.7-33, (L)); die Zweige aus S6b sind allein durch
+         Tests und Mutationen belegt (Zuschnitt S6b, B7).
+      8. DREI EINZELNE: Das Entfernen fremder Kennungen (S4) ist live nicht belegbar, der
+         Beweis ist der Wächter W, und meta.md, Teil (ac), bleibt ungeklärt · der angekündigte,
+         undatierte Schema-Wechsel bei pinterest (Backlog, Zuschnitt-Frage P11.7-21) · die zwei
+         Divergenzen bei google und linkedin (F3).
+      ALS MANGELHAFT BEKANNT — ACHT PUNKTE:
+      a. Eine Klick-Kennung gibt es nur auf der Landeseite; bei `fbc` ist der Zeitanteil der
+         Verarbeitungszeitpunkt. Fundstelle: offener Punkt "CONVERSIONS AUF FOLGESEITEN TRAGEN
+         BEI KEINEM ZIEL EINE KLICK-KENNUNG — UND JEDE ABHILFE VERLANGT EINE AUFBEWAHRUNG, DIE
+         DIESES PRODUKT NICHT HAT".
+      b. Eine unbekannte Kennung und eine im Fragment reisen mit; eine nicht parsebare Adresse
+         verliert auch die eigene (Zuschnitt S4, D3, D5 und D6).
+      c. LinkedIn verwirft einen IPv6-Besucher ohne `li_fat_id` (Zuschnitt S6b, B1 und B4); ob
+         auf exportierten Seiten IPv6 ankommt, ist offen (VERMERK P11.7-21).
+      d. Meta sendet zwei verlangte Felder nur bedingt (Backlog, Zuschnitt-Frage P11.7-22).
+      e. Die stillen Ausgänge VOR dem Adapter bleiben still, und die Erfolgszeile sieht nur der
+         Owner, eine Stunde lang. Fundstelle: offener Punkt "EIN ZIEL KANN KONFIGURIERT SEIN UND
+         TROTZDEM NICHT SENDEN", Ursache (3), dort als K4.
+      f. Kein Versions-Wächter für tiktok, google und pinterest (Backlog, Zuschnitt-Frage
+         P11.7-13).
+      g. `external_id` geht an kein Ziel (Backlog, Zuschnitt-Fragen P11.7-4, P11.7-12 und
+         P11.7-18).
+      h. Die Google-Frist im Status "Testing" läuft weiter; neu autorisiert am 2026-09-24.
+         Fundstelle: offener Punkt "DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN
+         PRODUKTION"".
+      Dazu, marginal und im Backlog: zwei Test-Titel und zwei Kommentare, die mehr bzw. etwas
+      anderes behaupten als ihr Code (Vorrat P11.7-11 und P11.7-12).
+      DER ERSTE PUNKT IST DER TRAGENDE: Das Produktversprechen des fünften Punkts ist, dass
+      jedes Netzwerk die Daten bekommt, mit denen es bestmöglich optimiert — bewiesen ist, dass
+      sie ankommen, nicht, dass sie zugeordnet werden. DIE ÜBRIGEN SIND BENANNTE LÜCKEN mit
+      eigener Ablage; sie halten die Phase nicht offen.
+      DIE HERKUNFT DIESER LISTE: gezogen aus den GRENZEN der 34 Vermerke, aus "Nächster
+      Schritt" und aus den Zuschnitt-Fragen der Standdatei (Inventur des Phasenendes, CC,
+      2026-09-25); die Fundstellen sind am Bestand nachgeprüft (CC, 2026-09-25). Einen Rang
+      trägt nur Punkt 1; die Reihenfolge der übrigen ist keine Wertung.
 
-      · KLICK-KENNUNGEN UND MATCH-FELDER ALLER GEBAUTEN ZIELE (OWNER 2026-09-22). JEDES
-        NETZWERK SOLL DIE DATEN BEKOMMEN, MIT DENEN ES BESTMÖGLICH OPTIMIERT — mit Blick
-        auf spätere interne Analytics und CRM.
-        ANLASS — OWNER-ANGABE, VON CC NICHT PRÜFBAR: Der Meta-Events-Manager meldet eine
-        Match-Qualität von 4,4/10 und "Server sendet keine Klick-ID (fbc)". Diese Angabe
-        ist NICHT am Repo und NICHT an einer Anbieter-Schnittstelle gemessen worden; sie
-        ist der Auslöser, nicht der Befund. WER SIE ALS MESSWERT ZITIERT, ZITIERT EINE
-        BILDSCHIRMLESUNG.
-        DER BEFUND AM EIGENEN CODE — GEMESSEN (CC, 2026-09-22, HEAD `9abdd2a`), verdichtet;
-        der Volltext steht in docs/aktiver-stand.md, VERMERK P11.7-1:
-        - ES GIBT EINEN BEACON, NICHT FÜNF. `buildCapiBeaconStatement`
-          (src/lib/tracking/meta.ts) liest GENAU EIN Cookie (`_fbp`) und `location.href`;
-          KEIN einziger URL-PARAMETER wird ausgelesen. Ein Vendor-Browser-Tag existiert
-          nur für meta (`fbq`).
-        - MATCH-FELDER JE ZIEL, vollständig: meta DREI (`client_ip_address`,
-          `client_user_agent`, `fbp`) · pinterest ZWEI (IP, UA) · tiktok ZWEI (IP, UA) ·
-          linkedin EINS (IP, und NUR IPv4) · google NUR die Klick-Kennungen, WEDER IP
-          NOCH UA.
-        - KEINE KLICK-KENNUNG AUSSER GOOGLES WIRD IRGENDWO BENANNT GEFÜHRT. Die Suche
-          über src/ nach fbc, fbclid, _fbc, ttclid, _ttp, epik und li_fat_id ergibt je
-          NULL Treffer, mit Positivkontrolle im selben Lauf.
-        GOOGLE GEHÖRT NUR ZU DIESEM PUNKT (OWNER-ENTSCHEIDUNG 2026-09-22). Die vier
-        Punkte darüber bleiben bei den vier Zielen, für die sie als Katalog-Lücken
-        festgestellt wurden. GRUND: Die Zahl VIER war am 2026-08-20 eine korrekte
-        Momentaufnahme — `'google'` kam erst am 2026-08-31 in `TRACKING_TARGETS`
-        (src/lib/settings.ts, Commit `659d672`; GEMESSEN, CC, 2026-09-22). Dieser Punkt
-        dagegen sagt ausdrücklich ALLE GEBAUTEN ZIELE und schliesst google damit ein.
-        DREI GRENZEN, JE EINZELN:
-        - E-MAIL UND TELEFON GEHÖREN AUSDRÜCKLICH NICHT DAZU. Für sie gilt die
-          Hash-Auflage der Datenklassen-Grenze, und sie sind eine ANDERE Arbeit mit einer
-          anderen Entscheidungslage. Wer sie hier mitnimmt, baut eine PII-Scheibe unter
-          dem Titel einer Match-Feld-Scheibe.
-        - OB EIN ANBIETER EINE KENNUNG VERLANGT ODER NUR EMPFIEHLT, IST UNGEMESSEN. Der
-          Unterschied entscheidet, ob ein fehlendes Feld ein Defekt oder eine Einbusse
-          ist; heute ist er für kein Ziel erhoben.
-        - FÜR TRAFFIC OHNE ANZEIGEN-KLICK IST EINE FEHLENDE KLICK-KENNUNG KORREKT. Ein
-          Besucher, der direkt kommt, trägt keine — die Abwesenheit ist dort kein Befund
-          und darf nicht als einer gezählt werden.
-        DIE DATENKLASSEN-ENTSCHEIDUNGEN, DIE DIESEN PUNKT BINDEN, STEHEN NICHT HIER,
-        SONDERN AN IHREM ORT — zweimal geschrieben liefen sie auseinander:
-        docs/offene-punkte.md, Eintrag "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE",
-        BLOCK VOM 2026-09-22, Teile (E2), (E3) und (E4). Dort ist die Reichweite der
-        dritten Datenklasse entschieden (fbc gleich welchen Trägers, fbp und
-        gleichartige Tag-Kennungen), der Grundsatz "eine Klick-Kennung geht nur an ihren
-        URHEBER" festgelegt — einschliesslich der Angabe, dass der heutige Code ihn
-        verletzt — und das Ablage-/Log-Verbot für den User-Agent klargestellt.
-        WAS DIESER PUNKT NICHT IST: KEIN Zuschnitt. Er benennt den Gegenstand; welche
-        Kennung je Ziel wie heisst, woher sie kommt und wo sie in die Nutzlast gehört,
-        ist UNGEMESSEN und Gegenstand des Anbieter-Crawls (Pflicht-Stopp für
-        docs/ziel-befunde.md, CLAUDE.md, "Anbieter-Befunde der Fan-Out-Ziele"). KEINE
-        EMPFEHLUNG zur Reihenfolge gegenüber den vier Punkten darüber.
-        PROVENIENZ: Der Punkt und die Zuordnung Googles sind OWNER-ENTSCHEIDUNG
-        (2026-09-22). Der Anlass ist eine OWNER-ANGABE (2026-09-22), NICHT gemessen. Die
-        Code-Befunde sind GEMESSEN am Repo (CC, 2026-09-22, HEAD `9abdd2a`); die drei
-        Grenzen sind OWNER-FESTLEGUNGEN desselben Tages.
+      DER VOLLTEXT DIESER ZEILE VOR DEM ABHAKEN — die vier Punkte vom 2026-08-20 samt Klammer
+      und Ausnahme der Rechtsform, die Erweiterung vom 2026-09-22 um den fünften Punkt mit
+      Anlass, Code-Befund, der Zuordnung Googles, den drei Grenzen und der Provenienz je
+      Angabe — STEHT IM COMMIT `b0c076b` und ist über `git show b0c076b:docs/roadmap.md`
+      vollständig nachzulesen. ER IST NICHT VERLORENGEGANGEN, SONDERN KOLLABIERT: Die vier
+      Punkte und der fünfte sind mit der Phase eingelöst; was über sie hinaus bindet, steht als
+      Dauerregel in docs/immer-beachten.md, als offener Punkt oder als Entscheidung im Archiv
+      der Phase. SEIN ZEIGER AUF VERMERK P11.7-1 IN docs/aktiver-stand.md IST MIT DIESEM
+      KOLLABIEREN ENTFALLEN und NICHT nachgezogen worden — der Vermerk steht unverändert im
+      Archiv der Phase.
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel: eine EIGENE Zeile, abgetrennt vom
       Eintrag 11.2 am 2026-09-08.
 
@@ -1909,9 +1900,18 @@ liegen beide hier und finden einander.
       ACCEPTED-ZEILEN WIEDER IM TESTPROTOKOLL — sichtbar, nicht verschluckt; kein Test wird
       davon rot. PROVENIENZ: der Filter ist GEMESSEN am Repo (CC, 2026-09-25, Bau-Commit
       `c37a41c`); dass ungefilterte Zeilen im Protokoll erscheinen, ist gemessen an der
-      Probe mF2 (Filter entfernt: 86 Zeilen; docs/aktiver-stand.md, VERMERK P11.7-34 der
-      Phase 11.7) — dass es für einen einzelnen fehlenden Namen ebenso geschieht, ist eine
-      FOLGE aus dem verankerten Muster, nicht eigens gemessen. KEINE Aussage darüber, ob GA4
+      Probe mF2 (Filter entfernt: 86 Zeilen; docs/claude-history/phase-11.7-anbieter-befunde.md,
+      VERMERK P11.7-34 der Phase 11.7) — dass es für einen einzelnen fehlenden Namen ebenso
+      geschieht, ist eine FOLGE aus dem verankerten Muster, nicht eigens gemessen. KEINE
+      Aussage darüber, ob GA4 gebaut wird.
+
+      OWNER-ENTSCHEIDUNG (2026-09-25, beim Phasenende 11.7) — DIE DOKU-LAST WIRD
+      GEGENGESTEUERT: DIE VERMERKE DER PHASE 11.9 TRAGEN NUR HARTE ANGABEN (docs/arbeitsweise.md,
+      Kadenz). IHR ARCHIV ERHEBT DEN MESSWERT AUS docs/arbeitsweise.md, ABSCHNITT 2b, ERNEUT UND
+      VERGLEICHT IHN MIT DEM DER PHASE 11.7. Der Anlass ist gemessen: Das Verhältnis docs : src
+      ist mit der Phase 11.7 zum zweiten Mal in Folge gestiegen, in jeder der drei dort
+      erhobenen Lesarten; die Werte und ihre Grenzen stehen im Kopf von
+      docs/claude-history/phase-11.7-anbieter-befunde.md. KEINE Aussage darüber, ob GA4
       gebaut wird.
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus: eine EIGENE Zeile, angelegt am
       2026-09-12. KEIN Produkt-Feature, sondern eine WARTUNGSARBEIT MIT EINEM FENSTER,

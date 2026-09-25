@@ -1624,7 +1624,8 @@ und KEINE Aussage darüber, wie sich dieses Projekt tatsächlich verhält.**
 `-type=A`, gegen drei Resolver** — den Router-Resolver der Maschine
 (`fe80::7ac5:7dff:fec6:3720`), `1.1.1.1` und `8.8.8.8`. **KEINE Doku-Lesung, KEIN echter
 Besuch einer Seite.** Anlass war der Stufe-1-Plan der Scheibe S6b der Phase 11.7
-(docs/aktiver-stand.md, VERMERK P11.7-21); der Befund gehört keiner Phase.
+(docs/claude-history/phase-11.7-anbieter-befunde.md, VERMERK P11.7-21); der Befund gehört
+keiner Phase.
 **WARUM ER IN DIESEM ABSCHNITT STEHT:** Die Label-Hosts sind die Ausspielung. **Wer die
 DNS-Zone von `publayer.net` führt und ob die gemessenen A-Adressen zu Vercel gehören, ist
 NICHT erhoben.**

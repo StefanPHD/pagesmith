@@ -118,7 +118,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [-] Phase 11.4 — Der Testknopf
 - [x] Phase 11.6 — Custom-Pixel
 - [x] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
-- [ ] Phase 11.7 — Anbieter-Befunde nachziehen
+- [x] Phase 11.7 — Anbieter-Befunde nachziehen
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
 - [x] Phase 11.11 — Import-Bereinigung
@@ -931,6 +931,17 @@ das Archiv soll gerade NICHT geladen werden. Der EINE @-Import des Repos steht u
   ein Inline-Script nur mit einer LADE-Adresse im Rumpf entfernbar ist, die vier
   Freigabe-Blöcke je Plan. ZWEI Entscheidungen sind als datierte ERGÄNZUNG an bestehende
   Dauerregeln gegangen (P11.11-9, P11.11-24).
+- docs/claude-history/phase-11.7-anbieter-befunde.md — gesamte Phase 11.7 (Anbieter-Befunde
+  nachziehen, zehn Scheiben S1 bis S10, 34 Vermerke). HIER NACHSEHEN, WER AN EINEM WEITEREN
+  ZIEL, AN EINER KLICK-KENNUNG, AN EINEM MATCH-FELD ODER AN DER ERFOLGSZEILE ARBEITET: 45
+  Einträge sind NICHT gehoben und bleiben hier, unter einem SAMMELVERMERK im Abschnitt
+  "Vollzogen"; einige stehen zugleich an ihrem Ort, etwa (E2) bis (E4) im Posten zur
+  Datenklassen-Grenze. Darunter die Zuschnitte S1 bis S9 samt `CLICK_ID_TABLE` und ihren
+  Grenzen (D1 bis D10), die Paar-Riegel bei tiktok und pinterest (P11.7-6, -7), E-c (welche
+  Match-Felder bewusst NICHT zum fünften Punkt gehören, je mit Grund) und die Crawl-Fragen F1
+  bis F8. ZWEI Dauerregeln sind daraus entstanden (die Erfolgszeile, die
+  MSYS-Pfadumwandlung), dazu eine Ergänzung an "COMMIT-KONVENTIONEN". Ihr Kopf trägt das
+  Protokoll der Hebung samt Gegenprobe und den Messwert nach Abschnitt 2b.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung (RISIKO /
   TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item). AUSLÖSER: Manifest-Arbeit;
   immer im SELBEN Commit wie die Tier-Übersicht hier.

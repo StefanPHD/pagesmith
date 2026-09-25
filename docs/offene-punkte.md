@@ -306,7 +306,8 @@ aufeinander; sie liegen alle hier und finden einander.
        ist seine AUFZÄHLUNG. Der Satz wird NICHT angefasst, und das ist eine Entscheidung
        und kein Übersehen: Seine Aussage trägt weiter, und ein nachgezogener Halbsatz
        machte aus einem Zeitdokument eine Behauptung über heute.
-       GEMELDET ALS VORRAT, NICHT GEBAUT: docs/aktiver-stand.md, Vorrat P11.7-2.
+       GEMELDET ALS VORRAT, NICHT GEBAUT: docs/claude-history/phase-11.7-anbieter-befunde.md,
+       Vorrat P11.7-2.
        ERLEDIGT 2026-09-25 (Phasenende 11.7, ARCHITEKTEN-ENTSCHEIDUNG): An der Roadmap-Zeile
        11.9 steht seither unmittelbar hinter dem Halbsatz ein DATIERTER Nachtrag, der die
        Aufzählung vervollständigt. Der Halbsatz selbst ist NICHT angefasst — er bleibt das
@@ -624,9 +625,9 @@ aufeinander; sie liegen alle hier und finden einander.
     (at)). Der Satz davor bleibt wörtlich.
   EHRLICH, JE ZIEL: was Pagesmith sendet und was nicht, und warum. Die Aufstellung dessen,
   was gesendet, was ausgeschlossen und was offen ist, steht je Ziel im Archiv der Phase 11.7
-  (heute: docs/aktiver-stand.md, VERMERK P11.7-25, "PUNKT 5, JE ZIEL", fortgeschrieben bis
-  VERMERK P11.7-30); die Hilfe übernimmt sie nicht ungeprüft, sondern misst sie beim Schreiben
-  am Code nach.
+  (docs/claude-history/phase-11.7-anbieter-befunde.md, VERMERK P11.7-25, "PUNKT 5, JE ZIEL",
+  fortgeschrieben bis VERMERK P11.7-30); die Hilfe übernimmt sie nicht ungeprüft, sondern
+  misst sie beim Schreiben am Code nach.
   VERBOTEN, WEIL UNWAHR (ARCHITEKTEN-BEFUND zum Owner-Entwurf, 2026-09-24):
   · "100 % der verfügbaren Signale" — E-Mail und Telefon werden bewusst NICHT gesendet
     (Roadmap-Zeile 11.7, Grenze des fünften Punktes; der Eintrag "DATENKLASSEN-GRENZE VOR DER

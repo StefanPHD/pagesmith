@@ -17,8 +17,8 @@ fünf. **OB EINE SITZUNG SIE VOLL LÄDT UND DANACH NOCH ARBEIT TRÄGT, IST AM 20
 GEMESSEN (OWNER, `/context`):** Volladung dieser Datei (408 302 Bytes), der Standdatei und
 des Kopfs samt einer vollständigen Aufklärung belegte 587,4k von 1M Token (59 %), frei
 379,6k — auf einem Modell mit 1M Kontext. Für ein Fenster von rund 200k trägt es nicht
-(ABLEITUNG aus den Zahlen). Nachweis: docs/aktiver-stand.md, VERMERK P11.7-23 der Phase
-11.7.
+(ABLEITUNG aus den Zahlen). Nachweis: docs/claude-history/phase-11.7-anbieter-befunde.md,
+VERMERK P11.7-23 der Phase 11.7.
 
 **WAS IM ÜBERNOMMENEN TEXT "DIESE DATEI" HEISST: DIE SAMMEL-DATEI VOR DER AUFTEILUNG, NICHT
 DIESE HIER.** Der Text ist vor der Aufteilung geschrieben worden und ist nicht angefasst
@@ -5783,8 +5783,8 @@ EINEM Lauf, live gegen `https://datamanager.googleapis.com/v1/events:ingest`, JE
 `https://www.googleapis.com/auth/datamanager`, per `read -rs` eingelesen und in keiner Ausgabe
 erschienen. Kopfzeilen `Authorization: Bearer …` und `Content-Type: application/json`, OHNE
 `x-goog-user-project`. Anlass: der Live-Test der Scheibe S7 der Phase 11.7
-(docs/aktiver-stand.md, VERMERK P11.7-24). **Kundennummer, Conversion-Type-ID und requestId
-stehen hier NICHT** — dieselbe Handhabung wie in (cb).
+(docs/claude-history/phase-11.7-anbieter-befunde.md, VERMERK P11.7-24). **Kundennummer,
+Conversion-Type-ID und requestId stehen hier NICHT** — dieselbe Handhabung wie in (cb).
 
 (cu) **`adIdentifiers.landingPageDeviceInfo` MIT `ipAddress` UND `userAgent` IST AUF
      SCHEMA-EBENE ANGENOMMEN — AUCH MIT EINER IPv6-ADRESSE.** **NEU.**

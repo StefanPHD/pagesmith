@@ -2021,8 +2021,9 @@ GEMESSEN am Repo (CC, 2026-09-23, HEAD `5d5602e`).
      "rejected" für eine Antwort ohne `res.ok`; daneben schreibt der Adapter "[capi] LinkedIn forward
      skipped: …" (Riegel, kein Aufruf) und "[capi] LinkedIn forward error: …" (Wurf, Zeitlimit).
      Eine Erfolgsprüfung sucht "forward accepted" gegen alle drei (GEMESSEN am Code, CC, 2026-09-25,
-     HEAD `c37a41c`; die Richtigstellung gilt allen Zielen: docs/aktiver-stand.md, Phase 11.7,
-     Abschnitt "Zuschnitt der Phase 11.7", S10, Q2). Der Wortlaut oben bleibt.
+     HEAD `c37a41c`; die Richtigstellung gilt allen Zielen:
+     docs/claude-history/phase-11.7-anbieter-befunde.md, Phase 11.7, Abschnitt "Zuschnitt der
+     Phase 11.7", S10, Q2). Der Wortlaut oben bleibt.
 
 ### MESSUNG 2026-09-23 — Annahme von `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` als zweiter Eintrag (Live-Test der Scheibe S6a, Phase 11.7) — der Teil (bd)
 
@@ -2143,7 +2144,8 @@ sind GEMESSEN am Repo (CC, 2026-09-24, HEAD `007a772`).
      · **GEMESSEN am Code (CC, 2026-09-24, HEAD `0e35d13`):** Die Nutzlast im Fall "IPv4 ohne
        `li_fat_id`" ist zeichengleich mit dem Stand `5d5602e`, unter dem die Anzeige am
        2026-09-23 reagierte (s. (bc)) — beide echten Adapter mit derselben Fixture, mit
-       Positivkontrolle. Einzelheiten: docs/aktiver-stand.md, VERMERK P11.7-32 der Phase 11.7.
+       Positivkontrolle. Einzelheiten: docs/claude-history/phase-11.7-anbieter-befunde.md,
+       VERMERK P11.7-32 der Phase 11.7.
      ZEIGER (2026-09-25) — DIE NACHABLESUNG IST GEMACHT: Die Anzeige sprang mit einem Klick am
      2026-09-25 auf diesen Tag; kein Ereignis vom 2026-09-24 war bis dahin angezeigt, die
      Ursache ist nicht belegt. s. unten (bg). Der Wortlaut oben bleibt.

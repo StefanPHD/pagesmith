@@ -1165,7 +1165,8 @@ TITEL DIE VERSIONSFRAGE:** Changelog und Übersichtsseite — geöffnet, Ergebni
 
 **HERKUNFT (2026-09-24):** GEMESSEN vom **OWNER, 09:44 UTC, im Terminal** (Git Bash, `curl`),
 **alle drei Läufe mit `?test=true`**, gegen `POST /v5/ad_accounts/{id}/events`; die Befehle
-stammen aus der Mess-Vorbereitung der Phase 11.7 (docs/aktiver-stand.md, VERMERK P11.7-26),
+stammen aus der Mess-Vorbereitung der Phase 11.7
+(docs/claude-history/phase-11.7-anbieter-befunde.md, VERMERK P11.7-26),
 Rumpf in der Form von `forwardToPinterest` (`src/lib/capi/pinterest-forward.ts`), mit
 Antwort-Kopfzeilen (`-D -`). Testwerte: IP `203.0.113.9` (TEST-NET) und ein erfundener
 User-Agent — der Adapter sendet die echten Werte des Besuchers. **Hier steht kein
@@ -1211,7 +1212,8 @@ Zugangsdatum, keine Werbekonto-Kennung und kein Anfrage-Bezeichner des Anbieters
 /v5/ad_accounts/{id}/events`, je ein Aufruf mit eigener `event_id` (`s9-A-1790255129` bis
 `s9-E-1790255129`), `event_name` `lead`, IP `203.0.113.9` (TEST-NET), ein erfundener
 User-Agent. Die Probe ist ein Entwurf von CC aus der Vorbereitung von S9, UNVERÄNDERT
-gefahren; ihre Form steht hier und in docs/aktiver-stand.md, VERMERK P11.7-29 (das Skript
+gefahren; ihre Form steht hier und in docs/claude-history/phase-11.7-anbieter-befunde.md,
+VERMERK P11.7-29 (das Skript
 selbst liegt nicht im Repo). Endpunkt, Kopfzeilen und Rumpf in der Form von
 `forwardToPinterest` (`src/lib/capi/pinterest-forward.ts`). Dazu **ABGELESEN, OWNER,
 dieselben Minuten:** die Test-Ansicht "Events testen" des eigenen Werbekontos (s. (aa)),
@@ -1307,9 +1309,10 @@ Adapter.
 **HERKUNFT (2026-09-24):** ABGELESEN vom **OWNER** an der Test-Ansicht "Events testen" des
 eigenen Werbekontos (s. (aa)), Einzelansicht je Ereignis, und am Vercel-Log. Gesendet hat der
 ADAPTER über den echten Weg: ein Klick auf der Live-Seite, Beacon an `/api/e`, Fan-Out, mit
-dem Projekt-Testmodus für Pinterest. Der Bau ist der Commit `024678a` (docs/aktiver-stand.md,
-VERMERK P11.7-30). Der Beacon trug `cns` = {meta, pinterest, tiktok, linkedin, google} je
-`true`. **Hier steht keine IP, kein Zugangsdatum und keine Werbekonto-Kennung.**
+dem Projekt-Testmodus für Pinterest. Der Bau ist der Commit `024678a`
+(docs/claude-history/phase-11.7-anbieter-befunde.md, VERMERK P11.7-30). Der Beacon trug
+`cns` = {meta, pinterest, tiktok, linkedin, google} je `true`.
+**Hier steht keine IP, kein Zugangsdatum und keine Werbekonto-Kennung.**
 
 (as) ÜBER DEN ECHTEN WEG ZEIGT DIE ANSICHT DIE KLICK-ID GENAU DANN, WENN `epik` IN DER ADRESSE
      STAND — R1 GEGEN S1.
@@ -1374,7 +1377,8 @@ HEAD `ed3008b`). **Hier steht keine IP, kein Zugangsdatum und keine Werbekonto-K
        Werbekontos (s. (u)); dort ist nichts abgelesen.
      · Die Verarbeitung ist nicht belegt: "accepted" heisst angenommen.
      NACHTRAG (2026-09-25) — ZWEI WEITERE BEOBACHTUNGEN OHNE TESTMODUS OHNE WARNUNG, ZUSAMMEN DREI.
-     Beim Live-Test der Scheibe S10c (docs/aktiver-stand.md, VERMERK P11.7-34 der Phase 11.7), zwei
+     Beim Live-Test der Scheibe S10c (docs/claude-history/phase-11.7-anbieter-befunde.md,
+     VERMERK P11.7-34 der Phase 11.7), zwei
      Klicks über den echten Weg, **Projekt-Testmodus für Pinterest AUS**, beide ohne `epik`:
      R1 (`…/?utm_source=s10cr1`) mit "[capi] Pinterest forward accepted: HTTP 200" um 07:49:32.730
      UTC und S1 (`…/?utm_source=s10cs1&gclid=…`) mit derselben Zeile um 07:51:50.865 UTC — **in

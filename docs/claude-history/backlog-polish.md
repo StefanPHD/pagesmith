@@ -4066,9 +4066,10 @@ offene Posten liest, liest sie falsch; ihr Erledigungs-Vermerk steht in ihrem ei
     ZEIGER (2026-09-25) — DIE ZEILE IST SEITHER EIGENS AUFGEKLÄRT: docs/offene-punkte.md, Posten
     "DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER", vierter Vermerk vom
     2026-09-25 — die Ableitung "höchstens einmal je Projekt und Stunde" ist widerlegt, und eine
-    Herabstufung von `access_token_expired` ist Kandidat für das Phasenende 11.7 (docs/aktiver-stand.md,
-    Phase 11.7, "Nächster Schritt"). **DER TRIGGER DIESES EINTRAGS IST DAMIT EINGETRETEN** — jene
-    Runde hat Vorrats-Eintrag 42 geöffnet —; **bearbeitet ist er nicht:** keine Aufspaltung der
+    Herabstufung von `access_token_expired` ist Kandidat für das Phasenende 11.7
+    (docs/claude-history/phase-11.7-anbieter-befunde.md, Phase 11.7, "Nächster Schritt").
+    **DER TRIGGER DIESES EINTRAGS IST DAMIT EINGETRETEN** — jene Runde hat Vorrats-Eintrag 42
+    geöffnet —; **bearbeitet ist er nicht:** keine Aufspaltung der
     Zeile, kein anderer Wortlaut je Zweig, keine Empfehlung. Der Wortlaut dieses Eintrags bleibt.
     ZEIGER (2026-09-25, Phasenende 11.7) — DER KANDIDAT IST AM PHASENENDE NICHT ENTSCHIEDEN
     UND LIEGT IN DIESER DATEI: Abschnitt "Aus Phase 11.7 gehoben (2026-09-25) …", Teil A,

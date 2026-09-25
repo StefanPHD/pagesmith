@@ -59,11 +59,19 @@ function rejectedLine(): string {
   return logLines()[1];
 }
 
+/** Alle Zeilen, die in console.info gelandet sind (die Erfolgszeile, S10b). */
+function infoLines(): string[] {
+  return (console.info as unknown as ReturnType<typeof vi.fn>).mock.calls.map(
+    (c) => String(c[0]),
+  );
+}
+
 beforeEach(() => {
   global.fetch = vi.fn(async () =>
     new Response(null, { status: 200 }),
   ) as unknown as typeof fetch;
   vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(console, "info").mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -295,5 +303,125 @@ describe("Meta-Fehlerpfad — die Deckel", () => {
     const line = rejectedLine();
     expect(line).toContain(`msg=${message.slice(0, 200)}`);
     expect(line).not.toContain(message.slice(0, 201));
+  });
+});
+
+// ===========================================================================
+// DIE ERFOLGSZEILE (Phase 11.7, S10b).
+//
+// Eine angenommene Antwort (res.ok — das bestehende Erfolgsurteil, kein neues) schreibt
+// GENAU EINE console.info-Zeile mit Ziel und HTTP-Status, sonst nichts. Das Muster ist
+// fuer alle fuenf Ziele zeichengleich (S10a). Die Faelle lesen BEIDE Kanaele: info fuer
+// die Zeile, error dafuer, dass sie nicht auf der falschen Stufe steht.
+// EINEN RIEGEL HAT DIESER ADAPTER NICHT. Ein werfender Getter im Body wirft laut
+// Vertragssatz 1 VOR dem try; dieser Fall wird hier bewusst NICHT festgenagelt.
+// ===========================================================================
+
+describe("Meta — die Erfolgszeile (S10b)", () => {
+  const ZEILE_200 = "[capi] Meta forward accepted: HTTP 200";
+
+  it("MS-a: HTTP 200 -> genau EINE Info-Zeile, keine Fehlerzeile", async () => {
+    // WIRD ROT, WENN: die Zeile fehlt, doppelt kommt, auf error steht oder mehr traegt.
+    await forwardToMeta(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(infoLines()).toEqual([ZEILE_200]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("MS-b: der Status kommt aus der Antwort — 201 ergibt 'HTTP 201'", async () => {
+    // WIRD ROT, WENN: der Status festgeschrieben statt gelesen wird. Jede Antwort mit
+    // res.ok gilt als angenommen. EINZIGER TEST GEGEN einen festgeschriebenen Status
+    // (Mutation mM6 der Scheibe S10b).
+    global.fetch = vi.fn(async () =>
+      new Response(null, { status: 201 }),
+    ) as unknown as typeof fetch;
+    await forwardToMeta(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(infoLines()).toEqual(["[capi] Meta forward accepted: HTTP 201"]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("MS-c: KEIN Wert aus Anfrage oder Antwort steht in einer Zeile — mit Positivkontrolle", async () => {
+    // WIRD ROT, WENN: IP, User-Agent, fbp, fbc bzw. fbclid, eventID, Adresse, Betrag,
+    // Waehrung, Testcode, Pixel-ID, Zugangsdatum (in der URL) oder ein Feld der Antwort
+    // in eine Zeile geraten (TRANSIT-ONLY; aus der Antwort allein der Status).
+    const FBCLID = "IwS10bErfundenFbclid-0001";
+    const FBP = "fb.1.1790000000000.1234567890";
+    const EVT = "evt-s10b-c-kennung";
+    const TESTCODE = "TEST-S10B-PROJ";
+    global.fetch = vi.fn(async () =>
+      jsonResponse({ events_received: 1, fbtrace_id: "TRACE-S10B-ANTWORT" }, 200),
+    ) as unknown as typeof fetch;
+    await forwardToMeta(
+      CONFIG,
+      "Purchase",
+      EVT,
+      {
+        value: 19.9,
+        currency: "EUR",
+        _fbp: FBP,
+        eventSourceUrl: `https://kunde.de/lp?utm_source=s10b&fbclid=${FBCLID}`,
+      },
+      IP,
+      UA,
+      TESTCODE,
+    );
+
+    // POSITIVKONTROLLE: jeder gesuchte Wert ist tatsaechlich hinausgegangen — sonst
+    // waere seine Abwesenheit in der Zeile trivial wahr.
+    const [url, init] = (global.fetch as unknown as ReturnType<typeof vi.fn>).mock
+      .calls[0] as [string, { body: string }];
+    for (const wert of [IP, UA, FBP, FBCLID, EVT, "kunde.de", "utm_source", "19.9", "EUR", TESTCODE]) {
+      expect(init.body).toContain(wert);
+    }
+    expect(url).toContain(TOKEN);
+    expect(url).toContain(CONFIG.pixelId);
+    expect(infoLines()).toEqual([ZEILE_200]);
+
+    const alle = [...infoLines(), ...logLines()].join("\n");
+    for (const wert of [
+      TOKEN, CONFIG.pixelId, IP, UA, FBP, FBCLID, EVT, "kunde.de", "utm_source",
+      "19.9", "EUR", TESTCODE, "TRACE-S10B-ANTWORT", "graph.facebook.com",
+    ]) {
+      expect(alle).not.toContain(wert);
+    }
+  });
+
+  it.each<[string, () => Response | Promise<Response>, number]>([
+    ["HTTP 400 mit Envelope", () =>
+      jsonResponse({ error: { code: 190, message: "Invalid parameter" } }, 400), 2],
+    ["HTTP 502 ohne JSON", () =>
+      new Response("<html>gateway</html>", { status: 502 }), 2],
+    ["HTTP 500 mit unlesbarem Rumpf", () =>
+      ({
+        ok: false,
+        status: 500,
+        headers: new Headers(),
+        text: async () => {
+          throw new Error("stream broken");
+        },
+      }) as unknown as Response, 2],
+    ["fetch wirft", () => {
+      throw new TypeError("network down");
+    }, 1],
+    ["Abbruch", () => {
+      throw new DOMException("Aborted", "AbortError");
+    }, 1],
+  ])("MS-d: %s -> KEINE Info-Zeile", async (_name, antwort, fehlerzeilen) => {
+    // WIRD ROT, WENN: die Zeile ausserhalb des Erfolgsurteils entsteht (Mutation mM2).
+    // POSITIVKONTROLLE: die Fehlerzeilen des Pfades — er wurde wirklich betreten.
+    global.fetch = vi.fn(async () => antwort()) as unknown as typeof fetch;
+    await forwardToMeta(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(infoLines()).toEqual([]);
+    expect(logLines()).toHaveLength(fehlerzeilen);
+  });
+
+  it("MS-e: mit Projekt-Testcode dieselbe Zeile — ohne den Code", async () => {
+    // WIRD ROT, WENN: die Zeile den Testmodus oder den Code traegt (Q7: keine Projekt-
+    // Angaben in der Zeile). Ein Ereignis mit Testcode wird angenommen und gezaehlt
+    // (docs/ziel-befunde/meta.md, Teil (a)); die Zeile sagt das nicht, und das ist gewollt.
+    await forwardToMeta(CONFIG, "Purchase", "evt-1", {}, IP, UA, "TEST-S10B-MODUS");
+    expect(infoLines()).toEqual([ZEILE_200]);
+    expect(infoLines().join("\n")).not.toContain("TEST-S10B-MODUS");
+    expect(logLines()).toEqual([]);
   });
 });

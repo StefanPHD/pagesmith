@@ -385,6 +385,16 @@ export async function forwardToMeta(
       // -> wir raten sonst. Der Body-Read liegt INNERHALB des fire-and-log-try: wirft er,
       // faengt ihn der bestehende catch, der Client bekommt weiterhin 204.
       console.error(await describeMetaError(res));
+    } else {
+      // DIE ERFOLGSZEILE (Phase 11.7, S10b). Eine angenommene Antwort — jede mit res.ok,
+      // das bestehende Erfolgsurteil, kein neues — schreibt GENAU EINE Info-Zeile mit Ziel
+      // und HTTP-Status und sonst nichts: keine Nutzlast, keine IP, keine Kennung, nie die
+      // URL (sie traegt den access_token) — TRANSIT-ONLY. Der Rumpf wird dafuer nicht
+      // gelesen. "accepted" heisst ANGENOMMEN, nicht verarbeitet: Nach Ablauf einer
+      // Version antwortet Meta mit Erfolg einer anderen Version
+      // (docs/ziel-befunde/meta.md, Teil (t)), und ein Ereignis mit Test-Code wird
+      // angenommen und gezaehlt (Teil (a)).
+      console.info(`[capi] Meta forward accepted: HTTP ${res.status}`);
     }
   } catch (err) {
     // Nur eine generische Meldung — nie die URL (traegt den Token) / den Token.

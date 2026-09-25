@@ -60,9 +60,17 @@ function logLines(): string[] {
   );
 }
 
+/** Alle Zeilen, die in console.info gelandet sind (die Erfolgszeile, S10b). */
+function infoLines(): string[] {
+  return (console.info as unknown as ReturnType<typeof vi.fn>).mock.calls.map(
+    (c) => String(c[0]),
+  );
+}
+
 beforeEach(() => {
   global.fetch = vi.fn(async () => jsonResponse(okBody())) as unknown as typeof fetch;
   vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(console, "info").mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -85,14 +93,15 @@ afterEach(() => {
 // ===========================================================================
 
 describe("Pinterest-Adapter — die DREI Ausgaenge des Rumpf-Lesers", () => {
-  it("T1: verarbeitet, keine Warnung -> KEINE Meldung", async () => {
+  it("T1: verarbeitet, keine Warnung -> KEINE Fehlerzeile", async () => {
     await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
     expect(logLines()).toEqual([]);
   });
 
   it("T2: verarbeitet MIT Warnung -> eigene Meldung, vom Fehlschlag unterscheidbar", async () => {
     // DER DRITTE AUSGANG. Ein Ereignis kann "processed" sein UND eine Warnung
-    // tragen — sie ist weder Fehler noch stiller Erfolg. Faellt bei M2.
+    // tragen — sie ist weder Fehler noch Erfolg ohne Befund; die Erfolgszeile daneben
+    // prueft PS-c. Faellt bei M2.
     global.fetch = vi.fn(async () =>
       jsonResponse(okBody({ warning_message: "deprecated field ignored" })),
     ) as unknown as typeof fetch;
@@ -751,5 +760,203 @@ describe("Pinterest — user_data.click_id ueber den Adressweg", () => {
       UA,
     );
     expect(global.fetch).not.toHaveBeenCalled();
+  });
+});
+
+// ===========================================================================
+// DIE ERFOLGSZEILE (Phase 11.7, S10b).
+//
+// Das bestehende Erfolgsurteil — evaluateSuccessBody meldet "processed" oder "warning" —
+// schreibt GENAU EINE console.info-Zeile mit Ziel und HTTP-Status, sonst nichts. Das
+// Muster ist fuer alle fuenf Ziele zeichengleich (S10a). Bei "warning" tritt sie NEBEN
+// die unveraenderte Warnzeile. Die Faelle lesen BEIDE Kanaele: info fuer die Zeile,
+// error dafuer, dass sie nicht auf der falschen Stufe steht.
+// ===========================================================================
+
+describe("Pinterest — die Erfolgszeile (S10b)", () => {
+  const ZEILE_200 = "[capi] Pinterest forward accepted: HTTP 200";
+
+  it("PS-a: processed ohne Warnung -> genau EINE Info-Zeile, keine Fehlerzeile", async () => {
+    // WIRD ROT, WENN: die Zeile fehlt, doppelt kommt, auf error steht oder mehr traegt.
+    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(infoLines()).toEqual([ZEILE_200]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("PS-b: der Status kommt aus der Antwort — 201 ergibt 'HTTP 201'", async () => {
+    // WIRD ROT, WENN: der Status festgeschrieben statt gelesen wird. EINZIGER TEST GEGEN
+    // einen festgeschriebenen Status (Mutation mP6 der Scheibe S10b).
+    global.fetch = vi.fn(async () => jsonResponse(okBody(), 201)) as unknown as typeof fetch;
+    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(infoLines()).toEqual(["[capi] Pinterest forward accepted: HTTP 201"]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("PS-c: processed MIT Warnung -> die Erfolgszeile UND die unveraenderte Warnzeile", async () => {
+    // WIRD ROT, WENN: die Zeile bei "warning" fehlt, die Warnzeile sich aendert oder
+    // entfaellt. DAS IST DER BETRIEBSFALL: jede gemessene Antwort traegt eine Warnung
+    // (docs/ziel-befunde/pinterest.md, Teil (al)(iv)). EINZIGER TEST GEGEN eine Zeile nur
+    // bei "processed" (Mutation mP7). Die Reihenfolge der beiden Zeilen ist nicht
+    // festgelegt und wird hier nicht geprueft.
+    global.fetch = vi.fn(async () =>
+      jsonResponse(okBody({ warning_message: "deprecated field ignored" })),
+    ) as unknown as typeof fetch;
+    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(infoLines()).toEqual([ZEILE_200]);
+    expect(logLines()).toEqual(["[capi] Pinterest forward warning: deprecated field ignored"]);
+  });
+
+  it("PS-d: KEIN Wert aus Anfrage oder Antwort steht in einer Zeile — mit Positivkontrolle", async () => {
+    // WIRD ROT, WENN: IP, User-Agent, Kennung, Zugangsdatum, epik, eventID, Adresse,
+    // Betrag, Waehrung oder ein Feld der Antwort in eine Zeile geraten (TRANSIT-ONLY; aus
+    // der Antwort allein der Status).
+    const EPIK = "dj0yS10bErfundenEpik-0001";
+    const EVT = "evt-s10b-d-kennung";
+    global.fetch = vi.fn(async () =>
+      jsonResponse(okBody({ antwort_marker: "RESP-S10B-ANTWORT" })),
+    ) as unknown as typeof fetch;
+    await forwardToPinterest(
+      CONFIG,
+      "Purchase",
+      EVT,
+      {
+        value: 49.9,
+        currency: "EUR",
+        eventSourceUrl: `https://kunde.de/lp?utm_source=s10b&epik=${EPIK}`,
+      },
+      IP,
+      UA,
+    );
+
+    // POSITIVKONTROLLE: jeder gesuchte Wert ist tatsaechlich hinausgegangen — sonst
+    // waere seine Abwesenheit in der Zeile trivial wahr.
+    const [url, init] = fetchCalls()[0];
+    for (const wert of [IP, UA, EPIK, EVT, "kunde.de", "utm_source", "49.9", "EUR"]) {
+      expect(init.body).toContain(wert);
+    }
+    expect(url).toContain(CONFIG.adAccountId);
+    expect(init.headers.Authorization).toContain(CONFIG.token);
+    expect(infoLines()).toEqual([ZEILE_200]);
+
+    const alle = [...infoLines(), ...logLines()].join("\n");
+    for (const wert of [
+      CONFIG.token, CONFIG.adAccountId, IP, UA, EPIK, EVT, "kunde.de", "utm_source",
+      "49.9", "EUR", "RESP-S10B-ANTWORT",
+    ]) {
+      expect(alle).not.toContain(wert);
+    }
+  });
+
+  it.each<[string, () => Promise<void>, boolean]>([
+    ["Riegel ohne User-Agent", () =>
+      forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, ""), true],
+    ["Riegel ohne IP", () =>
+      forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, undefined, UA), true],
+    ["HTTP 401 mit JSON", async () => {
+      global.fetch = vi.fn(async () =>
+        jsonResponse({ code: 2, message: "Authentication failed.", status: "failure" }, 401),
+      ) as unknown as typeof fetch;
+      await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    }, false],
+    ["HTTP 502 ohne JSON", async () => {
+      global.fetch = vi.fn(async () =>
+        textResponse("<html>gateway</html>", 502),
+      ) as unknown as typeof fetch;
+      await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    }, false],
+    ...(
+      [
+        ["HTTP 200 mit failed", () =>
+          jsonResponse({
+            num_events_received: 1,
+            num_events_processed: 0,
+            events: [{ status: "failed", error_message: "unknown event name" }],
+          })],
+        ["HTTP 200 mit leerem Rumpf", () => textResponse("")],
+        ["HTTP 200 ohne JSON", () => textResponse("<html>x</html>")],
+        ["HTTP 200 ohne Ereignis-Array", () =>
+          jsonResponse({ num_events_received: 1, num_events_processed: 1 })],
+        ["HTTP 200 mit NULL Eintraegen", () =>
+          jsonResponse({ num_events_received: 1, num_events_processed: 1, events: [] })],
+        ["HTTP 200 mit ZWEI Eintraegen", () =>
+          jsonResponse({
+            num_events_received: 1,
+            num_events_processed: 1,
+            events: [{ status: "processed" }, { status: "processed" }],
+          })],
+        ["HTTP 200, Zaehlwerte fehlen", () =>
+          jsonResponse({ events: [{ status: "processed" }] })],
+        ["HTTP 200, Widerspruch Zaehler/Status", () =>
+          jsonResponse({
+            num_events_received: 1,
+            num_events_processed: 1,
+            events: [{ status: "failed" }],
+          })],
+        ["HTTP 200 mit unlesbarem Rumpf", () =>
+          ({
+            ok: true,
+            status: 200,
+            headers: new Headers(),
+            text: async () => {
+              throw new Error("stream broken");
+            },
+          }) as unknown as Response],
+      ] as Array<[string, () => Response]>
+    ).map(([name, mk]): [string, () => Promise<void>, boolean] => [
+      name,
+      async () => {
+        global.fetch = vi.fn(async () => mk()) as unknown as typeof fetch;
+        await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+      },
+      false,
+    ]),
+    ["fetch wirft", async () => {
+      global.fetch = vi.fn(async () => {
+        throw new TypeError("network down");
+      }) as unknown as typeof fetch;
+      await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    }, false],
+    ["werfender Getter im Body", () =>
+      forwardToPinterest(
+        CONFIG,
+        "Purchase",
+        "evt-1",
+        {
+          get eventSourceUrl(): string {
+            throw new Error("boom");
+          },
+        },
+        IP,
+        UA,
+      ), false],
+  ])("PS-e: %s -> KEINE Info-Zeile", async (_name, lauf, istRiegel) => {
+    // WIRD ROT, WENN: die Zeile ausserhalb des Erfolgsurteils entsteht (Mutationen mP2,
+    // mP2b der Scheibe S10b).
+    await lauf();
+    expect(infoLines()).toEqual([]);
+    if (!istRiegel) {
+      // POSITIVKONTROLLE: genau eine Fehlerzeile — der Pfad wurde wirklich betreten.
+      expect(logLines()).toHaveLength(1);
+      return;
+    }
+    // DER RIEGEL IST STILL — er loggt nichts, eine Fehlerzeile gibt es als Kontrolle
+    // nicht. POSITIVKONTROLLE statt dessen: KEIN Aufruf, und DERSELBE Aufruf mit beiden
+    // Werten erzeugt die Zeile — sonst waere "keine Info-Zeile" trivial wahr.
+    expect(global.fetch).not.toHaveBeenCalled();
+    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
+    expect(infoLines()).toEqual([ZEILE_200]);
+  });
+
+  it("PS-f: im Testmodus dieselbe Zeile — ohne Hinweis auf den Testmodus", async () => {
+    // WIRD ROT, WENN: die Zeile den Testmodus traegt (Q7: keine Projekt-Angaben in der
+    // Zeile). Im Testmodus zeichnet der Anbieter NICHT auf, die Antwort ist dieselbe
+    // (docs/ziel-befunde/pinterest.md, Teile (ah), (u)); die Zeile sagt das nicht, und das
+    // ist gewollt.
+    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA, true);
+    expect(fetchCalls()[0][0]).toContain("?test=true");
+    expect(infoLines()).toEqual([ZEILE_200]);
+    expect(infoLines().join("\n")).not.toContain("test");
+    expect(logLines()).toEqual([]);
   });
 });

@@ -359,12 +359,14 @@ function describeErrorBody(
  * kommen mehrere zurueck, hat der Anbieter seinen eigenen Vertrag gebrochen. Den
  * ersten zu lesen unterstellte eine Reihenfolge, die niemand zugesagt hat.
  *
- * DIE WARNUNG IST DER DRITTE AUSGANG, und sie ist weder Fehler noch stiller Erfolg:
+ * DIE WARNUNG IST DER DRITTE AUSGANG, und sie ist weder Fehler noch Erfolg ohne Befund:
  * Ein Ereignis kann "processed" sein UND eine warning_message tragen. Sie zu
  * verwerfen hiesse, eine Rueckmeldung wegzuwerfen, die der Anbieter eigens sendet;
  * sie als Fehler zu behandeln waere falsch, denn das Ereignis IST verarbeitet.
  * SIE IST FREIER TEXT und geht deshalb durch DENSELBEN Bereiniger wie jede andere
  * Anbieter-Meldung.
+ * Seit S10b schreibt der Aufrufer bei "processed" UND bei "warning" die Erfolgszeile; die
+ * Warnzeile tritt daneben, sie ersetzt sie nicht.
  */
 function evaluateSuccessBody(
   res: Response,
@@ -633,8 +635,20 @@ export async function forwardToPinterest(
       console.error(describeErrorBody(res, raw, parsed));
       return;
     }
-    const { line } = evaluateSuccessBody(res, raw, parsed);
+    const { outcome, line } = evaluateSuccessBody(res, raw, parsed);
     if (line) console.error(line);
+    // DIE ERFOLGSZEILE (Phase 11.7, S10b). Das bestehende Erfolgsurteil — "processed" oder
+    // "warning", kein neues — schreibt GENAU EINE Info-Zeile mit Ziel und HTTP-Status und
+    // sonst nichts: nichts aus der Anfrage (TRANSIT-ONLY), aus der Antwort allein der
+    // Status. Die Warnzeile darueber bleibt unveraendert und tritt DANEBEN; im Betrieb
+    // traegt jede gemessene Antwort eine Warnung (docs/ziel-befunde/pinterest.md, Teil
+    // (al)(iv)), also entstehen dort beide Zeilen. Die Menge steht POSITIV da: ein
+    // kuenftiger Ausgang zaehlt nicht still als angenommen.
+    // "accepted" heisst ANGENOMMEN, nicht erfasst: Im Testmodus werden die Ereignisse
+    // nicht aufgezeichnet, die Antwort ist dieselbe (Teile (ah), (u)).
+    if (outcome === "processed" || outcome === "warning") {
+      console.info(`[capi] Pinterest forward accepted: HTTP ${res.status}`);
+    }
   } catch (err) {
     // Nur der Fehler-NAME. errorName liest ausschliesslich .name — nie die Message,
     // die Client-Input oder Fremdtext tragen kann. Ein Abort landet als DOMException

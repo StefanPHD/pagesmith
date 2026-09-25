@@ -3392,6 +3392,17 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   Kontrollen sind GEMESSEN am Repo (CC, 2026-09-17). Dass der Trigger für Nummern-Zeiger
   unerreichbar wird, ist eine ABLEITUNG aus Antrag B, keine Messung.
 
+  ERGÄNZT 2026-09-25 (Vorrat P11.9-16 der Phase 11.9) — DIE ACHSE VOM 2026-09-17 SIEHT NUR
+  TITEL HINTER DEM PFAD. Sie sucht "den Pfad `docs/aktiver-stand.md` gefolgt von einem
+  ZITIERTEN Abschnittstitel"; ein Titel VOR dem Pfad liegt ausserhalb. BEISPIEL, GEMESSEN (CC,
+  2026-09-25): docs/claude-history/phase-11.2-google.md, Absatz "DER VORRATS-EINTRAG 4 IST
+  UNBERÜHRT", schreibt 'im Abschnitt "Vorrat (gemeldet, nicht gebaut)" DIESER Datei
+  (docs/aktiver-stand.md)' — ein Hausform-Titel vor dem Pfad; in den 120 Zeichen danach steht
+  kein zitierter Titel. OB DIE ZWANZIG DARÜBER IHN FÜHREN, IST NICHT ERHOBEN: das Muster vom
+  2026-09-17 ist beschrieben, nicht abgelegt. Eine Zählung der Zeiger dieser Form gibt es
+  nicht. Der Trigger bleibt unverändert. Herkunft: Nebenbefund einer Runde vom 2026-09-25,
+  festgehalten in docs/claude-history/phase-11.9-ga4.md, Vorrat P11.9-16. KEINE EMPFEHLUNG.
+
 - DER TESTZUSTAND WIRD NACH DEM SPEICHERN NICHT NEU GEHOLT — UND ER ÜBERLEBT DEN
   PROJEKTWECHSEL (ZWEI TRIGGER, je einzeln hinreichend, beide spätestens vor einem
   Beta-Launch: (1) für die drei Speicherpfade aus (b) — der erste fremde Nutzer, der

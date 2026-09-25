@@ -4005,8 +4005,10 @@ offene Posten liest, liest sie falsch; ihr Erledigungs-Vermerk steht in ihrem ei
     Zeiger neu.
     GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder zur Reihenfolge noch
     dazu, ob alle 110 oder nur die tatsächlich mehrdeutigen anzufassen sind.
-    TRIGGER: **die erste Arbeit an GA4** — spätestens ein Zuschnitt der Zeile 11.9 —, ODER
-    die nächste Runde, die eine dieser Dateien ohnehin öffnet.
+    TRIGGER: **die Wiederaufnahme der Phase 11.9**, ODER die nächste Runde, die eine dieser
+    Dateien ohnehin öffnet. ERSETZT 2026-09-25 — bis dahin lautete der erste Teil "die erste
+    Arbeit an GA4 — spätestens ein Zuschnitt der Zeile 11.9 —"; Phase 11.9 ist verworfen
+    (docs/roadmap.md, Eintrag 11.9), ihre Kipp-Bedingungen stehen dort.
     **ABGRENZUNG ZU EINTRAG 61, damit die zwei nicht zusammengezogen werden:** Jener zählt
     Zeiger auf den PFAD `docs/aktiver-stand.md`, die nach dem Schnitt vom 2026-09-08 auf eine
     andere Datei zeigen müssten. Dieser zählt Zeiger auf die PHASENNUMMER `11.2`, die nach der
@@ -6067,3 +6069,30 @@ Doku-Commit. KEIN FIX-VORSCHLAG über das Benannte hinaus.
   ist Zeitdokument und bleibt richtig.
   GEMESSEN am Repo (CC, 2026-09-25, HEAD `912f70a`). TRIGGER: die nächste Runde, die
   `src/lib/tracking/target-adapters.ts` ohnehin öffnet (Code-Commit).
+
+## Aus Phase 11.9 gehoben (2026-09-25) — zwei Bindungen und zwei Owner-Fragen, die JEDES weitere Ziel treffen
+
+Phase 11.9 ist am 2026-09-25 VERWORFEN (OWNER-ENTSCHEIDUNG; docs/roadmap.md, Eintrag 11.9).
+Die zwei Einträge hier sind NICHT GA4-spezifisch: Sie gelten dem nächsten neuen Mitglied von
+`TrackingTarget`, gleich welchem Anbieter. Die Owner-Fragen P11.9-9 und P11.9-10 waren an GA4
+gestellt; ihr GA4-Teil ist gegenstandslos, ihr allgemeiner Teil geht in den Eintrag der
+Bindung auf, an der er hängt. Herkunft: die Standdatei der Phase 11.9, archiviert als
+docs/claude-history/phase-11.9-ga4.md. Gemessen am Repo (CC, 2026-09-25, HEAD `912f70a`).
+KEINE EMPFEHLUNG.
+
+- **Bindung P11.9-3, mit Owner-Frage P11.9-10 — `ALL_CONSENT_KEYS` SETZT EIN NEUES ZIEL VOR `analytics` UND `custom`**
+  Die Ableitung (`src/lib/tracking/consent-targets.ts`) beginnt mit
+  `...TRACKING_TARGETS.map(...)`; ein neues Ziel landet damit VOR den zwei Nicht-Ziel-Schlüsseln.
+  Ihr Kommentar sagt, ein Wert vor `analytics` "verschoebe einen bestehenden Wert und machte
+  jeden früheren Byte-Vergleich wertlos". ROT WERDEN (nicht durch tsc) die Literale `SIEBEN`
+  bzw. `ps1:…` in den consent-bar-, consent-modal-, consent-revoke-, consent-store-,
+  pageview-emitter.resend- und custom-pixel-Tests. OFFEN (Owner-Frage P11.9-10): die
+  Reihenfolge — an der Ziel-Ableitung oder hinten angehängt.
+  TRIGGER: das nächste neue Mitglied von `TrackingTarget`.
+
+- **Bindung P11.9-4, mit Owner-Frage P11.9-9 — `CONSENT_GROUP_KEYS` LEGT JEDEN NEUEN SCHLÜSSEL STILL IN "Werbung"**
+  `ads: ALL_CONSENT_KEYS.filter((k) => k !== ANALYTICS_CONSENT_TARGET)`
+  (`src/lib/tracking/consent-choice.ts`). Rot wird allein der Test `G0` (consent-bar.test.ts);
+  die Gruppierung ist Entscheidung (25) der Phase 11.5. OFFEN (Owner-Frage P11.9-9): die Gruppe
+  des neuen Ziels — "Messung" oder "Werbung".
+  TRIGGER: das nächste neue Mitglied von `TrackingTarget`.

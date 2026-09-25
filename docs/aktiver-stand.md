@@ -23,6 +23,7 @@ Gattung einmal (VERMERK, Entscheidung, Vorrat, Zuschnitt-Frage; GEMESSEN am Repo
 - Owner-Fragen, fällig nach der GA4-Lesung
 - Register der Phase 11.9
 - Nächster Schritt der Phase 11.9
+- Vollzogen — was hier stand und wohin es gegangen ist
 
 ## Entscheidung zum Ablauf der Phase 11.9
 
@@ -228,3 +229,65 @@ Die GA4-Anbieter-Lesung nach docs/immer-beachten.md, "ANBIETER-DOKUMENTATION WIR
 ABSCHNITTSWEISE GELESEN …". Ihre Fragen legt der Crawl-Prompt fest; diese Datei entwirft keine.
 NACHGETRAGEN 2026-09-25: DIE LESUNG IST GEFAHREN (Vermerk P11.9-15). Was sie beantwortbar macht,
 steht dort unter (3); der nächste Schritt ist Sache des Owners.
+
+## Vollzogen — was hier stand und wohin es gegangen ist
+
+**DIE HEBUNG DES PHASENENDES 11.9, 2026-09-25.** Anlass: OWNER-ENTSCHEIDUNG 2026-09-25 — Phase
+11.9 ist VERWORFEN, Marker `[-]` (docs/roadmap.md, Eintrag 11.9). Dieser Abschnitt ist das
+REGISTER; an den Einträgen oben steht kein Einzelzeiger. Titel-Zitate ohne Überschriften-Marke.
+Die Vermerke P11.9-2 und P11.9-15 werden nicht zugeordnet; sie bleiben im Archiv.
+
+**DIE ZIELE UND IHRE FUNDSTELLEN:**
+- **OP** — docs/offene-punkte.md, als datierte Ergänzung an einem bestehenden Posten; der Stub
+  in CLAUDE.md bleibt, weil Titel und Trigger unverändert sind.
+- **BL** — docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.9 gehoben
+  (2026-09-25) — zwei Bindungen und zwei Owner-Fragen, die JEDES weitere Ziel treffen", bzw.
+  der Abschnitt "Nachtrag 2026-09-25 (Phase 11.9, erste Aufklärung) — zwei Kommentare im
+  Code, die heute Falsches sagen".
+- **ERL** — gestrichen mit Beleg; der Eintrag steht oben unverändert, der Beleg hier.
+
+**JE EINTRAG — NUMMER MIT GATTUNG → ZIEL, FUNDSTELLE BZW. BELEG:**
+- Entscheidung P11.9-1 → ERL. Beleg: die Lesung ist gefahren (Commit `31c7404`, Vermerk
+  P11.9-15); die Phase, deren Ablauf sie ordnete, ist verworfen.
+- Bindung P11.9-3 → BL, Eintrag "Bindung P11.9-3, mit Owner-Frage P11.9-10 …". Gegenstand ist
+  "ein neues Ziel", nicht GA4.
+- Bindung P11.9-4 → BL, Eintrag "Bindung P11.9-4, mit Owner-Frage P11.9-9 …". Gegenstand ist
+  "ein neues Ziel", nicht GA4.
+- Bindung P11.9-5 → ERL. Beleg: derselbe Gegenstand steht als Dauerregel in
+  docs/immer-beachten.md, "EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN FAIL-CLOSED AN,
+  UND EIN DEPLOY HEILT DAS NICHT" (`allowedTargets` lässt ohne `cns` allein
+  `LEGACY_CONSENT_ROLE` durch, `consentAllows` wird nicht gefragt, ein neues Ziel trägt die
+  Rolle nicht).
+- Owner-Frage P11.9-6 → ERL. Beleg: GA4-spezifisch (Measurement Protocol oder Data Manager
+  API), gegenstandslos durch das `[-]`; das Material steht in docs/ziel-befunde/ga4.md, Teile
+  (g) und (l).
+- Owner-Frage P11.9-7 → ERL. Beleg: GA4-spezifisch (Herkunft der GA4-`client_id`),
+  gegenstandslos durch das `[-]`; Material ga4.md, Teile (a) bis (f).
+- Owner-Frage P11.9-8 → ERL. Beleg: hängt an P11.9-7 und ist mit ihr gegenstandslos.
+- Owner-Frage P11.9-9 → BL, aufgegangen im Eintrag der Bindung P11.9-4 (ihr allgemeiner
+  Teil); der GA4-Teil ist gegenstandslos.
+- Owner-Frage P11.9-10 → BL, aufgegangen im Eintrag der Bindung P11.9-3 (ihr allgemeiner
+  Teil); der GA4-Teil ist gegenstandslos.
+- Owner-Frage P11.9-11 → ERL. Beleg: Ihr Gegenstand ist die Kollision eines ZWEITEN
+  Google-Ziels mit dem vergebenen Schlüssel 'google' — GA4-spezifisch, gegenstandslos durch das
+  `[-]`. Der allgemeine Rest (je Ziel eine eigene Migration auf `project_secrets`) steht als
+  Dauerregel in docs/immer-beachten.md, "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
+  CONSTRAINT-ERWEITERUNG MIT …".
+- Owner-Frage P11.9-12 → ERL. Beleg: Der fehlende GA4-Befund liegt vor (ga4.md, Teil (i)) und
+  ist mit dem `[-]` gegenstandslos. Dass JEDES neue Ziel je einen Zweig in `requiresTestCode`
+  und `testModeAnbieterAuskunft` braucht, erzwingt tsc (Vermerk P11.9-2, Punkt (7)), und die
+  Testmodus-Frage steht für jedes Ziel als H1 in docs/ziel-fragenkatalog.md.
+- Vorrat P11.9-13 → BL (seit der Anlage, Abschnitt "Nachtrag 2026-09-25 (Phase 11.9, erste
+  Aufklärung) …").
+- Vorrat P11.9-14 → BL (ebenda).
+- Vorrat P11.9-16 → OP, datierte Ergänzung am Posten "ZEIGER AUF docs/aktiver-stand.md MEINEN
+  EINE FRÜHERE STANDDATEI …".
+
+**DIE BILANZ: 14 = OP 1 · BL 6 · ERL 7.** Keine neue Dauerregel.
+
+**AUSSERHALB DER BILANZ, IM SELBEN COMMIT:** docs/claude-history/backlog-polish.md, Eintrag 63
+("DIE 110 ZEIGER AUF "11.2" IN DER GEPFLEGTEN DOKU SIND NICHT KLASSIFIZIERT.") — sein
+Gegenstand ist GA4-spezifisch (ob ein Zeiger nach der Trennung GA4 meint); der erste Teil
+seines Triggers ist auf "die Wiederaufnahme der Phase 11.9" ersetzt. Der Posten im Archiv
+11.7 (Vorrat P11.7-2, Trigger "der Zuschnitt von GA4") ist dort bereits ERLEDIGT und nicht
+angefasst.

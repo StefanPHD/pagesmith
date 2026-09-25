@@ -42,6 +42,7 @@ DATEI MIT VERZEICHNIS NICHT").
 - Fragen an den Zuschnitt (nach dem Meta-Crawl)
 - Zuschnitt der Phase 11.7
 - Nächster Schritt
+- Vollzogen — was hier stand und wohin es gegangen ist
 
 ## Gegenstand der Phase
 
@@ -3335,3 +3336,130 @@ worden; im Status "Testing" stirbt das Erneuerungs-Token sieben Tage danach (VER
 mit dem fünften Ziel eingelöst, der Satz "KEIN ZUSCHNITT VOR DIESER AUFKLÄRUNG" mit VERMERK
 P11.7-8. **WAS BLEIBT, IST IHR GEMEINSAMER GRUND:** Ein Zuschnitt gegen eine geratene
 Feldliste oder gegen ungeprüfte Annahmen über den eigenen Code ist nichts wert.
+
+## Vollzogen — was hier stand und wohin es gegangen ist
+
+**DIE HEBUNG DES PHASENENDES 11.7, 2026-09-25.** Grundlage: die Inventur desselben Tages (CC,
+READ-ONLY, HEAD `3e080b2`) mit 87 Einträgen in neun Gattungen, und die
+ARCHITEKTEN-ENTSCHEIDUNGEN A7-1 bis A7-16 desselben Tages, die sechs Zuordnungen der Inventur
+verschoben haben. **DIESER ABSCHNITT IST DAS REGISTER:** An den Einträgen oben steht KEIN
+Einzelzeiger; wer einen Eintrag sucht, findet hier sein Ziel. Titel-Zitate stehen ohne
+Überschriften-Marke.
+
+**DIE VIER ZIELE UND IHRE FUNDSTELLEN:**
+- **DR** — docs/immer-beachten.md (Kern) und docs/immer-beachten-herleitung.md (Volltext
+  und Verzeichnis).
+- **OP** — docs/offene-punkte.md, mit Stub in CLAUDE.md, "## Offene Punkte".
+- **BL** — docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.7 gehoben
+  (2026-09-25) — Vorrat, Zuschnitt-Fragen und Befunde der Standdatei, dazu vier Posten aus
+  docs/offene-punkte.md", Teil A.
+- **ERL** — gestrichen mit Beleg; der Eintrag steht oben unverändert und trägt seinen Beleg
+  schon selbst oder hier.
+- **NG** — nicht gehoben; der Eintrag bleibt im Archiv (Sammelvermerk unten).
+
+**JE EINTRAG — NUMMER MIT GATTUNG → ZIEL, FUNDSTELLE:**
+- I · Entscheidung P11.7-1 → NG · Entscheidung P11.7-2 → NG · Entscheidung P11.7-3 → NG ·
+  Entscheidung P11.7-4 → NG · Entscheidung P11.7-5 → NG · Entscheidung P11.7-6 → NG ·
+  Entscheidung P11.7-7 → NG.
+- II · E-a → NG · E-b → NG · E-c → NG · E-d → NG · E-e → NG · E-f → NG.
+- III · Zuschnitt S1 → NG · Zuschnitt S2 → NG · Zuschnitt S3 → NG · Zuschnitt S4, D1 bis
+  D10 → NG · Zuschnitt S5, F1 bis F10 → NG · Zuschnitt S6a, L1 bis L7 → NG · Zuschnitt S6b,
+  B1 bis B7 → NG · Zuschnitt S7, G1 bis G5 und DMA → NG · Zuschnitt S8, T1 bis T5 → NG ·
+  Zuschnitt S9, N1 bis N6 und N9 → NG · Zuschnitt S9, N3 "DEKODIER-GRENZE" → OP, neuer
+  Posten "KEINE KLICK-KENNUNG IST AN EINEM ECHTEN ANZEIGENKLICK GEPRÜFT — WEDER IHRE FORM NOCH
+  DER ABGLEICH" (A7-6) · Zuschnitt S10, Q1 bis Q4 und TRANSIT-ONLY → DR, Regel "JEDER
+  FAN-OUT-ADAPTER SCHREIBT BEI EINER ANGENOMMENEN ANTWORT GENAU EINE ERFOLGSZEILE — SIE
+  BELEGT DIE ANNAHME, NICHT DIE VERARBEITUNG" (A7-2) · Zuschnitt S10, Filter im
+  Testprotokoll → NG (steht am Ort: Roadmap-Zeile 11.9, `vitest.config.ts`) · "Was den
+  Zuschnitt bindet" → ERL (Pflicht-Nachweis mit S4 geschlossen, VERMERK P11.7-16) · "Frist
+  mit Termin" → ERL (Bau-Commit `9778aca`, VERMERK P11.7-14) · "MITZUNEHMEN — VORRAT P11.7-1,
+  P11.7-3, P11.7-4" → ERL (`5d5602e`, `de88657`) · "AUSDRÜCKLICH NICHT TEIL DIESER PHASE" →
+  NG · "DREI ABWEICHUNGEN VOM FRÜHEREN ARCHITEKTEN-VORSCHLAG" → NG.
+- IV · Vorrat P11.7-1 → ERL (`de88657`) · Vorrat P11.7-2 → ERL (datierter Nachtrag an der
+  Roadmap-Zeile 11.9 in diesem Hebungs-Commit, A7-10; s. unten) · Vorrat P11.7-3 → ERL
+  (`5d5602e`) · Vorrat P11.7-4 → ERL (`de88657`) · Vorrat P11.7-5 → ERL (`5d5602e`) · Vorrat
+  P11.7-6 → ERL (`5d5602e`) · Vorrat P11.7-7 → ERL (`9778aca`) · Vorrat P11.7-8 → BL · Vorrat
+  P11.7-9 → ERL (`7f44ef5`, `ed3008b`, `cefe636`) · Vorrat P11.7-10 → BL · Vorrat P11.7-11 →
+  BL · Vorrat P11.7-12 → BL.
+- V · Hebungs-Kandidat P11.7-1 → DR, eigene Regel "GIT BASH WANDELT EIN ARGUMENT, DAS MIT
+  `@/` BEGINNT, STILL IN EINEN WINDOWS-PFAD UM — EINE SUCHE MELDET DANN EINE ABWESENHEIT, DIE
+  DER GEGENSTAND NICHT HERGIBT" (A7-4).
+- VI · Zuschnitt-Frage P11.7-1 → NG · Zuschnitt-Frage P11.7-2 → OP · Zuschnitt-Frage P11.7-3
+  → ERL (C2; Rest in Zuschnitt-Frage P11.7-22) · Zuschnitt-Frage P11.7-4 → BL · Zuschnitt-Frage
+  P11.7-5 → NG · Zuschnitt-Frage P11.7-6 → NG · Zuschnitt-Frage P11.7-7 → NG ·
+  Zuschnitt-Frage P11.7-8 → ERL (gemessen, VERMERK P11.7-23; CLAUDE.md nachgezogen) ·
+  Zuschnitt-Frage P11.7-9 → NG · Zuschnitt-Frage P11.7-10 → BL · Zuschnitt-Frage P11.7-11 →
+  ERL (E-f) · Zuschnitt-Frage P11.7-12 → BL · Zuschnitt-Frage P11.7-13 → BL · Zuschnitt-Frage
+  P11.7-14 → NG · Zuschnitt-Frage P11.7-15 → NG · Zuschnitt-Frage P11.7-16 → NG ·
+  Zuschnitt-Frage P11.7-17 → ERL (`5d5602e`, `9778aca`) · Zuschnitt-Frage P11.7-18 → BL ·
+  Zuschnitt-Frage P11.7-19 → NG · Zuschnitt-Frage P11.7-20 → OP · Zuschnitt-Frage P11.7-21 →
+  BL · Zuschnitt-Frage P11.7-22 → BL · Zuschnitt-Frage P11.7-23 → ERL (`4809cb5`) ·
+  Zuschnitt-Frage P11.7-24 → BL · Zuschnitt-Frage P11.7-25, Punkt (7) → BL · Zuschnitt-Frage
+  P11.7-26 → OP. Die drei OP-Fragen P11.7-2, P11.7-20 und P11.7-26 stehen als Vermerk am
+  Posten "CONVERSIONS AUF FOLGESEITEN TRAGEN BEI KEINEM ZIEL EINE KLICK-KENNUNG — UND JEDE
+  ABHILFE VERLANGT EINE AUFBEWAHRUNG, DIE DIESES PRODUKT NICHT HAT", dessen Titel und Trigger
+  dabei ersetzt worden sind (A7-13).
+- VII · F1 → NG · F2 → NG · F3 → NG · F4 → NG · F5 → NG · F6 → NG · F7 → NG · F8 → NG · "WAS
+  EIN CRAWL FÜR LINKEDIN NICHT KLÄRT" → NG.
+- VIII · K4 aus E-e → OP, Vermerk an Ursache (3) des Postens "EIN ZIEL KANN KONFIGURIERT SEIN
+  UND TROTZDEM NICHT SENDEN", Trigger erweitert (A7-1) · Herabstufung von
+  `access_token_expired` → BL (A7-5) · die Q7-Zeiger aus `src/` → NG · Backlog-Eintrag 65 →
+  BL (bleibt, wo er ist; Zeiger vom 2026-09-25 an ihm).
+- IX · Befund aus VERMERK P11.7-16, Mutation m6 → OP, Vermerk am Posten "DREI WEGE, AUF
+  DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE", gemessen und abgeleitet getrennt
+  (A7-16) · Frage aus VERMERK P11.7-23, (b) → ERL (der Posten "STIRBT DAS
+  ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR" führt die Kartenhälfte seit
+  seinem zweiten Vermerk vom 2026-09-04 als gebaut) · Befund aus VERMERK P11.7-23, (h), der
+  Zeiger "(af)" → BL · Verfahrensbefund aus VERMERK P11.7-30 → DR, Ergänzung der Regel
+  "COMMIT-KONVENTIONEN" (A7-11).
+
+**SAMMELVERMERK NICHT GEHOBEN — 45 EINTRÄGE.** Sie beschreiben, wie der Code dieser Phase
+gebaut ist (die Zuschnitte S1 bis S9, die Entscheidungen P11.7-5 bis P11.7-7), oder sie
+zeigen auf einen Ort ausserhalb dieser Datei, an dem sie schon stehen — die Teile (E2) bis
+(E4) des Postens "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE", der Kopf von
+`src/lib/capi/version-deadlines.test.ts`, die Kommentare an den Paar-Riegeln, die
+Roadmap-Zeile 11.9, die Ziel-Dateien —, oder sie sind Verfahrensentscheidungen, die mit dem
+Phasenende erschöpft sind (Entscheidung P11.7-1, E-a, E-d). Sie gelten, solange der Code
+steht; gestrichen ist keine. **HIER NACHZUSEHEN FÜR JEDEN, DER EIN WEITERES ZIEL, EINE
+KLICK-KENNUNG, EIN MATCH-FELD ODER DIE ERFOLGSZEILE ANFASST:** E-c (welche Felder bewusst
+nicht zum fünften Punkt gehören, je mit Grund), die Tabelle `CLICK_ID_TABLE` und ihre
+Grenzen (D1 bis D10), die Paar-Riegel (Entscheidungen P11.7-6 und P11.7-7).
+
+**DIE BILANZ — INVENTUR, VERSCHIEBUNGEN, IST:**
+
+| Ziel | Inventur | durch A7 verschoben | Soll | Ist (gezählt in diesem Abschnitt) |
+|---|---|---|---|---|
+| DR | 1 | +1 (A7-2), +1 (A7-11) | 3 | 3 |
+| OP | 5 | +1 (A7-6) | 6 | 6 |
+| BL | 19 | −1 (A7-6), −1 (A7-10), −1 (A7-11) | 16 | 16 |
+| ERL | 16 | +1 (A7-10) | 17 | 17 |
+| NG | 46 | −1 (A7-2) | 45 | 45 |
+| **Summe** | **87** | 0 | **87** | **87** |
+
+**AUSSERHALB DER BILANZ — DIE SICHTUNG DER OFFENEN PUNKTE**, die an dieses Phasenende gebunden
+war (Inventur Teil 3; A7-12 und A7-14). In docs/offene-punkte.md: GESTRICHEN mit Beleg —
+"CLAUDE.md NÄHERT SICH DEM LADELIMIT", "DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU
+VERDICHTEN", "DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND SIND NICHT
+GESICHTET", "eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR …", "`retry` HAT KEINE
+OBERGRENZE …", "ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8 …"; INS BACKLOG, wörtlich (Teil B
+jenes Abschnitts) — "DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT …", "DER OAUTH-WEG RUFT
+ensureTrackingKey NICHT …", "`saveProject` SCHREIBT `settings` UNVALIDIERT …", "DER RESOLVER
+SCHREIBT BEI TOTEM ZUGANGSDATUM …"; STUB NACHGEZOGEN — "DIE ADBLOCKER-KACHEL …" und "WAS
+GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT …" (je EINGETRETEN), "DIE SIEBEN-TAGE-FRIST …"
+(kein fester Termin mehr); STUB ENTFERNT — "KEIN TEST LÄSST EINEN WURF …" (erledigt seit dem
+2026-09-17). Die Grundsatzfrage des Sichtungs-Postens liegt im Backlog, Teil A, als Kandidat
+für einen Änderungsantrag an docs/arbeitsweise.md. In CLAUDE.md, "## Modus", ist die Zeile
+"Phase 11.5 — Einwilligungs-Dialog" gestrichen: Die Phase ist seit dem 2026-09-16
+abgeschlossen und kippt nicht mehr mit dem Zustand, an dem jene Liste hängt.
+
+**EINE AUSFÜHRUNG, DIE VOM WORTLAUT DER ZUORDNUNG ABWEICHT — A7-10:** Die Zuordnung lautete,
+den Halbsatz an der Roadmap-Zeile 11.9 nachzuziehen. Der Posten "DATENKLASSEN-GRENZE VOR DER
+ERSTEN PII-SCHEIBE", Teil (E2), hält fest: "Der Satz wird NICHT angefasst, und das ist eine
+Entscheidung und kein Übersehen … ein nachgezogener Halbsatz machte aus einem Zeitdokument
+eine Behauptung über heute." Vollzogen ist deshalb ein DATIERTER NACHTRAG unmittelbar hinter
+dem unveränderten Satz; die Aufzählung ist damit vervollständigt, das Zeitdokument steht.
+Die Abweichung ist in der Vorlage zur Freigabe benannt.
+
+**NOCH NICHT VOLLZOGEN, WEIL ES ZUR ARCHIVIERUNG GEHÖRT:** das [x] der Zeile 11.7 und das
+Kollabieren ihres Volltexts, der Eintrag unter "## Detail-Archiv", das Umbenennen dieser
+Datei und das Nachziehen der Zeiger auf docs/aktiver-stand.md.

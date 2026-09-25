@@ -15,6 +15,12 @@ DER ÜBERNOMMENE TEXT UNTERHALB DIESES KOPFES IST ZEICHENGLEICH die Datei vom 20
 kein Wort umformuliert, keine Regel gekürzt, nichts umsortiert:
 sha256 = da93d50f34a9365b221035fccf59ac5f0380048f94e11a10bd9a69da46f1b08a
 (243 222 Bytes, 3 058 Zeilen, LF, CR = 0, NUL = 0; erhoben vor dem Eingriff).
+ERGÄNZT 2026-09-25 (Phasenende 11.7): Seit diesem Tag trägt der Text unterhalb dieses Kopfes
+Zusätze, die NACH dem 2026-09-22 hinzugekommen sind — zwei Zeilen am Ende des Verzeichnisses,
+eine datierte Ergänzung an "COMMIT-KONVENTIONEN" und zwei Regeln am Dateiende. Die Prüfsumme
+darüber gilt dem Stand vom 2026-09-22 und ist damit alt, nicht falsch. Wiederholbar ist sie
+an diesem Stand (Commit `22deb39`, unverändert bis `3e080b2`): alles ab der Zeile IB-GELADEN
+bis zum Dateiende (GEMESSEN, CC, 2026-09-25).
 Er beginnt mit der Marke IB-GELADEN und trägt den ruhenden GATE-APPARAT um sie. DER KERN
 TRÄGT DIE MARKE IN ZEILE 1, DEN APPARAT NICHT — er ist Historie mit einer
 Wiederauflebens-Bedingung, und sein Ort ist deshalb hier.
@@ -243,6 +249,8 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS ...
 - BETREIBER-CODE IM AUSGELIEFERTEN TEXT REIST ALS WERT UND WIRD GEKAPSELT ...
 - EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING — WER KNOTEN ...
+- JEDER FAN-OUT-ADAPTER SCHREIBT BEI EINER ANGENOMMENEN ANTWORT GENAU EINE ...
+- GIT BASH WANDELT EIN ARGUMENT, DAS MIT `@/` BEGINNT, STILL IN EINEN ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -403,6 +411,27 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   pruefen. Taucht eine Migration im Diff auf, gilt zusaetzlich die
   Migration-VOR-Code-Deploy-Reihenfolge (eigene Regel: docs/db-regeln.md, "MIGRATION IMMER
   VOR CODE-DEPLOY").
+  ERGÄNZT 2026-09-25 (Phase 11.7, aus dem Verfahrensbefund am Commit der Scheibe S9) — DIE
+  SECRET-PRÜFUNG BRAUCHT EINE POSITIVKONTROLLE UND EINEN EIGENEN SCHRITT. Der Text darüber
+  bleibt wörtlich.
+  DER BEFUND (GEMESSEN, CC, 2026-09-24): Die Secret-Suche vor dem Commit lief im SELBEN
+  Befehl wie Commit und Push, und ihre Positivkontrolle meldete 0 — das Muster traf den
+  erfundenen Test-Token nicht, weil er einen Unterstrich trägt. Committet und gepusht wurde
+  trotzdem. Nachgeprüft am gepushten Commit mit erweitertem Muster: Positivkontrolle 1,
+  Treffer in den hinzugefügten Zeilen 0. Es war nichts durchgerutscht — aber die Prüfung
+  hatte nichts geprüft.
+  DIE ERGÄNZUNG: Die Prüfung ist nur mit einer POSITIVKONTROLLE eine Prüfung — das
+  Suchmuster muss im selben Lauf einen bekannten Köder finden; sonst ist ein echter
+  Nicht-Treffer von einem Muster, das nichts trifft, nicht zu unterscheiden (Lektion (d) an
+  "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE"). Sie läuft als EIGENER Schritt VOR Commit und
+  Push; schlägt die Kontrolle fehl, wird weder committet noch gepusht. IM SELBEN BEFEHL KANN
+  SIE NICHTS VERHINDERN: Ihr Ergebnis steht erst da, wenn der Commit schon läuft.
+  DIE BEDINGUNG DES ENTFALLENS: sobald ein mechanischer Schutz übernimmt — etwa
+  Push-Protection oder ein Pre-Commit-Scanner. Ob einer davon heute greift, ist nicht
+  erhoben.
+  PROVENIENZ: der Befund GEMESSEN (CC, 2026-09-24), protokolliert im Archiv der Phase 11.7,
+  VERMERK P11.7-30; die Ergänzung ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25 beim
+  Phasenende 11.7.
 - TESTDATEN UND TEST-SEQUENZ MÜSSEN DEN PRODUKTIVEN PFAD TREFFEN (Phase 9, zwei live
   gefundene Fehlschläge): (1) DATENLAGE: der 9a-Umschalt-Test gab A und B bewusst
   UNTERSCHIEDLICHES HTML, um die Ableitungskette maximal sichtbar zu machen — und sparte
@@ -3093,3 +3122,114 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   und WebKit sind ungemessen.
   PROVENIENZ: der Parser-Befund GEMESSEN (CC, 2026-09-19); die Folge für den Live-Baum eine
   ABLEITUNG; der Chrome-Lauf eine OWNER-ANGABE. Herleitung: das Archiv der Phase 11.6.
+- JEDER FAN-OUT-ADAPTER SCHREIBT BEI EINER ANGENOMMENEN ANTWORT GENAU EINE ERFOLGSZEILE —
+  SIE BELEGT DIE ANNAHME, NICHT DIE VERARBEITUNG (Phase 11.7, gehoben 2026-09-25 aus dem
+  Zuschnitt der Scheibe S10, Block "WAS ÜBER S10 HINAUS BINDET — JEDES KÜNFTIGE ZIEL": Q1
+  bis Q4 und TRANSIT-ONLY): Im Zweig, den der Adapter ohnehin als Erfolg wertet, und nur
+  dort, schreibt er genau eine Zeile `[capi] <Ziel> forward accepted: HTTP <Status>` über
+  `console.info`, mit einem Argument; `<Ziel>` ist der Anzeigename der übrigen Zeilen des
+  Adapters (heute `Meta`, `Pinterest`, `TikTok`, `LinkedIn`, `Google`).
+  DER ANLASS — GEMESSEN am Code (CC, 2026-09-24): Bei vier von fünf Zielen war ein Erfolg
+  STILL — meta, tiktok, linkedin und google loggten nur Ablehnung, Riegel und Wurf —, und
+  die Pinterest-Spur hing an der Warnung "external_id is missing", die mit einem gesendeten
+  `external_id` entfiele. Ob ein LinkedIn-Forward angekommen war, war an keiner Stelle
+  direkt zu sehen; die Anbieter-Anzeige "Data last received" bewegte sich nach zwei direkt
+  mit 201 angenommenen Aufrufen nicht (Archiv der Phase 11.7, VERMERK P11.7-22).
+  VIER TEILE, JE MIT GRUND:
+  · KEIN NEUES URTEIL (Q1): Die Zeile hängt am bestehenden Erfolgszweig. Eine Zeile mit
+    eigenem Urteil wäre eine zweite Auswertung neben der bestehenden.
+  · DAS WORT (Q2): "accepted" — ANGENOMMEN, nicht "erfolgreich" oder "gesendet". Ein
+    Meldungstext behauptet kein Ergebnis (Regel "CLIENT-SEITIGE SERVER-ACTION-AUFRUFE …",
+    letzter Absatz), und eine 2xx-Antwort belegt die Annahme, nicht die Verarbeitung.
+    GEMESSENER FALL: Google nahm über den echten Weg eine Anfrage mit erfundener gclid mit
+    HTTP 200 an, deren Verarbeitung erwartbar scheitert (docs/ziel-befunde/google.md, Teile
+    (cb) und (cv)).
+  · DIE STUFE (Q3): `console.info`, nicht `console.error`; die bestehenden Fehler- und
+    Warnzeilen bleiben unverändert.
+  · TRANSIT-ONLY IN DER ZEILE: nichts aus Anfrage oder Antwort ausser dem HTTP-Status —
+    keine Nutzlast, keine IP, kein User-Agent, keine Kennung, kein Zugangsdatum, keine
+    Ereignis- oder Projekt-Kennung. Grund: docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR
+    DER ERSTEN PII-SCHEIBE", und die Entscheidung P11.7-4 der Phase 11.7 (das Ablage- und
+    Log-Verbot gilt für den User-Agent wie für die IP). Drei Testdateien zeigen darauf mit
+    "Q7: keine Projekt-Angaben in der Zeile" (`meta-forward.test.ts`,
+    `pinterest-forward.test.ts`, `tiktok-forward.test.ts`); der Satz stand im Zuschnitt
+    ursprünglich unter Q7.
+  RICHTIGGESTELLT AM 2026-09-25, BEVOR DIE REGEL ENTSTAND — DAS GEGENSTÜCK: Im Zuschnitt stand
+  zunächst, "forward accepted"/"forward rejected" sei ein Suchpaar. GEMESSEN am Code (CC,
+  2026-09-25, HEAD `c37a41c`): Die Fehlerzeilen heissen je Ziel verschieden — meta `failed`,
+  `rejected`, `error` · pinterest `rejected`, `warning`, `error` · tiktok `rejected`,
+  `error` · linkedin `rejected`, `skipped`, `error` · google `failed`, `skipped`, `error`;
+  google trägt keine rejected-Zeile. Deshalb steht im Kern "gegen ALLE Fehlerzeilen des
+  Ziels".
+  DER FILTER IM TESTPROTOKOLL: `onConsoleLog` in `vitest.config.ts` unterdrückt die Zeile
+  allein auf stdout und allein für die fünf Anzeigenamen, verankert. GEMESSEN (CC,
+  2026-09-25): mit Filter 0 accepted-Zeilen im Protokoll, ohne ihn 86 in 12 Dateien; alle
+  übrigen Zeilen mit und ohne Filter 186 = 186, als Menge identisch. Fehlt ein neuer Name,
+  erscheinen seine Zeilen wieder — sichtbar, nicht verschluckt, und kein Test wird davon
+  rot. Dieselbe Auflage steht an der Roadmap-Zeile 11.9 (GA4).
+  DAS TESTMUSTER AUS S10, an den Mutationsproben gemessen (Archiv der Phase 11.7, VERMERKE
+  P11.7-31, P11.7-33, P11.7-34): je Adapter eine Gruppe (T8 linkedin, TS tiktok, MS meta,
+  PS pinterest, GS google), die rot wird, wenn die Zeile entfernt ist · unbedingt bzw. auch
+  in einem Fehlerzweig entsteht · eine weitere Angabe trägt · auf Stufe error steht ·
+  doppelt entsteht · den Status festschreibt; bei google zusätzlich, wenn vor der Zeile der
+  Rumpf gelesen wird, bei pinterest, wenn die Bedingung auf das bestehende Urteil fehlt oder
+  verengt ist. DREIUNDDREISSIG Proben, alle wie vorhergesagt.
+  DIE GRENZE — WAS DIE ZEILE NICHT LEISTET, und sie ist der Grund für die Bedingung des
+  Entfallens: Sie ist nur für den Owner sichtbar; die Logs halten auf dem Hobby-Plan eine
+  Stunde (docs/plattform-befunde.md, Vercel-Abschnitt, GELESEN); sie belegt an keinem Ziel
+  die Verarbeitung; und die stillen Ausgänge VOR dem Adapter bleiben still. Den Betreiber
+  erreicht sie nicht — das ist K4, geführt in docs/offene-punkte.md, "EIN ZIEL KANN
+  KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN", Ursache (3).
+  DAS MENGENGERÜST UND SEINE KIPPBEDINGUNG (Q4): eine Zeile je angenommenem Forward, also je
+  Conversion und Ziel, auf dem meistgetroffenen Pfad. Neu zu bewerten bei echtem Traffic
+  oder bei einer Log-Grenze des Plans — dann K4 oder eine Stichprobe.
+  VERWORFEN (OWNER-ENTSCHEIDUNG E-e der Phase 11.7, 2026-09-24): die Zeile befristet über
+  eine Umgebungsvariable (K1b) — ein unbeobachteter Schalter, dasselbe Muster wie der offene
+  Punkt zum deployment-weiten Testmodus-Hebel · ein lokaler Lauf des echten Adapters gegen
+  die Schnittstelle (K3) — mehr Aufwand für denselben Zweck.
+  ABGRENZUNG ZU "WELCHE REGEL WANN GREIFT: BEKOMMT DIESER FEHLER EIN BLEIBENDES SIGNAL?":
+  Jene ordnet einen gescheiterten Forward als VORKOMMNIS ein, als Grösse und nicht als
+  Meldung. Die Erfolgszeile ist weder Meldung noch Signal, sondern eine Logzeile für den
+  Owner; an jener Einordnung ändert sie nichts.
+  ABGRENZUNG ZU "WORTWAHL DASHBOARD 'NUR server-seitig erfasst', NIEMALS 'gerettet'":
+  dieselbe Ehrlichkeit an einer anderen Stelle — dort behauptet ein Dashboard-Wort keinen
+  Empfang, hier behauptet ein Log-Wort keine Verarbeitung.
+  DIE BEDINGUNG DES ENTFALLENS: sobald die Ablage des Ergebnisses je Ziel (K4) die
+  Erfolgssicht übernimmt, oder das Log-Konzept ersetzt wird. Heute ist keines von beiden
+  gebaut.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG E-e (2026-09-24, K1 für alle fünf Ziele); Q1 bis Q4 und
+  TRANSIT-ONLY ARCHITEKTEN-ZUSCHNITT (2026-09-24, Q2 richtiggestellt 2026-09-25); Bau und
+  Live-Beleg GEMESSEN (Bau-Commits `7f44ef5`, `ed3008b`, `cefe636`, Filter `c37a41c`; live
+  am 2026-09-24 und 2026-09-25, zuletzt alle fünf Zeilen in EINER Anfrage — Archiv der Phase
+  11.7, VERMERK P11.7-34). Die Erhebung zur Regel ist ARCHITEKTEN-ENTSCHEIDUNG vom
+  2026-09-25 beim Phasenende 11.7.
+- GIT BASH WANDELT EIN ARGUMENT, DAS MIT `@/` BEGINNT, STILL IN EINEN WINDOWS-PFAD UM — EINE
+  SUCHE MELDET DANN EINE ABWESENHEIT, DIE DER GEGENSTAND NICHT HERGIBT (Phase 11.7, gehoben
+  2026-09-25 aus Hebungs-Kandidat P11.7-1):
+  DER BEFUND — GEMESSEN (CC, 2026-09-23, Stufe-1-Plan der Scheibe S3, Gate G1): Eine Suche
+  nach `'@/lib/capi/config'` über `src/` meldete 0 Treffer; mit `MSYS_NO_PATHCONV=1` — die
+  Variable schaltet die Pfadumwandlung ab — waren es 15 Dateien (zwölf Config-Mocks, der
+  Wächter, `ingest.ts`, `meta-forward.ts`). Kein Fehler, keine Warnung: das Muster kommt
+  verändert beim Werkzeug an.
+  DIE ABHILFE: `MSYS_NO_PATHCONV=1` bei jedem Aufruf mit einem solchen Argument. Sie ist in
+  derselben Phase wieder gebraucht worden — für die Suchen der Aufklärung zu S4 (VERMERK
+  P11.7-15) und für die Zeiger-Inventur des Phasenendes (CC, 2026-09-25).
+  WARUM EINE EIGENE REGEL UND KEIN ABSATZ (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-25): Die
+  Nachbarregeln handeln von einem Werkzeug, das seine Eingabe richtig bekommt und falsch
+  misst oder nur einen Ausschnitt liefert. Hier misst das Werkzeug richtig; die SHELL hat
+  die Eingabe verändert, bevor es sie sieht. Die Abhilfe ist deshalb keine andere Waage,
+  sondern eine Variable vor dem Aufruf.
+  ABGRENZUNG ZU "`grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL …": Jene
+  führt als Umgebungs-Falle die leere `$TMPDIR`; diese ist eine zweite Falle derselben
+  Umgebung. Dass sie nicht an `grep` gebunden ist, ist eine ABLEITUNG aus dem Mechanismus —
+  die Umwandlung geschieht vor dem Aufruf —, gemessen ist ein Suchlauf.
+  ABGRENZUNG ZU "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND":
+  Jene verlangt, bei einer Abwesenheit das Werkzeug zu WECHSELN. Hier hilft ein Wechsel nur,
+  wenn das neue Werkzeug nicht über dieselbe Shell aufgerufen wird — derselbe Ausgang, ein
+  anderer Verursacher.
+  DIE GRENZE: Gemessen ist das Präfix `@/`. Ob andere Argumentformen — etwa ein führender
+  Schrägstrich — ebenso umgewandelt werden, ist in diesem Projekt nicht gemessen.
+  DIE BEDINGUNG DES ENTFALLENS: Die Arbeitsumgebung ist nicht mehr Git Bash unter Windows.
+  PROVENIENZ: der Befund GEMESSEN (CC, 2026-09-23); die Erhebung zur Regel ist
+  ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25 beim Phasenende 11.7. Herleitung: das Archiv der
+  Phase 11.7, Hebungs-Kandidat P11.7-1.

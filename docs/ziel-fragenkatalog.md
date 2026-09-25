@@ -67,6 +67,7 @@ dazu, bekommt die Matrix eine DATIERTE Fortschreibung — der alte Stand bleibt 
 - ## Fortschreibung der Matrix — 2026-08-20 (nachmittags), Ziel PINTEREST
 - ## Befunde am Verfahren (2026-08-20)
 - ## Fortschreibung der Matrix — 2026-09-11, Ziel LINKEDIN
+- ## Fortschreibung der Matrix — 2026-09-25, Phase 11.7 (meta, pinterest, tiktok, linkedin)
 
 **NACHGEZOGEN AM 2026-09-11 — DIE LETZTEN DREI ZEILEN FEHLTEN.** Bis dahin führte dieses
 Verzeichnis nur die ersten drei Abschnitte; die Pinterest-Fortschreibung und "Befunde am
@@ -827,3 +828,108 @@ gelesene Umfang (2026-09-11) — LinkedIn". Alle Buchstaben unten meinen jenen A
   Hilfe-Artikel, eine formale Suche über zweiundzwanzig Begriffe mit Positiv- und
   Negativkontrolle. **Beantwortet ist die Frage damit NICHT**: Ein Nicht-Treffer mit
   Reichweite ist kein Beweis der Abwesenheit. Teile (aa) bis (ad) und der Umfang-Block.
+
+## Fortschreibung der Matrix — 2026-09-25, Phase 11.7 (meta, pinterest, tiktok, linkedin)
+
+**DIE FORM IST DIE DER BEIDEN FORTSCHREIBUNGEN DARÜBER:** Die Zeilen im Abschnitt "Die Matrix —
+Stand 2026-08-20" werden NICHT überschrieben. Jede Änderung steht HIER, nennt den BISHERIGEN
+Zustand und den NEUEN und zeigt auf die Fundstelle der Antwort.
+
+**WAS SICH NICHT ÄNDERT:** Der KATALOG ist unberührt — keine Frage neu, keine gestrichen,
+keine umformuliert. Es bleiben 41 Fragen in 9 Gruppen. **GOOGLE BEKOMMT AUCH HIER KEINE
+SPALTE:** Die Matrix beschreibt die vier Ziele vom 2026-08-20; eine Spalte für google wäre
+eine eigene Fortschreibung und ist nicht Gegenstand dieser.
+
+**HERKUNFT DIESER FORTSCHREIBUNG:** die Anbieter-Crawls, Messungen und Live-Belege der Phase
+11.7 (2026-09-22 bis 2026-09-25). **DIE ANTWORTEN STEHEN NICHT HIER, SONDERN IN DER DATEI DES
+ZIELS UNTER docs/ziel-befunde/** — die Buchstaben unten meinen die Datei des jeweils genannten
+Ziels. Die Zuordnung zu den Zellen hat die Inventur des Phasenendes erhoben (CC, 2026-09-25;
+die Teile gegen ihre Überschriften geprüft, nicht voll gelesen). **DIE VIER ZELLEN, DIE DIE
+ROADMAP-ZEILE 11.7 FÜHRTE, SIND B2, G1, H2 UND H3;** was darunter als "zusätzlich berührt"
+steht, hat die Phase nebenbei beantwortet oder ergänzt.
+
+**B2 — VERSIONSANGABE:**
+- **B2** meta: bisher BEANTWORTET mit dem Teilaspekt "ob v21.0 noch bedient wird: NICHT
+  GEFUNDEN" → **BEANTWORTET** (gel, 2026-09-23) — für die Conversions API gilt der
+  Graph-Zeitplan (Teil (v)); der Adapter sendet seit Bau-Commit `9778aca` `v25.0`, laut Teil
+  (w) bis 2028-07-29; die Ankunft darunter ist gemessen (Teil (aa)). **WELCHE VERSION META
+  TATSÄCHLICH VERARBEITET, IST NICHT GEMESSEN** (Teil (y): eine Antwort-Kopfzeile zeigte es).
+- **B2** linkedin: bisher "202601 fällt am 15.01.2027" (Fortschreibung vom 2026-09-11) →
+  **BEANTWORTET, NACHGEZOGEN** (gel, 2026-09-23) — der Adapter sendet seit Bau-Commit
+  `5d5602e` `202609`, aktiv bis 15.09.2027 (Teil (au)); die Antwort auf eine abgeschaltete
+  Version ist 426 `NONEXISTENT_VERSION` (Teil (ar)); die Ankunft unter `202609` ist gemessen
+  (Teil (bc)).
+- **B2** tiktok: der Teilaspekt "Abschaltpraxis NIE GESTELLT" → **BEANTWORTET** (gel,
+  2026-09-22) — `v1.3` ist die aktuelle Fassung und trägt kein Abschaltdatum (Teil (p)).
+- **B2** pinterest: der Teilaspekt "Abschaltpraxis NIE GESTELLT" → **NICHT GEFUNDEN**
+  (2026-09-22) — kein Lebenszyklus, kein Termin, Breaking Changes per E-Mail an die Kontakte
+  einer registrierten App (Teil (ag)). Aus einer Lücke im DENKEN ist eine Lücke im WISSEN
+  geworden.
+
+**G1 — ERFOLGS-STATUSCODE UND ERFOLGSKRITERIUM:**
+- **G1** pinterest: bisher "Status genügt NICHT … der Erfolgs-Rumpf selbst ist NIE GEMESSEN" →
+  **BEANTWORTET** (gem, 2026-09-24) — der Erfolgsrumpf ist gemessen und deckt sich mit der
+  gelesenen Form (Teile (al) und (ah)). **UNGEMESSEN BLEIBT DER ZWEIG "HTTP 200 MIT `failed`"**
+  — keiner der Läufe hat ihn erzeugt. Ohne Testmodus trug eine Antwort über den echten Weg
+  keine Warnung — EINE Beobachtung (Teil (at)).
+- **G1** meta, tiktok, linkedin: der Zustand bleibt BEANTWORTET; ergänzt um die Erfolgszeile
+  der Adapter, über die der Status seit dem 2026-09-24 bzw. -25 über den echten Weg ablesbar
+  ist — meta HTTP 200, erstmals abgelesen (meta, Teil (af)), linkedin 201 (linkedin, Teil
+  (bf)), tiktok 200. Für tiktok ergänzt: die Antwort ist für Feldnamen im `user`-Objekt blind
+  — auch ein unbekanntes Feld bekommt `code 0` (tiktok, Teil (q)).
+
+**H2 — DEDUPLIZIERUNG:**
+- **H2** tiktok: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-09-22) — Schlüssel
+  `[event_source_id, event, event_id]`, Verwurf binnen 48 Stunden, Verschmelzung binnen fünf
+  Minuten, der Cookie-Weg greift nur ohne `event_id` (Teil (n)). **DIE WIRKUNG IST NICHT
+  GEMESSEN.**
+
+**H3 — MENGENBESCHRÄNKUNG UND WIEDERHOLUNGSVERHALTEN:**
+- **H3** meta: bisher NIE GESTELLT → **BEANTWORTET mit Vorbehalt** (gel, 2026-09-22) — der
+  Anbieter nennt KEIN spezifisches Limit, dazu 1 000 Ereignisse je Aufruf (Teil (u)). Ob eine
+  Aussage ohne Zahl als Antwort zählt, ist NICHT ENTSCHEIDBAR.
+- **H3** tiktok: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-09-22) — beziffert, für
+  alle Stufen gleich; eine Überschreitung kommt als `40100` mit HTTP 401 (Teil (o)). Ein
+  Wiederholungsverhalten ist in dieser Fortschreibung nicht erhoben.
+- **H3** pinterest: bisher BEANTWORTET (gel, Teil (e)), seit dem 2026-09-22 mit drei
+  widersprüchlichen Aussagen (Teil (ai)(2)) → **BEANTWORTET** (gem, 2026-09-24) — 120 000 je
+  60 Sekunden, Kategorie `ads_conversions_ad_account_id`, aus den Kopfzeilen dreier
+  Testanfragen (Teil (al)(iii)).
+- **H3** linkedin: bleibt BEANTWORTET (gel, 2026-09-11); ergänzt: eine Vorgabe zu
+  Wiederholungsversuchen nach einer 429 ist im gelesenen Umfang NICHT GEFUNDEN, jetzt mit
+  benannter Reichweite (Teil (as)).
+- **FÜR ALLE DREI, AN DENEN DIE ROADMAP F7 FÜHRTE — meta, tiktok, linkedin: WELCHES LIMIT
+  TATSÄCHLICH GREIFT, IST NICHT GEMESSEN.**
+
+**ZUSÄTZLICH BERÜHRT — der Zustand ändert sich oder wird ergänzt:**
+- **E1** meta: bisher "BEANTWORTET teilweise (IP, UA, `fbp`; vollständige Liste NIE
+  GESTELLT)" → **BEANTWORTET** (gel, 2026-09-22) — die vollständige Liste der
+  Kundeninformations-Parameter samt Hash-Status (Teil (k)); die drei Pflichtfelder für
+  Website-Ereignisse (Teil (l)). Gesendet wird seit S5 zusätzlich `fbc`, angenommen und als
+  Klick-ID erkannt (Teil (ad)).
+- **E1** tiktok: bisher "vollständige Liste NICHT GEFUNDEN" → **BEANTWORTET** (gel,
+  2026-09-22) — zwei Seiten mit zwei verschieden langen Listen (Teil (l)); gesendet wird seit
+  S8 zusätzlich `user.ttclid`, im Test-Events-Reiter angezeigt (Teil (r)).
+- **E1** linkedin: bisher "SECHS Symbole gel, ZWEI davon gem" (Fortschreibung vom
+  2026-09-11) → **SECHS gel, DREI gem** — `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` ist als
+  zweiter Eintrag neben der IP (Teil (bd)) und allein (Teil (be)) angenommen.
+- **E1** pinterest: bleibt BEANTWORTET; ergänzt: `user_data.click_id` aus `epik` wird
+  angenommen und als Klick-ID erkannt (Teil (am)), derselbe Wert allein in der Adresse
+  nicht (Teil (ao)).
+- **G4** pinterest: ergänzt — im Erfolgszweig kein Echo des Werts in fünf Läufen (Teil (aq));
+  Fehlerzweige ungemessen.
+- **G5** pinterest: bisher "Zählwerte und `events[]`, gel — nie gemessen" → **gem** (2026-09-24,
+  Teil (al)).
+- **H5** pinterest: bisher NICHT GEFUNDEN → **BEANTWORTET** (beo, 2026-09-24) — "Events
+  testen" zeigt die Klick-ID feldspezifisch, und ein unbekannter Feldname wird still
+  ignoriert (Teile (am), (an), (as)).
+- **H5** meta, tiktok, linkedin: bleiben BEANTWORTET; ergänzt — meta: "Events testen" ist das
+  Echtzeit-Instrument, die Übersicht zählt verzögert (Teile (ad), (ae)); tiktok: der
+  Test-Events-Reiter zeigt `user.ttclid` (Teil (r)); linkedin: "Data last received" zeigt nur
+  den LETZTEN Empfang und belegt nicht, ob frühere Ereignisse gezählt wurden (Teil (bg)).
+- **F2** pinterest: bleibt NICHT GEFUNDEN; ergänzt — ein nicht registrierter Name
+  (`subscription`) wird mit HTTP 200 angenommen und als "Unknown" geführt (Teil (al)).
+
+**FÜR KEINE DIESER ZELLEN IST DER FACHLICHE ABGLEICH GEMESSEN.** Alle Live-Belege der Phase
+fuhren erfundene Kennungen; geführt als offener Punkt in docs/offene-punkte.md, "KEINE
+KLICK-KENNUNG IST AN EINEM ECHTEN ANZEIGENKLICK GEPRÜFT — WEDER IHRE FORM NOCH DER ABGLEICH".

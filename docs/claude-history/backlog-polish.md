@@ -4070,6 +4070,10 @@ offene Posten liest, liest sie falsch; ihr Erledigungs-Vermerk steht in ihrem ei
     Phase 11.7, "Nächster Schritt"). **DER TRIGGER DIESES EINTRAGS IST DAMIT EINGETRETEN** — jene
     Runde hat Vorrats-Eintrag 42 geöffnet —; **bearbeitet ist er nicht:** keine Aufspaltung der
     Zeile, kein anderer Wortlaut je Zweig, keine Empfehlung. Der Wortlaut dieses Eintrags bleibt.
+    ZEIGER (2026-09-25, Phasenende 11.7) — DER KANDIDAT IST AM PHASENENDE NICHT ENTSCHIEDEN
+    UND LIEGT IN DIESER DATEI: Abschnitt "Aus Phase 11.7 gehoben (2026-09-25) …", Teil A,
+    Eintrag "Mitnahme aus S10c — DIE HERABSTUFUNG DER ZEILE `access_token_expired` …"; der
+    Posten zu Eintrag 42 liegt ebendort in Teil B, wörtlich. Dieser Eintrag bleibt, wo er ist.
 66. **EINE PRÜFVORSCHRIFT, DIE EINE ACHSE BENENNT, DECKT NUR DIESE ACHSE — UND MELDET DAS
     NIE.**
     **DER BELEG (GEMESSEN, CC, 2026-09-08):** Die Bedingung, unter der die Standdatei der
@@ -5534,3 +5538,502 @@ wer nur die offenen Vorrats-Einträge sichtet, findet ihn nicht.
   KEINEM LAUF ERHOBEN:** Es hängt an den Pixel-IDs von A und B, und die sind dort nicht
   erfasst worden. Der Lauf zeigt die eigene Ablage, nicht die des Anbieters.
   **KEIN TRIGGER.**
+
+## Aus Phase 11.7 gehoben (2026-09-25) — Vorrat, Zuschnitt-Fragen und Befunde der Standdatei, dazu vier Posten aus docs/offene-punkte.md
+
+Aus der Standdatei der Phase 11.7 (Anbieter-Befunde nachziehen) und aus der Sichtung der
+offenen Punkte, die an das Phasenende dieser Phase gebunden war. **JEDER EINTRAG NENNT SEINE
+URSPRUNGS-NUMMER MIT GATTUNG** — in jener Standdatei zählen Vorrat, Entscheidung und
+Zuschnitt-Frage in getrennten Reihen; "Vorrat P11.7-10" und "Zuschnitt-Frage P11.7-10" sind
+zwei verschiedene Einträge.
+DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still kaputt". Was hier
+liegt, erfüllt die zweite Hälfte nicht; einige tragen einen Trigger, und wo er eingetreten
+ist, steht das dabei. Die Zuordnung ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25.
+**ZWEI TEILE MIT VERSCHIEDENER TEXTFORM:** Teil A trägt die Einträge der Standdatei
+VERDICHTET und nicht zeichengleich; der ungekürzte Wortlaut steht im Archiv der Phase 11.7.
+Teil B trägt vier Posten aus docs/offene-punkte.md WÖRTLICH — sie haben kein Archiv, und ihr
+Wortlaut stünde sonst nur in der Versionsverwaltung. In docs/offene-punkte.md bleibt je
+Posten sein Titel mit dem Grund der Verschiebung.
+
+### Teil A — aus der Standdatei der Phase 11.7, verdichtet
+
+- **Vorrat P11.7-8 — DER VERTRAGSSATZ "EIN WURF WIRD ZUM 500" IN VIER ADAPTERN IRRT FÜR ASYNC-ADAPTER UNTER `allSettled` — IN DER SICHEREN RICHTUNG**
+  Vertragssatz 1 in `meta-forward.ts`, `tiktok-forward.ts`, `pinterest-forward.ts` und
+  `linkedin-forward.ts` sagt, ein Wurf im Adapter mache aus der leeren 204 einen 500.
+  GEMESSEN (VERMERK P11.7-16, Mutation m6): Ein Wurf im Rumpf einer `async function` wird zur
+  Ablehnung, `Promise.allSettled` fängt sie, die 204 bleibt. Der Satz fordert mehr Vorsicht
+  als nötig und schwächt keinen Schutz; in S4 bewusst nicht geändert (Entscheidung E5 jener
+  Scheibe). KEIN FIX-VORSCHLAG. TRIGGER: die nächste Scheibe, die einen dieser Vertragssätze
+  ohnehin ändert — bis zum Phasenende nicht eingetreten.
+
+- **Vorrat P11.7-10 — IN DER LOKALEN ENTWICKLUNG REIST EINE PLATZHALTER-IP AN GOOGLE**
+  Ist die Client-Adresse leer oder Loopback und `META_TEST_EVENT_CODE` gesetzt, liefert
+  `resolveClientIp` (`src/lib/capi/ingest.ts`) die Platzhalter-IP `123.123.123.123`; seit S7
+  reist sie als `landingPageDeviceInfo.ipAddress` auch an Google (GEMESSEN am Code,
+  2026-09-24). In der Produktion ohne Folge — dort kommt die Adresse aus der Kopfzeile.
+  TRIGGER: die nächste Scheibe, die `resolveClientIp` oder den Google-Adapter berührt —
+  **EINGETRETEN mit S10c (Bau-Commit `cefe636`) und dort NICHT bearbeitet**. KEIN
+  FIX-VORSCHLAG.
+
+- **Vorrat P11.7-11 — DIE TITEL VON T7-a UND T7-b IN `src/lib/capi/linkedin-forward.test.ts` VERSPRECHEN "keine Logzeile" UND PRÜFEN NUR `console.error`**
+  Seit S10a entsteht in ihrem Fall eine Info-Zeile; der Titel behauptet mehr, als der Test
+  deckt (Mutation mL4, VERMERK P11.7-31). T4-h und T5 (tiktok) sind in S10a aus demselben
+  Grund geschärft worden. Wer den Fall aufgreift, folgt docs/immer-beachten.md, "EINE
+  ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL …", Kommentar-Fehler: BEIDES tun —
+  Titel berichtigen UND den fehlenden Test ergänzen. TRIGGER: die nächste Runde, die jene
+  Testdatei öffnet — bis zum Phasenende nicht eingetreten.
+
+- **Vorrat P11.7-12 — ZWEI KOMMENTARE AUS S10b NENNEN DIE WARNUNG DEN BETRIEBSFALL, UND EINE MESSUNG OHNE TESTMODUS WIDERSPRICHT**
+  Der Kommentar an der Erfolgszeile in `forwardToPinterest` und der an PS-c
+  (`pinterest-forward.test.ts`) sagen, im Betrieb trage jede Antwort eine Warnung. Über den
+  echten Weg OHNE Testmodus fehlte sie bei einem Aufruf (docs/ziel-befunde/pinterest.md,
+  Teil (at)). Code und PS-c bleiben richtig; falsch ist allein die Begründung. TRIGGER: die
+  nächste Runde, die eine der beiden Dateien öffnet.
+
+- **Zuschnitt-Fragen P11.7-4, P11.7-12 und P11.7-18 — `external_id` BZW. `externalIds` IST BEI META, TIKTOK UND LINKEDIN DER EINZIGE SELBST ZU VERGEBENDE WERT**
+  Worunter eine selbst vergebene, über Kanäle stabile Besucher-Kennung fällt — ob sie ein
+  "fingerprint-artiges Merkmal" im Sinne der DATENKLASSEN-GRENZE ist —, ist eine
+  OWNER-FRAGE und nicht entschieden; in der Phase 11.7 ausdrücklich ausgeschlossen. MATERIAL:
+  Meta nutzt `fbp` ersatzweise (meta, Teil (j)); TikTok verlangt SHA-256 auch für Web
+  (tiktok, Teil (l)); LinkedIn verlangt kein Hashen, fasst höchstens EINEN Wert und bindet ihn
+  ein Jahr über alle Werbekonten desselben Business Managers (linkedin, Teil (ap)); Pinterest
+  mahnt "external_id is missing. We highly recommend this on all events." in jeder
+  Testantwort an (pinterest, Teil (al)(iv)). Ein fehlendes Feld ist eine Einbusse, kein
+  stiller Bruch. KEIN TRIGGER.
+
+- **Zuschnitt-Frage P11.7-10 — DOPPELZÄHLUNG MIT EINEM EIGENEN TIKTOK-PIXEL DES BETREIBERS**
+  Der Adapter setzt `event_id` immer; der Cookie-Weg der Deduplizierung greift nur OHNE
+  (tiktok, Teil (n)). Behält ein Betreiber sein eigenes TikTok-Pixel, feuert es mit einer
+  anderen Kennung — ob daraus eine Doppelzählung folgt, ist eine ABLEITUNG und ungemessen.
+  Nachbar: der Restsatz aus Vorrat P11.11-5 ("ob Meta doppelt zählt, ist ungemessen"),
+  Abschnitt "Aus Phase 11.11 gehoben (2026-09-22)". Die Fundliste der Phase 11.11 zeigt ein
+  fremdes TikTok-Pixel an und bietet sein Entfernen an. KEIN TRIGGER.
+
+- **Zuschnitt-Frage P11.7-13 — KEIN VERSIONS-WÄCHTER FÜR TIKTOK, GOOGLE UND PINTEREST**
+  Der Wächter `src/lib/capi/version-deadlines.test.ts` führt meta und linkedin. tiktok
+  (`v1.3`, "Available until: TBD", tiktok, Teil (p)), google (`v1`, keine dokumentierte
+  Abschaltregel, google, Teil (cm)) und pinterest (`v5`, keine, pinterest, Teil (ag)) tragen
+  keinen Termin. Pinterest kündigt Breaking Changes per E-Mail an die Kontakte einer
+  registrierten App an — ob das unseren Zugangsweg erreicht, ist UNGELESEN. Ein Ziel kommt
+  nach Entscheidung P11.7-5 als Tabellenzeile dazu, im selben Commit wie seine Anhebung.
+  TRIGGER: ein Abschalttermin für eines der drei wird bekannt — er feuert unbeobachtet,
+  beim Anbieter.
+
+- **Zuschnitt-Frage P11.7-21 — EIN ANGEKÜNDIGTER, UNDATIERTER SCHEMA-WECHSEL BEI PINTEREST KÖNNTE `evaluateSuccessBody` EINEN ANGEKOMMENEN FORWARD ALS FEHLSCHLAG WERTEN LASSEN**
+  Pinterest lässt optionale Felder mit Null-Werten künftig weg, ohne Datum und ohne
+  Endpunkt-Liste (pinterest, Teil (ak)); `evaluateSuccessBody` verlangt numerische
+  `num_events_received` und `num_events_processed`. Fiele eines weg, entstünde eine falsche
+  Fehlerzeile und keine accepted-Zeile — ein angekommener Forward sähe gescheitert aus.
+  VERLOREN GEHT DABEI KEINE CONVERSION. UNGEMESSEN; am [x] der Phase 11.7 benannt. KEIN
+  FIX-VORSCHLAG. TRIGGER: die Umstellung selbst, sichtbar an einer Fehlerzeile mit HTTP 200.
+
+- **Zuschnitt-Frage P11.7-22 — META SENDET ZWEI VERLANGTE FELDER NUR BEDINGT, UND ES GIBT KEINEN RIEGEL DAGEGEN**
+  `action_source` steht unbedingt; `client_user_agent` und `event_source_url` nur, wenn
+  vorhanden (`forwardToMeta`); laut meta, Teil (l), sind alle drei verlangt. pinterest und
+  tiktok tragen einen Paar-Riegel, linkedin bricht ohne Identität ab — nur meta hat keinen.
+  Ob ein fehlendes Pflichtfeld beim Anbieter ein Defekt oder eine Einbusse ist, ist
+  UNGEMESSEN, und ein Riegel könnte Conversions verwerfen, die der Anbieter annimmt: VOR
+  EINEM BAU STEHT EINE MESSUNG. KEIN TRIGGER.
+
+- **Zuschnitt-Frage P11.7-24 — DIE SEITENADRESSE WIRD IM HANDLER NICHT GEPRÜFT, UND `asString` STEHT SECHSMAL ZEICHENGLEICH**
+  `handleIngest` berührt `eventSourceUrl` nicht; die einzige Behandlung ist ein Trim je
+  Adapter, sechsmal zeichengleich. Seit S4 prüft `stripForeignClickIds` allein die
+  Parsebarkeit. Der Kopfkommentar an mehreren Kopien führt die Doppelung als gewollt. KEIN
+  TRIGGER.
+
+- **Zuschnitt-Frage P11.7-25, Punkt (7) — "ANWESENHEIT, NIE FORM" ALS REGEL FÜR ALLE ZIELE IST NICHT ENTSCHIEDEN**
+  Jedes Herauslesen einer Klick-Kennung prüft heute Anwesenheit und keine Form — fünfmal
+  gleich gebaut und je Ziel eigens begründet: `extractGoogleClickIds`, meta (F4), linkedin
+  (L3), tiktok (T3), pinterest (N3). Ob daraus eine Regel für jedes künftige Ziel wird, ist
+  eine Entscheidung und nicht getroffen; eine gelesene Formregel kippte sie je Ziel. KEIN
+  TRIGGER.
+
+- **Mitnahme aus S10c — DIE HERABSTUFUNG DER ZEILE `access_token_expired` IN `usableTokenFromRow` (`src/lib/capi/token.ts`) — EIN KANDIDAT, KEINE ENTSCHEIDUNG**
+  Die Zeile "[capi/resolve] secret unusable" steht auf Stufe error und wird bei totem
+  Zugangsdatum bei JEDER `/api/e`-Anfrage geschrieben, auch dort, wo ohnehin nichts an Google
+  ginge; verloren geht keine Conversion (GEMESSEN am Code, CC, 2026-09-25). Ihr Kommentar
+  begründet die Stufe mit "die einzige beobachtbare Signatur dieses Zustands"; das ist
+  seither relativiert. Am Phasenende 11.7 NICHT entschieden — die Herabstufung änderte eine
+  bestehende Fehlerzeile und liegt ausserhalb jeder Bau-Scheibe. Sie gehört zusammen mit dem
+  Posten "DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER"
+  (Teil B unten) und mit Eintrag 65 ("DIE ZUSTÄNDE HINTER `[capi/resolve] secret unusable`
+  SIND MEHR ALS DREI", Abschnitt "Aus Phase 11.2 gehoben"). KEIN TRIGGER.
+
+- **Befund aus VERMERK P11.7-23, (h) — DER ZEIGER "(af)" IN docs/claude-md-herleitung.md**
+  Eine Provenienz-Liste im Abschnitt "## Modus" jener Datei führt "(af)". Die Sieben-Tage-Frist
+  steht in docs/ziel-befunde/google.md, Teil (ae); ob dort die Frist gemeint ist, ist am
+  Bestand nicht entscheidbar. An drei anderen Stellen ist derselbe Zeiger am 2026-09-24
+  berichtigt worden. Jene Datei ist ein zeichengleicher Stand vom 2026-09-22; eine Korrektur
+  wäre ein datierter Nachtrag, kein Eingriff in den Text. KEIN TRIGGER.
+
+- **Aus der Sichtung beim Phasenende 11.7 — KANDIDAT FÜR EINEN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md: WAS MIT EINEM FÄLLIGEN PUNKT GESCHIEHT, DER NICHT ABGEARBEITET WIRD**
+  Der gestrichene Posten "DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND
+  SIND NICHT GESICHTET" hielt die Frage offen: Ein eingetretener Trigger macht einen Punkt
+  FÄLLIG, nicht erledigt — und niemand hatte entschieden, was mit einem fälligen Punkt
+  geschieht, der liegen bleibt. Die Sichtung vom 2026-09-25 hat sie je Posten beantwortet
+  (bleibt · gestrichen mit Beleg · ins Backlog), nicht als Regel. GEMESSEN an ihr: Von zwölf
+  Posten mit dem Wort EINGETRETEN waren drei erledigt, ohne gestrichen zu sein, und vier
+  gingen ins Backlog. Ein Änderungsantrag würde den Ausgang festlegen — etwa, dass die
+  Hebung jedes Phasenendes die eingetretenen Trigger sichtet. NICHT ENTSCHIEDEN; KEIN
+  TRIGGER.
+
+### Teil B — aus docs/offene-punkte.md, wörtlich
+
+Verschoben bei der Sichtung am 2026-09-25 (ARCHITEKTEN-ENTSCHEIDUNG). Je Posten zuerst der
+Grund, dann der Wortlaut zeichengleich, wie er bis Commit `3e080b2` in docs/offene-punkte.md
+stand. Die Einrückung des Wortlauts ist die des Originals.
+
+#### DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden")
+
+GRUND DER VERSCHIEBUNG: Die Achse hat keinen realen Konsumenten; was still kaputtginge,
+setzt eine gebaute Achse voraus. Ihr Trigger ist seit dem 2026-08-31 eingetreten.
+DER WORTLAUT, zeichengleich:
+
+- DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
+  Grund: kein realer Konsument. TRIGGER,
+  wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE
+  EREIGNISTYP trägt. Was still kaputtgeht: Ein Nenner, der nur Variante A kennt, meldet
+  vollständig, während beim halben Traffic nichts ankommt. Die drei Messbefunde, die dann
+  sofort gelten und nicht neu erhoben werden müssen, stehen in
+  docs/claude-history/backlog-polish.md, "VOLLSTÄNDIGKEITS-ACHSE — WAS DANN SOFORT GILT".
+  SACHKORREKTUR 2026-08-31 — ERSETZT UND NICHT GESTEMPELT: Im Grund stand zusätzlich "kein
+  Ziel trägt heute eine Kennung je Ereignistyp". DAS IST AM CODE FALSCH. LinkedIn trägt seit
+  Scheibe 11.1d genau das — `settings.pixels.linkedin.conversionRules`, eine Zuordnung
+  Ereignisname -> Conversion-Regel-Kennung (GEMESSEN am Repo, CC, 2026-08-31, am Typ
+  ProjectSettings in src/lib/settings.ts und an getConversionRules/setConversionRule
+  ebenda) — und das Ziel SENDET seit dem 2026-08-19 (Scheibe 11.1f).
+  ERSETZT und nicht gestempelt, weil dieser Halbsatz ein MASSSTAB ist: Wer den Trigger an ihm
+  misst, hält ihn für nicht eingetreten. Der ANDERE Halbsatz des Grundes ("kein realer
+  Konsument") bleibt WÖRTLICH stehen und ist unberührt — er sagt, dass die ACHSE keinen
+  Abnehmer hat, nicht dass es keine Kennung je Ereignistyp gäbe. Das sind zwei verschiedene
+  Aussagen, und nur die eine ist überholt.
+  DER TRIGGER IST DAMIT EINGETRETEN, und sein WORTLAUT wird NICHT angetastet — er trifft
+  genau diesen Fall. Der Stub in CLAUDE.md ist im selben Zug nachgezogen.
+  WAS DARAUS NICHT FOLGT: dass die Vollständigkeits-Achse zu bauen wäre. Der Punkt ist
+  weiterhin OFFEN und NICHT ENTSCHIEDEN; KEINE EMPFEHLUNG.
+  OB DIESER EINTRAG EINER DER DREI AUS "DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN
+  TRIGGER UND SIND NICHT GESICHTET" IST, IST NICHT GEPRÜFT WORDEN. Der Satz steht hier
+  ausdrücklich statt einer Behauptung in die eine oder die andere Richtung: Jener Eintrag
+  nennt seine drei Mitglieder nicht, und eine Zuordnung ohne Prüfung wäre eine erfundene.
+  PROVENIENZ: GEMESSEN am Repo (CC, 2026-08-31), in der Aufklärungsrunde zum Zuschnitt der
+  Scheibe 2 der Phase 11.2. Dass der Trigger damit eingetreten ist, ist eine FOLGE aus dieser
+  Messung und seinem Wortlaut, keine zweite Beobachtung.
+
+#### DER OAUTH-WEG RUFT ensureTrackingKey NICHT — ANDERS ALS setCapiToken
+
+GRUND DER VERSCHIEBUNG: Ohne Veröffentlichung entsteht kein Verkehr, und `publishProject`
+stellt den Schlüssel sicher — ein Zustand, der nichts erzeugt, macht nichts still falsch.
+Die einzige benannte Kippbedingung, die Phase 11.4, ist verworfen. Den Grund trägt der
+Vermerk vom 2026-09-01 samt Nachtrag vom 2026-09-11 aus dem am selben Tag gestrichenen
+Posten "ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN" (zweiter
+Spiegelstrich); er folgt dem Wortlaut unten, ebenfalls wörtlich. Der Trigger ist seit dem
+2026-09-08 eingetreten.
+DER WORTLAUT, zeichengleich:
+
+- DER OAUTH-WEG RUFT ensureTrackingKey NICHT — ANDERS ALS setCapiToken (Trigger: die
+  Transport-Scheibe, also die Scheibe, die den Zugang tatsächlich benutzt):
+  GEHOBEN AM 2026-09-08 aus docs/claude-history/phase-11.8-autorisierungsschicht.md,
+  Vorrats-Eintrag 6, im Rahmen des
+  nachgeholten Phasenendes der Phase 11.8. Der Wortlaut des Triggers ist der des
+  Vorrats-Eintrags und NICHT umformuliert.
+  DER BEFUND: Die Server-Action `setCapiToken` stellt den projektweiten Tracking-Schlüssel
+  bei JEDEM Ziel sicher; die Callback-Route der Scheibe 11.8e tut es NICHT. GEMESSEN am
+  Code (CC, 2026-08-27), erneut bestätigt am 2026-09-08: `ensureTrackingKey`
+  (src/lib/settings.ts) hat im Produktivcode ausschliesslich Aufrufer in
+  src/app/projects/actions.ts; src/app/api/oauth/google/callback/route.ts nennt den Namen
+  nur im Kommentar, der die Auslassung begründet.
+  DER GRUND WAR DER ZUSCHNITT, NICHT EINE ENTSCHEIDUNG GEGEN DEN SCHRITT: Es wäre ein
+  Schreibvorgang auf einer ZWEITEN Tabelle (`projects`) ohne damalige Wirkung gewesen —
+  nichts las den google-Zugang, der `events:ingest`-Aufruf war aus jener Scheibe
+  ausgeschlossen.
+  WAS DARAUS FOLGT: Ein Projekt, das AUSSCHLIESSLICH über diesen Weg konfiguriert wird, hat
+  womöglich keinen Tracking-Schlüssel — und ohne ihn sendet es nicht.
+  DER TRIGGER IST EINGETRETEN (GEMESSEN am Repo, CC, 2026-09-08): Die Transport-Scheibe ist
+  gebaut und live bewiesen — Scheibe 4 des Schnitts der Phase 11.2, VERMERK 10 im Archiv
+  docs/claude-history/phase-11.2-google.md, Bau-Commits 26caa38 und 84e9fca. Der Punkt ist
+  damit FÄLLIG und wartet nicht mehr.
+  DASS DARAUS EIN DEFEKT FOLGT, IST NICHT ENTSCHIEDEN, und dieser Satz gehört zwingend
+  daneben: Ob ein Projekt in diesem Zustand EXISTIERT, ist am Repo nicht feststellbar — es
+  bräuchte eine Abfrage gegen die laufende Datenbank, und die ist nicht gefahren worden. Es
+  ist bis heute KEIN Projekt ohne Tracking-Schlüssel beobachtet worden.
+  KEINE EMPFEHLUNG, ob der Aufruf ergänzt wird oder ob die Prüfung an anderer Stelle
+  entsteht.
+  PROVENIENZ: Der Unterschied zu `setCapiToken` ist GEMESSEN am Code (CC, 2026-08-27 und
+  2026-09-08); das Eintreten des Triggers ist GEMESSEN am Repo (CC, 2026-09-08); die Folge
+  für ein Projekt ohne Schlüssel ist eine ABLEITUNG und keine Messung.
+
+AUS DEM GESTRICHENEN POSTEN "ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN",
+ZWEITER SPIEGELSTRICH, zeichengleich:
+
+    **VERMERK 2026-09-01 ZUM ZWEITEN SPIEGELSTRICH (`ensureTrackingKey`) — DER
+    URSPRUNGSTEXT WIRD NICHT UMGESCHRIEBEN, DIESER VERMERK TRITT DANEBEN.**
+    Der Ursprung führt den Posten als "VORBEDINGUNG der Transport-Scheibe".
+    **SCHEIBE 4 BEHEBT IHN NICHT**, und der Grund gehört dazu, sonst gilt er als übersehen:
+    **Ohne Tracking-Schlüssel erreicht kein Beacon den Ingest** — `getCapiConfigByTrackingKey`
+    (src/lib/capi/token.ts) kehrt bei leerem Schlüssel ohne Datenbank-Runde zurück, und ein
+    Projekt ohne Schlüssel trägt auch keinen ausgelieferten Emitter, der einen senden könnte.
+    **ES ENTSTEHT ALSO GAR KEIN VERKEHR, NICHT NUR KEIN SICHTBARER.** Ein Zustand, der nichts
+    erzeugt, kann nichts stillschweigend falsch machen; das ist der Unterschied zu einem
+    Posten, der still Conversions verliert.
+    **DIE BEDINGUNG, UNTER DER DAS KIPPT:** eine Scheibe, die **OHNE Veröffentlichung sendet**
+    — **Phase 11.4, der Testknopf**. Dort löst ein Betreiber den Versand von Hand aus, und der
+    Weg über den ausgelieferten Emitter entfällt; ab da ist ein fehlender Schlüssel kein
+    leiser Zustand mehr, sondern ein Fehlschlag mit Auslöser.
+    **EIN GEMESSENER ZUSATZ (CC, 2026-09-01), der die Prämisse "ohne Publish kein Schlüssel"
+    enger fasst als bisher angenommen:** Eine `domains`-Zeile KANN **ohne** `publishProject`
+    entstehen — `persistDomainRow` (src/lib/domains/register.ts) legt sie an, erreichbar über
+    `registerCustomDomain` und die Server-Action `addCustomDomain`
+    (src/app/projects/domain-actions.ts), und **diese Kette berührt `publishProject` an keiner
+    Stelle**. ACHSE: `from("domains")` über `src/` rekursiv, binärsicher, Testdateien
+    gefiltert — zwölf Fundstellen, davon DREI `insert`; zwei davon (`assignDomainLabel`,
+    `insertDomainLabel`) haben ausschliesslich `publishProject` als Aufrufer, die dritte nicht.
+    Positivkontrolle: dieselbe Achse führt die Aufrufer-Kette je Symbol lückenlos.
+    **WAS DER ZUSATZ NICHT SAGT:** `ensureTrackingKey` läuft **weiterhin nur** in
+    `setCapiToken` und `publishProject` (GEMESSEN am Repo, CC, 2026-09-01). Die
+    Custom-Domain-Zeile setzt **keinen** Tracking-Schlüssel — der Zusatz benennt eine
+    `domains`-Zeile ohne Publish, **nicht** einen Schlüssel ohne Publish. Wer beides
+    zusammenzieht, liest hier eine Behebung, die nicht dasteht.
+
+    **NACHGETRAGEN 2026-09-11 — DIE KIPPBEDINGUNG DARÜBER HAT KEIN BENANNTES VORHABEN MEHR.
+    DER WORTLAUT DES VERMERKS BLEIBT STEHEN:** Er ist Teil des Vorrats-Eintrags, den der Kopf
+    dieses Postens als "NICHT umformuliert" führt; ein Umschreiben machte jenen Satz falsch.
+    Die Bedingung lautet "eine Scheibe, die OHNE Veröffentlichung sendet", und als ihr
+    einziges Vorhaben nennt sie **Phase 11.4, den Testknopf — die ist am 2026-09-11
+    VERWORFEN** (docs/roadmap.md, Zeile "Phase 11.4 — Der Testknopf"). **EINE ZWEITE
+    BEDINGUNG NENNT DIESER VERMERK NICHT** — auch sein gemessener Zusatz nicht: Der benennt
+    eine `domains`-Zeile ohne Publish und ausdrücklich keinen Schlüssel ohne Publish.
+    **DAS KIPPEN DIESES ZUSTANDS HÄNGT DAMIT AN KEINEM BENANNTEN EREIGNIS MEHR.** Wer den
+    Spiegelstrich für wartend hält, liest einen entfallenen Zeiger mit. OB EIN ANDERES
+    VORHABEN OHNE VERÖFFENTLICHUNG SENDET ODER SENDEN WIRD, IST NICHT GEPRÜFT UND HIER NICHT
+    ENTSCHIEDEN.
+    PROVENIENZ: der Wortlaut des Vermerks GELESEN (CC, 2026-09-11), seine Zugehörigkeit zum
+    Vorrats-Eintrag GEMESSEN an der gelöschten Vorratsdatei im Stand vor Commit `003e65f`
+    (CC, 2026-09-11); die Verwerfung ist OWNER-ENTSCHEIDUNG 2026-09-11.
+
+#### `saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT
+
+GRUND DER VERSCHIEBUNG: Sein Kern ist seit dem 2026-08-31 beantwortet; was bleibt, ist nach
+seinem eigenen Vermerk ein MASSSTAB für jede spätere Blob-Frage — kein Zustand, der still
+kaputtgeht.
+DER WORTLAUT, zeichengleich:
+
+- `saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT (Trigger: der Zuschnitt der Scheibe 2 — EINGETRETEN; der Eintrag wird ausdrücklich NICHT gestrichen):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 16, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+16. **`saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE
+    UI-ABWESENHEIT UND NICHT DURCH EINEN RIEGEL.**
+    **GEMESSEN am Code (CC, 2026-08-29):** `saveProject` (src/app/projects/actions.ts)
+    reicht den Einstellungs-Blob unverändert in die `projects`-Spalte durch — kein
+    Schema-Check, keine Feldprüfung, keine Ziel-Prüfung. Der einzige Weg, der heute
+    `settings.pixels.<ziel>.pixelId` setzt, ist das öffentliche Eingabefeld der Karte
+    (`setPixelId` hat im Produktivcode GENAU EINEN Aufrufer, components/CodeImporter.tsx).
+    **WAS DARAUS FOLGT UND WARUM ES HIERHER GEHÖRT:** Das erste der vier Tore der
+    Scheibe 3 (`withPixel` in src/lib/capi/token.ts) hält, WEIL die Google-Karte kein
+    solches Feld anbietet. Ein selbstgebauter Aufruf könnte `pixels.google` trotzdem in
+    den Blob legen. **DIE TRAGENDE SCHICHT IST DESHALB TOR B** — die Klartext-Spalte
+    `secret` der google-Zeile bleibt NULL, und der Resolver liest ausschliesslich sie.
+    **ES IST KEINE NEUE LÜCKE, UND DIESER SATZ GEHÖRT DAZU, damit der Eintrag nicht
+    grösser gelesen wird als er ist:** Der Blob ist seit jeher CLIENT-besessen
+    (`saveProject` ersetzt ihn ganzheitlich — die Regel "SERVER-EIGENE IDENTITÄT NIE IN
+    EINEN CLIENT-BESESSENEN BLOB" beschreibt genau das). Die Scheibe 3 ändert daran
+    nichts; sie macht nur sichtbar, dass ein TOR daran hängt.
+    **GEMELDET, NICHT BEHOBEN. KEINE EMPFEHLUNG** — weder eine Validierung in
+    `saveProject` noch eine Allowlist im Blob ist hier vorgeschlagen.
+    TRIGGER: **der Zuschnitt der Scheibe 2.** Dort fällt Tor A ABSICHTLICH (die Kennungen
+    bekommen ihre Eingabe), und ab da zählt, dass der Blob beliebige Ziel-Schlüssel
+    aufnimmt — die Frage ist dann nicht mehr, ob ein Feld existiert, sondern was in der
+    Spalte stehen darf.
+    GEMELDET 2026-08-29.
+
+    **VERMERK 2026-08-31 — TRIGGER EINGETRETEN. DER EINTRAG WIRD NICHT GESTRICHEN.**
+    Der Zuschnitt der Scheibe 2 steht (s. den Abschnitt "Die Konto-Kennungen bekommen ihre
+    Eingabe"). Dieser Vermerk sagt, WAS er von diesem Eintrag beantwortet und was er nur
+    VERORTET — die Trennung ist der ganze Zweck, weil ein Eintrag mit eingetretenem Trigger
+    sonst entweder als erledigt gilt oder als übersehen liegenbleibt.
+    · **BEANTWORTET IST DER KERN:** Tor A fällt ABSICHTLICH. Was danach hält, steht an zwei
+      Orten und nicht hier — in der Sachkorrektur an Festlegung (1) der Scheibe 3 (Tor B UND
+      Tor D, Tor D unabhängig und für sich hinreichend) und in der Beweis-Achse der
+      Scheibe 2, die für jedes der beiden einen eigenen Test verlangt, der SEIN Tor benennt.
+      **Der Satz dieses Eintrags "DIE TRAGENDE SCHICHT IST DESHALB TOR B" war damit zu eng**
+      — er nannte eines von zweien; als Aussage über den 2026-08-29 bleibt er richtig und
+      wird NICHT überschrieben.
+    · **NICHT BEANTWORTET, SONDERN VERORTET:** Dass ein Betreiber über das neue Feld eine
+      FREMDE Kundennummer eintragen kann, ist eine Frage an das Verhalten des Anbieters. Sie
+      steht seit dem 2026-08-31 als eigener offener Punkt in docs/offene-punkte.md ("WAS
+      GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT, IST UNGELESEN UND UNGEMESSEN"), Trigger
+      "der Zuschnitt der Scheibe 4". **Sie ist hier ausdrücklich NICHT entschieden.**
+    · **WARUM DER EINTRAG BLEIBT:** Seine MESSUNG — `saveProject` schreibt den
+      Einstellungs-Blob unvalidiert durch, kein Schema-Check, keine Feldprüfung, keine
+      Ziel-Prüfung — ist der MASSSTAB für jede spätere Blob-Frage. Ein gelöschter Eintrag
+      nähme sie mit. Dieselbe Bauform wie bei Eintrag 15, wo die Erledigt-Kennzeichnung
+      ebenfalls UNTER dem unveränderten Eintrag steht.
+    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
+    Existenz des Zuschnitts (CC, 2026-08-31). Die zwei Tore sind GEMESSEN am Repo (CC,
+    2026-08-31).
+
+#### DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER
+
+GRUND DER VERSCHIEBUNG: Der Befund ist LAUT, nicht still — eine Fehlerzeile je Anfrage —,
+und verloren geht dabei keine Conversion (vierter Vermerk, 2026-09-25). Der Kandidat,
+`access_token_expired` herabzustufen, steht oben in Teil A.
+DER WORTLAUT, zeichengleich:
+
+- DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER (Trigger: der Zuschnitt der Scheibe 1b — EINGETRETEN; der Eintrag bleibt offen und wird nicht abgehakt):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 42, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+42. **DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER,
+    UNGEDROSSELT.** GEMESSEN am Code (CC, 2026-09-02): `usableTokenFromRow`
+    (src/lib/capi/token.ts, modul-privat) schreibt bei toter Uhr 1
+    `console.error("[capi/resolve] secret unusable", …)` mit dem `reason`
+    `access_token_expired` und gibt `null` zurück.
+    **DER KOMMENTARKOPF DERSELBEN FUNKTION BENENNT DIE LAGE BEREITS SELBST** — "Es gibt KEINE
+    Drosselung. Ein Projekt mit kaputtem Chiffrat schreibt eine Zeile PRO BESUCHER" —,
+    allerdings am Fall des KAPUTTEN CHIFFRATS; **die tote Uhr 1 liegt auf demselben Weg und
+    ist dort nicht genannt.**
+    **DIE ZEILE NENNT KEIN PROJEKT.** Sie trägt den Ziel-Namen und einen SELBSTVERGEBENEN
+    Grund; die `projectId` fehlt absichtlich, und der Kommentar begründet das mit dem Pfad
+    selbst — er läuft bei JEDEM Besucher JEDER Kundenseite, und eine Projekt-Kennung je
+    Beacon wäre eine Datenerhebung, die niemand beschlossen hat.
+    **WARUM DAS ZÄHLT — IN ZWEI RICHTUNGEN, UND BEIDE GEHÖREN HIN:**
+    · **ES IST HEUTE DIE EINZIGE BEOBACHTBARE SIGNATUR DES BRUCHS**, den Scheibe 1b beheben
+      soll — also die Live-Test-Achse für 1b. Sie ist eine ANWESENHEIT und keine Abwesenheit,
+      anders als der Erfolgsbeleg des Adapters, der nach VERMERK 10, Abschnitt (d), ein
+      SCHWEIGEN ist; und sie ist im Wortlaut von allen drei Adapter-Zeilen unterscheidbar.
+      **SIE ORDNET SICH ABER KEINEM PRÜFLING ZU**, weil sie kein Projekt nennt — wer mit ihr
+      misst, misst über alle Projekte zugleich.
+    · **ES IST UNBEGRENZTES SCHREIBEN AUF DEM MEISTGETROFFENEN PFAD DER PLATTFORM.** Nach
+      Ablauf der Stunde erzeugt jeder Besucher jeder Seite eines betroffenen Projekts eine
+      Fehlerzeile, ohne Zählung und ohne Ende.
+    **KEIN VORSCHLAG ZUR DROSSELUNG**, und ausdrücklich auch keiner dazu, ob die `projectId`
+    hineingehörte. GEMELDET 2026-09-02, NICHT GEBAUT.
+    TRIGGER: der Zuschnitt der Scheibe 1b — er berührt beide Richtungen zugleich.
+
+    **VERMERK 2026-09-03 — TRIGGER EINGETRETEN, UND 1b-1 SCHLIESST DIESEN EINTRAG
+    AUSDRÜCKLICH AUS. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK
+    TRITT DANEBEN.**
+    **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
+    der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
+    OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
+    Scheibe 1b des Schnitts der Phase 11.2") und führt diesen Eintrag unter "Was
+    ausdrücklich draussen bleibt, je mit seinem Grund".
+    **BEIDE RICHTUNGEN BLEIBEN DAMIT OFFEN, UND SIE BLEIBEN ES AUS VERSCHIEDENEN GRÜNDEN:**
+    Die **Drosselung** ist nicht Gegenstand der Klammer — sie liegt auf dem Ingest-Pfad, und
+    1b-1 hält `src/lib/capi/ingest.ts` und `src/lib/capi/token.ts` ausdrücklich unberührt.
+    Die **Live-Test-Achse** wird von der Klammer nicht gebraucht: Der Nachweis von 1b-1
+    läuft über die bestehende Beweis-Route, nicht über die Fehlerzeile.
+    **WAS DAS FÜR 1b-2 HEISST UND HIER NUR BENANNT WIRD:** Die Zeile bleibt die einzige
+    beobachtbare Signatur des Bruchs, den ein Takt beheben soll — **und sie ordnet sich
+    weiterhin keinem Prüfling zu**, weil sie kein Projekt nennt.
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT. KEINE EMPFEHLUNG** — weder zur
+    Drosselung noch dazu, ob die `projectId` hineingehörte.
+    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
+    Existenz des Zuschnitts (CC, 2026-09-03). Der Ausschluss ist ein ARCHITEKTEN-ZUSCHNITT
+    vom 2026-09-03, die Zerlegung in zwei Schritte eine ARCHITEKTEN-FESTLEGUNG desselben
+    Tages; keine Messung.
+
+    **ZWEITER VERMERK 2026-09-03 — SCHEIBE 1b-2a NIMMT DIESEN EINTRAG EBENFALLS NICHT AUF,
+    ABER SIE ÄNDERT SEINEN GEGENSTAND. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Rettung am Beacon — Scheibe 1b-2a des
+    Schritts 1b-2 der Scheibe 1b") und führt ihn dort unter "Was diese Scheibe ausdrücklich
+    nicht baut, je mit Grund".
+    **WAS SICH ÄNDERT, IST DIE URSACHE DER ZEILE UND NICHT IHRE HÄUFIGKEIT:** Heute schreibt
+    `usableTokenFromRow` sie, sobald das Zugangsdatum tot ist — und tot ist es nach einer
+    Stunde ohne Erneuerung, also regelmässig. **NACH 1b-2a BLEIBT ALS URSACHE NUR NOCH DAS
+    TOTE ERNEUERUNGS-TOKEN**, denn ein erneuerbarer Zugang wird dann erneuert, statt eine
+    Zeile zu erzeugen.
+    **UND GENAU DAS MACHT DEN POSTEN NICHT KLEINER, SONDERN ANDERS — der Satz gehört hierher,
+    sonst liest die nächste Runde ihn als halb erledigt: EIN TOTES ERNEUERUNGS-TOKEN BEHEBT
+    KEIN CODE.** Es verlangt eine Neu-Autorisierung durch den Kunden. Die Fehlerzeile
+    beschreibt danach einen Zustand, der **bis zu einer Handlung ausserhalb des Systems
+    bestehen bleibt** — sie wird damit seltener, aber JEDE einzelne wiegt schwerer, und
+    ungedrosselt ist sie weiterhin.
+    **DER EINTRAG BLEIBT OFFEN, WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER
+    STEHT WÖRTLICH WIE ZUVOR.** **KEINE EMPFEHLUNG** — weder zur Drosselung noch dazu, ob
+    die `projectId` hineingehörte.
+    PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Dass nach 1b-2a nur noch das
+    tote Erneuerungs-Token als Ursache bleibt, ist eine **ABLEITUNG** aus den vier Lagen
+    jenes Zuschnitts, **keine Messung** — gebaut ist nichts.
+
+    **DRITTER VERMERK 2026-09-03 — DIE ZEILE VERSCHWINDET NICHT, SIE WIRD SELTEN. DIE
+    ABLEITUNG DES ZWEITEN VERMERKS WAR ZU WEIT, UND DAS WIRD HIER RICHTIGGESTELLT STATT
+    GESTEMPELT.** Der Text darüber bleibt ZEICHEN FÜR ZEICHEN stehen; überholt ist eine
+    ABLEITUNG, die dort ausdrücklich als solche gekennzeichnet ist.
+    **WAS DER ZWEITE VERMERK SAGTE:** "NACH 1b-2a BLEIBT ALS URSACHE NUR NOCH DAS TOTE
+    ERNEUERUNGS-TOKEN, denn ein erneuerbarer Zugang wird dann erneuert, statt eine Zeile zu
+    erzeugen."
+    **WAS AM GEBAUTEN CODE GILT (GEMESSEN, CC, 2026-09-03, und LIVE bestätigt, OWNER,
+    2026-09-03 — s. VERMERK 12, Abschnitte (b) bis (d)): DER `console.error` STEHT VOR DER
+    VERZWEIGUNG UND WIRD IN BEIDEN FÄLLEN GESCHRIEBEN.** Ein erneuerbarer Zugang wird
+    erneuert **UND** erzeugt die Zeile. Was die Fälle trennt, ist allein der `reason`.
+    **DREI URSACHEN STATT EINER, und sie sind verschieden schwer:**
+    · **`access_token_expired` — DIE RETTUNG GREIFT.** Ein NORMALVORGANG. Er tritt je
+      Projekt und Stunde höchstens einmal auf, nicht mehr je Besucher; **das ist die
+      Verbesserung, und sie ist real.**
+    · **`refresh_token_expired` — ECHTER AUSFALL**, den kein Code behebt. Er verlangt eine
+      Neu-Autorisierung durch den Kunden und bleibt bis dahin bestehen.
+    · **DER BESTÄTIGUNGS-BEACON ERZEUGT SIE AUCH IM ERFOLGSFALL.** Er durchläuft den
+      Resolver, sieht den alten Token und kehrt VOR dem Forward-Zweig zurück — er rettet
+      nicht. **Ein Conversion-Beacon-PAAR hinterlässt damit auch bei geglückter Rettung
+      eine Fehlerzeile.** ABLEITUNG aus dem Kontrollfluss; am Log ist nicht entscheidbar,
+      welche der zwei Zeilen um 16:47:07 von ihm stammte.
+    **WAS SICH NICHT ÄNDERT UND WAS SCHLIMMER GEWORDEN IST:** Die Zeile ist **seltener**
+    geworden — sie hängt nicht mehr an jedem Besucher einer abgelaufenen Stunde.
+    **UNGEDROSSELT IST SIE WEITERHIN**, und der Fall, in dem sie es am teuersten ist, ist
+    **derselbe geblieben**: ein Ziel mit lebender Uhr 2 und dauerhaft scheiternder
+    Erneuerung schreibt sie je Beacon — und ruft dabei zusätzlich je Beacon den Anbieter.
+    **DIE ZWEITE RICHTUNG DES EINTRAGS — die Live-Test-Achse — HAT SICH DAMIT VERSCHOBEN:**
+    Die Zeile ist **nicht mehr die Signatur des Bruchs**, sie ist ab jetzt die Signatur
+    **eines von drei Zuständen**. **Wer mit ihr misst, misst die Anwesenheit eines
+    Wortes, nicht mehr die eines Defekts.** Der Live-Nachweis der Scheibe 1b-2a ist genau
+    deshalb NICHT über sie geführt worden, sondern über den FOLGENDEN Beacon (VERMERK 12,
+    Abschnitt (c)).
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER STEHT WÖRTLICH
+    WIE ZUVOR. KEINE EMPFEHLUNG** — weder zur Drosselung noch dazu, ob die `projectId`
+    hineingehörte.
+    **DIE MEHRDEUTIGKEIT SELBST IST EIN EIGENER POSTEN GEWORDEN**, weil sie eine andere
+    Frage stellt als dieser Eintrag: nicht "wie oft", sondern "was bedeutet sie".
+    PROVENIENZ: der Code-Befund GEMESSEN (CC, 2026-09-03); die drei Ursachen sind eine
+    **ABLEITUNG** aus dem Kontrollfluss, gestützt auf die Live-Beobachtungen vom
+    2026-09-03 (OWNER). **Keine Messung der Häufigkeit** — sie ist nicht erhoben.
+
+    **VIERTER VERMERK 2026-09-25 — AUS DER AUFKLÄRUNG DER SCHEIBE S10c DER PHASE 11.7 (Mitnahme 1).
+    DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
+    · **DIE ABLEITUNG "höchstens einmal je Projekt und Stunde" IM DRITTEN VERMERK IST WIDERLEGT** —
+      sie stand dort ausdrücklich als ABLEITUNG. **AM CODE (GEMESSEN, CC, 2026-09-25):** Die
+      Auflösung (`usableTokenFromRow`, `src/lib/capi/token.ts`) läuft bei JEDER `/api/e`-Anfrage und
+      schreibt die Zeile bei totem Zugangsdatum jedes Mal; erneuert wird allein in der VORSORGE (nur
+      bei noch lebendem Zugangsdatum, Lage `lead`) und in der RETTUNG (nur hinter `isForwardable`
+      und der Einwilligung für das Ziel), beides in `handleIngest` (`src/lib/capi/ingest.ts`). Bis
+      eine Conversion rettet, schreibt also jede andere Anfrage die Zeile. **AM LOG (OWNER-ANGABE,
+      2026-09-25):** vier Zeilen in vier Anfragen, 08:25:30.79 bis 08:25:55.98 MESZ, also binnen
+      rund 25 Sekunden (gerechnet aus den Zeitstempeln; VERMERK P11.7-33 der Phase 11.7).
+    · **DIE ZEILE TRAT IN ANFRAGEN OHNE ERNEUERUNG AUF, IN DENEN OHNEHIN NICHTS AN GOOGLE GINGE**
+      (GEMESSEN am Code): Seitenaufruf (nicht forwardbar) · Bestätigungs-Beacon (früher Ausgang vor
+      Vorsorge und Rettung) · fehlende Einwilligung für google (die Rettung prüft sie wie der
+      Forward). **Es geht also keine Conversion verloren.** Welche Art Anfrage jede der vier Zeilen
+      trug, nennt das Log nicht.
+    · **DIE BEGRÜNDUNG "einzige Signatur" FÜR DIE STUFE error IST SEITHER RELATIVIERT.** Der
+      Kommentar an der Zeile (`usableTokenFromRow`, Zweig der toten Uhr 1) begründet die Stufe mit
+      "die einzige beobachtbare Signatur dieses Zustands" und "die Live-Test-Achse"; der dritte
+      Vermerk oben nennt die Zeile seither "nicht mehr die Signatur des Bruchs", und
+      docs/claude-history/backlog-polish.md, Eintrag 65, zählt fünf Ursachen. **EINE HERABSTUFUNG
+      VON `access_token_expired` IST EIN KANDIDAT FÜR DAS PHASENENDE 11.7, KEINE ENTSCHEIDUNG** — sie
+      änderte eine bestehende Fehlerzeile und liegt ausserhalb jeder Bau-Scheibe der Phase.
+    · **"anders als der Erfolgsbeleg des Adapters, der nach VERMERK 10, Abschnitt (d), ein
+      SCHWEIGEN ist"** (oben, erste Richtung) — **SEIT S10c GIBT ES DIE ACCEPTED-ZEILE:** Eine
+      angenommene Google-Einlieferung schreibt "[capi] Google forward accepted: HTTP <Status>"
+      (Bau-Commit `cefe636`; über den echten Weg abgelesen am 2026-09-25, docs/ziel-befunde/google.md,
+      Teil (cv)). Der Erfolgsbeleg ist damit eine ANWESENHEIT wie diese Zeile.
+    · **NICHT DERSELBE FALL WIE "KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG":** Am 2026-09-25
+      lief genau EINE Erneuerung, in der Klick-Anfrage; Seitenaufruf und Bestätigung erneuern nicht.
+      Der Trigger jenes Postens ist davon nicht berührt.
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER STEHT WÖRTLICH WIE
+    ZUVOR.** **KEINE EMPFEHLUNG** zur Drosselung oder zur `projectId`.
+    PROVENIENZ: Der Kontrollfluss ist **GEMESSEN am Code** (CC, 2026-09-25, HEAD `c37a41c`); die vier
+    Zeilen sind eine **OWNER-ANGABE** vom 2026-09-25; dass keine Conversion verloren geht, ist eine
+    **FOLGE** aus dem Kontrollfluss, keine Messung.

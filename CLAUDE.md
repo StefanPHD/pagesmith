@@ -42,7 +42,6 @@ Text geprüft, 2026-08-20):
 · "Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)"
 · "Phase 15 — Public-Launch-Restarbeit (Tier 0)"
 · "HOBBY-50-DOMAIN-DECKE (Trigger: echte Skalierung)"
-· "Phase 11.5 — Einwilligungs-Dialog"
 · Sicherheits-Manifest Tier 1: "SAFE-BROWSING" · "SHARED-REPUTATION publayer.net"
 · Sicherheits-Manifest Tier 2: "BACKUPS + Restore-Drill"
 AUSDRÜCKLICH NICHT AUFGEFÜHRT, obwohl es danach aussieht: "DATA-RETENTION" (Tier 2) ruht
@@ -181,13 +180,9 @@ in docs/claude-md-herleitung.md.
   (2) TRIGGER FÜR DIE KLÄRUNG: sobald echter Traffic eine Zuordnung zu einer echten Person
   erzeugt. Der Eintrag trägt seit dem 2026-09-19 einen PUNKT (4) aus der Phase 11.6 und seit
   dem 2026-09-24 einen PUNKT (5), Warnungen in den Oberflächen der Netzwerke)
-- DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden")
-  (TRIGGER, wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine
-  Kennung JE EREIGNISTYP trägt. — EINGETRETEN, nachgezogen am 2026-08-31)
-- CLAUDE.md NÄHERT SICH DEM LADELIMIT (Trigger: vor der nächsten Hebung an einem
-  Phasenende)
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
-  — mit einem Einwilligungs-Dialog wird der Defekt real)
+  — mit einem Einwilligungs-Dialog wird der Defekt real — EINGETRETEN mit dem Abschluss der
+  Phase 11.5 am 2026-09-16, nachgezogen am 2026-09-25)
 - NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST (Trigger: BEREITS
   EINGETRETEN — vier Ziele laufen live (GEMESSEN am Code, 2026-08-21: meta · pinterest ·
   tiktok · linkedin), und jedes kann nachträglich konfiguriert werden; hier steht bewusst
@@ -201,17 +196,14 @@ in docs/claude-md-herleitung.md.
   (2) TRIGGER: die UI-Warnung (Owner-Absicht, 2026-08-18), spätestens vor echtem
       Ad-Traffic.
   (3) TRIGGER: eine Frontend-Runde, ODER ein Support-Fall, in dem ein Betreiber meldet,
-      dass nichts ankommt.
+      dass nichts ankommt, ODER — spätestens — vor echtem Ad-Traffic (erweitert am
+      2026-09-25: K4, die Ablage des Ergebnisses je Ziel, gehört zu dieser Ursache).
   (4) TRIGGER: mit dem ersten Ziel, dessen Zugangsdatum ablaufen kann; für LinkedIn ist er
       EINGETRETEN, seit das Ziel am 2026-08-19 sendet.
   (5) TRIGGER: ein Schreibweg auf `project_secrets`, der die Nicht-Leer-Prüfung nicht trägt.
 - DER PAGEVIEW-TOKEN IST ALS CUSTOM-EVENT EINTIPPBAR (Trigger: vor echtem Ad-Traffic)
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
   nicht-additive Migration)
-- DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU VERDICHTEN (Trigger: die nächste Arbeit
-  an CLAUDE.md, die diesen Abschnitt ohnehin berührt)
-- DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND SIND NICHT GESICHTET
-  (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet)
 - DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
   Arbeit an db-stand.sql oder am DB-Doku-Stand)
 - DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026 (Trigger: das Anlegen einer NEUEN
@@ -240,11 +232,8 @@ in docs/claude-md-herleitung.md.
 - DIE PROJEKTWAHL ÜBERLEBT KEIN NEULADEN (Trigger: der erste fremde Nutzer mit mehr als
   einem Projekt — spätestens vor einem Beta-Launch)
 - WAS GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT, IST UNGELESEN UND UNGEMESSEN (Trigger: der
-  BESTÄTIGTE LIVE-NACHWEIS DER SCHEIBE 4 der Phase 11.2 — nachgezogen am 2026-09-01)
-- DER OAUTH-WEG RUFT ensureTrackingKey NICHT — ANDERS ALS setCapiToken (Trigger: die
-  Transport-Scheibe, also die Scheibe, die den Zugang tatsächlich benutzt — EINGETRETEN,
-  GEMESSEN am Repo 2026-09-08. Ob ein Projekt OHNE Tracking-Schlüssel existiert, ist am
-  Repo NICHT feststellbar und ausdrücklich nicht erhoben)
+  BESTÄTIGTE LIVE-NACHWEIS DER SCHEIBE 4 der Phase 11.2 — nachgezogen am 2026-09-01;
+  EINGETRETEN am 2026-09-01, die Frage ist unbeantwortet)
 - OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST ERST AB MITTE OKTOBER 2026
   ENTSCHEIDBAR (Trigger: Mitte Oktober 2026 — abzulesen an der Direct-API-Seite im
   Campaign Manager, Anzeigen "Status" und "Data last received")
@@ -254,10 +243,17 @@ in docs/claude-md-herleitung.md.
 
 **AUS DEM PHASENENDE 11.2 GEHOBEN (2026-09-08) — NEUNZEHN PUNKTE.** Einer ist am 2026-09-23
 geschlossen und hier entfernt ("DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT").
+Fünf weitere sind am 2026-09-25 bei der Sichtung am Phasenende 11.7 herausgenommen — drei
+ERLEDIGT und gestrichen ("eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR …", "retry HAT
+KEINE OBERGRENZE …", "ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8 …"), zwei ins Backlog
+verschoben ("saveProject SCHREIBT settings UNVALIDIERT …", "DER RESOLVER SCHREIBT BEI TOTEM
+ZUGANGSDATUM …"); je Titel steht in docs/offene-punkte.md der Beleg bzw. der Grund. Ein Titel
+ist ERSETZT ("CONVERSIONS AUF FOLGESEITEN …").
 - DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN PRODUKTION" (Trigger: EINGETRETEN,
-  und er trägt einen TERMIN — das Erneuerungs-Token stirbt am 2026-09-11 um 07:26:58 UTC.
-  Ein Neu-Verbinden VERSCHIEBT ihn um sieben Tage und löst ihn NICHT; dauerhaft löst ihn
-  nur der Statuswechsel, und der ist Arbeit am ANBIETER-KONTO, keine Code-Arbeit)
+  und er trägt einen TERMIN, der mit jeder Neu-Autorisierung wandert — im Status "Testing"
+  stirbt das Erneuerungs-Token sieben Tage danach; abzulesen an der Ziel-Karte. Ein
+  Neu-Verbinden VERSCHIEBT ihn und löst ihn NICHT; dauerhaft löst ihn nur der
+  Statuswechsel, und der ist Arbeit am ANBIETER-KONTO, keine Code-Arbeit)
 - DER eventSource-WERT IST NICHT GEMESSEN — GEBAUT IST "WEB" ALS ENTSCHEIDUNG (Trigger: das
   erste Instrument, das FACHLICHE Falschheit von syntaktischer Gültigkeit trennt —
   validateOnly=true leistet das ausdrücklich NICHT)
@@ -274,26 +270,18 @@ geschlossen und hier entfernt ("DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLO
 - DREI FELDER DER NUTZLAST SIND FRAGEN DER TRANSPORT-SCHEIBE, NICHT DIESER (Trigger:
   DREI Trigger, je Feld einer; der Eintrag entfällt ERST, wenn alle drei eingetreten UND
   abgearbeitet sind)
-- eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE
-  ANDERE (Trigger: "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT
-  der URL" — EINGETRETEN, ausdrücklich NICHT geschlossen)
 - EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation LESEN
   (Trigger: der erste Rückkanal für abgelehnte Ereignisse)
 - KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG (Trigger: eine gemessene Rotation bei
   irgendeinem Anbieter dieses Rahmens, ODER ein Auslöser, der die Funktion nachweislich
   nebenläufig ruft — an BEIDEN Hälften NICHT eingetreten)
-- retry HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN (Trigger: der Zuschnitt
-  der Scheibe 1b — EINGETRETEN)
-- ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN (Trigger: zwei
-  eigene Trigger, BEIDE EINGETRETEN)
-- saveProject SCHREIBT settings UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT
-  (Trigger: der Zuschnitt der Scheibe 2 — EINGETRETEN)
 - PROJECT_PARAM STEHT ZWEIMAL, UND DIE DIVERGENZ IST EINSEITIG STUMM (Trigger: eine
   Änderung an einem der beiden Parameternamen)
-- CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR (Trigger: der
-  Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten Datenklasse)
-- DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER (Trigger:
-  der Zuschnitt der Scheibe 1b — EINGETRETEN; der Eintrag bleibt offen)
+- CONVERSIONS AUF FOLGESEITEN TRAGEN BEI KEINEM ZIEL EINE KLICK-KENNUNG — UND JEDE ABHILFE
+  VERLANGT EINE AUFBEWAHRUNG, DIE DIESES PRODUKT NICHT HAT (Trigger: der Zuschnitt der
+  Phase 17, ODER eine erneute Owner-Befassung mit der dritten Datenklasse, ODER der
+  Zuschnitt eines Cookie-Wegs zu einer Klick-Kennung, gleich welchen Ziels. TITEL UND
+  TRIGGER SIND AM 2026-09-25 ERSETZT, nicht gestempelt)
 - STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR (Trigger: die
   nächste Arbeit an der Ziel-Karte, ODER der Statuswechsel auf "In Produktion", ODER der
   erste Kunde mit einer Google-Verbindung)
@@ -323,7 +311,9 @@ SENDEN".
   Zugangsdaten oder eine Kennung speichert, auch mit nur EINEM Projekt; (2) für das Fenster
   aus (c) — der erste fremde Nutzer mit mehr als einem Projekt)
 
-**AUS DEM PHASENENDE 11.5 GEHOBEN (2026-09-16) — SIEBEN POSTEN.**
+**AUS DEM PHASENENDE 11.5 GEHOBEN (2026-09-16) — SIEBEN POSTEN.** Einer ist am 2026-09-25
+entfernt ("KEIN TEST LÄSST EINEN WURF BIS IN EINEN KNOPF-HANDLER …", seit dem 2026-09-17
+erledigt; der Beleg steht am Posten in docs/offene-punkte.md).
 - UNSER EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP ÜBERFAHREN — ZWEI WEGE, DIE GETRENNT
   BLEIBEN (ZWEI TRIGGER, je einzeln hinreichend, beide spätestens vor einem Beta-Launch mit
   fremden Nutzern: (1) der erste Betreiber, der ein asynchron setzendes CMP mitbringt UND
@@ -344,10 +334,6 @@ SENDEN".
 - EIN EINGESCHALTETER EINWILLIGUNGS-DIALOG OHNE ZUSTIMMUNG SIEHT AUS WIE KAPUTTES TRACKING —
   UND ZWAR AN DREI STELLEN GLEICHZEITIG (Trigger: der erste fremde Nutzer, der den Dialog
   einschaltet — für den Owner BEREITS EINGETRETEN)
-- KEIN TEST LÄSST EINEN WURF BIS IN EINEN KNOPF-HANDLER DER EINWILLIGUNGS-OBERFLÄCHEN DURCH
-  (Trigger: die nächste Runde, die am Klick-Handler von Leiste oder Modal, an
-  CONSENT_CHOICE_JS oder an write() arbeitet — ERLEDIGT 2026-09-17, gedeckt durch L22/M23,
-  bb9f045)
 - DER CONSENT-GATE-BLOCK HAT ZWEI ERZEUGER — UND SIE LAUFEN BEREITS AUSEINANDER (Trigger: die
   nächste Änderung am INHALT des Gate-Blocks an einem der beiden Erzeuger — die reine
   Hüllen-Divergenz von heute ist harmlos und ist NICHT der Trigger)
@@ -375,6 +361,15 @@ bündelt DREI Sachen; SEIN DRITTER TEIL STEHT NICHT DORT, SONDERN ALS PUNKT (4) 
 "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE".
 - CUSTOM-PIXEL: QA UND BETREIBER-HINWEISE VOR DEM LAUNCH (Trigger: vor dem öffentlichen
   Launch)
+
+**AUS DEM PHASENENDE 11.7 GEHOBEN (2026-09-25) — EIN POSTEN.** Drei weitere Ergebnisse
+stehen als Ergänzung an bestehenden Posten und haben keine eigene Zeile: K4 an Ursache (3)
+von "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN", die Cookie-Wege am Posten
+"CONVERSIONS AUF FOLGESEITEN …" (Titel und Trigger ersetzt), die Containment-Messung an "DREI
+WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE".
+- KEINE KLICK-KENNUNG IST AN EINEM ECHTEN ANZEIGENKLICK GEPRÜFT — WEDER IHRE FORM NOCH DER
+  ABGLEICH (Trigger: der erste echte Anzeigenklick je Ziel — spätestens vor echtem
+  Ad-Traffic)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

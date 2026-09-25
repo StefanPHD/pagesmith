@@ -103,6 +103,11 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   docs(claude)-Commits bleiben GETRENNT von feat/fix-Commits. Vor jedem Push git status
   und git diff auf versehentliche Secrets/.env-Inhalte prüfen. Taucht eine Migration im
   Diff auf, gilt zusätzlich "MIGRATION IMMER VOR CODE-DEPLOY" (docs/db-regeln.md).
+  Die Secret-Prüfung ist nur mit einer POSITIVKONTROLLE eine Prüfung: Das Suchmuster muss
+  im selben Lauf einen bekannten Köder finden. Sie läuft als EIGENER Schritt VOR Commit und
+  Push, nie im selben Befehl. Schlägt die Kontrolle fehl, wird weder committet noch
+  gepusht. Entfällt, sobald ein mechanischer Schutz übernimmt — etwa Push-Protection oder
+  ein Pre-Commit-Scanner.
 
 - TESTDATEN UND TEST-SEQUENZ MÜSSEN DEN PRODUKTIVEN PFAD TREFFEN
   Bei jedem Test gegen einen Zustandswechsel zuerst fragen, welche Datenlage der
@@ -1260,3 +1265,28 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   nicht erst beim Übernehmen — eine Bereinigung dort berührt keinen fremden Knoten.
   Ein eingefügtes Script-Element läuft dort NICHT: Ein Test gegen ein `DOMParser`-Dokument
   kann die Einfügung belegen, nie die Ausführung — das ist eine Live-Test-Achse.
+
+- JEDER FAN-OUT-ADAPTER SCHREIBT BEI EINER ANGENOMMENEN ANTWORT GENAU EINE ERFOLGSZEILE —
+  SIE BELEGT DIE ANNAHME, NICHT DIE VERARBEITUNG
+  Die Zeile entsteht nur in dem Zweig, den der Adapter ohnehin als Erfolg wertet — kein
+  eigenes Urteil daneben. Muster: `[capi] <Ziel> forward accepted: HTTP <Status>`, über
+  `console.info`, ein Argument; `<Ziel>` ist der Anzeigename der übrigen Zeilen des Adapters.
+  Nichts aus Anfrage oder Antwort ausser dem HTTP-Status: keine Nutzlast, keine IP, kein
+  User-Agent, keine Kennung, kein Zugangsdatum, keine Ereignis- oder Projekt-Kennung.
+  "accepted" heisst ANGENOMMEN, nicht "erfolgreich" oder "gesendet": eine 2xx-Antwort belegt
+  die Annahme, nicht die Verarbeitung. Wer einen Erfolg sucht, hält "forward accepted"
+  gegen ALLE Fehlerzeilen des Ziels, nicht gegen "rejected" allein.
+  Ein neues Ziel: sein Anzeigename kommt in die Namensliste des Filters `onConsoleLog` in
+  `vitest.config.ts` — fehlt er, erscheinen seine Zeilen wieder im Testprotokoll. Seine
+  Tests folgen dem Muster aus S10 der Phase 11.7: rot wird, wenn die Zeile fehlt, auch in
+  einem Fehlerzweig entsteht, eine weitere Angabe trägt, auf Stufe error steht, doppelt
+  entsteht oder den Status festschreibt.
+  Entfällt, sobald die Ablage des Ergebnisses je Ziel (K4) die Erfolgssicht übernimmt oder
+  das Log-Konzept ersetzt wird.
+
+- GIT BASH WANDELT EIN ARGUMENT, DAS MIT `@/` BEGINNT, STILL IN EINEN WINDOWS-PFAD UM —
+  EINE SUCHE MELDET DANN EINE ABWESENHEIT, DIE DER GEGENSTAND NICHT HERGIBT
+  Eine Suche nach `'@/lib/capi/config'` über `src/` meldete 0 Treffer, mit
+  `MSYS_NO_PATHCONV=1` 15 Dateien. Kein Fehler, keine Warnung: das Muster kommt verändert
+  beim Werkzeug an. Abhilfe: `MSYS_NO_PATHCONV=1` bei jedem Aufruf mit einem solchen
+  Argument. Entfällt, wenn die Arbeitsumgebung nicht mehr Git Bash unter Windows ist.

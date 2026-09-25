@@ -1872,6 +1872,14 @@ liegen beide hier und finden einander.
         dieselbe Grenze aus. DIE DRITTE DATENKLASSE VOM 2026-08-28 DECKT DAS NICHT: Sie
         gilt fremdvergebenen KLICK-Kennungen, nicht einer selbst gesetzten
         Besucher-Kennung. WER SIE HIER ANWENDET, WENDET SIE AUF EINE ANDERE KLASSE AN.
+        ERGÄNZT 2026-09-25 (Phasenende 11.7, Vorrat P11.7-2 der Phase 11.7) — DIE
+        AUFZÄHLUNG IM SATZ DARÜBER IST SEIT DEM 2026-09-22 ZU ENG, SEINE SCHLUSSFOLGERUNG
+        NICHT: Die dritte Datenklasse deckt seither auch `fbc` gleich welchen Trägers und
+        `fbp` samt gleichartigen Kennungen, die das Tag eines Anbieters setzt
+        (docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE", Teil (E2))
+        — `fbp` ist keine Klick-Kennung. Ihr Kriterium ist die FREMDE Herkunft; eine SELBST
+        gesetzte Besucher-Kennung deckt sie weiterhin nicht. Der Satz darüber bleibt als
+        Zeitdokument stehen, wie (E2) es festhält.
 
       DER ZIELSCHLÜSSEL IST EINE OFFENE FRAGE, UND SIE IST KEINE FOLGE DIESER TRENNUNG:
       Der Fan-Out-Schlüssel heisst heute 'google' — src/lib/settings.ts (TRACKING_TARGETS)

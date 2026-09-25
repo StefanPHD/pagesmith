@@ -307,6 +307,11 @@ aufeinander; sie liegen alle hier und finden einander.
        und kein Übersehen: Seine Aussage trägt weiter, und ein nachgezogener Halbsatz
        machte aus einem Zeitdokument eine Behauptung über heute.
        GEMELDET ALS VORRAT, NICHT GEBAUT: docs/aktiver-stand.md, Vorrat P11.7-2.
+       ERLEDIGT 2026-09-25 (Phasenende 11.7, ARCHITEKTEN-ENTSCHEIDUNG): An der Roadmap-Zeile
+       11.9 steht seither unmittelbar hinter dem Halbsatz ein DATIERTER Nachtrag, der die
+       Aufzählung vervollständigt. Der Halbsatz selbst ist NICHT angefasst — er bleibt das
+       Zeitdokument, als das ihn der Satz darüber führt. Vorrat P11.7-2 steht im Archiv der
+       Phase 11.7.
 
   (E3) DER GRUNDSATZ: EINE KLICK-KENNUNG GEHT NUR AN IHREN URHEBER. Eine fremdvergebene
        Klick-Kennung wird an den Anbieter weitergereicht, DER SIE VERGEBEN HAT — und an
@@ -453,6 +458,28 @@ aufeinander; sie liegen alle hier und finden einander.
   ist beides gleich plausibel. Was still kaputtgeht: das Containment ist als
   Sicherheitsregel geführt (Enumeration-Schutz) — bleibt die Messung aus, bleibt offen, ob
   eine Sicherheitszusage hält.
+  VERMERK 2026-09-25 (Phasenende 11.7) — EINE MESSUNG DERSELBEN KLASSE LIEGT VOR, UND SIE
+  DECKT EINEN TEIL. Der Text darüber bleibt stehen. GEMESSEN UND ABGELEITET STEHEN GETRENNT:
+  · GEMESSEN (CC, 2026-09-23; Archiv der Phase 11.7, VERMERK P11.7-16): Ein Wurf im RUMPF
+    eines async-Adapters — auch vor dessen `try` — wird zur Ablehnung, `Promise.allSettled`
+    fängt sie, und die Antwort bleibt die leere 204. Zwei Belege: eine `node -e`-Probe mit
+    Gegenprobe (ein SYNCHRONER Adapter lässt den Handler rejecten) und die Mutation m6 jener
+    Scheibe — 103 rote Fälle, KEINER an Status oder Rumpf; in `ingest.persist.test.ts`,
+    Fall (d), mit echtem Meta-Adapter standen `status 204` und der leere Rumpf vor der
+    gescheiterten Zeile und bestanden. Die echte Wurfzone sind die SYNCHRONEN Glieder vor
+    dem Fan-Out: die Lambdas in `FORWARDER_BY_TARGET`, `dispatchForward`, der
+    map-Callback.
+  · ABGELEITET, NICHT GEMESSEN (CC, 2026-09-25): WEG (1) — `asLogString`
+    (`src/lib/capi/meta-forward.ts`) und `normalizeProviderValue`
+    (`src/lib/capi/tiktok-forward.ts`) liegen in den Modulen der Adapter; stehen ihre
+    Aufrufe im Rumpf der async-Adapter, fällt ein Wurf dort unter die Messung. Der
+    Aufrufort ist NICHT einzeln geprüft. WEG (3) — `getPixelId` wird im RESOLVER gerufen
+    (`getCapiConfigByTrackingKey`, `src/lib/capi/token.ts`; GEMESSEN am Code), nicht im
+    Adapter; die Messung DECKT IHN NICHT. WEG (2) — ob ein Nicht-String als Zugangsdatum
+    schon im Resolver oder erst im Adapter wirft, ist hier nicht erhoben.
+  DER TRIGGER ("die Messung selbst") IST DAMIT FÜR EINEN TEIL EINGETRETEN, NICHT FÜR DEN
+  POSTEN. Er bleibt offen; der Rang ist weiter weder behauptet noch ausgeschlossen. Titel und
+  Trigger sind nicht angefasst.
 - BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE (Trigger: vor dem öffentlichen Launch; wie
   der COOKIE-DOKU-SCHNIPSEL darüber eine PRODUKTPFLICHT, kein Nice-to-have): (1) dass
   Pagesmith KEINEN Einwilligungs-Dialog mitliefert und ohne einen ALLE Ziele als erlaubt
@@ -622,1009 +649,36 @@ aufeinander; sie liegen alle hier und finden einander.
   ändern sich, und ein früh geschriebener Text zitierte dann Meldungen, die es nicht mehr
   gibt. Der Trigger ist der des Postens.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
-  Grund: kein realer Konsument. TRIGGER,
-  wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE
-  EREIGNISTYP trägt. Was still kaputtgeht: Ein Nenner, der nur Variante A kennt, meldet
-  vollständig, während beim halben Traffic nichts ankommt. Die drei Messbefunde, die dann
-  sofort gelten und nicht neu erhoben werden müssen, stehen in
-  docs/claude-history/backlog-polish.md, "VOLLSTÄNDIGKEITS-ACHSE — WAS DANN SOFORT GILT".
-  SACHKORREKTUR 2026-08-31 — ERSETZT UND NICHT GESTEMPELT: Im Grund stand zusätzlich "kein
-  Ziel trägt heute eine Kennung je Ereignistyp". DAS IST AM CODE FALSCH. LinkedIn trägt seit
-  Scheibe 11.1d genau das — `settings.pixels.linkedin.conversionRules`, eine Zuordnung
-  Ereignisname -> Conversion-Regel-Kennung (GEMESSEN am Repo, CC, 2026-08-31, am Typ
-  ProjectSettings in src/lib/settings.ts und an getConversionRules/setConversionRule
-  ebenda) — und das Ziel SENDET seit dem 2026-08-19 (Scheibe 11.1f).
-  ERSETZT und nicht gestempelt, weil dieser Halbsatz ein MASSSTAB ist: Wer den Trigger an ihm
-  misst, hält ihn für nicht eingetreten. Der ANDERE Halbsatz des Grundes ("kein realer
-  Konsument") bleibt WÖRTLICH stehen und ist unberührt — er sagt, dass die ACHSE keinen
-  Abnehmer hat, nicht dass es keine Kennung je Ereignistyp gäbe. Das sind zwei verschiedene
-  Aussagen, und nur die eine ist überholt.
-  DER TRIGGER IST DAMIT EINGETRETEN, und sein WORTLAUT wird NICHT angetastet — er trifft
-  genau diesen Fall. Der Stub in CLAUDE.md ist im selben Zug nachgezogen.
-  WAS DARAUS NICHT FOLGT: dass die Vollständigkeits-Achse zu bauen wäre. Der Punkt ist
-  weiterhin OFFEN und NICHT ENTSCHIEDEN; KEINE EMPFEHLUNG.
-  OB DIESER EINTRAG EINER DER DREI AUS "DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN
-  TRIGGER UND SIND NICHT GESICHTET" IST, IST NICHT GEPRÜFT WORDEN. Der Satz steht hier
-  ausdrücklich statt einer Behauptung in die eine oder die andere Richtung: Jener Eintrag
-  nennt seine drei Mitglieder nicht, und eine Zuordnung ohne Prüfung wäre eine erfundene.
-  PROVENIENZ: GEMESSEN am Repo (CC, 2026-08-31), in der Aufklärungsrunde zum Zuschnitt der
-  Scheibe 2 der Phase 11.2. Dass der Trigger damit eingetreten ist, ist eine FOLGE aus dieser
-  Messung und seinem Wortlaut, keine zweite Beobachtung.
-- CLAUDE.md NÄHERT SICH DEM LADELIMIT (Trigger: vor der nächsten Hebung an einem
-  Phasenende): GEMESSEN am 2026-08-13 — die Datei steht bei rund 149 KB gegenüber dem
-  dokumentierten 150k-Ladelimit, "## Immer beachten" trägt 1 012 Zeilen und 80 Regeln,
-  und allein die Hebung dieser Phase hat 10 293 Bytes gekostet. Jede Phase fügt mehrere
-  Regeln hinzu; die Datei wurde zuletzt schon einmal von 147 auf 138 KB gebracht. Was still
-  kaputtgeht: Ohne Entscheidung endet die nächste Hebung entweder ÜBER dem Ladelimit oder
-  damit, dass gefilterte Regeln stillschweigend nicht gehoben werden — und eine nicht
-  gehobene Regel wird nicht mehr gelesen. HIER STEHT AUSDRÜCKLICH KEIN VORSCHLAG, WAS
-  AUSGELAGERT WIRD: das gehört in eine Arbeitsweise-Runde am Phasenübergang.
-  ZWEI ZAHLEN NACHGEZOGEN (GEMESSEN am Repo, 2026-08-14): Hier stand "rund 1 200 Zeilen"
-  und "rund 11 KB"; gemessen sind 1 012 Zeilen (Abschnitt von der Überschrift bis zur
-  letzten Inhaltszeile) und 10 293 Bytes (Grösse von CLAUDE.md vor und nach dem
-  Hebungs-Commit 92c1a3b). Die beiden übrigen Zahlen des Eintrags halten der Messung
-  stand: 149 970 Bytes und 80 Regeln. HERKUNFT der beiden falschen: ein Diktat, das beim
-  Eintragen bereits als zu niedrig gemeldet und damals nicht nachgezogen wurde.
-
-  NACHGETRAGEN 2026-09-10 — VIER ANGABEN ZUR AUSGELAGERTEN DATEI. Der Eintrag oben ist
-  von 2026-08-13/14 und beschreibt den Zustand VOR der Auslagerung; er bleibt wörtlich
-  stehen und wird nicht umgeschrieben. Was seither dazugekommen ist, betrifft
-  docs/immer-beachten.md — die Datei, die jenen Abschnitt seit dem 2026-08-14 trägt.
-
-  (a) DAS LADEN IST GEMESSEN, UND ES TRÄGT. Der Eintrag stand bisher allein auf der
-  GRÖSSE; ob die Datei überhaupt noch VOLLSTÄNDIG ankommt, war nie erhoben. Jetzt ist es
-  das: In einer FRISCHEN Sitzung, OHNE jedes Werkzeug, waren drei Angaben allein aus dem
-  Startkontext abrufbar — die Marke IB-GELADEN in Zeile 1, die LETZTE Regelüberschrift
-  der Datei im Wortlaut, und ein Eintrag aus der MITTE des Verzeichnisses.
-  docs/immer-beachten.md lädt also vollständig.
-  ZEIGER 2026-09-18: Die Reichweite ist enger — die drei abgefragten Angaben stehen sämtlich im
-  KOPF der Datei (die Marke in Zeile 1, die zwei anderen im Verzeichnis); belegt ist die Ladung
-  bis dorthin. S. (m).
-  DIE WARNUNG DES WERKZEUGS BEI RUND 170 000 ZEICHEN IST EINE WARNUNG UND KEINE
-  ABSCHNEIDUNG. Wer sie als Abschneidung liest, hält eine vollständig geladene Datei für
-  halb geladen und baut Vorsorge gegen einen Zustand, der nicht eingetreten ist.
-  FOLGE: DAS AUFTRAG-0-GATE FÜR DIESE DATEI BLEIBT RUHEND. Der Gate-Apparat in CLAUDE.md,
-  "## Immer beachten — AUSGELAGERT nach docs/immer-beachten.md", ruht ausdrücklich,
-  solange der @-Import trägt — er trägt.
-  PROVENIENZ: GEMESSEN 2026-09-10 in einer frischen Sitzung ohne Werkzeug. Der Befund ist
-  diesem Eintrag VORGEGEBEN worden; die Runde, die ihn hier einträgt, hat ihn NICHT
-  nachgemessen. Die Grösse der Datei am selben Tag: 170 046 Zeichen in 172 427 Bytes,
-  2 185 Zeilen (GEMESSEN am Repo, CC, 2026-09-10) — eine DATIERTE Angabe, also alt und
-  nicht falsch; wer den heutigen Wert braucht, misst ihn.
-
-  (b) DIE PRÜFUNG, DIE DAS WIEDERHOLT, GEHÖRT DAZU — sonst ist (a) ein Einzelereignis,
-  das niemand nachstellen kann. VIER FRAGEN, in einer FRISCHEN Sitzung, OHNE jedes
-  Werkzeug: (1) die ZAHL der Einträge im Verzeichnis der Datei · (2) die LETZTE
-  Regelüberschrift im Wortlaut · (3) ein Eintrag aus der MITTE des Verzeichnisses ·
-  (4) die Marke in Zeile 1.
-  MARKE UND LETZTE ÜBERSCHRIFT WERDEN ZUSAMMEN GEFRAGT, UND DAS IST KEINE
-  GRÜNDLICHKEIT: Die Marke steht auch im Stub von CLAUDE.md und ist von dort
-  ABSCHREIBBAR, ohne die Datei je geöffnet zu haben — allein beantwortet sie nichts. Die
-  letzte Überschrift steht am DATEIENDE und, auf feste Breite gekappt, ein zweites Mal im
-  VERZEICHNIS im Kopf der Datei; allein am Ende steht ihr RUMPF. Sie wandert mit jeder
-  angefügten Regel. Erst beide zusammen trennen "geladen" von "aus dem Stub geraten".
-
-  ERGÄNZT 2026-09-18 — EINE ZWEITE ACHSE, WEIL DIE VIER FRAGEN OBEN AUS DEM KOPF DER DATEI
-  BEANTWORTBAR SIND. Der GRUND darüber bleibt wörtlich und bleibt richtig: Marke und letzte
-  Überschrift zusammen trennen "geladen" von "aus dem Stub geraten". Was sie NICHT trennen,
-  ist "ganz geladen" von "bis zum Ende des Verzeichnisses geladen" — die Ortsangabe zur
-  letzten Überschrift ist am selben Tag ERSETZT worden, weil sie die Kappung im Verzeichnis
-  nicht kannte.
-  ALLE VIER FRAGEN OBEN SIND AUS DEN ERSTEN RUND 200 ZEILEN BEANTWORTBAR: (1) durch
-  Zählen der Verzeichniszeilen · (2) aus der LETZTEN Verzeichniszeile · (3) aus dem
-  Verzeichnis selbst · (4) aus Zeile 1. Das Verzeichnis, das die Datei auffindbar macht, macht
-  ihren Kopf zur Kopie ihres Endes.
-  DIE ZWEITE ACHSE, AB SOFORT PFLICHT — DIE ENDE-ACHSE: MINDESTENS EINE FRAGE NACH EINER
-  ANGABE, DIE NUR IM RUMPF DER LETZTEN REGEL STEHT — nicht im Verzeichnis, nicht in CLAUDE.md,
-  nicht in MEMORY.md. Sie wird JE PROBE NEU GEWÄHLT, weil die letzte Regel mit jeder Hebung
-  wechselt; eine einmal festgeschriebene Frage wäre nach der nächsten Hebung stumm.
-  VOR JEDER PROBE WIRD DIE ALLEINSTELLUNG DER GEWÄHLTEN ANGABE GEMESSEN, mit POSITIV- UND
-  NEGATIVKONTROLLE im selben Lauf und mit benanntem Instrument. Ohne diese Messung ist die
-  Frage keine Ende-Achse, sondern eine Behauptung über eine Alleinstellung — und eine
-  Abwesenheits-Behauptung ohne benannte Reichweite trägt hier so wenig wie an einem Test.
-  TAUGLICH IST, WAS SICH NICHT VORHERSAGEN LÄSST: eine Zahl, ein Eigenname, eine Wortfolge aus
-  der PROVENIENZ am Ende der letzten Regel. UNTAUGLICH IST DER SINN DES RUMPFES — er lässt
-  sich aus der Überschrift erraten, und eine erratene Antwort ist von einer gelesenen nicht zu
-  unterscheiden.
-  DIE FRAGEN (1) BIS (4) BLEIBEN UND WERDEN NICHT ERSETZT: Sie prüfen den KOPF, und der muss
-  ebenfalls ankommen. Sie tragen nur die Aussage über das DATEIENDE nicht allein.
-  PROVENIENZ: Die Ergänzung ist OWNER-AUFTRAG 2026-09-18. Dass alle vier Fragen aus dem Kopf
-  beantwortbar sind, ist GEMESSEN am Repo (CC, 2026-09-18); die Fundstellen stehen in (m).
-
-  (c) DIE ENTFALLENS-PRÜFUNG IST GEFAHREN UND ERGAB NULL. Regel für Regel in
-  Dateireihenfolge: 104 Regeln · SIEBEN nennen eine Bedingung ihres Entfallens · KEINE
-  davon ist eingetreten · 97 nennen gar keine. Geprüft wurden die sieben Bedingungen
-  einzeln am Repo (CI-Gates, eslint-Konfiguration, git-Hooks, Migrations-Runner,
-  textContent-Vorschrift, ein Gate über nummerierte Zeiger bzw. über präsentische
-  Selbstangaben, ein Anzeiger für den nachzuziehenden veröffentlichten Stand); die Belege
-  je Bedingung stehen im Bericht jener Runde.
-  DIE FOLGE IST DER GRUND FÜR DIESEN NACHTRAG: Der Ausgang über die Entfallens-Bedingung
-  greift NUR für Regeln, die nach seiner Einführung entstanden sind — die sieben stammen
-  sämtlich aus den Phasen 11.8 und 11.2. DER BESTAND KANN ÜBER DIESEN WEG NIE SCHRUMPFEN.
-  WER DIE DATEI KLEINER HABEN WILL, TEILT SIE NACH LADEKLASSE; STREICHEN IST KEIN WEG
-  DORTHIN — und das ist jetzt GEMESSEN statt vermutet.
-  PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10).
-
-  (d) VIERZEHN ÜBERSCHNEIDUNGEN SIND ERHOBEN UND AUSDRÜCKLICH NICHT ZUSAMMENGELEGT.
-  DER GRUND GEHÖRT DAZU, sonst liest die nächste Aufräumrunde die Liste als
-  Arbeitsvorrat: Bei fast jeder zieht die JÜNGERE Regel die Abgrenzung zur älteren
-  SELBST — es sind bewusste Nachbarn, keine Dubletten, und beim Zusammenlegen verlöre die
-  schärfere Hälfte ihre Kante.
-  WAS SIE STATTDESSEN ZEIGEN, UND DAS IST IHR ERTRAG FÜR DIESEN EINTRAG: natürliche
-  LADEKLASSEN. Drei dichte Gruppen — zerstörte Voraussetzungen von Live-Schritten: FÜNF
-  Regeln · Zeiger und Anker in Dokumenten: VIER · ausgelieferte Artefakte, die ein Deploy
-  nicht erreicht: VIER. Fällt je die Entscheidung zu teilen, liegen die Schnittlinien
-  hier — GEMESSEN statt geraten.
-  HIER STEHT AUSDRÜCKLICH KEIN VORSCHLAG, OB UND WIE GETEILT WIRD. Das ist dieselbe
-  Zurückhaltung wie oben ("HIER STEHT AUSDRÜCKLICH KEIN VORSCHLAG, WAS AUSGELAGERT
-  WIRD") und aus demselben Grund: Der Zuschnitt gehört in eine Arbeitsweise-Runde, nicht
-  in einen offenen Punkt.
-  PROVENIENZ: die Erhebung der vierzehn und die drei Gruppengrössen GEMESSEN am Repo
-  (CC, 2026-09-10); dass NICHT zusammengelegt wird, ist OWNER/ARCHITEKT-ENTSCHEIDUNG
-  2026-09-10.
-
-  DER TRIGGER DIESES PUNKTES BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem
-  Phasenende"). Der Satz steht hier, damit ein späterer Leser nicht sucht, warum ein
-  Nachtrag von 2026-09-10 den Trigger nicht bewegt hat: Es stand bereits einer da, und
-  ein bestehender Trigger wird nicht ersetzt, nur weil ein Befund dazukommt.
-
-  NACHGETRAGEN 2026-09-11 — DREI BLÖCKE UND DER TRIGGER. Alles darüber bleibt wörtlich
-  stehen; seine Angaben sind datierte Messungen und werden hier gelesen, nicht ersetzt.
-  Die Buchstaben laufen weiter, damit ein Verweis auf einen Teil dieses Postens eindeutig
-  bleibt.
-
-  (e) DIE GRENZE, WIE DAS WERKZEUG SIE MELDET — 150,0k, IN ZEICHEN. BEOBACHTET am
-  2026-09-11 (Owner, Ablesung der Werkzeug-Ausgabe beim Sitzungsstart; KEINE Messung),
-  wörtlich: "docs\immer-beachten.md is over the 150.0k-char limit (188.8k chars)". Die
-  erste Zahl ist die SCHWELLE, die zweite die DATEIGRÖSSE.
-  DREI FOLGEN FÜR DIESEN POSTEN, und sie sind der Ertrag dieses Blocks:
-  · WIE (a) ZU LESEN IST. (a) nennt "die Warnung des Werkzeugs bei rund 170 000
-    Zeichen". Die 170k vom 2026-09-10 waren demnach die damalige GRÖSSE der Datei, nicht
-    die Schwelle. (a) WIRD NICHT ERSETZT: "eine Warnung und keine Abschneidung" bleibt
-    wahr — der Satz ist mehrdeutig, nicht falsch, und seine Messung ist datiert.
-  · DIE MARGE DES KOPFES. Der Eintrag oben rechnet in BYTES ("rund 149 KB",
-    "149 970 Bytes"). Gilt die Grenze in ZEICHEN, lag CLAUDE.md am 2026-08-13 WEITER unter
-    ihr, als er sagt. Die Zeichenzahl jenes Tages ist NICHT erhoben. Das ist eine Aussage
-    über die MARGE des Eintrags, nicht über seine Berechtigung.
-  · DIE EINHEIT IST IM REPO UNEINHEITLICH (GEMESSEN am Repo, CC, 2026-09-11): Commit
-    45449c4 rechnet in Zeichen ("~153.9k auf ~16.5k Zeichen"); der Kopf von
-    docs/immer-beachten.md und der Stub in CLAUDE.md rechnen in Bytes ("149 970 von
-    150 000 Bytes").
-  DIE GRÖSSEN AM 2026-09-11 (GEMESSEN am Repo, CC): docs/immer-beachten.md 191 435 Bytes /
-  188 757 Zeichen / 2 428 Zeilen · CLAUDE.md 85 398 Bytes / 84 032 Zeichen. Beide reines
-  LF, kein BOM; Zeichen gezählt als Unicode-Codepoints. Datiert, also alt und nicht
-  falsch; wer den heutigen Wert braucht, misst ihn.
-
-  (f) DIE LADE-PROBE IST BEI DER NEUEN GRÖSSE ERNEUT GEFAHREN. GEMESSEN 2026-09-11 in einer
-  FRISCHEN Sitzung OHNE Werkzeug, bei 191 435 Bytes / 188 757 Zeichen. Abgefragt: die
-  LETZTE Regelüberschrift im Wortlaut · ihr RUMPF sinngemäss · die VIER
-  Regelüberschriften davor im Wortlaut · die ZAHL der Verzeichnis-Einträge · ein Eintrag
-  aus der MITTE. Alle Antworten stimmten mit dem Dateitext überein, gegengeprüft mit
-  Werkzeug ERST NACH der Antwort. Die letzte Regel begann in Zeile 2420 von 2428
-  (datierte Angabe), ihr Rumpf war bis zum Schlusssatz abrufbar.
-  DER TRAGENDE BELEG: Die Vorgabe der Probe nannte FÜNF am 2026-09-11 angefügte Regeln.
-  Die Antwort nannte SECHS und meldete die Abweichung selbst; die sechste steht
-  unmittelbar vor den vier abgefragten. WER EINE DATEI NICHT LIEST, SONDERN AUS EINEM STUB
-  ODER AUS DER VORGABE ABSCHREIBT, KANN EINE ANGABE NICHT ÜBERBIETEN.
-  WARUM DIE PROBE SCHARF WAR: Die sechs Regeln stehen am DATEIENDE, in keinem Stub und in
-  keiner anderen Datei — dort, wo eine Kürzung zuerst greift.
-  EINE ABWEICHUNG VON (b): Die Marke in Zeile 1 wurde NICHT abgefragt. Dass (b) die Marke
-  für sich allein als wertlos bezeichnet, macht die Auslassung nicht zu keiner — (b)
-  schreibt VIER Fragen vor, gefahren wurde ein anderer Satz.
-  DIE ZAHLEN FÜGEN SICH, GEMESSEN und nicht abgeleitet (Repo, CC, 2026-09-11): (c) zählte
-  am 2026-09-10 104 Regeln; der Hebungs-Commit f318574 hat sechs angefügt (dazu einen
-  Zusatz an einer bestehenden Regel), der Folge-Commit a00f56c keine. Heute stehen 110
-  Verzeichnis-Einträge UND 110 Regeln, und jeder Verzeichnis-Eintrag ist positionsweise
-  der Anfang seiner Regel.
-  DIE GRENZE DIESER PROBE: Sie sagt, dass der Import an DIESEM Tag bei DIESER Grösse
-  vollständig geladen hat. Sie sagt NICHT, wo eine Obergrenze liegt, und NICHT, dass das
-  Werkzeug die gemeldete Grenze nie durchsetzt. (a) bleibt wörtlich stehen — eine
-  datierte Messung für ihren Stand.
-
-  (g) DIE ZWEITE ACHSE: WAS DAS LADEN KOSTET, BEVOR GEARBEITET WIRD. Alles darüber
-  argumentiert über GRÖSSE gegen eine Grenze; für die Kosten des Ladens führte dieser
-  Posten keine Zahl.
-  BEOBACHTET am 2026-09-11 (Owner, /context beim Sitzungsstart, frische Sitzung ohne
-  Arbeit; KEINE Messung, und von CC nicht nachmessbar — /context ist ein Nutzer-Befehl):
-  190,5k von 1M Token belegt (19 %). Nach Kategorie: Speicherdateien 152,6k (15,3 %) ·
-  Werkzeuge 31,9k (3,2 %) · Systemvorgabe 2,6k · Fertigkeiten 3,4k · Nachrichten 8 Token.
-  Frei: 776,5k (77,6 %).
-  WAS DARAUS FOLGT:
-  · DAS FENSTER IST NICHT DIE ENGE STELLE — 77,6 % sind frei, bevor gearbeitet wird.
-  · DIE MAUT FÄLLT IN JEDER SITZUNG AN, unabhängig von der Aufgabe, und sie wächst mit
-    jeder Hebung (ABLEITUNG: jede Hebung fügt der unbedingt geladenen Datei Regeln an).
-  WAS NICHT DARAUS FOLGT: welche Ursache knappe Sitzungen trägt. OWNER-BEOBACHTUNG:
-  Sitzungen gehen schnell zur Neige, und eine zweite Ursache liegt ausserhalb der Doku —
-  lange Berichte verbrauchen den Rest in wenigen Runden. WELCHE DER BEIDEN URSACHEN
-  WIEVIEL TRÄGT, IST NICHT ERHOBEN.
-  HIER STEHT KEIN VORSCHLAG — weder zum Teilen noch zu kürzeren Berichten noch zu beidem;
-  der Zuschnitt gehört, wie oben zweimal gesagt, in eine Arbeitsweise-Runde.
-
-  DER TRIGGER IST AM 2026-09-11 EINGETRETEN, UND SEINE FRAGE IST ERST NACHTRÄGLICH
-  BEANTWORTET (GEMESSEN am Repo, CC, 2026-09-11): Der Posten ist am 2026-09-10 bearbeitet
-  worden (Commit 371001e, die Nachträge (a) bis (d)), rund 32½ Stunden vor dem
-  Hebungs-Commit f318574. Die Hebung selbst hat ihn NICHT angefasst — sie änderte
-  docs/offene-punkte.md an vier Stellen, keine davon in diesem Posten — und hat sechs
-  Regeln ans Ende von docs/immer-beachten.md angefügt. Die Runde vom 2026-09-10 KONNTE
-  die Frage des Triggers nicht beantworten: Sie lief, bevor feststand, was die Hebung
-  anfügen würde, und liess den Trigger ausdrücklich stehen (die Reihenfolge ist
-  GEMESSEN, der Schluss daraus eine ABLEITUNG). Beantwortet ist sie erst durch die Probe
-  unter (f) — NACHTRÄGLICH, als die sechs Regeln schon am Dateiende standen.
-  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). Er ist
-  wiederkehrend und feuert am nächsten Phasenende erneut.
-
-  NACHGETRAGEN 2026-09-16 — DIE DRITTE LADE-PROBE UND ZWEI BEFUNDE DER AUFKLÄRUNG. Alles
-  darüber bleibt wörtlich stehen; seine Angaben sind datierte Messungen und werden hier
-  gelesen, nicht ersetzt. Die Buchstaben laufen weiter, damit ein Verweis auf einen Teil
-  dieses Postens eindeutig bleibt.
-
-  (h) DIE LADE-PROBE IST BEI 204 200 ZEICHEN ERNEUT GEFAHREN, UND SIE TRÄGT. Nach dem
-  Muster aus (b), in einer FRISCHEN Sitzung OHNE jedes Werkzeug. Abgefragt: die MARKE in
-  Zeile 1 · die ZAHL der Verzeichnis-Einträge · die LETZTE Regelüberschrift im Wortlaut ·
-  ihr RUMPF · die VIER Regelüberschriften davor im Wortlaut. Auf die ausdrückliche Frage,
-  ob eine Datei geöffnet oder ein Werkzeug benutzt wurde: NEIN. Marke, letzte Überschrift,
-  Rumpf und die vier davor stimmten mit dem Dateitext überein; gegengeprüft mit Werkzeug
-  ERST NACH der Antwort.
-  DIE ZUSAGE GILT DAMIT AN EINEM UM 15 443 ZEICHEN GRÖSSEREN BESTAND als bei der Probe
-  unter (f) (188 757 Zeichen am 2026-09-11) — eine Rechnung aus zwei datierten Messungen,
-  keine dritte Beobachtung.
-  DER TRAGENDE BELEG IST NICHT DIE MARKE, SONDERN DER RUMPF UND DIE REIHENFOLGE. Die Marke
-  steht auch im Stub von CLAUDE.md und ist von dort abschreibbar — (b) sagt das bereits,
-  und diese Probe hat sie trotzdem mitgefragt, weil sie zusammen mit dem Rest etwas trennt,
-  was sie allein nicht trennt. Der RUMPF der letzten Regel und die REIHENFOLGE der vier
-  davor stehen in KEINEM Stub und in keiner anderen Datei. Sie entsprechen genau der Folge,
-  in der die Hebung des Phasenendes 11.5 sie angefügt hat: Commit 3c05fae hängt FÜNF Regeln
-  an, in dieser Folge — "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES …" · "WAS EINMAL IM
-  AUSGELIEFERTEN TEXT STEHT …" · "EIN UNBEKANNTER KONFIGURATIONSWERT …" · "`grep` TAUGT IN
-  DIESER UMGEBUNG …" · "EIN WÄCHTER ÜBER ZEICHEN …". Die Antwort nannte die letzte und die
-  vier davor in genau dieser Folge (GEMESSEN am Repo, CC, 2026-09-16).
-  DIE GRENZE AN DER EINEN ANGABE, DIE KEIN BELEG IST: Die ZAHL der Verzeichnis-Einträge war
-  eine HANDZÄHLUNG im geladenen Text und ist vom Antwortenden SELBST als um eins unsicher
-  gekennzeichnet worden. Sie trägt nicht; die vier anderen Angaben tragen. Sie traf
-  trotzdem: GEMESSEN am Dateitext (CC, 2026-09-16) stehen 115 Verzeichnis-Einträge UND 115
-  Regeln, und jeder Verzeichnis-Eintrag ist positionsweise der Anfang seiner Regel — null
-  Abweichungen über alle 115. DASS EINE HANDZÄHLUNG RICHTIG LAG, MACHT SIE NICHT ZUM BELEG:
-  Sie ist als unsicher gekennzeichnet worden, und eine Angabe, die ihre eigene Unschärfe
-  benennt, kann eine Ladung nicht beweisen.
-  DIE ZAHLEN FÜGEN SICH (GEMESSEN am Repo, CC, 2026-09-16): (f) zählte am 2026-09-11 110
-  Einträge und 110 Regeln; die Commits 54dff16 und 49caf8a haben KEINE Regel angefügt, die
-  Hebung 3c05fae FÜNF. 110 + 5 = 115.
-  DIE GRÖSSEN AM 2026-09-16 (GEMESSEN am Repo, CC): docs/immer-beachten.md 207 128 Bytes /
-  204 200 Zeichen / 2 617 Zeilen, reines LF, kein BOM, null NUL. Die letzte Regel beginnt in
-  Zeile 2 586 von 2 617. Zeichen gezählt als Unicode-Codepoints; CR und NUL über dieselbe
-  Zählung und ausdrücklich NICHT über `grep` (s. die Regel "`grep` TAUGT IN DIESER UMGEBUNG
-  WEDER FÜR DAS CR NOCH FÜR DAS NUL" in docs/immer-beachten.md — sie ist eine der fünf, die
-  diese Probe abgefragt hat). Datiert, also alt und nicht falsch; wer den heutigen Wert
-  braucht, misst ihn.
-  DIE ZWEITE GRENZE, UNVERÄNDERT AUS (a) UND (f): Die Probe sagt, dass der Import an DIESEM
-  Tag bei DIESER Grösse vollständig geladen hat. Sie sagt NICHT, wo eine Obergrenze liegt,
-  und NICHT, dass das Werkzeug die gemeldete Grenze nie durchsetzt.
-  PROVENIENZ: Die Probe-Antworten und der Ablauf der Probe sind OWNER-ANGABEN (frische
-  Sitzung ohne Werkzeug, 2026-09-16). Die Gegenprüfung am Dateitext — Zahl der Einträge und
-  Regeln, positionsweise Deckung, letzte Regel, die vier davor, Reihenfolge und Herkunft der
-  fünf angefügten Regeln, Grössen — ist GEMESSEN am Repo (CC, 2026-09-16).
-
-  (i) DAS MATERIAL DER SCHNITTLINIEN AUS (d) EXISTIERT NICHT. (d) nennt VIERZEHN
-  Überschneidungen und drei dichte Gruppen mit FÜNF, VIER und VIER Regeln und sagt, dort
-  lägen die Schnittlinien, falls je die Entscheidung zu teilen fällt. WELCHE Regeln das
-  sind, steht nirgends im Repo.
-  GEMESSEN am Repo (CC, 2026-09-16), zwei Achsen über alle Dateien der Typen md, ts, tsx
-  und sql ausserhalb von node_modules — das schliesst docs/, src/, supabase/ und CLAUDE.md
-  ein: (1) `ueberschneidung|überschneidung|schnittlinie|ladeklasse`, case-insensitiv;
-  (2) die Gruppen-Bezeichner selbst — `zerstörte voraussetzung|voraussetzungen von
-  live-schritten|zeiger und anker|ausgelieferte artefakte, die ein deploy`. Achse (2) trifft
-  im ganzen Repo GENAU DIE ZWEI ZEILEN VON (d) SELBST und sonst nichts; die Treffer von
-  Achse (1) ausserhalb dieses Postens betreffen die Ladeklasse einzelner Quelldateien und
-  die fünfte Ladeklasse im Kopf von docs/immer-beachten.md, nicht die Gruppen. Auch die
-  Suche nach dem Zählwort `vierzehn` fördert nur andere Gegenstände zutage (Vorratsposten,
-  Zeiger, Mutationen, Tage). POSITIVKONTROLLE: Achse (2) findet den Satz in (d), in dem die
-  Gruppen benannt werden — eine Auflistung in derselben Wortwahl hätte sie also gefunden.
-  DIESER ABSATZ FÜHRT DIE SUCHBEGRIFFE SEITHER SELBST: Wer nachmisst, zieht die Treffer von
-  (i) ab, sonst hält er die Zitate hier für das gesuchte Material.
-  DIE GRENZE DIESER MESSUNG, und ohne sie ist sie stärker als ihr Instrument: Beide Achsen
-  suchen WORTLAUT. Eine Liste, die weder "Überschneidung" noch einen Gruppen-Bezeichner
-  noch "vierzehn" trägt — etwa eine blosse Aufzählung von Regeltiteln unter einer neutralen
-  Überschrift —, wäre ihnen entgangen.
-  DAZU DIE ARITHMETIK, die (d) selbst nicht auflöst: FÜNF plus VIER plus VIER sind DREIZEHN,
-  nicht VIERZEHN. Ob die vierzehnte Überschneidung ausserhalb der drei Gruppen liegt, sagt
-  (d) nicht.
-  WER DIE SCHNITTLINIEN BENUTZEN WILL, MUSS DIE ZUORDNUNG NEU ERHEBEN. Das ist keine
-  Entwertung von (d): Die Erhebung hat stattgefunden und ist dort als GEMESSEN ausgewiesen —
-  erhalten geblieben sind die ZAHLEN, nicht das Material. HIER STEHT KEINE EMPFEHLUNG und
-  keine Schnittlinie.
-  PROVENIENZ: Der Befund stammt aus der Aufklärung vom 2026-09-16 und stand bis dahin nur in
-  ihrem Bericht. Die zwei Achsen, ihre Positivkontrolle und der Nicht-Treffer sind GEMESSEN
-  am Repo (CC, 2026-09-16); die Arithmetik ist am Text von (d) ABLESBAR.
-
-  (j) DER WACHSTUMSTREIBER IST DIE LÄNGE, NICHT DIE ZAHL. Der Posten oben rechnet in
-  GRÖSSE und die Nachträge (c) und (f) in ANZAHL; keiner fragt, woraus die Grösse entsteht.
-  GEMESSEN am Repo (CC, 2026-09-16), Regel für Regel in Dateireihenfolge, Grenze zwischen
-  zwei Regeln jeweils der nächste Zeilenanfang "- ":
-  · REGELN 1 BIS 80: zusammen 81 448 Zeichen, im Schnitt 1 018 Zeichen je Regel.
-  · REGELN 81 BIS 115: zusammen 108 716 Zeichen, im Schnitt 3 106 Zeichen je Regel.
-  · DREISSIG PROZENT DER REGELN TRAGEN SIEBENUNDFÜNFZIG PROZENT DER ZEICHEN.
-  Regel 81 ist die erste, deren Text die Phase 11.1 nennt ("EIN ANKER, DER EINDEUTIG
-  AUSSIEHT …") — GEMESSEN, keine der Regeln 1 bis 80 nennt sie.
-  DIE ABGRENZUNG-ABSÄTZE SIND DER SICHTBARE TEIL DAVON: 0,09 Vorkommen je Regel bei 1 bis 80,
-  1,29 je Regel ab 81 (7 gegen 45 Vorkommen).
-  ES IST EIN SPRUNG, KEIN TREND, und das ist die Aussage dieses Nachtrags: Die Regeln ab 81
-  sind nicht fortlaufend länger geworden. Der letzte Block ist der DÜNNSTE der drei nach dem
-  Sprung (Regeln 111 bis 115: 2 888 Zeichen im Schnitt, gegen 3 135 bei 81 bis 95 und 3 150
-  bei 96 bis 110). DIE VERMUTUNG, DIE ABGRENZUNGEN WÜCHSEN MIT DER DATEIGRÖSSE, IST DAMIT AM
-  MATERIAL GEPRÜFT UND NICHT BESTÄTIGT.
-  ZWEI ABWEICHUNGEN VOM BERICHT DER AUFKLÄRUNG, die hier stehen statt still angeglichen zu
-  werden:
-  · "Einen ABGRENZUNG-Absatz, den es davor gar nicht gab" IST ZU STARK. Die Form gibt es
-    davor — in den Regeln 11, 14, 15, 16, 20, 22 und 76 —, meist mitten im Satz statt als
-    eigener Absatz. NEU IST NICHT DIE FORM, NEU IST IHRE DICHTE.
-  · "Der dichteste Block ist der erste nach dem Sprung" trifft bei DIESEM Zuschnitt nicht:
-    96 bis 110 liegt um ein halbes Prozent über 81 bis 95. Die RICHTUNG der Aussage hält —
-    kein Trend nach oben, und der letzte Block ist nicht der dichteste —, die Rangfolge der
-    beiden mittleren Blöcke hängt am Zuschnitt und liegt im Rauschen. Der Zuschnitt des
-    Berichts liegt nicht im Repo; ein Widerspruch ist daraus NICHT abzuleiten.
-  WAS AUS DEN DATEN NICHT ZU ENTSCHEIDEN IST: ob die DATEIGRÖSSE oder die EINFÜHRUNG DER
-  BAUFORM den Sprung trägt. Beides fällt zeitlich zusammen. HIER STEHT KEINE EMPFEHLUNG und
-  keine Schnittlinie.
-  PROVENIENZ: Der Befund stammt aus der Aufklärung vom 2026-09-16 und stand bis dahin nur in
-  ihrem Bericht. Sämtliche Zahlen dieses Absatzes, die Blockgrenzen und die zwei Abweichungen
-  sind GEMESSEN am Repo (CC, 2026-09-16).
-
-  DER TRIGGER IST MIT DEM PHASENENDE 11.5 EINGETRETEN, UND DIESE RUNDE IST SEINE
-  ABARBEITUNG — zusammen mit der Aufklärung vom 2026-09-16, aus der (i) und (j) stammen.
-  ANDERS ALS AM 2026-09-11 IST DIE FRAGE DES TRIGGERS DIESMAL NICHT NACHTRÄGLICH
-  BEANTWORTET: Die Hebung des Phasenendes 11.5 (Commit 3c05fae) stand bereits, als die Probe
-  lief, und die fünf angefügten Regeln sind genau das, was die Probe abgefragt hat.
-  DER TRIGGER BLEIBT AUCH HIER UNVERÄNDERT ("vor der nächsten Hebung an einem
-  Phasenende"). Dass er wiederkehrend ist und am nächsten Phasenende erneut feuert, steht
-  im Block von 2026-09-11 und wird hier NICHT verdoppelt: Derselbe Satz zweimal in einem
-  Posten macht jeden Zeiger auf ihn mehrdeutig.
-
-  NACHGETRAGEN 2026-09-16, ZWEITER BLOCK DES TAGES — DIE ERHEBUNG NACH SUBSYSTEMEN UND DIE
-  ENTSCHEIDUNG, DIE AUS IHR FOLGT. Alles darüber bleibt wörtlich stehen; seine Angaben sind
-  datierte Messungen und werden hier gelesen, nicht ersetzt. Die Buchstaben laufen weiter,
-  damit ein Verweis auf einen Teil dieses Postens eindeutig bleibt.
-
-  (k) ES WIRD NICHT GESCHNITTEN — OWNER-ENTSCHEIDUNG 2026-09-16. Die Erhebung desselben
-  Tages hat geprüft, ob ein Schnitt nach SUBSYSTEMEN trägt: jede der 115 Regeln einzeln,
-  zugeordnet zu QUERSCHNITT (gilt bei jedem Bau), SUBSYSTEM (gilt nur bei Arbeit an einem
-  bestimmten Teil) oder MEHRDEUTIG. Er trägt nicht.
-  DIE ZAHLEN, DIE DIE ENTSCHEIDUNG TRAGEN — die Zeichenzahlen GEMESSEN am Dateitext (CC,
-  2026-09-16), die Klassenzugehörigkeit ein URTEIL derselben Runde:
-  · 190 164 Zeichen in 115 Regelblöcken (der Rest der Datei bis 204 200 sind Kopf und
-    Verzeichnis, die bei jedem Schnitt in JEDER Hälfte stünden).
-  · QUERSCHNITT 50 Regeln / 97 369 Zeichen / 51,2 % · MEHRDEUTIG 9 / 17 336 / 9,1 % ·
-    SUBSYSTEM 56 / 75 459 / 39,7 %, verteilt auf ZEHN Arbeitsetiketten.
-  · STÜCK UND UMFANG GEHEN AUSEINANDER, und wer nach Stück plant, plant falsch: Die
-    Anbieter-Recherche hat DREI Regeln und ist nach Umfang das ZWEITGRÖSSTE Subsystem; die
-    Oberfläche hat VIERMAL so viele Regeln und ist kleiner.
-  DIE PROBE AM NÄCHSTEN REALEN BAU IST DIE ENTSCHEIDENDE ZAHL, und sie ist der Grund der
-  Entscheidung: Für die Phase 11.6 müsste eine Sitzung 87,7 % der Regelzeichen laden; weg
-  blieben 12,3 %, und die HÄLFTE davon ist ein einziges Subsystem. SOLANGE DIE VORFRAGE
-  JENER PHASE OFFEN IST — Client-Snippet oder Server-Empfänger —, MUSS DIE KLÄRENDE SITZUNG
-  DIE VEREINIGUNG BEIDER LESARTEN LADEN. Der Schnitt hilft am wenigsten dort, wo eine Phase
-  BEGINNT, also genau dort, wo der Kontext am knappsten ist.
-  DREI WEITERE BEFUNDE, die gegen ihn sprechen:
-  · DIE SPANNE ZWISCHEN 39,7 % UND 48,8 % HÄNGT AN NEUN REGELN. Die Hälfte der Datei ist
-    unstrittig unbedingt; der ganze Streit wird an den neun Mehrdeutigen geführt.
-  · DIE VERFLECHTUNG IST GRÖSSER ALS IHRE MESSBARE HÄLFTE: 39 WÖRTLICHE Titel-Zitate
-    zwischen Regeln, neun davon über eine Klassengrenze — aber 47 der 115 Regeln tragen
-    UNSCHARFE Verweise ("die Regel darüber", "ABGRENZUNG zu Lektion (c)", "VERWANDT").
-    GENAU DIE MACHT EIN SCHNITT UNAUFFINDBAR: Sie benennen kein Ziel, das man nachschlagen
-    könnte.
-  · DER EINZIGE PRÄZEDENZFALL IST UNAUSGEWERTET: docs/db-regeln.md läuft seit dem
-    2026-08-13 auslöser-geladen, 37 Nennungen in 14 Dateien — KEINE bewertet die
-    Ladeklasse. Und die Datei ist nicht eingefroren: Sie trägt eine VIERTE Regel, die DORT
-    entstanden ist und nie in der unbedingt geladenen Datei stand.
-  · DIE FEHLERKLASSE "EINE AUSLÖSER-GELADENE DATEI WIRD ÜBERSEHEN" IST IM PROJEKT BENANNT,
-    aber für diesen Fall NICHT EINGETRETEN — oder nicht bemerkt worden, und das ist am
-    Bestand nicht zu unterscheiden. Eine Nicht-Beobachtung ist hier kein Entlastungsbeweis.
-  WAS STATTDESSEN GILT: Der Trigger dieses Postens ist wiederkehrend und feuert an jedem
-  Phasenende. GEHANDELT WIRD, WENN EINE LADE-PROBE NACH NACHTRAG (b) FEHLSCHLÄGT — nicht,
-  wenn eine Zahl eine Schwelle überschreitet.
-  WENN DOCH GESCHNITTEN WIRD, IST DIE ANBIETER-RECHERCHE DER ERSTE KANDIDAT: drei Regeln,
-  14 117 Zeichen, nach Umfang das zweitgrösste Subsystem, mit einem scharfen Auslöser
-  (Arbeit an einem fremden Anbieter). Das ist die HÄLFTE der gesamten Ersparnis in DREI
-  Regeln. GENANNT, NICHT EMPFOHLEN — und die Entscheidung oben bleibt davon unberührt.
-  DIE GRENZEN DIESER ERHEBUNG, und ohne sie ist die Liste unten stärker als ihr Verfahren:
-  · DIE KLASSENZUGEHÖRIGKEIT IST EIN URTEIL, KEINE MESSUNG. Gemessen sind allein die
-    Zeichenzahlen und die Verweis-Zählungen.
-  · DER ANGELEGTE MASSSTAB WAR DIE OPERATIVE ANWEISUNG EINER REGEL — an wen sie sich
-    richtet und was sie zu tun befiehlt —, NICHT IHR BELEG. Sonst wanderte jede Regel
-    dorthin, wo ihr Beispiel herkommt. EIN ANDERER MASSSTAB SCHNITTE DIE LISTE ANDERS; wer
-    sie später benutzt, muss wissen, nach welchem sie geschnitten ist.
-  · DER AUFTRAG WAR IN SICH WIDERSPRÜCHLICH, und das gehört an die Liste, nicht in einen
-    Bericht: Seine Querschnitt-Aufzählung nannte "Test- und Wächter-Disziplin", seine
-    Prüffrage lautete "würde jemand an einem ANDEREN Subsystem diese Regel brauchen?". BEI
-    REGEL 65 WIDERSPRECHEN SICH BEIDE — "die Testumgebung wertet kein CSS aus" ist
-    Test-Disziplin und wird ausserhalb der Oberfläche nie gebraucht. Die Erhebung ist der
-    PRÜFFRAGE gefolgt (der Auftrag nennt sie schärfer) und beziffert den Unterschied mit
-    568 Zeichen. BEI SIEBEN WEITEREN REGELN — 5, 8, 15, 16, 21, 78, 93 — liegt dieselbe
-    Spannung latent; dort stammen die Belege aus je einem Subsystem, die Anweisung aber
-    nicht, und sie stehen als Querschnitt.
-  · DIE ETIKETTEN S1 BIS S10 SIND ARBEITSETIKETTEN DIESER ERHEBUNG, KEINE MODULVORSCHLÄGE.
-    Sie sind aus den Regeltexten gezogen, nicht vorab gesetzt.
-  WARUM DIE LISTE VOLLSTÄNDIG DASTEHT UND NICHT IHR ERGEBNIS: NACHTRAG (d) HAT EINE SOLCHE
-  ERHEBUNG SCHON EINMAL GEFAHREN UND NUR DIE ZAHLEN AUFGESCHRIEBEN. Welche Regeln seine
-  vierzehn Überschneidungen und seine drei Gruppen bilden, steht nirgends im Repo (s. (i)) —
-  dieselbe Arbeit müsste zum zweiten Mal gemacht werden. Das ist der Grund für jede der 115
-  Zeilen unten, auch für die, deren Zuordnung offensichtlich aussieht.
-  DIESE LISTE ZITIERT 115 REGELANFÄNGE WÖRTLICH: Wer nach dem Titel einer Regel sucht,
-  trifft ab jetzt auch hier. Die Treffer dieses Nachtrags gehören nicht zum Bestand der
-  Regel, sondern zu ihrer Erhebung.
-  DIE ZEHN ETIKETTEN: S1 Tracking-/Ingest-Pfad und Fan-Out-Ziele · S2 Datenbank (Schema,
-  Migrationen, Policies, PostgREST) · S3 Hosting/Serving (Domains, Routing, Cookies, Audit)
-  · S4 Ausgelieferter Kundentext (Erzeugen, Veröffentlichen) · S5 Editor-/Workspace-
-  Oberfläche · S6 Server-Actions und Next-Bauform · S7 Geheimnisse, OAuth, Chiffrierung ·
-  S8 Anbieter-Recherche · S9 Analytics-Anzeige · S10 Deploy, Build, Env.
-  DIE LISTE — Nummer · wörtlicher Anfang, gekappt · Klasse · Etikett bzw. Grund:
-    1 | DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ... | SUB S3
-    2 | APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI ... | SUB S2
-    3 | AUDIT-LOG-DISZIPLIN: GENAU EIN Eintrag pro ... | SUB S3
-    4 | TEST-DISZIPLIN: DISKRIMINIEREND STATT BREIT ... | QUERSCHNITT
-    5 | MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE ... | QUERSCHNITT
-    6 | EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI ... | QUERSCHNITT
-    7 | COMMIT-KONVENTIONEN: Conventional-Commit-Format ... | QUERSCHNITT
-    8 | TESTDATEN UND TEST-SEQUENZ MÜSSEN DEN ... | QUERSCHNITT
-    9 | CLIENT-SEITIGE SERVER-ACTION-AUFRUFE ... | SUB S6
-   10 | DIFF-VORLAGE = GEZIELTE VERIFIKATION ... | QUERSCHNITT
-   11 | WAS NUR IM GESPRÄCH GESAGT WIRD ... | QUERSCHNITT
-   12 | EINE MUTATIONS-VORHERSAGE KANN IN BEIDE ... | QUERSCHNITT
-   13 | EINE REGEL KANN RICHTIG SEIN UND NICHT SKALIEREN ... | QUERSCHNITT
-   14 | EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG ... | QUERSCHNITT
-   15 | EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND ... | QUERSCHNITT
-   16 | EIN GRÜNER TEST IST KEIN BELEG ... | QUERSCHNITT
-   17 | EINE ZÄHLUNG ENTLANG EINER ACHSE ... | QUERSCHNITT
-   18 | EINE BEDINGUNG, DIE EINE ARBEIT AN EINE ANDERE HÄNGT ... | QUERSCHNITT
-   19 | WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT ... | QUERSCHNITT
-   20 | EINE ANLEITUNG, DIE EINE VORAUSSETZUNG NICHT NENNT ... | QUERSCHNITT
-   21 | EIN LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND ... | QUERSCHNITT
-   22 | EINE BILLIGE MESSUNG WIRD NICHT DURCH EINE ... | QUERSCHNITT
-   23 | Erst der nutzbare Kern, dann Infrastruktur. | QUERSCHNITT (Haltung)
-   24 | Importierter User-Code läuft NUR im sandboxed iframe ... | SUB S5
-   25 | HISTORIE-CHECK VOR EINGRIFF IN KERN-DATEIEN ... | QUERSCHNITT (der Text sagt selbst
-        "gilt bei JEDEM Plan")
-   26 | PERMANENTER Alias /api/capi darf NIE entfernt werden ... | SUB S1
-   27 | GRANTS SCHÜTZEN NICHTS — RLS IST DIE EINZIGE ... | SUB S2
-   28 | HOST-ONLY-COOKIES AUF GETEILTEN WILDCARD-DOMAINS ... | SUB S3
-   29 | SET-COOKIE UND EINE ALS ÖFFENTLICH/CACHEBAR ... | SUB S3
-   30 | EIN SERVERSEITIG GELESENER COOKIE-WERT BLEIBT ... | MEHRDEUTIG — trifft jeden Pfad,
-        der einen Cookie liest: Serving, Ingest, Persist. Die Achse ist die Eingabequelle,
-        kein Subsystem.
-   31 | INGEST-204-CONTAINMENT ... | SUB S1
-   32 | TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL ... | MEHRDEUTIG — eine Regel über drei
-        Orte: die events-Spalte (DB), den Ingest-Marker und den Verlustraten-Join
-        (Analytics).
-   33 | KILL-SWITCH ALS EXPLIZITER, FAIL-CLOSED ZWEIG ... | SUB S1
-   34 | isForwardable = NEGATIV-AUSSCHLUSS EINES ... | SUB S1
-   35 | BESTÄTIGUNGEN/CONFIRMS NIE AN META FORWARDEN ... | SUB S1
-   36 | BEACON-keepalive PFLICHT ... | SUB S1
-   37 | DRITTANBIETER-SCRIPT-LADEPRÜFUNG am load/error-Event ... | SUB S1
-   38 | WORTWAHL DASHBOARD "NUR server-seitig erfasst" ... | SUB S9
-   39 | DARSTELLUNGS-EHRLICHKEIT BEI VERGLEICHSZAHLEN ... | SUB S9
-   40 | SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB ... | MEHRDEUTIG —
-        bindet jede Scheibe, die irgendwo einen Wert persistiert: DB, Tracking, Hosting,
-        Einwilligung. Die Achse ist der Besitz des Blobs.
-   41 | KEIN SERVER-SEITIGES HTML-PARSING ... | SUB S4
-   42 | CAPI-TOKEN UND PIXEL-/DATASET-ID SIND EIN PAAR ... | SUB S1
-   43 | KLICK-WIRING vs. Maustasten ... | SUB S4
-   44 | "USE SERVER"-DATEIEN ... | SUB S6
-   45 | POSTGREST-QUERIES + ECHTE PRIMÄRSCHLÜSSEL ... | SUB S2
-   46 | OB EINE MIGRATION IN DER LAUFENDEN DB ANGEWANDT IST ... | SUB S2
-   47 | ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE ... | SUB S2
-   48 | ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH ... | SUB S2 (die VERWANDT-Klausel
-        auf die Historien ist Beleg, nicht Anweisung)
-   49 | NEXT_PUBLIC_-REDEPLOY-PFLICHT ... | SUB S10
-   50 | DAS ETIKETT IM NEXT-BUILD-OUTPUT BENENNT DIE KONVENTION ... | SUB S10
-   51 | DIE NEXT-KONVENTIONSDATEI IST src/proxy.ts ... | SUB S3
-   52 | HOST-QUELLE FÜR APP-vs-SERVING-BRANCHING ... | SUB S3
-   53 | Vor neuer Phase: kurz bestätigen, dass die vorige ... | QUERSCHNITT
-   54 | Jede Bau-Freigabe an CC endet mit einer expliziten ... | QUERSCHNITT
-   55 | Session-unabhängige Mutationen (MCP-Vorbereitung) ... | SUB S6
-   56 | ABLEITEN STATT HARDCODEN (Werte mit einer Quelle) ... | QUERSCHNITT
-   57 | ABLEITEN STATT LÖSCHEN (projekt-spezifischer View-State) ... | MEHRDEUTIG — zwei
-        Hälften: der View-State an der Oberfläche UND die Frage, aus welcher Quelle
-        abgeleitet wird (Geheimnis-Tabelle gegen settings). Trifft UI, Tracking, Hosting.
-   58 | DER HALTBARE ANKER IST DER SYMBOLNAME ... | QUERSCHNITT
-   59 | EIN WIEDERKEHRENDER AUFRUF GEGEN EINEN EXTERNEN DIENST ... | SUB S5
-   60 | EINE KOMPONENTE MIT EIGENEM ZUSTAND DARF NICHT ... | SUB S5
-   61 | KEIN ZEIT- ODER LOCALE-ABHÄNGIGER WERT IN EINEM TEILBAUM ... | SUB S5
-   62 | VERSTECKEN PER CSS-KLASSE ... | SUB S5
-   63 | WER EIN ELEMENT AUS DEM DOKUMENTFLUSS NIMMT ... | SUB S5
-   64 | ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG ... | MEHRDEUTIG —
-        Oberfläche UND Testbestand; die dritte Achse trifft ausdrücklich auch
-        Mengen-Erweiterungen ausserhalb der UI.
-   65 | DIE TESTUMGEBUNG WERTET KEIN CSS AUS ... | SUB S5 — DIE STELLE, AN DER SICH AUFTRAG
-        UND PRÜFFRAGE WIDERSPRECHEN (s. die Grenzen oben, 568 Zeichen)
-   66 | SERVER-ACTIONS SIND IM NETZWERK-TAB NICHT AN IHREM NAMEN ... | SUB S6
-   67 | EIN SIGNAL LEUCHTET NUR, WENN DER NUTZER JETZT ... | SUB S5
-   68 | AUFRÄUMEN AM ANFANG EINER SITZUNG ... | SUB S5
-   69 | WELCHE REGEL WANN GREIFT: BEKOMMT DIESER FEHLER ... | MEHRDEUTIG — das
-        Oberflächen-Signal UND die Fan-Out-Folge, dass ein Ziel-Fehlschlag eine GRÖSSE ist
-        und keine Meldung.
-   70 | WAS DIE HÜLLE VOM INHALT TRENNT ... | SUB S5
-   71 | NUR EIN TEST IST EIN WÄCHTER ... | QUERSCHNITT
-   72 | BEIM EXTRAHIEREN EINER ANSICHT WANDERT EINE ABLEITUNG ... | SUB S5
-   73 | WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG ... | QUERSCHNITT
-   74 | NAHT-HYGIENE (7c-2, aktiv) ... | MEHRDEUTIG — eine NAHT zwischen Domain-/Routing-
-        und Tracking-Logik; sie gehört per Gegenstand beiden Seiten.
-   75 | SCHWÄRZUNG — VIER TEILE, DIE NUR ZUSAMMEN TRAGEN ... | SUB S7
-   76 | EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT ... | QUERSCHNITT
-   77 | MENGEN — ZWEI REGELN, DIE ZUSAMMENGEHÖREN ... | QUERSCHNITT
-   78 | BEVOR EIN ERGEBNIS BEURTEILT WIRD ... | QUERSCHNITT (Teil (e) nennt den A/B-Betrieb
-        als Vorbedingung — Beleg, nicht Gegenstand)
-   79 | MEHRERE KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL ... | MEHRDEUTIG — Aussage über
-        das Datenmodell der Ziele: Schema (project_secrets) UND Ziel-Anbindung zugleich.
-   80 | WER EINE STREICHUNG PLANT, ZÄHLT NICHT NUR DIE IMPORTE ... | QUERSCHNITT
-   81 | EIN ANKER, DER EINDEUTIG AUSSIEHT ... | QUERSCHNITT
-   82 | EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY ... | SUB S4
-   83 | EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT ... | QUERSCHNITT
-   84 | JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE ... | MEHRDEUTIG — Ziel-Anbindung UND
-        Migration; seit der Erweiterung vom 2026-08-27 ausdrücklich auch für Zielwerte OHNE
-        Adapter.
-   85 | ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN ... | SUB S8
-   86 | EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN ... | SUB S8
-   87 | EIN NACHWEIS AN EINER NEUEN DATEI IST BLIND ... | QUERSCHNITT
-   88 | EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM LAUF ... | SUB S2
-   89 | EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN ... | QUERSCHNITT
-   90 | EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN ... | QUERSCHNITT
-   91 | EINE KENNUNG WIRD NIE FÜR EINEN ANDEREN SCHLÜSSELWERT ... | SUB S7
-   92 | EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE ... | SUB S7
-   93 | EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG ... | QUERSCHNITT
-   94 | EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ... | QUERSCHNITT
-   95 | DIE LISTE "GESEHEN, NICHT GEÖFFNET" IST DER ORT ... | SUB S8
-   96 | EIN TITEL-ZEIGER AUS UMLAUTFREIEM QUELLTEXT ... | QUERSCHNITT
-   97 | "### Vollzogen — was hier stand und wohin es gegangen ist" ... | QUERSCHNITT
-   98 | DIE BYTE-KONTROLLE BRAUCHT EIN BENANNTES INSTRUMENT ... | QUERSCHNITT
-   99 | EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF ... | QUERSCHNITT
-  100 | EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE ... | QUERSCHNITT
-  101 | EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT ... | QUERSCHNITT
-  102 | EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN ... | SUB S1 (die Regel grenzt
-        sich selbst gegen 82 ab: dort der Mechanismus, hier die Betriebsfolge)
-  103 | EINE ROUTE, DIE SCHREIBT ODER EINEN FREMDEN ENDPUNKT RUFT ... | SUB S6
-  104 | EIN BEDIENELEMENT, DAS EINEN VORGANG IM NAMEN DES NUTZERS ... | SUB S5 (die Regel
-        grenzt sich selbst gegen 103 ab: dort die Route, hier das Bedienelement)
-  105 | EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN ... | QUERSCHNITT
-  106 | EINE ZITIERTE EINHEIT ZU TEILEN MACHT JEDEN ZEIGER ... | QUERSCHNITT
-  107 | EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT ... | QUERSCHNITT
-  108 | SICHTBARKEIT STATT ISOLATION — EIN TESTMODUS BELEGT ... | SUB S1
-  109 | EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG ... | QUERSCHNITT
-  110 | EINE WIDERLEGTE BEGRÜNDUNG STEHT IM ARCHIV WEITER ... | SUB S1
-  111 | KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT ... | SUB S4
-  112 | WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT ... | SUB S4
-  113 | EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB ... | QUERSCHNITT
-  114 | `grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR ... | QUERSCHNITT
-  115 | EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN ... | QUERSCHNITT
-  DIE SUMMEN JE ETIKETT (Regeln / Zeichen, ohne die Mehrdeutigen): S1 11 / 12 982 ·
-  S2 7 / 7 979 · S3 6 / 4 873 · S4 5 / 10 172 · S5 12 / 9 123 · S6 5 / 7 273 ·
-  S7 3 / 4 621 · S8 3 / 14 117 · S9 2 / 1 593 · S10 2 / 2 726.
-  PROVENIENZ: Die Entscheidung, nicht zu schneiden, ist OWNER 2026-09-16. Sämtliche
-  Zeichenzahlen, die Zahl der Regeln, die 39 wörtlichen Titel-Zitate und die 47 Regeln mit
-  unscharfen Verweisen sind GEMESSEN am Dateitext (CC, 2026-09-16); die 37 Nennungen von
-  db-regeln.md und die vierte Regel dort ebenfalls GEMESSEN am Repo. Die ZUORDNUNG jeder
-  einzelnen Regel ist ein URTEIL derselben Runde und ausdrücklich keine Messung. Die Probe
-  an der Phase 11.6 ruht auf der Roadmap-Zeile 11.6, GELESEN (CC, 2026-09-16); dass die
-  klärende Sitzung die Vereinigung beider Lesarten laden muss, ist eine ABLEITUNG aus der
-  dort offenen Vorfrage.
-
-  NACHGETRAGEN 2026-09-17 — DIE VIERTE LADE-PROBE, ERSTMALS GENAU NACH (b). Alles darüber
-  bleibt wörtlich stehen; seine Angaben sind datierte Messungen und werden hier gelesen,
-  nicht ersetzt. Die Buchstaben laufen weiter, damit ein Verweis auf einen Teil dieses
-  Postens eindeutig bleibt.
-
-  (l) DIE PROBE IST BESTANDEN — VIER VON VIER —, UND SIE MISST DENSELBEN BESTAND WIE (h).
-  Gefahren in einer frischen CC-Sitzung nach dem Phasenende 11.12, Stand nach Commit
-  cd0b344. Die vier Fragen sind die von (b), ohne Abweichung; die Antworten standen vor
-  jedem Werkzeugaufruf, gegengeprüft mit Werkzeug ERST DANACH.
-  · (1) ZAHL DER VERZEICHNIS-EINTRÄGE: 115. · (2) LETZTE REGELÜBERSCHRIFT: "EIN WÄCHTER ÜBER
-    ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN". · (3) EINTRAG AUS DER MITTE:
-    "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER (Phase 10, ..." — genannt
-    als Eintrag #58 von 115 und positionsweise genau der 58. · (4) MARKE IN ZEILE 1:
-    IB-GELADEN. Alle vier stimmen mit dem Dateitext überein (GEMESSEN am Repo, CC,
-    2026-09-17).
-  ERSTMALS GENAU NACH (b), und das ist der Zuwachs gegenüber den zwei Proben davor: (f) liess
-  die Marke aus und fragte dafür den Rumpf der letzten Regel und die vier Überschriften davor;
-  (h) fragte Marke, Zahl, letzte Überschrift, Rumpf und die vier davor, aber KEINEN Eintrag
-  aus der Mitte. Der von (b) vorgeschriebene Satz ist damit am 2026-09-17 zum ersten Mal
-  vollständig gefahren worden (GEMESSEN am Text dieses Postens, CC, 2026-09-17).
-  DER TRAGENDE BELEG IST DIE ANMERKUNG DER ANTWORTENDEN INSTANZ: Sie hat vor der Prüfung von
-  sich aus gesagt, dass sie aus dem GELADENEN KONTEXT abliest und nicht aus einem Gedächtnis
-  rekonstruiert. GENAU DAS IST DIE AUSSAGE, DIE DIESE PROBE ERHEBEN SOLL — dass der Text da
-  ist, nicht dass er erinnert wird. Eine Instanz, die ihn hätte erinnern müssen, wäre die
-  schwächere Beobachtung, keine stärkere.
-  DIE ZAHL AUS (1) TRÄGT AUCH DIESMAL NICHT, AUS DEMSELBEN GRUND WIE IN (h): eine Handzählung
-  im geladenen Text, vom Antwortenden selbst als der unsicherste der vier Werte
-  gekennzeichnet, mit einer vorab benannten Fehlerspanne von ±3. Sie traf. Es tragen (2) und
-  (3) — und (3) trägt schärfer als in jeder Probe zuvor, weil die Position mitgenannt und
-  richtig war.
-
-  EINE NEUE SCHWÄCHE DER FRAGEN (1) UND (3), DIE DIESE PROBE NOCH NICHT TRIFFT, DIE NÄCHSTE
-  ABER TREFFEN KANN: Die Liste unter (k) zitiert seit dem 2026-09-16 alle 115 Regelanfänge MIT
-  IHRER NUMMER und nennt die Zahl 115. Die Antworten auf (1) und (3) stehen damit ein zweites
-  Mal im Repo, ausserhalb von docs/immer-beachten.md. FÜR DIESEN LAUF IST DAS FOLGENLOS:
-  docs/offene-punkte.md lädt nicht, und /context führte am 2026-09-17 genau DREI
-  Speicherdateien (docs/immer-beachten.md, CLAUDE.md, MEMORY.md). WER (b) KÜNFTIG FÄHRT,
-  PRÜFT VORHER, OB DIE ZWEITE ANTWORTQUELLE GELADEN WAR. (2) ist davon unberührt: (k) kappt
-  jeden Regelanfang, die letzte Überschrift steht dort nur angeschnitten.
-
-  /context BEIM SITZUNGSSTART (OWNER-ANGABE 2026-09-17, Ablesung; /context ist ein
-  Nutzer-Befehl und von CC nicht nachmessbar): Modell mit 1M-Fenster · 201k von 1M Token
-  belegt (20 %) · "Memory files" DREI Dateien, 169,2k Token — docs/immer-beachten.md 114,5k ·
-  CLAUDE.md 54,7k · MEMORY.md 73.
-  DIE WERKZEUG-WARNUNG WÖRTLICH (OWNER-ANGABE 2026-09-17): "docs\immer-beachten.md is over
-  the 150.0k-char limit (204.2k chars)". Erste Zahl Schwelle, zweite Dateigrösse — dieselbe
-  Lesart wie in (e). Die 204,2k decken sich mit der Messung unten; die Warnung bleibt eine
-  Warnung und ist keine Abschneidung (s. (a)).
-  DIE GRÖSSEN AM 2026-09-17 (GEMESSEN am Repo, CC): docs/immer-beachten.md 207 128 Bytes /
-  204 200 Zeichen / 2 617 Zeilen · CLAUDE.md 99 417 Bytes / 97 867 Zeichen / 1 339 Zeilen.
-  Beide reines LF, kein BOM, null CR, null NUL; Zeichen gezählt als Unicode-Codepoints, CR
-  und NUL über `tr`, ausdrücklich nicht über `grep` (s. die Regel "`grep` TAUGT IN DIESER
-  UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL"). Datiert, also alt und nicht falsch; wer den
-  heutigen Wert braucht, misst ihn.
-  DIE DREI ZAHLEN DER ERSTEN DATEI SIND DIE VON (h), ZEICHENGLEICH — sie ist seit dem
-  2026-09-16 unverändert. Ihr letzter Commit ist die Hebung des Phasenendes 11.5 (3c05fae);
-  die Hebung des Phasenendes 11.12 hat ihr KEINE Regel angefügt (GEMESSEN am Repo, CC,
-  2026-09-17). DARAUS FOLGT DIE GRENZE DIESER PROBE, und sie ist die wichtigste Zeile dieses
-  Nachtrags: Sie wiederholt (h) bei DERSELBEN Grösse. Sie belegt die Ladung an einem zweiten
-  Tag und in einer zweiten Sitzung, aber KEINE höhere Obergrenze als (h). CLAUDE.md ist
-  derweil gewachsen — 85 398 Bytes am 2026-09-11 (s. (e)) gegen 99 417 heute.
-
-  DER TITEL DIESES POSTENS NENNT CLAUDE.md, AKUT IST DIE ZWEITE LADEDATEI — FESTSTELLUNG
-  DIESER RUNDE. Der Titel stammt aus dem Zustand vom 2026-08-13, als "## Immer beachten" noch
-  in CLAUDE.md stand; seit der Auslagerung am 2026-08-14 trägt docs/immer-beachten.md jenen
-  Abschnitt. Die Werkzeug-Warnung nennt sie und nicht CLAUDE.md, und sie ist mit 114,5k gegen
-  54,7k Token die grössere der beiden Ladedateien. Wer den Posten nach seinem Titel sucht und
-  bei CLAUDE.md nachmisst, misst die kleinere Hälfte.
-  DER TITEL BLEIBT TROTZDEM WÖRTLICH UND WIRD NICHT UMBENANNT: Er wird von aussen zitiert —
-  VIER Stellen, GEMESSEN am Repo (CC, 2026-09-17): CLAUDE.md, "## Offene Punkte", und drei in
-  docs/claude-history/ (backlog-polish.md, phase-11-multi-tracking-aktiver-stand.md,
-  phase-11.2-google.md). Eine Umbenennung machte vier Zeiger tot, und ein toter Zeiger fällt
-  an keinem Gate auf. Dieser Nachtrag sagt es stattdessen.
-
-  DIE FOLGE: BESTANDEN, KEINE HANDLUNG. Die Owner-Entscheidung vom 2026-09-16 unter (k) — es
-  wird nicht geschnitten — bleibt unberührt. Gehandelt wird, wenn eine Lade-Probe nach (b)
-  FEHLSCHLÄGT, nicht wenn eine Zahl eine Schwelle überschreitet.
-  DER VORSCHLAG DES WERKZEUGS IST ABGELEGT UND IST KEINE ENTSCHEIDUNG: /context hat am
-  2026-09-17 unter "Suggestions" angeboten, die Speicherdateien über /memory zu sichten und zu
-  kürzen ("save ~50.8k"). Er steht hier, damit er nicht als neuer Befund wiederauftaucht; er
-  ist weder angenommen noch abgelehnt.
-
-  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). WIE AM
-  2026-09-11 UND ANDERS ALS AM 2026-09-16 IST SEINE FRAGE NACHTRÄGLICH BEANTWORTET: Die Hebung
-  des Phasenendes 11.12 (Commit 3697171) stand bereits, als die Probe lief. HIER IST DAS
-  FOLGENLOS, und der Grund ist derselbe wie bei der Grenze oben — jene Hebung hat der Datei
-  nichts angefügt, es gab nichts, was die Probe hätte verfehlen können.
-  PROVENIENZ: Die /context-Werte, der Wortlaut der Werkzeug-Warnung und der Vorschlag
-  "save ~50.8k" sind OWNER-ANGABEN (Ablesung beim Sitzungsstart, 2026-09-17). Die vier
-  Probe-Antworten stammen aus der Sitzung selbst; DASS SIE VOR JEDEM WERKZEUGAUFRUF STANDEN,
-  IST AM REPO NICHT PRÜFBAR — es ist der Ablauf jener Sitzung und kein Befund an einer Datei.
-  Die Gegenprüfung am Dateitext, die Grössen, die Commit-Historie von docs/immer-beachten.md,
-  die vier Titel-Zitate und der Vergleich der in (f) und (h) abgefragten Sätze sind GEMESSEN
-  am Repo (CC, 2026-09-17). Die Feststellung zum Titel ist ein URTEIL dieser Runde auf
-  gemessener Grundlage.
-
-  NACHGETRAGEN 2026-09-18 — DIE FÜNFTE LADE-PROBE UND DER BEFUND, DASS DIE BAUFORM (b) DAS
-  DATEIENDE NICHT PRÜFT. Alles darüber bleibt wörtlich stehen; seine Angaben sind datierte
-  Messungen und werden hier gelesen, nicht ersetzt. Die Buchstaben laufen weiter, damit ein
-  Verweis auf einen Teil dieses Postens eindeutig bleibt.
-
-  (m) DIE PROBE IST BEI 225 515 ZEICHEN GEFAHREN UND BESTANDEN — VIER VON VIER —, UND SIE IST
-  DIE ERSTE IM BESTAND, DEREN ENDE-FRAGE AUF EINE GEMESSEN ALLEINSTEHENDE ANGABE ZIELT. (f)
-  und (h) haben den RUMPF der letzten Regel ebenfalls abgefragt, (f) ausdrücklich "sinngemäss";
-  ob die Antwort auch anderswo zu holen gewesen wäre, ist dort nicht gemessen. Für F3 und F4
-  ist die Alleinstellung gemessen. Frische CC-Sitzung am 2026-09-18, Stand HEAD
-  3809f58. Dass die Antworten VOR jedem Werkzeugaufruf standen, ist OWNER-ANGABE; wie bei (l)
-  ist das der Ablauf jener Sitzung und am Repo nicht prüfbar.
-  ACHTUNG BEI DEN NUMMERN: Diese Probe hat EIGENE Fragen, die NICHT die von (b) sind. Sie
-  heissen hier F1 bis F4; die Nummern (1) bis (4) bleiben den Fragen von (b) vorbehalten. Wer
-  beide Zählungen zusammenzieht, vergleicht zwei verschiedene Sätze.
-  DIE GRÖSSEN AM 2026-09-18 (GEMESSEN am Repo, CC): docs/immer-beachten.md 228 765 Bytes /
-  225 515 Zeichen / 2 886 Zeilen, reines LF, kein BOM, null CR, null NUL; Zeichen gezählt als
-  Unicode-Codepoints, CR und NUL über `tr` bzw. `od`, ausdrücklich nicht über `grep`.
-  CLAUDE.md 105 667 Bytes. Datiert, also alt und nicht falsch; wer den heutigen Wert braucht,
-  misst ihn.
-  DER BESTAND IST UM 21 315 ZEICHEN GRÖSSER ALS BEI (h) UND (l) — eine Rechnung aus zwei
-  datierten Messungen, keine dritte Beobachtung. Die Differenz sind SECHS Regeln aus der
-  Hebung des Phasenendes 11.13 (Commit 799050c, GEMESSEN am Diff, CC, 2026-09-18: zwölf
-  angefügte Zeilen mit Regelanfang, je sechs im Verzeichnis und im Rumpf). Die Zahlen fügen
-  sich: (h) und (l) zählten 115, 115 + 6 = 121, und heute stehen 121 Verzeichnis-Einträge UND
-  121 Regeln (GEMESSEN, CC, 2026-09-18).
-  DIE VIER FRAGEN IM WORTLAUT: "1. Wie lautet die erste Zeile von docs/immer-beachten.md?
-  2. Wie beginnt der Titel der LETZTEN Regel in docs/immer-beachten.md? 3. Die
-  PROVENIENZ-Angabe am Ende dieser letzten Regel nennt ein Ergebnis für die Scheibe 11.13e in
-  Zahlenform. Welche Zahlenangabe ist das? 4. Wie lauten die letzten acht Wörter der Datei
-  docs/immer-beachten.md?" Rahmen: ohne Werkzeug, ohne eine Datei zu lesen, und "nicht im
-  Kontext" statt zu raten.
-  DIE VIER ANTWORTEN UND IHRE FUNDSTELLEN (GEMESSEN am Dateitext, CC, 2026-09-18):
-  · F1 "IB-GELADEN" — Zeile 1.
-  · F2 "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE
-    STELLE — SONST FÄLLT DIE ZUSAGE ERSATZLOS WEG" — Regelanfang in Zeile 2 856, gekappter
-    Verzeichnis-Eintrag in Zeile 206.
-  · F3 "18-von-18" — Zeile 2 885, in der PROVENIENZ der letzten Regel.
-  · F4 "Live-Blockwerte sind OWNER-MESSUNGEN und von CC nicht prüfbar)." — Zeile 2 886, die
-    LETZTE Zeile der Datei.
-  Alle vier stimmen mit dem Dateitext überein; gegengeprüft mit Werkzeug ERST NACH der
-  Antwort.
-  ES TRAGEN F3 UND F4, UND NUR SIE. Beide stehen ausschliesslich im RUMPF der letzten Regel,
-  am Dateiende, und in keiner beim Start ladenden Quelle:
-  · "18-von-18" hat im ganzen Repo GENAU EIN Vorkommen, die Wortfolge aus F4 ebenfalls
-    (GEMESSEN, Achse über md/ts/tsx/sql ohne node_modules, CC, 2026-09-18).
-  · CLAUDE.md und MEMORY.md tragen NULL Treffer auf "WO EINE BYTE-GLEICHHEIT", "18-von-18" und
-    "OWNER-MESSUNGEN und von CC nicht". POSITIVKONTROLLE im selben Lauf (CLAUDE.md Zeile 227,
-    CLAUDE.md Zeile 987, MEMORY.md Zeile 1 — je Treffer), NEGATIVKONTROLLE mit einer
-    erfundenen Zeichenkette (null Treffer), Instrument `grep -n`, GNU grep 3.0. Die Null ist
-    damit keine Werkzeug-Null.
-  F1 UND F2 TRENNEN NICHTS, und das ist kein Nebensatz: Die Marke steht auch in CLAUDE.md
-  (Zeile 990) — das sagt (b) bereits —, und die letzte Regelüberschrift steht ein zweites Mal
-  im VERZEICHNIS derselben Datei, in Zeile 206.
-  DARAUS FOLGT DER BEFUND ÜBER DIE BAUFORM (b), UND ER IST DER ERTRAG DIESES NACHTRAGS: ALLE
-  VIER FRAGEN VON (b) SIND AUS DEM KOPF DER DATEI BEANTWORTBAR — aus Zeile 1 und aus dem
-  Verzeichnis, dessen Einträge in den Zeilen 86 bis 206 stehen. Die Belege, je GEMESSEN am
-  Repo (CC, 2026-09-18):
-  · DIE IN (l) PROTOKOLLIERTE ANTWORT AUF (2) — "EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES
-    GEPRÜFTEN NICHT BESTIMMEN" — steht VOLLSTÄNDIG in der Verzeichniszeile 200; die Kappung
-    setzt erst dahinter ein.
-  · DIE IN (l) PROTOKOLLIERTE ANTWORT AUF (3) — "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT
-    DIE ZEILENNUMMER (Phase 10, ..." — ist ZEICHENGLEICH die Verzeichniszeile 143, INKLUSIVE
-    ihrer Kappung mitten im Klammerzusatz. Der Rumpf derselben Regel (Zeile 892) geht anders
-    weiter: "(Phase 10, an der". DIE ANTWORT TRÄGT ALSO DIE FORM DES VERZEICHNISSES, nicht die
-    des Rumpfes.
-  · DIE POSITIONSANGABE AUS (l), "#58 von 115", IST IM VERZEICHNIS NACHZUZÄHLEN: "DER HALTBARE
-    ANKER ..." ist der 58. Eintrag.
-  · (1) ist die Zahl der Verzeichniszeilen und damit im Verzeichnis selbst enthalten; (4) ist
-    Zeile 1.
-  DIE REICHWEITE VON (a) UND (l) IST DAMIT ENGER ALS IHR WORTLAUT — UND SIE SIND NICHT FALSCH:
-  Beide haben AUSSCHLIESSLICH Angaben abgefragt, die im Kopf stehen, und belegen damit die
-  Ladung BIS ZUM ENDE DES VERZEICHNISSES, heute Zeile 206 von 2 886 der Regeldatei. Über die
-  2 680 Zeilen dahinter sagen sie nichts.
-  AUSDRÜCKLICH NICHT DARUNTER FALLEN (f) UND (h): Beide haben zusätzlich den RUMPF der letzten
-  Regel abgefragt und damit das Dateiende berührt. Sie sind darin von (b) ABGEWICHEN — (f) hält
-  das selbst fest —, und genau diese Abweichung macht die ENDE-ACHSE an (b) zur Pflicht: (l)
-  hat (b) genau befolgt und deshalb keine Rumpf-Frage gestellt.
-  EIN SATZ IM POSTEN IST WEITER FORMULIERT ALS SEINE PROBE, UND ER BLEIBT WÖRTLICH STEHEN:
-  "docs/immer-beachten.md lädt also vollständig." in (a). Er ist eine datierte Aussage über
-  seinen Stand; seit dem 2026-09-18 trägt er unmittelbar dahinter einen Zeiger hierher. DIESER
-  NACHTRAG TRÄGT DIE REICHWEITE, er nicht.
-  OB JE ABGESCHNITTEN WURDE, IST UNGEMESSEN — IN BEIDE RICHTUNGEN. Weder ist belegt, dass eine
-  frühere Sitzung die Datei nur bis zum Verzeichnis bekam, noch ist belegt, dass sie
-  vollständig ankam. Für den 2026-09-18 ist das Dateiende belegt; für jeden Tag davor bleibt
-  es offen, und es wird offen bleiben — der Zustand jener Sitzungen ist nicht mehr
-  herstellbar.
-  DIE FOLGE FÜR DIE BAUFORM STEHT NICHT HIER, SONDERN AN (b): Die Fragenliste dort ist am
-  selben Tag um eine ENDE-ACHSE ergänzt worden. Zwei Fassungen desselben Verfahrens liefen
-  sonst auseinander.
-  DIE GRENZE DIESER PROBE, unverändert aus (a), (f), (h) und (l): Sie sagt, dass die Datei an
-  DIESEM Tag bei DIESER Grösse bis in ihre letzte Zeile ankam. Sie sagt NICHT, wo eine
-  Obergrenze liegt, und NICHT, dass das Werkzeug die gemeldete Grenze nie durchsetzt.
-  /context IST FÜR DIESE PROBE NICHT ERHOBEN. Anders als bei (g), (l) und der Werkzeug-Warnung
-  in (e) gibt es für den 2026-09-18 keine Ablesung der Speicherdateien, keinen Token-Wert und
-  keinen Wortlaut der Warnung. Wer die Maut dieses Tages sucht, findet sie hier nicht.
-  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). WIE AM
-  2026-09-11 UND AM 2026-09-17 IST SEINE FRAGE NACHTRÄGLICH BEANTWORTET: Die Hebung des
-  Phasenendes 11.13 (Commit 799050c) stand bereits, als die Probe lief. ANDERS ALS AM
-  2026-09-17 IST DAS HIER NICHT FOLGENLOS — jene Hebung hat der Datei sechs Regeln angefügt,
-  und genau die letzte davon ist der Gegenstand von F2, F3 und F4.
-  PROVENIENZ: Die vier Fragen und ihr Rahmen stehen im Auftrag jener Sitzung; DASS DIE
-  ANTWORTEN VOR JEDEM WERKZEUGAUFRUF STANDEN, IST OWNER-ANGABE und am Repo nicht prüfbar. Die
-  vier Antworten stammen aus der Sitzung selbst. Die Gegenprüfung am Dateitext, die Grössen,
-  die Fundstellen 1 · 143 · 200 · 206 · 892 · 2 856 · 2 885 · 2 886, die Zählung 121 zu 121,
-  der Diff von 799050c und die Suchen in CLAUDE.md und MEMORY.md samt Positiv- und
-  Negativkontrolle sind GEMESSEN am Repo (CC, 2026-09-18). Dass (h) und (l) nur bis zum Ende
-  des Verzeichnisses tragen, ist eine ABLEITUNG aus diesen Messungen und dem Wortlaut ihrer
-  Fragen, keine zweite Beobachtung.
-
-  NACHGETRAGEN 2026-09-19 — DIE SECHSTE LADE-PROBE, DIE ERSTE MIT DER ENDE-ACHSE ALS
-  VORGEFUNDENER PFLICHT. Alles darüber bleibt wörtlich stehen; seine Angaben sind datierte
-  Messungen und werden hier gelesen, nicht ersetzt. Die Buchstaben laufen weiter, damit ein
-  Verweis auf einen Teil dieses Postens eindeutig bleibt.
-
-  (n) DIE PROBE IST BEI 232 300 ZEICHEN GEFAHREN UND BESTANDEN — DREI VON DREI —, UND SIE IST
-  DIE ERSTE, BEI DER DIE TRENNSCHÄRFE AN EINER EINZIGEN FRAGE HÄNGT. Frische CC-Sitzung am
-  2026-09-19, NACH der Hebung des Phasenendes 11.6 und nach der Richtigstellung der
-  jsdom-Angabe; die antwortende Instanz sah Commit 4c21c53 als Stand. Dass die Antworten VOR
-  jedem Werkzeugaufruf standen, ist OWNER-ANGABE — wie bei (l) und (m) der Ablauf jener
-  Sitzung und am Repo nicht prüfbar.
-  ACHTUNG BEI DEN NUMMERN: Diese Probe hat EIGENE Fragen, die NICHT die von (b) sind. Sie
-  heissen hier F1 bis F3; die Nummern (1) bis (4) bleiben den Fragen von (b) vorbehalten.
-  SIE HAT DREI FRAGEN GESTELLT UND NICHT FÜNF, UND DAS IST EINE ABWEICHUNG VON (b): Von den
-  vier Kopf-Fragen dort sind nur (4) — die Marke — und (2) — die letzte Regelüberschrift —
-  gestellt worden; (1) die Zahl der Verzeichnis-Einträge und (3) ein Eintrag aus der MITTE des
-  Verzeichnisses fehlen. Die ENDE-ACHSE ist voll bedient. Die Probe trägt damit die KOPF-Achse
-  schwächer als (l) und (m) und die ENDE-Achse gleich stark.
-  DIE DREI FRAGEN IM WORTLAUT: "1. Welche Marke steht in Zeile 1 von docs/immer-beachten.md?
-  2. Wie beginnt die Überschrift der letzten Regel jener Datei — die ersten sechs Wörter?
-  3. Die allerletzte Zeile jener Datei ist eine Provenienz-Angabe. Sie ordnet drei Aussagen
-  drei verschiedenen Herkunftsarten zu und nennt am Schluss eine Herleitung. Nenne die drei
-  Zuordnungen und die Herleitung." Rahmen: ohne Werkzeug, ohne eine Datei zu lesen, und
-  "nicht im Kontext" statt zu raten.
-  DIE DREI ANTWORTEN UND IHRE FUNDSTELLEN (GEMESSEN am Dateitext, CC, 2026-09-19):
-  · F1 "IB-GELADEN" — Zeile 1.
-  · F2 "EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING" — Regelanfang in Zeile
-    2 935, gekappter Verzeichnis-Eintrag in Zeile 208.
-  · F3 die drei Zuordnungen — Parser-Befund auf GEMESSEN (CC, 2026-09-19), die Folge für den
-    Live-Baum auf ABLEITUNG, der Chrome-Lauf auf OWNER-ANGABE — und die Herleitung "das Archiv
-    der Phase 11.6": Zeilen 2 968 und 2 969, die letzten zwei Zeilen der Datei.
-  Alle drei stimmen mit dem Dateitext überein; gegengeprüft mit Werkzeug ERST NACH der
-  Antwort.
-  ES TRÄGT ALLEIN F3. Die Alleinstellung ist gemessen, wie (b) es seit dem 2026-09-18 verlangt
-  (GEMESSEN, CC, 2026-09-19): Die Nadel "der Chrome-Lauf eine OWNER-ANGABE" hat im ganzen Repo
-  GENAU EIN Vorkommen — Achse über md/ts/tsx/sql ohne node_modules —, und es ist Zeile 2 969
-  der Regeldatei selbst. CLAUDE.md und MEMORY.md tragen NULL Treffer. POSITIVKONTROLLE im
-  selben Lauf (CLAUDE.md Zeile 1, MEMORY.md Zeile 1, docs/immer-beachten.md Zeile 1 — je
-  Treffer), NEGATIVKONTROLLE mit einer erfundenen Zeichenkette (null Treffer in allen drei
-  Dateien), Instrument `grep -n -F`, GNU grep 3.0. Die Null ist damit keine Werkzeug-Null.
-  F1 UND F2 TRENNEN NICHTS, UND DAS IST HIER NICHT ABGESCHRIEBEN, SONDERN AM HEUTIGEN BESTAND
-  GEMESSEN: Die Marke steht auch in CLAUDE.md (Zeile 1 002), und die letzte Regelüberschrift
-  steht ein zweites Mal im VERZEICHNIS derselben Datei (Zeile 208). DIE FRAGE NACH DEN ERSTEN
-  SECHS WÖRTERN IST AUS DER GEKAPPTEN VERZEICHNISZEILE VOLLSTÄNDIG BEANTWORTBAR — die Kappung
-  setzt erst hinter "WER KNOTEN" ein. Damit bestätigt diese Probe den Befund von (m) an einem
-  NEUEN Bestand: Der Kopf der Datei ist eine Kopie ihres Endes, und nur eine Rumpf-Frage
-  trennt.
-  DER JSDOM-FUND DER VORBEREITUNG GEHÖRT DAZU, WEIL ER EINEN ANKER GEKOSTET HAT: Als
-  Ende-Achse lag die Versionsangabe im Rumpf der letzten Regel nahe — eine Zahl, und Zahlen
-  sind nach (b) tauglich. Die Vorbereitung fand dort "jsdom 27", während das Repo 29.1.1
-  installiert und in package.json gepinnt führt; die Angabe ist richtiggestellt worden (Commit
-  4c21c53) und als Anker VERWORFEN — ein Anker, der in derselben Runde erst hergestellt wird,
-  belegt die Richtigstellung und nicht die Ladung.
-  DIE GRÖSSEN AM 2026-09-19 (GEMESSEN am Repo, CC): docs/immer-beachten.md 235 655 Bytes /
-  232 300 Zeichen / 2 969 Zeilen, reines LF (`git ls-files --eol`: i/lf w/lf), kein BOM (die
-  ersten drei Bytes sind 49 42 2d), null CR, null NUL; Zeichen gezählt als Unicode-Codepoints,
-  CR und NUL über `tr` bzw. `od`, ausdrücklich nicht über `grep`. CLAUDE.md 109 125 Bytes.
-  Datiert, also alt und nicht falsch; wer den heutigen Wert braucht, misst ihn.
-  DER BESTAND IST UM 6 785 ZEICHEN GRÖSSER ALS BEI (m) — eine Rechnung aus zwei datierten
-  Messungen, keine dritte Beobachtung. Die Differenz trägt die Hebung des Phasenendes 11.6
-  (Commit f75624c, GEMESSEN am Diff, CC, 2026-09-19: vier angefügte Zeilen mit Regelanfang, je
-  zwei im Verzeichnis und im Rumpf) und daneben die eine Zeile aus 4c21c53. Die Zahlen fügen
-  sich: (m) zählte 121 zu 121, 121 + 2 = 123, und heute stehen 123 Verzeichnis-Einträge UND
-  123 Regeln (GEMESSEN, CC, 2026-09-19).
-  DIE GRENZE DIESER PROBE, unverändert aus (a), (f), (h), (l) und (m): Sie sagt, dass die
-  Datei an DIESEM Tag bei DIESER Grösse bis in ihre letzte Zeile ankam. Sie sagt NICHT, wo
-  eine Obergrenze liegt, und NICHT, dass das Werkzeug die gemeldete Grenze nie durchsetzt.
-  /context IST FÜR DIESE PROBE NICHT ERHOBEN — wie bei (m) gibt es für diesen Tag keine
-  Ablesung der Speicherdateien, keinen Token-Wert und keinen Wortlaut der Warnung.
-  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). WIE AM
-  2026-09-11, AM 2026-09-17 UND AM 2026-09-18 IST SEINE FRAGE NACHTRÄGLICH BEANTWORTET: Die
-  Hebung des Phasenendes 11.6 (Commit f75624c) stand bereits, als die Probe lief, und die
-  Archivierung (78547c4) ebenfalls.
-  PROVENIENZ: Die drei Fragen und ihr Rahmen stehen im Auftrag jener Sitzung; DASS DIE
-  ANTWORTEN VOR JEDEM WERKZEUGAUFRUF STANDEN, IST OWNER-ANGABE und am Repo nicht prüfbar. Die
-  drei Antworten stammen aus der Sitzung selbst. Die Gegenprüfung am Dateitext, die Grössen,
-  die Fundstellen 1 · 208 · 1 002 · 2 935 · 2 968 · 2 969, die Zählung 123 zu 123, der Diff
-  von f75624c, die jsdom-Angaben aus package.json und dem Dateitext und die Suchen in
-  CLAUDE.md und MEMORY.md samt Positiv- und Negativkontrolle sind GEMESSEN am Repo (CC,
-  2026-09-19). DASS DIE VERSIONSANGABE ALS ANKER ERWOGEN UND VERWORFEN WURDE, IST
-  OWNER-ANGABE aus dem Auftrag dieser Runde; am Repo steht davon nur die Richtigstellung
-  selbst.
-
-  NACHGETRAGEN 2026-09-22 — DIE ACHTE LADE-PROBE, DAZU DIE SIEBTE DESSELBEN TAGES ALS
-  ZWEITHAND-ANGABE. Alles darüber bleibt wörtlich stehen; seine Angaben sind datierte
-  Messungen und werden hier gelesen, nicht ersetzt. Die Buchstaben laufen weiter, damit ein
-  Verweis auf einen Teil dieses Postens eindeutig bleibt.
-
-  (o) DIE PROBE IST BEI 239 743 ZEICHEN GEFAHREN UND BESTANDEN — FÜNF VON FÜNF —, UND SIE IST
-  DIE ERSTE, DEREN ENDE-ACHSE AUF EINE ERGÄNZUNG AN EINER BESTEHENDEN REGEL ZIELT STATT AUF
-  DIE LETZTE REGEL. Frische CC-Sitzung am 2026-09-22, Stand HEAD 42c7bd9, NACH der Hebung
-  und der Archivierung des Phasenendes 11.11; es läuft keine Phase. Die fünf Antworten sind
-  im Bericht festgeschrieben worden, BEVOR die Sitzung docs/immer-beachten.md mit einem
-  Werkzeug angefasst hat; wie bei (l), (m) und (n) ist das der Ablauf jener Sitzung und am
-  Repo nicht prüfbar.
-  ACHTUNG BEI DEN NUMMERN: Die Fragen (1) bis (4) SIND diesmal die von (b), ohne Abweichung;
-  die fünfte heisst F5 und ist die ENDE-ACHSE. Wer F5 zu den Nummern von (b) zählt,
-  vergleicht zwei verschiedene Sätze.
-  DIE FÜNF ANTWORTEN UND IHRE FUNDSTELLEN (GEMESSEN am Dateitext, CC, 2026-09-22):
-  · (1) ZAHL DER VERZEICHNIS-EINTRÄGE: 123 — die Einträge stehen in den Zeilen 86 bis 208,
-    und im Rumpf ab Zeile 210 stehen ebenfalls 123 Regelanfänge.
-  · (2) LETZTE REGELÜBERSCHRIFT: "EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM
-    SKRIPTING — WER KNOTEN DARAUS IN EINE LEBENDE SEITE ÜBERNIMMT, ÜBERNIMMT EINEN ANDEREN
-    BAUM, ALS DER BROWSER GEBAUT HÄTTE (Phase 11.6, gehoben 2026-09-19 aus der bindenden
-    Entscheidung P11.6-6 und dem Bau des Laders)" — Regelanfang in Zeile 3 024, gekappter
-    Verzeichnis-Eintrag in Zeile 208.
-  · (3) EINTRAG AUS DER MITTE: "VERSTECKEN PER CSS-KLASSE — WEDER DAS HTML-ATTRIBUT hidden
-    NOCH ..." — genannt als Eintrag #62 von 123 und positionsweise genau der 62., Zeile 147.
-  · (4) MARKE IN ZEILE 1: IB-GELADEN.
-  · F5 (ENDE-ACHSE, auf die Ergänzung vom 2026-09-22 an "ABLEITEN STATT LÖSCHEN"): "DERSELBE
-    BILDSCHIRM ZEIGTE EINE KORREKTE UND EINE VERALTETE AUSSAGE ÜBER DENSELBEN TEXT" — Zeilen
-    917 und 918, über den Zeilenumbruch getrennt.
-  Alle fünf stimmen mit dem Dateitext überein; gegengeprüft mit Werkzeug ERST NACH der
-  Antwort.
-  DIE ALLEINSTELLUNG VON F5 IST VOR DER GEGENPRÜFUNG GEMESSEN, wie (b) es seit dem
-  2026-09-18 verlangt (GEMESSEN, CC, 2026-09-22): Die Nadel hat im ganzen Repo GENAU EIN
-  Vorkommen — Achse über md/ts/tsx/sql ohne node_modules —, und es ist Zeile 917 der
-  Regeldatei selbst. CLAUDE.md und MEMORY.md tragen NULL Treffer. POSITIVKONTROLLE im selben
-  Lauf (docs/immer-beachten.md "IB-GELADEN" zweimal, CLAUDE.md "IB-GELADEN" einmal, MEMORY.md
-  ein eigener Anker einmal), NEGATIVKONTROLLE mit einer erfundenen Zeichenkette (null Treffer
-  in allen drei Dateien). INSTRUMENT: `perl -0777` mit leerraum-toleranter Nadel (`\s+`
-  zwischen den Wörtern) und dem Umlaut als Bytefolge, ausdrücklich NICHT `grep`.
-  DER BEFUND ÜBER DIE BAUFORM (b), UND ER IST DER ERTRAG DIESES NACHTRAGS: DIE ENDE-ACHSE
-  DORT IST AN DIE LETZTE REGEL GEBUNDEN — UND EINE HEBUNG MUSS KEINE REGEL ANFÜGEN. Die
-  Hebung des Phasenendes 11.11 hat der Datei KEINE neue Regel gegeben, sondern ZWEI
-  bestehende ERGÄNZT (GEMESSEN am Diff c3b849a, CC, 2026-09-22: 29 angefügte Zeilen, NULL
-  Zeilen mit Regelanfang; die zwei Ergänzungen sitzen an Regel 24 "Importierter User-Code
-  läuft NUR im sandboxed iframe ..." und an Regel 57 "ABLEITEN STATT LÖSCHEN"). FOLGE: Die
-  letzte Regel ist seit dem 2026-09-19 unverändert, und eine Ende-Achse nach dem WORTLAUT von
-  (b) hätte heute denselben Rumpf abgefragt wie (n) — sie hätte den NEU HINZUGEKOMMENEN Text
-  gar nicht berührt. Der Auftrag dieser Runde hat die Achse deshalb auf die zwei Ergänzungen
-  gelegt: FRISCHE statt ENDLAGE.
-  DER PREIS DIESER WAHL GEHÖRT DAZU, sonst liest sich die Probe stärker, als sie ist: Die
-  zwei Ergänzungen stehen im ERSTEN DRITTEL des Rumpfes. F5 liegt in Zeile 917 von 3 058 —
-  eine Antwort darauf belegt die Ladung BIS DORTHIN, nicht bis zum Dateiende.
-  DASS DAS DATEIENDE TROTZDEM BELEGT IST, IST BEIFANG UND NICHT PLANUNG: Die Antwort auf (2)
-  nannte die letzte Regelüberschrift MIT ihrem Klammerzusatz, und der Verzeichnis-Eintrag
-  (Zeile 208) ist VOR dem Klammerzusatz gekappt. Die Wortfolge "gehoben 2026-09-19 aus der
-  bindenden Entscheidung P11.6-6" hat im ganzen Repo GENAU EIN Vorkommen und steht in Zeile
-  3 026 von 3 058; CLAUDE.md und MEMORY.md tragen null (GEMESSEN, CC, 2026-09-22, dieselbe
-  Achse und dasselbe Instrument wie bei F5).
-  ER IST EIN BELEG UND KEINE ENDE-ACHSE NACH (b), und der Unterschied ist kein Formalismus:
-  Diese Alleinstellung ist NACH der Antwort gemessen worden, (b) verlangt die Messung VORHER.
-  Wer sie als zweite Ende-Achse führt, führt eine Alleinstellung, die zum Zeitpunkt der Frage
-  niemand kannte.
-  DIE ZAHLEN FÜGEN SICH, UND SIE TUN ES ZUM ERSTEN MAL OHNE ZUWACHS AN REGELN (GEMESSEN am
-  Repo, CC, 2026-09-22): (n) zählte am 2026-09-19 123 Verzeichnis-Einträge und 123 Regeln.
-  Seither haben ZWEI Commits die Datei angefasst — c9a561f (60 angefügte Zeilen, NULL
-  Regelanfänge; die Ergänzung an der Werkzeug-Regel vom 2026-09-21) und c3b849a (29
-  angefügte Zeilen, NULL Regelanfänge). Heute stehen 123 zu 123. DIE DATEI IST ZWISCHEN ZWEI
-  PROBEN UM 7 443 ZEICHEN GEWACHSEN, OHNE DASS DIE ZAHL DER REGELN GESTIEGEN IST — bei jeder
-  früheren Probe war der Zuwachs an Zeichen ein Zuwachs an Regeln. Wer den Bestand über die
-  Regelzahl beobachtet, sieht dieses Wachstum nicht.
-  DAS IST ZUGLEICH EIN BEFUND ZU (j): Jener Nachtrag misst die LÄNGE je Regel und nennt sie
-  den Wachstumstreiber. Die zwei Commits dieser Woche sind die stärkste Bestätigung im
-  Bestand — 89 Zeilen ohne eine einzige neue Regel. (j) BLEIBT WÖRTLICH; seine Zahlen sind
-  vom 2026-09-16 und werden hier nicht nachgezogen.
-  DIE GRÖSSEN AM 2026-09-22 (GEMESSEN am Repo, CC): docs/immer-beachten.md 243 222 Bytes /
-  239 743 Zeichen / 3 058 Zeilen, reines LF (`git ls-files --eol`: i/lf w/lf), kein BOM (die
-  ersten drei Bytes sind 49 42 2d), null CR, null NUL; Zeichen gezählt als Unicode-Codepoints,
-  CR und NUL über `tr` bzw. `od`, ausdrücklich nicht über `grep`. CLAUDE.md 114 244 Bytes /
-  112 464 Zeichen / 1 518 Zeilen. Datiert, also alt und nicht falsch; wer den heutigen Wert
-  braucht, misst ihn.
-  /context IST FÜR DIESE PROBE NICHT ERHOBEN — wie bei (m) und (n) gibt es für diesen Tag
-  keine Ablesung der Speicherdateien, keinen Token-Wert und keinen Wortlaut der Warnung.
-  DIE GRENZE DIESER PROBE, unverändert aus (a), (f), (h), (l), (m) und (n): Sie sagt, dass
-  die Datei an DIESEM Tag bei DIESER Grösse ankam — bis Zeile 917 durch F5, bis Zeile 3 026
-  durch den Beifang. Sie sagt NICHT, wo eine Obergrenze liegt, und NICHT, dass das Werkzeug
-  die gemeldete Grenze nie durchsetzt.
-  DIE FOLGE: BESTANDEN, KEINE HANDLUNG. Die Owner-Entscheidung vom 2026-09-16 unter (k) — es
-  wird nicht geschnitten — bleibt unberührt. Gehandelt wird, wenn eine Lade-Probe nach (b)
-  FEHLSCHLÄGT, nicht wenn eine Zahl eine Schwelle überschreitet.
-  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). WIE AM
-  2026-09-11, AM 2026-09-17, AM 2026-09-18 UND AM 2026-09-19 IST SEINE FRAGE NACHTRÄGLICH
-  BEANTWORTET: Die Hebung des Phasenendes 11.11 (Commit c3b849a) und die Archivierung
-  (04459c0) standen bereits, als die Probe lief. ANDERS ALS AM 2026-09-17 IST DAS HIER NICHT
-  FOLGENLOS — jene Hebung hat der Datei Text angefügt, und genau dieser Text ist der
-  Gegenstand von F5.
-  PROVENIENZ: Die fünf Fragen und ihr Rahmen stehen im Auftrag jener Sitzung; DASS DIE
-  ANTWORTEN VOR JEDEM WERKZEUGAUFRUF AUF DIE REGELDATEI STANDEN, ist am Repo nicht prüfbar —
-  es ist der Ablauf der Sitzung und kein Befund an einer Datei. Die fünf Antworten stammen
-  aus der Sitzung selbst. Die Gegenprüfung am Dateitext, die Grössen, die Fundstellen
-  1 · 86 · 147 · 208 · 210 · 917 · 918 · 3 024 · 3 026, die Zählung 123 zu 123, die
-  numstat-Werte von c9a561f und c3b849a und die Suchen samt Positiv- und Negativkontrolle
-  sind GEMESSEN am Repo (CC, 2026-09-22).
-
-  DIE SIEBTE PROBE DESSELBEN TAGES — ZWEITHAND, VON DIESER RUNDE NICHT NACHMESSBAR.
-  ARCHITEKT-ANGABE aus dem Bericht einer früheren Sitzung, hier wörtlich abgelegt und bis
-  heute nirgends im Repo verzeichnet: Am 2026-09-22, VOR der Hebung des Phasenendes 11.11,
-  lief eine Lade-Probe MIT Ende-Achse bei 240 689 Bytes / 237 251 Zeichen, und sie bestand.
-  Dabei meldete `grep -c -F` für eine UMBROCHENE Nadel fälschlich 0; gefunden hat sie erst
-  `perl -0777`.
-  WAS DAVON HEUTE GEMESSEN IST UND WAS NICHT — der Satz muss mit, sonst liest sich eine
-  Zweithand-Angabe wie eine Messung: Die zwei Grössen decken sich ZEICHENGLEICH mit dem Stand
-  von docs/immer-beachten.md bei Commit c9a561f, also unmittelbar VOR der Hebung c3b849a
-  (GEMESSEN, CC, 2026-09-22). Das bestätigt den STAND, auf den sich die Angabe bezieht — NICHT
-  die Probe selbst, nicht ihre Fragen, nicht ihre Antworten und nicht ihr Ergebnis. Die stehen
-  in keiner Datei dieses Repos.
-  DER `grep`-BEFUND IST HEUTE UNABHÄNGIG WIEDERHOLT WORDEN (GEMESSEN, CC, 2026-09-22): Auch
-  bei F5 meldet `grep -c -F` auf die volle, über zwei Zeilen laufende Nadel 0, während
-  `perl -0777` sie genau einmal findet. ZWEI LÄUFE, DERSELBE BEFUND — der zweite ist gemessen,
-  der erste Zweithand.
-  DAS IST EINE NEUE ACHSE AN EINEM BEKANNTEN BEFUND: Die Regel "`grep` TAUGT IN DIESER
-  UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL" (docs/immer-beachten.md) handelt von
-  SONDERBYTES. Hier ist das Byte harmlos und der ZEILENUMBRUCH die Ursache — `grep` arbeitet
-  zeilenweise und kann eine Nadel, die über zwei Zeilen läuft, gar nicht sehen. DER
-  FEHLSCHLAG SIEHT IN BEIDEN FÄLLEN GLEICH AUS: eine 0, die wie ein Befund aussieht. HIER
-  STEHT KEINE EMPFEHLUNG und kein Antrag auf eine Regeländerung; die Feststellung gehört an
-  diesen Posten, weil sie an seinem Verfahren entstanden ist.
-  PROVENIENZ: Die Angaben zur siebten Probe sind ARCHITEKT-ANGABE (Bericht einer früheren
-  Sitzung desselben Tages) und ausdrücklich ZWEITHAND. Die Deckung der zwei Grössen mit dem
-  Stand bei c9a561f und die heutige Wiederholung des `grep`-Befundes sind GEMESSEN am Repo
-  (CC, 2026-09-22).
+  VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
+  ENTSCHEIDUNG). Grund: Die Achse hat keinen realen Konsumenten; was still kaputtginge, setzt
+  eine gebaute Achse voraus. Der Trigger ist seit dem 2026-08-31 eingetreten und bleibt es.
+  Der Volltext steht WÖRTLICH in docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase
+  11.7 gehoben (2026-09-25) …", unter diesem Titel.
+- CLAUDE.md NÄHERT SICH DEM LADELIMIT — GESTRICHEN AM 2026-09-25, DER GEGENSTAND IST ERLEDIGT.
+  Der Punkt hielt fest, dass CLAUDE.md und danach docs/immer-beachten.md, die beide JEDE
+  Sitzung laden, auf das Ladelimit zuwuchsen — und dass eine nicht gehobene Regel nicht mehr
+  gelesen wird. Sein Trigger lautete "vor der nächsten Hebung an einem Phasenende"; er trug
+  seit dem 2026-09-10 die Lade-Proben (a) bis (o).
+  BELEG DER ERLEDIGUNG:
+  · Beide Dateien sind am 2026-09-22 in Kern und Herleitung geteilt worden —
+    docs/immer-beachten.md mit Commit `22deb39`, CLAUDE.md mit Commit `cccc23f`
+    (Token-Diät). Seither lädt je Datei nur der Kern; der Volltext steht in
+    docs/immer-beachten-herleitung.md bzw. docs/claude-md-herleitung.md und lädt nicht.
+  · DIE GRÖSSEN AM 2026-09-25, vor der Hebung des Phasenendes 11.7 (GEMESSEN, CC): CLAUDE.md
+    70 202 Bytes / 69 076 Zeichen, docs/immer-beachten.md 86 081 Bytes / 84 763 Zeichen,
+    beide reines LF; Zeichen als Unicode-Codepoints. Die Schwelle, die das Werkzeug meldet,
+    liegt bei 150,0k Zeichen JE DATEI (Teil (e), BEOBACHTET am 2026-09-11, OWNER).
+  · Die letzte Lade-Probe (o) ist VOR den beiden Teilungen gefahren und kennt sie nicht; der
+    Posten hatte seinen Gegenstand damit verloren, ohne es zu sagen.
+  · DIE GRENZE: Ob beide Kerne zusammen einer gemeinsamen Grenze unterliegen, ist nicht
+    erhoben; die Schwelle aus (e) ist je Datei gemeldet. Eine neue Lade-Probe ist mit dieser
+    Streichung nicht gefahren.
+  · EIN BEFUND STAND NUR HIER und geht mit dem Volltext ins Archiv, nicht in eine Regel:
+    `grep` sieht eine Nadel, die über einen Zeilenumbruch läuft, nicht und meldet 0, wo
+    `perl -0777` sie findet (Nachtrag vom 2026-09-22, zweimal beobachtet). Er ist weder Regel
+    noch Vorrat geworden.
+  · Die Streichung ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25 (Phasenende 11.7). Der
+    gestrichene Volltext steht unter Commit `3e080b2`.
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.
@@ -1679,6 +733,13 @@ aufeinander; sie liegen alle hier und finden einander.
   src/components/MeasureView.tsx. Der zitierte Satz ist GELESEN in CLAUDE.md (CC, 2026-09-12).
   Dass beide Formulierungen dieselbe Richtung meinen, ist eine ABLEITUNG aus der Mechanik des
   min() über die verbleibenden Bestätigungen, KEINE Aussage jenes Eintrags über diesen.
+  VERMERK 2026-09-25 (Sichtung beim Phasenende 11.7) — DER TRIGGER IST EINGETRETEN. Er
+  lautete "Phase 11.5 — mit einem Einwilligungs-Dialog wird der Defekt real". Der Dialog ist
+  gebaut; die Phase 11.5 ist seit dem 2026-09-16 abgeschlossen (docs/roadmap.md, Zeile 11.5).
+  Der Defekt ist UNBEARBEITET: die events-Tabelle trägt weiterhin keine Ziel-Spalte. Der
+  Posten bleibt; der Stub in CLAUDE.md sagt seither "EINGETRETEN". Dieselbe Ziel-Achse
+  braucht K4 (s. "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN", Ursache (3),
+  Vermerk vom 2026-09-25).
 - NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST (Trigger: BEREITS
   EINGETRETEN — vier Ziele laufen live (GEMESSEN am Code, 2026-08-21: meta · pinterest ·
   tiktok · linkedin), und jedes kann nachträglich konfiguriert werden;
@@ -1884,6 +945,39 @@ aufeinander; sie liegen alle hier und finden einander.
       Meldung, sondern eine GRÖSSE — wer ihn als Fehlermeldung baut, hängt eine Anzeige an
       ein Ereignis, das PRO BESUCHER eintreten kann. Eine Anzeige braucht zudem einen Weg
       vom SERVER-Ereignis in die Oberfläche, den es heute nicht gibt.
+
+      VERMERK 2026-09-25 (Phasenende 11.7) — K4 GEHÖRT HIERHER, UND DER TRIGGER DIESER
+      URSACHE IST ERWEITERT, NICHT ERSETZT. Der Text darüber bleibt stehen.
+      TRIGGER, ERWEITERT: eine Frontend-Runde, ODER ein Support-Fall, in dem ein Betreiber
+      meldet, dass nichts ankommt, ODER — spätestens — VOR ECHTEM AD-TRAFFIC (OWNER-
+      ENTSCHEIDUNG E-e der Phase 11.7, 2026-09-24). Der zugefügte Trigger feuert
+      UNBEOBACHTET: echter Ad-Traffic tritt im Betrieb ein, nicht in einer Runde, die diese
+      Datei öffnet.
+      WAS K4 IST: das Ergebnis jedes Forwards JE ZIEL abzulegen, damit der Betreiber sieht,
+      ob sein Ziel annimmt — genau der fehlende Weg vom Server-Ereignis in die Oberfläche,
+      den diese Ursache nennt. K4 IST KEIN EIGENER POSTEN (ARCHITEKTEN-ENTSCHEIDUNG
+      2026-09-25): zwei Posten für dieselbe Lücke liefen auseinander.
+      WAS SEIT PHASE 11.7 STEHT UND WAS NICHT: Jeder Adapter schreibt bei einer angenommenen
+      Antwort eine Zeile "[capi] <Ziel> forward accepted: HTTP <Status>" (Dauerregel "JEDER
+      FAN-OUT-ADAPTER SCHREIBT BEI EINER ANGENOMMENEN ANTWORT GENAU EINE ERFOLGSZEILE …",
+      docs/immer-beachten.md). DEN BETREIBER ERREICHT SIE NICHT: Nur der Owner sieht sie,
+      die Logs halten auf dem Hobby-Plan eine Stunde (docs/plattform-befunde.md,
+      Vercel-Abschnitt, GELESEN), und sie belegt die Annahme, nicht die Verarbeitung.
+      STILL BLEIBEN die Ausgänge VOR dem Adapter — unbekannter trackingKey, Kill-Switch,
+      Bestätigungs-Beacon, fehlende Kennung oder Regel, fehlende oder unlesbare
+      Geheimnis-Zeile, nicht forwardbares Ereignis, fehlende Einwilligung, kein Empfänger
+      übrig (GEMESSEN am Code, Archiv der Phase 11.7, VERMERK P11.7-22).
+      DIE GRENZEN, DIE EIN ZUSCHNITT VON K4 VORFINDET — gelesen am Bestand, nicht
+      entschieden: Ein gescheiterter Forward ist ein VORKOMMNIS und eine GRÖSSE, keine
+      Meldung (docs/immer-beachten.md, "WELCHE REGEL WANN GREIFT"). Eine Ablage je Ziel
+      braucht eine EIGENE additive Spalte und nie `source` ("TRACKING-source =
+      BEOBACHTUNGS-ORT, NIE ZIEL"); dieselbe Ziel-Achse verlangen die Posten "DIE
+      ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST" und "DIE
+      VERLUSTRATEN-AGGREGATION IST ZIEL-BLIND" (ABLEITUNG, nicht gemessen). Eine Ablage ist
+      ein Schreibpfad, für den die DATENKLASSEN-GRENZE gilt. Die Anzeige-Hälfte der
+      Zuschnitt-Frage P11.7-11 der Phase 11.7 (TikTok `40100` gegen `40104`) ist mitgemeint
+      (OWNER-ENTSCHEIDUNG E-f).
+      KEINE EMPFEHLUNG zur Gestalt.
   (4) DER ZUGANG BRICHT OHNE ZUTUN DES KUNDEN — ABLAUF ODER WIDERRUF. TRIGGER: mit dem
       ersten Ziel, dessen Zugangsdatum ablaufen kann; für LinkedIn ist er EINGETRETEN,
       seit das Ziel am 2026-08-19 sendet. Die bestehenden Ziele tragen ein STATISCHES
@@ -2356,19 +1450,23 @@ aufeinander; sie liegen alle hier und finden einander.
     Ablesung der Kachel, keine Messung an der Datenbank.
   Die Angaben des Dialogs und der Versionsstand stehen in docs/plattform-befunde.md,
   Abschnitt "Supabase (Postgres · Auth · RLS · Vault · Backups)", Teil (at).
-- DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU VERDICHTEN (Trigger: die nächste Arbeit
-  an CLAUDE.md, die diesen Abschnitt ohnehin berührt): Der Eintrag steht in CLAUDE.md,
-  "### A) Heute verbindlich", und misst GEMESSEN am 2026-08-24 120 Zeilen / 9 429 Bytes —
-  der grösste zusammenhängende Einzelblock einer unbedingt geladenen Datei. Er stellt über
-  sich selbst zwei Dinge fest, die am 2026-08-24 unverändert dastehen: auf die SOLL-Hälfte
-  beruft sich im Produktivcode KEINE Stelle, und ihr Trigger ("eine GEMESSENE Grenze unter
-  echtem Traffic") hat niemanden, der misst — es gibt kein Monitoring auf
-  Concurrency-Slots.
-  ZU TUN: die SOLL-Hälfte auf wenige Zeilen verdichten und ihren Volltext hierher ziehen.
-  WAS NICHT DAZUGEHÖRT: die MUSS-Hälfte ("der CAPI-Call muss zuverlässig zugestellt
-  werden"). Sie gilt UNBEDINGT, bleibt wörtlich in CLAUDE.md und wird nicht angefasst.
-  Ebenso wenig gehört eine eigene Runde dazu — der Trigger ist ausdrücklich eine Arbeit,
-  die den Abschnitt ohnehin öffnet.
+- DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU VERDICHTEN — GESTRICHEN AM 2026-09-25, DER
+  GEGENSTAND IST ERLEDIGT. Der Punkt hielt fest, dass der Eintrag "/API/E-SCHLANKHEIT" in
+  CLAUDE.md, "### A) Heute verbindlich", mit 120 Zeilen / 9 429 Bytes (GEMESSEN 2026-08-24)
+  der grösste Einzelblock einer unbedingt geladenen Datei war, und verlangte, seine
+  SOLL-Hälfte auf wenige Zeilen zu verdichten und ihren Volltext hierher zu ziehen.
+  BELEG DER ERLEDIGUNG:
+  · Der Trigger ("die nächste Arbeit an CLAUDE.md, die diesen Abschnitt ohnehin berührt") ist
+    mit Commit `cccc23f` eingetreten (2026-09-22, Teilung von CLAUDE.md in Kern und
+    Herleitung) und im selben Zug vollzogen: Der ganze Eintrag trägt heute 24 Zeilen /
+    2 013 Bytes, die SOLL-Hälfte davon 5 Zeilen (GEMESSEN, CC, 2026-09-25). Die MUSS-Hälfte
+    steht unverändert als UNBEDINGT im Kern.
+  · ABWEICHUNG VOM WORTLAUT DES PUNKTES: Der Volltext steht nicht hier, sondern in
+    docs/claude-md-herleitung.md, Abschnitt "## Code-Qualität, Performance &
+    SaaS-Skalierung" — zeichengleich der Stand vom 2026-09-22. Der Inhalt ist erhalten; der
+    Ort folgt der Teilung und nicht diesem Punkt.
+  · Die Streichung ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25 (Phasenende 11.7). Der
+    gestrichene Volltext steht unter Commit `3e080b2`.
 - EIN INDIKATOR FÜR ABSCHNITT 2b FEHLT (Trigger: die nächste Änderung an
   docs/arbeitsweise.md — dann geht er beiläufig hinein und kostet keinen zweiten Vollzug in
   der Projektanweisung): GEGENSTAND — Abschnitt "## 2b. PROPORTION — WIE TIEF GEPRÜFT
@@ -2379,36 +1477,33 @@ aufeinander; sie liegen alle hier und finden einander.
   Gate" — die geänderten Zeilen in docs/ und in src/ über die Phase, genannt im Kopf des
   Phasen-Archivs. Die Stub-Zeile in CLAUDE.md, "## Offene Punkte", ist im selben Zug
   gestrichen.
-- DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND SIND NICHT GESICHTET
-  (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet): GEMESSEN am
-  2026-08-24 tragen DREI Einträge das Wort EINGETRETEN — "NICHTS ZEIGT AN, DASS DER
-  VERÖFFENTLICHTE STAND NACHZUZIEHEN IST" · "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM
-  NICHT SENDEN" (dort zwei seiner vier Trigger, Ursache (1) und Ursache (4)) · "DAS
-  POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT".
-  DIE FRAGE, DIE DIESER EINTRAG OFFENHÄLT: Ein Trigger ist per Definition dieser Liste die
-  Bedingung, unter der ein Punkt herausgeht. Ein eingetretener Trigger macht den Punkt
-  FÄLLIG, nicht erledigt — und niemand hat entschieden, was mit einem fälligen Punkt
-  geschieht, der nicht abgearbeitet wird.
-  WAS NICHT DAZUGEHÖRT: die drei Punkte jetzt zu sichten oder abzuarbeiten. Dieser Eintrag
-  hält fest, DASS eine Sichtung fällig ist, und trifft keine Aussage über ihr Ergebnis.
-  Die Zahl DREI ist eine Momentaufnahme vom 2026-08-24 und wird nicht stillschweigend
-  fortgeschrieben.
-  MOMENTAUFNAHME VOM 2026-09-11, NEBEN DER ALTEN UND NICHT STATT IHRER — GEMESSEN an CLAUDE.md,
-  Abschnitt "Offene Punkte", nach der Hebung der Phase 11.3 (CC; Achse: jede Stub-Zeile, die
-  mit "- " beginnt, samt ihren Folgezeilen, das Wort EINGETRETEN mit Wortgrenze;
-  Negativkontrolle 0): Von 59 Stub-Einträgen tragen ZWÖLF das Wort EINGETRETEN — DREIZEHN,
-  wenn man diesen Eintrag mitzählt, dessen Titel "EINGETRETENEN" führt. Die zwölf: "DIE
-  VOLLSTÄNDIGKEITS-ACHSE …" · "NICHTS ZEIGT AN …" · "EIN ZIEL KANN KONFIGURIERT SEIN …" ·
-  "DAS POSTGRES-UPGRADE …" · "EIN AUTORISIERUNGS-FLUSS …" · "DER OAUTH-WEG RUFT
-  ensureTrackingKey NICHT …" · "DIE SIEBEN-TAGE-FRIST …" · "eventSourceUrl IST AN DER
-  FAN-OUT-STELLE VERFÜGBAR …" · "retry HAT KEINE OBERGRENZE …" · "ZWEI EINTRÄGE AUS DEM
-  VORRAT DER PHASE 11.8 …" · "saveProject SCHREIBT settings UNVALIDIERT …" · "DER RESOLVER
-  SCHREIBT BEI TOTEM ZUGANGSDATUM …". Mit dieser Zählung ist keine Sichtung gefahren.
-  VERMERK 2026-09-23, ERSETZT AM SELBEN TAG — DIE SICHTUNG GESCHIEHT MIT DER HEBUNG AM ENDE
-  DER PHASE 11.7 (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-23): Jene Runde öffnet diese Datei ohnehin
-  und ordnet jeden Posten zu. Hier stand: "BEWUSST NICHT GESICHTET: Die öffnende Runde war der
-  Abschluss der Scheibe S2 der Phase 11.7 (OWNER-ENTSCHEIDUNG); die Sichtung bekommt eine
-  eigene Runde."
+- DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND SIND NICHT GESICHTET —
+  GESTRICHEN AM 2026-09-25, DER GEGENSTAND IST ERLEDIGT. Der Punkt hielt fest, DASS eine
+  Sichtung der Posten mit eingetretenem Trigger fällig war — drei am 2026-08-24, zwölf am
+  2026-09-11 —, und band sie an die Hebung am Ende der Phase 11.7 (Vermerk vom 2026-09-23).
+  BELEG DER ERLEDIGUNG:
+  · DIE SICHTUNG IST GEFAHREN (CC, Inventur des Phasenendes 11.7, 2026-09-25; zugeordnet vom
+    Architekten am selben Tag). Zählung nach der Achse vom 2026-09-11 (GEMESSEN, CC,
+    2026-09-25): Von 69 Stub-Einträgen trugen zwölf das Wort EINGETRETEN;
+    Negativkontrolle 0.
+  · JE POSTEN (Titelanfang, Ergebnis): NICHTS ZEIGT AN … — bleibt · EIN ZIEL KANN
+    KONFIGURIERT SEIN … — bleibt, Ursache (3) um K4 ergänzt · DAS POSTGRES-UPGRADE … — schon
+    am 2026-09-11 gestrichen · DIE VOLLSTÄNDIGKEITS-ACHSE … — Backlog · EIN
+    AUTORISIERUNGS-FLUSS … — bleibt · DER OAUTH-WEG RUFT ensureTrackingKey NICHT … — Backlog ·
+    DIE SIEBEN-TAGE-FRIST … — bleibt, Stub ohne festen Termin · eventSourceUrl IST AN DER
+    FAN-OUT-STELLE VERFÜGBAR … — gestrichen · retry HAT KEINE OBERGRENZE … — gestrichen ·
+    ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8 … — gestrichen · saveProject SCHREIBT
+    settings UNVALIDIERT … — Backlog · DER RESOLVER SCHREIBT … — Backlog · EIN
+    EINGESCHALTETER EINWILLIGUNGS-DIALOG … (seit dem 2026-09-16 in der Zählung) — bleibt.
+    Ohne das Wort im Stub, aber mit eingetretenem Trigger: DIE ADBLOCKER-KACHEL … und WAS
+    GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT … — bleiben, Stub nachgezogen.
+  · SEINE GRUNDSATZFRAGE BLEIBT OFFEN und liegt im Backlog, gekennzeichnet als Kandidat für
+    einen Änderungsantrag an docs/arbeitsweise.md: was mit einem FÄLLIGEN Punkt geschieht,
+    der nicht abgearbeitet wird. Die Sichtung hat sie je Posten beantwortet, nicht als
+    Regel. Fundstelle: docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.7
+    gehoben (2026-09-25) …".
+  · Die Streichung ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25 (Phasenende 11.7). Der
+    gestrichene Volltext steht unter Commit `3e080b2`.
 - DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
   Arbeit an db-stand.sql oder am DB-Doku-Stand): CLAUDE.md hält im Abschnitt "## Aktueller
   DB-/Analytics-Stand" fest, jener Titel-Zeiger brauche die Regeltitel weiterhin an einem
@@ -2989,6 +2084,9 @@ aufeinander; sie liegen alle hier und finden einander.
   ist, ist eine FOLGE aus seinem Wortlaut. Die Gestalt des Instruments ist GELESEN an Teil (ca)
   derselben Datei, aus der auch Messung D stammt. KEINE Messung an einer Google-Schnittstelle
   in dieser Runde.
+  VERMERK 2026-09-25 (Sichtung beim Phasenende 11.7): Der Trigger ist seit dem 2026-09-01
+  EINGETRETEN, die Frage ist UNBEANTWORTET — die Phase 11.7 hat den benannten Handaufruf
+  nicht gefahren. Der Posten bleibt; der Stub in CLAUDE.md sagt seither "EINGETRETEN".
 - DIE RÜCKMELDUNG EINER BEDINGTEN SCHREIBUNG ÜBER PostgREST IST UNGEMESSEN (Trigger: der
   Zuschnitt der Scheibe 1b-2b): DREI FRAGEN SIND OFFEN, und sie stehen im VOLLTEXT in
   docs/plattform-befunde.md, Abschnitt "Supabase", LAUF 3, Teil (ar) — hier NUR der Zeiger
@@ -3084,37 +2182,15 @@ aufeinander; sie liegen alle hier und finden einander.
   ÜBER DIE GELESENE DOKU und KEINE Messung — es ist an keiner Schnittstelle etwas erhoben
   worden. Die README-Zitate sind GELESEN am Repo (CC, 2026-09-04).
 
-- DER OAUTH-WEG RUFT ensureTrackingKey NICHT — ANDERS ALS setCapiToken (Trigger: die
-  Transport-Scheibe, also die Scheibe, die den Zugang tatsächlich benutzt):
-  GEHOBEN AM 2026-09-08 aus docs/claude-history/phase-11.8-autorisierungsschicht.md,
-  Vorrats-Eintrag 6, im Rahmen des
-  nachgeholten Phasenendes der Phase 11.8. Der Wortlaut des Triggers ist der des
-  Vorrats-Eintrags und NICHT umformuliert.
-  DER BEFUND: Die Server-Action `setCapiToken` stellt den projektweiten Tracking-Schlüssel
-  bei JEDEM Ziel sicher; die Callback-Route der Scheibe 11.8e tut es NICHT. GEMESSEN am
-  Code (CC, 2026-08-27), erneut bestätigt am 2026-09-08: `ensureTrackingKey`
-  (src/lib/settings.ts) hat im Produktivcode ausschliesslich Aufrufer in
-  src/app/projects/actions.ts; src/app/api/oauth/google/callback/route.ts nennt den Namen
-  nur im Kommentar, der die Auslassung begründet.
-  DER GRUND WAR DER ZUSCHNITT, NICHT EINE ENTSCHEIDUNG GEGEN DEN SCHRITT: Es wäre ein
-  Schreibvorgang auf einer ZWEITEN Tabelle (`projects`) ohne damalige Wirkung gewesen —
-  nichts las den google-Zugang, der `events:ingest`-Aufruf war aus jener Scheibe
-  ausgeschlossen.
-  WAS DARAUS FOLGT: Ein Projekt, das AUSSCHLIESSLICH über diesen Weg konfiguriert wird, hat
-  womöglich keinen Tracking-Schlüssel — und ohne ihn sendet es nicht.
-  DER TRIGGER IST EINGETRETEN (GEMESSEN am Repo, CC, 2026-09-08): Die Transport-Scheibe ist
-  gebaut und live bewiesen — Scheibe 4 des Schnitts der Phase 11.2, VERMERK 10 im Archiv
-  docs/claude-history/phase-11.2-google.md, Bau-Commits 26caa38 und 84e9fca. Der Punkt ist
-  damit FÄLLIG und wartet nicht mehr.
-  DASS DARAUS EIN DEFEKT FOLGT, IST NICHT ENTSCHIEDEN, und dieser Satz gehört zwingend
-  daneben: Ob ein Projekt in diesem Zustand EXISTIERT, ist am Repo nicht feststellbar — es
-  bräuchte eine Abfrage gegen die laufende Datenbank, und die ist nicht gefahren worden. Es
-  ist bis heute KEIN Projekt ohne Tracking-Schlüssel beobachtet worden.
-  KEINE EMPFEHLUNG, ob der Aufruf ergänzt wird oder ob die Prüfung an anderer Stelle
-  entsteht.
-  PROVENIENZ: Der Unterschied zu `setCapiToken` ist GEMESSEN am Code (CC, 2026-08-27 und
-  2026-09-08); das Eintreten des Triggers ist GEMESSEN am Repo (CC, 2026-09-08); die Folge
-  für ein Projekt ohne Schlüssel ist eine ABLEITUNG und keine Messung.
+- DER OAUTH-WEG RUFT ensureTrackingKey NICHT — ANDERS ALS setCapiToken — VERSCHOBEN INS
+  BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-ENTSCHEIDUNG). Grund:
+  Ohne Veröffentlichung entsteht kein Verkehr, und `publishProject` stellt den Schlüssel
+  sicher — ein Zustand, der nichts erzeugt, macht nichts still falsch (Vermerk vom
+  2026-09-01 am gestrichenen Posten "ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8 …"); die
+  einzige benannte Kippbedingung, die Phase 11.4, ist verworfen. Der Trigger ist seit dem
+  2026-09-08 eingetreten. Der Volltext steht WÖRTLICH in docs/claude-history/backlog-polish.md,
+  Abschnitt "Aus Phase 11.7 gehoben (2026-09-25) …", unter diesem Titel — dort zusammen mit
+  jenem Vermerk und seinem Nachtrag.
 
 - DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT
   DER FORWARD STILL — GESTRICHEN AM 2026-09-23, DER GEGENSTAND IST ERLEDIGT. Der Punkt
@@ -3415,135 +2491,24 @@ aufeinander; sie liegen alle hier und finden einander.
    Roadmap-Zeile 11.9 offen). Der Satz "ER ENTFÄLLT ERST, WENN ALLE DREI EINGETRETEN UND
    ABGEARBEITET SIND" trägt weiter.
 
-- eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE ANDERE (Trigger: "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT der URL, nicht mehr für ihre Verfügbarkeit" — EINGETRETEN, und der Eintrag ist ausdrücklich NICHT geschlossen):
-  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 6, im Rahmen
-  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
-  NICHT umformuliert; die Nummer ist die des Vorrats.
-
-6. **eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE
-   LIEGT NICHT MEHR AM TRANSPORTWEG, SONDERN AM INHALT DER URL.**
-   GEMESSEN am Repo (CC, 2026-08-29). INSTRUMENT: formale Suche über src/ nach
-   `eventSourceUrl` ohne Testdateien, dazu die Lesung der getroffenen Symbole.
-   **WAS DAMIT ENTSCHIEDEN IST — DREI ANGABEN:**
-   · **DER TRANSPORTWEG STEHT.** `eventSourceUrl` ist ein Feld des Typs
-     `CapiRequestBody` (src/lib/capi/ingest.ts). `handleIngest` reicht `body`
-     unverändert an `dispatchForward` und von dort an `FORWARDER_BY_TARGET[target]`
-     weiter — jeder Adapter bekommt es, ohne dass jemand etwas hinzufügen müsste.
-   · **DREI DER VIER ADAPTER LESEN SIE HEUTE SCHON**, je über `asString(body.eventSourceUrl)`:
-     `forwardToMeta` (src/lib/capi/meta-forward.ts) und die Adapter in
-     src/lib/capi/pinterest-forward.ts und src/lib/capi/tiktok-forward.ts.
-     **LinkedIn liest sie NICHT** — der Kommentarkopf von src/lib/capi/linkedin-forward.ts
-     sagt es ausdrücklich. Ein Google-Zweig wäre damit der VIERTE Leser und kein
-     Sonderfall.
-   · **`extractGoogleClickIds` BEKÄME VON DORT EINEN EINGABEWERT.** Die Funktion
-     (src/lib/capi/google-click-ids.ts) nimmt `unknown` entgegen und ist in ihrem
-     eigenen Kopf genau auf diese Quelle zugeschnitten. Gesetzt wird der Wert im
-     Beacon-Rumpf von `buildCapiBeaconStatement` (src/lib/tracking/meta.ts) als
-     `location.href` — absolut, wie die Funktion es verlangt.
-   **EIN NAHELIEGENDER EINWAND IST GEPRÜFT UND TRÄGT NICHT:** Der Bestätigungs-Beacon
-   `buildPixelConfirmStatement` (ebenda) trägt `eventSourceUrl` ausdrücklich NICHT
-   ("BARE Payload"). **Das trifft den Fan-Out nicht:** Der Bestätigungs-Zweig
-   (`isBrowserConfirm` in `handleIngest`) kehrt mit seiner 204 zurück, BEVOR der
-   Forward-Block erreicht wird. Ein Confirm kommt an der Fan-Out-Stelle nie an.
-   **WAS OFFEN BLEIBT UND DER GRUND IST, WARUM DIESER EINTRAG NICHT ENTFÄLLT:** Gemessen
-   ist, dass die URL ANKOMMT — nicht, dass sie eine Klick-Kennung TRÄGT. Beide Lücken
-   aus Vermerk 1 stehen unverändert: dass eine ECHTE gclid von Google denselben Weg
-   nimmt, ist NICHT GEPRÜFT, und gemessen ist ein EIN-SEITEN-FALL. Auf einer Seite mit
-   mehreren Schritten ist `location.href` zur Conversion-Zeit eine andere URL als beim
-   Einstieg.
-   **ERSETZT AM 2026-08-29** — hier stand, die Verfügbarkeit an der Fan-Out-Stelle sei
-   NICHT GEMESSEN, samt der Auflage an den Transport-Zuschnitt, sie zu prüfen. Die
-   Prüfung ist gefahren, die Auflage ist damit eingelöst; der Wortlaut war bis zu diesem
-   Tag richtig.
-   TRIGGER: die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT der
-   URL, nicht mehr für ihre Verfügbarkeit.
-
-   **VERMERK 2026-09-01, SACHKORRIGIERT AM 2026-09-02 — DER TRIGGER IST EINGETRETEN, UND DIE
-   FRAGE IST NUR IN EINER RICHTUNG BEANTWORTET.** Der Text darüber bleibt ZEICHEN FÜR ZEICHEN
-   stehen; dieser Vermerk tritt DANEBEN.
-   **WAS AM 2026-09-02 ERSETZT WORDEN IST:** Die Überschrift sagte "DIE FRAGE IST BEANTWORTET.
-   DIESER EINTRAG HAT SEINEN GEGENSTAND VOLLSTÄNDIG ABGEARBEITET", und der erste Spiegelstrich
-   qualifizierte die Kennung als ECHT und ihren Weg als "über eine echte Anzeige". **DIE
-   PRÄMISSE TRIFFT NICHT ZU** — OWNER-ANGABE 2026-09-02, Volltext in VERMERK 10, Abschnitt (b),
-   "SACHKORREKTUR 2026-09-02 — DIE HERKUNFT DER KLICK-KENNUNG".
-   **DER TRIGGER LAUTETE "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem
-   INHALT der URL".** Die Scheibe ist gebaut und live bewiesen (VERMERK 10), und die Frage ist
-   damit so weit beantwortet — GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten Anwendung:
-   · **LANDEPAGE: DIE KENNUNG IST DA — BEI EINEM VON HAND GESETZTEN WERT.** Schritt 2 — die
-     gehostete Seite mit von Hand gesetztem Query-String aufgerufen, die Conversion auf
-     derselben Seite ausgelöst: durchgelaufen, keine Fehlerzeile, kein `no_click_id`.
-     **DAS IST NEU GEGENÜBER VERMERK 1 und nicht nichts:** Dort war gemessen, dass der Wert im
-     `eventSourceUrl` **ankommt**; hier durchläuft er zum ersten Mal den **VOLLSTÄNDIGEN
-     PRODUKTIVPFAD** bis zum Netzruf.
-     **DIE ERSTE HÄLFTE DER RESTLÜCKE AUS VERMERK 1 IST DAMIT NICHT EINGELÖST:** Ob eine
-     **ECHTE** `gclid` denselben Weg nimmt, ist weiterhin **NICHT GEPRÜFT**. Sie ist kleiner
-     geworden, nicht geschlossen.
-   · **FOLGESEITE: SIE IST WEG.** Schritt 3 — dieselbe von Hand gesetzte Adresse, die
-     Conversion erst nach einem Seitenwechsel: `location.href` trägt die Kennung zur
-     Conversion-Zeit nicht mehr,
-     und es entsteht kein Ereignis. **Damit ist die ZWEITE Hälfte eingelöst** — die, die
-     dieser Eintrag als "auf einer Seite mit mehreren Schritten ist `location.href` zur
-     Conversion-Zeit eine andere URL als beim Einstieg" formuliert hatte.
-   **DIE ZWEI ZEIGER, damit nichts hier ein zweites Mal geschrieben wird:** Das Protokoll
-   beider Schritte und die Einlösung der drei Schulden stehen in **VERMERK 10, Abschnitt (b)**.
-   Die **FOLGE der zweiten Hälfte** — dass Conversions auf Folgeseiten für Google heute nicht
-   messbar sind und die naheliegende Abhilfe durch TRANSIT-ONLY versperrt ist — ist als
-   **Vorrats-Eintrag 39** verortet, samt ihrem Bezug zu Phase 17 und zur dritten Datenklasse.
-   **Zweimal geschrieben liefe es auseinander.**
-   **WAS DIESER VERMERK NICHT TUT — UND DAS IST DER GRUND, WARUM ER DANEBEN STEHT STATT DEN
-   EINTRAG ZU ERSETZEN: OB DER EINTRAG DAMIT ENTFÄLLT, IST HIER NICHT ENTSCHIEDEN UND WIRD ES
-   NICHT.** Er hat seinen Gegenstand abgearbeitet — das ist etwas anderes, als überflüssig zu
-   sein. **Zwei Gründe sprechen dagegen, ihn beiläufig zu streichen**, und keiner davon wird
-   hier abgewogen: Sein GEMESSENER Teil (`eventSourceUrl` erreicht jeden Adapter über
-   `CapiRequestBody`; drei der vier Adapter lesen sie, LinkedIn nicht) ist der Maßstab für
-   jeden künftigen Adapter, der die URL braucht — und die Bauform dieses Vorrats hat bei
-   Eintrag 7, 15 und 16 jeweils **die Messung als Grund für das Stehenbleiben** genannt.
-   **DIE STREICHUNG IST EINE EIGENE ENTSCHEIDUNG.**
-   PROVENIENZ: Die Live-Werte der Schritte 2 und 3 GEMESSEN 2026-09-01 (OWNER) an der
-   ausgelieferten Anwendung. Dass der Trigger damit eingetreten ist, ist eine FOLGE aus seinem
-   Wortlaut. **KEINE Ablesung der gesendeten Nutzlast.**
-
-   **VERMERK 2026-09-07 — DIE FRAGE IST JETZT IN BEIDE RICHTUNGEN BEANTWORTET. Der Text
-   darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt DANEBEN** — dieselbe
-   Bauform wie der Vermerk vom 2026-09-01 darüber.
-   **WARUM DANEBEN UND NICHT ERSETZT, und der Grund ist an beiden betroffenen Sätzen
-   derselbe:** Sie sind über das Wort "DAMIT" an die Messung vom **2026-09-01** gebunden — die
-   Kopfzeile "DIE FRAGE IST NUR IN EINER RICHTUNG BEANTWORTET" und der Satz "**DIE ERSTE
-   HÄLFTE DER RESTLÜCKE AUS VERMERK 1 IST DAMIT NICHT EINGELÖST:** Ob eine **ECHTE** `gclid`
-   denselben Weg nimmt, ist weiterhin **NICHT GEPRÜFT**". **Als Aussagen über JENE Messung
-   sind beide unverändert wahr; als Aussagen über HEUTE sind sie überholt.** Wer sie ersetzte,
-   machte aus einer richtigen Angabe über einen Tag eine falsche über einen anderen.
-   **WAS DIE ERSTE HÄLFTE GESCHLOSSEN HAT — GEMESSEN 2026-09-07 (OWNER), am Vercel-Log des
-   eigenen Dienstes:** Ein Conversion-Beacon von einer Landepage, die mit einer **ECHTEN, vom
-   Anbieter vergebenen Klick-Kennung** in der Adresse geöffnet worden war, hat den
-   Erneuerungsweg und danach den Google-Adapter durchlaufen — der vollständige Produktivpfad
-   bis zum Netzruf. Abgelegt als **MESSUNG F**, docs/ziel-befunde.md, Google-Abschnitt,
-   **Teil (cd)**. **Dass die Kennung eine ECHTE war, ist eine OWNER-ANGABE 2026-09-07.**
-   **DREI GRENZEN AUS (cd) GEHÖREN DAZU:** der **Statuscode** des Einlieferungs-Aufrufs war
-   **nicht ablesbar** · die Zuordnung zu der beim Anbieter angenommenen Einlieferung ist eine
-   **ABLEITUNG**, keine Messung · **welcher** der drei Kennungs-Parameter getroffen hat, ist
-   **ungemessen**. **KEINE DER DREI BERÜHRT DEN WORTLAUT DER FRAGE** — gefragt war der WEG,
-   nicht die Antwort des Anbieters und nicht der Parametername.
-   **DIE ZWEITE HÄLFTE WAR SCHON AM 2026-09-01 EINGELÖST, mit einem NEIN**, und das steht im
-   Vermerk darüber unverändert. **EIN GEMESSENES NEIN ERFÜLLT DIE BEDINGUNG** — sie verlangt,
-   dass die Lücke GEMESSEN ist, nicht dass sie günstig ausfällt. **PROVENIENZ dieser Hälfte,
-   wörtlich: GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten Anwendung.**
-   **TRÄGT DIESER EINTRAG DANACH NOCH ETWAS OFFENES? NEIN — auf seiner eigenen Achse ist
-   nichts mehr offen.** Sein Trigger ("die Transport-Scheibe — jetzt für die verbliebene Frage
-   nach dem INHALT der URL") ist eingetreten, und die Frage ist ab dem 2026-09-07 in **beide**
-   Richtungen beantwortet. Was bleibt, ist **kein offener Punkt, sondern ein MASSSTAB**: der
-   gemessene Teil oben — `eventSourceUrl` erreicht über `CapiRequestBody` jeden Adapter, drei
-   der vier lesen sie, LinkedIn nicht — bleibt der Maßstab für jeden künftigen Adapter, der
-   die URL braucht.
-   **ER WIRD HIER AUSDRÜCKLICH NICHT GESCHLOSSEN UND NICHT GESTRICHEN.** Der Vermerk vom
-   2026-09-01 sagt es bereits im Wortlaut: "OB DER EINTRAG DAMIT ENTFÄLLT, IST HIER NICHT
-   ENTSCHIEDEN UND WIRD ES NICHT. … **DIE STREICHUNG IST EINE EIGENE ENTSCHEIDUNG.**" Diese
-   Runde trifft sie nicht; sie liegt beim Architekten.
-   PROVENIENZ DIESES VERMERKS: die erste Hälfte **GEMESSEN 2026-09-07 (OWNER)**, die zweite
-   **GEMESSEN 2026-09-01 (OWNER)**. Dass damit die zwei benannten Sätze als Aussagen über
-   heute überholt sind, ist eine **ABLEITUNG** aus deren Wortlaut (CC, 2026-09-07,
-   Doku-Runde), **keine dritte Messung**. **KEINE Ablesung der gesendeten Nutzlast**, und
-   **KEINE Messung an einer Google-Oberfläche** in diesem Vermerk.
+- eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE
+  ANDERE — GESTRICHEN AM 2026-09-25, DER GEGENSTAND IST ERLEDIGT. Der Punkt
+  (Vorrats-Eintrag 6 der Phase 11.2) hielt fest, dass `eventSourceUrl` jeden Adapter über
+  `CapiRequestBody` erreicht, und führte die Restlücke am INHALT der URL.
+  BELEG DER ERLEDIGUNG:
+  · Seine eigene Frage war seit dem Vermerk vom 2026-09-07 in beide Richtungen beantwortet —
+    "auf seiner eigenen Achse ist nichts mehr offen"; die Streichung war dort ausdrücklich
+    einer eigenen Entscheidung vorbehalten. Sie ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25
+    (Phasenende 11.7).
+  · Was er als MASSSTAB behielt, ist seither überholt: "drei der vier Adapter lesen sie,
+    LinkedIn nicht". GEMESSEN am Code (CC, 2026-09-25): Alle fünf Adapter lesen
+    `eventSourceUrl` — linkedin seit S6a der Phase 11.7 für `li_fat_id` (`extractLiFatId`,
+    Bau-Commit `09476b9`), google über `extractGoogleClickIds`; meta, tiktok und pinterest
+    reichen sie, von fremden Klick-Kennungen bereinigt, weiter.
+  · Die FOLGE seiner zweiten Hälfte — eine Conversion auf einer Folgeseite trägt keine
+    Klick-Kennung — steht als eigener Posten: "CONVERSIONS AUF FOLGESEITEN TRAGEN BEI KEINEM
+    ZIEL EINE KLICK-KENNUNG …" (Titel seit dem 2026-09-25).
+  · Der gestrichene Volltext steht unter Commit `3e080b2`.
 
 - EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation LESEN (Trigger: der erste Rückkanal für abgelehnte Ereignisse):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 8, im Rahmen
@@ -3674,182 +2639,41 @@ aufeinander; sie liegen alle hier und finden einander.
    häufigerer Erneuerung schärfer wird, ist eine **ABLEITUNG** aus dem gewählten Takt,
    **keine Messung** — es ist kein nebenläufiger Lauf beobachtet worden.
 
-- `retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN (Trigger: der Zuschnitt der Scheibe 1b — EINGETRETEN):
-  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 10, im Rahmen
-  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
-  NICHT umformuliert; die Nummer ist die des Vorrats.
+- `retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN — GESTRICHEN AM 2026-09-25,
+  DER GEGENSTAND IST ERLEDIGT. Der Punkt (Vorrats-Eintrag 10 der Phase 11.2) hielt fest,
+  dass der Ausgang `retry` der Erneuerung keine Obergrenze hatte, und verlangte sie von der
+  Scheibe 1b.
+  BELEG DER ERLEDIGUNG:
+  · GEBAUT mit Schritt 1b-1 der Phase 11.2, Bau-Commit `6bc01ed` (2026-09-03):
+    `src/lib/oauth/refresh-run.ts` wiederholt `refreshAccessToken` bei `kind:"retry"`
+    höchstens `REFRESH_MAX_ATTEMPTS` mal (GEMESSEN am Code, CC, 2026-09-25). Die
+    Pflicht-Mutation "Obergrenze ausbauen" steht im Archiv der Phase 11.2
+    (docs/claude-history/phase-11.2-google.md).
+  · Der Posten war danach nicht gestrichen worden; gefunden hat es die Sichtung des
+    Phasenendes 11.7. Die Streichung ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25.
+  · Der gestrichene Volltext steht unter Commit `3e080b2`.
 
-10. **`retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN.** DREI Ausgänge
-    der Erneuerungs-Funktion können DAUERHAFT sein und trotzdem `retry` melden:
-    `unexpected` (ein Anbieter-Code, den wir nicht abbilden), `read` (die Datenbank
-    antwortet nicht), und seit der Entscheidung B-2 der unbrauchbare 2xx-Rumpf.
-    **UNTER EINEM MENSCHEN-AUSLÖSER IST DAS HARMLOS** — jemand klickt, bekommt `retry`,
-    und hört irgendwann auf. **UNTER EINEM AUTOMATISMUS IST ES EINE SCHLEIFE, DIE JE
-    DURCHLAUF EINEN ECHTEN ERNEUERUNGSRUF VERBRAUCHT.**
-    **DIESELBE FIGUR WIE DIE BEGRÜNDUNG AN `write_failed`, EINE EBENE HÖHER:** Dort hält
-    der ZUSTAND den Wiederholer an (`misconfigured` statt `retry`), weil eine
-    CHECK-Verletzung sich durch Wiederholen nie auflöst. Hier gibt es niemanden, der ihn
-    anhält — `retry` sagt "nochmal", und die Funktion kennt keine Zählung, keine
-    Verzögerung und keine Obergrenze. **Sie soll sie auch nicht kennen: eine
-    Bibliotheksfunktion ohne Aufrufer kann nicht wissen, wie oft sie schon lief.**
-    GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG, wo die Grenze liegt oder wie
-    sie aussieht.
-    TRIGGER: der Zuschnitt der Scheibe 1b.
+- ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN — GESTRICHEN AM 2026-09-25,
+  DER GEGENSTAND IST ERLEDIGT. Der Punkt (Vorrats-Eintrag 13 der Phase 11.2) führte zwei
+  Einträge aus dem Vorrat der Phase 11.8, weil deren Trigger eingetreten waren.
+  BELEG DER ERLEDIGUNG, JE SPIEGELSTRICH:
+  · "'google' FEHLT IN TRACKING_TARGETS" — ERLEDIGT: `'google'` steht seit Commit `659d672`
+    (2026-08-31) in `TRACKING_TARGETS` (`src/lib/settings.ts`; GEMESSEN, CC, 2026-09-08,
+    an der Roadmap-Zeile 11.9 protokolliert, und erneut 2026-09-25).
+  · "ensureTrackingKey LÄUFT IM GOOGLE-OAUTH-WEG NICHT" — DOPPELT GEFÜHRT: Derselbe
+    Gegenstand stand als eigener Posten ("DER OAUTH-WEG RUFT ensureTrackingKey NICHT —
+    ANDERS ALS setCapiToken"). Er liegt seit dem 2026-09-25 im Backlog; der Vermerk vom
+    2026-09-01 und der Nachtrag vom 2026-09-11 dieses Postens sind dort wörtlich
+    mitgenommen, weil sie den Grund der Verschiebung tragen.
+  · Die Streichung ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25 (Phasenende 11.7). Der
+    gestrichene Volltext steht unter Commit `3e080b2`.
 
-    **VERMERK 2026-09-03 — TRIGGER EINGETRETEN, UND DIESER EINTRAG LIEGT IN 1b-1. DER
-    TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
-    **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
-    der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
-    OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
-    Der Zuschnitt steht (s. den Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
-    Scheibe 1b des Schnitts der Phase 11.2") und führt **die Obergrenze aus diesem Eintrag
-    als eines von drei Stücken, die hineingehören.**
-    **DIE OBERGRENZE LIEGT IN 1b-1 UND NICHT IN 1b-2, und dieser Satz gehört hierher, weil
-    die naheliegende Zuordnung die andere wäre:** Sie hängt an der KLAMMER und nicht am
-    Takt — der Ausgang `retry` entsteht in der Funktion darunter, und die Klammer ist die
-    erste Stelle, die zählen kann.
-    **WAS DER ZUSCHNITT NICHT TUT, und das ist der Grund für diesen Vermerk: ER SAGT NICHT,
-    WELCHE GESTALT SIE BEKOMMT.** Er trägt dafür eine eigene offene Entwurfsfrage mit DREI
-    Lesarten — Wiederholung mit Deckel INNERHALB eines Aufrufs · ein persistierter Zähler
-    ÜBER Aufrufe hinweg · eine ehrlichere AUSGANGS-KLASSIFIKATION, die `retry` nur dort
-    meldet, wo Wiederholen etwas ändern kann. **Die zweite fällt aus 1b-1** (sie braucht
-    Zustand und Wissen über den Takt); **zwischen der ersten und der dritten entscheidet der
-    Architekt am Plan.**
-    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT:** Ein eingetretener Trigger
-    ist kein Vollzug, und der Satz "Sie soll sie auch nicht kennen: eine Bibliotheksfunktion
-    ohne Aufrufer kann nicht wissen, wie oft sie schon lief" ist **der Maßstab, an dem die
-    Gestalt der Obergrenze zu messen ist** — die Klammer bekommt einen Aufrufer, die
-    Bibliotheksfunktion darunter nicht.
-    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
-    Existenz des Zuschnitts (CC, 2026-09-03). Die drei Lesarten sind ein
-    ARCHITEKTEN-ZUSCHNITT vom 2026-09-03, die Zerlegung in zwei Schritte eine
-    ARCHITEKTEN-FESTLEGUNG desselben Tages; keine Messung.
-
-- ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN (Trigger: zwei eigene Trigger, BEIDE EINGETRETEN):
-  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 13, im Rahmen
-  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
-  NICHT umformuliert; die Nummer ist die des Vorrats.
-
-13. **ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN.**
-    **HERKUNFTSDATEI: docs/claude-history/phase-11.8-autorisierungsschicht.md**, Abschnitt
-    "Vorrat (gemeldet, nicht
-    gebaut)", Einträge 5 und 6. **DER GRUND FÜR DIE ÜBERNAHME IST IHR ORT, NICHT IHR
-    INHALT:** Jene Datei ist archiviert und wird nicht mehr geladen; beide Trigger sind
-    inzwischen EINGETRETEN, und ein eingetretener Trigger in einer ungelesenen Datei ist
-    ein Posten, der still stirbt.
-    **NUR ÜBERNOMMEN — NICHT NEU GEMESSEN, NICHT BEHOBEN, NICHT UMFORMULIERT.** Die
-    Befunde und ihre Provenienz stehen am Ursprung und werden hier NICHT verdoppelt.
-    · **`'google'` FEHLT IN `TRACKING_TARGETS`** — die Zeile ist für die Oberfläche
-      unsichtbar und über die Anwendung nicht löschbar. **TRIGGER EINGETRETEN:** Die
-      Aufnahme ist Scheibe 3 des Schnitts (bindende Entscheidung (6)), und sie kommt VOR
-      dem Transport (bindende Entscheidung (8)).
-    · **`ensureTrackingKey` LÄUFT IM GOOGLE-OAUTH-WEG NICHT** — anders als in
-      `setCapiToken`. Ein Projekt, das ausschliesslich über diesen Weg konfiguriert wird,
-      hat womöglich keinen Tracking-Schlüssel. **TRIGGER EINGETRETEN:** Der Ursprung
-      führt ihn als "VORBEDINGUNG der Transport-Scheibe"; die Scheibe 1a hat ihn
-      gemessen bestätigt und ausdrücklich NICHT behoben.
-    ÜBERNOMMEN 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
-
-    **VERMERK 2026-09-01 ZUM ZWEITEN SPIEGELSTRICH (`ensureTrackingKey`) — DER
-    URSPRUNGSTEXT WIRD NICHT UMGESCHRIEBEN, DIESER VERMERK TRITT DANEBEN.**
-    Der Ursprung führt den Posten als "VORBEDINGUNG der Transport-Scheibe".
-    **SCHEIBE 4 BEHEBT IHN NICHT**, und der Grund gehört dazu, sonst gilt er als übersehen:
-    **Ohne Tracking-Schlüssel erreicht kein Beacon den Ingest** — `getCapiConfigByTrackingKey`
-    (src/lib/capi/token.ts) kehrt bei leerem Schlüssel ohne Datenbank-Runde zurück, und ein
-    Projekt ohne Schlüssel trägt auch keinen ausgelieferten Emitter, der einen senden könnte.
-    **ES ENTSTEHT ALSO GAR KEIN VERKEHR, NICHT NUR KEIN SICHTBARER.** Ein Zustand, der nichts
-    erzeugt, kann nichts stillschweigend falsch machen; das ist der Unterschied zu einem
-    Posten, der still Conversions verliert.
-    **DIE BEDINGUNG, UNTER DER DAS KIPPT:** eine Scheibe, die **OHNE Veröffentlichung sendet**
-    — **Phase 11.4, der Testknopf**. Dort löst ein Betreiber den Versand von Hand aus, und der
-    Weg über den ausgelieferten Emitter entfällt; ab da ist ein fehlender Schlüssel kein
-    leiser Zustand mehr, sondern ein Fehlschlag mit Auslöser.
-    **EIN GEMESSENER ZUSATZ (CC, 2026-09-01), der die Prämisse "ohne Publish kein Schlüssel"
-    enger fasst als bisher angenommen:** Eine `domains`-Zeile KANN **ohne** `publishProject`
-    entstehen — `persistDomainRow` (src/lib/domains/register.ts) legt sie an, erreichbar über
-    `registerCustomDomain` und die Server-Action `addCustomDomain`
-    (src/app/projects/domain-actions.ts), und **diese Kette berührt `publishProject` an keiner
-    Stelle**. ACHSE: `from("domains")` über `src/` rekursiv, binärsicher, Testdateien
-    gefiltert — zwölf Fundstellen, davon DREI `insert`; zwei davon (`assignDomainLabel`,
-    `insertDomainLabel`) haben ausschliesslich `publishProject` als Aufrufer, die dritte nicht.
-    Positivkontrolle: dieselbe Achse führt die Aufrufer-Kette je Symbol lückenlos.
-    **WAS DER ZUSATZ NICHT SAGT:** `ensureTrackingKey` läuft **weiterhin nur** in
-    `setCapiToken` und `publishProject` (GEMESSEN am Repo, CC, 2026-09-01). Die
-    Custom-Domain-Zeile setzt **keinen** Tracking-Schlüssel — der Zusatz benennt eine
-    `domains`-Zeile ohne Publish, **nicht** einen Schlüssel ohne Publish. Wer beides
-    zusammenzieht, liest hier eine Behebung, die nicht dasteht.
-
-    **NACHGETRAGEN 2026-09-11 — DIE KIPPBEDINGUNG DARÜBER HAT KEIN BENANNTES VORHABEN MEHR.
-    DER WORTLAUT DES VERMERKS BLEIBT STEHEN:** Er ist Teil des Vorrats-Eintrags, den der Kopf
-    dieses Postens als "NICHT umformuliert" führt; ein Umschreiben machte jenen Satz falsch.
-    Die Bedingung lautet "eine Scheibe, die OHNE Veröffentlichung sendet", und als ihr
-    einziges Vorhaben nennt sie **Phase 11.4, den Testknopf — die ist am 2026-09-11
-    VERWORFEN** (docs/roadmap.md, Zeile "Phase 11.4 — Der Testknopf"). **EINE ZWEITE
-    BEDINGUNG NENNT DIESER VERMERK NICHT** — auch sein gemessener Zusatz nicht: Der benennt
-    eine `domains`-Zeile ohne Publish und ausdrücklich keinen Schlüssel ohne Publish.
-    **DAS KIPPEN DIESES ZUSTANDS HÄNGT DAMIT AN KEINEM BENANNTEN EREIGNIS MEHR.** Wer den
-    Spiegelstrich für wartend hält, liest einen entfallenen Zeiger mit. OB EIN ANDERES
-    VORHABEN OHNE VERÖFFENTLICHUNG SENDET ODER SENDEN WIRD, IST NICHT GEPRÜFT UND HIER NICHT
-    ENTSCHIEDEN.
-    PROVENIENZ: der Wortlaut des Vermerks GELESEN (CC, 2026-09-11), seine Zugehörigkeit zum
-    Vorrats-Eintrag GEMESSEN an der gelöschten Vorratsdatei im Stand vor Commit `003e65f`
-    (CC, 2026-09-11); die Verwerfung ist OWNER-ENTSCHEIDUNG 2026-09-11.
-
-- `saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT (Trigger: der Zuschnitt der Scheibe 2 — EINGETRETEN; der Eintrag wird ausdrücklich NICHT gestrichen):
-  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 16, im Rahmen
-  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
-  NICHT umformuliert; die Nummer ist die des Vorrats.
-
-16. **`saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE
-    UI-ABWESENHEIT UND NICHT DURCH EINEN RIEGEL.**
-    **GEMESSEN am Code (CC, 2026-08-29):** `saveProject` (src/app/projects/actions.ts)
-    reicht den Einstellungs-Blob unverändert in die `projects`-Spalte durch — kein
-    Schema-Check, keine Feldprüfung, keine Ziel-Prüfung. Der einzige Weg, der heute
-    `settings.pixels.<ziel>.pixelId` setzt, ist das öffentliche Eingabefeld der Karte
-    (`setPixelId` hat im Produktivcode GENAU EINEN Aufrufer, components/CodeImporter.tsx).
-    **WAS DARAUS FOLGT UND WARUM ES HIERHER GEHÖRT:** Das erste der vier Tore der
-    Scheibe 3 (`withPixel` in src/lib/capi/token.ts) hält, WEIL die Google-Karte kein
-    solches Feld anbietet. Ein selbstgebauter Aufruf könnte `pixels.google` trotzdem in
-    den Blob legen. **DIE TRAGENDE SCHICHT IST DESHALB TOR B** — die Klartext-Spalte
-    `secret` der google-Zeile bleibt NULL, und der Resolver liest ausschliesslich sie.
-    **ES IST KEINE NEUE LÜCKE, UND DIESER SATZ GEHÖRT DAZU, damit der Eintrag nicht
-    grösser gelesen wird als er ist:** Der Blob ist seit jeher CLIENT-besessen
-    (`saveProject` ersetzt ihn ganzheitlich — die Regel "SERVER-EIGENE IDENTITÄT NIE IN
-    EINEN CLIENT-BESESSENEN BLOB" beschreibt genau das). Die Scheibe 3 ändert daran
-    nichts; sie macht nur sichtbar, dass ein TOR daran hängt.
-    **GEMELDET, NICHT BEHOBEN. KEINE EMPFEHLUNG** — weder eine Validierung in
-    `saveProject` noch eine Allowlist im Blob ist hier vorgeschlagen.
-    TRIGGER: **der Zuschnitt der Scheibe 2.** Dort fällt Tor A ABSICHTLICH (die Kennungen
-    bekommen ihre Eingabe), und ab da zählt, dass der Blob beliebige Ziel-Schlüssel
-    aufnimmt — die Frage ist dann nicht mehr, ob ein Feld existiert, sondern was in der
-    Spalte stehen darf.
-    GEMELDET 2026-08-29.
-
-    **VERMERK 2026-08-31 — TRIGGER EINGETRETEN. DER EINTRAG WIRD NICHT GESTRICHEN.**
-    Der Zuschnitt der Scheibe 2 steht (s. den Abschnitt "Die Konto-Kennungen bekommen ihre
-    Eingabe"). Dieser Vermerk sagt, WAS er von diesem Eintrag beantwortet und was er nur
-    VERORTET — die Trennung ist der ganze Zweck, weil ein Eintrag mit eingetretenem Trigger
-    sonst entweder als erledigt gilt oder als übersehen liegenbleibt.
-    · **BEANTWORTET IST DER KERN:** Tor A fällt ABSICHTLICH. Was danach hält, steht an zwei
-      Orten und nicht hier — in der Sachkorrektur an Festlegung (1) der Scheibe 3 (Tor B UND
-      Tor D, Tor D unabhängig und für sich hinreichend) und in der Beweis-Achse der
-      Scheibe 2, die für jedes der beiden einen eigenen Test verlangt, der SEIN Tor benennt.
-      **Der Satz dieses Eintrags "DIE TRAGENDE SCHICHT IST DESHALB TOR B" war damit zu eng**
-      — er nannte eines von zweien; als Aussage über den 2026-08-29 bleibt er richtig und
-      wird NICHT überschrieben.
-    · **NICHT BEANTWORTET, SONDERN VERORTET:** Dass ein Betreiber über das neue Feld eine
-      FREMDE Kundennummer eintragen kann, ist eine Frage an das Verhalten des Anbieters. Sie
-      steht seit dem 2026-08-31 als eigener offener Punkt in docs/offene-punkte.md ("WAS
-      GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT, IST UNGELESEN UND UNGEMESSEN"), Trigger
-      "der Zuschnitt der Scheibe 4". **Sie ist hier ausdrücklich NICHT entschieden.**
-    · **WARUM DER EINTRAG BLEIBT:** Seine MESSUNG — `saveProject` schreibt den
-      Einstellungs-Blob unvalidiert durch, kein Schema-Check, keine Feldprüfung, keine
-      Ziel-Prüfung — ist der MASSSTAB für jede spätere Blob-Frage. Ein gelöschter Eintrag
-      nähme sie mit. Dieselbe Bauform wie bei Eintrag 15, wo die Erledigt-Kennzeichnung
-      ebenfalls UNTER dem unveränderten Eintrag steht.
-    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
-    Existenz des Zuschnitts (CC, 2026-08-31). Die zwei Tore sind GEMESSEN am Repo (CC,
-    2026-08-31).
+- `saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT —
+  VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
+  ENTSCHEIDUNG). Grund: Sein Kern ist seit dem 2026-08-31 beantwortet; was bleibt, ist nach
+  seinem eigenen Vermerk ein MASSSTAB für jede spätere Blob-Frage — kein Zustand, der still
+  kaputtgeht. Der Volltext steht WÖRTLICH in docs/claude-history/backlog-polish.md,
+  Abschnitt "Aus Phase 11.7 gehoben (2026-09-25) …", unter diesem Titel.
 
 - `PROJECT_PARAM` STEHT ZWEIMAL, UND DIE DIVERGENZ IST EINSEITIG STUMM (Trigger: eine Änderung an einem der beiden Parameternamen):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 24, im Rahmen
@@ -3877,10 +2701,17 @@ aufeinander; sie liegen alle hier und finden einander.
     GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
     TRIGGER: eine Änderung an einem der beiden Parameternamen.
 
-- CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR (Trigger: der Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten Datenklasse — je nachdem, was zuerst eintritt):
+- CONVERSIONS AUF FOLGESEITEN TRAGEN BEI KEINEM ZIEL EINE KLICK-KENNUNG — UND JEDE ABHILFE VERLANGT EINE AUFBEWAHRUNG, DIE DIESES PRODUKT NICHT HAT (Trigger: der Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten Datenklasse, ODER der Zuschnitt eines Cookie-Wegs zu einer Klick-Kennung, gleich welchen Ziels — je nachdem, was zuerst eintritt):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 39, im Rahmen
   des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
   NICHT umformuliert; die Nummer ist die des Vorrats.
+  TITEL UND TRIGGER SIND AM 2026-09-25 ERSETZT, NICHT GESTEMPELT (Phasenende 11.7,
+  ARCHITEKTEN-ENTSCHEIDUNG; Präzedenz: "`settingsEqual` IST EINE ALLOWLIST …", 2026-09-18).
+  Bis dahin lauteten sie: "CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR
+  (Trigger: der Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten
+  Datenklasse — je nachdem, was zuerst eintritt)". Der Vorrats-Wortlaut darunter trägt den
+  alten Titel weiter; wer nach ihm sucht, landet hier. Was sich geändert hat, steht im
+  Vermerk vom 2026-09-25 am Ende dieses Postens.
 
 39. **CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR — UND DIE NAHELIEGENDE
     ABHILFE IST DURCH TRANSIT-ONLY VERSPERRT.**
@@ -3921,163 +2752,46 @@ aufeinander; sie liegen alle hier und finden einander.
     TRIGGER: der Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten
     Datenklasse — je nachdem, was zuerst eintritt.
 
-- DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER (Trigger: der Zuschnitt der Scheibe 1b — EINGETRETEN; der Eintrag bleibt offen und wird nicht abgehakt):
-  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 42, im Rahmen
-  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
-  NICHT umformuliert; die Nummer ist die des Vorrats.
+    VERMERK 2026-09-25 (Phasenende 11.7) — DER POSTEN GILT JETZT ALLEN ZIELEN. Der Wortlaut
+    darüber bleibt.
+    WAS SICH GEÄNDERT HAT: Seit den Scheiben S5 bis S9 der Phase 11.7 trägt JEDES Ziel eine
+    Klick-Kennung, und jede kommt allein aus der Seitenadresse — meta `fbc` aus `fbclid`,
+    linkedin `li_fat_id`, tiktok `user.ttclid`, pinterest `user_data.click_id` aus `epik`,
+    google wie zuvor `gclid`/`gbraid`/`wbraid`. Dieses Produkt setzt kein Cookie und legt
+    nichts ab (Entscheidung P11.7-2 der Phase 11.7; GEMESSEN am Code, Archiv der Phase 11.7,
+    VERMERK P11.7-1, (a), (b) und (f)). FOLGE: EINE KLICK-KENNUNG IST NUR VERFÜGBAR, SOLANGE
+    DIE ADRESSE SIE TRÄGT — auf einer Folgeseite fehlt sie bei ALLEN fünf Zielen. Bei google
+    loggt der Adapter dann "skipped: no_click_id"; bei den übrigen vier geht das Ereignis
+    ohne Klick-Kennung hinaus, und nichts meldet das.
+    WAS DIE ANBIETER EMPFEHLEN (GELESEN, je in der Datei des Ziels unter docs/ziel-befunde/):
+    meta das Cookie `_fbc` mit 90 Tagen oder eine Ablage im Backend (meta, Teil (h)) ·
+    pinterest das Cookie `_epik` statt des Parameters (pinterest, Teil (ac)) · tiktok selbst
+    auslesen und ablegen, 28 Tage (tiktok, Teil (j)) · linkedin ein Cookie mit 30 Tagen, das
+    ein eingebautes Insight Tag voraussetzt (linkedin, Teil (an)). WIE GROSS DER VERLUST OHNE
+    AUFBEWAHRUNG IST, IST UNGEMESSEN.
+    DREI ZUSCHNITT-FRAGEN DER PHASE 11.7 GEHÖREN HIERHER UND SIND OFFEN: P11.7-2 — Metas
+    Empfehlung zu `_fbc` kollidiert mit der dritten Datenklasse; ohne neue
+    Owner-Entscheidung ist der Cookie-Weg nicht baubar; ohne eigene Ablage ist der Zeitanteil
+    von `fbc` der Verarbeitungszeitpunkt statt der ersten Beobachtung, mit ungemessener
+    Wirkung · P11.7-20 — die Aufbewahrung selbst, dort an die Phase 17 verwiesen ·
+    P11.7-26 — ein Cookie-Wert ist über die heutige Beacon-Form nicht erreichbar; wer einen
+    Cookie-Weg zuschneidet, braucht NEUE FELDER IM BEACON-RUMPF auf `/api/e`, berührt damit
+    die A-Regel "/API/E-SCHLANKHEIT" an ihrem Kopf, und ein neues Beacon-Feld wirkt erst nach
+    Neu-Veröffentlichen.
+    DAHER DER DRITTE TRIGGER: Ein Cookie-Weg kann auch ohne die Phase 17 zugeschnitten werden
+    und berührt dieselbe Frage.
+    KEINE EMPFEHLUNG.
+    PROVENIENZ: die Code-Befunde GEMESSEN (CC, 2026-09-22 bis 2026-09-24; Archiv der Phase
+    11.7); die Anbieter-Empfehlungen GELESEN (Crawls vom 2026-09-22); Titel, Trigger und
+    Zuordnung ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25.
 
-42. **DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER,
-    UNGEDROSSELT.** GEMESSEN am Code (CC, 2026-09-02): `usableTokenFromRow`
-    (src/lib/capi/token.ts, modul-privat) schreibt bei toter Uhr 1
-    `console.error("[capi/resolve] secret unusable", …)` mit dem `reason`
-    `access_token_expired` und gibt `null` zurück.
-    **DER KOMMENTARKOPF DERSELBEN FUNKTION BENENNT DIE LAGE BEREITS SELBST** — "Es gibt KEINE
-    Drosselung. Ein Projekt mit kaputtem Chiffrat schreibt eine Zeile PRO BESUCHER" —,
-    allerdings am Fall des KAPUTTEN CHIFFRATS; **die tote Uhr 1 liegt auf demselben Weg und
-    ist dort nicht genannt.**
-    **DIE ZEILE NENNT KEIN PROJEKT.** Sie trägt den Ziel-Namen und einen SELBSTVERGEBENEN
-    Grund; die `projectId` fehlt absichtlich, und der Kommentar begründet das mit dem Pfad
-    selbst — er läuft bei JEDEM Besucher JEDER Kundenseite, und eine Projekt-Kennung je
-    Beacon wäre eine Datenerhebung, die niemand beschlossen hat.
-    **WARUM DAS ZÄHLT — IN ZWEI RICHTUNGEN, UND BEIDE GEHÖREN HIN:**
-    · **ES IST HEUTE DIE EINZIGE BEOBACHTBARE SIGNATUR DES BRUCHS**, den Scheibe 1b beheben
-      soll — also die Live-Test-Achse für 1b. Sie ist eine ANWESENHEIT und keine Abwesenheit,
-      anders als der Erfolgsbeleg des Adapters, der nach VERMERK 10, Abschnitt (d), ein
-      SCHWEIGEN ist; und sie ist im Wortlaut von allen drei Adapter-Zeilen unterscheidbar.
-      **SIE ORDNET SICH ABER KEINEM PRÜFLING ZU**, weil sie kein Projekt nennt — wer mit ihr
-      misst, misst über alle Projekte zugleich.
-    · **ES IST UNBEGRENZTES SCHREIBEN AUF DEM MEISTGETROFFENEN PFAD DER PLATTFORM.** Nach
-      Ablauf der Stunde erzeugt jeder Besucher jeder Seite eines betroffenen Projekts eine
-      Fehlerzeile, ohne Zählung und ohne Ende.
-    **KEIN VORSCHLAG ZUR DROSSELUNG**, und ausdrücklich auch keiner dazu, ob die `projectId`
-    hineingehörte. GEMELDET 2026-09-02, NICHT GEBAUT.
-    TRIGGER: der Zuschnitt der Scheibe 1b — er berührt beide Richtungen zugleich.
-
-    **VERMERK 2026-09-03 — TRIGGER EINGETRETEN, UND 1b-1 SCHLIESST DIESEN EINTRAG
-    AUSDRÜCKLICH AUS. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK
-    TRITT DANEBEN.**
-    **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
-    der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
-    OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
-    Der Zuschnitt steht (s. den Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
-    Scheibe 1b des Schnitts der Phase 11.2") und führt diesen Eintrag unter "Was
-    ausdrücklich draussen bleibt, je mit seinem Grund".
-    **BEIDE RICHTUNGEN BLEIBEN DAMIT OFFEN, UND SIE BLEIBEN ES AUS VERSCHIEDENEN GRÜNDEN:**
-    Die **Drosselung** ist nicht Gegenstand der Klammer — sie liegt auf dem Ingest-Pfad, und
-    1b-1 hält `src/lib/capi/ingest.ts` und `src/lib/capi/token.ts` ausdrücklich unberührt.
-    Die **Live-Test-Achse** wird von der Klammer nicht gebraucht: Der Nachweis von 1b-1
-    läuft über die bestehende Beweis-Route, nicht über die Fehlerzeile.
-    **WAS DAS FÜR 1b-2 HEISST UND HIER NUR BENANNT WIRD:** Die Zeile bleibt die einzige
-    beobachtbare Signatur des Bruchs, den ein Takt beheben soll — **und sie ordnet sich
-    weiterhin keinem Prüfling zu**, weil sie kein Projekt nennt.
-    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT. KEINE EMPFEHLUNG** — weder zur
-    Drosselung noch dazu, ob die `projectId` hineingehörte.
-    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
-    Existenz des Zuschnitts (CC, 2026-09-03). Der Ausschluss ist ein ARCHITEKTEN-ZUSCHNITT
-    vom 2026-09-03, die Zerlegung in zwei Schritte eine ARCHITEKTEN-FESTLEGUNG desselben
-    Tages; keine Messung.
-
-    **ZWEITER VERMERK 2026-09-03 — SCHEIBE 1b-2a NIMMT DIESEN EINTRAG EBENFALLS NICHT AUF,
-    ABER SIE ÄNDERT SEINEN GEGENSTAND. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN.**
-    Der Zuschnitt steht (s. den Abschnitt "Die Rettung am Beacon — Scheibe 1b-2a des
-    Schritts 1b-2 der Scheibe 1b") und führt ihn dort unter "Was diese Scheibe ausdrücklich
-    nicht baut, je mit Grund".
-    **WAS SICH ÄNDERT, IST DIE URSACHE DER ZEILE UND NICHT IHRE HÄUFIGKEIT:** Heute schreibt
-    `usableTokenFromRow` sie, sobald das Zugangsdatum tot ist — und tot ist es nach einer
-    Stunde ohne Erneuerung, also regelmässig. **NACH 1b-2a BLEIBT ALS URSACHE NUR NOCH DAS
-    TOTE ERNEUERUNGS-TOKEN**, denn ein erneuerbarer Zugang wird dann erneuert, statt eine
-    Zeile zu erzeugen.
-    **UND GENAU DAS MACHT DEN POSTEN NICHT KLEINER, SONDERN ANDERS — der Satz gehört hierher,
-    sonst liest die nächste Runde ihn als halb erledigt: EIN TOTES ERNEUERUNGS-TOKEN BEHEBT
-    KEIN CODE.** Es verlangt eine Neu-Autorisierung durch den Kunden. Die Fehlerzeile
-    beschreibt danach einen Zustand, der **bis zu einer Handlung ausserhalb des Systems
-    bestehen bleibt** — sie wird damit seltener, aber JEDE einzelne wiegt schwerer, und
-    ungedrosselt ist sie weiterhin.
-    **DER EINTRAG BLEIBT OFFEN, WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER
-    STEHT WÖRTLICH WIE ZUVOR.** **KEINE EMPFEHLUNG** — weder zur Drosselung noch dazu, ob
-    die `projectId` hineingehörte.
-    PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Dass nach 1b-2a nur noch das
-    tote Erneuerungs-Token als Ursache bleibt, ist eine **ABLEITUNG** aus den vier Lagen
-    jenes Zuschnitts, **keine Messung** — gebaut ist nichts.
-
-    **DRITTER VERMERK 2026-09-03 — DIE ZEILE VERSCHWINDET NICHT, SIE WIRD SELTEN. DIE
-    ABLEITUNG DES ZWEITEN VERMERKS WAR ZU WEIT, UND DAS WIRD HIER RICHTIGGESTELLT STATT
-    GESTEMPELT.** Der Text darüber bleibt ZEICHEN FÜR ZEICHEN stehen; überholt ist eine
-    ABLEITUNG, die dort ausdrücklich als solche gekennzeichnet ist.
-    **WAS DER ZWEITE VERMERK SAGTE:** "NACH 1b-2a BLEIBT ALS URSACHE NUR NOCH DAS TOTE
-    ERNEUERUNGS-TOKEN, denn ein erneuerbarer Zugang wird dann erneuert, statt eine Zeile zu
-    erzeugen."
-    **WAS AM GEBAUTEN CODE GILT (GEMESSEN, CC, 2026-09-03, und LIVE bestätigt, OWNER,
-    2026-09-03 — s. VERMERK 12, Abschnitte (b) bis (d)): DER `console.error` STEHT VOR DER
-    VERZWEIGUNG UND WIRD IN BEIDEN FÄLLEN GESCHRIEBEN.** Ein erneuerbarer Zugang wird
-    erneuert **UND** erzeugt die Zeile. Was die Fälle trennt, ist allein der `reason`.
-    **DREI URSACHEN STATT EINER, und sie sind verschieden schwer:**
-    · **`access_token_expired` — DIE RETTUNG GREIFT.** Ein NORMALVORGANG. Er tritt je
-      Projekt und Stunde höchstens einmal auf, nicht mehr je Besucher; **das ist die
-      Verbesserung, und sie ist real.**
-    · **`refresh_token_expired` — ECHTER AUSFALL**, den kein Code behebt. Er verlangt eine
-      Neu-Autorisierung durch den Kunden und bleibt bis dahin bestehen.
-    · **DER BESTÄTIGUNGS-BEACON ERZEUGT SIE AUCH IM ERFOLGSFALL.** Er durchläuft den
-      Resolver, sieht den alten Token und kehrt VOR dem Forward-Zweig zurück — er rettet
-      nicht. **Ein Conversion-Beacon-PAAR hinterlässt damit auch bei geglückter Rettung
-      eine Fehlerzeile.** ABLEITUNG aus dem Kontrollfluss; am Log ist nicht entscheidbar,
-      welche der zwei Zeilen um 16:47:07 von ihm stammte.
-    **WAS SICH NICHT ÄNDERT UND WAS SCHLIMMER GEWORDEN IST:** Die Zeile ist **seltener**
-    geworden — sie hängt nicht mehr an jedem Besucher einer abgelaufenen Stunde.
-    **UNGEDROSSELT IST SIE WEITERHIN**, und der Fall, in dem sie es am teuersten ist, ist
-    **derselbe geblieben**: ein Ziel mit lebender Uhr 2 und dauerhaft scheiternder
-    Erneuerung schreibt sie je Beacon — und ruft dabei zusätzlich je Beacon den Anbieter.
-    **DIE ZWEITE RICHTUNG DES EINTRAGS — die Live-Test-Achse — HAT SICH DAMIT VERSCHOBEN:**
-    Die Zeile ist **nicht mehr die Signatur des Bruchs**, sie ist ab jetzt die Signatur
-    **eines von drei Zuständen**. **Wer mit ihr misst, misst die Anwesenheit eines
-    Wortes, nicht mehr die eines Defekts.** Der Live-Nachweis der Scheibe 1b-2a ist genau
-    deshalb NICHT über sie geführt worden, sondern über den FOLGENDEN Beacon (VERMERK 12,
-    Abschnitt (c)).
-    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER STEHT WÖRTLICH
-    WIE ZUVOR. KEINE EMPFEHLUNG** — weder zur Drosselung noch dazu, ob die `projectId`
-    hineingehörte.
-    **DIE MEHRDEUTIGKEIT SELBST IST EIN EIGENER POSTEN GEWORDEN**, weil sie eine andere
-    Frage stellt als dieser Eintrag: nicht "wie oft", sondern "was bedeutet sie".
-    PROVENIENZ: der Code-Befund GEMESSEN (CC, 2026-09-03); die drei Ursachen sind eine
-    **ABLEITUNG** aus dem Kontrollfluss, gestützt auf die Live-Beobachtungen vom
-    2026-09-03 (OWNER). **Keine Messung der Häufigkeit** — sie ist nicht erhoben.
-
-    **VIERTER VERMERK 2026-09-25 — AUS DER AUFKLÄRUNG DER SCHEIBE S10c DER PHASE 11.7 (Mitnahme 1).
-    DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
-    · **DIE ABLEITUNG "höchstens einmal je Projekt und Stunde" IM DRITTEN VERMERK IST WIDERLEGT** —
-      sie stand dort ausdrücklich als ABLEITUNG. **AM CODE (GEMESSEN, CC, 2026-09-25):** Die
-      Auflösung (`usableTokenFromRow`, `src/lib/capi/token.ts`) läuft bei JEDER `/api/e`-Anfrage und
-      schreibt die Zeile bei totem Zugangsdatum jedes Mal; erneuert wird allein in der VORSORGE (nur
-      bei noch lebendem Zugangsdatum, Lage `lead`) und in der RETTUNG (nur hinter `isForwardable`
-      und der Einwilligung für das Ziel), beides in `handleIngest` (`src/lib/capi/ingest.ts`). Bis
-      eine Conversion rettet, schreibt also jede andere Anfrage die Zeile. **AM LOG (OWNER-ANGABE,
-      2026-09-25):** vier Zeilen in vier Anfragen, 08:25:30.79 bis 08:25:55.98 MESZ, also binnen
-      rund 25 Sekunden (gerechnet aus den Zeitstempeln; VERMERK P11.7-33 der Phase 11.7).
-    · **DIE ZEILE TRAT IN ANFRAGEN OHNE ERNEUERUNG AUF, IN DENEN OHNEHIN NICHTS AN GOOGLE GINGE**
-      (GEMESSEN am Code): Seitenaufruf (nicht forwardbar) · Bestätigungs-Beacon (früher Ausgang vor
-      Vorsorge und Rettung) · fehlende Einwilligung für google (die Rettung prüft sie wie der
-      Forward). **Es geht also keine Conversion verloren.** Welche Art Anfrage jede der vier Zeilen
-      trug, nennt das Log nicht.
-    · **DIE BEGRÜNDUNG "einzige Signatur" FÜR DIE STUFE error IST SEITHER RELATIVIERT.** Der
-      Kommentar an der Zeile (`usableTokenFromRow`, Zweig der toten Uhr 1) begründet die Stufe mit
-      "die einzige beobachtbare Signatur dieses Zustands" und "die Live-Test-Achse"; der dritte
-      Vermerk oben nennt die Zeile seither "nicht mehr die Signatur des Bruchs", und
-      docs/claude-history/backlog-polish.md, Eintrag 65, zählt fünf Ursachen. **EINE HERABSTUFUNG
-      VON `access_token_expired` IST EIN KANDIDAT FÜR DAS PHASENENDE 11.7, KEINE ENTSCHEIDUNG** — sie
-      änderte eine bestehende Fehlerzeile und liegt ausserhalb jeder Bau-Scheibe der Phase.
-    · **"anders als der Erfolgsbeleg des Adapters, der nach VERMERK 10, Abschnitt (d), ein
-      SCHWEIGEN ist"** (oben, erste Richtung) — **SEIT S10c GIBT ES DIE ACCEPTED-ZEILE:** Eine
-      angenommene Google-Einlieferung schreibt "[capi] Google forward accepted: HTTP <Status>"
-      (Bau-Commit `cefe636`; über den echten Weg abgelesen am 2026-09-25, docs/ziel-befunde/google.md,
-      Teil (cv)). Der Erfolgsbeleg ist damit eine ANWESENHEIT wie diese Zeile.
-    · **NICHT DERSELBE FALL WIE "KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG":** Am 2026-09-25
-      lief genau EINE Erneuerung, in der Klick-Anfrage; Seitenaufruf und Bestätigung erneuern nicht.
-      Der Trigger jenes Postens ist davon nicht berührt.
-    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER STEHT WÖRTLICH WIE
-    ZUVOR.** **KEINE EMPFEHLUNG** zur Drosselung oder zur `projectId`.
-    PROVENIENZ: Der Kontrollfluss ist **GEMESSEN am Code** (CC, 2026-09-25, HEAD `c37a41c`); die vier
-    Zeilen sind eine **OWNER-ANGABE** vom 2026-09-25; dass keine Conversion verloren geht, ist eine
-    **FOLGE** aus dem Kontrollfluss, keine Messung.
+- DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER — VERSCHOBEN INS
+  BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-ENTSCHEIDUNG). Grund: Der
+  Befund ist LAUT, nicht still — eine Fehlerzeile je Anfrage —, und verloren geht dabei keine
+  Conversion (Vermerk vom 2026-09-25). Der Kandidat, `access_token_expired` herabzustufen,
+  liegt im selben Abschnitt des Backlogs, neben Eintrag 65. Der Volltext steht WÖRTLICH in
+  docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.7 gehoben (2026-09-25) …",
+  unter diesem Titel.
 
 - STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR (Trigger: die nächste Arbeit an der Ziel-Karte, ODER der Statuswechsel auf "In Produktion", ODER der erste Kunde mit einer Google-Verbindung):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 50, im Rahmen
@@ -4411,6 +3125,13 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   2026-09-04). Die volle Herleitung stand in docs/aktiver-stand.md, Abschnitt "1b als
   Folgetask", Vorbedingung (iv), und liegt nach Schritt 2 im Archiv
   docs/claude-history/phase-11.2-google.md.
+  VERMERK 2026-09-25 (Sichtung beim Phasenende 11.7) — DER TERMIN IM TRIGGER IST VORBEI, DER
+  POSTEN NICHT. Der Wortlaut darüber bleibt. Die Google-Karte ist seither mehrfach neu
+  autorisiert worden, zuletzt am 2026-09-24; die Frist läuft danach "um den 2026-10-01"
+  (OWNER-ANGABE; Archiv der Phase 11.7, VERMERKE P11.7-23 und P11.7-34). Der Statuswechsel
+  auf "In Produktion" ist nicht vollzogen — am Repo nicht entscheidbar, er ist Arbeit am
+  Anbieter-Konto. Der Stub in CLAUDE.md nennt seither keinen festen Termin mehr, sondern
+  den Mechanismus.
 
 - DER eventSource-WERT IST NICHT GEMESSEN — GEBAUT IST "WEB" ALS ENTSCHEIDUNG (Trigger: das
   erste Instrument, das FACHLICHE Falschheit von syntaktischer Gültigkeit trennt):
@@ -4967,6 +3688,8 @@ Nummer in der Standdatei.
   den der Posten als ungeprüft führte; Positivkontrolle im selben Lauf.
   BELEG: GEMESSEN am Code (CC, 2026-09-17); der ungekürzte Wortlaut des Postens steht im
   Commit davor.
+  DER STUB IN CLAUDE.md IST AM 2026-09-25 ENTFERNT (Sichtung beim Phasenende 11.7) — er
+  stand dort als erledigt weiter. L22 und M23 existieren (GEMESSEN, CC, 2026-09-25).
 
 - DER CONSENT-GATE-BLOCK HAT ZWEI ERZEUGER — UND SIE LAUFEN BEREITS AUSEINANDER (aus Vorrat
   (16) der Phase 11.5) (Trigger: die nächste Änderung am INHALT des Gate-Blocks an einem der
@@ -5165,3 +3888,61 @@ Gegenstand nicht zweimal geführt wird.
   11.6a); die Einordnung als EIN Posten mit Trigger "vor dem öffentlichen Launch" ist
   OWNER-VORGABE desselben Tages. Die Code-Belege (T4, die Kapselung, der Parser-Befund) sind
   GEMESSEN am Repo (CC, 2026-09-19).
+
+**AUS DEM PHASENENDE 11.7 GEHOBEN (2026-09-25) — EIN POSTEN.** Aus der Standdatei der Phase
+11.7 (Anbieter-Befunde nachziehen). DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND
+"geht sonst still kaputt". Ein neuer Posten ist daraus entstanden; seine Ursprünge stehen am
+Eintrag. DREI WEITERE ERGEBNISSE DIESER HEBUNG STEHEN ALS ERGÄNZUNG AN BESTEHENDEN POSTEN und
+nicht als eigene Zeile: K4 an "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN",
+Ursache (3) · die Cookie-Wege und die Aufbewahrung (Zuschnitt-Fragen P11.7-2, -20 und -26) an
+"CONVERSIONS AUF FOLGESEITEN TRAGEN BEI KEINEM ZIEL EINE KLICK-KENNUNG …", dessen Titel und
+Trigger dabei ersetzt worden sind · die Messung zum Containment an "DREI WEGE, AUF DENEN EIN
+WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE". Was keinen offenen Punkt ergibt, liegt in
+docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.7 gehoben (2026-09-25) …".
+- KEINE KLICK-KENNUNG IST AN EINEM ECHTEN ANZEIGENKLICK GEPRÜFT — WEDER IHRE FORM NOCH DER
+  ABGLEICH (Trigger: der erste echte Anzeigenklick je Ziel — spätestens vor echtem
+  Ad-Traffic):
+  DER BEFUND: Die Phase 11.7 hat an allen fünf Zielen eine Klick-Kennung gebaut oder ergänzt
+  und live belegt — meta `fbc` aus `fbclid` (S5), linkedin `li_fat_id` (S6a, S6b), google
+  `landingPageDeviceInfo` neben `gclid`/`gbraid`/`wbraid` (S7; die Kennungen seit der Phase
+  11.2), tiktok `user.ttclid` (S8), pinterest `user_data.click_id` aus `epik` (S9). JEDER
+  LIVE-BELEG FUHR EINEN ERFUNDENEN WERT (Archiv der Phase 11.7, VERMERKE P11.7-18, -20, -22,
+  -24, -28, -30 und -34). Belegt sind Annahme und Erkennung beim Anbieter — NICHT die
+  Zuordnung zu einem Anzeigenklick, und NICHT die Form eines echten Werts.
+  ZWEI ACHSEN, DIE GETRENNT BLEIBEN:
+  (1) DIE FORM. Jede Kennung wird über einen Standard-Parser aus der Adresse gelesen und
+      DEKODIERT gesendet (`readClickIdExact` in `src/lib/capi/click-id-strip.ts` für die
+      vier neuen, `extractGoogleClickIds` für google; GEMESSEN am Code) — ein `+` im Wert
+      wird zum Leerzeichen. Für `li_fat_id` und `epik` nennt keine gelesene Quelle eine
+      Formregel; für `ttclid` nennt tiktok bis 1 000 Zeichen und "nicht kürzen" (tiktok,
+      Teil (j)); `fbclid` ist schreibungsempfindlich (meta, Teil (h)). Bei tiktok steht der
+      Wert zusätzlich ROH in `page.url`, das der Anbieter selbst ausliest (tiktok, Teil
+      (m)). Bei pinterest steht er ebenfalls roh in der Adresse, wird dort aber für Warnung
+      und Anzeige NICHT erkannt (pinterest, Teil (ao)) — der dekodierte Wert im Feld ist dort
+      der einzige, den der Anbieter erkennt (Zuschnitt der Scheibe S9, N3,
+      "DEKODIER-GRENZE"). Die Schreibung der Google-Parameter-NAMEN ist ein eigener Posten.
+  (2) DER ABGLEICH. Ob ein Anbieter mit dem gesendeten Wert einen Anzeigenklick zuordnet,
+      ist an KEINEM Ziel gemessen. Die belegten Instrumente zeigen die ANNAHME: meta "Events
+      testen" mit "Benutzer-Datenschlüssel: Klick-ID" (meta, Teil (ad)) · tiktok der
+      Test-Events-Reiter mit "ttclid" (tiktok, Teil (r)) · pinterest "Events testen" mit
+      "Klick-ID" (pinterest, Teil (as)) · linkedin und google allein die Annahme am Endpunkt
+      (linkedin, Teil (be); google, Teil (cu)). Welches Instrument den ABGLEICH zeigt, ist
+      je Ziel nicht entschieden.
+  WAS STILL KAPUTTGEHT: Ein falsch geformter Wert geht ohne jede Meldung hinaus — pinterest
+  prüft `+` und `%` nicht (pinterest, Teil (ap)), tiktok quittiert mit `code 0` und ist
+  dabei für Feldnamen blind (tiktok, Teil (q)) —, und TRANSIT-ONLY verhindert, dass wir ihn
+  sehen: kein Log, keine Ablage ("DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" in dieser
+  Datei). Die Folge wäre eine Kennung, die der Anbieter annimmt und nicht zuordnet —
+  sichtbar allenfalls als schwächere Optimierung, nie als Fehler.
+  DER TRIGGER FEUERT UNBEOBACHTET: Ein echter Anzeigenklick geschieht im Betrieb, nicht in
+  einer Runde, die diese Datei öffnet.
+  DIE NACHBARN IN DIESER DATEI lösen ihn nicht ab: "DIE SCHREIBUNG DER URL-PARAMETERNAMEN
+  STÜTZT SICH AUF NICHTS GELESENES" (google, der NAME) · "DIE WIRKUNG AUF DIE GEBOTE IST
+  UNGEMESSEN" (google, die WIRKUNG) · "CONVERSIONS AUF FOLGESEITEN TRAGEN BEI KEINEM ZIEL
+  EINE KLICK-KENNUNG …" (die VERFÜGBARKEIT).
+  KEINE EMPFEHLUNG, wie gemessen wird.
+  PROVENIENZ: Der Posten fasst zwei Befunde der Phase 11.7 zusammen (ARCHITEKTEN-ENTSCHEIDUNG
+  2026-09-25): die Dekodier-Grenze aus dem Zuschnitt der Scheibe S9 (N3) und den Befund
+  "kein fachlicher Abgleich an irgendeinem Ziel" aus der Inventur des Phasenendes. Die
+  Code-Befunde GEMESSEN (CC, 2026-09-23 bis 2026-09-25); die Anbieter-Angaben GELESEN bzw.
+  GEMESSEN je an der genannten Stelle; die Live-Belege sind OWNER-ANGABEN.

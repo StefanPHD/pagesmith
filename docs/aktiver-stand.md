@@ -228,6 +228,7 @@ unverändert. PROVENIENZ: Plan- und Bau-Auftrag des Architekten, 2026-09-25.
 - (I5) Ein Klick direkt auf das Element mit Aktion verhält sich wie heute.
 - (I6) ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts und alles unter src/lib/capi/ und
   src/lib/tracking/ bleiben unberührt — auch nicht "nur schnell".
+  AUSNAHME für genau zwei Testdateien: Entscheidung P12.5-19.
 
 **Vermerk P12.5-13 — DER BYTE-WÄCHTER PINNT DAS KLICK-SKRIPT (Gate G8 des Plans; GEMESSEN, CC,
 2026-09-25, HEAD `0529e02`).** Die Tests W1 und W2 in src/lib/own-blocks-waechter.test.ts
@@ -238,9 +239,13 @@ Sonde trägt `redirect` und `track` an einem `<button>`; das Dokument enthält d
 Wiring-Script aus `buildWiringScript` samt auxclick-Zweig, und JEDE Änderung am Klick-Skript
 macht W1/W2 rot. Der Kopf des Wächters: "WIRD ER ROT, IST DAS EIN STOPP UND KEINE ANPASSUNG
 DES SOLLWERTS." Lauf `vitest run src/lib/own-blocks-waechter.test.ts`: 4 von 4 grün.
-Sonst festgeschrieben ist das Klick-Skript nirgends: `toMatchSnapshot` über src/ 0 Treffer
-(Positivkontrolle `createHash`: Treffer); der Hash N8 in
-src/lib/analytics/pageview-emitter.resend.test.ts gilt allein `buildPageViewScript`. Die Nadel
+Festgeschrieben ist das Klick-Skript an VIER Stellen in DREI Testdateien: neben W1 und W2 auch
+T1 in src/lib/tracking/consent-setter.test.ts (14 160 B / sha256 `a953b21e…c04faa`) und T9 in
+src/lib/tracking/custom-pixel.test.ts (zwei Fixtures: 5 819 B / `89f6fa2f4435374b` und
+12 964 B / `70107cb1b2934e75`, sha256 auf 16 Zeichen gekürzt). Beide werden mit den
+Einsetzungen E1–E3 rot, ohne jede Mutation (GEMESSEN, CC, 2026-09-25). Inventur aller
+Testdateien mit Hash oder Bytezählung und Ursache der früheren Fehlmeldung: Vermerk P12.5-18.
+Die Nadel
 `WIRING_NEEDLE` (src/lib/own-blocks.ts) ist `getElementById("pagesmith-mappings")`; diese
 Zeile des Skripts bleibt unberührt.
 
@@ -282,6 +287,50 @@ die Slots `redirect` und `track` wie jedes Element ausser Text (`ActionPanel`,
 src/components/ActionPanel.tsx). Folge, falls es zutrifft: möglicherweise falsche Conversions
 — gezählt wird der Klick ins Feld, nicht das Absenden. TRIGGER: die nächste Messung nach
 Scheibe 1.
+
+**Vermerk P12.5-18 — INVENTUR DER TESTDATEIEN MIT HASH ODER BYTEZÄHLUNG, UND WARUM G8 SIE
+VERFEHLT HAT (GEMESSEN, CC, 2026-09-25, im Bau der Scheibe).**
+(1) URSACHE DER FEHLMELDUNG IN G8: Die Suche
+`toMatchSnapshot|toMatchInlineSnapshot|sha256|createHash|subtle.digest` über src/ lief mit
+`| head` und gab zehn Zeilen aus; die zehn Zeilen stammten aus zwei Dateien
+(src/lib/analytics/pageview-emitter.resend.test.ts, src/lib/own-blocks-waechter.test.ts). Die
+übrigen Treffer, darunter die zwei weiteren Pins, lagen jenseits der Kappung. Die gemeldete
+Abwesenheit hat das Werkzeug erzeugt, nicht der Code.
+(2) DIE SUCHE OHNE KAPPUNG: Achse `createHash|subtle.digest|sha256|byteLength|BASELINE` über
+alle `*.test.ts`/`*.test.tsx` unter src/ — acht Dateien. DREI davon tragen die VIER Pins des
+Klick-Skripts, jeweils ein fester Byte- und sha256-Wert eines Dokuments aus
+`generateFunctional(…, "export")`: W1 und W2 (src/lib/own-blocks-waechter.test.ts), T1
+(src/lib/tracking/consent-setter.test.ts), T9 mit zwei Fixtures
+(src/lib/tracking/custom-pixel.test.ts). Die übrigen FÜNF pinnen es nicht:
+- src/lib/analytics/pageview-emitter.resend.test.ts, N8: fester Wert über
+  `buildPageViewScript` allein, kein Wiring-Script.
+- src/lib/tracking/consent-store.test.ts, R3: fester Wert über `buildConsentDenyScript` allein
+  (selbst ein Differenz-Nachweis seit Phase 11.6).
+- src/lib/foreign-strip.test.ts: `byteLength` nur als DIFFERENZ zweier Texte desselben Laufs,
+  kein fester Wert.
+- src/lib/own-blocks-strip.test.ts: ebenso, eine Byte-Differenz desselben Laufs.
+- src/lib/tracking/consent-revoke.test.ts: der Treffer steht nur in einem Kommentar (der dort
+  gestrichene Wächter W0).
+(3) DIE GEGENPROBE: Die Mutation M1 ändert E1, das in JEDEM Wiring-Script steht — in jedem
+Modus, auch vor dem Ausstieg für "edit". Unter M1 wurden an Byte-Tests genau W1', W2', T1 und
+T9 rot; keine der fünf übrigen Dateien.
+(4) PROBE (CC, 2026-09-25, im Scratchpad, nicht im Repo; Fixtures zeichengleich aus T1 und T9):
+Nach Entfernen von E1–E3 ist der Text an allen drei Fixtures byte- und sha-gleich zum
+jeweiligen Sollwert, ohne Entfernung weicht er ab (roh je 1 052 B mehr).
+
+**Entscheidung P12.5-19 (Entscheidung zum STOPP im Bau, A mit A1) — DER DIFFERENZ-NACHWEIS AUCH
+AN T1 UND T9.** (I6) wird AUSSCHLIESSLICH für zwei Testdateien aufgehoben:
+src/lib/tracking/consent-setter.test.ts (T1) und src/lib/tracking/custom-pixel.test.ts (T9).
+Produktionscode unter src/lib/tracking/ und src/lib/capi/ bleibt gesperrt. T1 und T9 werden
+wie W1'/W2' zum Differenz-Nachweis: Sollwerte UNVERÄNDERT, die Einsetzungen E1–E3 in JEDER
+Datei eigens abgetippt, ihre Anzahl vorher genannt, nach Entfernung gleich dem Sollwert in Bytes
+und sha256, ohne Entfernung abweichend; die Köpfe beider Tests werden, soweit sie das Pinnen
+beschreiben, im selben Zug angepasst. GRUND: Ohne Umstellung bleiben beide Tests rot (B); neue
+Sollwerte aus dem Bau wären der Spiegel aus Entscheidung P11.11-18 der Phase 11.11 (C); die
+Probe aus Vermerk P12.5-18, Punkt (4), zeigt, dass der Nachweis dort aufgeht. Je Datei eine
+eigene Abschrift (A1) statt einer gemeinsamen Hilfsdatei (A2): jede Abschrift wird für sich
+gegen den Code geprüft, ein Auseinanderlaufen macht den betroffenen Test rot — und eine neue
+Datei verlangte eine eigene Owner-Entscheidung. PROVENIENZ: ARCHITEKT, 2026-09-25.
 
 ## Register der Phase 12.5
 

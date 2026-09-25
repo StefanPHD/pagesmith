@@ -2491,6 +2491,10 @@ aufeinander; sie liegen alle hier und finden einander.
    `destinations`-Element in `buildIngestEventsRequest`) und `eventName` (GA4 ist kein Ziel;
    Roadmap-Zeile 11.9 offen). Der Satz "ER ENTFÄLLT ERST, WENN ALLE DREI EINGETRETEN UND
    ABGEARBEITET SIND" trägt weiter.
+   **NACHGETRAGEN 2026-09-25 — DIE ROADMAP-ZEILE 11.9 STEHT SEITHER AUF `[-]` VERWORFEN**
+   (docs/roadmap.md, Eintrag 11.9). Der `eventName`-Trigger tritt damit erst mit einer
+   Wiederaufnahme der Phase 11.9 ein; ihre Kipp-Bedingungen stehen dort. Der Satz darüber
+   bleibt als Befund vom 2026-09-24 stehen.
 
 - eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE
   ANDERE — GESTRICHEN AM 2026-09-25, DER GEGENSTAND IST ERLEDIGT. Der Punkt

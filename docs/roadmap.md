@@ -1824,8 +1824,44 @@ liegen beide hier und finden einander.
       der Phase. SEIN ZEIGER AUF VERMERK P11.7-1 IN docs/aktiver-stand.md IST MIT DIESEM
       KOLLABIEREN ENTFALLEN und NICHT nachgezogen worden — der Vermerk steht unverändert im
       Archiv der Phase.
-- [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel: eine EIGENE Zeile, abgetrennt vom
+- [-] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel: eine EIGENE Zeile, abgetrennt vom
       Eintrag 11.2 am 2026-09-08.
+
+      VERWORFEN 2026-09-25 (OWNER-ENTSCHEIDUNG) — DIE PHASE WIRD NICHT GEBAUT. Der Wortlaut
+      darunter bleibt ZEICHEN FÜR ZEICHEN stehen (Präzedenz: Eintrag 11.4). Dieser Block tritt
+      davor und trägt den Grund, als Befund:
+      · DAS PROTOKOLL IST ZUM ERGÄNZEN VON TAGGING GEDACHT UND VERLANGT ES: "The intent of the
+        Measurement Protocol is to augment automatic collection through gtag, Tag Manager, and
+        Google Analytics for Firebase, not to replace it." und "You must use tagging (gTag, Tag
+        Manager, or Google Analytics for Firebase) to use this protocol." (ga4.md, Teil (f)).
+      · DIE GÜLTIGE client_id STAMMT AUS gtag: "In order for an event to be valid, it must have
+        a client_id that has already been used to send an event from gtag.js." (ga4.md, Teil
+        (a)). Dass sie damit genau im Blocker-Fall fehlt, ist eine ABLEITUNG — keine gelesene
+        Seite spricht über Blocker (ga4.md, Teil (r)). Die Chrome-Doku nennt dagegen eine
+        selbst erzeugte Zeichenkette; der Widerspruch ist ungemessen (ga4.md, Teil (b)).
+      · LÄUFT gtag, MELDET ES SELBST — ein Server-Ereignis käme doppelt dazu. ABLEITUNG: Eine
+        Deduplizierung zwischen Tag- und Protokoll-Ereignis ist nicht gelesen; gelesen ist
+        allein `transaction_id` am Ereignis `purchase` (ga4.md, Teil (p)).
+      · DIE QUELLENZUORDNUNG HÄNGT AM RESERVIERTEN `session_start`: "The session_start event
+        carries the information that determines the attribution of the session, such as the
+        gclid, UTM parameters, and referrer." `session_start` ist ein reservierter Name; ein
+        Protokoll-Ereignis erbt Quelle und Kampagne nur über die `session_id` einer
+        Online-Sitzung, binnen 24 Stunden (ga4.md, Teil (c)).
+      · KEIN AUSGELIEFERTES GOOGLE-TAG: "KEIN VON PAGESMITH AUSGELIEFERTES GOOGLE-TAG",
+        OWNER-ENTSCHEIDUNG 2026-08-24 (Eintrag 11.2).
+      PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-25. Die Zitate sind GELESEN am 2026-09-25 an der
+      Anbieter-Dokumentation und abgelegt in docs/ziel-befunde/ga4.md (Commit `31c7404`), Teile
+      (a), (b), (c), (f), (p) und (r). NICHTS DAVON IST GEMESSEN.
+      KIPP-BEDINGUNGEN, JE EINZELN HINREICHEND FÜR EINE WIEDERAUFNAHME:
+      (1) der Anbieter streicht die Tagging-Pflicht aus dem Measurement-Protocol-Abschnitt;
+      (2) der Owner revidiert "KEIN VON PAGESMITH AUSGELIEFERTES GOOGLE-TAG";
+      (3) eine MESSUNG belegt, dass ein Ereignis mit gtag-fremder client_id gezählt und einer
+          Kampagne zugeordnet wird — UND die Doppelzählung bei vorhandenem gtag ist gelöst.
+      BEI WIEDERAUFNAHME AUFSCHLAGEN: docs/ziel-befunde/ga4.md · das Archiv
+      docs/claude-history/phase-11.9-ga4.md (Vermerk P11.9-2 mit den Stellen, die tsc bei einem
+      neuen Ziel erzwingt und nicht erzwingt) · docs/claude-history/backlog-polish.md, Eintrag
+      63 · docs/claude-history/phase-11.7-anbieter-befunde.md, Vorrat P11.7-2 (Trigger "der
+      Zuschnitt von GA4"; dort erledigt).
 
       WARUM SIE EINE EIGENE ZEILE IST UND KEIN ABSCHNITT VON 11.2: Google Ads
       Conversions und GA4 sind ZWEI ADAPTER MIT VERSCHIEDENEN ZUGANGSMODELLEN, nicht

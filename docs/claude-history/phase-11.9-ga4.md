@@ -1,4 +1,78 @@
-# Phase 11.9 — GA4 als sechstes Fan-Out-Ziel: DER AKTIVE STAND
+# Phase 11.9 — GA4 als sechstes Fan-Out-Ziel: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 11.9. **Sie hiess bis zum Phasenende
+`docs/aktiver-stand.md`** und war das Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der
+Phase arbeitete. IHR NAME IST OWNER-ENTSCHEIDUNG (2026-09-25).
+
+**ZEITRAUM UND UMFANG:** angelegt und archiviert am 2026-09-25. Zwei Commits bis zum
+Phasenende — `57a94ff` (erste Aufklärung, Standdatei angelegt) und `31c7404` (GA4-Anbieter-Lesung,
+docs/ziel-befunde/ga4.md angelegt) —, dazu die Hebung `990292d`. **KEINE SCHEIBE, KEIN CODE.**
+Zwei Vermerke (P11.9-2, P11.9-15), eine Entscheidung (P11.9-1), drei Bindungen (P11.9-3 bis
+P11.9-5), sieben Owner-Fragen (P11.9-6 bis P11.9-12), drei Vorrats-Einträge (P11.9-13, P11.9-14,
+P11.9-16).
+
+**WIE SIE ENDETE: `[-]` VERWORFEN (OWNER-ENTSCHEIDUNG 2026-09-25).** Grund, Provenienz und die
+drei Kipp-Bedingungen stehen an der Roadmap-Zeile 11.9 (docs/roadmap.md) und werden hier NICHT
+verdoppelt. Die Befunde, auf denen der Grund ruht: docs/ziel-befunde/ga4.md.
+
+**HIER NACHSEHEN, WER AN EINEM WEITEREN ZIEL ARBEITET — GLEICH WELCHEM, NICHT NUR GA4:** Vermerk
+P11.9-2, Punkt (7) — was tsc bei einem sechsten Mitglied von `TrackingTarget` erzwingt — und
+Punkt (8) — was es NICHT erzwingt und was stattdessen rot wird (GEMESSEN am Repo, CC,
+2026-09-25, HEAD `912f70a`; `src/` ist bis zur Archivierung unverändert). Dazu im Backlog die
+Einträge "Bindung P11.9-3, mit Owner-Frage P11.9-10 …" und "Bindung P11.9-4, mit Owner-Frage
+P11.9-9 …".
+
+**DER MESSWERT NACH docs/arbeitsweise.md, ABSCHNITT 2b** (GEMESSEN am Repo, CC, 2026-09-25,
+`git log --numstat`, Summen aus Einfügungen und Löschungen je Pfadpräfix; keine Datei binär,
+keine ausserhalb von `docs/` und `src/`):
+
+| Spanne | `docs/` | `src/` |
+|---|---|---|
+| `57a94ff^..31c7404` (bis vor dem Phasenende, wie bei 11.7) | 820 | 0 |
+| `57a94ff^..990292d` (mit dem Hebungs-Commit) | 927 | 0 |
+
+**KEIN VERHÄLTNIS:** `src/` ist 0. Zum Vergleich die absoluten Werte der Phase 11.7 aus dem Kopf
+von docs/claude-history/phase-11.7-anbieter-befunde.md (Spanne `354a6e5^..3e080b2`): `docs/`
+41 191, 32 316 bzw. 12 202 je Lesart, `src/` 3 755.
+
+**DAS PROTOKOLL DER HEBUNG — 2026-09-25, EIN COMMIT (`990292d`).** Das REGISTER steht im
+Abschnitt "Vollzogen — was hier stand und wohin es gegangen ist" am Ende des Rumpfes. **DIE
+BILANZ: 14 = OP 1 · BL 6 · ERL 7**; die zwei Vermerke sind nicht zugeordnet. Keine neue
+Dauerregel. Ausserhalb der Bilanz: der Trigger von Backlog-Eintrag 63 ist ersetzt.
+**DIE GEGENPROBE — AM BESTAND DER ZIELDATEIEN, JE EINTRAG, NICHT GEGEN DAS REGISTER**
+(GEMESSEN, CC, 2026-09-25, Skript über die Dateien, leerraum-normalisiert, vor dem
+Hebungs-Commit; umgezogen ist derselbe Stand):
+
+| Ziel | Soll | gefunden | geprüft am Bestand |
+|---|---|---|---|
+| OP | 1 | 1 | Ergänzung "(Vorrat P11.9-16 der Phase 11.9)" innerhalb des Postens "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI …" in docs/offene-punkte.md |
+| BL | 6 | 6 | P11.9-3 mit -10 und P11.9-4 mit -9 im Backlog-Abschnitt "Aus Phase 11.9 gehoben (2026-09-25) …", je mit Trigger; P11.9-13 und -14 im Abschnitt "Nachtrag 2026-09-25 (Phase 11.9, erste Aufklärung) …" |
+| ERL | 7 | 7 | Eintrag steht in dieser Datei; Beleg am Bestand: Commit `31c7404` existiert (`git cat-file`), die zwei zitierten Dauerregel-Titel in docs/immer-beachten.md, ga4.md Teile (a), (f), (g), (i), (l), Katalog-Frage H1 |
+| **Summe** | **14** | **14** | Register-Pfeile je Ziel ebenfalls 1 · 6 · 7 |
+
+NEGATIVKONTROLLE: drei erfundene Anker ("Vorrat P11.9-17", "Bindung P11.9-6, mit",
+"Owner-Frage P11.9-13") je 0.
+
+**ZEIGER AUF `docs/aktiver-stand.md`, DIE DIESE PHASE MEINEN — GEMESSEN VOR DEM UMZUG (CC,
+2026-09-25).** ACHSE: die in `57a94ff`, `31c7404` und `990292d` hinzugefügten Zeilen ausser der
+Standdatei, Muster `docs/aktiver-stand.md` oder `P11.9-<Zahl>`; daneben über alle verfolgten
+Dateien `P11.9-<Zahl>` und der Pfad mit `11.9` im Umfeld von drei Zeilen. POSITIVKONTROLLE: die
+Achse trifft die bekannten Nummern im Backlog (7) und in docs/offene-punkte.md (2).
+- **EINER NACHGEZOGEN:** docs/claude-history/backlog-polish.md, Abschnitt "Nachtrag 2026-09-25
+  (Phase 11.9, erste Aufklärung) …", Kopfsatz "(docs/aktiver-stand.md, solange die Phase
+  läuft)".
+- **docs/ziel-befunde/ga4.md und docs/ziel-befunde/google.md TRAGEN KEINEN ZEIGER DIESER
+  PHASE.** Die Pfad-Treffer in google.md meinen frühere Standdateien.
+- **IN `src/` UND `supabase/` KEIN TREFFER** auf `P11.9-` oder "Phase 11.9".
+- Die Treffer aus dem Hebungs-Commit nennen bereits diesen Pfad.
+
+**DER RUMPF IST ZEICHENGLEICH MIT DEM STAND IN `990292d`**, ab der Zeile "**PFLICHT-GATE:**":
+291 Zeilen, sha256 8eccce23c8bb0b18de2120cf6209b8a23594c78cbf93dab3e156021b9cd74a67. Die Treffer
+auf `docs/aktiver-stand.md` in ihm bleiben als Zeitdokument stehen.
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **PFLICHT-GATE:** Diese Datei ist ab ihrer Anlage (2026-09-25) das Pflicht-Gate ("Auftrag 0")
 jedes Bau- und Aufklärungs-Prompts der Phase 11.9 (CLAUDE.md, "## Aktiver Stand — Verfahren

@@ -119,7 +119,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.6 — Custom-Pixel
 - [x] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
 - [x] Phase 11.7 — Anbieter-Befunde nachziehen
-- [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
+- [-] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
 - [x] Phase 11.11 — Import-Bereinigung
 - [x] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
@@ -942,6 +942,13 @@ das Archiv soll gerade NICHT geladen werden. Der EINE @-Import des Repos steht u
   bis F8. ZWEI Dauerregeln sind daraus entstanden (die Erfolgszeile, die
   MSYS-Pfadumwandlung), dazu eine Ergänzung an "COMMIT-KONVENTIONEN". Ihr Kopf trägt das
   Protokoll der Hebung samt Gegenprobe und den Messwert nach Abschnitt 2b.
+- docs/claude-history/phase-11.9-ga4.md — gesamte Phase 11.9 (GA4 als sechstes Ziel, [-]
+  VERWORFEN am 2026-09-25; keine Scheibe, kein Code). HIER NACHSEHEN, WER AN EINEM WEITEREN
+  ZIEL ARBEITET — GLEICH WELCHEM: Vermerk P11.9-2, Punkte (7) und (8), führt die Stellen, die
+  tsc bei einem neuen Mitglied von `TrackingTarget` erzwingt, und die, die es NICHT erzwingt.
+  Grund und Kipp-Bedingungen des `[-]`: Roadmap-Zeile 11.9; die Anbieter-Befunde:
+  docs/ziel-befunde/ga4.md. Ihr Kopf trägt das Protokoll der Hebung samt Gegenprobe und den
+  Messwert nach Abschnitt 2b.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung (RISIKO /
   TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item). AUSLÖSER: Manifest-Arbeit;
   immer im SELBEN Commit wie die Tier-Übersicht hier.

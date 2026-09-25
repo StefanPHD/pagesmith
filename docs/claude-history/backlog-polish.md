@@ -6044,8 +6044,9 @@ DER WORTLAUT, zeichengleich:
 ## Nachtrag 2026-09-25 (Phase 11.9, erste Aufklärung) — zwei Kommentare im Code, die heute Falsches sagen
 
 Gemeldet in der ersten Aufklärung der Phase 11.9, abgelegt ohne Umweg über den Vorrat der
-Standdatei; die Nummern setzen die Reihe `P11.9-n` jener Standdatei fort (docs/aktiver-stand.md,
-solange die Phase läuft). Beide sind Code-Kommentare: ein Nachzug ist ein CODE-COMMIT, kein
+Standdatei; die Nummern setzen die Reihe `P11.9-n` jener Standdatei fort
+(docs/claude-history/phase-11.9-ga4.md, das Archiv der Phase 11.9; NACHGEZOGEN 2026-09-25 beim
+Phasenende, bis dahin docs/aktiver-stand.md). Beide sind Code-Kommentare: ein Nachzug ist ein CODE-COMMIT, kein
 Doku-Commit. KEIN FIX-VORSCHLAG über das Benannte hinaus.
 
 - **Vorrat P11.9-13 — DER KOMMENTAR AN `listConfiguredTargets` (`src/app/projects/actions.ts`) SAGT "genau deshalb bleibt der Testknopf noetig"**

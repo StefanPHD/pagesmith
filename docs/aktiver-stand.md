@@ -287,6 +287,12 @@ unverändert": Ein Klick innerhalb eines Formulars löst dessen Aktion dann nich
 liefe ein Klick auf ein markiertes Kind ohne Aktion in einem Formular (etwa "Formular-Text")
 aus dem Formular hinaus zu einem umschliessenden Element mit Aktion. Bis zum Bau-Commit der
 Scheibe 1b gilt diese Entscheidung unverändert, weil der Code sie trägt.
+MIT SCHEIBE 1b IST DIE FORM-ZEILE NACH DEM HOCHSCHRITT DOPPELT GETRAGEN (GEMESSEN, CC,
+2026-09-25): Die Mutation M6a allein wird fachlich nicht rot; M6a zusammen mit N2 (E4 entfernt)
+macht T10 und "Regression Scheibe 1: Klick auf 'Formular-Text' im Formular mit Track -> 0"
+rot, die mit N2 allein grün bleiben. M6a gilt damit nur zusammen mit N2 (Entscheidung
+P12.5-32; Vermerk P12.5-31, Punkt (6)). Die Start-Prüfung trägt weiter allein: M6b macht T10b
+rot.
 
 **Entscheidung P12.5-16 (D3 des Plans) — P11.12-2 WIRD NICHT MITGENOMMEN.** GRUND: Die falsche
 Begründung steht in src/lib/generate.ts ZWEIMAL — im Kopfkommentar von `buildWiringScript`
@@ -590,6 +596,70 @@ Zustand "pending", und ein Neuladen verwirft den Puffer. Der Beacon selbst geht 
 TRIGGER: der Live-Test der Scheibe 1b, Variante 3a (frisch geladene Seite, Abschicken als
 erste Conversion).
 
+**Vermerk P12.5-31 — BAU DER SCHEIBE 1b, STOPP VOR DEM CODE-COMMIT (CC, 2026-09-25, HEAD
+`fcb0969`; Code im Arbeitsbaum, NICHT committet).** GEMESSEN am Repo.
+(1) STOPP: Die Mutation M6a (FORM-Halt nach dem Hochschritt in `actionOwner` entfernt) wird
+    fachlich NICHT rot; rot werden nur die vier Differenz-Nachweise (Kaskade). Vorab so
+    vorhergesagt. Ursache ist eine VERDECKUNG DURCH KOMPOSITION, kein hohler Test: Erreicht
+    die Suche ein `<form>` MIT Aktion, gibt `actionOwner` es ohne die Zeile zurück, und E4
+    bzw. E5 setzen es auf null; ein `<form>` OHNE Aktion fängt die Start-Prüfung der Schleife
+    ab. Die Zeile ist seit E4/E5 im Verhalten redundant. M6b (Start-Prüfung entfernt) wird
+    weiter rot (T10b).
+(2) E6 IST KEIN FESTER WORTLAUT: Der submit-Listener trägt die Track-Anweisung (`trackAll`),
+    deren Text je Konfiguration anders lautet. Die vier Nachweise setzen E6 deshalb zusammen
+    — Vorspann und Nachspann getippt, dazwischen der Text aus dem Track-Zweig des
+    click-Listeners, einem Teil des alten Textes, den der sha256 nach dem Entfernen abdeckt.
+(3) N8 (bestehende Formular-Weiterleitung verschwindet aus dem `ActionPanel`) ist nicht
+    gefahren: Eine Testumgebung besteht (Testing Library, src/components/CodeImporter.test.tsx
+    rendert das Panel), aber keine Datei im Scope kann den Test aufnehmen. Ohne
+    Scope-Erweiterung geht die Auflage an den Live-Test.
+(4) NICHT DETERMINISTISCH, NICHT VON DER MUTATION: Unter M2 fiel einmal
+    src/lib/detect.test.ts, "verkraftet riesigen Input (~hunderttausende Knoten) ohne Crash";
+    allein und im zweiten vollen Lauf unter M2 grün. `detect.ts` war nicht mutiert, und
+    `detectElements` ruft `generate.ts` nicht. Vorgemerkt: docs/claude-history/backlog-polish.md,
+    Vorrat P12.5-35.
+(5) DIE BEZEICHNER DES EINGESETZTEN TRACK-TEXTES (`trackAll` in `buildWiringScript`) IM
+    SUBMIT-LISTENER — je Konfiguration (GELESEN am Repo, CC, 2026-09-25). `trackAll` setzt
+    zwei Anweisungen zusammen:
+    · `metaTrackStatement` (src/lib/tracking/meta.ts), drei erreichbare Formen:
+      ohne Pixel, ohne Laufzeit -> `console.warn(… + ((a.config && a.config.event) || ""))`,
+      liest `console`, `a`; ohne Pixel, mit Laufzeit (Beacon) -> dieselbe Warnung plus
+      `__psMetaFire(a.config);`, liest zusätzlich `__psMetaFire`; mit Pixel ->
+      `__psMetaFire(a.config);`. Pixel ohne Laufzeit entsteht nicht: `buildMetaRuntime`
+      liefert mit gesetzter Pixel-ID immer eine Laufzeit.
+    · `customTrackStatement` (src/lib/tracking/custom-pixel.ts): ohne Ereigniszeile "";
+      Ereigniszeile ohne Basis-Code -> `__psCustomFire(a.config && a.config.code);`;
+      Ereigniszeile mit Basis-Code -> zusätzlich vorweg `__psCustomRun();`.
+    Die Einwilligung ändert den Text von `trackAll` nicht; sie wirkt in `__psMetaFire` bzw.
+    `__psCustomOk`. BEZEICHNER GESAMT: `a`, `console`, `__psMetaFire`, `__psCustomRun`,
+    `__psCustomFire`. `a` deklariert der Submit-Listener selbst (`var a = actions[j];`).
+    `__psMetaFire` (`buildMetaRuntime`), `__psCustomRun` und `__psCustomFire`
+    (`buildCustomPixelRuntime`) sind Funktionsdeklarationen im Rumpf der IIFE (eingesetzt
+    hinter `var MODE`) und damit in jedem ihrer Listener sichtbar; `console` ist global. KEIN
+    Bezeichner, der nur im Klick-Listener existiert (`el`, `t`, `e` des Klicks, `redirect`,
+    `url`) — kein Befund.
+    TESTS JE PFAD: Meta mit Pixel — S1; Meta ohne Pixel mit Beacon — S11 (Positivkontrolle);
+    Meta ohne Pixel ohne Laufzeit + Ereigniszeile — S12a; Ereigniszeile mit Basis-Code —
+    S12b. MUTATION N9 (`a` im Submit-Listener umbenannt): fachlich rot S1, S2, S3, S4, S6, S7,
+    S9, S11 (Positivkontrolle), S12a, S12b; Kaskade auf die vier Differenz-Nachweise.
+(6) MESSUNG M6a + N2 (beide zugleich, volle Suite, Rücknahme per sha256 geprüft): fachlich rot
+    S2, S3, S8 (die Menge von N2 allein) und DAZU T10 und "Regression Scheibe 1: Klick auf
+    'Formular-Text' im Formular mit Track -> 0"; Kaskade auf die vier Differenz-Nachweise. Die
+    zwei zusätzlichen Tests werden NUR in der Kombination rot — die Zeile trägt den FORM-Halt
+    doppelt mit E4/E5.
+(7) TESTZAHL nach S12a/S12b: 2306 (vorher 2304).
+
+**Entscheidungen P12.5-32 bis P12.5-34 — ZUM STOPP IM BAU DER SCHEIBE 1b (ARCHITEKT,
+2026-09-25):**
+- **P12.5-32:** M6a, Option (a) — der FORM-Halt nach dem Hochschritt in `actionOwner` bleibt als
+  doppelte Absicherung neben E4/E5. Eine Mutation dieser Zeile ist nur zusammen mit N2
+  aussagekräftig (Vermerk P12.5-31, Punkt (6)).
+- **P12.5-33:** N8 — die Auflage aus Entscheidung P12.5-23 (eine bestehende
+  Formular-Weiterleitung bleibt im `ActionPanel` sichtbar und entfernbar) geht an den
+  Live-Test; kein Scope-Ausbau für einen Test.
+- **P12.5-34:** Vermerk P12.5-31 wird committet, der Code bleibt bis zur Freigabe im
+  Arbeitsbaum.
+
 **Vorrat P12.5-29 — WEITERLEITUNG NACH DEM ABSCHICKEN (R2 des Plans der Scheibe 1b).** Nach
 Entscheidung P12.5-23 führt ein Formular keine Weiterleitung aus; eine Weiterleitung NACH dem
 Abschicken verlangt ein `preventDefault` und eine eigene Navigation und bräche damit (I4) der
@@ -625,7 +695,8 @@ POSTEN IM BACKLOG, DIE DIE SCHATTEN-KORREKTUR BERÜHRT (docs/claude-history/back
 VORRAT DIESER PHASE, DIREKT IM BACKLOG ABGELEGT (docs/claude-history/backlog-polish.md,
 Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) — drei Befunde der ersten Aufklärung"):
 P12.5-10, P12.5-11, P12.5-12; Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) — Scheibe 1b,
-ein Oberflächen-Hinweis": P12.5-30.
+ein Oberflächen-Hinweis": P12.5-30; Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) —
+Scheibe 1b, ein flackernder Test": P12.5-35.
 
 ## Nächster Schritt der Phase 12.5
 

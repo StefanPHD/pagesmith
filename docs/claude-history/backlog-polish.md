@@ -6137,3 +6137,21 @@ FIX-VORSCHLAG über das Benannte hinaus.
   (Test S9 der Scheibe 1b). Die Oberfläche (`ActionPanel`, src/components/ActionPanel.tsx)
   sagt das nicht. Vorgemerkt für die Neugestaltung der Oberfläche (ARCHITEKT, Bau-Auftrag
   2026-09-25). TRIGGER: das UI-Redesign.
+
+## Aus Phase 12.5 vorgemerkt (2026-09-25) — Scheibe 1b, ein flackernder Test
+
+Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummer setzt die Reihe `P12.5-n` jener
+Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+FIX-VORSCHLAG über das Benannte hinaus.
+
+- **Vorrat P12.5-35 — "verkraftet riesigen Input (~hunderttausende Knoten) ohne Crash" FLACKERT
+  UNTER VOLLLAST**
+  Der Test in src/lib/detect.test.ts ("detectElements – defensive Garantien") fiel im Bau der
+  Scheibe 1b einmal in einem vollen `vitest run` unter der Mutation M2 (Phase 12.5); allein
+  und im zweiten vollen Lauf unter derselben Mutation war er grün. `detect.ts` war nicht
+  mutiert, und `detectElements` ruft `generate.ts` nicht. Die Fehlermeldung des roten Laufs ist
+  nicht erhoben, die Ursache nicht untersucht. GEMESSEN (CC, 2026-09-25); Fundstelle Vermerk
+  P12.5-31, Punkt (4), der Phase 12.5. Folge, solange er flackert: ein rotes Ergebnis dieses
+  Tests in einer Mutationsrunde ist kein Befund über die Mutation, bis es wiederholt ist.
+  TRIGGER: das nächste rote Auftreten dieses Tests, oder die nächste Arbeit an
+  `detectElements`.

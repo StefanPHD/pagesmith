@@ -168,6 +168,9 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
     die Teile (a) bis (g)
   - ### Beobachtung an der Test-Events-Ansicht des Werbekontos (2026-09-09) — der
     Teil (h)
+- ## GA4 (Measurement Protocol)
+  - ### Abschnitts-Lesung 2026-09-25 der Measurement-Protocol-Dokumentation — die Teile (a)
+    bis (r)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
 STATT AUFGELÖST WIRD:** Dieses Verzeichnis führte bis dahin AUSSCHLIESSLICH die drei
@@ -218,3 +221,10 @@ bleibt gültig.
 zeichengleich herausgeschnitten, mit Prüfsumme im Kopf jener Datei. Ein Verweis der Form
 "docs/ziel-befunde.md, Abschnitt "TikTok (Events API 2.0)", Teil (x)" meint ihn dort und
 bleibt gültig.
+
+## GA4 (Measurement Protocol)
+
+**DIESES ZIEL STEHT SEIT SEINER ANLAGE AM 2026-09-25 IN `docs/ziel-befunde/ga4.md`** — neu
+angelegt, nicht herausgeschnitten, deshalb ohne Prüfsumme; hier hat es nie einen Befund
+getragen. Die älteren GA4-Angaben stehen in `docs/ziel-befunde/google.md`, Teil (f), und bleiben
+dort als Zeitdokument (OWNER-ENTSCHEIDUNG 2026-09-25).

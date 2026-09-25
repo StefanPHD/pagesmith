@@ -104,6 +104,46 @@ PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-25, übermittelt im Auftrag der Doku-Rund
     google. docs/db-stand.md: LIVE ABGELESEN am 2026-08-27 (Owner), dieselben fünf Werte. Ob
     heute so angewandt, ist am Repo nicht entscheidbar.
 
+**Vermerk P11.9-15 — GA4-Anbieter-Lesung (KEIN BAU, daher kein Bau-Commit: es ist keine Zeile
+Code entstanden, und Entscheidung P11.9-1 stellt die Lesung vor jeden Zuschnitt; CC,
+2026-09-25).** Alles GELESEN, nichts GEMESSEN.
+(1) FUNDSTELLE: docs/ziel-befunde/ga4.md, Abschnitt "GA4 (Measurement Protocol)", Teile (a) bis
+    (r); Umfang, Varianten und "gesehen, nicht geöffnet" im Kopf der Lesung.
+(2) KERNANTWORT AUF F1: `client_id` ist für ein Web-Ereignis Pflicht (empfohlen zwei positive
+    Zahlen mit Punkt aus gtag/GTM, zulässig der volle Wert des Client-ID-Cookies), und laut
+    "Verify implementation" (Doku-Stand 2026-06-15) ist ein Ereignis nur "valid", wenn seine
+    client_id schon von gtag.js gesendet hat — die Chrome-Doku "Use Google Analytics" nennt
+    dagegen eine beliebige, selbst erzeugte Zeichenkette; der Widerspruch ist am Dokument nicht
+    entscheidbar (ga4.md, Teile (a), (b); GELESEN 2026-09-25).
+(3) DURCH DIE LESUNG BEANTWORTBAR — nicht beantwortet: P11.9-6 (ga4.md (g), (l)) · P11.9-7
+    (ga4.md (a) bis (f)) · P11.9-8 (hängt an P11.9-7; ga4.md (f)) · P11.9-9 (ga4.md (j); Material,
+    keine Zuordnung) · P11.9-12 (ga4.md (i)). NICHT BERÜHRT: P11.9-10 und P11.9-11 — Fragen an
+    den eigenen Code.
+(4) DIE ROHFASSUNG ("(f) GA4 — GEPRÜFT (2026-08-03)"), je Aussage (ga4.md, Teil (r)): "zum
+    ERGÄNZEN gedacht, sonst eingeschränkte Auswertung" — BESTÄTIGT · "Geo über die client_id" —
+    BESTÄTIGT als Rückfall; "Geo lässt sich NICHT selbst mitsenden" — WIDERLEGT (`user_location`,
+    `ip_override` seit 2025-05-14 laut Changelog) · "client_id steckt im `_ga`-Cookie, das gtag
+    setzt" — für den gtag-Fall im Kern BESTÄTIGT, aber nicht ausschliesslich und `_ga` nicht
+    wörtlich · "im Blocker-Fall NICHT vorhanden" — OFFEN (keine gelesene Seite spricht über
+    Blocker). google.md, Teil (f): zwei Skalare — BESTÄTIGT; Allowlist — nur für die
+    Multi-Source-Gestalt BESTÄTIGT; der dortige Trigger (Abkündigung) — NICHT eingetreten ("no
+    plans for deprecation").
+
+**Vorrat P11.9-16 — DIE SUCHACHSE DES POSTENS "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE
+FRÜHERE STANDDATEI …" ÜBERSIEHT TITEL-ZEIGER, DIE DEN TITEL VOR DEM PFAD NENNEN.** Nachgetragen
+2026-09-25; PROVENIENZ: Nebenbefund der vorigen Runde, übermittelt im Crawl-Auftrag desselben
+Tages — bis dahin im Repo nicht festgehalten (GEMESSEN: `Titel vor`, `vor dem Pfad`, `Suchachse
+des` über docs/ und CLAUDE.md, 0 Treffer). BELEG: Die Achse vom 2026-09-17 lautet "der Pfad
+`docs/aktiver-stand.md` gefolgt von einem ZITIERTEN Abschnittstitel im Fenster von 120 Zeichen"
+(docs/offene-punkte.md, am Posten, Nachtrag 2026-09-17; GELESEN am Dateitext). BEISPIEL, GEMESSEN
+(CC, 2026-09-25): docs/claude-history/phase-11.2-google.md, Absatz "DER VORRATS-EINTRAG 4 IST
+UNBERÜHRT", schreibt 'im Abschnitt "Vorrat (gemeldet, nicht gebaut)" DIESER Datei
+(docs/aktiver-stand.md)' — ein Hausform-Titel VOR dem Pfad; in den 120 Zeichen nach dem Pfad
+steht kein zitierter Titel. Ob die Zählung vom 2026-09-17 ihn trotzdem führt, ist nicht erhoben:
+ihr Muster ist beschrieben, nicht abgelegt. Eine Zählung aller Zeiger dieser Form gibt es nicht.
+ORT: docs/offene-punkte.md ist in dieser Runde ausser Scope; gehoben wird am Phasenende. KEINE
+EMPFEHLUNG.
+
 ## Was den GA4-Bau bindet, ohne entschieden zu sein
 
 **Bindung P11.9-3 — `ALL_CONSENT_KEYS` SETZT EINEN SECHSTEN ZIEL-SCHLÜSSEL VOR `analytics` UND
@@ -186,3 +226,5 @@ wörtlich im Stub in CLAUDE.md, "## Offene Punkte"):
 
 Die GA4-Anbieter-Lesung nach docs/immer-beachten.md, "ANBIETER-DOKUMENTATION WIRD
 ABSCHNITTSWEISE GELESEN …". Ihre Fragen legt der Crawl-Prompt fest; diese Datei entwirft keine.
+NACHGETRAGEN 2026-09-25: DIE LESUNG IST GEFAHREN (Vermerk P11.9-15). Was sie beantwortbar macht,
+steht dort unter (3); der nächste Schritt ist Sache des Owners.

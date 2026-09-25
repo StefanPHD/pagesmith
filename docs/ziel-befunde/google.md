@@ -8,6 +8,13 @@ DER BELEG: sha256 = 8137a094d1cfbca4fd583b88580adf80c0d3a00227c75fdbae7194f3e2c8
 den übernommenen Abschnitt — also über alles ab der Zeile "## Google (Google Ads
 Conversions · GA4)" bis zum Dateiende, OHNE diesen Kopf. Wer prüfen will, ob hier jemand
 nachträglich ein Wort geändert hat, misst gegen diese Prüfsumme.
+ERGÄNZUNG 2026-09-25 — DIE PRÜFSUMME GILT DEM STAND DES COMMITS `11a44f7`, NICHT DEM HEUTIGEN
+DATEIENDE. Seither kamen nur Anhänge und datierte Zeiger und Vorbehalte nach der Konvention
+hinzu (Einzelheiten: git log); über den heutigen Stand geht die Summe darum nicht mehr auf
+(GEMESSEN, CC, 2026-09-25: am Stand `11a44f7` ergibt der Schnitt den Wert oben, am Stand
+`57a94ff` nicht). Gemessen wird sie gegen `git show 11a44f7:docs/ziel-befunde/google.md`, dort
+ab der Zeile "## Google (Google Ads Conversions · GA4)". Der Satz darüber bleibt wörtlich; er war
+am Tag der Aufteilung richtig.
 
 **WARUM ES DIE AUFTEILUNG GAB:** Die Sammel-Datei war für die VOLLLADUNG zu gross, die der
 Pflicht-Stopp vor einem Zuschnitt verlangt. Die Pflicht ist damit nicht gelockert, sondern
@@ -5889,4 +5896,13 @@ Conversion-Type-ID und requestId stehen hier NICHT** — dieselbe Handhabung wie
        wertet ihn, da er den Rumpf nicht liest, als angenommen.
      · Ein Anbieter kann sein Verhalten ändern, ohne dass hier etwas rot wird. Diese Ablesung
        datiert vom 2026-09-25.
+
+### Auflösung 2026-09-25 — GA4-Befunde stehen ab jetzt in docs/ziel-befunde/ga4.md
+
+**NEUE GA4-BEFUNDE KOMMEN NICHT MEHR HIERHER, SONDERN NACH `docs/ziel-befunde/ga4.md`**
+(OWNER-ENTSCHEIDUNG 2026-09-25: GA4 ist ein eigenes Ziel, und diese Datei trägt in einem Fenster
+von rund 200k keine Volladung vor einem Crawl). Teil (f) und die GA4-Angaben aus LAUF 1 bleiben
+WÖRTLICH als Zeitdokument stehen; ihre Gegenprüfung an der Anbieter-Dokumentation vom 2026-09-25
+steht in ga4.md, Teil (r). Dieser Nachtrag ist kein Befund und trägt keinen Buchstaben; der
+nächste Befund zu Google Ads bekommt (cw).
 

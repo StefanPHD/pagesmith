@@ -85,6 +85,9 @@ export default function ActionPanel({
  * Weiterleitung (redirect) UND Tracking (track) —, je unabhaengig zuweisbar/
  * entfernbar (Compound-Key, Scheibe 1a). Die Slots werden per (elementId, type) aus
  * der vollen mappings-Liste abgeleitet.
+ * AUSNAHME FORMULAR (Phase 12.5, Scheibe 1b): kein Redirect-Slot zum Anlegen, eine
+ * bestehende Weiterleitung nur noch sichtbar und entfernbar; der Track mit den Texten
+ * fuer das Abschicken.
  */
 function ElementActions({
   element,
@@ -118,6 +121,25 @@ function ElementActions({
           onSave={onSaveText}
           onRemove={() => onRemove("text")}
         />
+      ) : element.type === "form" ? (
+        // FORMULAR (Phase 12.5, Scheibe 1b; Entscheidungen P12.5-23 und P12.5-26 der
+        // Phase 12.5): Der Track zaehlt beim ABSCHICKEN, nicht beim Klick, und ein
+        // Formular fuehrt KEINE Weiterleitung mehr aus. Deshalb gibt es hier keinen
+        // Redirect-Slot zum Anlegen; eine BESTEHENDE Weiterleitung bleibt sichtbar, mit
+        // dem Hinweis, dass sie nicht mehr wirkt, und ist entfernbar (das Mapping bleibt
+        // gueltige Daten).
+        <div className="flex flex-col gap-4">
+          <InactiveFormRedirect
+            mapping={findMapping(mappings, element.id, "redirect")}
+            onRemove={() => onRemove("redirect")}
+          />
+          <TrackActions
+            trigger="submit"
+            mapping={findMapping(mappings, element.id, "track")}
+            onSave={onSaveTrack}
+            onRemove={() => onRemove("track")}
+          />
+        </div>
       ) : (
         // Interaktiv = zwei unabhaengige Slots, gestapelt.
         <div className="flex flex-col gap-4">
@@ -127,6 +149,7 @@ function ElementActions({
             onRemove={() => onRemove("redirect")}
           />
           <TrackActions
+            trigger="click"
             mapping={findMapping(mappings, element.id, "track")}
             onSave={onSaveTrack}
             onRemove={() => onRemove("track")}
@@ -436,6 +459,48 @@ function RedirectView({
   );
 }
 
+/**
+ * Die Weiterleitung eines FORMULARS (Phase 12.5, Scheibe 1b; Entscheidung P12.5-23 der
+ * Phase 12.5). Ohne Mapping: nichts — neu anlegen geht nicht. Mit Mapping: sichtbar, mit
+ * dem Hinweis, dass sie nicht mehr wirkt, und entfernbar; kein Bearbeiten, denn eine
+ * Aenderung an einer Aktion, die nicht ausgefuehrt wird, saehe aus wie eine wirksame.
+ */
+function InactiveFormRedirect({
+  mapping,
+  onRemove,
+}: {
+  mapping: Mapping | null;
+  onRemove: () => void;
+}) {
+  const redirectMapping = mapping?.type === "redirect" ? mapping : null;
+  if (!redirectMapping) return null;
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-3">
+        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">
+          🔗 Weiterleitung — wirkt nicht mehr
+        </p>
+        <p className="break-all text-sm text-gray-500 line-through">
+          {redirectMapping.config.url}
+        </p>
+        <p className="mt-1 text-xs text-gray-600">
+          Formulare leiten nicht mehr weiter; das Formular schickt so ab, wie es gebaut ist.
+          Diese Weiterleitung kannst du entfernen.
+        </p>
+      </div>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={onRemove}
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
+        >
+          Entfernen
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** URL-Formular (Anlegen/Bearbeiten). Speichern gesperrt, solange URL invalid. */
 function RedirectForm({
   url,
@@ -523,10 +588,15 @@ function RedirectForm({
  * wert-tragenden Events (META_VALUE_EVENTS) ODER Custom-Events.
  */
 function TrackActions({
+  trigger,
   mapping,
   onSave,
   onRemove,
 }: {
+  // WANN DER TRACK FEUERT (Phase 12.5, Scheibe 1b): "click" fuer Knopf und Link,
+  // "submit" fuer ein Formular — dort zaehlt er beim Abschicken, nicht beim Klick. Nur
+  // die TEXTE haengen daran; gespeichert wird dasselbe Mapping.
+  trigger: "click" | "submit";
   mapping: Mapping | null;
   onSave: (config: TrackConfig) => void;
   onRemove: () => void;
@@ -597,6 +667,7 @@ function TrackActions({
   if (isEditing) {
     return (
       <TrackForm
+        trigger={trigger}
         isCustom={isCustom}
         event={event}
         value={value}
@@ -631,11 +702,17 @@ function TrackActions({
       />
     );
   }
-  return <TrackTile onPick={() => setIsEditing(true)} />;
+  return <TrackTile trigger={trigger} onPick={() => setIsEditing(true)} />;
 }
 
 /** Kachel: Tracking-Event starten. */
-function TrackTile({ onPick }: { onPick: () => void }) {
+function TrackTile({
+  trigger,
+  onPick,
+}: {
+  trigger: "click" | "submit";
+  onPick: () => void;
+}) {
   return (
     <div>
       <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
@@ -651,7 +728,9 @@ function TrackTile({ onPick }: { onPick: () => void }) {
             🎯 Tracking-Event
           </span>
           <span className="text-xs text-gray-500">
-            Feuert bei Klick ein Event (zusätzlich zur Weiterleitung).
+            {trigger === "submit"
+              ? "Feuert beim Abschicken des Formulars ein Event."
+              : "Feuert bei Klick ein Event (zusätzlich zur Weiterleitung)."}
           </span>
         </button>
       </div>
@@ -710,6 +789,7 @@ function TrackView({
  * bei leerem Event.
  */
 function TrackForm({
+  trigger,
   isCustom,
   event,
   value,
@@ -725,6 +805,7 @@ function TrackForm({
   onSubmit,
   onCancel,
 }: {
+  trigger: "click" | "submit";
   isCustom: boolean;
   event: string;
   value: string;
@@ -823,7 +904,9 @@ function TrackForm({
         <span className="font-medium text-gray-700">
           Eigener Tracking-Code (optional)
           <span className="block text-xs font-normal text-gray-400">
-            Läuft bei Klick auf dieses Element. Keine Variablen von uns.
+            {trigger === "submit"
+              ? "Läuft beim Abschicken dieses Formulars. Keine Variablen von uns."
+              : "Läuft bei Klick auf dieses Element. Keine Variablen von uns."}
           </span>
         </span>
         <textarea

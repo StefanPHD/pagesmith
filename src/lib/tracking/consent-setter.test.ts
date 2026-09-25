@@ -96,13 +96,17 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
   //
   // SEIT DER PHASE 12.5, SCHEIBE 1, EIN DIFFERENZ-NACHWEIS (Entscheidung P12.5-19 der
   // Phase 12.5; docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN
-  // WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE"). Die Schatten-Korrektur setzt
-  // BEWUSST drei Stuecke in das Wiring-Script ein (E1–E3 unten). Die Vergleichswerte
-  // sind UNVERAENDERT; sie stehen jetzt auf der ENTFERNTEN Seite: der Text ist der von
-  // vor 11.5a plus GENAU diese Einsetzungen, sonst kein Zeichen. Die Einsetzungen sind
-  // aus dem Bau-Auftrag der Scheibe GETIPPT, nicht aus generate.ts abgelesen; dieselbe
-  // Abschrift steht eigens in own-blocks-waechter.test.ts und custom-pixel.test.ts
-  // (A1: jede Abschrift wird fuer sich gegen den Code geprueft).
+  // WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE"). Die Schatten-Korrektur (Scheibe
+  // 1: E1–E3) und der Formular-Track am Abschicken (Scheibe 1b: E4–E6, Entscheidung
+  // P12.5-21) setzen BEWUSST sechs Stuecke in das Wiring-Script ein (unten). Die
+  // Vergleichswerte sind UNVERAENDERT; sie stehen jetzt auf der ENTFERNTEN Seite: der
+  // Text ist der von vor 11.5a plus GENAU diese Einsetzungen, sonst kein Zeichen. Die
+  // Einsetzungen sind aus den Bau-Auftraegen GETIPPT, nicht aus generate.ts abgelesen;
+  // dieselbe Abschrift steht eigens in own-blocks-waechter.test.ts und
+  // custom-pixel.test.ts (A1: jede Abschrift wird fuer sich gegen den Code geprueft).
+  // E6 IST ZUSAMMENGESETZT: Vorspann und Nachspann getippt, dazwischen die Track-Anweisung
+  // aus dem Track-Zweig des click-Listeners — ein Teil des ALTEN Textes, den der sha256
+  // nach dem Entfernen mit abdeckt.
   const BASELINE_BYTES = 14160;
   const BASELINE_SHA256 =
     "a953b21e5683129da7868e01efa8a07a10334f29c09cabbfbed1da145fc04faa";
@@ -136,20 +140,64 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
   // disjunkt — ohne ihn waere E2 ein Teilstring von E3.
   const E2 = "\n      el = actionOwner(el);";
   const E3 = "\n        el = actionOwner(el);";
+  // E4 (click), E5 (auxclick): ein Formular ist nie Eigentuemer eines Klicks.
+  const E4 = '\n      if (el && el.tagName === "FORM") el = null;';
+  const E5 = '\n        if (el && el.tagName === "FORM") el = null;';
+  // E6: der submit-Listener — Vorspann, Track-Anweisung, Nachspann.
+  const E6_VOR = [
+    "  // FORMULAR-TRACK AM ABSCHICKEN (Phase 12.5, Scheibe 1b): Der Track eines <form>",
+    "  // zaehlt beim Abschicken (submit), nicht beim Klick. Capture an document: ein",
+    "  // Handler des Betreibers am Formular kann ihn weder mit stopPropagation noch mit",
+    "  // preventDefault verdecken. KEIN preventDefault von uns: Ziel, Methode und",
+    "  // Absenden gehoeren dem Betreiber. Eine Weiterleitung fuehrt ein Formular nicht",
+    "  // aus. Einmal je Formular und Seitenleben.",
+    "  var submittedForms = [];",
+    "  document.addEventListener(",
+    '    "submit",',
+    "    function (e) {",
+    "      var f = e.target;",
+    '      if (!f || f.tagName !== "FORM") return;',
+    "      if (submittedForms.indexOf(f) !== -1) return;",
+    '      var actions = byId[f.getAttribute("data-pagesmith-id")];',
+    "      if (!actions || !actions.length) return;",
+    "      submittedForms.push(f);",
+    "      for (var j = 0; j < actions.length; j++) {",
+    "        var a = actions[j];",
+    '        if (a.type === "track") {',
+    "            ",
+  ].join("\n");
+  const E6_NACH = ["", "        }", "      }", "    },", "    true", "  );", ""].join("\n");
+  const TRACK_AUF = 'if (a.type === "track") {\n            ';
+  const TRACK_ZU = '\n          } else if (a.type === "redirect")';
+  const e6Of = (s: string) => {
+    const auf = s.indexOf(TRACK_AUF);
+    const zu = s.indexOf(TRACK_ZU, auf);
+    if (auf === -1 || zu === -1) throw new Error("Track-Zweig des click-Listeners nicht gefunden");
+    return E6_VOR + s.slice(auf + TRACK_AUF.length, zu) + E6_NACH;
+  };
   const count = (s: string, part: string) => s.split(part).length - 1;
   const withoutInsertions = (s: string) =>
-    s.split(E1).join("").split(E3).join("").split(E2).join("");
+    s
+      .split(e6Of(s)).join("")
+      .split(E5).join("")
+      .split(E4).join("")
+      .split(E1).join("")
+      .split(E3).join("")
+      .split(E2).join("");
 
-  it("T1: bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text der von vor der Scheibe plus GENAU E1–E3", () => {
+  it("T1: bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text der von vor der Scheibe plus GENAU E1–E6", () => {
     const out = deliver("off");
     // DER DISKRIMINATOR GEGEN EINEN NEBENEFFEKT-ZWEIG: Diese Fixture hat eine
     // NICHT-LEERE Schluesselmenge. Haenge der Zweig an der Leere einer Menge statt
     // am Schalter, entstuende hier ein Setzer und beide Zusicherungen fielen.
     // Die Einsetzungen, erwartet je GENAU EINMAL (ein Wiring-Script, Export mit
-    // click- und auxclick-Listener).
+    // click-, auxclick- und submit-Listener).
     expect(count(out, E1)).toBe(1);
     expect(count(out, E2)).toBe(1);
     expect(count(out, E3)).toBe(1);
+    expect(count(out, E4)).toBe(1);
+    expect(count(out, E5)).toBe(1);
+    expect(count(out, e6Of(out))).toBe(1);
     const rest = withoutInsertions(out);
     expect(Buffer.byteLength(rest, "utf8")).toBe(BASELINE_BYTES);
     expect(createHash("sha256").update(rest, "utf8").digest("hex")).toBe(

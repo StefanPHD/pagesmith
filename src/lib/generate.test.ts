@@ -194,7 +194,20 @@ function aux(selector: string, button: number): MouseEvent {
   return ev;
 }
 
-const MAPPED_BUTTON = `<!DOCTYPE html><html><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>`;
+// Abschicken des ersten passenden Formulars (Phase 12.5, Scheibe 1b). BEWUSST per
+// dispatchEvent und NICHT per requestSubmit: jsdom meldet nach dem Ereignis "not
+// implemented" fuer die Navigation, und seine Gueltigkeitspruefung ist statisch — die
+// echte Pruefung des Browsers ist eine Live-Test-Achse (Vermerk P12.5-22 der Phase 12.5,
+// Punkt (5)). Gibt das Event zurueck (defaultPrevented lesbar).
+function submit(selector: string): Event {
+  const el = mountedDoc.querySelector(selector);
+  if (!el) throw new Error(`kein Element fuer ${selector}`);
+  const ev = new Event("submit", { bubbles: true, cancelable: true });
+  el.dispatchEvent(ev);
+  return ev;
+}
+
+const MAPPED_BUTTON =`<!DOCTYPE html><html><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>`;
 // Gemappter Link mit GEERBTER Original-href aus der Fremdseite -> beweist den
 // href-Bake diskriminierend (der Bake muss diese URL ersetzen).
 const MAPPED_LINK = `<!DOCTYPE html><html><body><a data-pagesmith-id="ps-aaaaaa" href="https://original.example/impressum">Impressum</a></body></html>`;
@@ -1918,10 +1931,10 @@ describe("Schatten-Korrektur (Phase 12.5, Scheibe 1)", () => {
     expect(fbqCalls(fbq, "track")).toHaveLength(0);
   });
 
-  it("T10 BESTAND (heutiges Verhalten, KEIN Soll): Klick in ein unmarkiertes <input> im <form> mit Track -> 1", () => {
-    // Haelt fest, was vor der Scheibe galt und unveraendert bleibt — zugleich die
-    // Positivkontrolle zu T10: dasselbe Formular feuert. Ob das eine Ueberzaehlung ist,
-    // ist Vorrat P12.5-17 der Phase 12.5 (ungemessen).
+  it("S2 (ersetzt 'T10 BESTAND', Scheibe 1b): Klick in ein unmarkiertes <input> im <form> mit Track -> 0 (mit Positivkontrolle)", () => {
+    // Bis Scheibe 1b feuerte hier der Track des Formulars — gemessen als Ueberzaehlung
+    // (Vorrat P12.5-17 der Phase 12.5). Jetzt ist ein Formular nie Eigentuemer eines
+    // Klicks (Entscheidung P12.5-21). Wird rot, wenn E4 fehlt (Mutation N2).
     const fbq = stubFbq();
     mountAndWire(
       generateFunctional(SCHATTEN_FORM, [track("ps-cccccc", "Lead")], "export", {
@@ -1929,6 +1942,9 @@ describe("Schatten-Korrektur (Phase 12.5, Scheibe 1)", () => {
       })
     );
     click("input");
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+    // POSITIVKONTROLLE im selben Lauf: dasselbe Formular feuert beim Abschicken.
+    submit("form");
     expect(fbqCalls(fbq, "track")).toHaveLength(1);
   });
 
@@ -1948,5 +1964,293 @@ describe("Schatten-Korrektur (Phase 12.5, Scheibe 1)", () => {
     // POSITIVKONTROLLE im selben Lauf: ein unmarkiertes Kind ausserhalb des <form> feuert.
     click("span");
     expect(fbqCalls(fbq, "track")).toHaveLength(1);
+  });
+});
+
+// ===========================================================================
+// FORMULAR-TRACK AM ABSCHICKEN (Phase 12.5, Scheibe 1b; Entscheidungen P12.5-21,
+// P12.5-23 bis P12.5-25 der Phase 12.5). Gemessen war: jeder Klick ins Feld zaehlte,
+// das Abschicken nicht (Vorrat P12.5-17). Jetzt zaehlt der Track eines <form> beim
+// submit — Capture an document, KEIN preventDefault, einmal je Formular und
+// Seitenleben —, ein Klick im Formular loest dessen Aktion nicht aus, und ein Formular
+// fuehrt keine Weiterleitung mehr aus. Was jsdom NICHT zeigen kann (Gueltigkeitspruefung
+// des Browsers, der Vorschau-Rahmen ohne allow-forms, die echte Navigation), steht in der
+// Live-Anleitung.
+// ===========================================================================
+
+// Formular mit markiertem Text, Eingabefeld und Absende-Knopf ohne eigenes Mapping, daneben
+// ein Link — die Live-Probe "Schatten Test".
+const FORM_PAGE = `<!DOCTYPE html><html><body><form data-pagesmith-id="ps-cccccc" action="#unten"><p data-pagesmith-id="ps-bbbbbb">Formular-Text</p><input type="email" name="email"><button data-pagesmith-id="ps-dddddd" type="submit">Absenden</button></form><a data-pagesmith-id="ps-aaaaaa" href="#unten">Link</a></body></html>`;
+
+// Wie mountAndWire, aber mit einem Haken VOR dem Ausfuehren unserer Scripts — so steht ein
+// Listener des Betreibers VOR unserem, wie ein Seiten-Script, das vor unserem Block laeuft.
+function mountAndWireAfter(output: string, before: (doc: Document) => void): void {
+  mountedDoc = new DOMParser().parseFromString(output, "text/html");
+  vi.stubGlobal("document", mountedDoc);
+  before(mountedDoc);
+  for (const s of Array.from(mountedDoc.querySelectorAll("script"))) {
+    if (s.id === "pagesmith-mappings") continue;
+    window.eval(s.textContent ?? "");
+  }
+}
+
+describe("Formular-Track am Abschicken (Phase 12.5, Scheibe 1b)", () => {
+  it("S1: Abschicken -> genau 1 Track, und das Abschicken bleibt unangetastet (kein preventDefault)", () => {
+    // Wird rot ohne den submit-Listener (N1) und mit einem preventDefault darin (N5).
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    const ev = submit("form");
+    const calls = fbqCalls(fbq, "track");
+    expect(calls).toHaveLength(1);
+    expect(calls[0][1]).toBe("Contact");
+    expect(ev.defaultPrevented).toBe(false);
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(hrefValue).toBe("");
+  });
+
+  it("S3: Klick auf das <form> selbst -> 0 (mit Positivkontrolle)", () => {
+    // Direkter Treffer auf das Formular — vor Scheibe 1b feuerte er. Rot ohne E4 (N2).
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click("form");
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+    submit("form");
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+  });
+
+  it("S4: zweimal Abschicken -> 1; ein ZWEITES Formular derselben Seite zaehlt eigens (Sperre je Formular)", () => {
+    // Rot ohne Sperre (N4: 2 statt 1) und mit einer globalen statt einer Sperre je
+    // Formular (N4b: das zweite Formular zaehlte nicht). Entscheidung P12.5-24.
+    const html = `<!DOCTYPE html><html><body><form id="f1" data-pagesmith-id="ps-cccccc"><input type="email"></form><form id="f2" data-pagesmith-id="ps-eeeeee"><input type="email"></form></body></html>`;
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        html,
+        [track("ps-cccccc", "Contact"), track("ps-eeeeee", "Lead")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    submit("#f1");
+    submit("#f1");
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+    submit("#f2");
+    const calls = fbqCalls(fbq, "track");
+    expect(calls).toHaveLength(2);
+    expect(calls[1][1]).toBe("Lead");
+  });
+
+  it("S5: Mittelklick ins Eingabefeld -> 0; Mittelklick auf den Link -> 1 (Positivkontrolle)", () => {
+    // Rot ohne E5 (N3): dann faende der auxclick-Pfad das Formular als Eigentuemer.
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        FORM_PAGE,
+        [track("ps-cccccc", "Contact"), track("ps-aaaaaa", "Lead")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    aux("input", 1);
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+    aux('[data-pagesmith-id="ps-aaaaaa"]', 1);
+    const calls = fbqCalls(fbq, "track");
+    expect(calls).toHaveLength(1);
+    expect(calls[0][1]).toBe("Lead");
+  });
+
+  it("S6: Betreiber ruft preventDefault VOR uns (AJAX-Formular) -> trotzdem genau 1 Track", () => {
+    // Ein Seiten-Script, das vor unserem Block laeuft, haengt einen Capture-Listener an
+    // document und schickt selbst per fetch ab. Rot, wenn unser Listener ein
+    // vorausgegangenes preventDefault als "nicht abgeschickt" deutet (N6b).
+    const fbq = stubFbq();
+    mountAndWireAfter(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "export", {
+        metaPixelId: PIXEL,
+      }),
+      (doc) => doc.addEventListener("submit", (e) => e.preventDefault(), true)
+    );
+    const ev = submit("form");
+    expect(ev.defaultPrevented).toBe(true); // das des Betreibers
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+  });
+
+  it("S7: Betreiber stoppt das Ereignis am Formular (stopPropagation) -> trotzdem genau 1 Track", () => {
+    // Rot, wenn unser Listener in der Bubble- statt in der Capture-Phase haengt (N6).
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    mountedDoc
+      .querySelector("form")!
+      .addEventListener("submit", (e) => e.stopPropagation());
+    submit("form");
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+  });
+
+  it("S8: Formular mit Weiterleitung -> weder beim Abschicken noch beim Klick ins Feld eine Navigation (R1)", () => {
+    // Entscheidung P12.5-23. Rot, wenn der submit-Pfad die Weiterleitung ausfuehrt (N7)
+    // oder der Klick-Pfad das Formular wieder als Eigentuemer nimmt (N2).
+    mountAndWire(
+      generateFunctional(
+        FORM_PAGE,
+        [redirect("ps-cccccc", "https://danke.example/", false)],
+        "export"
+      )
+    );
+    const c = click("input");
+    expect(c.defaultPrevented).toBe(false);
+    const s = submit("form");
+    expect(s.defaultPrevented).toBe(false);
+    expect(hrefValue).toBe("");
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+
+  it("S9: Knopf mit eigenem Track im Formular mit Track -> Klick feuert 'Inner', Abschicken 'Contact' (konfiguriertes Verhalten)", () => {
+    // Entscheidung P12.5-25: zwei Conversions sind hier GEWOLLT. Der Knopf ist
+    // type="button", damit jsdom beim Klick nicht selbst abschickt — Klick und Abschicken
+    // werden getrennt ausgeloest.
+    const html = `<!DOCTYPE html><html><body><form data-pagesmith-id="ps-cccccc"><input type="email"><button type="button" data-pagesmith-id="ps-dddddd">Senden</button></form></body></html>`;
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        html,
+        [track("ps-cccccc", "Contact"), track("ps-dddddd", "Inner")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    click("button");
+    submit("form");
+    const calls = fbqCalls(fbq, "track");
+    expect(calls.map((c) => c[1])).toEqual(["Inner", "Contact"]);
+  });
+
+  it("S10: im Modus 'edit' haengt KEIN submit-Listener; in 'preview' einer (Positivkontrolle)", () => {
+    // Im Editieren-Rahmen gehoeren Ereignisse der Selektions-Bruecke. Gezaehlt wird die
+    // REGISTRIERUNG, nicht ein Track — im Modus 'edit' steht kein Track in der Tabelle,
+    // eine Abwesenheit von Tracks waere dort trivial wahr.
+    const spy = vi.spyOn(Document.prototype, "addEventListener");
+    const submitRegs = () => spy.mock.calls.filter((c) => c[0] === "submit").length;
+    mountAndWire(generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "edit"));
+    expect(submitRegs()).toBe(0);
+    mountAndWire(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "preview")
+    );
+    expect(submitRegs()).toBe(1);
+    spy.mockRestore();
+  });
+
+  it("S11: Abschicken ohne Metas Einwilligung -> KEIN Beacon", () => {
+    // Der submit-Zweig setzt dieselbe Track-Anweisung ein wie der Klick und laeuft damit
+    // durch dasselbe Gate in __psMetaFire. Waechter gegen einen Zweig, der es umgeht.
+    const beacon = stubBeacon();
+    vi.stubGlobal("pagesmithConsent", () => false);
+    mountAndWire(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "export", {
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    submit("form");
+    expect(beacon).not.toHaveBeenCalled();
+  });
+
+  it("S11 (Positivkontrolle): Abschicken MIT Metas Einwilligung -> genau 1 Beacon", () => {
+    const beacon = stubBeacon();
+    vi.stubGlobal("pagesmithConsent", { meta: true });
+    mountAndWire(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "export", {
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    submit("form");
+    expect(beacon).toHaveBeenCalledTimes(1);
+  });
+
+  // S12 — DER EINGESETZTE TRACK-TEXT (trackAll) IM SUBMIT-LISTENER, je Pfad. trackAll liest
+  // je nach Konfiguration `a`, `console`, `__psMetaFire`, `__psCustomRun`, `__psCustomFire`.
+  // `a` definiert der Submit-Listener selbst; die __ps*-Funktionen stehen als Deklarationen
+  // im Rumpf der IIFE und sind damit in jedem ihrer Listener sichtbar. Die Meta-Pfade decken
+  // S1 (Pixel: nur __psMetaFire) und S11 (Positivkontrolle: Beacon ohne Pixel — Warnung plus
+  // __psMetaFire) ab; hier die zwei Custom-Pfade. Rot, wenn der Submit-Listener einen Namen
+  // nicht bereitstellt, den trackAll braucht (Mutation N9: `a` umbenannt).
+  it("S12a: Ereigniszeile OHNE Basis-Code, ohne Meta -> Warnung + __psCustomFire genau einmal, kein Fehler", () => {
+    const w = window as unknown as Record<string, unknown>;
+    delete w.__probeS12;
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const err = vi.spyOn(console, "error");
+    mountAndWire(
+      generateFunctional(
+        FORM_PAGE,
+        [
+          {
+            elementId: "ps-cccccc",
+            type: "track",
+            config: { event: "Contact", code: "window.__probeS12 = (window.__probeS12 || 0) + 1;" },
+          },
+        ],
+        "export"
+      )
+    );
+    submit("form");
+    expect(w.__probeS12).toBe(1);
+    // Die Meta-Warnung des Pfads ohne Pixel und ohne Laufzeit liest a.config.event.
+    expect(warn.mock.calls.filter((c) => String(c[0]).includes("Contact"))).toHaveLength(1);
+    expect(err).not.toHaveBeenCalled();
+    warn.mockRestore();
+    err.mockRestore();
+    delete w.__probeS12;
+  });
+
+  it("S12b: Ereigniszeile MIT Basis-Code (Lader) -> __psCustomRun und __psCustomFire, Zeile genau einmal, kein Fehler", () => {
+    const w = window as unknown as Record<string, unknown>;
+    delete w.__probeS12;
+    delete w.__probeS12Lader;
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const err = vi.spyOn(console, "error");
+    mountAndWire(
+      generateFunctional(
+        FORM_PAGE,
+        [
+          {
+            elementId: "ps-cccccc",
+            type: "track",
+            config: { event: "Contact", code: "window.__probeS12 = (window.__probeS12 || 0) + 1;" },
+          },
+        ],
+        "export",
+        { customPixelCode: "<script>window.__probeS12Lader = 1;</" + "script>" }
+      )
+    );
+    submit("form");
+    expect(w.__probeS12).toBe(1);
+    expect(err).not.toHaveBeenCalled();
+    err.mockRestore();
+    delete w.__probeS12;
+    delete w.__probeS12Lader;
+  });
+
+  it("Regression Scheibe 1: Klick auf 'Formular-Text' im Formular mit Track -> 0", () => {
+    // FORM-Halt aus Scheibe 1 (P12.5-15) bleibt: die Suche laeuft nicht aus dem Formular.
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click("p");
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
   });
 });

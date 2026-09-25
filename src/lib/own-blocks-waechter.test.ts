@@ -7,13 +7,18 @@
 // an SCRIPT_ID (lib/analytics/pageview-emitter.ts). Ein Export aendert kein Verhalten;
 // dieser Waechter belegte damals, dass der erzeugte Text davon byte-gleich unberuehrt ist.
 //
-// WAS ER HEUTE FESTNAGELT: Die Schatten-Korrektur (Phase 12.5, Scheibe 1) aendert das
-// Wiring-Script BEWUSST — als reine EINSETZUNG an drei Stellen (E1–E3 unten). Nach
-// docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN
-// DIFFERENZ-NACHWEIS AN IHRE STELLE", gilt jetzt: der erzeugte Text ist der alte plus
-// GENAU diese Einsetzungen, sonst kein Zeichen. Geprueft wird: jede Einsetzung steht
-// genau so oft da wie vorher genannt; nach ihrer Entfernung ist der Text byte-gleich zum
-// Sollwert; ohne die Entfernung weicht er ab (Positivkontrolle).
+// WAS ER HEUTE FESTNAGELT: Die Schatten-Korrektur (Phase 12.5, Scheibe 1: E1–E3) und der
+// Formular-Track am Abschicken (Phase 12.5, Scheibe 1b: E4–E6) aendern das Wiring-Script
+// BEWUSST — als reine EINSETZUNG an sechs Stellen (unten). Nach docs/immer-beachten.md,
+// "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE
+// STELLE", gilt jetzt: der erzeugte Text ist der alte plus GENAU diese Einsetzungen,
+// sonst kein Zeichen. Geprueft wird: jede Einsetzung steht genau so oft da wie vorher
+// genannt; nach ihrer Entfernung ist der Text byte-gleich zum Sollwert; ohne die
+// Entfernung weicht er ab (Positivkontrolle).
+// E6 IST ZUSAMMENGESETZT: Vorspann und Nachspann sind getippt, dazwischen steht die
+// Track-Anweisung, die je Konfiguration anders lautet. Sie wird aus dem Track-Zweig des
+// click-Listeners gelesen — einem Teil des ALTEN Textes, den der sha256 nach dem Entfernen
+// mit abdeckt. Sie ist damit keine ungepruefte Zutat, sondern eine bereits gepinnte.
 //
 // DIE SOLLWERTE SIND UNVERAENDERT die vor der Scheibe 11.11d erhobenen und stehen in
 // docs/claude-history/phase-11.11-import-bereinigung.md, ENTSCHEIDUNG P11.11-22, Punkt (g).
@@ -107,12 +112,59 @@ const E1 = [
 const E2 = "\n      el = actionOwner(el);";
 const E3 = "\n        el = actionOwner(el);";
 
+// DIE EINSETZUNGEN DES FORMULAR-TRACKS (Phase 12.5, Scheibe 1b) — GETIPPT aus dem
+// Bau-Auftrag. E4 (click) und E5 (auxclick): ein Formular ist nie Eigentuemer eines
+// Klicks; wie bei E2/E3 macht der fuehrende Zeilenumbruch die beiden disjunkt.
+const E4 = '\n      if (el && el.tagName === "FORM") el = null;';
+const E5 = '\n        if (el && el.tagName === "FORM") el = null;';
+// E6: der submit-Listener vor dem Ende des Scripts — Vorspann, Track-Anweisung,
+// Nachspann (s. Kopf).
+const E6_VOR = [
+  "  // FORMULAR-TRACK AM ABSCHICKEN (Phase 12.5, Scheibe 1b): Der Track eines <form>",
+  "  // zaehlt beim Abschicken (submit), nicht beim Klick. Capture an document: ein",
+  "  // Handler des Betreibers am Formular kann ihn weder mit stopPropagation noch mit",
+  "  // preventDefault verdecken. KEIN preventDefault von uns: Ziel, Methode und",
+  "  // Absenden gehoeren dem Betreiber. Eine Weiterleitung fuehrt ein Formular nicht",
+  "  // aus. Einmal je Formular und Seitenleben.",
+  "  var submittedForms = [];",
+  "  document.addEventListener(",
+  '    "submit",',
+  "    function (e) {",
+  "      var f = e.target;",
+  '      if (!f || f.tagName !== "FORM") return;',
+  "      if (submittedForms.indexOf(f) !== -1) return;",
+  '      var actions = byId[f.getAttribute("data-pagesmith-id")];',
+  "      if (!actions || !actions.length) return;",
+  "      submittedForms.push(f);",
+  "      for (var j = 0; j < actions.length; j++) {",
+  "        var a = actions[j];",
+  '        if (a.type === "track") {',
+  "            ",
+].join("\n");
+const E6_NACH = ["", "        }", "      }", "    },", "    true", "  );", ""].join("\n");
+// Die Track-Anweisung, wie sie im Track-Zweig des click-Listeners steht (alter Text).
+const TRACK_AUF = 'if (a.type === "track") {\n            ';
+const TRACK_ZU = '\n          } else if (a.type === "redirect")';
+function e6Of(s: string): string {
+  const auf = s.indexOf(TRACK_AUF);
+  const zu = s.indexOf(TRACK_ZU, auf);
+  if (auf === -1 || zu === -1) throw new Error("Track-Zweig des click-Listeners nicht gefunden");
+  return E6_VOR + s.slice(auf + TRACK_AUF.length, zu) + E6_NACH;
+}
+
 // Wie oft eine Einsetzung im Text steht (nicht ueberlappend).
 const count = (s: string, part: string) => s.split(part).length - 1;
-// Der Text ohne die Einsetzungen: E3 vor E2 ist fuer das Ergebnis gleichgueltig
-// (disjunkt, s.o.), die Reihenfolge ist nur festgelegt, damit sie reproduzierbar ist.
+// Der Text ohne die Einsetzungen. E6 zuerst (es haengt am Track-Zweig, der danach
+// unberuehrt bleibt); die uebrigen sind disjunkt, ihre Reihenfolge ist nur festgelegt,
+// damit sie reproduzierbar ist.
 const withoutInsertions = (s: string) =>
-  s.split(E1).join("").split(E3).join("").split(E2).join("");
+  s
+    .split(e6Of(s)).join("")
+    .split(E5).join("")
+    .split(E4).join("")
+    .split(E1).join("")
+    .split(E3).join("")
+    .split(E2).join("");
 
 function exportDoc(): string {
   return generateFunctional(SAUBER, MAPPINGS, "export", OPTS);
@@ -127,13 +179,16 @@ function publishedDoc(): string {
 }
 
 describe("Byte-Waechter: der ausgelieferte Text eines SAUBEREN Projekts", () => {
-  it("W1': generateFunctional('export') = Vorher-Wert plus GENAU die Einsetzungen E1–E3", () => {
+  it("W1': generateFunctional('export') = Vorher-Wert plus GENAU die Einsetzungen E1–E6", () => {
     const doc = exportDoc();
     // (3) die Einsetzungen zaehlen — erwartet je GENAU EINMAL (ein Wiring-Script mit
-    // click- UND auxclick-Listener, weil die Sonde exportiert).
+    // click-, auxclick- und submit-Listener, weil die Sonde exportiert).
     expect(count(doc, E1)).toBe(1);
     expect(count(doc, E2)).toBe(1);
     expect(count(doc, E3)).toBe(1);
+    expect(count(doc, E4)).toBe(1);
+    expect(count(doc, E5)).toBe(1);
+    expect(count(doc, e6Of(doc))).toBe(1);
     // (4) entfernen -> byte-gleich zum Vorher-Wert.
     const rest = withoutInsertions(doc);
     expect(bytes(rest)).toBe(SOLL_EXPORT.bytes);
@@ -143,11 +198,14 @@ describe("Byte-Waechter: der ausgelieferte Text eines SAUBEREN Projekts", () => 
     expect(bytes(doc)).not.toBe(SOLL_EXPORT.bytes);
   });
 
-  it("W2': danach injectPageViewEmitter = Vorher-Wert plus GENAU die Einsetzungen E1–E3", () => {
+  it("W2': danach injectPageViewEmitter = Vorher-Wert plus GENAU die Einsetzungen E1–E6", () => {
     const doc = publishedDoc();
     expect(count(doc, E1)).toBe(1);
     expect(count(doc, E2)).toBe(1);
     expect(count(doc, E3)).toBe(1);
+    expect(count(doc, E4)).toBe(1);
+    expect(count(doc, E5)).toBe(1);
+    expect(count(doc, e6Of(doc))).toBe(1);
     const rest = withoutInsertions(doc);
     expect(bytes(rest)).toBe(SOLL_PUBLISHED.bytes);
     expect(sha(rest)).toBe(SOLL_PUBLISHED.sha256);

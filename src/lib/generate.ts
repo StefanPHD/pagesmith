@@ -24,8 +24,13 @@ export const MAPPINGS_SCRIPT_ID = "pagesmith-mappings";
 // Vorschau- vs. Export- vs. Editier-Verhalten: dieselbe Wiring-Engine, EINE
 // mode-Verzweigung — kein Duplikat-Script.
 // - export:  echte Produktionslogik (Redirect-Click-Wiring + href-Bake fuer <a> +
-//            auxclick-Track bei Mittelklick; Text wird direkt in den DOM gebacken).
-// - preview: funktionale Vorschau (Redirect-Click-Wiring + Containment + Text).
+//            auxclick-Track bei Mittelklick + submit-Track fuer <form>; Text wird
+//            direkt in den DOM gebacken).
+// - preview: funktionale Vorschau (Redirect-Click-Wiring + Containment + Text; der
+//            submit-Listener haengt auch hier, doch der Vorschau-Rahmen traegt kein
+//            allow-forms; dass dort deshalb kein submit entsteht, ist aus der
+//            HTML-Spezifikation ABGELEITET, nicht gemessen — Vermerk P12.5-22 der
+//            Phase 12.5, Punkt (3)).
 // - edit:    Editieren-iframe (NUR Text-Anzeige; KEIN Click-Wiring — Klicks
 //            gehoeren der Selektions-Bruecke, die separat injiziert wird).
 export type GenerateMode = "export" | "preview" | "edit";
@@ -48,10 +53,18 @@ export type GenerateMode = "export" | "preview" | "edit";
 // Traegt das innerste keine (z.B. ein markiertes <h2> in einem <a> mit Track),
 // gilt der Klick dem naechsten markierten Vorfahren mit Aktion — Halt am ersten,
 // nie die Aktionen zweier Elemente. text zaehlt nicht als Klick-Aktion. Ein <form>
-// beendet die Suche (Formulare verhalten sich wie vor der Scheibe; Entscheidung
-// P12.5-15 der Phase 12.5). Die Editor-Bruecke (LISTENER_SCRIPT, detect.ts) waehlt
-// weiter das innerste markierte Element — sie ist bewusst NICHT mitgezogen. Click
-// und auxclick nutzen dieselbe Suche (actionOwner).
+// beendet die Suche (Entscheidung P12.5-15 der Phase 12.5): weder laeuft sie von
+// unten in ein Formular noch aus einem Formular ohne Aktion heraus. Die Editor-Bruecke
+// (LISTENER_SCRIPT, detect.ts) waehlt weiter das innerste markierte Element — sie ist
+// bewusst NICHT mitgezogen. Click und auxclick nutzen dieselbe Suche (actionOwner).
+//
+// FORMULARE (Phase 12.5, Scheibe 1b; Entscheidungen P12.5-21 und P12.5-23 der Phase
+// 12.5): Ein <form> ist NIE der Eigentuemer eines Klicks — auch nicht bei einem
+// direkten Treffer (Klick ins Eingabefeld, auf das Formular selbst). Sein Track zaehlt
+// beim ABSCHICKEN (submit-Listener an document, Capture, KEIN preventDefault, einmal
+// je Formular und Seitenleben); eine Weiterleitung fuehrt ein Formular nicht mehr aus,
+// weder beim Klick noch beim Abschicken. Ein Element IM Formular mit eigener Aktion
+// (etwa ein Knopf mit Track) feuert beim Klick weiter seine eigene (P12.5-25).
 // PREVIEW (srcDoc-iframe erbt unsere Origin -> Containment noetig): gemappte
 //   Weiterleitung oeffnet IMMER escaped einen neuen Tab (openInNewTab ignoriert,
 //   NIE location.href, das wuerde das iframe selbst framen); JEDER andere
@@ -65,9 +78,10 @@ export type GenerateMode = "export" | "preview" | "edit";
 // Datenblock, sondern werden DIREKT in den DOM gebacken (Scheibe 2, siehe
 // generateFunctional) -> kein Laufzeit-JS noetig, gut fuer SEO, kein FOUC.
 //
-// CLICK-Wiring (Redirect + Containment): Vorschau + Export, NICHT Editieren. Im
-// Editieren-iframe gehoeren Klicks ALLEIN der separat injizierten Selektions-
-// Bruecke -> generateFunctional("edit") installiert KEINEN eigenen Click-Handler.
+// CLICK-Wiring (Redirect + Containment) und SUBMIT-Track: Vorschau + Export, NICHT
+// Editieren. Im Editieren-iframe gehoeren Klicks ALLEIN der separat injizierten
+// Selektions-Bruecke -> generateFunctional("edit") installiert KEINEN eigenen Click-
+// oder Submit-Handler.
 //
 // META (Scheibe 1b): ist eine Pixel-ID gesetzt, wird die isolierte Meta-Runtime
 // (buildMetaRuntime) in die IIFE gesplicet und der Track-Zweig feuert echtes fbq
@@ -194,6 +208,7 @@ function buildWiringScript(
       if (!t || typeof t.closest !== "function") return;
       var el = t.closest("[${PAGESMITH_ID_ATTR}]");
       el = actionOwner(el);
+      if (el && el.tagName === "FORM") el = null;
       var actions = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
       if (actions && actions.length) {
         // Track-Aktionen feuern SOFORT in der Schleife; die (max. eine) Redirect-
@@ -256,6 +271,7 @@ function buildWiringScript(
         if (!t || typeof t.closest !== "function") return;
         var el = t.closest("[${PAGESMITH_ID_ATTR}]");
         el = actionOwner(el);
+        if (el && el.tagName === "FORM") el = null;
         var actions = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
         if (!actions || !actions.length) return;
         for (var j = 0; j < actions.length; j++) {
@@ -268,6 +284,31 @@ function buildWiringScript(
       true
     );
   }
+  // FORMULAR-TRACK AM ABSCHICKEN (Phase 12.5, Scheibe 1b): Der Track eines <form>
+  // zaehlt beim Abschicken (submit), nicht beim Klick. Capture an document: ein
+  // Handler des Betreibers am Formular kann ihn weder mit stopPropagation noch mit
+  // preventDefault verdecken. KEIN preventDefault von uns: Ziel, Methode und
+  // Absenden gehoeren dem Betreiber. Eine Weiterleitung fuehrt ein Formular nicht
+  // aus. Einmal je Formular und Seitenleben.
+  var submittedForms = [];
+  document.addEventListener(
+    "submit",
+    function (e) {
+      var f = e.target;
+      if (!f || f.tagName !== "FORM") return;
+      if (submittedForms.indexOf(f) !== -1) return;
+      var actions = byId[f.getAttribute("${PAGESMITH_ID_ATTR}")];
+      if (!actions || !actions.length) return;
+      submittedForms.push(f);
+      for (var j = 0; j < actions.length; j++) {
+        var a = actions[j];
+        if (a.type === "track") {
+            ${trackAll}
+        }
+      }
+    },
+    true
+  );
 })();`;
 }
 

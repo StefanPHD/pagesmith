@@ -6097,3 +6097,30 @@ KEINE EMPFEHLUNG.
   die Gruppierung ist Entscheidung (25) der Phase 11.5. OFFEN (Owner-Frage P11.9-9): die Gruppe
   des neuen Ziels — "Messung" oder "Werbung".
   TRIGGER: das nächste neue Mitglied von `TrackingTarget`.
+
+## Aus Phase 12.5 vorgemerkt (2026-09-25) — drei Befunde der ersten Aufklärung
+
+Abgelegt ohne Umweg über die Standdatei; die Nummern setzen die Reihe `P12.5-n` jener
+Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+FIX-VORSCHLAG über das Benannte hinaus.
+
+- **Vorrat P12.5-10 — DIE KLICK-ELEMENTE WERDEN NACH TAG GEZÄHLT: EIN ALS BUTTON GESTALTETES `<a>` STEHT UNTER "Links", UND "0 Buttons" VERWIRRT**
+  Der Zähler über der Elementliste (`counts` in `src/components/CodeImporter.tsx`) zählt je
+  `ElementType`; `classify` (`src/lib/detect.ts`) führt ein `a[href]` als `link`, ausser es trägt
+  `role="button"`. GEMESSEN am Repo (CC, 2026-09-25). Die Verwirrung ist eine
+  OWNER-BEOBACHTUNG vom 2026-09-25 (Bildschirmfoto). Funktional ohne Verlust (OWNER-EINORDNUNG
+  2026-09-25). Vorgemerkt für die Neugestaltung der Oberfläche. TRIGGER: das UI-Redesign.
+
+- **Vorrat P12.5-11 — SUCHANKER-ABWEICHUNG: "settingsEqual IST EINE ALLOWLIST" STEHT IN ZWEI SCHREIBWEISEN**
+  Der Stub in `CLAUDE.md` ("## Offene Punkte") schreibt `settingsEqual` OHNE Backticks, der
+  Posten in docs/offene-punkte.md MIT Backticks. Eine Titelsuche mit fester Zeichenkette trifft
+  deshalb nur eine der beiden Stellen. GEMESSEN am Repo (CC, 2026-09-25). TRIGGER: die nächste
+  Runde, die den Stub oder den Posten ohnehin anfasst.
+
+- **Vorrat P12.5-12 — `public/*.svg` DER NEXT-VORLAGE AUF KUNDEN-DOMAINS: UNGEMESSEN**
+  `public/` enthält fünf SVGs aus der Next-Vorlage (`file.svg`, `globe.svg`, `next.svg`,
+  `vercel.svg`, `window.svg`); der Matcher in `src/proxy.ts` schliesst Bilddateien aus, auch auf
+  Serving-Hosts. Ob die Dateien unter `<label>.publayer.net/<name>.svg` ausgeliefert werden, ist
+  NICHT gemessen — ABGELEITET aus Matcher und Verzeichnis. Berührt Entscheidung P12.5-5 der Phase
+  12.5 (Medienbytes nie über unsere Vercel-Routen) nur als Nachbarfrage. TRIGGER: die nächste
+  Runde, die am Serve-Pfad oder an `public/` arbeitet.

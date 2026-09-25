@@ -1861,7 +1861,9 @@ liegen beide hier und finden einander.
       docs/claude-history/phase-11.9-ga4.md (Vermerk P11.9-2 mit den Stellen, die tsc bei einem
       neuen Ziel erzwingt und nicht erzwingt) · docs/claude-history/backlog-polish.md, Eintrag
       63 · docs/claude-history/phase-11.7-anbieter-befunde.md, Vorrat P11.7-2 (Trigger "der
-      Zuschnitt von GA4"; dort erledigt).
+      Zuschnitt von GA4"; dort erledigt) · docs/offene-punkte.md, "DREI FELDER DER NUTZLAST SIND
+      FRAGEN DER TRANSPORT-SCHEIBE, NICHT DIESER" (sein `eventName`-Trigger hängt an GA4;
+      ERGÄNZT 2026-09-25).
 
       WARUM SIE EINE EIGENE ZEILE IST UND KEIN ABSCHNITT VON 11.2: Google Ads
       Conversions und GA4 sind ZWEI ADAPTER MIT VERSCHIEDENEN ZUGANGSMODELLEN, nicht
@@ -2382,6 +2384,37 @@ liegen beide hier und finden einander.
       acht Punkte sind GEMESSEN am Repo (CC, 2026-09-18). Sämtliche Live-Angaben der Phase sind
       OWNER-MESSUNGEN bzw. OWNER-ANGABEN und von CC nicht prüfbar; welche das je Scheibe sind,
       steht an der Provenienz des jeweiligen Vermerks im Archiv.
+- [ ] Phase 12.5 — Medien: Bilder, SVG, Video und Hintergrundbilder im importierten
+      Kunden-HTML erkennen und ändern. Laufend: docs/aktiver-stand.md.
+      REIHENFOLGE DES BAUS (OWNER 2026-09-25): Schatten-Korrektur -> Medien Stufe 1 ->
+      Rich-Text (Phase 12). Die Zeile steht VOR der Zeile 12; die Reihenfolge der Zeilen ist
+      eine Ablage (Eintrag 11.10, Punkt (d)), der Bauplan ist dieser Satz. Scheibe 1 ist die
+      Schatten-Korrektur — ein markiertes Kind verdeckt die Aktion seines Elternelements, live
+      bestätigt (OWNER, 2026-09-25) — und Vorbedingung beider Phasen.
+      DREI STUFEN: (1) ohne neue Infrastruktur — Erkennung von img, picture, inline-svg, video,
+      background-image; Änderung NUR VORHANDENER Medien-Elemente (src, alt, poster,
+      Video-Schalter); Warnung bei stark abweichendem Seitenverhältnis statt Zwang; Hinweis auf
+      kaputte relative Pfade · (2) Uploads — Speicher, Umwandlung, Ursprungs-Isolation,
+      Missbrauch, Löschregel; davor eine Anbieter-Lesung · (3) Asset-Bibliothek, SVG-Farben
+      einbrennen, ZIP-Export, neu eingefügte Einbettungen (die Einwilligung wird dann UNSERE
+      Frage).
+      GRENZEN, ALS BEFUND: serverseitiges SVG-Bereinigen per DOMPurify kollidiert mit "KEIN
+      SERVER-SEITIGES HTML-PARSING" — die Gefahr liegt im Speicher-URSPRUNG, nicht in der Seite ·
+      ein neuer Speicher-Anbieter nur nach Lesung · Uploads sind eine neue Missbrauchsklasse
+      (der Kill-Switch sperrt heute keine Dateien; ein gelöschtes Asset bricht ausgelieferte
+      Seiten still) · YouTube-/Vimeo-Einbettungen berühren die Einwilligung · KI-Markierungen
+      gehören zu Phase 18 und werden nicht vorgebaut.
+      BINDEND ÜBER DIE PHASE HINAUS: MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN. Grund:
+      Hobby stoppt hart statt zu berechnen, für alle Kundenseiten zugleich; die Fair-Use-Seite
+      führt "Media hosting for hot-linking" unter "Never fair use" (docs/plattform-befunde.md,
+      Abschnitt "Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)", Teil (g)).
+      EDITOR-GERÜST ALS EIGENE SCHEIBE, nach der Schatten-Korrektur und vor der ersten
+      Medien-Oberfläche: linke Spalte in Reitern (Elemente, Code, Skripte), rechte Spalte strikt
+      kontextuell zum gewählten Element, globale Einstellungen in Kopfleiste bzw. Modal. NUR
+      Struktur, keine Optik; nicht mit der Schatten-Korrektur bündeln.
+      PROVENIENZ: OWNER-ENTSCHEIDUNGEN 2026-09-25; Wortlaut, Gründe und Fundstellen stehen in
+      der Standdatei (Entscheidungen P12.5-1 bis P12.5-7, Vermerke P12.5-8 und P12.5-9 der Phase
+      12.5).
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.
@@ -2392,6 +2425,22 @@ liegen beide hier und finden einander.
       (Parameter-Substitution statt Markup-Erhalt) — im Konzept-Gespräch zu
       Phase 12 prüfen, ob es mitgebaut wird oder eigenständig bleibt, NICHT
       automatisch bündeln.
+      NACHGETRAGEN 2026-09-25 — DIESE PHASE FOLGT NACH DER PHASE 12.5 (OWNER 2026-09-25).
+      "Rich-Text zuerst" ist verworfen: Rich-Text verlangt die schwerere Senken-Entscheidung und
+      profitiert von einem Modell, das den zweiten Änderungstyp schon kennt. Die
+      Schatten-Korrektur (Scheibe 1 der Phase 12.5) ist Vorbedingung auch dieser Phase.
+      BEFUNDE DER ERSTEN AUFKLÄRUNG (GEMESSEN am Repo, CC, 2026-09-25, soweit nicht anders
+      gekennzeichnet):
+      · `isPureText` (src/lib/detect.ts) schliesst jedes h1–h6/p mit einem Kind-Element ausser
+        <br> aus; es wird kein Kandidat und bekommt keine ps-ID (Tests in
+        src/lib/detect.test.ts: "<p> MIT Kind-Element (<strong>) ist KEIN Textkandidat", "ein
+        <p> mit Kindern bekommt KEINE ps-ID").
+      · Ein zugelassenes <br> überlebt ein Überschreiben NICHT — die Engine schreibt über
+        `textContent` (`generateFunctional`, src/lib/generate.ts; Handler `PS_SET_TEXT` in
+        `LISTENER_SCRIPT`), und das ersetzt alle Kinder. ABGELEITET, nicht gemessen; kein Test
+        deckt <br> mit Override.
+      · li, span, div, td und andere Textträger werden nicht erkannt — `TEXT_SELECTOR` nennt nur
+        h1–h6 und p.
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks: Pagesmith wird KEIN Versender
       (Owner-Entscheidung) — stattdessen Webhooks auf Performance-Events, der
       Kunde behält seinen bestehenden ESP.

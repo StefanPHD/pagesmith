@@ -124,6 +124,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.11 — Import-Bereinigung
 - [x] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
 - [x] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs
+- [ ] Phase 12.5 — Medien
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)

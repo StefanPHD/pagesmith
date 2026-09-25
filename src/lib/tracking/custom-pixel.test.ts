@@ -275,19 +275,72 @@ describe("11.6a — der erzeugte Text", () => {
   // DIE FIXTURE IST DIE DER VORHER-MESSUNG UND NICHT DIE DES RESTES DIESER DATEI — ein
   // Byte-Vergleich gegen einen Wert, der an einer ANDEREN Eingabe erhoben wurde, waere
   // keiner. Sie steht deshalb hier eigens.
+  //
+  // SEIT DER PHASE 12.5, SCHEIBE 1, EIN DIFFERENZ-NACHWEIS (Entscheidung P12.5-19 der
+  // Phase 12.5; docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN
+  // WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE"). Die Schatten-Korrektur setzt
+  // BEWUSST drei Stuecke in das Wiring-Script ein (E1–E3 unten). Die Vergleichswerte
+  // sind UNVERAENDERT; sie stehen jetzt auf der ENTFERNTEN Seite: der Text ist der von
+  // vor 11.6a plus GENAU diese Einsetzungen, sonst kein Zeichen. Die Einsetzungen sind
+  // aus dem Bau-Auftrag der Scheibe GETIPPT, nicht aus generate.ts abgelesen; dieselbe
+  // Abschrift steht eigens in own-blocks-waechter.test.ts und consent-setter.test.ts
+  // (A1: jede Abschrift wird fuer sich gegen den Code geprueft).
   const T9_HTML =
     '<html><body><button data-pagesmith-id="b1">Kauf</button></body></html>';
   const OHNE_ALLES = { bytes: 5819, sha: "89f6fa2f4435374b" };
   const MIT_META = { bytes: 12964, sha: "70107cb1b2934e75" };
-  it("T9: ohne Snippet und ohne Ereigniszeile ist der erzeugte Text byte-gleich zu vor 11.6a", () => {
+
+  // E1: die zwei lokalen Funktionen hinter der byId-Schleife des Wiring-Scripts.
+  const E1 = [
+    "  // SCHATTEN-KORREKTUR (Phase 12.5, Scheibe 1): traegt das innerste markierte",
+    "  // Element keine Klick-Aktion (track/redirect), gilt der Klick dem naechsten",
+    "  // markierten Vorfahren, der eine traegt. Halt am ERSTEN -> hoechstens die",
+    "  // Aktionen EINES Elements je Klick. text zaehlt nicht (in der Vorschau steht",
+    "  // er in der Tabelle). Ein <form> beendet die Suche: weder wird von unten in",
+    "  // ein <form> gelaufen noch aus einem <form> ohne Aktion heraus.",
+    "  function hasClickAction(list) {",
+    "    if (!list) return false;",
+    "    for (var h = 0; h < list.length; h++) {",
+    '      if (list[h].type === "track" || list[h].type === "redirect") return true;',
+    "    }",
+    "    return false;",
+    "  }",
+    "  function actionOwner(el) {",
+    '    while (el && !hasClickAction(byId[el.getAttribute("data-pagesmith-id")])) {',
+    '      if (el.tagName === "FORM") return null;',
+    '      el = el.parentElement ? el.parentElement.closest("[data-pagesmith-id]") : null;',
+    '      if (el && el.tagName === "FORM") return null;',
+    "    }",
+    "    return el;",
+    "  }",
+    "",
+  ].join("\n");
+  // E2 (click-Listener), E3 (auxclick-Listener): der fuehrende Zeilenumbruch macht sie
+  // disjunkt — ohne ihn waere E2 ein Teilstring von E3.
+  const E2 = "\n      el = actionOwner(el);";
+  const E3 = "\n        el = actionOwner(el);";
+  const count = (s: string, part: string) => s.split(part).length - 1;
+  const withoutInsertions = (s: string) =>
+    s.split(E1).join("").split(E3).join("").split(E2).join("");
+
+  it("T9: ohne Snippet und ohne Ereigniszeile ist der erzeugte Text der von vor 11.6a plus GENAU E1–E3", () => {
     const ohne = generateFunctional(T9_HTML, [trackMapping()], "export", {
       metaPixelId: "",
       trackingKey: "",
       capiProxyUrl: "",
       consentTargets: [],
     });
-    expect(Buffer.byteLength(ohne, "utf8")).toBe(OHNE_ALLES.bytes);
-    expect(sha16(ohne)).toBe(OHNE_ALLES.sha);
+    // Die Einsetzungen, erwartet je GENAU EINMAL (ein Wiring-Script, Export mit
+    // click- und auxclick-Listener).
+    expect(count(ohne, E1)).toBe(1);
+    expect(count(ohne, E2)).toBe(1);
+    expect(count(ohne, E3)).toBe(1);
+    const ohneRest = withoutInsertions(ohne);
+    expect(Buffer.byteLength(ohneRest, "utf8")).toBe(OHNE_ALLES.bytes);
+    expect(sha16(ohneRest)).toBe(OHNE_ALLES.sha);
+    // POSITIVKONTROLLE: ohne die Entfernung weicht der Text ab.
+    expect(sha16(ohne)).not.toBe(OHNE_ALLES.sha);
+    expect(Buffer.byteLength(ohne, "utf8")).not.toBe(OHNE_ALLES.bytes);
 
     const mitMeta = generateFunctional(T9_HTML, [trackMapping()], "export", {
       metaPixelId: "123",
@@ -295,8 +348,15 @@ describe("11.6a — der erzeugte Text", () => {
       capiProxyUrl: "https://a.example/api/e",
       consentTargets: ["meta"],
     });
-    expect(Buffer.byteLength(mitMeta, "utf8")).toBe(MIT_META.bytes);
-    expect(sha16(mitMeta)).toBe(MIT_META.sha);
+    expect(count(mitMeta, E1)).toBe(1);
+    expect(count(mitMeta, E2)).toBe(1);
+    expect(count(mitMeta, E3)).toBe(1);
+    const mitMetaRest = withoutInsertions(mitMeta);
+    expect(Buffer.byteLength(mitMetaRest, "utf8")).toBe(MIT_META.bytes);
+    expect(sha16(mitMetaRest)).toBe(MIT_META.sha);
+    // POSITIVKONTROLLE.
+    expect(sha16(mitMeta)).not.toBe(MIT_META.sha);
+    expect(Buffer.byteLength(mitMeta, "utf8")).not.toBe(MIT_META.bytes);
   });
 
   // T13. DIE VORSCHAU BAUT KEINEN CUSTOM-BAUSTEIN (Entscheidung P11.6-6, Teil (d)).

@@ -410,6 +410,57 @@ describe("LISTENER_SCRIPT – PS_SET_TEXT Live-Patch-Handler (Scheibe 3)", () =>
   });
 });
 
+describe("LISTENER_SCRIPT – Klick-Auswahl bleibt beim INNERSTEN markierten Element (I1, Phase 12.5 Scheibe 1)", () => {
+  // Eigener Seam: runBridge oben verwirft den Click-Listener. Hier wird er gefangen und
+  // direkt mit einem Ereignis-Objekt gerufen; window/document sind wie dort GESHADOWED.
+  // WAECHTER, KEIN NACHWEIS DER SCHEIBE: Die Schatten-Korrektur aendert nur das
+  // ausgelieferte Wiring (buildWiringScript, generate.ts). Die Editor-Bruecke muss das
+  // innerste Element waehlen, sonst ist ein <h2> in einem <a> nicht mehr einzeln
+  // bearbeitbar. Wird rot, wenn jemand die Suche nach oben auch hier einbaut (Mutation M5).
+  function runBridgeClicks() {
+    let clickHandler: ((e: unknown) => void) | null = null;
+    const posted: unknown[] = [];
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const win = {
+      addEventListener: () => {},
+      parent: { postMessage: (msg: unknown) => posted.push(msg) },
+    };
+    const doc = {
+      addEventListener: (type: string, fn: (e: unknown) => void) => {
+        if (type === "click") clickHandler = fn;
+      },
+      querySelector: (sel: string) => container.querySelector(sel),
+    };
+    new Function("window", "document", LISTENER_SCRIPT)(win, doc);
+    const clickOn = (target: Element) => {
+      if (!clickHandler) throw new Error("kein Click-Listener registriert");
+      clickHandler({ target, preventDefault: () => {}, stopPropagation: () => {} });
+    };
+    const clicked = () =>
+      posted.filter(
+        (m) => (m as { type?: string }).type === "ELEMENT_CLICKED"
+      ) as Array<{ elementId: string }>;
+    return { container, clickOn, clicked, cleanup: () => container.remove() };
+  }
+
+  it("T8: Klick auf das markierte <h2> im <a> waehlt das <h2>, nicht das <a>", () => {
+    const { container, clickOn, clicked, cleanup } = runBridgeClicks();
+    container.innerHTML =
+      '<a data-pagesmith-id="ps-aaaaaa" href="#unten"><h2 data-pagesmith-id="ps-bbbbbb">Titel</h2>Rand</a>';
+    clickOn(container.querySelector("h2")!);
+    expect(clicked()).toEqual([
+      expect.objectContaining({ elementId: "ps-bbbbbb" }),
+    ]);
+    // POSITIVKONTROLLE im selben Lauf: ein Klick auf das <a> selbst waehlt das <a>.
+    clickOn(container.querySelector("a")!);
+    expect(clicked()[1]).toEqual(
+      expect.objectContaining({ elementId: "ps-aaaaaa" })
+    );
+    cleanup();
+  });
+});
+
 // ===========================================================================
 // DIE FREMD-ERKENNUNG HAENGT AM SELBEN PARSE (Phase 11.11, Scheibe 11.11b;
 // ENTSCHEIDUNG P11.11-5 "kein zweiter Parse" und P11.11-12, Satz 1 "vor

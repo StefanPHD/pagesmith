@@ -1754,3 +1754,199 @@ describe("HAELFTE B: die vier Wachen, einzeln", () => {
     expect(payload.eventID).toBe(fbqEventId);
   });
 });
+
+// ===========================================================================
+// SCHATTEN-KORREKTUR (Phase 12.5, Scheibe 1; Befund: Vermerk P12.5-9 der Phase 12.5).
+// Ein markiertes Kind ohne Klick-Aktion (z.B. ein reiner Text-Kandidat <h2> in einem
+// <a> mit Track) verdeckte die Aktion seines Vorfahren: das Wiring suchte nur das
+// INNERSTE markierte Element. Jetzt gilt der Klick dem naechsten markierten Vorfahren
+// mit track/redirect — Halt am ersten, ein <form> beendet die Suche.
+// ===========================================================================
+
+// <a> mit Track, darin ein markiertes <h2> und freier Rand-Text — die Live-Probe.
+const SCHATTEN_LINK = `<!DOCTYPE html><html><body><a data-pagesmith-id="ps-aaaaaa" href="#unten"><h2 data-pagesmith-id="ps-bbbbbb">Titel</h2>Rand</a></body></html>`;
+
+// <form> mit einem markierten <p> und einem unmarkierten Eingabefeld (T10).
+const SCHATTEN_FORM = `<!DOCTYPE html><html><body><form data-pagesmith-id="ps-cccccc" action="/x"><p data-pagesmith-id="ps-bbbbbb">Hinweis</p><input type="text" name="n"></form></body></html>`;
+
+describe("Schatten-Korrektur (Phase 12.5, Scheibe 1)", () => {
+  it("T1: Klick auf das markierte <h2> im <a> mit Track -> Track feuert genau einmal", () => {
+    // Vor der Scheibe rot (0 Calls): closest fand das <h2>, byId kannte es nicht.
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(SCHATTEN_LINK, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    const ev = click("h2");
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+    expect(fbqCalls(fbq, "track")[0][1]).toBe("Lead");
+    // track-only blockt den Default nicht — wie beim Direkt-Klick.
+    expect(ev.defaultPrevented).toBe(false);
+  });
+
+  it("T2 (I5): Klick direkt auf das <a> -> Track feuert genau einmal, wie vor der Scheibe", () => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(SCHATTEN_LINK, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+    expect(ev.defaultPrevented).toBe(false);
+  });
+
+  it("T3: Text-Kandidat OHNE markierten Vorfahren mit Aktion -> nichts (mit Positivkontrolle)", () => {
+    // Eine Aktion steht auf der Seite — aber nicht ueber dem <h2>. Wird rot, wenn die
+    // Suche nicht an null endet, sondern irgendein Element mit Aktion greift.
+    const html = `<!DOCTYPE html><html><body><div><h2 data-pagesmith-id="ps-bbbbbb">Titel</h2></div><a data-pagesmith-id="ps-aaaaaa" href="#x">CTA</a></body></html>`;
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(html, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    const ev = click("h2");
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+    expect(ev.defaultPrevented).toBe(false);
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(hrefValue).toBe("");
+    // POSITIVKONTROLLE im selben Lauf: dasselbe Wiring feuert am <a>.
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+  });
+
+  it("T4: Klick auf ein markiertes Kind eines <button> mit Weiterleitung -> Weiterleitung", () => {
+    // Ein <button> hat kein gebackenes href — ohne die Korrektur ginge die Weiterleitung
+    // hier ganz verloren (vor der Scheibe: hrefValue "", kein preventDefault).
+    const html = `<!DOCTYPE html><html><body><button data-pagesmith-id="ps-aaaaaa"><p data-pagesmith-id="ps-bbbbbb">Kaufen</p></button></body></html>`;
+    mountAndWire(
+      generateFunctional(
+        html,
+        [redirect("ps-aaaaaa", "https://buy.example/x", false)],
+        "export"
+      )
+    );
+    const ev = click("p");
+    expect(ev.defaultPrevented).toBe(true);
+    expect(hrefValue).toBe("https://buy.example/x");
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+
+  it("T5 (I2): inneres Element mit eigener Aktion im aeusseren mit Aktion -> NUR die innere, genau einmal", () => {
+    // Faengt eine Suche ohne Halt am ersten Treffer (Mutation M2): dann liefe die
+    // aeussere Aktion — Ereignis "Outer" und ihre Weiterleitung.
+    const html = `<!DOCTYPE html><html><body><a data-pagesmith-id="ps-aaaaaa" href="https://orig.example/"><button data-pagesmith-id="ps-bbbbbb">Kaufen</button></a></body></html>`;
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        html,
+        [
+          redirect("ps-aaaaaa", "https://outer.example/", false),
+          track("ps-aaaaaa", "Outer"),
+          track("ps-bbbbbb", "Inner"),
+        ],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    click("button");
+    const calls = fbqCalls(fbq, "track");
+    expect(calls).toHaveLength(1);
+    expect(calls[0][1]).toBe("Inner");
+    expect(hrefValue).toBe("");
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+
+  it("T6: VORSCHAU — ein <h2> MIT text-Mapping verdeckt den Track des <a> nicht; Containment bleibt", () => {
+    // DER EINZIGE TEST, DER DIESE FEHLERKLASSE FAENGT (Mutation M3): In der Vorschau
+    // steht das text-Mapping in der Tabelle. Zaehlte jeder Tabelleneintrag als Aktion,
+    // hielte die Suche am <h2> an und der Track fiele aus. Im Export steht text nicht
+    // in der Tabelle — dort ist die Klasse unsichtbar.
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        SCHATTEN_LINK,
+        [text("ps-bbbbbb", "Neu"), track("ps-aaaaaa", "Lead")],
+        "preview",
+        { metaPixelId: PIXEL }
+      )
+    );
+    const ev = click("h2");
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+    // Containment: der Rahmen navigiert nicht (<a href> ohne Weiterleitung).
+    expect(ev.defaultPrevented).toBe(true);
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+
+  it("T7: Mittelklick auf das <h2> -> Track genau einmal, Navigation unangetastet", () => {
+    // Faengt eine Korrektur, die nur den click-Listener erreicht (Mutation M4).
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(SCHATTEN_LINK, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    const ev = aux("h2", 1);
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+    expect(ev.defaultPrevented).toBe(false);
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(hrefValue).toBe("");
+  });
+
+  it("T7b: Rechtsklick auf das <h2> -> nichts (der Ghost-Conversion-Riegel bleibt vorn)", () => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(SCHATTEN_LINK, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    aux("h2", 2);
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+  });
+
+  it("T10: <form> mit Track — Klick auf ein markiertes <p> darin -> 0 (Entscheidung P12.5-15)", () => {
+    // Die Suche laeuft nicht von unten in ein <form> (Mutation M6a).
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(SCHATTEN_FORM, [track("ps-cccccc", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click("p");
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+  });
+
+  it("T10 BESTAND (heutiges Verhalten, KEIN Soll): Klick in ein unmarkiertes <input> im <form> mit Track -> 1", () => {
+    // Haelt fest, was vor der Scheibe galt und unveraendert bleibt — zugleich die
+    // Positivkontrolle zu T10: dasselbe Formular feuert. Ob das eine Ueberzaehlung ist,
+    // ist Vorrat P12.5-17 der Phase 12.5 (ungemessen).
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(SCHATTEN_FORM, [track("ps-cccccc", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click("input");
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+  });
+
+  it("T10b: <form> OHNE Aktion in einem Element MIT Aktion — Klick ins <input> -> 0 (mit Positivkontrolle)", () => {
+    // Die Suche laeuft nicht aus einem <form> ohne Aktion heraus (Mutation M6b) —
+    // Auslegung zu Entscheidung P12.5-15 der Phase 12.5: vor der Scheibe feuerte hier
+    // nichts.
+    const html = `<!DOCTYPE html><html><body><div role="button" data-pagesmith-id="ps-aaaaaa"><span>Karte</span><form data-pagesmith-id="ps-cccccc" action="/x"><input type="text" name="n"></form></div></body></html>`;
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(html, [track("ps-aaaaaa", "Outer")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click("input");
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+    // POSITIVKONTROLLE im selben Lauf: ein unmarkiertes Kind ausserhalb des <form> feuert.
+    click("span");
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+  });
+});

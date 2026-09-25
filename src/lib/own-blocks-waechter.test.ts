@@ -1,19 +1,29 @@
 // DER BYTE-WAECHTER UEBER DEN AUSGELIEFERTEN TEXT (Phase 11.11, Scheibe 11.11d;
-// Entscheidung P11.11-22, Punkt (g)).
+// Entscheidung P11.11-22, Punkt (g)) — SEIT DER PHASE 12.5, SCHEIBE 1, EIN
+// DIFFERENZ-NACHWEIS (Entscheidung P12.5-14 der Phase 12.5).
 //
-// WAS ER FESTNAGELT: Die Scheibe 11.11d hat an den zwei ERZEUGERN des ausgelieferten
+// WOHER ER KOMMT: Die Scheibe 11.11d hat an den zwei ERZEUGERN des ausgelieferten
 // Textes je EIN Wort geaendert — `export` an MAPPINGS_SCRIPT_ID (lib/generate.ts) und
 // an SCRIPT_ID (lib/analytics/pageview-emitter.ts). Ein Export aendert kein Verhalten;
-// dieser Waechter belegt, dass der erzeugte Text davon byte-gleich unberuehrt ist.
+// dieser Waechter belegte damals, dass der erzeugte Text davon byte-gleich unberuehrt ist.
 //
-// DIE SOLLWERTE SIND VOR DER ERSTEN ZEILE PRODUKTIVCODE ERHOBEN WORDEN und stehen in
-// docs/claude-history/phase-11.11-import-bereinigung.md, ENTSCHEIDUNG P11.11-22, Punkt (g). Nach dem Bau sind sie nicht
-// mehr herstellbar (docs/immer-beachten.md, EIN VORHER-WERT WIRD VOR DEM DEPLOY
-// GESICHERT).
+// WAS ER HEUTE FESTNAGELT: Die Schatten-Korrektur (Phase 12.5, Scheibe 1) aendert das
+// Wiring-Script BEWUSST — als reine EINSETZUNG an drei Stellen (E1–E3 unten). Nach
+// docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN
+// DIFFERENZ-NACHWEIS AN IHRE STELLE", gilt jetzt: der erzeugte Text ist der alte plus
+// GENAU diese Einsetzungen, sonst kein Zeichen. Geprueft wird: jede Einsetzung steht
+// genau so oft da wie vorher genannt; nach ihrer Entfernung ist der Text byte-gleich zum
+// Sollwert; ohne die Entfernung weicht er ab (Positivkontrolle).
 //
-// WIRD ER ROT, IST DAS EIN STOPP UND KEINE ANPASSUNG DES SOLLWERTS. Ein nachgezogener
-// Sollwert waere genau der SPIEGEL, den Entscheidung P11.11-18 verbietet: Er
-// bestaetigte jede Aenderung, statt sie zu fangen.
+// DIE SOLLWERTE SIND UNVERAENDERT die vor der Scheibe 11.11d erhobenen und stehen in
+// docs/claude-history/phase-11.11-import-bereinigung.md, ENTSCHEIDUNG P11.11-22, Punkt (g).
+// DIE EINSETZUNGEN SIND AUS DEM BAU-AUFTRAG DER SCHEIBE GETIPPT, NICHT aus dem Code
+// abgelesen oder importiert — sonst waere der Nachweis ein Spiegel.
+//
+// WIRD ER ROT, IST DAS EIN STOPP UND KEINE ANPASSUNG DES SOLLWERTS ODER DER EINSETZUNGEN.
+// Ein nachgezogener Wert waere genau der SPIEGEL, den Entscheidung P11.11-18 verbietet:
+// Er bestaetigte jede Aenderung, statt sie zu fangen. Eine weitere bewusste Aenderung am
+// erzeugten Text braucht eine eigene Entscheidung und eine eigene benannte Einsetzung.
 //
 // SEINE GRENZE GEHOERT AN IHN SELBST: Der Aufbau ist eine SONDE, keine reale
 // Kundenseite. Er sagt, dass DIESE Eingabe DIESEN Text erzeugt — nicht, dass eine von
@@ -63,6 +73,47 @@ const sha = (s: string) =>
   createHash("sha256").update(s, "utf8").digest("hex");
 const bytes = (s: string) => Buffer.byteLength(s, "utf8");
 
+// DIE EINSETZUNGEN DER SCHATTEN-KORREKTUR (Phase 12.5, Scheibe 1) — GETIPPT aus dem
+// Bau-Auftrag, nicht aus generate.ts abgelesen. Der Attributname steht aufgeloest da,
+// so wie er im erzeugten Text steht.
+// E1: die zwei lokalen Funktionen hinter der byId-Schleife.
+const E1 = [
+  "  // SCHATTEN-KORREKTUR (Phase 12.5, Scheibe 1): traegt das innerste markierte",
+  "  // Element keine Klick-Aktion (track/redirect), gilt der Klick dem naechsten",
+  "  // markierten Vorfahren, der eine traegt. Halt am ERSTEN -> hoechstens die",
+  "  // Aktionen EINES Elements je Klick. text zaehlt nicht (in der Vorschau steht",
+  "  // er in der Tabelle). Ein <form> beendet die Suche: weder wird von unten in",
+  "  // ein <form> gelaufen noch aus einem <form> ohne Aktion heraus.",
+  "  function hasClickAction(list) {",
+  "    if (!list) return false;",
+  "    for (var h = 0; h < list.length; h++) {",
+  '      if (list[h].type === "track" || list[h].type === "redirect") return true;',
+  "    }",
+  "    return false;",
+  "  }",
+  "  function actionOwner(el) {",
+  '    while (el && !hasClickAction(byId[el.getAttribute("data-pagesmith-id")])) {',
+  '      if (el.tagName === "FORM") return null;',
+  '      el = el.parentElement ? el.parentElement.closest("[data-pagesmith-id]") : null;',
+  '      if (el && el.tagName === "FORM") return null;',
+  "    }",
+  "    return el;",
+  "  }",
+  "",
+].join("\n");
+// E2 (click-Listener) und E3 (auxclick-Listener): je EINE Zeile. Der fuehrende
+// Zeilenumbruch gehoert dazu — erst er macht die beiden disjunkt (ohne ihn waere E2
+// wegen der kuerzeren Einrueckung ein Teilstring von E3).
+const E2 = "\n      el = actionOwner(el);";
+const E3 = "\n        el = actionOwner(el);";
+
+// Wie oft eine Einsetzung im Text steht (nicht ueberlappend).
+const count = (s: string, part: string) => s.split(part).length - 1;
+// Der Text ohne die Einsetzungen: E3 vor E2 ist fuer das Ergebnis gleichgueltig
+// (disjunkt, s.o.), die Reihenfolge ist nur festgelegt, damit sie reproduzierbar ist.
+const withoutInsertions = (s: string) =>
+  s.split(E1).join("").split(E3).join("").split(E2).join("");
+
 function exportDoc(): string {
   return generateFunctional(SAUBER, MAPPINGS, "export", OPTS);
 }
@@ -76,16 +127,33 @@ function publishedDoc(): string {
 }
 
 describe("Byte-Waechter: der ausgelieferte Text eines SAUBEREN Projekts", () => {
-  it("W1: generateFunctional('export') liefert den Vorher-Wert byte-gleich", () => {
+  it("W1': generateFunctional('export') = Vorher-Wert plus GENAU die Einsetzungen E1–E3", () => {
     const doc = exportDoc();
-    expect(bytes(doc)).toBe(SOLL_EXPORT.bytes);
-    expect(sha(doc)).toBe(SOLL_EXPORT.sha256);
+    // (3) die Einsetzungen zaehlen — erwartet je GENAU EINMAL (ein Wiring-Script mit
+    // click- UND auxclick-Listener, weil die Sonde exportiert).
+    expect(count(doc, E1)).toBe(1);
+    expect(count(doc, E2)).toBe(1);
+    expect(count(doc, E3)).toBe(1);
+    // (4) entfernen -> byte-gleich zum Vorher-Wert.
+    const rest = withoutInsertions(doc);
+    expect(bytes(rest)).toBe(SOLL_EXPORT.bytes);
+    expect(sha(rest)).toBe(SOLL_EXPORT.sha256);
+    // (5) POSITIVKONTROLLE: ohne die Entfernung weicht der Text ab.
+    expect(sha(doc)).not.toBe(SOLL_EXPORT.sha256);
+    expect(bytes(doc)).not.toBe(SOLL_EXPORT.bytes);
   });
 
-  it("W2: danach injectPageViewEmitter liefert den Vorher-Wert byte-gleich", () => {
+  it("W2': danach injectPageViewEmitter = Vorher-Wert plus GENAU die Einsetzungen E1–E3", () => {
     const doc = publishedDoc();
-    expect(bytes(doc)).toBe(SOLL_PUBLISHED.bytes);
-    expect(sha(doc)).toBe(SOLL_PUBLISHED.sha256);
+    expect(count(doc, E1)).toBe(1);
+    expect(count(doc, E2)).toBe(1);
+    expect(count(doc, E3)).toBe(1);
+    const rest = withoutInsertions(doc);
+    expect(bytes(rest)).toBe(SOLL_PUBLISHED.bytes);
+    expect(sha(rest)).toBe(SOLL_PUBLISHED.sha256);
+    // POSITIVKONTROLLE.
+    expect(sha(doc)).not.toBe(SOLL_PUBLISHED.sha256);
+    expect(bytes(doc)).not.toBe(SOLL_PUBLISHED.bytes);
   });
 
   it("W3: der erzeugte Text ist DETERMINISTISCH — zwei Laeufe, ein Ergebnis", () => {

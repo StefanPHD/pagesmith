@@ -93,19 +93,73 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
   // Byte-Gleichheit verletzt — dann ist das der Befund —, oder der ausgelieferte
   // Text hat sich aus einem ANDEREN, bewussten Grund geaendert; dann wird der
   // Vergleichswert eigens neu erhoben und die Aenderung benannt.
+  //
+  // SEIT DER PHASE 12.5, SCHEIBE 1, EIN DIFFERENZ-NACHWEIS (Entscheidung P12.5-19 der
+  // Phase 12.5; docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN
+  // WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE"). Die Schatten-Korrektur setzt
+  // BEWUSST drei Stuecke in das Wiring-Script ein (E1–E3 unten). Die Vergleichswerte
+  // sind UNVERAENDERT; sie stehen jetzt auf der ENTFERNTEN Seite: der Text ist der von
+  // vor 11.5a plus GENAU diese Einsetzungen, sonst kein Zeichen. Die Einsetzungen sind
+  // aus dem Bau-Auftrag der Scheibe GETIPPT, nicht aus generate.ts abgelesen; dieselbe
+  // Abschrift steht eigens in own-blocks-waechter.test.ts und custom-pixel.test.ts
+  // (A1: jede Abschrift wird fuer sich gegen den Code geprueft).
   const BASELINE_BYTES = 14160;
   const BASELINE_SHA256 =
     "a953b21e5683129da7868e01efa8a07a10334f29c09cabbfbed1da145fc04faa";
 
-  it("T1: bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text BYTE-GLEICH zu vor der Scheibe", () => {
+  // E1: die zwei lokalen Funktionen hinter der byId-Schleife des Wiring-Scripts.
+  const E1 = [
+    "  // SCHATTEN-KORREKTUR (Phase 12.5, Scheibe 1): traegt das innerste markierte",
+    "  // Element keine Klick-Aktion (track/redirect), gilt der Klick dem naechsten",
+    "  // markierten Vorfahren, der eine traegt. Halt am ERSTEN -> hoechstens die",
+    "  // Aktionen EINES Elements je Klick. text zaehlt nicht (in der Vorschau steht",
+    "  // er in der Tabelle). Ein <form> beendet die Suche: weder wird von unten in",
+    "  // ein <form> gelaufen noch aus einem <form> ohne Aktion heraus.",
+    "  function hasClickAction(list) {",
+    "    if (!list) return false;",
+    "    for (var h = 0; h < list.length; h++) {",
+    '      if (list[h].type === "track" || list[h].type === "redirect") return true;',
+    "    }",
+    "    return false;",
+    "  }",
+    "  function actionOwner(el) {",
+    '    while (el && !hasClickAction(byId[el.getAttribute("data-pagesmith-id")])) {',
+    '      if (el.tagName === "FORM") return null;',
+    '      el = el.parentElement ? el.parentElement.closest("[data-pagesmith-id]") : null;',
+    '      if (el && el.tagName === "FORM") return null;',
+    "    }",
+    "    return el;",
+    "  }",
+    "",
+  ].join("\n");
+  // E2 (click-Listener), E3 (auxclick-Listener): der fuehrende Zeilenumbruch macht sie
+  // disjunkt — ohne ihn waere E2 ein Teilstring von E3.
+  const E2 = "\n      el = actionOwner(el);";
+  const E3 = "\n        el = actionOwner(el);";
+  const count = (s: string, part: string) => s.split(part).length - 1;
+  const withoutInsertions = (s: string) =>
+    s.split(E1).join("").split(E3).join("").split(E2).join("");
+
+  it("T1: bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text der von vor der Scheibe plus GENAU E1–E3", () => {
     const out = deliver("off");
     // DER DISKRIMINATOR GEGEN EINEN NEBENEFFEKT-ZWEIG: Diese Fixture hat eine
     // NICHT-LEERE Schluesselmenge. Haenge der Zweig an der Leere einer Menge statt
     // am Schalter, entstuende hier ein Setzer und beide Zusicherungen fielen.
-    expect(Buffer.byteLength(out, "utf8")).toBe(BASELINE_BYTES);
-    expect(createHash("sha256").update(out, "utf8").digest("hex")).toBe(
+    // Die Einsetzungen, erwartet je GENAU EINMAL (ein Wiring-Script, Export mit
+    // click- und auxclick-Listener).
+    expect(count(out, E1)).toBe(1);
+    expect(count(out, E2)).toBe(1);
+    expect(count(out, E3)).toBe(1);
+    const rest = withoutInsertions(out);
+    expect(Buffer.byteLength(rest, "utf8")).toBe(BASELINE_BYTES);
+    expect(createHash("sha256").update(rest, "utf8").digest("hex")).toBe(
       BASELINE_SHA256
     );
+    // POSITIVKONTROLLE: ohne die Entfernung weicht der Text ab.
+    expect(createHash("sha256").update(out, "utf8").digest("hex")).not.toBe(
+      BASELINE_SHA256
+    );
+    expect(Buffer.byteLength(out, "utf8")).not.toBe(BASELINE_BYTES);
     // Diagnose-Hilfe, falls die Zahlen oben fallen: sagt, WAS zuviel drin ist.
     expect(out).not.toContain(CONSENT_SETTER_SCRIPT_ID);
   });

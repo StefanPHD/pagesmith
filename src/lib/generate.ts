@@ -3,8 +3,9 @@
 // Cheerio) — client-seitig via DOMParser, konsistent zur Detection in detect.ts.
 //
 // Sie verdrahtet die erfassten Aktionen in ein funktionales HTML: ein injiziertes
-// Laufzeit-Script haengt pro data-pagesmith-id einen Click-Handler. Bisher haben
-// wir nur die ABSICHT erfasst; hier feuert der Button wirklich.
+// Laufzeit-Script haengt EINEN delegierten Click-Handler an document und ordnet
+// jeden Klick per data-pagesmith-id einem Element zu (siehe buildWiringScript).
+// Bisher haben wir nur die ABSICHT erfasst; hier feuert der Button wirklich.
 
 import type { Mapping } from "./mappings";
 import { buildMetaRuntime, metaTrackStatement } from "./tracking/meta";
@@ -41,6 +42,16 @@ export type GenerateMode = "export" | "preview" | "edit";
 //
 // EXPORT (echte Produktionslogik): kein Mapping -> Default bleibt; Mapping ->
 //   openInNewTab ? window.open('_blank') : location.href.
+//
+// WELCHES ELEMENT EIN KLICK TRIFFT (Phase 12.5, Scheibe 1 — Schatten-Korrektur):
+// das innerste markierte Element, das eine Klick-Aktion (track/redirect) traegt.
+// Traegt das innerste keine (z.B. ein markiertes <h2> in einem <a> mit Track),
+// gilt der Klick dem naechsten markierten Vorfahren mit Aktion — Halt am ersten,
+// nie die Aktionen zweier Elemente. text zaehlt nicht als Klick-Aktion. Ein <form>
+// beendet die Suche (Formulare verhalten sich wie vor der Scheibe; Entscheidung
+// P12.5-15 der Phase 12.5). Die Editor-Bruecke (LISTENER_SCRIPT, detect.ts) waehlt
+// weiter das innerste markierte Element — sie ist bewusst NICHT mitgezogen. Click
+// und auxclick nutzen dieselbe Suche (actionOwner).
 // PREVIEW (srcDoc-iframe erbt unsere Origin -> Containment noetig): gemappte
 //   Weiterleitung oeffnet IMMER escaped einen neuen Tab (openInNewTab ignoriert,
 //   NIE location.href, das wuerde das iframe selbst framen); JEDER andere
@@ -139,6 +150,27 @@ function buildWiringScript(
     var id = table[i].elementId;
     (byId[id] = byId[id] || []).push(table[i]);
   }
+  // SCHATTEN-KORREKTUR (Phase 12.5, Scheibe 1): traegt das innerste markierte
+  // Element keine Klick-Aktion (track/redirect), gilt der Klick dem naechsten
+  // markierten Vorfahren, der eine traegt. Halt am ERSTEN -> hoechstens die
+  // Aktionen EINES Elements je Klick. text zaehlt nicht (in der Vorschau steht
+  // er in der Tabelle). Ein <form> beendet die Suche: weder wird von unten in
+  // ein <form> gelaufen noch aus einem <form> ohne Aktion heraus.
+  function hasClickAction(list) {
+    if (!list) return false;
+    for (var h = 0; h < list.length; h++) {
+      if (list[h].type === "track" || list[h].type === "redirect") return true;
+    }
+    return false;
+  }
+  function actionOwner(el) {
+    while (el && !hasClickAction(byId[el.getAttribute("${PAGESMITH_ID_ATTR}")])) {
+      if (el.tagName === "FORM") return null;
+      el = el.parentElement ? el.parentElement.closest("[${PAGESMITH_ID_ATTR}]") : null;
+      if (el && el.tagName === "FORM") return null;
+    }
+    return el;
+  }
   // Text-Override (Vorschau + Editieren, einmalig beim Laden). Im Export ist kein
   // text-Mapping im Datenblock -> diese Schleife findet nichts.
   if (MODE !== "export") {
@@ -161,6 +193,7 @@ function buildWiringScript(
       var t = e.target;
       if (!t || typeof t.closest !== "function") return;
       var el = t.closest("[${PAGESMITH_ID_ATTR}]");
+      el = actionOwner(el);
       var actions = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
       if (actions && actions.length) {
         // Track-Aktionen feuern SOFORT in der Schleife; die (max. eine) Redirect-
@@ -222,6 +255,7 @@ function buildWiringScript(
         var t = e.target;
         if (!t || typeof t.closest !== "function") return;
         var el = t.closest("[${PAGESMITH_ID_ATTR}]");
+        el = actionOwner(el);
         var actions = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
         if (!actions || !actions.length) return;
         for (var j = 0; j < actions.length; j++) {

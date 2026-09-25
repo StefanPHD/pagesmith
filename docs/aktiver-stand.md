@@ -208,27 +208,27 @@ daher kein Bau-Commit: eine Live-Probe des Owners, dazu eine Ablesung am Code).*
 
 ## Scheibe 1 — Schatten-Korrektur
 
-**ZIEL** (Entscheidung P12.5-2; Befund: Vermerk P12.5-9): Trägt das innerste markierte
-Element keine Klick-Aktion (`track` oder `redirect`), löst ein Klick zur Laufzeit die Aktion
-des nächsten markierten Vorfahren aus, der eine trägt. Die Editor-Auswahl bleibt beim
-innersten Element — das `<h2>` bleibt einzeln bearbeitbar. Die Korrektur liegt allein in
-`buildWiringScript` (src/lib/generate.ts); `LISTENER_SCRIPT` (src/lib/detect.ts) bleibt
-unverändert. PROVENIENZ: Plan- und Bau-Auftrag des Architekten, 2026-09-25.
+**ABGESCHLOSSEN AM 2026-09-25 — Bau-Commit `5f1f4bf`, Live-Test bestanden; Abschluss-Vermerk
+P12.5-20.** Der Zuschnitt ist verdichtet: Hier stehen nur noch die Invarianten und
+Entscheidungen, die über die Scheibe hinaus binden, dazu die Vermerke und der Vorrat der
+Scheibe. Was gestrichen ist und wo sein Inhalt steht: Vermerk P12.5-20, Punkt (7).
 
-**INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-25, wörtlich):
+**INVARIANTEN, DIE ÜBER DIE SCHEIBE HINAUS BINDEN** (ARCHITEKT, Plan-Auftrag 2026-09-25,
+wörtlich; Nummern wie im Plan):
 - (I1) Die Editor-Auswahl trifft weiter das innerste markierte Element.
+  WÄCHTER: T8 in src/lib/detect.test.ts (Mutation M5, Vermerk P12.5-20).
 - (I2) Pro Klick höchstens EINE Aktion — die des innersten Elements, das eine Aktion trägt.
   Nie zwei (doppelte Conversion unter geteilter eventID wäre die Folge).
   LESART (CC im Plan, 2026-09-25): die Aktionen EINES Elements — ein Element mit `redirect`
   und `track` führt beide aus; je Element und Typ gibt es höchstens ein Mapping
-  (`upsertMapping`, src/lib/mappings.ts, GELESEN).
+  (`upsertMapping`, src/lib/mappings.ts, GELESEN). WÄCHTER: T5 in src/lib/generate.test.ts
+  (Mutation M2).
 - (I3) Die Form des Datenblocks { elementId, type, config } und das Attribut
   data-pagesmith-id bleiben unverändert; bereits veröffentlichte Datenblöcke bleiben gültig.
-- (I4) Eine Seite ohne Laufzeit-Aktion bekommt weiter KEIN Skript.
-- (I5) Ein Klick direkt auf das Element mit Aktion verhält sich wie heute.
-- (I6) ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts und alles unter src/lib/capi/ und
-  src/lib/tracking/ bleiben unberührt — auch nicht "nur schnell".
-  AUSNAHME für genau zwei Testdateien: Entscheidung P12.5-19.
+GRUND DES BLEIBENS (CC, Verdichtung 2026-09-25): Die drei beschreiben Eigenschaften der
+Editor-Brücke (`LISTENER_SCRIPT`), des ausgelieferten Wirings (`buildWiringScript`) und des
+Datenblocks, auf die spätere Arbeit trifft — das Editor-Gerüst (Entscheidung P12.5-7) an der
+Brücke, ein zweiter Änderungstyp (Kandidat K1, Vermerk P12.5-8, Punkt (7)) am Datenblock.
 
 **Vermerk P12.5-13 — DER BYTE-WÄCHTER PINNT DAS KLICK-SKRIPT (Gate G8 des Plans; GEMESSEN, CC,
 2026-09-25, HEAD `0529e02`).** Die Tests W1 und W2 in src/lib/own-blocks-waechter.test.ts
@@ -249,25 +249,36 @@ Die Nadel
 `WIRING_NEEDLE` (src/lib/own-blocks.ts) ist `getElementById("pagesmith-mappings")`; diese
 Zeile des Skripts bleibt unberührt.
 
-**Entscheidung P12.5-14 (D1 des Plans) — DIFFERENZ-NACHWEIS STATT BYTE-GLEICHHEIT.** W1 und W2
-werden nach docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN
-DIFFERENZ-NACHWEIS AN IHRE STELLE …" umgestellt. Die Sollwerte bleiben UNVERÄNDERT und sind
-der Vorher-Wert; die Korrektur wird als reine EINSETZUNG gebaut, deren Wortlaut der Test aus
-dem freigegebenen Plan tippt, nicht aus dem Code; der Kopf des Wächters wird im selben Commit
-neu gefasst. GRUND: Ein aus dem Bau abgelesener Sollwert wäre der Spiegel, den Entscheidung
-P11.11-18 der Phase 11.11 verbietet; ohne Textänderung ist die Korrektur nicht zu bauen — der
-Datenblock ist durch (I3) gesperrt, ein zweites Script änderte den Text ebenso. PROVENIENZ:
-ARCHITEKT, 2026-09-25.
+**Entscheidung P12.5-14 (D1 des Plans) — DIFFERENZ-NACHWEIS STATT BYTE-GLEICHHEIT.** Das
+Wiring-Script ist an VIER Stellen byte-genau festgeschrieben: W1' und W2'
+(src/lib/own-blocks-waechter.test.ts), T1 (src/lib/tracking/consent-setter.test.ts), T9
+(src/lib/tracking/custom-pixel.test.ts); T1 und T9 kraft Entscheidung P12.5-19. Alle vier sind
+seit Bau-Commit `5f1f4bf` Differenz-Nachweise nach docs/immer-beachten.md, "WO EINE
+BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE …": Die
+Sollwerte sind die UNVERÄNDERTEN Vorher-Werte; die Einsetzungen E1–E3 stehen in jeder der drei
+Dateien eigens abgetippt, nicht aus dem Code abgelesen; geprüft werden ihre Anzahl, die
+Gleichheit nach dem Entfernen in Bytes und sha256 und die Abweichung ohne das Entfernen.
+BINDET JEDE KÜNFTIGE ÄNDERUNG AM ERZEUGTEN TEXT: Sollwerte und Einsetzungen werden nie aus dem
+Bau nachgezogen; eine weitere bewusste Änderung braucht eine eigene Entscheidung und eine
+eigene benannte Einsetzung, in ALLEN vier Nachweisen (so auch der Kopf von
+src/lib/own-blocks-waechter.test.ts, Bau-Commit `5f1f4bf`). GRUND: Ein aus dem Bau abgelesener
+Sollwert wäre der Spiegel, den Entscheidung P11.11-18 der Phase 11.11 verbietet; ohne
+Textänderung war die Korrektur nicht zu bauen — der Datenblock ist durch (I3) gesperrt, ein
+zweites Script änderte den Text ebenso. PROVENIENZ: ARCHITEKT, 2026-09-25.
 
 **Entscheidung P12.5-15 (D2 des Plans) — FORMULARE BLEIBEN EXAKT WIE HEUTE.** Die Suche nach
 oben läuft nicht in ein `<form>` hinein: erreicht sie ein FORM, endet sie mit null. Ein
 direkter Treffer auf das `<form>` (`closest` liefert es selbst) bleibt unverändert. GRUND: Der
 Befund aus Vorrat P12.5-17 deutet auf heutige Überzählung; die Scheibe weitet ihn nicht aus.
-PROVENIENZ: ARCHITEKT, 2026-09-25.
+PROVENIENZ: ARCHITEKT, 2026-09-25. "HEUTE" meint den Stand vor Bau-Commit `5f1f4bf`.
 AUSLEGUNG IM BAU (CC, 2026-09-25): Ein direkter Treffer auf ein `<form>` OHNE Klick-Aktion
 läuft ebenfalls nicht weiter nach oben — sonst löste ein Klick in ein Formular ohne Aktion,
 das in einem Element mit Aktion liegt, künftig dessen Aktion aus, und das Formular verhielte
 sich anders als heute.
+GEBAUT als die zwei FORM-Zeilen in `actionOwner` (`buildWiringScript`, src/lib/generate.ts).
+WÄCHTER in src/lib/generate.test.ts: T10 (Mutation M6a), T10b (Mutation M6b), dazu
+"T10 BESTAND" als Festschreibung des Verhaltens vor der Scheibe, ausdrücklich kein Soll.
+BINDET, BIS VORRAT P12.5-17 GEMESSEN UND ENTSCHIEDEN IST.
 
 **Entscheidung P12.5-16 (D3 des Plans) — P11.12-2 WIRD NICHT MITGENOMMEN.** GRUND: Die falsche
 Begründung steht in src/lib/generate.ts ZWEIMAL — im Kopfkommentar von `buildWiringScript`
@@ -276,6 +287,11 @@ ausserhalb des Scripts und im Kommentar INNERHALB des ausgelieferten Scripts ("s
 (Entscheidung P12.5-14); nur die äussere zu ändern fiele unter docs/immer-beachten.md, "WER
 EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR FALLE". PROVENIENZ: Vorschlag CC im
 Plan, ARCHITEKT-Entscheidung 2026-09-25.
+BINDET ÜBER DIE SCHEIBE HINAUS (CC, Verdichtung 2026-09-25): Wer den Backlog-Posten
+"(P11.12-2) DER KOPFKOMMENTAR VON `src/lib/generate.ts` BEGRÜNDET DAS PREVIEW-CONTAINMENT
+FALSCH." abarbeitet, ändert mit der inneren Stelle den ausgelieferten Text — die vier
+Differenz-Nachweise (Entscheidung P12.5-14) werden dann rot, und die Änderung braucht eine
+eigene Entscheidung.
 
 **Vorrat P12.5-17 — DER TRACK EINES FORMULARS FEUERT BEI JEDEM KLICK AUF EIN UNMARKIERTES
 KIND.** ABGELEITET am Code (CC, 2026-09-25), UNGEMESSEN. Der Click-Listener in
@@ -331,6 +347,101 @@ Probe aus Vermerk P12.5-18, Punkt (4), zeigt, dass der Nachweis dort aufgeht. Je
 eigene Abschrift (A1) statt einer gemeinsamen Hilfsdatei (A2): jede Abschrift wird für sich
 gegen den Code geprüft, ein Auseinanderlaufen macht den betroffenen Test rot — und eine neue
 Datei verlangte eine eigene Owner-Entscheidung. PROVENIENZ: ARCHITEKT, 2026-09-25.
+(I6) ist mit der Verdichtung aus dem Abschnitt gestrichen; sein Wortlaut steht in Vermerk
+P12.5-20, Punkt (7).
+
+**Vermerk P12.5-20 — ABSCHLUSS DER SCHEIBE 1 (SCHATTEN-KORREKTUR). Bau-Commit `5f1f4bf`**
+("fix(generate): Klick auf markiertes Kind loest die Aktion des naechsten Vorfahren aus");
+Doku-Commits der Scheibe `8cf167d` (Zuschnitt) und `3efdb43` (Pin-Inventur, Entscheidung
+P12.5-19).
+(1) GEBAUT (GEMESSEN am Repo, CC, 2026-09-25): In `buildWiringScript` (src/lib/generate.ts) drei
+    Einsetzungen — E1, die lokalen Funktionen `hasClickAction` und `actionOwner` hinter der
+    `byId`-Schleife; E2 und E3, je ein Aufruf `el = actionOwner(el);` im click- und im
+    auxclick-Listener. `LISTENER_SCRIPT` (src/lib/detect.ts) unverändert. Tests in
+    src/lib/generate.test.ts, Block "Schatten-Korrektur (Phase 12.5, Scheibe 1)": T1–T7, T7b,
+    T10, "T10 BESTAND", T10b; in src/lib/detect.test.ts: T8 mit eigenem Seam.
+(2) GATES (CC, 2026-09-25): `tsc --noEmit` exit 0 · `eslint` 0 Fehler, 1 vorbestehende Warnung
+    (src/lib/tracking/consent.test.ts) · `vitest run` 98 Dateien, 2292 Tests grün, vorher
+    2280 · `next build` exit 0.
+(3) MUTATIONEN (CC, 2026-09-25; je volle Suite, Rücknahme per sha256 geprüft), fachlich rot:
+    M1 (Rückfall auf das innerste markierte Element) -> T1, T4, T6, T7 · M2 (kein Halt am
+    ersten Treffer) -> T5 · M3 (jeder Tabelleneintrag zählt als Aktion) -> NUR T6 · M4 (E3
+    entfernt) -> NUR T7 · M5 (Brücke wählt das äussere Element) -> NUR T8 · M6a (FORM-Halt nach
+    dem Hochschritt entfernt) -> NUR T10 · M6b (FORM-Halt am Start entfernt) -> NUR T10b. Jede
+    Mutation in generate.ts macht zusätzlich die vier Differenz-Nachweise rot (W1', W2', T1,
+    T9) — eine KASKADE, nicht als Treffer gezählt; M5 (detect.ts) hat keine. Alle sieben wie
+    vorhergesagt, keine blieb grün. Die Suche nach weiteren Pins ohne Kappung fand keinen
+    (Achsen und Positivkontrolle: Vermerk P12.5-18).
+(4) LIVE-TEST — GEMESSEN, OWNER, LIVE, 2026-09-25, Seite "Schatten Test" (von CC nicht
+    prüfbar):
+    · Neu veröffentlicht nach dem Deploy; eine Vorher-Kontrolle entfiel, weil die Seite schon
+      neu veröffentlicht war. Seitenquelltext: "actionOwner" 3 Treffer.
+    · R1 Linksklick Rand: 2 Requests `/api/e`, 204, "Lead". R2 Mittelklick Rand: 2 Requests,
+      204. R3 Rechtsklick Rand: 0.
+    · F1 Linksklick `<h2>`: 2 Requests, 204, "Lead", Sprung nach `#unten` erfolgt. F2
+      Mittelklick `<h2>`: 2 Requests, 204. F3 Rechtsklick `<h2>`: 0.
+    · Nachmessung an F1, beide Payloads geöffnet: gleiche eventID
+      4946908c-5846-4842-99c6-09bc5f194433. Request 1 trägt `cns` {meta:true}, `_fbp`,
+      `eventSourceUrl`, `isCustom`:false. Request 2 trägt `obs` "__ps_browser". R1, R2 und F2
+      sind nur gezählt, nicht geöffnet.
+    · Editor: Klick auf `<h2>` wählt das `<h2>` (nur "Text bearbeiten"); Klick auf den Rand
+      wählt das `<a>`; in der Vorschau bleibt der Rahmen beim Klick auf das `<h2>` stehen.
+    · OWNER-ANGABE: Bei Track-Ereignissen waren es schon immer zwei Requests, beim PageView
+      einer.
+(5) ZWEI REQUESTS JE TRACK-KLICK — KEIN NEUER BEFUND, SONDERN EIN FEHLER DER LIVE-ANLEITUNG.
+    Plan und Live-Anleitung der Scheibe (CC, 2026-09-25) erwarteten "genau 1 Request"; das war
+    falsch. Das Muster ist beschrieben — GELESEN am Repo, CC, 2026-09-25:
+    · Code, src/lib/tracking/meta.ts: `buildCapiBeaconStatement` baut den Beacon mit
+      `eventSourceUrl`, `isCustom`, dem Einwilligungsfeld (`CONSENT_WIRE_FIELD` = "cns",
+      src/lib/tracking/consent-wire.ts) und `_fbp`; `buildPixelConfirmStatement` baut die
+      Bestätigung mit derselben eventID (`eid`), dem echten Ereignisnamen und
+      `obs` = `BROWSER_CONFIRM_MARKER` ("__ps_browser", src/lib/analytics/events.ts), ohne
+      `value`/`currency`/`_fbp`/`eventSourceUrl`. Gesendet wird sie über `__psConfirm` in
+      `buildMetaRuntime` — sofort bei Pixel-Zustand "ok", gepuffert bei "pending", verworfen
+      bei "blocked"/"foreign" (`__psPixelResolve`).
+    · Doku: docs/immer-beachten.md, "BESTÄTIGUNGEN/CONFIRMS NIE AN META FORWARDEN" — "Das
+      Adblock-Bestätigungs-Beacon (source='browser') trägt DIESELBE eventID wie die echte
+      Conversion".
+    Die an F1 geöffneten Payloads stimmen mit diesen zwei Bauformen überein; einen Widerspruch
+    zu Code oder Doku gibt es nicht. ABGELEITET, NICHT GEMESSEN: Bei blockiertem Meta-Pixel
+    entsteht die Bestätigung nicht — dann ein Request je Track-Klick.
+(6) GRENZEN DER MESSUNG:
+    · Das Paar Beacon/Bestätigung ist NUR an F1 geöffnet; dass die je zwei Requests von R1, R2
+      und F2 dasselbe Paar sind, ist nicht gezeigt, nur gezählt.
+    · Die Vorher-Kontrolle ("actionOwner" 0 Treffer vor dem Neu-Veröffentlichen) entfiel. Das
+      ist tragbar: "actionOwner" existierte vor dem Bau-Commit nirgends im Repo — GEMESSEN (CC,
+      2026-09-25): `git grep "actionOwner"` auf `5f1f4bf^` 0 Treffer (Positivkontrolle
+      `buildWiringScript` auf `5f1f4bf^`: Treffer), auf `5f1f4bf` Treffer in vier Dateien. Ein
+      Text ohne die Korrektur kann die Zeichenkette nicht tragen.
+    · Die Sprung-Frage aus Vermerk P12.5-9, Punkt (3), ist nur für den NEUEN Text beantwortet
+      (F1: Sprung erfolgt); für den alten bleibt sie offen.
+    · Welche weiteren Projekte seit dem Bau-Commit neu veröffentlicht sind, ist nicht erhoben.
+    WIRKUNG: erst nach erneutem Veröffentlichen — die Serve-Route liefert den gespeicherten
+    Text (Vermerk P12.5-9, Punkt (4)); jede nicht neu veröffentlichte Seite trägt weiter den
+    Text ohne Korrektur. Heruntergeladene Exporte bleiben unverändert.
+(7) VERDICHTUNG DES ZUSCHNITTS (CC, 2026-09-25) — GESTRICHEN, weil mit der Scheibe
+    abgelaufen, mit ihrem Inhalt:
+    · ZIEL: "Trägt das innerste markierte Element keine Klick-Aktion (`track` oder
+      `redirect`), löst ein Klick zur Laufzeit die Aktion des nächsten markierten Vorfahren
+      aus, der eine trägt. Die Editor-Auswahl bleibt beim innersten Element — das `<h2>`
+      bleibt einzeln bearbeitbar. Die Korrektur liegt allein in `buildWiringScript`
+      (src/lib/generate.ts); `LISTENER_SCRIPT` (src/lib/detect.ts) bleibt unverändert." —
+      erfüllt, Punkte (1) und (4).
+    · (I4) "Eine Seite ohne Laufzeit-Aktion bekommt weiter KEIN Skript." — Bestandsregel, steht
+      am Ort der Handlung (`injectScripts` in `generateFunctional`; Test "REINE TEXTSEITE: kein
+      Konsument -> KEIN Block, KEIN Script (Zusage unveraendert)" in src/lib/generate.test.ts).
+    · (I5) "Ein Klick direkt auf das Element mit Aktion verhält sich wie heute." — relativ zum
+      Stand vor der Scheibe; gedeckt durch T2 und die Bestandstests.
+    · (I6) "ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts und alles unter src/lib/capi/
+      und src/lib/tracking/ bleiben unberührt — auch nicht 'nur schnell'." — Scope-Riegel der
+      Scheibe; seine Ausnahme bleibt als Entscheidung P12.5-19 stehen. Eingehalten: Der
+      Bau-Commit berührt unter src/lib/tracking/ nur die zwei freigegebenen Testdateien.
+    · Aus Entscheidung P12.5-14 die Bau-Anweisungen ("der Test tippt den Wortlaut aus dem
+      freigegebenen Plan", "der Kopf des Wächters wird im selben Commit neu gefasst") —
+      ausgeführt im Bau-Commit; an ihrer Stelle steht dort jetzt der gebaute Zustand.
+    GEBLIEBEN: (I1)–(I3) mit Grund · Entscheidungen P12.5-14, P12.5-15, P12.5-16 (mit einem
+    Satz, der über die Scheibe hinaus bindet), P12.5-19 · Vermerke P12.5-13, P12.5-18 · Vorrat
+    P12.5-17.
 
 ## Register der Phase 12.5
 
@@ -364,5 +475,8 @@ Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) …"): P12.5-10, P12.5-11, P12
 
 ## Nächster Schritt der Phase 12.5
 
-Der Bau der Scheibe 1 — Schatten-Korrektur (Abschnitt "Scheibe 1 — Schatten-Korrektur"),
-danach ihr Live-Test durch den Owner.
+Scheibe 1 ist abgeschlossen (Vermerk P12.5-20). Danach, in dieser Reihenfolge:
+(1) Die Messung des Formular-Befunds — Vorrat P12.5-17 (der Track eines Formulars beim Klick
+    in ein Eingabefeld; TRIGGER dort: "die nächste Messung nach Scheibe 1").
+(2) Danach Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7).
+Diese Datei entwirft keine von beiden.

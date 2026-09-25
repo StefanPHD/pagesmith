@@ -592,6 +592,9 @@ aufeinander; sie liegen alle hier und finden einander.
     Signale, keine Ablehnung und kein Fehler: pinterest verarbeitet das Ereignis und meldet
     "external_id is missing" in JEDER Antwort (GEMESSEN, docs/ziel-befunde/pinterest.md,
     Teile (al)(iv), (ar)).
+    VORBEHALT (2026-09-25): "in JEDER Antwort" ist im TESTMODUS gemessen; über den echten Weg
+    OHNE Testmodus fehlte die Warnung bei einem Aufruf (docs/ziel-befunde/pinterest.md, Teil
+    (at)). Der Satz davor bleibt wörtlich.
   EHRLICH, JE ZIEL: was Pagesmith sendet und was nicht, und warum. Die Aufstellung dessen,
   was gesendet, was ausgeschlossen und was offen ist, steht je Ziel im Archiv der Phase 11.7
   (heute: docs/aktiver-stand.md, VERMERK P11.7-25, "PUNKT 5, JE ZIEL", fortgeschrieben bis

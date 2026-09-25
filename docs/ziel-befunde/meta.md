@@ -1377,3 +1377,39 @@ Netzwerk-Tab des Browsers, während der Live-Regression nach dem Deploy des Bau-
        mit Test-Code. Dass die Pixel-Antwort 200 eine Verarbeitung belegt, ist nicht gesagt —
        sie belegt die Auslieferung der Anfrage.
 
+### ABLESUNG 2026-09-25 am Vercel-Log und an "Events testen" (Live-Test der Scheibe S10b, Phase 11.7) — der Teil (af)
+
+Provenienz: OWNER-ABLESUNGEN (2026-09-25) nach dem Deploy des Bau-Commits `ed3008b`; die
+Vercel-Zeilen hat der Architekt am Screenshot des Owners abgelesen. EIN Klick um 08:25 MESZ auf
+`https://meta-test-5nlm3e.publayer.net/?utm_source=s10b` (ohne `fbclid`), eventID
+`f1da694d-5826-4021-9441-75a393be6cbd`, `/api/e` 204, Projekt-Testmodus für meta AN
+(Test-Code). **KEIN Aufruf gegen die Schnittstelle von Hand, keine Doku-Lesung.** Die Angaben
+über unseren Adapter sind GEMESSEN am Repo (CC, 2026-09-25, HEAD `ed3008b`).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (ae) folgt (af).
+
+(af) DIE ERFOLGSANTWORT DES ENDPUNKTS HAT HTTP 200 — ERSTMALS ABGELESEN, ÜBER DIE ERFOLGSZEILE.
+     · **WAS DER ADAPTER SEIT S10b TUT — GEMESSEN am Repo:** `forwardToMeta`
+       (`src/lib/capi/meta-forward.ts`) schreibt bei jeder Antwort mit `res.ok` genau eine Zeile
+       `[capi] Meta forward accepted: HTTP <Status>` über `console.info`; der Status kommt aus der
+       Antwort, **der Rumpf wird dafür nicht gelesen.**
+     · **ABGELESEN, Klick-Anfrage:** "[capi] Meta forward accepted: HTTP 200" um 06:25:56.885
+       UTC.
+     · **DER MITLÄUFER, "Events testen":** dasselbe Ereignis (eventID wie oben), Quelle Server,
+       Status **"Verarbeitet"**, Match-Parameter IP-Adresse und User Agent.
+     **WAS DAS BEANTWORTET:** den HTTP-Status einer angenommenen Antwort unseres Adapters —
+     bis dahin stand keiner im Bestand (die Teile (aa), (ad), (ae) belegen die Ankunft am
+     Events Manager, nicht den Status). Die Zuordnung der Zeile zum Klick ist durch den
+     Mitläufer BELEGT.
+     **EINE BEOBACHTUNG OHNE DEUTUNG:** In (aa) und (ad) stand das Server-Ereignis auf
+     "Dedupliziert", hier auf "Verarbeitet". Ob ein Browser-Ereignis desselben Klicks einging,
+     ist nicht abgelesen.
+     **DIE GRENZEN:**
+     · **Mit Test-Code** — ein solches Ereignis wird angenommen UND gezählt (Teil (a)); der
+       Status OHNE Test-Code ist nicht abgelesen.
+     · **Der Rumpf ist nicht gelesen** — eine Aussage über eine angenommene Nutzlast mit
+       Einwänden im Rumpf folgt daraus nicht.
+     · **Welche Version Meta verarbeitet hat, bleibt offen** — die Kopfzeile aus (y) wird
+       weiterhin nicht gelesen.
+     · EIN Aufruf, EIN Tag; "Verarbeitet" belegt die Annahme, nicht einen Abgleich mit einem
+       Anzeigenklick.
+

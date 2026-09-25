@@ -1169,6 +1169,9 @@ reine Zeilen-Zusätze; der Stand WÄHREND der Läufe ist nicht eigens per Hash b
     ist gemessen zeichengleich mit `5d5602e`; dazu ein Nachtrag (Ablesezeit, Ablesung "abends",
     die Frage der Conversion-Identität) — VERMERK P11.7-32. Die Nachablesung folgt dem
     Entscheidungsbaum unter "Nächster Schritt", Punkt 1.
+    **ZEIGER 2026-09-25 — DIE NACHABLESUNG IST ERLEDIGT:** Die Anzeige sprang mit dem Klick von
+    S10b auf den 25.09.; kein Ereignis vom 24.09. war angezeigt, die Ursache ist nicht belegt,
+    ein Rückbau gegenstandslos — VERMERK P11.7-33, (L).
 (d) **BEFUND OHNE BEWERTUNG:** Das Google-Geheimnis des Testprojekts ist
     `refresh_token_expired`.
 
@@ -1411,8 +1414,8 @@ SCHÄTZUNG; die Reihenfolge setzt E-d):
 7. ZUSCHNITT-FRAGE P11.7-11 — ERLEDIGT: geschlossen durch OWNER-ENTSCHEIDUNG E-f.
 8. Vorrat P11.7-9 (K1–K4) — ENTSCHIEDEN (E-e): K1 für alle fünf Ziele, zugeschnitten als S10;
    K4 wird beim Phasenende gehoben.
-9. LinkedIn-Nachablesung "Data last received" (VERMERK P11.7-22, (c)) — Messung — Campaign
-   Manager ab 2026-09-25.
+9. LinkedIn-Nachablesung "Data last received" (VERMERK P11.7-22, (c)) — ERLEDIGT am
+   2026-09-25, mit Ergebnis und benannter Grenze des Instruments (VERMERK P11.7-33, (L)).
 10. Unbehandelte Felder aus Punkt 5 — ERLEDIGT: eingeordnet durch Owner-Entscheidung E-c.
 11. Matrix-Fortschreibung B2, G1, H2, H3 in docs/ziel-fragenkatalog.md — Doku; heute keine
     Fortschreibung für 11.7 (Suche nach "2026-09-2": 0 Treffer); Pflicht ist nicht geregelt.
@@ -1771,6 +1774,8 @@ mT5 gesetzt, ohne Zwischenprüfung; die Schlussprüfung ist OK.**
   "## Modus"); der Mitläufer fehlt.
 - **UNBELEGT:** die Verarbeitung bei LinkedIn und die Anzeige in "Data last received". Das
   entscheidet die Nachablesung (Abschnitt "Nächster Schritt").
+  **ZEIGER 2026-09-25:** Das Ereignis dieses Klicks war bis zum Morgen des 2026-09-25 nicht
+  angezeigt; die Nachablesung und ihre Grenze stehen in VERMERK P11.7-33, (L).
 
 **ZEIGER / ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/linkedin.md, Teil (bf), dazu datierte
 Zeiger an (bc), (bd) und (be) · Q2 nachgezogen (das Wort "accepted") · Vorrat P11.7-9
@@ -1832,6 +1837,117 @@ IPv4-Fall ohne `li_fat_id` keinen Unterschied zum Stand vor S6a/S6b.
 
 **ZEIGER / IM SELBEN ZUG:** docs/ziel-befunde/linkedin.md, Zusatz an Teil (be) · ein datierter
 Zeiger an VERMERK P11.7-22, (c) · "Nächster Schritt", Punkt 1, als Entscheidungsbaum.
+**ZEIGER 2026-09-25 — DIE HYPOTHESE IST FÜR DEN WEG OHNE `li_fat_id` NICHT GESTÜTZT, DIE
+NACHABLESUNG IST ERLEDIGT:** VERMERK P11.7-33, (L).
+
+### VERMERK P11.7-33 — Teilscheibe S10b gebaut und live belegt vom 2026-09-25 (Erfolgszeile meta und pinterest), dazu die LinkedIn-Nachablesung
+
+**HARTE ANGABEN:** 2026-09-25 · **BAU-COMMIT `ed3008b`** (`feat(capi): Erfolgszeile fuer meta
+und pinterest (Phase 11.7, S10b)`) · vier Dateien: `src/lib/capi/meta-forward.ts` (`else`-Zweig
+an `if (!res.ok)` in `forwardToMeta`), `src/lib/capi/pinterest-forward.ts` (in
+`forwardToPinterest` nach der unveränderten Warnzeile, wenn `evaluateSuccessBody` "processed"
+oder "warning" meldet — als positive Menge; ein Kommentarsatz im Kopf von
+`evaluateSuccessBody`, dessen Code unverändert ist), `src/lib/capi/meta-forward.test.ts` (MS-a
+bis MS-e, MS-d mit fünf Zeilen), `src/lib/capi/pinterest-forward.test.ts` (PS-a bis PS-f, PS-e
+mit fünfzehn Zeilen; Titel von T1 und Kommentar in T2 geschärft) · die Zeile nach Q2
+zeichengleich, `console.info`, ein Argument · Tests **2 237 → 2 266 / 98** (GEMESSEN, CC) ·
+tsc, lint (0 Fehler; die bestehende Warnung in `consent.test.ts`), build grün · **GENAU ZWEI
+neue `console`-Zeilen im Diff, keine entfernt; jede bestehende Fehler- und Warnzeile
+byte-gleich** (GEMESSEN, mit Positivkontrolle).
+
+**MUTATIONSPROBEN — VIERZEHN, ALLE WIE VORHERGESAGT**, die Vorhersage je Probe VOR dem Lauf am
+gebauten Bestand nachgezählt, KEINE danach geändert; **NULLPROBE VORAB** (Baustand, voller
+Lauf): 2 266 Tests, **0 rot**. Je voller Lauf über 98 Dateien, **nach JEDER Probe** per `cp`
+aus der Bausicherung zurückgenommen und per sha256 über alle vier Dateien belegt:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| mM1 | Zeile entfernt | 4 — MS-a, MS-b, MS-c, MS-e |
+| mM2 | `else` zum eigenen Block, also unbedingt | 3 — MS-d: 400, 502, 500 unlesbar |
+| mM3 | `clientIp` angehängt | 4 — wie mM1 |
+| mM4 | Stufe `error` | 4 — wie mM1; ausserhalb 0 |
+| mM5 | Zeile doppelt | 4 — wie mM1 |
+| mM6 | "HTTP 200" festgeschrieben | 1 — NUR MS-b |
+| mP1 | Zeile entfernt | 7 — PS-a, PS-b, PS-c, PS-d, PS-f, PS-e (beide Riegel) |
+| mP2 | Bedingung auf `outcome` entfernt | 9 — die neun PS-e-Zeilen "HTTP 200 …" |
+| mP2b | Zeile vor `if (!res.ok)` gezogen | 11 — die neun plus 401 und 502 |
+| mP3 | `clientIp` angehängt | 7 — wie mP1 |
+| mP4 | Stufe `error` | 10 — wie mP1, dazu T1, T2, T12b; ausserhalb 0 |
+| mP5 | Zeile doppelt | 7 — wie mP1 |
+| mP6 | "HTTP 200" festgeschrieben | 1 — NUR PS-b |
+| mP7 | nur bei "processed" | 1 — NUR PS-c |
+
+**DIE MESSUNG FÜR S10c** (ungefangene Zeilen im Testprotokoll) steht an Q7 im Abschnitt
+"Zuschnitt der Phase 11.7".
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-25; die Vercel-Zeilen vom Architekten am Screenshot
+abgelesen):**
+- VORHER, Vercel "Last hour": "Meta forward accepted" 0 · "Pinterest forward accepted" 0 ·
+  "forward accepted" 0. A/B aus · Pinterest-Testmodus AUS · Meta-Testmodus AN (Test-Code) ·
+  Deployment `ed3008b` "Ready".
+- KLICK: 08:25 MESZ auf `…/?utm_source=s10b`, eventID `f1da694d-5826-4021-9441-75a393be6cbd`,
+  `/api/e` 204, `cns` für alle fünf Ziele `true`.
+- VERCEL, Anfrage 08:25:55.87 MESZ (POST `/api/e` 204), Funktions-Log "7 Total · 2 Error", in
+  dieser Folge (UTC): 06:25:56.239 "[capi/resolve] secret unusable" {target google, reason
+  access_token_expired} · 06:25:56.579 "[oauth/token-refresh] ok" {target google} ·
+  06:25:56.703 "[capi] Google forward skipped: no_click_id" · 06:25:56.779 "[capi] Pinterest
+  forward accepted: HTTP 200" · 06:25:56.823 "[capi] TikTok forward accepted: HTTP 200" ·
+  06:25:56.885 "[capi] Meta forward accepted: HTTP 200" · 06:25:57.021 "[capi] LinkedIn forward
+  accepted: HTTP 201". **KEINE Pinterest-Warnzeile.** Die Anfragen um 08:25:30.79, 08:25:50.90
+  und 08:25:55.98 zeigen je "[capi/resolve] secret unusable" {target google, reason
+  access_token_expired}.
+- MITLÄUFER, Meta "Events testen": dieselbe eventID, Quelle Server, "Verarbeitet",
+  Match-Parameter IP-Adresse und User Agent.
+
+**DIE GRENZE, GETRENNT:**
+- **GEMESSEN:** vier accepted-Zeilen über den echten Weg, in der Klick-Anfrage. **Erstmals
+  abgelesen ist der Erfolgsstatus von Meta: HTTP 200** — mit Test-Code, der Rumpf wird nicht
+  gelesen (docs/ziel-befunde/meta.md, Teil (af)).
+- **BELEGT, nicht nur gestützt:** die Zuordnung zum Klick — der Mitläufer zeigt dieselbe eventID
+  als Server-Ereignis; anders als in S10a (VERMERK P11.7-31) ist er diesmal abgelesen.
+- **NEU, GEMESSEN, EINE BEOBACHTUNG:** Pinterest ohne Testmodus → **keine Warnzeile**,
+  abgelesen am Log, nicht am Rumpf. KREUZPROBE: "2 Error" sind genau die zwei Zeilen auf
+  Error-Stufe (`console.error` in `usableTokenFromRow`, `src/lib/capi/token.ts`, und in
+  `forwardToGoogle`, `src/lib/capi/google-forward.ts`; GEMESSEN am Code); eine Warnzeile
+  (`console.error`) wäre die dritte gewesen. **Alle bisher protokollierten Warnungen stammen
+  aus Läufen mit Testmodus** (docs/ziel-befunde/pinterest.md, Teile (u), (x), (al), (am) bis
+  (ar), (as)); ob die zwei Läufe OHNE Parameter vom 2026-09-10 eine trugen, ist nicht
+  protokolliert. Befund: pinterest.md, Teil (at).
+- **UNBELEGT:** die Verarbeitung bei allen vier Anbietern · Metas Status ohne Test-Code · ob
+  Pinterest ohne Testmodus nie oder nur hier keine Warnung sendet.
+
+**(L) DIE LINKEDIN-NACHABLESUNG — ERLEDIGT, MIT ERGEBNIS (OWNER-ANGABEN, 2026-09-25):**
+- "Data last received" stand am 2026-09-25 VOR dem Klick weiter auf September 23, 2026 6:27 PM;
+  NACH dem Klick auf **September 25, 2026 8:25 AM**. Das Ereignis vom 06:25 UTC erschien also
+  nach dem Klick. **FOLGERUNG:** Die Anzeige zeigt Ortszeit (06:25 UTC = 08:25 MESZ).
+- Die Conversion-ID der abgelesenen Anzeige stimmt laut Owner mit der Regel auf der
+  LinkedIn-Karte überein. Die Nummer steht hier bewusst nicht; sie ist kein Geheimnis und gehört
+  trotzdem nicht in ein Dokument (dieselbe Figur wie die Client-ID, linkedin.md, Teil (u)).
+  **Ob die Terminal-Aufrufe vom 24.09. dieselbe Regel trafen, sagt die Ablesung nicht** — die
+  Frage aus VERMERK P11.7-32, (b), bleibt als Frage.
+- **DIE NUTZLAST DIESES EREIGNISSES** (IPv4, ohne `li_fat_id`) ist die des heutigen Codes mit
+  S6b und nachweislich zeichengleich mit der vom 2026-09-23 (VERMERK P11.7-32, (a)). **DAMIT IST
+  DIE OWNER-HYPOTHESE "seit S6b nichts" FÜR DEN WEG OHNE `li_fat_id` NICHT GESTÜTZT; EIN RÜCKBAU
+  IST GEGENSTANDSLOS.** Die Wege MIT `li_fat_id` sind nicht mitgefahren.
+- **UNGEKLÄRT:** Kein Ereignis vom 2026-09-24 — der echte Weg mit `li_fat_id` (~08:21) und ohne
+  (S10a, 15:25 UTC, mit 201 quittiert), dazu beide Terminal-Aufrufe — war bis zum Morgen des
+  2026-09-25 angezeigt. Eine Ursache beim Anbieter an diesem Tag ist die sparsamste Erklärung,
+  aber nicht belegt.
+- **DIE GRENZE DES INSTRUMENTS:** "Data last received" zeigt nur den LETZTEN Empfang und kann
+  nicht belegen, ob die Ereignisse vom 2026-09-24 je gezählt wurden. "Signal health" ist in der
+  Oberfläche nicht auffindbar; angezeigt werden nur zwei Empfehlungen.
+Befund: docs/ziel-befunde/linkedin.md, Teil (bg).
+
+**(G) EINE BEOBACHTUNG FÜR S10c, KEIN BEFUND:** siehe die Mitnahme an Q7 (Google-Zugangstoken
+abgelaufen, "secret unusable" je Anfrage).
+
+**ZEIGER / ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/pinterest.md, Teil (at), dazu datierte
+Zeiger an (al) und (ar) · docs/ziel-befunde/meta.md, Teil (af) · docs/ziel-befunde/linkedin.md,
+Teil (bg), dazu datierte Zeiger an (q), (be) und (bf) · docs/offene-punkte.md, Punkt (5) des
+Postens "BETREIBER-DOKUMENTATION FEHLT" mit datiertem Vorbehalt · der Befund an S9 und der
+Zeiger an Vorrat P11.7-9 ersetzt · Q7 über den Gegenstand gefasst · S10-Block nachgezogen ·
+Vorrat P11.7-12 neu · Zeiger an VERMERK P11.7-22, (c), P11.7-25 (Nr. 9), P11.7-31 und P11.7-32
+· "Nächster Schritt" nachgezogen · **S10b ABGESCHLOSSEN.**
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -1897,12 +2013,12 @@ Sie bindet jede Runde, die den Pinterest-Riegel oder `user_data` berührt.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-**FÜNF SIND OFFEN (P11.7-2, -8, -9, -10, -11); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7
+**SECHS SIND OFFEN (P11.7-2, -8, -9, -10, -11, -12); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7
 MIT S3, P11.7-1 UND -4 MIT S4.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
 `a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
 2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
 **GEMESSEN IST, DASS SIE DASTEHEN — NICHT, DASS SIE NACHGEZOGEN WÄREN.** **KEINE
-EMPFEHLUNG** an keinem der neun.
+EMPFEHLUNG** an keinem.
 
 **P11.7-1 — DER KOPFKOMMENTAR VON `src/lib/capi/google-click-ids.ts` IST WIDERLEGT.**
 **GESCHLOSSEN 2026-09-23 — BAU-COMMIT `de88657` (S4):** Der Absatz nennt jetzt die zwei
@@ -1980,10 +2096,12 @@ stehen im VERMERK P11.7-22.
 TRIGGER: eingetreten und entschieden. **DIE LINKEDIN-HÄLFTE IST BEANTWORTET** (VERMERK
 P11.7-31): Seit S10a ist eine angenommene Antwort an der Zeile "[capi] LinkedIn forward
 accepted" direkt zu sehen, live beobachtet am 2026-09-24. Die stillen Ausgänge VOR dem Adapter
-bleiben still. Der Eintrag schliesst weiterhin mit S10 insgesamt, also mit S10b und S10c.
-**ZEIGER 2026-09-24 — DAS GEGENSTÜCK BEI PINTEREST:** Dort ist ein Erfolg heute sichtbar, aber
-nur über eine Warnzeile, die jede Antwort erzeugt — Befund an S9 im Abschnitt "Zuschnitt der
-Phase 11.7" (VERMERK P11.7-26).
+bleiben still. **SEIT S10b AUCH FÜR META UND PINTEREST** (VERMERK P11.7-33): beide Zeilen
+live gesehen am 2026-09-25. Der Eintrag schliesst mit S10c (google).
+**ZEIGER 2026-09-25 — PINTEREST:** Ein Erfolg ist seit S10b an der Zeile "[capi] Pinterest
+forward accepted" zu sehen, nicht mehr über die Warnzeile. Die Warnung ist im Testmodus
+gemessen; ohne Testmodus fehlte sie bei einem Aufruf (VERMERK P11.7-33;
+docs/ziel-befunde/pinterest.md, Teil (at)).
 
 **P11.7-10 — IN DER LOKALEN ENTWICKLUNG REIST EINE PLATZHALTER-IP AN GOOGLE.** BEFUND vom
 2026-09-24 (Stufe-1-Plan von S7, GEMESSEN am Code): Ist die Client-Adresse leer oder Loopback
@@ -2000,6 +2118,17 @@ Info-Zeile, und der Titel behauptet mehr, als der Test deckt. T4-h und T5 (tikto
 aus demselben Grund geschärft worden; T7-a und T7-b lagen ausserhalb der Freigabe.
 **KEIN FIX-VORSCHLAG.**
 TRIGGER: die nächste Runde, die `src/lib/capi/linkedin-forward.test.ts` öffnet.
+
+**P11.7-12 — ZWEI KOMMENTARE AUS S10b NENNEN DIE WARNUNG DEN BETRIEBSFALL, UND EINE MESSUNG OHNE
+TESTMODUS WIDERSPRICHT.** BEFUND vom 2026-09-25 (VERMERK P11.7-33): Der Kommentar an der
+Erfolgszeile in `forwardToPinterest` (`src/lib/capi/pinterest-forward.ts`) sagt, im Betrieb trage
+jede gemessene Antwort eine Warnung, also entstünden dort beide Zeilen; der Kommentar an PS-c
+(`src/lib/capi/pinterest-forward.test.ts`) nennt denselben Fall den Betriebsfall. Gemessen waren
+bis dahin nur Antworten MIT Testmodus; über den echten Weg ohne Testmodus fehlte die Warnung bei
+einem Aufruf (docs/ziel-befunde/pinterest.md, Teil (at)). **Der Code und PS-c bleiben richtig** —
+die Zeile gilt bei "processed" wie bei "warning", und PS-c prüft genau das; falsch ist allein die
+Begründung. **KEIN FIX-VORSCHLAG.**
+TRIGGER: die nächste Runde, die eine der beiden Dateien öffnet.
 
 ## Hebungs-Kandidaten
 
@@ -2563,7 +2692,8 @@ Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist nach G1 bis G5 gebaut,
 (VERMERK P11.7-28). S9 (pinterest) ist nach N1 bis N6 und N9 gebaut, `user_data.click_id` ist in
 "Events testen" live belegt (VERMERK P11.7-30). S10 (eine Zeile je angenommenem Forward, alle
 fünf Ziele) ist nach Q1 bis Q9 zugeschnitten (OWNER-ENTSCHEIDUNG E-e); S10a (linkedin, tiktok)
-ist gebaut und live beobachtet (VERMERK P11.7-31), S10b und S10c sind nicht gebaut.
+ist gebaut und live beobachtet (VERMERK P11.7-31), S10b (meta, pinterest) ist gebaut und live
+belegt (VERMERK P11.7-33), S10c (google) ist nicht gebaut.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -2879,12 +3009,13 @@ der Datei ihres Ziels.
   ausgeschlossen · `external_id` — offene Owner-Frage (ZUSCHNITT-FRAGE P11.7-4) · `idfa`, `idfv`,
   `gaid`, `att_status` — Kennungen von Apps.
 - pinterest `epik` — ZUSCHNITT-FRAGE P11.7-19.
-  **BEFUND 2026-09-24 — KEINE ENTSCHEIDUNG** (VERMERK P11.7-26; docs/ziel-befunde/pinterest.md,
-  Teil (al)(iv)): `evaluateSuccessBody` (`src/lib/capi/pinterest-forward.ts`) macht aus jeder
-  nicht leeren Warnung eine Logzeile, und jede Antwort trägt "external_id is missing" — **in
-  Produktion schreibt damit JEDER Pinterest-Forward eine Warnzeile**; nach S9 bleibt "external_id
-  is missing" stehen. Zwei Seiten: Rauschen, das echte Warnungen verdeckt · zugleich heute die
-  einzige Sichtbarkeit eines Erfolgs (Gegenstück bei LinkedIn: Vorrat P11.7-9).
+  **BEFUND 2026-09-25 — KEINE ENTSCHEIDUNG** (VERMERKE P11.7-26, P11.7-33;
+  docs/ziel-befunde/pinterest.md, Teile (al)(iv), (at)): `evaluateSuccessBody`
+  (`src/lib/capi/pinterest-forward.ts`) macht aus jeder nicht leeren Warnung eine Logzeile. Die
+  Warnung "external_id is missing" trug jede Antwort **im Testmodus**; über den echten Weg
+  **ohne** Testmodus fehlte sie bei einem Aufruf (eine Beobachtung, abgelesen am Log). Ob eine
+  Warnzeile im Betrieb Rauschen erzeugt, ist damit offen. **Sichtbar ist ein Erfolg seit S10b
+  über die Zeile "[capi] Pinterest forward accepted"**, nicht über die Warnzeile.
   **DIE DREI VORMERKUNGEN FÜR S9 SIND ERLEDIGT:** Prüfsumme im Kopf und Zeiger an (p)(2) von
   docs/ziel-befunde/pinterest.md mit VERMERK P11.7-29, der Kopfkommentar zum Erfolgs-Rumpf im
   Bau-Commit `024678a` (VERMERK P11.7-30). Ihr Wortlaut steht unter Commit `e588c77`.
@@ -2940,8 +3071,10 @@ Dazu Entscheidung P11.7-7 (Paar-Riegel bleibt).
 **S10 — ZUGESCHNITTEN AM 2026-09-24 — eine Zeile je angenommenem Forward, alle fünf Ziele.**
 Vorrat P11.7-9, OWNER-ENTSCHEIDUNG E-e (K1); Material der Entscheidungsbericht desselben Tages.
 **S10a ABGESCHLOSSEN AM 2026-09-24 — VERMERK P11.7-31** (Bau-Commit `7f44ef5`; beide Zeilen live
-beobachtet). **S10b und S10c sind nicht gebaut.** Q1 bis Q9 bleiben als bindende
-Entscheidungen stehen: sie binden S10b und S10c. NICHT ZU VERWECHSELN mit dem Seiten-Kürzel
+beobachtet). **S10b ABGESCHLOSSEN AM 2026-09-25 — VERMERK P11.7-33** (Bau-Commit `ed3008b`; alle
+vier accepted-Zeilen live gesehen, die Zuordnung per Mitläufer belegt). **S10c (google) ist
+offen; mit ihr schliesst Vorrat P11.7-9.** Q1 bis Q9 bleiben als bindende Entscheidungen stehen:
+sie binden S10c. NICHT ZU VERWECHSELN mit dem Seiten-Kürzel
 "S10" im LinkedIn-Crawl (VERMERK P11.7-19); dort sind S1 bis S11 Doku-Seiten, keine Scheiben.
 **ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24** (Kennbuchstaben Q, frei im Bestand —
 GEMESSEN, CC: `\bQ[0-9]` 0 Treffer vor dieser Runde). Sie sind ZIELÜBERGREIFEND formuliert und
@@ -2983,10 +3116,28 @@ treffen keine Aussage über ein einzelnes Ziel:
   Fehlercode lesbar").
 - **Q7 — NICHT TEIL VON S10:** K4 · ein erneutes Senden · jede Änderung an bestehenden
   Fehlerzeilen · Ereignis- oder Projekt-Kennungen in der Zeile.
-  **MITNAHME FÜR S10c (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-24):** Die Info-Zeilen landen im
-  Testprotokoll von `fan-out.test.ts`, Wächter W (`click-id-strip.test.ts`) und V4
-  (`version-deadlines.test.ts`), weil dort kein `console.info`-Spion steht; S10a hat das
-  bewusst nicht angefasst. Es wird EINMAL am Ende geschlossen, in S10c.
+  **MITNAHME FÜR S10c (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-24, am 2026-09-25 über den Gegenstand
+  gefasst):** Geschlossen wird **jede Testdatei, in der eine accepted-Zeile ins Protokoll
+  gelangt, ohne dass ein Spion sie auswertet** — EINMAL am Ende, in S10c. S10a und S10b haben
+  das bewusst nicht angefasst.
+  GEMESSEN (CC, 2026-09-25, Stand `ed3008b`): **84 Zeilen in 12 Dateien** — ingest.test-mode 16
+  · click-id-strip 12 · ingest.variant 11 · ingest.forwardable 9 · route.test.ts (api/capi) 8 ·
+  ingest.confirm 8 · fan-out 8 · ingest.consent-targets 4 · version-deadlines 3 ·
+  ingest.consent 2 · ingest.persist 2 · ingest.timeout 1; nach Ziel meta 71, pinterest 6,
+  tiktok 4, linkedin 3. INSTRUMENT: ein voller Lauf mit `--reporter=verbose`; gezählt sind die
+  accepted-Zeilen unter den Köpfen `stdout | <Datei> > <Test>` (Konsolenausgaben, die kein Spion
+  abfängt), per Node-Skript je Datei und Ziel; Gegenprobe über den ganzen Text ebenfalls 84.
+  POSITIVKONTROLLE: dasselbe Instrument ergab am Stand vor S10b 7 — genau die bekannten Zeilen
+  aus S10a, und sie stehen alle im neuen Protokoll. Mit S10c kommen die Google-Zeilen hinzu;
+  die Zahl ist dann neu zu messen.
+  **MITNAHME FÜR S10c, EINE BEOBACHTUNG, KEIN BEFUND (VERMERK P11.7-33):** Bei abgelaufenem
+  Google-Zugangstoken schreibt die Auflösung je `/api/e`-Anfrage "[capi/resolve] secret
+  unusable … access_token_expired" auf Stufe error — am 2026-09-25 in vier Anfragen binnen einer
+  halben Minute, auch in Anfragen ohne sichtbare Erneuerung; "[oauth/token-refresh] ok" stand
+  allein in der Klick-Anfrage, zwischen der Auflösung und "Google forward skipped". Zu prüfen in
+  der Aufklärung von S10c, gegen die bestehenden offenen Punkte zur Erneuerung —
+  docs/offene-punkte.md, "KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG" und "DER RESOLVER
+  SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER".
 - **Q8 — SCHNITT JE ZIEL (Pflicht-Stopp Ziel-Befunde, CLAUDE.md).** GEMESSEN (CC, 2026-09-24,
   `wc -c`): google.md 414 115 · linkedin.md 157 040 · meta.md 103 472 · pinterest.md 96 503 ·
   tiktok.md 48 559 · Kopf docs/ziel-befunde.md 14 399 · diese Standdatei 206 649 Bytes (vor
@@ -3062,7 +3213,8 @@ binden:**
 ## Nächster Schritt
 
 **S1 BIS S9 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28, P11.7-30), **DAZU S10a** (VERMERK P11.7-31).
+P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28, P11.7-30), **DAZU S10a UND S10b** (VERMERKE
+P11.7-31, P11.7-33).
 **ALLE FÜNF PUNKTE DER ROADMAP-ZEILE 11.7 SIND BEARBEITET:** F5, F6 und F7 durch die Lesung
 (E-a), F8 gemessen
 (VERMERK P11.7-26), Punkt 5 mit S4 bis S9. Die Reihenfolge bis zum Phasenende steht in der
@@ -3070,31 +3222,15 @@ OWNER-ENTSCHEIDUNG E-d (Abschnitt "Gegenstand der Phase").
 **DIE OWNER-ENTSCHEIDUNGEN ZU SCHRITT (4) VON E-d SIND GETROFFEN:** E-e (Vorrat P11.7-9, K1 für
 alle fünf Ziele, zugeschnitten als S10) und E-f (ZUSCHNITT-FRAGE P11.7-11 geschlossen).
 **ALS NÄCHSTES, IN DIESER REIHENFOLGE:**
-1. **Die LinkedIn-Nachablesung ab 2026-09-25, als ENTSCHEIDUNGSBAUM**, gegen den ANKER
-   2026-09-24 15:25 UTC (der Klick von S10a, VERMERK P11.7-31; vorher stand die Anzeige auf
-   September 23, 2026 6:27 PM). Die Zeitzone der Anzeige ist nicht erhoben; der Vergleich
-   rechnet damit.
-   (1) **ABLESEN:** "Data last received" UND "Signal health" im Campaign Manager.
-   (2) **VERGLEICHEN:** die ID der abgelesenen Conversion gegen die Regel auf der
-       LinkedIn-Karte der App UND gegen `REGEL_URN` des Terminal-Blocks (VERMERK P11.7-32, (b)).
-   (3) **ENTSCHEIDEN:**
-       · Die Anzeige zeigt einen Zeitpunkt AB dem Anker → Verzögerung; erledigt.
-       · Die IDs weichen ab → die RICHTIGE Conversion ablesen und den Baum ab (1) wiederholen.
-       · Die Anzeige steht weiter auf dem 23.09. UND die IDs stimmen → Gegenprobe (b): eine
-         NEUE Direct-API-Conversion und ein Terminal-Aufruf in S6a-Form dagegen (Owner, ohne
-         Code).
-   (4) **RÜCKBAU** (`git revert 007a772`) **NUR, WENN SICH EIN ZUSAMMENHANG MIT S6b ZEIGT** —
-       in einem eigenen Vermerk mit Rückweg. **Die Owner-Hypothese "seit S6b nichts" ist eine
-       FRAGE, kein Befund;** VERMERK P11.7-32, (a), findet für den Fall "IPv4 ohne `li_fat_id`"
-       keinen Unterschied zum Stand vor S6a.
-   Die Ergebnisse gehören an docs/ziel-befunde/linkedin.md, Teile (be) und (q), und an VERMERK
-   P11.7-22, (c).
-2. **S10b (meta + pinterest)**, in einer NEUEN Sitzung — Pflicht-Stopp: Volladung
-   docs/ziel-befunde/meta.md und docs/ziel-befunde/pinterest.md plus Kopf; das Muster aus Q2
-   ZEICHENGLEICH.
-3. **S10c (google)** — Volladung docs/ziel-befunde/google.md plus Kopf; dazu die Mitnahme an
-   Q7 (das Rauschen im Testprotokoll).
-4. **Das Phasenende** nach E-d (6).
+1. **S10c (google)** in einer NEUEN Sitzung — Pflicht-Stopp: Volladung
+   docs/ziel-befunde/google.md plus Kopf; das Muster aus Q2 ZEICHENGLEICH; dazu die ZWEI
+   Mitnahmen an Q7 (die ungefangenen accepted-Zeilen im Testprotokoll und die Beobachtung zu
+   "secret unusable"). **SPERRE: Der Google-Zugang des Testprojekts läuft um den 2026-10-01
+   ab** (Sieben-Tage-Frist, s. unten) — der Live-Test von S10c braucht einen gültigen Zugang.
+2. **Das Phasenende** nach E-d (6).
+**ERLEDIGT:** die LinkedIn-Nachablesung, mit Ergebnis und benannter Grenze des Instruments
+(VERMERK P11.7-33, (L)); der Entscheidungsbaum, der hier stand, ist damit gegenstandslos, sein
+Wortlaut steht unter Commit `4a47e4a`. S10b ist abgeschlossen (VERMERK P11.7-33).
 **WEITERE OFFENE ZUSCHNITT-FRAGEN IM BESTAND**, je mit dem Stand an der Frage (Abschnitt
 "Fragen an den Zuschnitt (nach dem Meta-Crawl)"):
 - P11.7-4 (dazu P11.7-12 und P11.7-18) — `external_id`, offene OWNER-Frage; für diese Phase

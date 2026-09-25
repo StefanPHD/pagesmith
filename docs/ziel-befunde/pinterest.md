@@ -1200,6 +1200,9 @@ Zugangsdatum, keine Werbekonto-Kennung und kein Anfrage-Bezeichner des Anbieters
      **DIE GRENZEN:** `?test=true` — die Quelle sagt, die Antwortform sei dieselbe wie ohne
      (ah), gemessen ist nur der Testmodus · EINE Beobachtung an einem Tag · der Fehlerzweig
      "200 mit `failed`" ist ungemessen.
+     ZEIGER (2026-09-25) — (iv) IST IM TESTMODUS GEMESSEN: Über den echten Weg OHNE Testmodus
+     trug eine Antwort KEINE Warnung (eine Beobachtung, abgelesen am Log, nicht am Rumpf), s.
+     unten (at). Der Wortlaut oben wird NICHT umformuliert.
 
 ### MESSUNG 2026-09-24 zu Klick-Kennung und Adresse (S9 der Phase 11.7) — die Teile (am) bis (ar)
 
@@ -1294,6 +1297,10 @@ Adapter.
      ABGELESEN: Sie endet vollständig auf "3P cookie loss", ohne Kappung (unten (as)). Der
      Fall OHNE Feld ("; click_i") ist an keiner echten Logzeile abgelesen. Der Wortlaut oben
      wird NICHT umformuliert.
+     ZEIGER (2026-09-25) — DER WARNUNGSTEXT IST IM TESTMODUS GEMESSEN: Über den echten Weg ohne
+     Testmodus entstand bei einem Aufruf ohne `epik` gar keine Warnzeile, s. unten (at); der
+     Fall "; click_i" ist damit weiter an keiner echten Logzeile abgelesen. Der Wortlaut oben
+     wird NICHT umformuliert.
 
 ### ABLESUNG 2026-09-24 über den echten Weg (Abschluss S9 der Phase 11.7) — der Teil (as)
 
@@ -1325,4 +1332,45 @@ VERMERK P11.7-30). Der Beacon trug `cns` = {meta, pinterest, tiktok, linkedin, g
        ob Pinterest sie dekodiert oder roh erwartet · ob die Zuordnung die Adresse liest · die
        Kappung auf "; click_i" für den Fall OHNE Feld, am Log nicht abgelesen · Fehlerzweige
        und ein Echo darin.
+
+### ABLESUNG 2026-09-25 am Vercel-Log über den echten Weg, OHNE Testmodus (Live-Test der Scheibe S10b, Phase 11.7) — der Teil (at)
+
+**HERKUNFT (2026-09-25):** Ein Live-Test des Owners nach dem Deploy des Bau-Commits `ed3008b`:
+EIN Klick um 08:25 MESZ auf `…/?utm_source=s10b` (ohne `epik`), Beacon an `/api/e` mit `cns`
+für alle fünf Ziele `true`, **Projekt-Testmodus für Pinterest AUS**. Abgelesen im Funktions-Log
+der Produktionsumgebung (Vercel) zur Klick-Anfrage; die Zeilen hat der Architekt am Screenshot
+des Owners abgelesen. **KEIN Terminal-Lauf, KEIN Blick in "Events testen", der Antwort-Rumpf
+ist nicht gelesen.** Die Angaben über unseren Adapter sind GEMESSEN am Repo (CC, 2026-09-25,
+HEAD `ed3008b`). **Hier steht keine IP, kein Zugangsdatum und keine Werbekonto-Kennung.**
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (as) folgt (at).
+
+(at) OHNE TESTMODUS TRUG EINE ANTWORT ÜBER DEN ECHTEN WEG KEINE WARNUNG — EINE BEOBACHTUNG,
+     ABGELESEN AM LOG.
+     · **WAS DER ADAPTER SEIT S10b TUT — GEMESSEN am Repo:** `forwardToPinterest`
+       (`src/lib/capi/pinterest-forward.ts`) schreibt bei einem Erfolgsurteil "processed" oder
+       "warning" genau eine Zeile `[capi] Pinterest forward accepted: HTTP <Status>` über
+       `console.info`; eine nicht leere `warning_message` erzeugt daneben, unverändert, die
+       Zeile "[capi] Pinterest forward warning: …" über `console.error`.
+     · **ABGELESEN, Klick-Anfrage** (Funktions-Log "7 Total · 2 Error"): "[capi] Pinterest
+       forward accepted: HTTP 200" um 06:25:56.779 UTC, **KEINE Zeile "Pinterest forward
+       warning"**.
+     · **KREUZPROBE — GEMESSEN am Code:** Die zwei Error-Zeilen der Anfrage sind die zwei
+       abgelesenen Zeilen auf Stufe error, "[capi/resolve] secret unusable" (Google) und
+       "[capi] Google forward skipped: no_click_id", beide `console.error`. Eine Warnzeile
+       (`console.error`) wäre die dritte gewesen.
+     **WAS DAS AN DEN TEILEN DARÜBER ÄNDERT, OHNE SIE UMZUSCHREIBEN:** "Jede Antwort trägt die
+     Warnung" (Teil (al)(iv)) ist im TESTMODUS gemessen, und alle bisher protokollierten
+     Warnungen stammen aus Läufen mit Testmodus — (u) und (x) aus den markierten Läufen des
+     2026-09-10, (al) sowie (am) bis (ar) per Terminal mit `?test=true`, (as) mit dem
+     Projekt-Testmodus. Ob die zwei Läufe OHNE Parameter vom 2026-09-10 eine Warnung trugen,
+     ist nicht protokolliert.
+     **DIE GRENZEN:**
+     · **EIN Aufruf, EIN Tag.** Ob Pinterest ohne Testmodus NIE warnt oder nur hier nicht, ist
+       nicht gezeigt.
+     · **Abgelesen am Log, nicht am Rumpf.** Ob die Antwort ein leeres `warning_message` trug
+       oder gar keines, ist nicht gesehen — für unser Log ist beides gleich
+       (`sanitizeProviderText` liefert für beide den Ersatzwert, GEMESSEN am Code).
+     · **Ohne Testmodus ist das Ereignis ein ECHTES** und fliesst in die Eventübersicht des
+       Werbekontos (s. (u)); dort ist nichts abgelesen.
+     · Die Verarbeitung ist nicht belegt: "accepted" heisst angenommen.
 

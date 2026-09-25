@@ -369,6 +369,10 @@ Kein Buchstabe wird neu vergeben, nichts umsortiert.
     Unmessbarkeit der Dedup-Wirkung. Der Wortlaut oben wird NICHT umformuliert und NICHT
     gekürzt: er sagt, was am Tag der Läufe abgelesen wurde. Die zweite Ablesung, ihre
     Grenze und die Basislinie für eine künftige Messung stehen unten unter (t).
+    ZEIGER (2026-09-25) — EINE WEITERE GRENZE DESSELBEN INSTRUMENTS: "Data last received" zeigt
+    nur den LETZTEN Empfang; ob Ereignisse eines Tages, der keinen Sprung zeigte, je gezählt
+    wurden, belegt es nicht. "Signal health" war am 2026-09-25 in der Oberfläche nicht
+    auffindbar. s. unten (bg). Der Wortlaut oben bleibt.
 
 (r) DER VERSIONS-HEADER IST PFLICHT — UND SEIN FEHLER HAT EINE EIGENE RUMPFFORM.
     GEMESSEN 2026-08-19, LAUF G: Ohne den Header ergibt DERSELBE Aufruf 400 mit dem Rumpf
@@ -2131,6 +2135,9 @@ sind GEMESSEN am Repo (CC, 2026-09-24, HEAD `007a772`).
        `li_fat_id`" ist zeichengleich mit dem Stand `5d5602e`, unter dem die Anzeige am
        2026-09-23 reagierte (s. (bc)) — beide echten Adapter mit derselben Fixture, mit
        Positivkontrolle. Einzelheiten: docs/aktiver-stand.md, VERMERK P11.7-32 der Phase 11.7.
+     ZEIGER (2026-09-25) — DIE NACHABLESUNG IST GEMACHT: Die Anzeige sprang mit einem Klick am
+     2026-09-25 auf diesen Tag; kein Ereignis vom 2026-09-24 war bis dahin angezeigt, die
+     Ursache ist nicht belegt. s. unten (bg). Der Wortlaut oben bleibt.
 
 ### MESSUNG 2026-09-24 — Annahme über den echten Weg, sichtbar an der Erfolgszeile (Scheibe S10a, Phase 11.7) — der Teil (bf)
 
@@ -2170,4 +2177,46 @@ unseren Adapter sind GEMESSEN am Repo (CC, 2026-09-24, HEAD `7f44ef5`).
        zwingend (s. (be)).
      · Belegt ist der Weg IPv4 OHNE `li_fat_id`. Die Wege mit `li_fat_id` und `li_fat_id` allein
        sind über diese Seite nicht mitgefahren.
+     ZEIGER (2026-09-25) — DAS EREIGNIS DIESES KLICKS WAR BIS ZUM MORGEN DES 2026-09-25 NICHT
+     ANGEZEIGT, ein Klick am 2026-09-25 dagegen sofort; s. unten (bg). Der Wortlaut oben bleibt.
+
+### ABLESUNG 2026-09-25 — die Nachablesung von "Data last received" (nach S10b, Phase 11.7) — der Teil (bg)
+
+**HERKUNFT (2026-09-25):** OWNER-ABLESUNGEN im Campaign Manager vor und nach einem Klick auf
+einer veröffentlichten Seite (08:25 MESZ, `…/?utm_source=s10b`, eventID
+`f1da694d-5826-4021-9441-75a393be6cbd`, `/api/e` 204, `cns` für alle fünf Ziele `true`), dazu
+das Funktions-Log der Produktionsumgebung, dessen Zeilen der Architekt am Screenshot des Owners
+abgelesen hat. **KEIN Terminal-Lauf.** Die Angaben über unseren Adapter sind GEMESSEN am Repo
+(CC, 2026-09-25, HEAD `ed3008b`). Die Conversion-ID steht hier bewusst nicht — sie ist kein
+Geheimnis und gehört trotzdem nicht in ein Dokument (dieselbe Figur wie in (u)).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (bf) folgt (bg).
+
+(bg) DIE ANZEIGE SPRANG MIT EINEM KLICK AM 2026-09-25 SOFORT — KEIN EREIGNIS VOM 2026-09-24 WAR
+     BIS DAHIN ANGEZEIGT, UND DAS INSTRUMENT KANN NICHT SAGEN, OB SIE GEZÄHLT WURDEN.
+     · **VORHER** (2026-09-25, vor dem Klick): "Data last received" **September 23, 2026 6:27
+       PM** — derselbe Stand wie vor dem Klick von (bf).
+     · **DAS LOG, Klick-Anfrage:** "[capi] LinkedIn forward accepted: HTTP 201" um 06:25:57.021
+       UTC; daneben die accepted-Zeilen von Pinterest, TikTok und Meta.
+     · **NACHHER:** **September 25, 2026 8:25 AM.** FOLGERUNG: Die Anzeige zeigt Ortszeit
+       (06:25 UTC = 08:25 MESZ).
+     · **DIE REGEL:** Die Conversion-ID der abgelesenen Anzeige stimmt laut Owner mit der Regel
+       auf der LinkedIn-Karte der App überein. Ob die Terminal-Aufrufe aus (be) dieselbe Regel
+       trafen, sagt die Ablesung nicht.
+     · **"Signal health"** ist in der Oberfläche nicht auffindbar; angezeigt werden nur zwei
+       Empfehlungen.
+     **WAS DAS BEANTWORTET:** Unsere Nutzlast im Fall IPv4 ohne `li_fat_id` — die des heutigen
+     Codes, nachweislich zeichengleich mit der vom 2026-09-23 (s. den Zusatz an (be)) — wird
+     angenommen und bewegt die Anzeige. Ein Zusammenhang des Stillstands mit dem Code des
+     2026-09-24 ist für diesen Weg damit nicht gestützt.
+     **UNGEKLÄRT:** Kein Ereignis vom 2026-09-24 — der echte Weg mit `li_fat_id` (~08:21 MESZ)
+     und ohne (15:25 UTC, mit 201 quittiert, (bf)), dazu die beiden Terminal-Aufrufe aus (be) —
+     war bis zum Morgen des 2026-09-25 angezeigt. Eine Ursache beim Anbieter an diesem Tag ist
+     die sparsamste Erklärung, aber NICHT belegt.
+     **DIE GRENZE DES INSTRUMENTS, UND SIE GEHÖRT ZUM BEFUND:** "Data last received" zeigt nur
+     den LETZTEN Empfang. Ob die Ereignisse vom 2026-09-24 je gezählt wurden, kann es nicht
+     belegen — ein späterer Empfang überschreibt jeden früheren. Ein Sprung zeigt, dass
+     irgendetwas ankam; ein ausbleibender Sprung belegt keinen Fehlschlag (s. (be)).
+     **DIE GRENZEN SONST:** Minutenauflösung; ein Klick; die Wege MIT `li_fat_id` sind nicht
+     mitgefahren; die Zuordnung des Sprungs zum Klick ruht auf dem einen Klick und darauf, dass
+     es keinen fremden Traffic gibt (CLAUDE.md, "## Modus").
 

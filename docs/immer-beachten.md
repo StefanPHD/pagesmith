@@ -1076,9 +1076,9 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   Die Grenze gehört dazu, sonst wird die Regel für mehr gehalten, als sie sagt — sie ist
   SCHMALER als "kein Baustein fasst einen fremden Knoten an". Ausdrücklich nicht erfasst
   und gewollt: das Anhängen des Host-Elements an `body` · das Einfügen des
-  fbevents-Scripts per `insertBefore` · die zwei Wiring-Listener an `document` samt
-  `preventDefault` beim Redirect · und zur Erzeugungszeit die Schreibvorgänge von
-  `generateFunctional` in Kundenelemente.
+  fbevents-Scripts per `insertBefore` · die drei Wiring-Listener an `document` (click,
+  auxclick, submit) samt `preventDefault` beim Redirect · und zur Erzeugungszeit die
+  Schreibvorgänge von `generateFunctional` in Kundenelemente.
   Was sie im Bestand kostet: Das Center-Modal hat keine SCROLL-SPERRE — der Besucher kann
   hinter der Abdunkelung scrollen. Das ist der bewusste Tausch, kein Versehen.
 

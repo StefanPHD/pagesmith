@@ -2668,10 +2668,27 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   DIE GRENZE GEHÖRT DAZU, sonst wird die Regel für mehr gehalten, als sie sagt — sie ist
   SCHMALER als „kein Baustein fasst einen fremden Knoten an". Ausdrücklich NICHT erfasst und
   gewollt: das Anhängen des Host-Elements an `body`, das Einfügen des fbevents-Scripts per
-  `insertBefore` (`__psMetaInit`), die zwei Wiring-Listener an `document` samt
-  `preventDefault` beim Redirect, und zur ERZEUGUNGSZEIT die Schreibvorgänge von
+  `insertBefore` (`__psMetaInit`), die drei Wiring-Listener an `document` (click, auxclick,
+  submit) samt `preventDefault` beim Redirect, und zur ERZEUGUNGSZEIT die Schreibvorgänge von
   `generateFunctional` in Kundenelemente. Wer die fünf Achsen mit „fremder Knoten" gleichsetzt,
   hält eine geltende Regel für gebrochen und baut die nächste Ausnahme frei Hand.
+  DIE AUFZÄHLUNG DER WIRING-LISTENER IST AUF DEM GEBAUTEN STAND (2026-09-25, Phase 12.5,
+  Scheibe 1b, Bau-Commit `0530c4b`; Entscheidung P12.5-27 der Phase 12.5): Zu click und
+  auxclick ist der submit-Listener gekommen, der den Track eines Formulars beim Abschicken
+  zählt. Er ruft KEIN `preventDefault`, liest am Formular nur Attribute und merkt sich das
+  Formular in einer Variablen der Laufzeit, nicht als Attribut — er ändert keine der fünf
+  Achsen. GEMESSEN am Code (CC, 2026-09-25): In `buildWiringScript` (src/lib/generate.ts)
+  stehen genau drei `document.addEventListener`, für "click", "auxclick" und "submit".
+  ABGRENZUNG, damit die Aufzählung nicht für vollständig gehalten wird: Der Lader des
+  Custom-Pixels (`buildCustomPixelRuntime`, src/lib/tracking/custom-pixel.ts, seit Scheibe
+  11.6a) hängt einen `DOMContentLoaded`-Listener an `document`. Er ist kein
+  Wiring-Listener, ändert keine der fünf Achsen und steht deshalb nicht in dieser Liste.
+  GEMESSEN (CC, 2026-09-25): Achse `(document|window)\.addEventListener\(` über
+  src/lib/generate.ts, src/lib/tracking/ und src/lib/analytics/ ohne Tests — genau diese
+  vier Treffer; die zwei `addEventListener` in src/lib/tracking/consent-choice.ts hängen an
+  Knöpfen, die der Baustein selbst erzeugt (`makeButton`, `makeWay`) und die Leiste bzw.
+  Modal in den eigenen Schattenbaum hängen (`attachShadow` in src/lib/tracking/consent-bar.ts
+  und src/lib/tracking/consent-modal.ts; GELESEN am Code, CC, 2026-09-25).
   WAS SIE IM BESTAND KOSTET UND WARUM DER TAUSCH RICHTIG IST: Das Center-Modal hat deshalb
   KEINE Scroll-Sperre — der Besucher kann hinter der Abdunkelung scrollen. Dazu ist gemessen,
   dass eine Sperre auf fremdem HTML nicht verlässlich hält: auf zwei realen Seiten hielt sie

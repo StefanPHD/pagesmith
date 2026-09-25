@@ -6124,3 +6124,16 @@ FIX-VORSCHLAG über das Benannte hinaus.
   NICHT gemessen — ABGELEITET aus Matcher und Verzeichnis. Berührt Entscheidung P12.5-5 der Phase
   12.5 (Medienbytes nie über unsere Vercel-Routen) nur als Nachbarfrage. TRIGGER: die nächste
   Runde, die am Serve-Pfad oder an `public/` arbeitet.
+
+## Aus Phase 12.5 vorgemerkt (2026-09-25) — Scheibe 1b, ein Oberflächen-Hinweis
+
+Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummer setzt die Reihe `P12.5-n` jener
+Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+FIX-VORSCHLAG über das Benannte hinaus.
+
+- **Vorrat P12.5-30 — KEIN HINWEIS, WENN EIN KNOPF MIT TRACK IN EINEM FORMULAR MIT TRACK LIEGT**
+  Nach Entscheidung P12.5-25 der Phase 12.5 sind dann zwei Conversions konfiguriertes
+  Verhalten: der Klick auf den Knopf feuert dessen Track, das Abschicken den des Formulars
+  (Test S9 der Scheibe 1b). Die Oberfläche (`ActionPanel`, src/components/ActionPanel.tsx)
+  sagt das nicht. Vorgemerkt für die Neugestaltung der Oberfläche (ARCHITEKT, Bau-Auftrag
+  2026-09-25). TRIGGER: das UI-Redesign.

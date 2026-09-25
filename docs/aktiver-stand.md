@@ -471,8 +471,9 @@ P12.5-19).
 
 **ZIEL** (Entscheidung P12.5-21; Befund: Vorrat P12.5-17): Der Track eines `<form>` zählt beim
 Abschicken (Ereignis `submit`), nicht beim Klick; ein Klick innerhalb eines Formulars löst
-dessen Aktion nicht mehr aus. Die Formular-Aktion des Betreibers bleibt unberührt. DER PLAN
-FOLGT (Stufe 1, vorgelegt 2026-09-25); gebaut wird nach seiner Freigabe.
+dessen Aktion nicht mehr aus. Die Formular-Aktion des Betreibers bleibt unberührt. Der Plan
+(Stufe 1) ist vorgelegt und am 2026-09-25 freigegeben, mit den Entscheidungen P12.5-23 bis
+P12.5-27.
 
 **Entscheidung P12.5-21 — DER FORMULAR-TRACK ZÄHLT BEIM ABSCHICKEN, NICHT BEIM KLICK.** Ein
 Klick innerhalb eines Formulars löst dessen Aktion nicht mehr aus. Eigene Scheibe 1b, VOR
@@ -519,6 +520,81 @@ anders gekennzeichnet.
 (6) SPERRE GEGEN DOPPELTES ABSCHICKEN: keine Vorlage je Element im Bestand; nächstverwandt ist
     das Einmal-Flag `__psFbReady` in `buildMetaRuntime`.
 
+**SCOPE DES BAUS** (ARCHITEKT, Bau-Auftrag 2026-09-25): src/lib/generate.ts,
+src/lib/generate.test.ts, src/lib/own-blocks-waechter.test.ts, src/components/ActionPanel.tsx,
+dazu nach den Entscheidungen P12.5-19 und P12.5-21 src/lib/tracking/consent-setter.test.ts und
+src/lib/tracking/custom-pixel.test.ts. Alles andere unberührt.
+
+**INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-25, wörtlich):
+- (I1) Links und Buttons ausserhalb von Formularen verhalten sich wie nach Scheibe 1; alle
+  Tests der Scheibe 1 bleiben grün.
+  AUSNAHME (ARCHITEKT, Bau-Auftrag 2026-09-25): "T10 BESTAND" wird durch den Test S2 ersetzt
+  (Klick ins Feld ergibt 0) — er hielt das Verhalten fest, das diese Scheibe beendet.
+- (I2) Höchstens eine Conversion je Abschicken; keine Conversion durch einen Klick innerhalb
+  eines Formulars.
+  LESART (CC, 2026-09-25, aus Entscheidung P12.5-25): "keine Conversion durch einen Klick"
+  meint die Aktion des FORMULARS. Ein Element im Formular mit EIGENER Aktion (etwa ein Knopf
+  mit Track) feuert beim Klick weiter seine eigene.
+- (I3) Die Form des Datenblocks und die Typnamen bleiben unverändert; veröffentlichte
+  Datenblöcke bleiben gültig.
+- (I4) Die Formular-Aktion des Betreibers (Ziel, Methode, Absenden) wird durch einen Track
+  nicht verändert — kein preventDefault für einen Track.
+- (I5) Eine Seite ohne Laufzeit-Aktion bekommt weiter kein Skript.
+- (I6) ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts und der Produktionscode unter
+  src/lib/tracking/ und src/lib/capi/ bleiben unberührt. Die Editor-Brücke bleibt unberührt.
+
+PROVENIENZ DER FOLGENDEN FÜNF ENTSCHEIDUNGEN: ARCHITEKT, Bau-Auftrag 2026-09-25, zum Plan der
+Scheibe 1b (vorgelegt 2026-09-25, Buchstaben wie im Auftrag).
+
+**Entscheidung P12.5-23 ((R) des Auftrags) — FORMULARE FÜHREN KEINE WEITERLEITUNG MEHR AUS,**
+weder beim Klick noch beim Abschicken. Das `ActionPanel` bietet für ein `<form>` keinen
+Redirect-Slot mehr an. AUFLAGE: Trägt ein `<form>` bereits eine Weiterleitung, bleibt sie im
+`ActionPanel` SICHTBAR mit dem Hinweis, dass sie nicht mehr wirkt, und ist ENTFERNBAR; neu
+anlegen geht nicht. (I3) bleibt: das Mapping bleibt gültige Daten. GRUND: Die Weiterleitung
+navigiert heute schon beim Klick ins Feld weg (Vermerk P12.5-22, Punkt (2), ABGELEITET); die
+Weiterleitung NACH dem Abschicken (R2 des Plans) gehört zu Phase 13 (E-Mail-/ESP-Webhooks),
+weil erst dort entschieden wird, was mit den Formulardaten geschieht (Vorrat P12.5-29). R2
+bräche zudem (I4): sie verlangt ein `preventDefault` und eine eigene Navigation.
+
+**Entscheidung P12.5-24 ((S) des Auftrags) — EINE CONVERSION JE FORMULAR UND SEITENLEBEN.** Die
+Sperre gegen doppeltes Abschicken gilt je Formular, nicht global, und liegt in der
+Laufzeit-Closure, nicht als Attribut am Formular. GRUND (Plan): Ein Doppelklick auf
+"Absenden" zählt einmal; ein Attribut am Formular fasste einen fremden Knoten an
+(docs/immer-beachten.md, "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN
+FREMDEN KNOTEN AN"). PREIS: Ein AJAX-Formular, das auf derselben Seite mehrfach legitim
+abschickt, zählt einmal.
+
+**Entscheidung P12.5-25 ((9) des Auftrags) — KNOPF MIT EIGENEM TRACK IN EINEM FORMULAR MIT TRACK:
+ZWEI CONVERSIONS SIND KONFIGURIERTES VERHALTEN.** Der Klick auf den Knopf feuert dessen
+Track, das Abschicken den des Formulars (Test S9 hält es fest). Ein Hinweis in der Oberfläche
+ist für das Redesign vorgemerkt (docs/claude-history/backlog-polish.md, Vorrat P12.5-30).
+
+**Entscheidung P12.5-26 ((A) des Auftrags) — src/components/ActionPanel.tsx IST IM SCOPE:** die
+Texte "bei Klick" bzw. "beim Abschicken" nach Elementtyp, der Redirect-Slot nach Entscheidung
+P12.5-23. GRUND: Die Texte "Feuert bei Klick ein Event", "Läuft bei Klick auf dieses Element"
+und "Klick leitet auf eine URL weiter" (`TrackActions`, `RedirectActions`) sind für ein
+Formular nach Scheibe 1b falsch.
+
+**Entscheidung P12.5-27 ((D) des Auftrags) — DIE ERGÄNZUNG DER DAUERREGEL "KEIN BAUSTEIN DES
+AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN" KOMMT IN DIE ABSCHLUSS-RUNDE
+NACH DEM LIVE-TEST, NICHT JETZT.** Anlass: Die Regel führt als gewollt "die zwei
+Wiring-Listener an `document`"; mit Scheibe 1b sind es drei (click, auxclick, submit). Der
+`submit`-Listener ändert keine der fünf dort geschützten Eigenschaften.
+
+**Vorrat P12.5-28 — DIE BESTÄTIGUNG DES PIXELS KANN BEI EINER NAVIGATION VERLOREN GEHEN; DIE
+VERLUSTRATE FIELE DANN ZU HOCH AUS.** ABGELEITET am Code (CC, 2026-09-25), UNGEMESSEN; die
+Fundstellen stehen in Vermerk P12.5-22, Punkt (4). Ist das Abschicken die erste Conversion
+einer Seite, lädt fbevents erst in diesem Aufruf; `__psConfirm` puffert die Bestätigung im
+Zustand "pending", und ein Neuladen verwirft den Puffer. Der Beacon selbst geht per
+`sendBeacon` und ist davon nicht betroffen. Gilt ebenso für einen Klick mit Weiterleitung.
+TRIGGER: der Live-Test der Scheibe 1b, Variante 3a (frisch geladene Seite, Abschicken als
+erste Conversion).
+
+**Vorrat P12.5-29 — WEITERLEITUNG NACH DEM ABSCHICKEN (R2 des Plans der Scheibe 1b).** Nach
+Entscheidung P12.5-23 führt ein Formular keine Weiterleitung aus; eine Weiterleitung NACH dem
+Abschicken verlangt ein `preventDefault` und eine eigene Navigation und bräche damit (I4) der
+Scheibe 1b. TRIGGER: der Zuschnitt der Phase 13 (E-Mail-/ESP-Webhooks).
+
 ## Register der Phase 12.5
 
 Je Eintrag Zieldatei und wörtlicher Titelanfang; Titel ohne Überschriften-Marke.
@@ -547,13 +623,15 @@ POSTEN IM BACKLOG, DIE DIE SCHATTEN-KORREKTUR BERÜHRT (docs/claude-history/back
   FALSCH." — dieselbe Datei.
 
 VORRAT DIESER PHASE, DIREKT IM BACKLOG ABGELEGT (docs/claude-history/backlog-polish.md,
-Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) …"): P12.5-10, P12.5-11, P12.5-12.
+Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) — drei Befunde der ersten Aufklärung"):
+P12.5-10, P12.5-11, P12.5-12; Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) — Scheibe 1b,
+ein Oberflächen-Hinweis": P12.5-30.
 
 ## Nächster Schritt der Phase 12.5
 
 Scheibe 1 ist abgeschlossen (Vermerk P12.5-20), der Formular-Befund gemessen (Vorrat
 P12.5-17). Danach, in dieser Reihenfolge:
 (1) Scheibe 1b — Formular-Track am Abschicken (Entscheidung P12.5-21): der Plan ist
-    vorgelegt; Freigabe, Bau, Live-Test.
+    freigegeben (Entscheidungen P12.5-23 bis P12.5-27); Bau, Live-Test.
 (2) Danach Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7).
 Diese Datei entwirft keine von beiden.

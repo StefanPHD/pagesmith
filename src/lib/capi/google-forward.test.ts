@@ -54,6 +54,13 @@ function gesendet(): Record<string, unknown> {
   return JSON.parse(String(aufrufe[0].init.body)) as Record<string, unknown>;
 }
 
+/** Alle Zeilen, die in console.info gelandet sind (die Erfolgszeile, S10c). */
+function infoZeilen(): string[] {
+  return (console.info as unknown as ReturnType<typeof vi.fn>).mock.calls.map(
+    (c) => String(c[0]),
+  );
+}
+
 beforeEach(() => {
   aufrufe = [];
   antwort = async () => new Response(null, { status: 200 });
@@ -61,6 +68,7 @@ beforeEach(() => {
     aufrufe.push({ url: String(url), init: init as RequestInit });
     return antwort();
   }) as unknown as typeof fetch;
+  vi.spyOn(console, "info").mockImplementation(() => {});
   vi.useFakeTimers();
   vi.setSystemTime(JETZT * 1000);
 });
@@ -485,5 +493,166 @@ describe("forwardToGoogle — landingPageDeviceInfo (S7)", () => {
     expect(ausgaben).toContain("HTTP 400");
     expect(ausgaben).not.toContain(IP);
     expect(ausgaben).not.toContain(UA);
+  });
+});
+
+// ===========================================================================
+// DIE ERFOLGSZEILE (Phase 11.7, S10c).
+//
+// Eine angenommene Antwort (res.ok — das bestehende Erfolgsurteil, kein neues) schreibt
+// GENAU EINE console.info-Zeile mit Ziel und HTTP-Status, sonst nichts. Das Muster ist
+// fuer alle fuenf Ziele zeichengleich (S10a). Die Faelle lesen BEIDE Kanaele: info fuer
+// die Zeile, error dafuer, dass sie nicht auf der falschen Stufe steht.
+// ===========================================================================
+
+describe("Google — die Erfolgszeile (S10c)", () => {
+  const ZEILE_200 = "[capi] Google forward accepted: HTTP 200";
+  const IP = "203.0.113.61";
+  const UA = "Mozilla/5.0 (ERFUNDEN-UA-GS-S10C)";
+
+  let fehler: ReturnType<typeof vi.spyOn>;
+  function fehlerZeilen(): string[] {
+    return fehler.mock.calls.map((c: unknown[]) => String(c[0]));
+  }
+
+  beforeEach(() => {
+    fehler = vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  it("GS-a: HTTP 200 -> genau EINE Info-Zeile, keine Fehlerzeile", async () => {
+    // WIRD ROT, WENN: die Zeile fehlt, doppelt kommt, auf error steht oder mehr traegt.
+    await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    expect(aufrufe).toHaveLength(1);
+    expect(infoZeilen()).toEqual([ZEILE_200]);
+    expect(fehlerZeilen()).toEqual([]);
+  });
+
+  it("GS-b: der Status kommt aus der Antwort — 201 ergibt 'HTTP 201'", async () => {
+    // WIRD ROT, WENN: der Status festgeschrieben statt gelesen wird. Jede Antwort mit
+    // res.ok gilt als angenommen. EINZIGER TEST GEGEN einen festgeschriebenen Status
+    // (Mutation mG6 der Scheibe S10c). Gemessen hat Google bisher nur 200 geliefert; der
+    // Wert 201 dient allein der Trennung.
+    antwort = async () => new Response(null, { status: 201 });
+    await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    expect(infoZeilen()).toEqual(["[capi] Google forward accepted: HTTP 201"]);
+    expect(fehlerZeilen()).toEqual([]);
+  });
+
+  it("GS-c: KEIN Wert aus Anfrage oder Antwort steht in einer Zeile — mit Positivkontrolle", async () => {
+    // WIRD ROT, WENN: Zugangsdatum, Kundennummer, Ziel-Kennung, Klick-Kennung, IP,
+    // User-Agent, eventID, Ereignisname, Betrag, Waehrung, die Adresse des Endpunkts oder
+    // ein Feld der Antwort in eine Zeile geraten (TRANSIT-ONLY; aus der Antwort allein
+    // der Status).
+    const EVT = "evt-s10c-c-kennung";
+    const EREIGNIS = "S10cErfundenesEreignis";
+    antwort = async () =>
+      new Response(JSON.stringify({ requestId: "RID-S10C-ANTWORT" }), { status: 200 });
+    await forwardToGoogle(
+      config({ conversionRules: { [EREIGNIS]: ZIEL_KENNUNG } }),
+      EREIGNIS,
+      EVT,
+      rumpf({ value: 19.9, currency: "EUR" }),
+      IP,
+      UA,
+    );
+
+    // POSITIVKONTROLLE: jeder gesuchte Wert ist tatsaechlich hinausgegangen — sonst
+    // waere seine Abwesenheit in der Zeile trivial wahr.
+    const body = String(aufrufe[0].init.body);
+    for (const wert of [KUNDENNUMMER, ZIEL_KENNUNG, GCLID, IP, UA, EVT, "19.9", "EUR"]) {
+      expect(body).toContain(wert);
+    }
+    const kopf = aufrufe[0].init.headers as Record<string, string>;
+    expect(kopf.Authorization).toContain(TOKEN);
+    expect(aufrufe[0].url).toContain("datamanager.googleapis.com");
+    expect(infoZeilen()).toEqual([ZEILE_200]);
+
+    const alle = [...infoZeilen(), ...fehlerZeilen()].join("\n");
+    for (const wert of [
+      TOKEN, KUNDENNUMMER, ZIEL_KENNUNG, GCLID, IP, UA, EVT, EREIGNIS, "19.9", "EUR",
+      "datamanager.googleapis.com", "RID-S10C-ANTWORT",
+    ]) {
+      expect(alle).not.toContain(wert);
+    }
+  });
+
+  it.each<[string, () => Promise<void>, number]>([
+    ["HTTP 400", async () => {
+      antwort = async () => new Response("{}", { status: 400 });
+      await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 1],
+    ["HTTP 401", async () => {
+      antwort = async () => new Response("{}", { status: 401 });
+      await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 1],
+    ["HTTP 404", async () => {
+      antwort = async () => new Response("{}", { status: 404 });
+      await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 1],
+    ["HTTP 429", async () => {
+      antwort = async () => new Response("{}", { status: 429 });
+      await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 1],
+    ["HTTP 503", async () => {
+      antwort = async () => new Response("{}", { status: 503 });
+      await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 1],
+    ["fetch wirft", async () => {
+      antwort = async () => {
+        throw new TypeError("network down");
+      };
+      await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 1],
+    ["Abbruch", async () => {
+      antwort = async () => {
+        throw new DOMException("Aborted", "AbortError");
+      };
+      await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 1],
+    ["Riegel 1 (keine Kundennummer)", async () => {
+      await forwardToGoogle(config({ operatingAccountId: "" }), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 0],
+    ["Riegel 2 (kein Ziel fuer das Ereignis)", async () => {
+      await forwardToGoogle(config({ conversionRules: {} }), "Purchase", "evt-1", rumpf(), IP, UA);
+    }, 0],
+    ["Riegel 3 (keine Klick-Kennung)", async () => {
+      await forwardToGoogle(
+        config(),
+        "Purchase",
+        "evt-1",
+        { eventSourceUrl: "https://kunde.example/danke" },
+        IP,
+        UA,
+      );
+    }, 0],
+  ])("GS-d: %s -> KEINE Info-Zeile", async (_name, lauf, fetches) => {
+    // WIRD ROT, WENN: die Zeile ausserhalb des Erfolgsurteils entsteht (Mutation mG2).
+    // POSITIVKONTROLLE: die eine Fehlerzeile des Pfades und die Zahl der Netzrufe — er
+    // wurde wirklich betreten.
+    await lauf();
+    expect(infoZeilen()).toEqual([]);
+    expect(fehlerZeilen()).toHaveLength(1);
+    expect(aufrufe).toHaveLength(fetches);
+  });
+
+  it("GS-e: die Zeile liest den Rumpf nicht — ein unlesbarer Erfolgs-Rumpf aendert nichts", async () => {
+    // WIRD ROT, WENN: fuer die Zeile der Rumpf gelesen wird (E4; Mutation mG7). Ein
+    // Erfolgs-Rumpf kann fieldWarnings tragen (GELESEN, google.md (o)/G1) — die Zeile
+    // urteilt darueber nicht, sie meldet die Annahme.
+    antwort = async () =>
+      ({
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        text: async () => {
+          throw new Error("stream broken");
+        },
+        json: async () => {
+          throw new Error("stream broken");
+        },
+      }) as unknown as Response;
+    await forwardToGoogle(config(), "Purchase", "evt-1", rumpf(), IP, UA);
+    expect(infoZeilen()).toEqual([ZEILE_200]);
+    expect(fehlerZeilen()).toEqual([]);
   });
 });

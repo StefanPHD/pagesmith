@@ -348,6 +348,17 @@ export async function forwardToGoogle(
     // Die Diagnose laeuft ueber einen Handaufruf ausserhalb des Produkts (E4).
     if (!res.ok) {
       console.error(`[capi] Google forward failed: HTTP ${res.status}`);
+    } else {
+      // DIE ERFOLGSZEILE (Phase 11.7, S10c). Eine angenommene Antwort — jede mit res.ok,
+      // das bestehende Erfolgsurteil, kein neues — schreibt GENAU EINE Info-Zeile mit Ziel
+      // und HTTP-Status und sonst nichts: keine Nutzlast, keine Klick-Kennung, keine IP,
+      // kein User-Agent, kein Zugangsdatum, keine Kundennummer — TRANSIT-ONLY. DER RUMPF
+      // WIRD AUCH DAFUER NICHT GELESEN (E4, s. den Kopf dieser Datei).
+      // "accepted" heisst ANGENOMMEN, nicht verarbeitet: Ein 200 kann fieldWarnings tragen
+      // (GELESEN, docs/ziel-befunde/google.md, Teile (o)/G1, (x)/G1), und die Verarbeitung
+      // ist asynchron — ein mit 200 angenommener Aufruf ist spaeter mit
+      // PROCESSING_ERROR_REASON_INVALID_GCLID gescheitert (GEMESSEN, Teile (ca)/(e), (cb)).
+      console.info(`[capi] Google forward accepted: HTTP ${res.status}`);
     }
   } catch (err) {
     // Nur der Fehler-NAME. errorName liest ausschliesslich .name — nie die Message,

@@ -21,6 +21,7 @@ P12.5-1, Vermerk P12.5-8 …) — dieselbe Form wie in der Phase 11.9.
 - Aufklärung zur Phase 12.5 vom 2026-09-25
 - Die Schatten-Probe vom 2026-09-25
 - Scheibe 1 — Schatten-Korrektur
+- Scheibe 1b — Formular-Track am Abschicken
 - Register der Phase 12.5
 - Nächster Schritt der Phase 12.5
 
@@ -278,7 +279,14 @@ sich anders als heute.
 GEBAUT als die zwei FORM-Zeilen in `actionOwner` (`buildWiringScript`, src/lib/generate.ts).
 WÄCHTER in src/lib/generate.test.ts: T10 (Mutation M6a), T10b (Mutation M6b), dazu
 "T10 BESTAND" als Festschreibung des Verhaltens vor der Scheibe, ausdrücklich kein Soll.
-BINDET, BIS VORRAT P12.5-17 GEMESSEN UND ENTSCHIEDEN IST.
+VERHÄLTNIS ZU ENTSCHEIDUNG P12.5-21 (CC, 2026-09-25; STEHEN GELASSEN, NICHT ERSETZT): Vorrat
+P12.5-17 ist gemessen und entschieden. Die Entscheidung löst mit dem Bau der Scheibe 1b
+genau EINEN Satz dieser Entscheidung ab — "Ein direkter Treffer auf das `<form>` … bleibt
+unverändert": Ein Klick innerhalb eines Formulars löst dessen Aktion dann nicht mehr aus, und
+"T10 BESTAND" wird ersetzt. Der FORM-HALT BLEIBT und bindet über Scheibe 1b hinaus: Ohne ihn
+liefe ein Klick auf ein markiertes Kind ohne Aktion in einem Formular (etwa "Formular-Text")
+aus dem Formular hinaus zu einem umschliessenden Element mit Aktion. Bis zum Bau-Commit der
+Scheibe 1b gilt diese Entscheidung unverändert, weil der Code sie trägt.
 
 **Entscheidung P12.5-16 (D3 des Plans) — P11.12-2 WIRD NICHT MITGENOMMEN.** GRUND: Die falsche
 Begründung steht in src/lib/generate.ts ZWEIMAL — im Kopfkommentar von `buildWiringScript`
@@ -294,7 +302,9 @@ Differenz-Nachweise (Entscheidung P12.5-14) werden dann rot, und die Änderung b
 eigene Entscheidung.
 
 **Vorrat P12.5-17 — DER TRACK EINES FORMULARS FEUERT BEI JEDEM KLICK AUF EIN UNMARKIERTES
-KIND.** ABGELEITET am Code (CC, 2026-09-25), UNGEMESSEN. Der Click-Listener in
+KIND.** GEMESSEN (OWNER, LIVE, 2026-09-25, Messwerte unten) — ÜBERZÄHLUNG UND UNTERZÄHLUNG
+BESTÄTIGT; überführt in Scheibe 1b (Entscheidung P12.5-21). Die Ableitung am Code (CC,
+2026-09-25): Der Click-Listener in
 `buildWiringScript` (src/lib/generate.ts) sucht `t.closest("[data-pagesmith-id]")`. Ein
 Eingabefeld ist kein Kandidat (`CANDIDATE_SELECTOR`, src/lib/detect.ts: Buttons, `form`,
 `a[href]`) und trägt keine Kennung; `form` ist Kandidat und wird markiert (`stabilizeDoc`). Ein
@@ -302,7 +312,21 @@ Klick in das Feld findet also das `<form>` und führt dessen `track` aus. Ein Fo
 die Slots `redirect` und `track` wie jedes Element ausser Text (`ActionPanel`,
 src/components/ActionPanel.tsx). Folge, falls es zutrifft: möglicherweise falsche Conversions
 — gezählt wird der Klick ins Feld, nicht das Absenden. TRIGGER: die nächste Messung nach
-Scheibe 1.
+Scheibe 1 — EINGETRETEN am 2026-09-25.
+MESSWERTE — OWNER, LIVE, 2026-09-25, Seite "Schatten Test" (von CC nicht prüfbar). Aufbau:
+`<form action="#unten">` mit `<p>Formular-Text</p>`, `<input type="email">`,
+`<button type="submit">`; Track "Contact" am `<form>`, kein Mapping am Button; der Link mit
+Track "Lead" unverändert.
+· Positivkontrolle, Klick auf den Rand des Links: 2 Requests "Lead" (Paar).
+· Klick ins E-Mail-Feld: 2 Requests "Contact". Zweiter und dritter Klick: je 2 weitere.
+· Klick auf "Formular-Text": 0.
+· Klick auf "Absenden": 0 Requests "Contact"; die Seite lädt neu, danach 1 Request
+  "__ps_pageview" (eventID 3660437c-f6e5-48c4-835d-d739fa8b7a0a).
+EINORDNUNG (CC, 2026-09-25): ÜBERZÄHLUNG — jeder Klick ins Feld zählt eine Conversion (drei
+Klicks, drei); UNTERZÄHLUNG — das Abschicken selbst zählt keine. Der Klick auf
+"Formular-Text" (0) entspricht dem FORM-Halt aus Entscheidung P12.5-15. Dass die je zwei
+Requests "Contact" das Paar aus Beacon und Bestätigung sind (Vermerk P12.5-20, Punkt (5)), ist
+nicht geöffnet, nur gezählt.
 
 **Vermerk P12.5-18 — INVENTUR DER TESTDATEIEN MIT HASH ODER BYTEZÄHLUNG, UND WARUM G8 SIE
 VERFEHLT HAT (GEMESSEN, CC, 2026-09-25, im Bau der Scheibe).**
@@ -443,6 +467,58 @@ P12.5-19).
     Satz, der über die Scheibe hinaus bindet), P12.5-19 · Vermerke P12.5-13, P12.5-18 · Vorrat
     P12.5-17.
 
+## Scheibe 1b — Formular-Track am Abschicken
+
+**ZIEL** (Entscheidung P12.5-21; Befund: Vorrat P12.5-17): Der Track eines `<form>` zählt beim
+Abschicken (Ereignis `submit`), nicht beim Klick; ein Klick innerhalb eines Formulars löst
+dessen Aktion nicht mehr aus. Die Formular-Aktion des Betreibers bleibt unberührt. DER PLAN
+FOLGT (Stufe 1, vorgelegt 2026-09-25); gebaut wird nach seiner Freigabe.
+
+**Entscheidung P12.5-21 — DER FORMULAR-TRACK ZÄHLT BEIM ABSCHICKEN, NICHT BEIM KLICK.** Ein
+Klick innerhalb eines Formulars löst dessen Aktion nicht mehr aus. Eigene Scheibe 1b, VOR
+Scheibe 2 (Editor-Gerüst, Entscheidung P12.5-7). Die Formular-Aktion des Betreibers bleibt
+unberührt. Die Weiterleitung an einem Formular wird nach dem Plan entschieden. VORAB
+FREIGEGEBEN nach Entscheidung P12.5-14: Die vier Differenz-Nachweise (W1', W2', T1, T9)
+werden um die neuen, benannten Einsetzungen erweitert, je eigene Abschrift (A1); die
+Sollwerte bleiben unverändert; der Scope-Riegel wird dafür NUR für
+src/lib/tracking/consent-setter.test.ts und src/lib/tracking/custom-pixel.test.ts aufgehoben,
+wie in Entscheidung P12.5-19. GRUND: die Messung aus Vorrat P12.5-17 — Überzählung beim
+Klick ins Feld, Unterzählung beim Abschicken. Verhältnis zu Entscheidung P12.5-15: dort.
+PROVENIENZ: ARCHITEKT, 2026-09-25.
+
+**Vermerk P12.5-22 — AUFKLÄRUNG ZUM PLAN DER SCHEIBE 1b (KEIN BAU, daher kein Bau-Commit: die
+Aufklärung war read-only; CC, 2026-09-25, HEAD `e09aab8`).** GEMESSEN am Repo, soweit nicht
+anders gekennzeichnet.
+(1) EIN `submit`-LISTENER EXISTIERT NUR IN DER EDITOR-BRÜCKE: `LISTENER_SCRIPT`
+    (src/lib/detect.ts) ruft im Capture `preventDefault`. Das ausgelieferte Wiring
+    (`buildWiringScript`, src/lib/generate.ts) hat keinen. Achse `"submit"` über src/ ohne
+    Tests: detect.ts (`BUTTON_SELECTOR`, `LISTENER_SCRIPT`) und zwei `type="submit"` in Seiten
+    der App.
+(2) WEITERLEITUNG AN EINEM FORMULAR: Das `ActionPanel` (src/components/ActionPanel.tsx) bietet
+    jedem Element ausser Text die Slots `redirect` und `track`, also auch einem `<form>`. Der
+    Redirect-Zweig im Click-Listener von `buildWiringScript` ruft `preventDefault` und
+    navigiert (`location.href` bzw. `window.open`). ABGELEITET, NICHT GEMESSEN: Ein Klick in das
+    Eingabefeld eines Formulars MIT Weiterleitung navigiert im Export sofort weg, in der
+    Vorschau öffnet er einen Tab.
+(3) DIE FUNKTIONALE VORSCHAU TRÄGT KEIN `allow-forms`: `sandbox="allow-scripts allow-popups
+    allow-popups-to-escape-sandbox"` am Rahmen "functional-preview" (src/components/
+    CodeImporter.tsx). NICHT GELESEN, Kenntnis der HTML-Spezifikation (UNGEPRÜFT): In einem
+    solchen Rahmen bricht das Abschicken ab, bevor ein `submit`-Ereignis entsteht — ein Track
+    beim Abschicken wäre in der Vorschau nicht vorführbar. Live prüfbar.
+(4) TRANSPORT: `buildCapiBeaconStatement` (src/lib/tracking/meta.ts) sendet allein per
+    `navigator.sendBeacon`, ohne `fetch`-Rückfall. `buildPixelConfirmStatement` sendet die
+    Bestätigung per `sendBeacon` mit `fetch`-`keepalive`-Rückfall, aber nur im Pixel-Zustand
+    "ok"; im Zustand "pending" puffert `__psConfirm` (`buildMetaRuntime`) in einer Variablen
+    der Seite. ABGELEITET, NICHT GEMESSEN: Lädt die Seite neu, bevor fbevents geladen ist, geht
+    die gepufferte Bestätigung verloren, und die Verlustrate zählt das Ereignis als Verlust.
+    Dasselbe gilt schon heute für einen Klick mit Weiterleitung.
+(5) TESTUMGEBUNG: jsdom 29.1.1 — `requestSubmit` (node_modules/jsdom/lib/jsdom/living/nodes/
+    HTMLFormElement-impl.js) prüft die Gültigkeit statisch (`reportValidity` ruft
+    `checkValidity`), feuert dann `submit` und meldet danach "not implemented"; eine
+    Sandbox-Prüfung gibt es dort nicht. GELESEN am installierten Paket.
+(6) SPERRE GEGEN DOPPELTES ABSCHICKEN: keine Vorlage je Element im Bestand; nächstverwandt ist
+    das Einmal-Flag `__psFbReady` in `buildMetaRuntime`.
+
 ## Register der Phase 12.5
 
 Je Eintrag Zieldatei und wörtlicher Titelanfang; Titel ohne Überschriften-Marke.
@@ -475,8 +551,9 @@ Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) …"): P12.5-10, P12.5-11, P12
 
 ## Nächster Schritt der Phase 12.5
 
-Scheibe 1 ist abgeschlossen (Vermerk P12.5-20). Danach, in dieser Reihenfolge:
-(1) Die Messung des Formular-Befunds — Vorrat P12.5-17 (der Track eines Formulars beim Klick
-    in ein Eingabefeld; TRIGGER dort: "die nächste Messung nach Scheibe 1").
+Scheibe 1 ist abgeschlossen (Vermerk P12.5-20), der Formular-Befund gemessen (Vorrat
+P12.5-17). Danach, in dieser Reihenfolge:
+(1) Scheibe 1b — Formular-Track am Abschicken (Entscheidung P12.5-21): der Plan ist
+    vorgelegt; Freigabe, Bau, Live-Test.
 (2) Danach Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7).
 Diese Datei entwirft keine von beiden.

@@ -20,6 +20,7 @@ P12.5-1, Vermerk P12.5-8 …) — dieselbe Form wie in der Phase 11.9.
 - Owner-Entscheidungen zur Phase 12.5 vom 2026-09-25
 - Aufklärung zur Phase 12.5 vom 2026-09-25
 - Die Schatten-Probe vom 2026-09-25
+- Scheibe 1 — Schatten-Korrektur
 - Register der Phase 12.5
 - Nächster Schritt der Phase 12.5
 
@@ -205,6 +206,83 @@ daher kein Bau-Commit: eine Live-Probe des Owners, dazu eine Ablesung am Code).*
     hinweist, ist der offene Punkt "NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN
     IST".
 
+## Scheibe 1 — Schatten-Korrektur
+
+**ZIEL** (Entscheidung P12.5-2; Befund: Vermerk P12.5-9): Trägt das innerste markierte
+Element keine Klick-Aktion (`track` oder `redirect`), löst ein Klick zur Laufzeit die Aktion
+des nächsten markierten Vorfahren aus, der eine trägt. Die Editor-Auswahl bleibt beim
+innersten Element — das `<h2>` bleibt einzeln bearbeitbar. Die Korrektur liegt allein in
+`buildWiringScript` (src/lib/generate.ts); `LISTENER_SCRIPT` (src/lib/detect.ts) bleibt
+unverändert. PROVENIENZ: Plan- und Bau-Auftrag des Architekten, 2026-09-25.
+
+**INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-25, wörtlich):
+- (I1) Die Editor-Auswahl trifft weiter das innerste markierte Element.
+- (I2) Pro Klick höchstens EINE Aktion — die des innersten Elements, das eine Aktion trägt.
+  Nie zwei (doppelte Conversion unter geteilter eventID wäre die Folge).
+  LESART (CC im Plan, 2026-09-25): die Aktionen EINES Elements — ein Element mit `redirect`
+  und `track` führt beide aus; je Element und Typ gibt es höchstens ein Mapping
+  (`upsertMapping`, src/lib/mappings.ts, GELESEN).
+- (I3) Die Form des Datenblocks { elementId, type, config } und das Attribut
+  data-pagesmith-id bleiben unverändert; bereits veröffentlichte Datenblöcke bleiben gültig.
+- (I4) Eine Seite ohne Laufzeit-Aktion bekommt weiter KEIN Skript.
+- (I5) Ein Klick direkt auf das Element mit Aktion verhält sich wie heute.
+- (I6) ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts und alles unter src/lib/capi/ und
+  src/lib/tracking/ bleiben unberührt — auch nicht "nur schnell".
+
+**Vermerk P12.5-13 — DER BYTE-WÄCHTER PINNT DAS KLICK-SKRIPT (Gate G8 des Plans; GEMESSEN, CC,
+2026-09-25, HEAD `0529e02`).** Die Tests W1 und W2 in src/lib/own-blocks-waechter.test.ts
+vergleichen Bytes und sha256 des Dokuments aus `generateFunctional(…, "export")` bzw. danach
+`injectPageViewEmitter` mit den Sollwerten aus Entscheidung P11.11-22, Punkt (g), der Phase
+11.11: 13 250 B / sha256 `b6ee842b…33a471e6` und 27 158 B / sha256 `70a86db8…8ef1a89d46`. Die
+Sonde trägt `redirect` und `track` an einem `<button>`; das Dokument enthält damit das
+Wiring-Script aus `buildWiringScript` samt auxclick-Zweig, und JEDE Änderung am Klick-Skript
+macht W1/W2 rot. Der Kopf des Wächters: "WIRD ER ROT, IST DAS EIN STOPP UND KEINE ANPASSUNG
+DES SOLLWERTS." Lauf `vitest run src/lib/own-blocks-waechter.test.ts`: 4 von 4 grün.
+Sonst festgeschrieben ist das Klick-Skript nirgends: `toMatchSnapshot` über src/ 0 Treffer
+(Positivkontrolle `createHash`: Treffer); der Hash N8 in
+src/lib/analytics/pageview-emitter.resend.test.ts gilt allein `buildPageViewScript`. Die Nadel
+`WIRING_NEEDLE` (src/lib/own-blocks.ts) ist `getElementById("pagesmith-mappings")`; diese
+Zeile des Skripts bleibt unberührt.
+
+**Entscheidung P12.5-14 (D1 des Plans) — DIFFERENZ-NACHWEIS STATT BYTE-GLEICHHEIT.** W1 und W2
+werden nach docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN
+DIFFERENZ-NACHWEIS AN IHRE STELLE …" umgestellt. Die Sollwerte bleiben UNVERÄNDERT und sind
+der Vorher-Wert; die Korrektur wird als reine EINSETZUNG gebaut, deren Wortlaut der Test aus
+dem freigegebenen Plan tippt, nicht aus dem Code; der Kopf des Wächters wird im selben Commit
+neu gefasst. GRUND: Ein aus dem Bau abgelesener Sollwert wäre der Spiegel, den Entscheidung
+P11.11-18 der Phase 11.11 verbietet; ohne Textänderung ist die Korrektur nicht zu bauen — der
+Datenblock ist durch (I3) gesperrt, ein zweites Script änderte den Text ebenso. PROVENIENZ:
+ARCHITEKT, 2026-09-25.
+
+**Entscheidung P12.5-15 (D2 des Plans) — FORMULARE BLEIBEN EXAKT WIE HEUTE.** Die Suche nach
+oben läuft nicht in ein `<form>` hinein: erreicht sie ein FORM, endet sie mit null. Ein
+direkter Treffer auf das `<form>` (`closest` liefert es selbst) bleibt unverändert. GRUND: Der
+Befund aus Vorrat P12.5-17 deutet auf heutige Überzählung; die Scheibe weitet ihn nicht aus.
+PROVENIENZ: ARCHITEKT, 2026-09-25.
+AUSLEGUNG IM BAU (CC, 2026-09-25): Ein direkter Treffer auf ein `<form>` OHNE Klick-Aktion
+läuft ebenfalls nicht weiter nach oben — sonst löste ein Klick in ein Formular ohne Aktion,
+das in einem Element mit Aktion liegt, künftig dessen Aktion aus, und das Formular verhielte
+sich anders als heute.
+
+**Entscheidung P12.5-16 (D3 des Plans) — P11.12-2 WIRD NICHT MITGENOMMEN.** GRUND: Die falsche
+Begründung steht in src/lib/generate.ts ZWEIMAL — im Kopfkommentar von `buildWiringScript`
+ausserhalb des Scripts und im Kommentar INNERHALB des ausgelieferten Scripts ("srcDoc-Basis
+(unsere Origin)"). Die innere zu ändern ist eine Ersetzung und bricht die reine Einsetzung
+(Entscheidung P12.5-14); nur die äussere zu ändern fiele unter docs/immer-beachten.md, "WER
+EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR FALLE". PROVENIENZ: Vorschlag CC im
+Plan, ARCHITEKT-Entscheidung 2026-09-25.
+
+**Vorrat P12.5-17 — DER TRACK EINES FORMULARS FEUERT BEI JEDEM KLICK AUF EIN UNMARKIERTES
+KIND.** ABGELEITET am Code (CC, 2026-09-25), UNGEMESSEN. Der Click-Listener in
+`buildWiringScript` (src/lib/generate.ts) sucht `t.closest("[data-pagesmith-id]")`. Ein
+Eingabefeld ist kein Kandidat (`CANDIDATE_SELECTOR`, src/lib/detect.ts: Buttons, `form`,
+`a[href]`) und trägt keine Kennung; `form` ist Kandidat und wird markiert (`stabilizeDoc`). Ein
+Klick in das Feld findet also das `<form>` und führt dessen `track` aus. Ein Formular bekommt
+die Slots `redirect` und `track` wie jedes Element ausser Text (`ActionPanel`,
+src/components/ActionPanel.tsx). Folge, falls es zutrifft: möglicherweise falsche Conversions
+— gezählt wird der Klick ins Feld, nicht das Absenden. TRIGGER: die nächste Messung nach
+Scheibe 1.
+
 ## Register der Phase 12.5
 
 Je Eintrag Zieldatei und wörtlicher Titelanfang; Titel ohne Überschriften-Marke.
@@ -237,5 +315,5 @@ Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) …"): P12.5-10, P12.5-11, P12
 
 ## Nächster Schritt der Phase 12.5
 
-Der Zuschnitt der Scheibe 1 — die Schatten-Korrektur (Entscheidung P12.5-2). Diese Datei
-entwirft ihn nicht.
+Der Bau der Scheibe 1 — Schatten-Korrektur (Abschnitt "Scheibe 1 — Schatten-Korrektur"),
+danach ihr Live-Test durch den Owner.

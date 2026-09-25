@@ -954,10 +954,12 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
 
 - EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN FAIL-CLOSED AN, UND EIN DEPLOY HEILT
   DAS NICHT
-  `consentAllows` kennt drei Zweige: das Feld `cns` ganz abwesend -> erlaubt (eine Seite,
-  die älter ist als das Feld, verlöre sonst still ihren Forward) · das Feld vorhanden, der
-  Ziel-Schlüssel darin fehlt -> VERWEIGERT · und jede bereits veröffentlichte Seite trägt
-  ein `cns`-Objekt ohne den neuen Schlüssel.
+  Eine bestehende Seite trägt eines von zwei: KEIN `cns`-Feld (veröffentlicht vor seiner
+  Einführung) -> `allowedTargets` lässt allein die Ziele mit `LEGACY_CONSENT_ROLE` durch,
+  heute nur meta, damit solche Seiten ihren Forward dorthin behalten; ein neues Ziel trägt
+  die Rolle nicht · ein `cns`-Objekt OHNE den neuen Schlüssel -> `consentAllows` VERWEIGERT.
+  `consentAllows` selbst antwortet auf ein fehlendes Feld mit "erlaubt"; im Fan-Out wird es
+  in diesem Fall nicht gefragt.
   Folge: Nach dem Verdrahten eines neuen Ziels sendet keine bestehende Seite dorthin, bis
   sie NEU VERÖFFENTLICHT ist; der Schlüssel geht zur Veröffentlichungszeit in den Text,
   ein Code-Deploy erreicht ihn nicht. Wer ein Ziel hinzufügt, plant das Neu-Veröffentlichen

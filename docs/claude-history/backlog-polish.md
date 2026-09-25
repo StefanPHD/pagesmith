@@ -6038,3 +6038,32 @@ DER WORTLAUT, zeichengleich:
     PROVENIENZ: Der Kontrollfluss ist **GEMESSEN am Code** (CC, 2026-09-25, HEAD `c37a41c`); die vier
     Zeilen sind eine **OWNER-ANGABE** vom 2026-09-25; dass keine Conversion verloren geht, ist eine
     **FOLGE** aus dem Kontrollfluss, keine Messung.
+
+## Nachtrag 2026-09-25 (Phase 11.9, erste Aufklärung) — zwei Kommentare im Code, die heute Falsches sagen
+
+Gemeldet in der ersten Aufklärung der Phase 11.9, abgelegt ohne Umweg über den Vorrat der
+Standdatei; die Nummern setzen die Reihe `P11.9-n` jener Standdatei fort (docs/aktiver-stand.md,
+solange die Phase läuft). Beide sind Code-Kommentare: ein Nachzug ist ein CODE-COMMIT, kein
+Doku-Commit. KEIN FIX-VORSCHLAG über das Benannte hinaus.
+
+- **Vorrat P11.9-13 — DER KOMMENTAR AN `listConfiguredTargets` (`src/app/projects/actions.ts`) SAGT "genau deshalb bleibt der Testknopf noetig"**
+  Phase 11.4 "Der Testknopf" ist seit dem 2026-09-11 **[-] VERWORFEN** (OWNER-ENTSCHEIDUNG;
+  docs/roadmap.md, Roadmap-Zeile 11.4). Der Satz kündigt ein Bedienelement als nötig an, das
+  nicht gebaut wird. Die Sachaussage davor — eine Geheimnis-Zeile belegt nicht, dass das
+  Zugangsdatum funktioniert — bleibt richtig.
+  ZWEITENS: "Gleiches Gate-Muster wie die beiden Schreib-Actions" ist veraltet. Auf
+  `project_secrets` schreiben heute VIER Aktionen derselben Datei — `setCapiToken`,
+  `removeCapiToken`, `startTestMode`, `endTestMode`; die Nachbarin `listTargetCredentialStates`
+  spricht von "DIE DREI ANDEREN".
+  GEMESSEN am Repo (CC, 2026-09-25, HEAD `912f70a`). TRIGGER: die nächste Runde, die
+  `src/app/projects/actions.ts` ohnehin öffnet (Code-Commit).
+
+- **Vorrat P11.9-14 — DIE FUNDSTELLEN-LISTE IN `src/lib/tracking/target-adapters.ts` VERORTET `TARGET_CARDS` IN `components/TargetCard.tsx`**
+  Die Liste "DIE FUNDSTELLEN FUER ZIEL-WISSEN" (Kopfkommentar, Punkt 6) ist als Messung vom
+  2026-08-13 datiert und war an jenem Tag richtig; seit `659d672` (2026-08-31) steht
+  `TARGET_CARDS` in `src/lib/tracking/target-cards.ts`. Falsch ist die Liste als HEUTIGE
+  Ortsangabe — ihr Satz "sie steht jetzt dort, wo sie wahr ist" liest sie so. Die Nennung im
+  ersten Absatz derselben Datei ("bis hierher … in TARGET_CARDS (components/TargetCard.tsx)")
+  ist Zeitdokument und bleibt richtig.
+  GEMESSEN am Repo (CC, 2026-09-25, HEAD `912f70a`). TRIGGER: die nächste Runde, die
+  `src/lib/tracking/target-adapters.ts` ohnehin öffnet (Code-Commit).

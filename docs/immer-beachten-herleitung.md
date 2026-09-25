@@ -2335,10 +2335,19 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
 - EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN FAIL-CLOSED AN, UND EIN DEPLOY HEILT
   DAS NICHT (Phase 11.2, gehoben 2026-09-08 aus der bindenden Entscheidung (4)):
   Der Einwilligungs-Draht ist fail-closed an einer Achse, die man beim Hinzufügen eines
-  Ziels nicht sieht. `consentAllows` kennt drei Zweige: das Feld `cns` GANZ ABWESEND ->
-  ERLAUBT (eine Seite, die älter ist als das Feld, verlöre sonst still ihren Forward); das
-  Feld VORHANDEN, der Ziel-Schlüssel darin FEHLT -> VERWEIGERT; und jede bereits
-  veröffentlichte Seite trägt ein `cns`-Objekt OHNE den neuen Schlüssel.
+  Ziels nicht sieht. Eine bestehende Seite trägt eines von zwei, und BEIDE verweigern dem
+  neuen Ziel den Forward:
+  · KEIN `cns`-Feld (veröffentlicht vor seiner Einführung): Dann entscheidet NICHT
+    `consentAllows`, sondern `allowedTargets` (src/lib/capi/ingest.ts) — es lässt allein die
+    Ziele mit `LEGACY_CONSENT_ROLE` (src/lib/tracking/consent-targets.ts) durch, heute nur
+    meta. Das hält den Forward solcher Seiten an meta; ein neues Ziel trägt die Rolle nicht,
+    und der Test in consent-targets.test.ts verlangt genau einen Träger.
+  · ein `cns`-Objekt OHNE den neuen Schlüssel: `consentAllows`
+    (src/lib/tracking/consent-wire.ts) VERWEIGERT — ein fehlender Schlüssel ergibt
+    `undefined === true`, also false; ebenso ein Feld, das kein Objekt ist.
+  `consentAllows` SELBST antwortet auf ein GANZ ABWESENDES Feld mit "erlaubt"; im Fan-Out
+  wird es in diesem Fall nicht gefragt. Wer die Funktion allein liest, hält den Altbestand
+  für offen gegenüber jedem Ziel.
   FOLGE, UND SIE IST DER GANZE INHALT DIESER REGEL: Nach dem Verdrahten eines neuen Ziels
   sendet KEINE bestehende Seite an dieses Ziel, bis sie NEU VERÖFFENTLICHT ist. EIN
   CODE-DEPLOY ERREICHT DAS NICHT — der Schlüssel geht zur VERÖFFENTLICHUNGSZEIT in den
@@ -2363,9 +2372,12 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   derselben Standdatei. Die Frage, die der Kandidat offenliess (eigene Regel oder Absatz an
   "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY"), ist mit dieser Regel zugunsten
   der EIGENEN entschieden — die Abgrenzung dorthin steht oben.
-  PROVENIENZ: die drei Zweige GEMESSEN am Code (CC, 2026-08-25), `consentAllows` in
-  src/lib/tracking/consent-wire.ts; die Folge für bestehende Seiten ist eine ABLEITUNG aus
-  diesem Zweig und der Erzeugungszeit des Schlüssels, KEINE Messung an einer
+  PROVENIENZ: die beiden Fälle GEMESSEN am Code (CC, 2026-09-25, HEAD `912f70a`) —
+  `allowedTargets`, `LEGACY_CONSENT_ROLE`, `consentAllows`. SACHKORREKTUR vom selben Tag:
+  Hier stand als Beleg "`consentAllows` kennt drei Zweige", gemessen am 2026-08-25. Das traf
+  die Funktion, nicht den Fan-Out — `allowedTargets` fängt den Fall "Feld fehlt" seit
+  `a42e1b1` (2026-08-08) vor ihr ab. Die Folge für bestehende Seiten ist eine ABLEITUNG aus
+  beiden Fällen und der Erzeugungszeit des Schlüssels, KEINE Messung an einer
   veröffentlichten Seite. Die Erhebung zur Regel ist OWNER-ENTSCHEIDUNG 2026-09-08. Dass
   Kandidat 1 und Entscheidung (4) dieselbe Sache sind, ist GEMESSEN am Dateitext (CC,
   2026-09-08).

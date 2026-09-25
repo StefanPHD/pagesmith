@@ -4063,6 +4063,13 @@ offene Posten liest, liest sie falsch; ihr Erledigungs-Vermerk steht in ihrem ei
     PROVENIENZ: Die drei Fundstellen und ihre `reason`-Werte **GEMESSEN am Code (CC,
     2026-09-08)**. Dass Eintrag 42 auf seiner Achse richtig zählt, ist eine **ABLEITUNG** aus
     dem Vergleich der beiden Achsen, keine zweite Messung.
+    ZEIGER (2026-09-25) — DIE ZEILE IST SEITHER EIGENS AUFGEKLÄRT: docs/offene-punkte.md, Posten
+    "DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER", vierter Vermerk vom
+    2026-09-25 — die Ableitung "höchstens einmal je Projekt und Stunde" ist widerlegt, und eine
+    Herabstufung von `access_token_expired` ist Kandidat für das Phasenende 11.7 (docs/aktiver-stand.md,
+    Phase 11.7, "Nächster Schritt"). **DER TRIGGER DIESES EINTRAGS IST DAMIT EINGETRETEN** — jene
+    Runde hat Vorrats-Eintrag 42 geöffnet —; **bearbeitet ist er nicht:** keine Aufspaltung der
+    Zeile, kein anderer Wortlaut je Zweig, keine Empfehlung. Der Wortlaut dieses Eintrags bleibt.
 66. **EINE PRÜFVORSCHRIFT, DIE EINE ACHSE BENENNT, DECKT NUR DIESE ACHSE — UND MELDET DAS
     NIE.**
     **DER BELEG (GEMESSEN, CC, 2026-09-08):** Die Bedingung, unter der die Standdatei der

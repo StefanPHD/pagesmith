@@ -2017,6 +2017,12 @@ GEMESSEN am Repo (CC, 2026-09-23, HEAD `5d5602e`).
      S10a ÜBERHOLT: Eine angenommene Antwort schreibt seither die Zeile "[capi] LinkedIn forward
      accepted: HTTP <Status>"; eine Erfolgsprüfung sucht "forward accepted" gegen "forward
      rejected", s. unten (bf). Der Wortlaut oben bleibt.
+     ZEIGER (2026-09-25) — "forward rejected" IST NICHT DAS GANZE GEGENSTÜCK: Bei LinkedIn steht
+     "rejected" für eine Antwort ohne `res.ok`; daneben schreibt der Adapter "[capi] LinkedIn forward
+     skipped: …" (Riegel, kein Aufruf) und "[capi] LinkedIn forward error: …" (Wurf, Zeitlimit).
+     Eine Erfolgsprüfung sucht "forward accepted" gegen alle drei (GEMESSEN am Code, CC, 2026-09-25,
+     HEAD `c37a41c`; die Richtigstellung gilt allen Zielen: docs/aktiver-stand.md, Phase 11.7,
+     Abschnitt "Zuschnitt der Phase 11.7", S10, Q2). Der Wortlaut oben bleibt.
 
 ### MESSUNG 2026-09-23 — Annahme von `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID` als zweiter Eintrag (Live-Test der Scheibe S6a, Phase 11.7) — der Teil (bd)
 
@@ -2075,6 +2081,9 @@ HEAD `09476b9`).
      rejected`" IST SEIT S10a ÜBERHOLT: Eine angenommene Antwort ist seither an der Zeile
      "[capi] LinkedIn forward accepted: HTTP <Status>" direkt zu sehen; eine Erfolgsprüfung sucht
      "forward accepted" gegen "forward rejected", s. unten (bf). Der Wortlaut oben bleibt.
+     ZEIGER (2026-09-25) — "forward rejected" IST NICHT DAS GANZE GEGENSTÜCK: dazu gehören bei
+     LinkedIn auch "forward skipped" und "forward error"; s. den gleichlautenden Zeiger an (bc).
+     Der Wortlaut oben bleibt.
 
 ### MESSUNG 2026-09-24 — `li_fat_id` allein und die S6a-Form per Terminal, dazu ein Befund zur Empfangsanzeige (Scheibe S6b, Phase 11.7) — der Teil (be)
 

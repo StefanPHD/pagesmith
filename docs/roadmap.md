@@ -1892,6 +1892,19 @@ liegen beide hier und finden einander.
       und die drei Zeiger sind GELESEN im Eintrag 11.2 (CC, 2026-09-08). Dass die dritte
       Datenklasse eine Besucher-Kennung nicht deckt, ist eine ABLEITUNG aus ihrem
       Gegenstand, keine Messung.
+
+      AUFLAGE (2026-09-25, aus der Scheibe S10c der Phase 11.7): DER NAME DES NEUEN ZIELS
+      KOMMT IN DIE NAMENSLISTE DES FILTERS IN vitest.config.ts. Jener Filter (`onConsoleLog`)
+      unterdrückt im Testprotokoll allein die Erfolgszeilen "[capi] <Ziel> forward accepted:
+      HTTP <Status>" der fünf heutigen Anzeigenamen (Meta, Pinterest, TikTok, LinkedIn,
+      Google), verankert und allein auf stdout. FEHLT DER NEUE NAME, ERSCHEINEN SEINE
+      ACCEPTED-ZEILEN WIEDER IM TESTPROTOKOLL — sichtbar, nicht verschluckt; kein Test wird
+      davon rot. PROVENIENZ: der Filter ist GEMESSEN am Repo (CC, 2026-09-25, Bau-Commit
+      `c37a41c`); dass ungefilterte Zeilen im Protokoll erscheinen, ist gemessen an der
+      Probe mF2 (Filter entfernt: 86 Zeilen; docs/aktiver-stand.md, VERMERK P11.7-34 der
+      Phase 11.7) — dass es für einen einzelnen fehlenden Namen ebenso geschieht, ist eine
+      FOLGE aus dem verankerten Muster, nicht eigens gemessen. KEINE Aussage darüber, ob GA4
+      gebaut wird.
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus: eine EIGENE Zeile, angelegt am
       2026-09-12. KEIN Produkt-Feature, sondern eine WARTUNGSARBEIT MIT EINEM FENSTER,
       DAS SICH SCHLIESST — und genau deshalb steht sie in der Roadmap und nicht im

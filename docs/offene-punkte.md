@@ -4042,6 +4042,43 @@ aufeinander; sie liegen alle hier und finden einander.
     **ABLEITUNG** aus dem Kontrollfluss, gestützt auf die Live-Beobachtungen vom
     2026-09-03 (OWNER). **Keine Messung der Häufigkeit** — sie ist nicht erhoben.
 
+    **VIERTER VERMERK 2026-09-25 — AUS DER AUFKLÄRUNG DER SCHEIBE S10c DER PHASE 11.7 (Mitnahme 1).
+    DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
+    · **DIE ABLEITUNG "höchstens einmal je Projekt und Stunde" IM DRITTEN VERMERK IST WIDERLEGT** —
+      sie stand dort ausdrücklich als ABLEITUNG. **AM CODE (GEMESSEN, CC, 2026-09-25):** Die
+      Auflösung (`usableTokenFromRow`, `src/lib/capi/token.ts`) läuft bei JEDER `/api/e`-Anfrage und
+      schreibt die Zeile bei totem Zugangsdatum jedes Mal; erneuert wird allein in der VORSORGE (nur
+      bei noch lebendem Zugangsdatum, Lage `lead`) und in der RETTUNG (nur hinter `isForwardable`
+      und der Einwilligung für das Ziel), beides in `handleIngest` (`src/lib/capi/ingest.ts`). Bis
+      eine Conversion rettet, schreibt also jede andere Anfrage die Zeile. **AM LOG (OWNER-ANGABE,
+      2026-09-25):** vier Zeilen in vier Anfragen, 08:25:30.79 bis 08:25:55.98 MESZ, also binnen
+      rund 25 Sekunden (gerechnet aus den Zeitstempeln; VERMERK P11.7-33 der Phase 11.7).
+    · **DIE ZEILE TRAT IN ANFRAGEN OHNE ERNEUERUNG AUF, IN DENEN OHNEHIN NICHTS AN GOOGLE GINGE**
+      (GEMESSEN am Code): Seitenaufruf (nicht forwardbar) · Bestätigungs-Beacon (früher Ausgang vor
+      Vorsorge und Rettung) · fehlende Einwilligung für google (die Rettung prüft sie wie der
+      Forward). **Es geht also keine Conversion verloren.** Welche Art Anfrage jede der vier Zeilen
+      trug, nennt das Log nicht.
+    · **DIE BEGRÜNDUNG "einzige Signatur" FÜR DIE STUFE error IST SEITHER RELATIVIERT.** Der
+      Kommentar an der Zeile (`usableTokenFromRow`, Zweig der toten Uhr 1) begründet die Stufe mit
+      "die einzige beobachtbare Signatur dieses Zustands" und "die Live-Test-Achse"; der dritte
+      Vermerk oben nennt die Zeile seither "nicht mehr die Signatur des Bruchs", und
+      docs/claude-history/backlog-polish.md, Eintrag 65, zählt fünf Ursachen. **EINE HERABSTUFUNG
+      VON `access_token_expired` IST EIN KANDIDAT FÜR DAS PHASENENDE 11.7, KEINE ENTSCHEIDUNG** — sie
+      änderte eine bestehende Fehlerzeile und liegt ausserhalb jeder Bau-Scheibe der Phase.
+    · **"anders als der Erfolgsbeleg des Adapters, der nach VERMERK 10, Abschnitt (d), ein
+      SCHWEIGEN ist"** (oben, erste Richtung) — **SEIT S10c GIBT ES DIE ACCEPTED-ZEILE:** Eine
+      angenommene Google-Einlieferung schreibt "[capi] Google forward accepted: HTTP <Status>"
+      (Bau-Commit `cefe636`; über den echten Weg abgelesen am 2026-09-25, docs/ziel-befunde/google.md,
+      Teil (cv)). Der Erfolgsbeleg ist damit eine ANWESENHEIT wie diese Zeile.
+    · **NICHT DERSELBE FALL WIE "KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG":** Am 2026-09-25
+      lief genau EINE Erneuerung, in der Klick-Anfrage; Seitenaufruf und Bestätigung erneuern nicht.
+      Der Trigger jenes Postens ist davon nicht berührt.
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER STEHT WÖRTLICH WIE
+    ZUVOR.** **KEINE EMPFEHLUNG** zur Drosselung oder zur `projectId`.
+    PROVENIENZ: Der Kontrollfluss ist **GEMESSEN am Code** (CC, 2026-09-25, HEAD `c37a41c`); die vier
+    Zeilen sind eine **OWNER-ANGABE** vom 2026-09-25; dass keine Conversion verloren geht, ist eine
+    **FOLGE** aus dem Kontrollfluss, keine Messung.
+
 - STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR (Trigger: die nächste Arbeit an der Ziel-Karte, ODER der Statuswechsel auf "In Produktion", ODER der erste Kunde mit einer Google-Verbindung):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 50, im Rahmen
   des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und

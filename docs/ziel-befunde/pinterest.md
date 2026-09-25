@@ -1373,4 +1373,13 @@ HEAD `ed3008b`). **Hier steht keine IP, kein Zugangsdatum und keine Werbekonto-K
      · **Ohne Testmodus ist das Ereignis ein ECHTES** und fliesst in die Eventübersicht des
        Werbekontos (s. (u)); dort ist nichts abgelesen.
      · Die Verarbeitung ist nicht belegt: "accepted" heisst angenommen.
+     NACHTRAG (2026-09-25) — ZWEI WEITERE BEOBACHTUNGEN OHNE TESTMODUS OHNE WARNUNG, ZUSAMMEN DREI.
+     Beim Live-Test der Scheibe S10c (docs/aktiver-stand.md, VERMERK P11.7-34 der Phase 11.7), zwei
+     Klicks über den echten Weg, **Projekt-Testmodus für Pinterest AUS**, beide ohne `epik`:
+     R1 (`…/?utm_source=s10cr1`) mit "[capi] Pinterest forward accepted: HTTP 200" um 07:49:32.730
+     UTC und S1 (`…/?utm_source=s10cs1&gclid=…`) mit derselben Zeile um 07:51:50.865 UTC — **in
+     keiner der beiden Anfragen eine Zeile "Pinterest forward warning"** (OWNER-ANGABE, abgelesen
+     am Vercel-Log). **WEITERHIN AM LOG ABGELESEN, NICHT AM RUMPF**; die Grenzen oben gelten
+     unverändert, nur die erste ("EIN Aufruf, EIN Tag") ist jetzt "drei Aufrufe, EIN Tag". Ob
+     Pinterest ohne Testmodus NIE warnt, zeigt auch das nicht. Der Wortlaut oben bleibt.
 

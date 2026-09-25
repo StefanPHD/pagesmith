@@ -4889,6 +4889,11 @@ auf einem Beleg ruht, den nur der Anbieter führt.
      angenommenen Einlieferung ist eine **ABLEITUNG**, ausdrücklich **keine Messung**. Die
      Nicht-Ablesbarkeit des Statuscodes ist **GEMESSEN** (das Werkzeug zeigt ihn nicht), die
      Zuschreibung an die Tarifstufe eine **OWNER-ANGABE** desselben Tages.
+     ZEIGER (2026-09-25) — DER STATUSCODE EINER ANGENOMMENEN EINLIEFERUNG IST SEIT S10c DER PHASE
+     11.7 AM EIGENEN LOG ABLESBAR: Der Adapter schreibt bei `res.ok` die Zeile "[capi] Google
+     forward accepted: HTTP <Status>"; über den echten Weg abgelesen unten (cv). Für einen
+     abgelehnten Aufruf stand der Status schon vorher im Log ("[capi] Google forward failed: HTTP
+     <Status>"). Der Wortlaut oben bleibt.
 
 (ce) **WAS DIE SPALTE "CONVERSIONS" DER NUTZUNGSÜBERSICHT ZÄHLT, IST IN DIESER DATEI NICHT
      GELESEN — NICHT-TREFFER MIT BENANNTER REICHWEITE.** **NEU.**
@@ -5836,4 +5841,52 @@ stehen hier NICHT** — dieselbe Handhabung wie in (cb).
        Teil (h)).
      · Ein Anbieter kann sein Verhalten ändern, ohne dass hier etwas rot wird. Diese Messung
        datiert vom 2026-09-24.
+
+### ABLESUNG 2026-09-25 am Vercel-Log über den echten Weg (Live-Test der Scheibe S10c, Phase 11.7) — der Teil (cv)
+
+**HERKUNFT (2026-09-25):** Ein Live-Test des Owners nach dem Deploy der Bau-Commits `cefe636` und
+`c37a41c`: ZWEI Klicks auf einer veröffentlichten Seite (Label-Host), je in einem neuen privaten
+Fenster, abgelesen im Funktions-Log der Produktionsumgebung (Vercel, Rohzeilen in UTC) und als
+Mitläufer im Meta Events Manager ("Events testen"). **KEIN Terminal-Lauf, KEIN Blick in den
+Antwort-Rumpf und keine Diagnose-Abfrage.** Alle Angaben über Log und Klicks sind OWNER-ANGABEN; die
+Angaben über unseren Adapter sind GEMESSEN am Repo (CC, 2026-09-25, HEAD `c37a41c`). **Kundennummer,
+Conversion-Type-ID und requestId stehen hier NICHT** — dieselbe Handhabung wie in (cb).
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF VON docs/ziel-befunde.md:** Auf (cu) folgt (cv).
+
+(cv) **ÜBER DEN ECHTEN WEG NIMMT DER ENDPUNKT EINE ANFRAGE MIT ERFUNDENER gclid MIT HTTP 200 AN —
+     SICHTBAR AN DER ERFOLGSZEILE AUS S10c.** **NEU.**
+
+     · **WAS DER ADAPTER SEIT S10c TUT — GEMESSEN am Repo:** `forwardToGoogle`
+       (`src/lib/capi/google-forward.ts`) schreibt bei jeder Antwort mit `res.ok` genau eine Zeile
+       `[capi] Google forward accepted: HTTP <Status>` über `console.info`, ohne einen Wert aus
+       Anfrage oder Antwort ausser dem Status; der Rumpf wird dafür NICHT gelesen. Jede andere
+       Antwort schreibt unverändert "[capi] Google forward failed: HTTP <Status>".
+     · **VORHER:** Vercel-Suche "Google forward accepted", Zeitraum "Last hour": 0. Zugang gültig,
+       Kundennummer und Conversion-Type-ID (reine Ziffernfolge) gesetzt, A/B aus.
+     · **R1 (Mitläufer, Sollwert vorher fest)**, `…/?utm_source=s10cr1` ohne gclid: in der
+       Klick-Anfrage "[capi/resolve] secret unusable" {google, access_token_expired} ·
+       "[oauth/token-refresh] ok" {google} · "[capi] Google forward skipped: no_click_id" — und
+       KEINE Zeile "Google forward accepted". Der Adapter wird erreicht, und ohne Annahme entsteht
+       keine Zeile.
+     · **S1**, `…/?utm_source=s10cs1&gclid=S10cTestGclid0001` (ERFUNDEN): in der Klick-Anfrage
+       07:51:51.960 UTC **"[capi] Google forward accepted: HTTP 200"**; keine Fehlerzeile für
+       Google, keine secret-unusable-Zeile. In derselben Anfrage stehen die accepted-Zeilen der
+       übrigen vier Ziele.
+     · **MITLÄUFER:** Meta "Events testen" zeigt dieselbe eventID als Server-Ereignis — die
+       Zuordnung der Zeilen zum Klick ist damit belegt, nicht nur gestützt.
+     · **NACHHER:** "Google forward accepted" (Last hour): genau 1.
+     **WAS DAS BEANTWORTET:** Der Statuscode einer Einlieferung über unseren echten Weg, am
+     2026-09-07 nicht ablesbar (s. (cd)/(b)), ist jetzt abgelesen: **200.** Es ist die erste
+     Beobachtung dieses Abschnitts, in der der Produktivpfad selbst — nicht ein Handaufruf — eine
+     Annahme als Statuscode zeigt.
+     **DIE GRENZEN, UND SIE SIND DER TEIL, DEN MAN SPÄTER ÜBERLIEST:**
+     · **ANGENOMMEN HEISST NICHT VERARBEITET.** Die gclid war erfunden; erwartbar scheitert die
+       Verarbeitung asynchron mit `PROCESSING_ERROR_REASON_INVALID_GCLID` (s. (cb), (cc)/(a)).
+       Eine Diagnose-Abfrage ist nicht gefahren, eine Conversion entsteht so nicht.
+     · **EIN STATUS AUSSER 200** ist über den echten Weg nicht beobachtet; der Test des Adapters
+       fährt 201 allein zur Trennung.
+     · **DER FALL "200 MIT fieldWarnings"** ((o)/G1, (x)/G1, GELESEN) ist nicht gemessen; der Adapter
+       wertet ihn, da er den Rumpf nicht liest, als angenommen.
+     · Ein Anbieter kann sein Verhalten ändern, ohne dass hier etwas rot wird. Diese Ablesung
+       datiert vom 2026-09-25.
 

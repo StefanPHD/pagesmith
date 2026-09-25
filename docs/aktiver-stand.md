@@ -1949,6 +1949,95 @@ Zeiger an Vorrat P11.7-9 ersetzt · Q7 über den Gegenstand gefasst · S10-Block
 Vorrat P11.7-12 neu · Zeiger an VERMERK P11.7-22, (c), P11.7-25 (Nr. 9), P11.7-31 und P11.7-32
 · "Nächster Schritt" nachgezogen · **S10b ABGESCHLOSSEN.**
 
+### VERMERK P11.7-34 — Teilscheibe S10c gebaut und live belegt vom 2026-09-25 (Erfolgszeile google, Filter im Testprotokoll); S10 abgeschlossen
+
+**HARTE ANGABEN:** 2026-09-25 · **ZWEI BAU-COMMITS:** `cefe636` (`feat(capi): Erfolgszeile fuer
+google (Phase 11.7, S10c)` — `src/lib/capi/google-forward.ts`: `else`-Zweig an `if (!res.ok)` in
+`forwardToGoogle`; `src/lib/capi/google-forward.test.ts`: Info-Spion im `beforeEach`, GS-a bis
+GS-e, GS-d mit zehn Fällen) und `c37a41c` (`chore(test): Erfolgszeilen der Adapter im
+Testprotokoll filtern (Phase 11.7, S10c)` — `vitest.config.ts`: `onConsoleLog`, verankert, allein
+stdout, die fünf Zielnamen) · die Zeile nach Q2 zeichengleich, `console.info`, ein Argument ·
+Tests **2 266 → 2 280 / 98** (GEMESSEN, CC) · tsc, lint (0 Fehler; die bestehende Warnung in
+`consent.test.ts`), build grün · **GENAU EINE neue `console`-Zeile im Produktivcode, keine
+entfernt**; der Diff ist rein additiv (206 Zeilen hinzu, 0 entfernt), jede bestehende Google-Zeile
+byte-gleich (GEMESSEN, mit Positivkontrolle) · Mitnahme 1 (VERMERK P11.7-33, (G)) ist NICHT im Code
+umgesetzt, nur als Doku (docs/offene-punkte.md, s. unten).
+
+**MUTATIONSPROBEN — SIEBEN, ALLE WIE VORHERGESAGT**, die Vorhersage vor dem Lauf am gebauten
+Bestand nachgezählt und gegenüber dem Plan unverändert, KEINE danach geändert; **NULLPROBE VORAB**
+(Baustand, voller Lauf): 2 280 Tests, **0 rot**. Je voller Lauf, nach JEDER Probe per `cp` aus der
+Bausicherung zurückgenommen, sha256 über alle drei Dateien gleich dem Baustand:
+
+| Probe | Eingriff | Rot |
+|---|---|---|
+| mG1 | Zeile entfernt | 4 — GS-a, GS-b, GS-c, GS-e |
+| mG2 | Zeile unbedingt nach dem `if` | 5 — GS-d: 400, 401, 404, 429, 503 |
+| mG3 | `clientIp` angehängt | 4 — wie mG1 |
+| mG4 | Stufe `error` | 4 — wie mG1; ausserhalb 0 |
+| mG5 | Zeile doppelt | 4 — wie mG1 |
+| mG6 | "HTTP 200" festgeschrieben | 1 — NUR GS-b |
+| mG7 | `await res.text()` vor der Zeile | 1 — NUR GS-e |
+
+**NACH DEN MUTATIONEN, ALLEIN FÜR DEN COMPILER:** tsc meldete einen impliziten `any` im Testhelfer
+`fehlerZeilen()`; ergänzt ist `(c: unknown[])`. Die Mutationen liefen gegen die Testdatei OHNE die
+Annotation; sie verschwindet zur Laufzeit, der Endlauf (2 280 grün) lief MIT ihr.
+
+**DER FILTER — GEMESSEN (CC, 2026-09-25)**, Instrument wie in S10b (voller Lauf mit
+`--reporter=verbose`, Zählskript über die Konsolenblöcke; Leerzeilen und Blockköpfe nicht
+mitgezählt):
+- (i) mit Filter: **0** accepted-Zeilen; Gegenprobe über den ganzen Text 0.
+- (ii) Filter vorübergehend aus (die Datei im Stand `HEAD`, zurück per `cp`, sha256 belegt): **86 in
+  12 Dateien**, genau wie vorhergesagt — click-id-strip 13 (+1, W-google), fan-out 9 (+1,
+  T10-google); nach Ziel Meta 71, Pinterest 6, TikTok 4, LinkedIn 3, Google 2.
+- (iii) alle übrigen Zeilen mit und ohne Filter **186 = 186** (stdout 11, stderr 175), als sortierte
+  Menge identisch. Die stdout-Blockköpfe fallen von 97 auf 11: die 86 Blöcke, die nur aus einer
+  accepted-Zeile bestanden, entfallen ganz.
+- MESSPROBEN AM FILTER (volle Läufe, keine Testauswertung; Vorhersage je vor dem Lauf; je zurück
+  per sha256): **mF1a** "forward" statt "forward accepted", die stdout-Bedingung bleibt → (iii)
+  GLEICH, 186 — **VORAB ALS SCHLECHTES MODELL DES FEHLERS ERKANNT**: alle übrigen `forward`-Zeilen
+  stehen auf stderr, die Bedingung verdeckt die Verbreiterung · **mF1b** Muster auf jede Zeile der
+  Form `[tag] ` verbreitert, Bedingung bleibt → 175, alle elf `[oauth/token-refresh]`-Zeilen
+  fehlen · **mF1c** "forward", Bedingung entfernt → 171, stderr 175 → 160 · **mF2** Filter
+  entfernt → 86 in 12 Dateien, gleich (ii).
+
+**LIVE-ERGEBNIS (OWNER-ANGABEN, 2026-09-25; Vercel-Rohzeilen in UTC):**
+- VORAB: Google-Zugang gültig (Frist um den 2026-10-01) · Kundennummer und Conversion-Type-ID
+  (reine Ziffernfolge) gesetzt · A/B aus · Meta-Testmodus an · Vorher-Wert "Google forward
+  accepted" (Last hour) 0.
+- R1, `…/?utm_source=s10cr1`, eventID `74b54019-56ea-41b1-9020-8fc9c5fcedee`, `/api/e` 204, `cns`
+  für alle fünf Ziele `true`: 07:49:31.619 [error] "[capi/resolve] secret unusable" {google,
+  access_token_expired} · 07:49:32.319 [info] "[oauth/token-refresh] ok" {google} · 07:49:32.659
+  [error] "[capi] Google forward skipped: no_click_id" · 07:49:32.730 Pinterest accepted 200 ·
+  .774 Meta accepted 200 · .801 TikTok accepted 200 · .991 LinkedIn accepted 201.
+- S1, `…/?utm_source=s10cs1&gclid=S10cTestGclid0001`, 09:51:50 MESZ, eventID
+  `3022700e-e14c-41d6-bbac-c637b2bf1eb9`, `/api/e` 204, `cns` für alle fünf Ziele `true`:
+  07:51:50.826 Meta accepted 200 · .827 TikTok accepted 200 · .865 Pinterest accepted 200 ·
+  07:51:51.041 LinkedIn accepted 201 · 07:51:51.960 [info] "[capi] Google forward accepted: HTTP
+  200". Keine Fehlerzeile für Google, KEINE secret-unusable-Zeile.
+- MITLÄUFER, Meta "Events testen": dieselbe eventID, Quelle Server, "Dedupliziert".
+- Nachher-Wert "Google forward accepted" (Last hour): **genau 1**.
+- Pinterest-Testmodus bei R1 und S1 AUS; eine Pinterest-Warnzeile erscheint in keiner der beiden
+  Anfragen.
+
+**DIE GRENZE, GETRENNT:**
+- **GEMESSEN:** Der Google-Endpunkt nimmt über den echten Weg eine Anfrage mit erfundener gclid an —
+  sichtbar an der Zeile aus S10c. In S1 stehen alle fünf Ziele als accepted in EINER Anfrage. Die
+  Erneuerung lief in der R1-Anfrage; S1 kam ohne sie aus.
+- **BELEGT per Mitläufer:** die Zuordnung der S1-Zeilen zum Klick — Meta zeigt dieselbe eventID als
+  Server-Ereignis.
+- **UNBELEGT:** die Verarbeitung bei Google — bei der erfundenen gclid erwartbar
+  `PROCESSING_ERROR_REASON_INVALID_GCLID` (docs/ziel-befunde/google.md, Teil (cb)) · ein Status
+  ausser 200 (201 allein im Test GS-b) · der Fall "200 mit fieldWarnings" · die Verarbeitung bei den
+  übrigen vier Zielen.
+
+**ZEIGER / ABSCHLUSS IM SELBEN ZUG:** docs/ziel-befunde/google.md, Teil (cv), dazu ein datierter
+Zeiger an (cd) · docs/ziel-befunde/pinterest.md, Nachtrag an (at) · docs/ziel-befunde/linkedin.md,
+datierte Zeiger an (bc) und (bd) (Richtigstellung von Q2) · docs/offene-punkte.md, Vermerk am
+Posten "DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER" ·
+docs/claude-history/backlog-polish.md, Zeiger an Eintrag 65 · docs/roadmap.md, Auflage an der
+Roadmap-Zeile 11.9 · Vorrat P11.7-9 geschlossen, Zeiger an Vorrat P11.7-10 · Q1 bis Q9 verdichtet,
+Q2 richtiggestellt · "Nächster Schritt" auf das Phasenende · **S10c ABGESCHLOSSEN, DAMIT S10.**
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 **SIE STEHEN HIER ALS ZEIGER, NICHT ALS KOPIE.** Ihr Ort ist der, an dem sie wirken;
@@ -2013,8 +2102,8 @@ Sie bindet jede Runde, die den Pinterest-Riegel oder `user_data` berührt.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-**SECHS SIND OFFEN (P11.7-2, -8, -9, -10, -11, -12); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7
-MIT S3, P11.7-1 UND -4 MIT S4.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
+**FÜNF SIND OFFEN (P11.7-2, -8, -10, -11, -12); P11.7-3, -5 UND -6 SIND MIT S2 GESCHLOSSEN, P11.7-7
+MIT S3, P11.7-1 UND -4 MIT S4, P11.7-9 MIT S10.** Der Stand von P11.7-1 bis P11.7-4 ist am 2026-09-22 an HEAD
 `a763716` gegengeprüft (VERMERK P11.7-8, Zeilen C6 bis C8), der von P11.7-5 bis P11.7-7 am
 2026-09-23 an HEAD `4809cb5`: jede der beanstandeten Stellen steht unverändert da.
 **GEMESSEN IST, DASS SIE DASTEHEN — NICHT, DASS SIE NACHGEZOGEN WÄREN.** **KEINE
@@ -2102,6 +2191,12 @@ live gesehen am 2026-09-25. Der Eintrag schliesst mit S10c (google).
 forward accepted" zu sehen, nicht mehr über die Warnzeile. Die Warnung ist im Testmodus
 gemessen; ohne Testmodus fehlte sie bei einem Aufruf (VERMERK P11.7-33;
 docs/ziel-befunde/pinterest.md, Teil (at)).
+**GESCHLOSSEN 2026-09-25 — ERLEDIGT DURCH S10a BIS S10c:** Eine angenommene Antwort ist an allen
+fünf Zielen an ihrer Zeile "[capi] <Ziel> forward accepted: HTTP <Status>" direkt zu sehen, je
+live beobachtet — linkedin und tiktok VERMERK P11.7-31, meta und pinterest VERMERK P11.7-33, google
+VERMERK P11.7-34, dort alle fünf in EINER Anfrage. Die stillen Ausgänge VOR dem Adapter bleiben
+still; das war nicht Gegenstand von K1. **K4 WIRD BEIM PHASENENDE NACH docs/offene-punkte.md
+GEHOBEN** (E-e).
 
 **P11.7-10 — IN DER LOKALEN ENTWICKLUNG REIST EINE PLATZHALTER-IP AN GOOGLE.** BEFUND vom
 2026-09-24 (Stufe-1-Plan von S7, GEMESSEN am Code): Ist die Client-Adresse leer oder Loopback
@@ -2110,6 +2205,10 @@ Platzhalter-IP `123.123.123.123`; seit S7 reist sie als `landingPageDeviceInfo.i
 an Google. **IN DER PRODUKTION OHNE FOLGE** — dort kommt die Adresse aus der Kopfzeile.
 **KEIN FIX-VORSCHLAG.**
 TRIGGER: die nächste Scheibe, die `resolveClientIp` oder den Google-Adapter berührt.
+**ZEIGER 2026-09-25 — DER TRIGGER IST MIT S10c EINGETRETEN, DER POSTEN IST DORT NICHT
+BEARBEITET:** Bau-Commit `cefe636` ändert `src/lib/capi/google-forward.ts`; der Zuschnitt von S10c
+(Q1 bis Q9) umfasste diesen Posten nicht. Er bleibt offen und geht mit dem Phasenende in die
+Zuordnung (Abschnitt "Nächster Schritt").
 
 **P11.7-11 — DIE TITEL VON T7-a UND T7-b IN `src/lib/capi/linkedin-forward.test.ts` VERSPRECHEN
 "keine Logzeile" UND PRÜFEN NUR `console.error`.** BEFUND vom 2026-09-24 (VERMERK P11.7-31,
@@ -2693,7 +2792,8 @@ Ausschluss belegt (VERMERK P11.7-22). S7 (google) ist nach G1 bis G5 gebaut,
 "Events testen" live belegt (VERMERK P11.7-30). S10 (eine Zeile je angenommenem Forward, alle
 fünf Ziele) ist nach Q1 bis Q9 zugeschnitten (OWNER-ENTSCHEIDUNG E-e); S10a (linkedin, tiktok)
 ist gebaut und live beobachtet (VERMERK P11.7-31), S10b (meta, pinterest) ist gebaut und live
-belegt (VERMERK P11.7-33), S10c (google) ist nicht gebaut.
+belegt (VERMERK P11.7-33), S10c (google) ist gebaut und live belegt (VERMERK P11.7-34); damit ist
+S10 abgeschlossen.
 
 **S1 — WÄCHTER, REINE TEST-SCHEIBE. ABGESCHLOSSEN AM 2026-09-23 — VERMERK P11.7-10.**
 Gegenstand: der Vorgabewert von `META_GRAPH_VERSION` über einen ECHTEN Import von
@@ -3068,108 +3168,56 @@ Wortlaut unter Commit `e588c77`. Ein Zeiger auf "N1 bis N9" landet hier.
   `sanitizeProviderText` — Vorrat P11.7-9.
 Dazu Entscheidung P11.7-7 (Paar-Riegel bleibt).
 
-**S10 — ZUGESCHNITTEN AM 2026-09-24 — eine Zeile je angenommenem Forward, alle fünf Ziele.**
-Vorrat P11.7-9, OWNER-ENTSCHEIDUNG E-e (K1); Material der Entscheidungsbericht desselben Tages.
-**S10a ABGESCHLOSSEN AM 2026-09-24 — VERMERK P11.7-31** (Bau-Commit `7f44ef5`; beide Zeilen live
-beobachtet). **S10b ABGESCHLOSSEN AM 2026-09-25 — VERMERK P11.7-33** (Bau-Commit `ed3008b`; alle
-vier accepted-Zeilen live gesehen, die Zuordnung per Mitläufer belegt). **S10c (google) ist
-offen; mit ihr schliesst Vorrat P11.7-9.** Q1 bis Q9 bleiben als bindende Entscheidungen stehen:
-sie binden S10c. NICHT ZU VERWECHSELN mit dem Seiten-Kürzel
-"S10" im LinkedIn-Crawl (VERMERK P11.7-19); dort sind S1 bis S11 Doku-Seiten, keine Scheiben.
-**ZUSCHNITT — ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-24** (Kennbuchstaben Q, frei im Bestand —
-GEMESSEN, CC: `\bQ[0-9]` 0 Treffer vor dieser Runde). Sie sind ZIELÜBERGREIFEND formuliert und
-treffen keine Aussage über ein einzelnes Ziel:
-- **Q1 — JE ADAPTER GENAU EINE ZEILE, WENN EINE ANTWORT ANGENOMMEN IST.** "Angenommen" ist GENAU
-  der Zweig, den der Adapter heute als Erfolg wertet — KEIN neues Urteil. Welcher Zweig das je
-  Ziel ist, stellt der Stufe-1-Plan der Teilscheibe fest, unter Volladung der Ziel-Datei.
-  Grund: E-e; eine Zeile, die ein eigenes Urteil fällte, wäre eine zweite Auswertung neben der
-  bestehenden.
-- **Q2 — INHALT:** das Präfix der bestehenden Zeilen, das Ziel, der HTTP-Status. Das Wort ist
-  "accepted" (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-24): alle bestehenden Zeilen sind englisch, und
-  "forward accepted"/"forward rejected" ist ein Suchpaar. Es heisst ANGENOMMEN, NICHT
-  "erfolgreich" oder "gesendet" — ein Meldungstext behauptet kein Ergebnis
+**S10 — ABGESCHLOSSEN AM 2026-09-25 — eine Zeile je angenommenem Forward, alle fünf Ziele.**
+Vorrat P11.7-9, OWNER-ENTSCHEIDUNG E-e (K1). **S10a** (linkedin, tiktok) VERMERK P11.7-31,
+Bau-Commit `7f44ef5` · **S10b** (meta, pinterest) VERMERK P11.7-33, `ed3008b` · **S10c** (google)
+VERMERK P11.7-34, `cefe636`, dazu der Filter im Testprotokoll `c37a41c`. NICHT ZU VERWECHSELN mit
+dem Seiten-Kürzel "S10" im LinkedIn-Crawl (VERMERK P11.7-19); dort sind S1 bis S11 Doku-Seiten,
+keine Scheiben.
+**VERDICHTET AM 2026-09-25 — DER WORTLAUT VON Q1 BIS Q9 STEHT UNTER COMMIT `4943643`.** Die
+Kennbuchstaben Q1 bis Q9 bleiben vergeben; ein Zeiger auf einen von ihnen landet hier. Was allein
+S10 anwies, ist erledigt und herausgenommen: Q5 (die Tests je Adapter — gebaut als T8, TS, MS, PS
+und GS) · Q6 (die TikTok-Kommentare, erledigt in S10a, VERMERK P11.7-31) · Q7 (der Ausschluss für
+S10, die Messung "84 Zeilen in 12 Dateien" und die zwei Mitnahmen für S10c — deren Ergebnis steht
+in VERMERK P11.7-34 und in docs/offene-punkte.md; **SEIN SATZ "Ereignis- oder Projekt-Kennungen in
+der Zeile" BINDET WEITER und steht unten unter TRANSIT-ONLY** — auf ihn zeigen drei Testdateien
+unter `src/` mit "Q7: keine Projekt-Angaben in der Zeile": `meta-forward.test.ts`,
+`pinterest-forward.test.ts`, `tiktok-forward.test.ts`) · Q8 (der Schnitt je Ziel und die
+Ladungsrechnung) · Q9 (das Gate vor der ersten Teilscheibe; keine Festlegung gefunden, in S10c
+erneut geprüft).
+**WAS ÜBER S10 HINAUS BINDET — JEDES KÜNFTIGE ZIEL:**
+- **Q1 — KEIN NEUES URTEIL:** Die Zeile entsteht GENAU in dem Zweig, den der Adapter ohnehin als
+  Erfolg wertet. Grund: eine Zeile, die ein eigenes Urteil fällte, wäre eine zweite Auswertung
+  neben der bestehenden (E-e).
+- **Q2 — DAS MUSTER UND DAS WORT:** `[capi] ${ZIEL} forward accepted: HTTP ${res.status}` —
+  `ZIEL` der Anzeigename der übrigen Zeilen des Adapters (`Meta`, `Pinterest`, `TikTok`,
+  `LinkedIn`, `Google`). Das Wort ist "accepted", alle bestehenden Zeilen sind englisch. Es heisst
+  ANGENOMMEN, NICHT "erfolgreich" oder "gesendet" — ein Meldungstext behauptet kein Ergebnis
   (docs/immer-beachten.md, safeAction-Regel, letzter Absatz), und eine 2xx-Antwort belegt die
-  Annahme, nicht die Verarbeitung (E-e). **DAS MUSTER** `[capi] ${ZIEL} forward accepted: HTTP
-  ${res.status}` — `console.info`, ein Argument, `ZIEL` der Anzeigename aller bestehenden
-  Zeilen des Adapters (`Meta`, `Pinterest`, `TikTok`, `LinkedIn`, `Google`) — **BINDET S10b UND
-  S10c ZEICHENGLEICH**; gebaut in S10a (VERMERK P11.7-31). NICHTS aus Anfrage oder Antwort: keine Nutzlast, keine
-  IP, kein User-Agent, keine Kennung, kein Zugangsdatum — TRANSIT-ONLY (docs/offene-punkte.md,
-  "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"; Entscheidung P11.7-4).
-- **Q3 — LOG-STUFE INFO, NICHT ERROR.** Präzedenz im Bestand: `console.info` für die
-  Erfolgszeile der OAuth-Rückkehr (`src/app/api/oauth/google/callback/route.ts`, GEMESSEN).
-  Bestehende Fehler- und Warnzeilen bleiben unverändert, auch die Pinterest-Warnzeile und
-  `sanitizeProviderText`.
+  Annahme, nicht die Verarbeitung (E-e; ein gemessener Fall: docs/ziel-befunde/google.md, Teil
+  (cb)).
+  **RICHTIGGESTELLT 2026-09-25 (ARCHITEKTEN-FEHLER), NICHT GESTEMPELT — hier stand:** "alle
+  bestehenden Zeilen sind englisch, und "forward accepted"/"forward rejected" ist ein Suchpaar."
+  **DAS GEGENSTÜCK ZU "forward accepted" IST NICHT ALLEIN "forward rejected", SONDERN DIE MENGE
+  DER BESTEHENDEN FEHLERZEILEN DES ZIELS.** GEMESSEN am Code (CC, 2026-09-25, HEAD `c37a41c`;
+  Präfixe `[capi] <Ziel> forward <Wort>` in den fünf Adaptern): meta `failed`, `rejected`,
+  `error` · pinterest `rejected`, `warning`, `error` · tiktok `rejected`, `error` · linkedin
+  `rejected`, `skipped`, `error` · google `failed`, `skipped`, `error` — **google trägt keine
+  rejected-Zeile.** Eine Erfolgsprüfung sucht "forward accepted" gegen alle Fehlerzeilen ihres
+  Ziels.
+- **Q3 — LOG-STUFE INFO, NICHT ERROR**, `console.info`, ein Argument. Bestehende Fehler- und
+  Warnzeilen bleiben unverändert.
+- **TRANSIT-ONLY IN DER ZEILE:** nichts aus Anfrage oder Antwort ausser dem HTTP-Status — keine
+  Nutzlast, keine IP, kein User-Agent, keine Kennung, kein Zugangsdatum, keine Ereignis- oder
+  Projekt-Kennung (docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE";
+  Entscheidung P11.7-4).
 - **Q4 — GRENZE UND KIPPBEDINGUNG:** eine Zeile je angenommenem Forward, also je Conversion und
   Ziel, auf dem meistgetroffenen Pfad. Neu zu bewerten bei echtem Traffic oder bei einer
   Log-Grenze des Plans — dann K4 oder eine Stichprobe.
-- **Q5 — TESTS JE ADAPTER:** die Zeile genau EINMAL bei Erfolg, mit POSITIVKONTROLLE auf Ziel und
-  Status, und die Abwesenheit jedes Werts aus der Anfrage. In KEINEM Fehler- oder Riegel-Pfad
-  entsteht die Zeile. Bestehende Tests, die die STILLE im Erfolg festhalten, benennt der Plan
-  einzeln mit ihrem Grund (bekannt ist T1 in `pinterest-forward.test.ts`, "verarbeitet, keine
-  Warnung -> KEINE Meldung"; er liest nur `console.error`).
-- **Q6 — MITNAHME:** der Kopfkommentar von `src/lib/capi/tiktok-forward.ts`, Punkt 4 ("zwei
-  verschiedene Codes teilen sich HTTP 401 (gemessen)"), und der Kommentar im Antwort-Zweig von
-  `forwardToTiktok` ("falsche Kennung" gegen "falsches Zugangsdatum") — nach dem, was
-  docs/ziel-befunde/tiktok.md belegt: `40100` und `40104` je HTTP 401, GELESEN (Teil (o)).
-  Welche Codes die Messung vom 2026-08-11 ergab, ist nicht festgehalten
-  (docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Live-Test: "HTTP 401, der
-  Fehlercode lesbar").
-- **Q7 — NICHT TEIL VON S10:** K4 · ein erneutes Senden · jede Änderung an bestehenden
-  Fehlerzeilen · Ereignis- oder Projekt-Kennungen in der Zeile.
-  **MITNAHME FÜR S10c (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-24, am 2026-09-25 über den Gegenstand
-  gefasst):** Geschlossen wird **jede Testdatei, in der eine accepted-Zeile ins Protokoll
-  gelangt, ohne dass ein Spion sie auswertet** — EINMAL am Ende, in S10c. S10a und S10b haben
-  das bewusst nicht angefasst.
-  GEMESSEN (CC, 2026-09-25, Stand `ed3008b`): **84 Zeilen in 12 Dateien** — ingest.test-mode 16
-  · click-id-strip 12 · ingest.variant 11 · ingest.forwardable 9 · route.test.ts (api/capi) 8 ·
-  ingest.confirm 8 · fan-out 8 · ingest.consent-targets 4 · version-deadlines 3 ·
-  ingest.consent 2 · ingest.persist 2 · ingest.timeout 1; nach Ziel meta 71, pinterest 6,
-  tiktok 4, linkedin 3. INSTRUMENT: ein voller Lauf mit `--reporter=verbose`; gezählt sind die
-  accepted-Zeilen unter den Köpfen `stdout | <Datei> > <Test>` (Konsolenausgaben, die kein Spion
-  abfängt), per Node-Skript je Datei und Ziel; Gegenprobe über den ganzen Text ebenfalls 84.
-  POSITIVKONTROLLE: dasselbe Instrument ergab am Stand vor S10b 7 — genau die bekannten Zeilen
-  aus S10a, und sie stehen alle im neuen Protokoll. Mit S10c kommen die Google-Zeilen hinzu;
-  die Zahl ist dann neu zu messen.
-  **MITNAHME FÜR S10c, EINE BEOBACHTUNG, KEIN BEFUND (VERMERK P11.7-33):** Bei abgelaufenem
-  Google-Zugangstoken schreibt die Auflösung je `/api/e`-Anfrage "[capi/resolve] secret
-  unusable … access_token_expired" auf Stufe error — am 2026-09-25 in vier Anfragen binnen einer
-  halben Minute, auch in Anfragen ohne sichtbare Erneuerung; "[oauth/token-refresh] ok" stand
-  allein in der Klick-Anfrage, zwischen der Auflösung und "Google forward skipped". Zu prüfen in
-  der Aufklärung von S10c, gegen die bestehenden offenen Punkte zur Erneuerung —
-  docs/offene-punkte.md, "KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG" und "DER RESOLVER
-  SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER".
-- **Q8 — SCHNITT JE ZIEL (Pflicht-Stopp Ziel-Befunde, CLAUDE.md).** GEMESSEN (CC, 2026-09-24,
-  `wc -c`): google.md 414 115 · linkedin.md 157 040 · meta.md 103 472 · pinterest.md 96 503 ·
-  tiktok.md 48 559 · Kopf docs/ziel-befunde.md 14 399 · diese Standdatei 206 649 Bytes (vor
-  dieser Runde).
-  **GERECHNET, als obere Schranke:** Nach VERMERK P11.7-23 belegten Nachrichten mit 567 041
-  Bytes geladenen Dateien 471,3k Token; die Nachrichten enthielten mehr als die Dateien, also
-  gilt für diese Dateien höchstens 0,831 Token je Byte. Fester Teil je Sitzung (Standdatei plus
-  Kopf, 221 048 Bytes): ≤ 183,7k.
-  · die vier kleineren zusammen: 405 574 Bytes, so viel wie google.md allein (414 115) — NICHT
-    klar darunter, also NICHT in einer Sitzung;
-  · **S10a — linkedin + tiktok:** 205 599 Bytes, mit festem Teil ≤ 354,6k Token;
-  · **S10b — meta + pinterest:** 199 975 Bytes, mit festem Teil ≤ 349,9k Token;
-  · **S10c — google allein:** 414 115 Bytes, mit festem Teil ≤ 527,9k Token.
-  Jede Gruppe liegt damit unter dem gemessenen Fall von VERMERK P11.7-23 (587,4k samt
-  Aufklärung, Modell mit 1M Kontext); S10a und S10b tragen je rund die Hälfte von google.md.
-  Die Code-Dateien kommen hinzu; die Schranke ist eine Rechnung, keine Messung.
-  **REIHENFOLGE:** S10a zuerst — LinkedIn ist der Anlass von Vorrat P11.7-9, und die
-  Nachablesung ab 2026-09-25 (VERMERK P11.7-22, (c)) kann eine gebaute Zeile schon nutzen. Die
-  erste Teilscheibe legt die gemeinsame Form der Zeile fest; die übrigen folgen ihr.
-  **KIPPBEDINGUNG:** Trägt eine Sitzung ihre Gruppe nicht, wird weiter JE ZIEL geteilt — nicht
-  die Ladung verkürzt.
-- **Q9 — PFLICHT-GATE VOR DEM PLAN DER ERSTEN TEILSCHEIBE:** Gibt es eine Entscheidung, eine
-  Dauerregel oder einen Test, der die STILLE im Erfolg ABSICHTLICH festlegt, und mit welchem
-  Grund? Eine solche Festlegung wird nicht still überschrieben.
-  **VORAB-SUCHE (CC, 2026-09-24) — KEINE FESTLEGUNG GEFUNDEN**, Reichweite: `docs/`, `CLAUDE.md`
-  und `src/` (`.md`, `.ts`) mit einer Achse aus Formulierungen für "still im Erfolg" und "loggt
-  nur", dazu `eslint.config.mjs` (keine `console`-Regel). Gefunden sind zwei BEFUNDE, die die
-  Stille FESTSTELLEN, nicht verlangen: docs/claude-history/phase-11.1-linkedin.md ("KEIN ADAPTER
-  LOGGT IM ERFOLGSFALL", GEMESSEN 2026-08-19) und
-  docs/claude-history/phase-11-multi-tracking-aktiver-stand.md ("DER ADAPTER SCHWEIGT BEIM
-  ERFOLG: keine Zeile im Log, also `code 0`" — dort als Live-Test-Instrument benutzt). Eine
-  Suche ist kein Beweis der Abwesenheit; das Gate prüft vor dem Plan erneut, dazu die Tests.
+- **DER FILTER IM TESTPROTOKOLL:** `onConsoleLog` in `vitest.config.ts` unterdrückt die Zeile
+  allein auf stdout und allein für die fünf Namen. Ein neues Ziel kommt in die Namensliste; fehlt
+  es, erscheint seine Zeile wieder im Protokoll — sichtbar, nicht verschluckt. Auflage an der
+  Roadmap-Zeile 11.9 (docs/roadmap.md).
 
 **MITZUNEHMEN — VORRAT P11.7-1, P11.7-3, P11.7-4 (Kopfkommentare)**, je in der ersten
 Scheibe, die ihre Datei berührt, wie ihre Trigger es verlangen. **P11.7-3 geht in S2** — die
@@ -3212,25 +3260,56 @@ binden:**
 
 ## Nächster Schritt
 
-**S1 BIS S9 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
-P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28, P11.7-30), **DAZU S10a UND S10b** (VERMERKE
-P11.7-31, P11.7-33).
+**S1 BIS S10 SIND ABGESCHLOSSEN** (VERMERKE P11.7-10, P11.7-12, P11.7-14, P11.7-16,
+P11.7-18, P11.7-20, P11.7-22, P11.7-24, P11.7-28, P11.7-30; S10 in P11.7-31, P11.7-33 und
+P11.7-34).
 **ALLE FÜNF PUNKTE DER ROADMAP-ZEILE 11.7 SIND BEARBEITET:** F5, F6 und F7 durch die Lesung
 (E-a), F8 gemessen
 (VERMERK P11.7-26), Punkt 5 mit S4 bis S9. Die Reihenfolge bis zum Phasenende steht in der
-OWNER-ENTSCHEIDUNG E-d (Abschnitt "Gegenstand der Phase").
-**DIE OWNER-ENTSCHEIDUNGEN ZU SCHRITT (4) VON E-d SIND GETROFFEN:** E-e (Vorrat P11.7-9, K1 für
-alle fünf Ziele, zugeschnitten als S10) und E-f (ZUSCHNITT-FRAGE P11.7-11 geschlossen).
-**ALS NÄCHSTES, IN DIESER REIHENFOLGE:**
-1. **S10c (google)** in einer NEUEN Sitzung — Pflicht-Stopp: Volladung
-   docs/ziel-befunde/google.md plus Kopf; das Muster aus Q2 ZEICHENGLEICH; dazu die ZWEI
-   Mitnahmen an Q7 (die ungefangenen accepted-Zeilen im Testprotokoll und die Beobachtung zu
-   "secret unusable"). **SPERRE: Der Google-Zugang des Testprojekts läuft um den 2026-10-01
-   ab** (Sieben-Tage-Frist, s. unten) — der Live-Test von S10c braucht einen gültigen Zugang.
-2. **Das Phasenende** nach E-d (6).
+OWNER-ENTSCHEIDUNG E-d (Abschnitt "Gegenstand der Phase"); ihre Schritte (1) bis (5) sind
+erledigt, S10 eingeschlossen (E-e).
+**ALS NÄCHSTES: DAS PHASENENDE 11.7** nach E-d (6) und dem Ablauf in docs/arbeitsweise.md. **DIE
+HEBUNG IST PFLICHT UND BEKOMMT EINEN EIGENEN COMMIT;** danach die Archivierung dieser Standdatei.
+Dorthin gehört ausdrücklich:
+1. **DIE HEBUNG** — HEBUNGS-KANDIDAT P11.7-1 (Abschnitt "Hebungs-Kandidaten"); dazu die Zuordnung
+   der Entscheidungen P11.7-1 bis P11.7-7 und der offenen Vorrats-Posten P11.7-2, -8, -10, -11,
+   -12 nach dem zweiteiligen Kriterium (CLAUDE.md, "## Offene Punkte"). Vorrat P11.7-10 hat seinen
+   Trigger mit S10c erreicht und ist nicht bearbeitet (Zeiger dort).
+2. **K4 HEBEN** — nach docs/offene-punkte.md, Trigger "vor echtem Ad-Traffic" (E-e).
+3. **DIE UNGESICHTETEN POSTEN SICHTEN** — docs/offene-punkte.md, "DREI EINTRÄGE DIESER LISTE HABEN
+   EINEN EINGETRETENEN TRIGGER UND SIND NICHT GESICHTET": Die Sichtung geschieht nach dem Vermerk
+   vom 2026-09-23 dort mit der Hebung am Ende dieser Phase. Die Momentaufnahme dort vom 2026-09-11
+   zählt ZWÖLF Stub-Einträge mit eingetretenem Trigger, DREIZEHN mit jenem Eintrag selbst; der
+   heutige Stand ist nicht erhoben.
+4. **DIE MATRIX FORTSCHREIBEN** — docs/ziel-fragenkatalog.md, Zeilen B2, G1, H2, H3 (E-d (6));
+   datiert, nicht stillschweigend.
+5. **BEIM [x] DAS UNBEWIESENE BENENNEN** (CLAUDE.md, "## Roadmap & aktueller Stand", Auflage an
+   "WANN [x] GESETZT WIRD"). Die Stellen im Bestand, je mit Zeiger:
+   · F5 — die Wirkung der TikTok-Deduplizierung ist ungemessen (E-a; VERMERK P11.7-25, Liste Nr. 4).
+   · F6 — welche Meta-Version tatsächlich verarbeitet wird (Abschnitt "Offene Fragen an den
+     Anbieter-Crawl", F6; docs/ziel-befunde/meta.md, Teil (y)).
+   · F7 — welches Rate-Limit bei meta, tiktok und linkedin tatsächlich greift (E-a; VERMERK
+     P11.7-25, Liste Nr. 5; Abschnitt "Offene Fragen an den Anbieter-Crawl", F7).
+   · F8 — der Fehlerzweig "HTTP 200 mit `failed`" bei Pinterest (E-a; VERMERK P11.7-26; F8).
+   · ZUSCHNITT-FRAGE P11.7-21 — der angekündigte, undatierte Pinterest-Schema-Wechsel (VERMERK
+     P11.7-25, Liste Nr. 12).
+   · Punkt 5 — ein fachlicher Abgleich ist an keinem Ziel belegt, alle Live-Belege fuhren
+     erfundene Kennungen (VERMERKE P11.7-18, -20, -24, -28, -30) · die Schreibung der Google-
+     Auto-Tagging-Parameter (docs/offene-punkte.md, "DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT
+     SICH AUF NICHTS GELESENES") · ob bei Google die IP allein genügt (G2; VERMERK P11.7-25,
+     Punkt 5, "OFFEN").
+   · S10 — eine accepted-Zeile belegt die ANNAHME, an keinem Ziel die Verarbeitung; bei Google
+     sind ein Status ausser 200 und der Fall "200 mit fieldWarnings" ungemessen (VERMERK
+     P11.7-34).
+   · die offenen ZUSCHNITT-FRAGEN unten.
+6. **AUS S10c DORTHIN GEREICHT:** die Herabstufung der Zeile `access_token_expired` in
+   `usableTokenFromRow` (`src/lib/capi/token.ts`) — ein KANDIDAT, KEINE Entscheidung
+   (docs/offene-punkte.md, Vermerk vom 2026-09-25 am Posten "DER RESOLVER SCHREIBT BEI TOTEM
+   ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER").
 **ERLEDIGT:** die LinkedIn-Nachablesung, mit Ergebnis und benannter Grenze des Instruments
 (VERMERK P11.7-33, (L)); der Entscheidungsbaum, der hier stand, ist damit gegenstandslos, sein
-Wortlaut steht unter Commit `4a47e4a`. S10b ist abgeschlossen (VERMERK P11.7-33).
+Wortlaut steht unter Commit `4a47e4a`. S10c und damit S10 sind abgeschlossen (VERMERK P11.7-34);
+die Reihenfolge, die hier bis dahin stand, steht unter Commit `4943643`.
 **WEITERE OFFENE ZUSCHNITT-FRAGEN IM BESTAND**, je mit dem Stand an der Frage (Abschnitt
 "Fragen an den Zuschnitt (nach dem Meta-Crawl)"):
 - P11.7-4 (dazu P11.7-12 und P11.7-18) — `external_id`, offene OWNER-Frage; für diese Phase

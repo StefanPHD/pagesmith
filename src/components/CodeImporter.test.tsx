@@ -5398,6 +5398,10 @@ describe("CodeImporter — Skripte und Tags im Code (11.11b)", () => {
 
   // SK10. DIE SCHREIBUNG IST "SKRIPTE". Ein Waechter, weil die falsche Form sich
   // sonst ueber die naechste Runde einschleicht und niemand sie bemerkt.
+  // SEIT SCHEIBE 2 DER PHASE 12.5 erfuellt auch der Reiter "Skripte" der linken Spalte
+  // die positive Haelfte — sie belegt damit nicht mehr allein die Ueberschrift der Liste
+  // (die tragen die uebrigen SK-Laeufe). Die negative Haelfte bewacht jetzt auch den
+  // Reiter-Namen.
   it("SK10: die Form Scripte kommt in der Oberflaeche nicht vor", async () => {
     render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_META} />);
     await screen.findByText("Kaufen");
@@ -6127,5 +6131,335 @@ describe("CodeImporter — Absende-Buttons ohne eigene Aktionen (Phase 12.5, Sch
     expect(screen.getByText(/Link \/ Weiterleitung/)).toBeTruthy();
     expect(screen.getByText(/Tracking-Event/)).toBeTruthy();
     expect(screen.queryByText(HINWEIS)).toBeNull();
+  });
+});
+
+// =============================================================================
+// Phase 12.5, Scheibe 2 — DAS EDITOR-GERUEST: die linke Spalte in drei Reitern
+// (Entscheidungen P12.5-7 und P12.5-49 bis P12.5-54 der Phase 12.5).
+//
+// WAS HIER NICHT GEPRUEFT WERDEN KANN, ausdruecklich: die SICHTBARKEIT. Die
+// Testumgebung wertet kein CSS aus (docs/immer-beachten.md, DIE TESTUMGEBUNG WERTET KEIN
+// CSS AUS) — die versteckten Reiter bleiben im DOM und fuer getByRole erreichbar, und
+// genau deshalb bleiben alle Bestandstests ohne einen Reiterklick gruen. Geprueft
+// werden DOM-Praesenz, KNOTEN-IDENTITAET, Attribute und die Versteck-Klasse als
+// STRUKTUR-Zusicherung.
+//
+// WARUM DIE KNOTEN-IDENTITAET: Der ungespeicherte Code liegt im CONTAINER und ueberlebte
+// auch ein Aushaengen der Textarea (Vermerk P12.5-48, Punkt (2)). Ein Test auf den Wert
+// allein waere in beiden Welten gruen — trennend sind nur der Knoten und das, was an ihm
+// haengt (Cursor, Offenzustand eines <details>).
+//
+// DIE WORTLAUTE SIND GETIPPT, nicht importiert (EIN WAECHTER UEBER DIE SPALTENLISTE
+// BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE).
+// =============================================================================
+describe("CodeImporter — Editor-Geruest: Reiter der linken Spalte (Phase 12.5, Scheibe 2)", () => {
+  const HTML =
+    '<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>' +
+    '<p data-pagesmith-id="ps-cccccc">Absatz</p>' +
+    '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>' +
+    '<script src="https://example.com/slider.js"></script>';
+  const HTML_B = '<h1 data-pagesmith-id="ps-dddddd">Zweites Projekt</h1>';
+  const HINWEIS_OHNE_AUSWAHL =
+    "Wähle ein Element in der Vorschau, um eine Aktion zu verknüpfen.";
+  const LEER_ELEMENTE =
+    "Noch nichts erkannt – füge im Reiter Code deinen HTML-Code ein.";
+  const LEER_SKRIPTE = "Noch kein Code.";
+
+  type Reiter = "Elemente" | "Code" | "Skripte";
+  const reiter = (name: Reiter) =>
+    screen.getByRole("button", { name: new RegExp(`^${name}$`) }) as HTMLButtonElement;
+  const gedrueckt = (name: Reiter) =>
+    reiter(name).getAttribute("aria-pressed") === "true";
+  const feld = () => document.querySelector("textarea") as HTMLTextAreaElement;
+  // Die Huellen: Textarea -> Inhalts-div -> Huelle; Ueberschrift -> Block-div -> Huelle.
+  const codeHuelle = () => feld().parentElement!.parentElement as HTMLElement;
+  const elementeHuelle = () =>
+    screen.getByRole("heading", { name: /^Erkannte Elemente/ }).parentElement!
+      .parentElement as HTMLElement;
+  const skripteHuelle = () =>
+    screen.getByRole("heading", { name: /^Skripte und Tags im Code/ }).parentElement!
+      .parentElement as HTMLElement;
+  const rahmen = () => screen.getByTitle("preview") as HTMLIFrameElement;
+  const aktionsSpalte = () =>
+    screen.getByRole("heading", { name: "Aktion" }).closest("aside") as HTMLElement;
+
+  // RT1. Rot, wenn der Standard immer "code" ist (MR3).
+  it("RT1: Projekt MIT Code startet auf dem Reiter Elemente", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    expect(gedrueckt("Elemente")).toBe(true);
+    expect(gedrueckt("Code")).toBe(false);
+    expect(gedrueckt("Skripte")).toBe(false);
+  });
+
+  // RT1b. Rot, wenn der Standard immer "elements" ist (MR3b). Dazu die zwei Leertexte
+  // (Entscheidung P12.5-53).
+  it("RT1b: leeres Projekt startet auf dem Reiter Code, mit beiden Leertexten", () => {
+    render(<CodeImporter />);
+    expect(gedrueckt("Code")).toBe(true);
+    expect(gedrueckt("Elemente")).toBe(false);
+    expect(gedrueckt("Skripte")).toBe(false);
+    expect(screen.getByText(LEER_ELEMENTE)).toBeTruthy();
+    expect(screen.getByText(LEER_SKRIPTE)).toBeTruthy();
+  });
+
+  // RT2. Rot, wenn der Code-Reiter beim Wechsel ausgehaengt wird (MR1): dann ist die
+  // Textarea danach ein NEUER Knoten mit anderem Cursor — der Wert allein bliebe gleich.
+  it("RT2: ein Reiterwechsel behaelt den ungespeicherten Code — derselbe Knoten, derselbe Cursor", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    fireEvent.click(reiter("Code"));
+    const neu = HTML + "<p>Ungespeichert</p>";
+    fireEvent.change(feld(), { target: { value: neu } });
+    const knoten = feld();
+    knoten.setSelectionRange(5, 5);
+    expect(knoten.selectionStart).toBe(5);
+
+    fireEvent.click(reiter("Elemente"));
+    fireEvent.click(reiter("Skripte"));
+    fireEvent.click(reiter("Code"));
+
+    expect(feld()).toBe(knoten);
+    expect(feld().value).toBe(neu);
+    expect(feld().selectionStart).toBe(5);
+    expect(screen.getByText("Ungespeicherte Änderungen")).toBeTruthy();
+  });
+
+  // RT3. Rot, wenn ein Reiterwechsel den Rahmen neu montiert (MR2) oder seinen srcdoc
+  // aendert (MR2b) — die zwei Wege, auf denen er neu laedt (Vermerk P12.5-48, Punkt (3)).
+  it("RT3: ein Reiterwechsel laedt den Vorschau-Rahmen nicht neu — derselbe Knoten, derselbe srcdoc", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    const vorher = rahmen();
+    const doc = vorher.getAttribute("srcdoc") ?? "";
+    // VORBEDINGUNG MIT BEWEISKRAFT: der Rahmen traegt schon den verarbeiteten Code —
+    // sonst verglichen wir zwei leere Werte.
+    expect(doc).toContain("Titel");
+
+    // NACH JEDEM WECHSEL, nicht nur am Ende: Die Folge endet wieder auf dem Startreiter,
+    // und ein srcdoc, der an JEDEM Wechsel neu entsteht, kaeme dann zum Ausgangswert
+    // zurueck — die Endprüfung allein blieb unter MR2b gruen (Scheibe 2, gemessen).
+    for (const name of ["Code", "Skripte", "Elemente"] as const) {
+      fireEvent.click(reiter(name));
+      expect(gedrueckt(name)).toBe(true);
+      expect(rahmen()).toBe(vorher);
+      expect(rahmen().getAttribute("srcdoc")).toBe(doc);
+    }
+  });
+
+  // RT4. STRUKTUR, KEINE SICHTBARKEIT. Rot, wenn die Versteck-Bedingung an der falschen
+  // Huelle haengt (MR4) — das faengt KEIN anderer Lauf, weil jsdom die Klasse ignoriert.
+  it("RT4 (STRUKTUR): die aktive Huelle traegt die Versteck-Klasse nicht, die zwei inaktiven tragen sie", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByRole("heading", { name: /^Skripte und Tags im Code/ });
+    const versteckt = () => ({
+      elemente: elementeHuelle().classList.contains("hidden"),
+      code: codeHuelle().classList.contains("hidden"),
+      skripte: skripteHuelle().classList.contains("hidden"),
+    });
+
+    expect(versteckt()).toEqual({ elemente: false, code: true, skripte: true });
+    fireEvent.click(reiter("Code"));
+    expect(versteckt()).toEqual({ elemente: true, code: false, skripte: true });
+    fireEvent.click(reiter("Skripte"));
+    expect(versteckt()).toEqual({ elemente: true, code: true, skripte: false });
+  });
+
+  // RT5. Rot, wenn der Skripte-Reiter ausgehaengt wird (MR5): der Offenzustand eines
+  // <details> lebt im DOM und stuerbe mit dem Knoten.
+  it("RT5: ein geoeffnetes <details> der Skripte-Liste bleibt ueber einen Reiterwechsel offen", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    // ERST SCHALTEN, DANN SUCHEN: Suchte der Lauf die Ueberschrift vor dem Wechsel,
+    // stuerbe er bei einem ausgehaengten Reiter schon dort und erreichte seine trennende
+    // Pruefung nie (unter MR5 gemessen, Scheibe 2).
+    await screen.findByText("Titel");
+    fireEvent.click(reiter("Skripte"));
+    await screen.findByRole("heading", { name: /^Skripte und Tags im Code/ });
+    const details = screen
+      .getByText(/^Weitere Skripte \(/)
+      .closest("details") as HTMLDetailsElement;
+    expect(details.open).toBe(false);
+    fireEvent.click(screen.getByText(/^Weitere Skripte \(/));
+    expect(details.open).toBe(true);
+
+    fireEvent.click(reiter("Elemente"));
+    fireEvent.click(reiter("Skripte"));
+
+    const danach = screen
+      .getByText(/^Weitere Skripte \(/)
+      .closest("details") as HTMLDetailsElement;
+    expect(danach).toBe(details);
+    expect(danach.open).toBe(true);
+  });
+
+  // RT6. Rot, wenn ein Reiterwechsel die Auswahl leert (MR9) oder den Filter
+  // zuruecksetzt (MR9b).
+  it("RT6: Auswahl und Filter ueberleben einen Reiterwechsel", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    fireEvent.click(screen.getByRole("button", { name: "Texte (2)" }));
+    fireEvent.click(screen.getByText("Titel"));
+    expect(within(aktionsSpalte()).getByText("Titel")).toBeTruthy();
+
+    fireEvent.click(reiter("Code"));
+    fireEvent.click(reiter("Elemente"));
+
+    expect(
+      screen.getByRole("button", { name: "Texte (2)" }).getAttribute("aria-pressed"),
+    ).toBe("true");
+    expect(within(aktionsSpalte()).queryByText(HINWEIS_OHNE_AUSWAHL)).toBeNull();
+    expect(within(aktionsSpalte()).getByText("Titel")).toBeTruthy();
+  });
+
+  // RT7. Rot, wenn der Sprung in onMessage fehlt (MR6). Die POSITIVKONTROLLE vorweg: eine
+  // Nachricht aus fremder Quelle schaltet nicht — der Sprung haengt am echten Pfad.
+  it("RT7: ein Klick in der Vorschau springt aus dem Reiter Code auf Elemente", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    fireEvent.click(reiter("Code"));
+    const nachricht = { type: "ELEMENT_CLICKED", elementId: "ps-bbbbbb" };
+
+    fireEvent(window, new MessageEvent("message", { data: nachricht, source: window }));
+    expect(gedrueckt("Code")).toBe(true);
+    expect(within(aktionsSpalte()).getByText(HINWEIS_OHNE_AUSWAHL)).toBeTruthy();
+
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        data: nachricht,
+        source: rahmen().contentWindow,
+      }),
+    );
+    expect(gedrueckt("Elemente")).toBe(true);
+    expect(gedrueckt("Code")).toBe(false);
+    expect(within(aktionsSpalte()).getByText("Kaufen")).toBeTruthy();
+  });
+
+  // RT8a. Rot, wenn der Zen-Wechsel beim Einfuegen wirkungslos ist (MR7).
+  it("RT8a: Einfuegen in ein leeres Projekt springt auf Elemente", () => {
+    render(<CodeImporter />);
+    expect(gedrueckt("Code")).toBe(true);
+    fireEvent.paste(feld());
+    fireEvent.change(feld(), { target: { value: HTML } });
+    expect(gedrueckt("Elemente")).toBe(true);
+  });
+
+  // RT8b. Rot, wenn die manuelle Wahl das Flag nicht setzt (MR8).
+  it("RT8b: nach manueller Wahl des Reiters Code bleibt Einfuegen auf Code", () => {
+    render(<CodeImporter />);
+    fireEvent.click(reiter("Code"));
+    fireEvent.paste(feld());
+    fireEvent.change(feld(), { target: { value: HTML } });
+    expect(gedrueckt("Code")).toBe(true);
+    expect(gedrueckt("Elemente")).toBe(false);
+  });
+
+  // RT8c. Rot, wenn applyZenForLoadedCode den Reiter nicht setzt (MR13).
+  it("RT8c: ein Projektwechsel aus dem Reiter Skripte landet auf Elemente", async () => {
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: HTML_B,
+      mappings: [],
+      settings: {},
+      html_b: null,
+      mappings_b: null,
+      ab_test_active: false,
+      ab_test_started_at: null,
+      tracking_key: "",
+    });
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={HTML}
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+      />,
+    );
+    await screen.findByText("Titel");
+    fireEvent.click(reiter("Skripte"));
+    expect(gedrueckt("Skripte")).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+    fireEvent.click(await screen.findByText("P2"));
+    await waitFor(() => expect(loadProject).toHaveBeenCalledWith("p2"));
+
+    await waitFor(() => expect(gedrueckt("Elemente")).toBe(true));
+    expect(gedrueckt("Skripte")).toBe(false);
+  });
+
+  // RT9. STRUKTUR. Rot, wenn die Bausteine-Warnung in eine Reiter-Huelle wandert (MR10):
+  // beim Import schaltet der Zen-Wechsel auf "Elemente", in der Code-Huelle waere sie
+  // dann unsichtbar — und kein anderer Lauf saehe es.
+  it("RT9 (STRUKTUR): die Bausteine-Warnung steht in der linken Spalte, aber in KEINER Reiter-Huelle", async () => {
+    const MIT_BAUSTEINEN = generateFunctional(
+      '<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>' +
+        '<button data-pagesmith-id="ps-bbbbbb">Kaufen</button>',
+      [
+        {
+          elementId: "ps-bbbbbb",
+          type: "redirect",
+          config: { url: "https://example.com/x", openInNewTab: false },
+        },
+      ],
+      "export",
+      { metaPixelId: "1234567890", trackingKey: "tk-alt", capiProxyUrl: "/api/e" },
+    );
+    // POSITIVKONTROLLE: die Fixture traegt wirklich Bausteine.
+    expect(MIT_BAUSTEINEN).toContain('id="pagesmith-mappings"');
+    render(<CodeImporter initialProjectId="proj-1" initialCode={MIT_BAUSTEINEN} />);
+    const warnung = await screen.findByText(
+      "Dieser Code enthält Pagesmith-Bausteine aus einem früheren Export. Sie senden Conversions an das ursprüngliche Projekt und würden sich beim Veröffentlichen verdoppeln.",
+    );
+    await screen.findByRole("heading", { name: /^Skripte und Tags im Code/ });
+
+    expect(warnung.closest("section")).toBe(reiter("Code").closest("section"));
+    expect(codeHuelle().contains(warnung)).toBe(false);
+    expect(elementeHuelle().contains(warnung)).toBe(false);
+    expect(skripteHuelle().contains(warnung)).toBe(false);
+  });
+
+  // RT10. Rot, wenn der Hinweis der rechten Spalte ohne Auswahl fehlt oder anders lautet
+  // (MR11). Bis zu dieser Scheibe von keinem Lauf gedeckt.
+  it("RT10: ohne Auswahl zeigt die rechte Spalte den Hinweis — nach einer Auswahl nicht mehr", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Kaufen");
+    expect(within(aktionsSpalte()).getByText(HINWEIS_OHNE_AUSWAHL)).toBeTruthy();
+    fireEvent.click(screen.getByText("Kaufen"));
+    expect(within(aktionsSpalte()).queryByText(HINWEIS_OHNE_AUSWAHL)).toBeNull();
+  });
+
+  // RT11. Rot, wenn ein globales Bedienelement in eine Spalte wandert (MR12).
+  it("RT11: Einstellungen, Kopieren und Exportieren liegen in keiner Spalte, und der Drawer oeffnet", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    const einstellungen = screen.getByRole("button", { name: /⚙ Einstellungen/ });
+    expect(einstellungen.closest("section, aside")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: /kopieren/i }).closest("section, aside"),
+    ).toBeNull();
+    expect(
+      screen.getByRole("button", { name: /exportieren/i }).closest("section, aside"),
+    ).toBeNull();
+    fireEvent.click(einstellungen);
+    expect(screen.getByRole("button", { name: /^Messen$/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^Live$/ })).toBeTruthy();
+  });
+
+  // RT12. Die drei Namen sind je GENAU EINMAL vergeben und stehen in der Gruppe
+  // "Linke Spalte" (docs/immer-beachten.md, ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN …).
+  it("RT12: die drei Reiter-Namen sind eindeutig und stehen in der Gruppe Linke Spalte", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    const gruppe = screen.getByRole("group", { name: "Linke Spalte" });
+    for (const name of ["Elemente", "Code", "Skripte"] as const) {
+      expect(
+        screen.getAllByRole("button", { name: new RegExp(`^${name}$`) }),
+      ).toHaveLength(1);
+      expect(within(gruppe).getByRole("button", { name })).toBeTruthy();
+    }
   });
 });

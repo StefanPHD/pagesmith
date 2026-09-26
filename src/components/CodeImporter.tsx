@@ -254,6 +254,9 @@ type SaveStatus = "idle" | "saving" | "saved" | "error";
 // oder ohne Permission fehlschlagen -> kein stilles Nichts.
 type CopyStatus = "idle" | "copied" | "error";
 
+// Reiter der linken Spalte (Phase 12.5, Scheibe 2; Entscheidung P12.5-7 der Phase 12.5).
+type LeftTab = "elements" | "code" | "scripts";
+
 /**
  * DIE WAHL DER DARSTELLUNG, MIT DER VORBELEGUNG DER ZWEI FARBEN (Phase 11.13, Scheibe
  * 11.13c; bindende Entscheidung P11.13-22). Reine Funktion, damit der Schreibweg
@@ -664,17 +667,27 @@ export default function CodeImporter({
     schluessel: string;
     text: string;
   } | null>(null);
-  // Linkes Panel ein-/ausklappbar. Zen-Modus: ein Projekt MIT Code startet
-  // eingeklappt (Fokus aufs Dashboard), ein leeres Projekt offen (man muss erst
-  // importieren koennen). Deterministisch aus initialCode -> server- und
-  // client-identischer erster Paint, kein Hydration-Mismatch (Lektion aus 3.2).
-  const [isInputCollapsed, setIsInputCollapsed] = useState(
-    initialCode.trim() !== ""
+  // DER AKTIVE REITER DER LINKEN SPALTE (Phase 12.5, Scheibe 2; Entscheidungen P12.5-49
+  // und P12.5-50 der Phase 12.5). Er ersetzt das Akkordeon der Code-Eingabe
+  // (isInputCollapsed), und die Zen-Regeln wirken jetzt auf ihn: ein Projekt MIT Code
+  // startet auf "Elemente" (die Liste ist das Arbeitswerkzeug), ein leeres Projekt auf
+  // "Code" (man muss erst importieren koennen). Deterministisch aus initialCode ->
+  // server- und client-identischer erster Paint, kein Hydration-Mismatch (Lektion aus
+  // 3.2).
+  // DIE INAKTIVEN REITER WERDEN VERSTECKT, NIE AUSGEHAENGT: Cursor und Undo-Verlauf der
+  // Textarea, die Scroll-Position der Liste und der Offenzustand der <details> der
+  // Skripte-Liste haengen am DOM-Knoten. Der Code selbst ueberlebte ein Aushaengen, weil
+  // er im Container liegt — deshalb prueft RT2 den KNOTEN und nicht nur den Wert.
+  const [leftTab, setLeftTab] = useState<LeftTab>(
+    initialCode.trim() !== "" ? "elements" : "code"
   );
-  // Zen-Modus "manuell schlaegt Auto": sobald der Nutzer das Panel selbst
-  // aufklappt, uebernimmt er die Kontrolle -> KEIN Auto-Collapse mehr in diesem
-  // Projekt-Kontext (bleibt true, auch wenn er danach wieder zuklappt). Wird NUR
-  // beim Projekt-Kontext-Wechsel via applyZenForLoadedCode zurueckgesetzt.
+  // Zen-Modus "manuell schlaegt Auto": sobald der Nutzer den Reiter "Code" selbst
+  // waehlt, uebernimmt er die Kontrolle -> KEIN automatischer Wechsel auf "Elemente"
+  // mehr in diesem Projekt-Kontext (bleibt true, auch wenn er danach einen anderen
+  // Reiter waehlt). Wird NUR beim Projekt-Kontext-Wechsel via applyZenForLoadedCode
+  // zurueckgesetzt. Der Name stammt aus dem Akkordeon und bleibt, weil der
+  // Backlog-Posten "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL …" ihn als Fundstelle
+  // nennt.
   const [userExpandedManually, setUserExpandedManually] = useState(false);
   // Datei-Upload: letzter Validierungs-/Lesefehler (freundlich sichtbar, kein
   // stilles Schlucken) + Drag-Hover-Feedback fuer die Dropzone.
@@ -1029,6 +1042,12 @@ export default function CodeImporter({
         // Vorwaerts-Bruecke (iframe -> Liste): Auswahl kam aus dem iframe.
         cameFromIframeRef.current = true;
         setSelectedElementId(d.elementId ?? null);
+        // SPRUNG AUF DEN REITER "Elemente" (Phase 12.5, Scheibe 2; Entscheidung P12.5-51
+        // der Phase 12.5) — IM SELBEN HANDLER wie die Auswahl: beide landen in EINEM
+        // Render-Durchlauf, die Liste ist beim Auswahl-Effekt unten schon sichtbar, und
+        // das Mitscrollen greift. Nur hier, nicht bei Auswahlen aus der rechten Spalte.
+        // setLeftTab ist stabil — die []-deps bleiben vollstaendig.
+        setLeftTab("elements");
       } else if (d?.type === "IFRAME_READY") {
         // Re-Sync nach jedem srcDoc-Reload: aktuelle Auswahl zuruecksenden.
         // selectedIdRef statt State -> kein stale closure trotz []-deps.
@@ -1047,6 +1066,10 @@ export default function CodeImporter({
   // cameFromIframeRef gated NUR das iframe-Scrollen (sonst springt die Vorschau
   // beim iframe-Klick) – das Listen-Scrollen feuert bewusst IMMER, damit ein
   // weit unten liegender Eintrag auch bei Auswahl aus dem iframe sichtbar wird.
+  // SEIT SCHEIBE 2 DER PHASE 12.5 kann die Liste in einem versteckten Reiter stehen; dann
+  // laeuft der Aufruf ins Leere. Fuer die Auswahl aus dem iframe schaltet onMessage im
+  // selben Durchlauf auf "Elemente" (Entscheidung P12.5-51); fuer Auswahlen aus der
+  // rechten Spalte bleibt das bewusst so.
   useEffect(() => {
     selectedIdRef.current = selectedElementId;
     const fromIframe = cameFromIframeRef.current;
@@ -1522,24 +1545,30 @@ export default function CodeImporter({
     setSelectedElementId(null);
     // Leeres Projekt hat per Definition keine Variante B -> Stash leer, Variante A.
     seedVariantState(null, null, false, null);
-    // Leerer Kontext -> Panel offen (man muss importieren koennen), Flag frisch.
+    // Leerer Kontext -> Reiter "Code" (man muss importieren koennen), Flag frisch.
     applyZenForLoadedCode("");
   }
 
   // Zen-Modus: an ein Import-EREIGNIS gehaengt (onPaste / erfolgreicher Upload),
   // NICHT an den Detektions-State (sonst feuerte es bei jedem Tastendruck und
-  // klappte dem Nutzer das Panel beim Tippen weg). Genau einmal pro Ereignis.
-  // "Manuell schlaegt Auto": hat der Nutzer selbst aufgeklappt, kein Auto-Collapse.
+  // schaltete dem Nutzer beim Tippen den Reiter weg). Genau einmal pro Ereignis.
+  // "Manuell schlaegt Auto": hat der Nutzer den Reiter "Code" selbst gewaehlt, kein
+  // automatischer Wechsel. Seit Scheibe 2 der Phase 12.5 ist die Wirkung der Wechsel auf
+  // "Elemente" statt des Einklappens — der Name bleibt, weil der Backlog-Posten
+  // "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL …" ihn als Fundstelle nennt; der dort
+  // vermutete Mechanismus (Wechsel im onPaste-Handler, vor dem onChange-Commit) gilt
+  // unveraendert.
   function autoCollapseOnImport() {
-    if (!userExpandedManually) setIsInputCollapsed(true);
+    if (!userExpandedManually) setLeftTab("elements");
   }
 
-  // Zen-Default beim Laden/Wechseln eines Projekt-Kontexts: Code vorhanden ->
-  // eingeklappt, leer -> offen. Setzt zugleich das "manuell"-Flag zurueck (neuer
-  // Kontext = frische Auto-Collapse-Erlaubnis). Kein Merken pro Projekt.
+  // Zen-Default beim Laden/Wechseln eines Projekt-Kontexts: Code vorhanden -> Reiter
+  // "Elemente", leer -> Reiter "Code" (Entscheidung P12.5-50 der Phase 12.5). Setzt
+  // zugleich das "manuell"-Flag zurueck (neuer Kontext = frische Erlaubnis fuer den
+  // automatischen Wechsel). Kein Merken pro Projekt.
   function applyZenForLoadedCode(html: string) {
     setUserExpandedManually(false);
-    setIsInputCollapsed(html.trim() !== "");
+    setLeftTab(html.trim() !== "" ? "elements" : "code");
     // uploadError ist projekt-ungebundener View-State -> beim Kontext-Wechsel
     // mit zuruecksetzen, sonst leuchtet ein Fehler aus Projekt A in B weiter.
     setUploadError(null);
@@ -1817,15 +1846,13 @@ export default function CodeImporter({
     setVariantBusy(false);
   }
 
-  // Manuelles Toggle: klappt der Nutzer AUF (next = nicht collapsed), uebernimmt
-  // er die Kontrolle -> Flag setzen, ab dann kein Auto-Collapse mehr. Zuklappen
-  // laesst das Flag unberuehrt (Kontrolle bleibt beim Nutzer).
-  function toggleInputCollapsed() {
-    setIsInputCollapsed((v) => {
-      const next = !v;
-      if (!next) setUserExpandedManually(true);
-      return next;
-    });
+  // Manuelle Reiterwahl: waehlt der Nutzer den Reiter "Code", uebernimmt er die
+  // Kontrolle -> Flag setzen, ab dann kein automatischer Wechsel mehr. Die Wahl eines
+  // anderen Reiters laesst das Flag unberuehrt (Kontrolle bleibt beim Nutzer) —
+  // dieselbe Regel wie beim frueheren Auf- und Zuklappen.
+  function selectLeftTab(tab: LeftTab) {
+    setLeftTab(tab);
+    if (tab === "code") setUserExpandedManually(true);
   }
 
   // Datei-Import (zweiter Weg neben Copy-Paste): validieren -> via FileReader
@@ -1846,7 +1873,7 @@ export default function CodeImporter({
     reader.onload = () => {
       const text = typeof reader.result === "string" ? reader.result : "";
       setCode(text);
-      // Erfolgreicher Upload = Import-Ereignis -> Zen-Auto-Collapse (einmalig).
+      // Erfolgreicher Upload = Import-Ereignis -> Zen-Wechsel auf "Elemente" (einmalig).
       autoCollapseOnImport();
     };
     reader.onerror = () => setUploadError("Datei konnte nicht gelesen werden.");
@@ -2507,7 +2534,7 @@ export default function CodeImporter({
     );
     setSelectedElementId(null);
     setIsProjectMenuOpen(false);
-    // Zen-Default fuer den neuen Kontext: mit Code eingeklappt, leer offen.
+    // Zen-Default fuer den neuen Kontext: mit Code Reiter "Elemente", leer "Code".
     applyZenForLoadedCode(proj.html);
   }
 
@@ -3104,7 +3131,7 @@ export default function CodeImporter({
       )}
 
       {/* Weg-C-Netz: verwaiste Verknuepfungen. Eigene, immer sichtbare Sektion
-          (nicht im einklappbaren linken Panel, da Orphans GLOBAL sind und kein
+          (nicht in einem Reiter der linken Spalte, da Orphans GLOBAL sind und kein
           Element-Badge tragen koennen — das Element fehlt ja). Nur bei N>0. */}
       {orphans.length > 0 && (
         <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
@@ -3191,108 +3218,68 @@ export default function CodeImporter({
         </div>
       )}
 
-      {/* Bestehende drei Zonen (Editor-Kern) — unveraendert. */}
+      {/* Die drei Zonen (Editor-Kern). Seit Scheibe 2 der Phase 12.5 steht Zone 1 in
+          Reitern; Zone 2 und Zone 3 sind davon unberuehrt, und der Baum oberhalb des
+          Edit-iframes haengt NICHT am Reiter — sonst mountete ein Reiterwechsel den
+          Rahmen neu (Waechter RT3). */}
       <div className="flex w-full flex-col gap-4 lg:flex-row">
-      {/* Zone 1 (links): Code-Eingabe (einklappbares Akkordeon) + Zaehler +
-          Elementliste. shrink-0, damit bei Platzmangel die Preview schrumpft,
-          nicht dieses Panel. Der Zen-Collapse versteckt NUR die Code-Eingabe
-          (Textarea + Upload) — Zaehler und Elementliste bleiben IMMER sichtbar,
-          denn die Liste ist das Arbeitswerkzeug, nur der Rohcode ist Ablenkung. */}
+      {/* Zone 1 (links): drei Reiter — "Elemente" (Zaehler, Filter, Liste), "Code"
+          (Textarea + Upload), "Skripte" (Skripte und Tags im Code); darueber die
+          Eigene-Bausteine-Warnung. shrink-0, damit bei Platzmangel die Preview
+          schrumpft, nicht dieses Panel.
+          DIE LISTE IST NICHT MEHR IMMER SICHTBAR (Entscheidung P12.5-49 der Phase 12.5):
+          E7 loest den Satz aus Phase 4.5 ab. Sein ZWECK bleibt — die Liste ist das
+          Arbeitswerkzeug —, getragen vom Standard-Reiter "Elemente", dem Sprung bei Klick
+          in die Vorschau (onMessage) und dem Sprung nach dem Einfuegen
+          (autoCollapseOnImport). Verloren geht allein die Sichtbarkeit der Liste waehrend
+          der Arbeit im Code oder in den Skripten. */}
       <section className="flex w-full shrink-0 flex-col self-start rounded-lg border border-gray-300 bg-white lg:w-80">
-        {/* (1) Code-Eingabe-Block. Voller Akkordeon-Trigger klappt NUR diesen
-            Block (Textarea + Upload); Zaehler und Elementliste darunter bleiben
-            immer sichtbar. Der Inhalt bleibt STETS gemountet (Textarea behaelt
-            State + Debounce), wird beim Einklappen nur per display:none
-            versteckt. */}
-        <div className="border-b border-gray-200">
-          <button
-            type="button"
-            onClick={toggleInputCollapsed}
-            aria-expanded={!isInputCollapsed}
-            className="flex w-full items-center justify-between gap-2 rounded-t-lg px-3 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
-          >
-            <span className="truncate">
-              {isInputCollapsed ? "Code anzeigen/editieren" : "Dein Code"}
-            </span>
-            <Chevron direction={isInputCollapsed ? "down" : "up"} />
-          </button>
-
-          <div className={isInputCollapsed ? "hidden" : "flex flex-col gap-3 px-3 pb-3"}>
-          <textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            onPaste={() => {
-              // Paste ist auch ein Import-Versuch -> alte Upload-Meldung clearen.
-              setUploadError(null);
-              autoCollapseOnImport();
-            }}
-            placeholder="Füge hier deinen HTML-Code ein – oder nutze den Datei-Upload unten."
-            className="h-96 w-full resize-none rounded-lg border border-gray-300 bg-gray-50 p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            spellCheck={false}
-          />
-
-          {/* Datei-Upload / Drag-Drop: zweiter Import-Weg neben Paste. Klick
-              loest das versteckte <input> aus; Drop nimmt nur die ERSTE Datei.
-              preventDefault auf dragOver/drop ist Pflicht, sonst oeffnet der
-              Browser die Datei selbst. Beide Wege muenden in importFile ->
-              setCode (gleicher Pfad wie Paste). */}
+        {/* (0) REITERLEISTE. Das Umschalt-Idiom des Projekts (role=group + aria-pressed,
+            wie Varianten-Umschalter und Drawer-Reiter; Entscheidung P12.5-54 der Phase
+            12.5) — KEIN tablist/tab: zwei Idiome auf einer Oberflaeche waeren genau das,
+            was der Kommentar an der Drawer-Reiterzeile ausschliesst. Die Namen "Elemente",
+            "Code", "Skripte" sind je einmal vergeben (RT12); "Skripte" traegt zugleich
+            SK10. */}
+        <div className="border-b border-gray-200 px-3 py-2.5">
           <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(e) => {
-              e.preventDefault();
-              setIsDragging(false);
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              setIsDragging(false);
-              const file = e.dataTransfer.files?.[0];
-              if (file) importFile(file);
-            }}
-            className={`flex flex-col items-center gap-1 rounded-lg border border-dashed px-3 py-4 text-center text-xs transition-colors ${
-              isDragging
-                ? "border-blue-500 bg-blue-50 text-blue-700"
-                : "border-gray-300 bg-gray-50 text-gray-500"
-            }`}
+            className="flex rounded-md border border-gray-300 p-0.5 text-sm font-medium"
+            role="group"
+            aria-label="Linke Spalte"
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".html,text/html"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) importFile(file);
-                // Wert leeren -> dieselbe Datei kann erneut gewaehlt werden und
-                // loest wieder onChange aus.
-                e.target.value = "";
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="font-medium text-blue-600 hover:text-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            >
-              HTML-Datei hochladen
-            </button>
-            <span>oder hierher ziehen</span>
-          </div>
-          {uploadError && (
-            <p className="text-xs font-medium text-red-600">{uploadError}</p>
-          )}
+            {(
+              [
+                { key: "elements", label: "Elemente" },
+                { key: "code", label: "Code" },
+                { key: "scripts", label: "Skripte" },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => selectLeftTab(tab.key)}
+                aria-pressed={leftTab === tab.key}
+                className={`flex-1 rounded px-3 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                  leftTab === tab.key
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* (1b) EIGENE PAGESMITH-BAUSTEINE IM IMPORTIERTEN TEXT (Phase 11.11,
             Scheibe 11.11d; Entscheidung P11.11-21 und P11.11-22, Punkt (b)).
 
-            AUSSERHALB DES EINKLAPPBAREN BLOCKS, DIREKT DARUNTER — und das ist eine
-            ZEITPUNKT-Frage, keine Geschmacksfrage: autoCollapseOnImport klappt den
-            Block oben bei einem Import-Ereignis ein, also GENAU im Moment, in dem diese
-            Warnung entsteht. Innen waere sie im haeufigsten Fall unsichtbar, und KEIN
-            Test wuerde es melden, weil die Testumgebung kein CSS auswertet.
+            UEBER DEN REITERN, IN KEINER REITER-HUELLE (Scheibe 2 der Phase 12.5; vorher
+            ausserhalb des einklappbaren Code-Blocks) — und das ist eine ZEITPUNKT-Frage,
+            keine Geschmacksfrage: autoCollapseOnImport schaltet bei einem Import-Ereignis
+            auf den Reiter "Elemente", also GENAU im Moment, in dem diese Warnung entsteht.
+            In der Code-Huelle waere sie im haeufigsten Fall unsichtbar, und kein
+            Bestandstest wuerde es melden, weil die Testumgebung kein CSS auswertet — der
+            Waechter ist die Struktur-Zusicherung RT9.
 
             ROT OHNE die Klasse `truncate`: Der Selektor span.truncate.text-red-600
             bezeichnet in CodeImporter.test.tsx den ZENTRALEN Fehlerkanal — einmal als
@@ -3300,7 +3287,9 @@ export default function CodeImporter({
             ERSTEN Treffer in Dokumentreihenfolge liefert. Ein roter Text mit beiden
             Klassen braeche beide Laeufe, und der zweite braeche STILL.
 
-            KEIN Signal in der Reiterzeile (P11.11-12, Satz 10). */}
+            KEIN Signal in der Reiterzeile des Drawers (P11.11-12, Satz 10); an der
+            Reiterleiste der linken Spalte braucht es keins, weil die Warnung ueber den
+            Reitern steht. */}
         {(ownBlocksInActive ||
           ownBlocksRest.length > 0 ||
           exportBlockedMessage) && (
@@ -3337,8 +3326,88 @@ export default function CodeImporter({
           </div>
         )}
 
-        {/* (2) Zaehler (Buttons/Forms/Links) — immer sichtbar, unabhaengig vom
-            Code-Collapse. */}
+        {/* DIE DREI REITER-HUELLEN (Phase 12.5, Scheibe 2). VERSTECKT, NIE AUSGEHAENGT:
+            echtes display:none per Tailwind-Klasse "hidden" — dasselbe Muster wie die
+            Bereiche im Drawer und das Edit-iframe. WEDER das HTML-Attribut hidden NOCH
+            aria-hidden (beide naehmen den Teilbaum aus dem Accessibility-Tree, und
+            getByRole filtert danach). Ein Aushaengen verloere, was am DOM-Knoten haengt:
+            Cursor und Undo-Verlauf der Textarea, die Scroll-Position der Liste, den
+            Offenzustand der <details> der Skripte-Liste. Waechter: RT2, RT4, RT5. Die
+            Reihenfolge der Huellen haengt NICHT am aktiven Reiter. */}
+        {/* Reiter CODE: Code-Eingabe (Textarea + Upload). */}
+        <div className={leftTab === "code" ? "" : "hidden"}>
+          <div className="flex flex-col gap-3 p-3">
+            <textarea
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              onPaste={() => {
+                // Paste ist auch ein Import-Versuch -> alte Upload-Meldung clearen.
+                setUploadError(null);
+                autoCollapseOnImport();
+              }}
+              placeholder="Füge hier deinen HTML-Code ein – oder nutze den Datei-Upload unten."
+              className="h-96 w-full resize-none rounded-lg border border-gray-300 bg-gray-50 p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              spellCheck={false}
+            />
+
+            {/* Datei-Upload / Drag-Drop: zweiter Import-Weg neben Paste. Klick
+                loest das versteckte <input> aus; Drop nimmt nur die ERSTE Datei.
+                preventDefault auf dragOver/drop ist Pflicht, sonst oeffnet der
+                Browser die Datei selbst. Beide Wege muenden in importFile ->
+                setCode (gleicher Pfad wie Paste). */}
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                const file = e.dataTransfer.files?.[0];
+                if (file) importFile(file);
+              }}
+              className={`flex flex-col items-center gap-1 rounded-lg border border-dashed px-3 py-4 text-center text-xs transition-colors ${
+                isDragging
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-gray-300 bg-gray-50 text-gray-500"
+              }`}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".html,text/html"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) importFile(file);
+                  // Wert leeren -> dieselbe Datei kann erneut gewaehlt werden und
+                  // loest wieder onChange aus.
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="font-medium text-blue-600 hover:text-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                HTML-Datei hochladen
+              </button>
+              <span>oder hierher ziehen</span>
+            </div>
+            {uploadError && (
+              <p className="text-xs font-medium text-red-600">{uploadError}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Reiter ELEMENTE (Standard bei einem Projekt mit Code): Zaehler, Filter,
+            Liste. */}
+        <div className={leftTab === "elements" ? "" : "hidden"}>
+        {/* (2) Zaehler (Buttons/Forms/Links/Texte). */}
         <div className="flex gap-3 border-b border-gray-200 px-3 py-2.5 text-sm text-gray-600">
           <span>🔘 {counts.button} Buttons</span>
           <span>📋 {counts.form} Forms</span>
@@ -3346,10 +3415,10 @@ export default function CodeImporter({
           <span>✎ {counts.text} Texte</span>
         </div>
 
-        {/* (3) Erkannte Elemente — IMMER sichtbar und scrollbar (das
-            Arbeitswerkzeug des Marketers; nur der Rohcode oben ist die
-            Ablenkung). Stabiler DOM-Knoten: der Collapse haengt ihn nie ab ->
-            Scroll-Position und Hoehe springen beim Auf-/Zuklappen nicht. */}
+        {/* (3) Erkannte Elemente — scrollbar, das Arbeitswerkzeug des Marketers.
+            Stabiler DOM-Knoten: der Reiterwechsel versteckt ihn nur und haengt ihn nie
+            ab. Ob ein Browser die Scroll-Position ueber display:none haelt, ist
+            UNGEPRUEFT (Vermerk P12.5-48 der Phase 12.5, Punkt (2)). */}
         <div className="p-3">
           <h2 className="mb-2 text-sm font-medium text-gray-700">
             Erkannte Elemente ({elements.length})
@@ -3385,7 +3454,9 @@ export default function CodeImporter({
           <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
             {elements.length === 0 ? (
               <p className="text-sm text-gray-400">
-                Noch nichts erkannt – füge oben Code ein.
+                {/* LEERTEXT (Entscheidung P12.5-53 der Phase 12.5): "oben" war mit
+                    den Reitern unwahr — der Code steht in einem eigenen Reiter. */}
+                Noch nichts erkannt – füge im Reiter Code deinen HTML-Code ein.
               </p>
             ) : visibleElements.length === 0 ? (
               <p className="text-sm text-gray-400">
@@ -3437,17 +3508,27 @@ export default function CodeImporter({
               })}
           </div>
         </div>
+        </div>
 
+        {/* Reiter SKRIPTE. */}
+        <div className={leftTab === "scripts" ? "" : "hidden"}>
+        {/* LEERTEXT (Entscheidung P12.5-53 der Phase 12.5): Ohne Code stuende hier ein
+            leerer Reiter. Der Text ist gegen die vier dokumentweiten
+            Abwesenheits-Zusicherungen (/%/, /gerettet/i, /mindestens/, /NaN/) gehalten —
+            er trifft keine. */}
+        {debouncedCode.trim() === "" && (
+          <p className="p-3 text-sm text-gray-400">Noch kein Code.</p>
+        )}
         {/* (4) SKRIPTE UND TAGS IM CODE (Phase 11.11, Scheibe 11.11b).
 
-            NACH der Elementliste und nicht vor den Zaehlern: Jede importierte Seite
-            traegt Skripte; weiter oben schoebe dieser Block das Arbeitswerkzeug des
-            Marketers dauerhaft nach unten.
+            IM EIGENEN REITER (Scheibe 2 der Phase 12.5). Vorher stand der Block NACH der
+            Elementliste, damit er das Arbeitswerkzeug des Marketers nicht nach unten
+            schob; mit den Reitern schiebt er nichts mehr.
 
             NUR BEI CODE IM EDITOR. Ohne Code gibt es nichts zu erkennen — und die vier
             dokumentweiten Abwesenheits-Zusicherungen in CodeImporter.test.tsx (/%/,
             /gerettet/i, /mindestens/, /NaN/) rendern OHNE initialCode; der Block
-            erscheint dort also gar nicht.
+            erscheint dort also gar nicht (dort steht der Leertext darueber).
 
             "skipped" ZEIGT NICHTS: Die Erkennung ist beim Server-Render gar nicht
             gelaufen, und eine Fehlermeldung dafuer waere ein falscher Alarm.
@@ -3693,6 +3774,7 @@ export default function CodeImporter({
             )}
           </div>
         )}
+        </div>
       </section>
 
       {/* Zone 2 (Mitte): Live-Preview. min-w-0 + flex-1 = nimmt die freie Breite

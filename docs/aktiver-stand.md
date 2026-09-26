@@ -1087,13 +1087,11 @@ Tages; das Verfahren ARCHITEKT 2026-09-26.
 
 ## Scheibe 2 — Editor-Gerüst
 
-**ZIEL (Entscheidung P12.5-7; Plan freigegeben 2026-09-26):** Die linke Spalte steht in drei
-Reitern — "Elemente", "Code", "Skripte" —, die inaktiven per CSS-Klasse `hidden` versteckt,
-nie ausgehängt; die Eigene-Bausteine-Warnung steht über den Reitern; die Zen-Regeln wirken auf
-den Reiter; ein Klick in die Vorschau springt auf "Elemente". Die rechte Spalte (`ActionPanel`)
-ist bereits strikt kontextuell und bleibt unverändert; die globalen Einstellungen liegen seit
-Phase 10 in Kopfleiste und Drawer. NUR Struktur, keine Optik. SCOPE DES BAUS:
-src/components/CodeImporter.tsx und src/components/CodeImporter.test.tsx, sonst nichts.
+**ABGESCHLOSSEN AM 2026-09-26 — Bau-Commit `f83ae5b`, Live-Test bestanden, mit vier Befunden;
+Abschluss-Vermerk P12.5-55.** Zwei Befunde gehen in Scheibe 2b, zwei in den Backlog bzw. nur
+in die Klärung (Punkt (5) dort). Der Zuschnitt ist verdichtet: Hier stehen nur noch die
+Invarianten und Entscheidungen, die über die Scheibe hinaus binden, dazu die Vermerke und der
+Vorrat der Scheibe. Was gestrichen ist und wo sein Inhalt steht: Vermerk P12.5-55, Punkt (7).
 
 **INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-26, wörtlich):
 - (I1) Keine Änderung an Erkennung, Mappings, Veröffentlichen, Export oder Laufzeit:
@@ -1105,6 +1103,9 @@ src/components/CodeImporter.tsx und src/components/CodeImporter.test.tsx, sonst 
 - (I4) Keine neue Abhängigkeit.
 - (I5) Keine Test-Prüfung fällt weg; ein Test darf einen Tab öffnen, nicht eine Aussage
   verlieren.
+GRUND DES BLEIBENS (CC, Verdichtung 2026-09-26): Scheibe 2b arbeitet unter denselben fünf
+Invarianten (ARCHITEKT, Plan-Auftrag der Scheibe 2b, 2026-09-26); jede weitere Arbeit an der
+linken Spalte trifft auf (I2) und (I3).
 
 **Vermerk P12.5-48 — AUFKLÄRUNG ZUM PLAN DER SCHEIBE 2 (KEIN BAU, daher kein Bau-Commit: die
 Aufklärung war read-only; die jsdom-Probe lief im Scratchpad, nicht im Repo; CC, 2026-09-26,
@@ -1209,6 +1210,124 @@ ein zweites Idiom neben dem am Drawer festgeschriebenen, neue Tastaturlogik, und
 `tabpanel` übliche `hidden`-Attribut verbietet die Dauerregel "VERSTECKEN PER CSS-KLASSE —
 WEDER DAS HTML-ATTRIBUT hidden NOCH aria-hidden". Kandidat für das Redesign.
 
+**Vermerk P12.5-55 — ABSCHLUSS DER SCHEIBE 2 (EDITOR-GERÜST). Bau-Commit `f83ae5b`** ("feat(editor):
+linke Spalte in Reitern (Elemente, Code, Skripte)"); Doku-Commit der Scheibe `5a9769f`
+(Zuschnitt).
+(1) GEBAUT (GEMESSEN am Repo, CC, 2026-09-26): In src/components/CodeImporter.tsx der State
+    `leftTab` (Typ `LeftTab`, Startwert nach Entscheidung P12.5-50), `selectLeftTab`, die
+    Reiterleiste (`role="group"`, `aria-label="Linke Spalte"`, drei Knöpfe mit `aria-pressed`)
+    und drei Hüllen mit der Klasse `hidden` am inaktiven Reiter; `setLeftTab("elements")` in
+    `onMessage` hinter `setSelectedElementId` (Entscheidung P12.5-51); `autoCollapseOnImport`
+    und `applyZenForLoadedCode` wirken auf den Reiter; die Leertexte aus Entscheidung
+    P12.5-53. ENTFALLEN: `isInputCollapsed`, `toggleInputCollapsed` und der Akkordeon-Knopf.
+    Tests in src/components/CodeImporter.test.tsx, Block "CodeImporter — Editor-Geruest:
+    Reiter der linken Spalte (Phase 12.5, Scheibe 2)": RT1, RT1b, RT2–RT7, RT8a–RT8c,
+    RT9–RT12.
+(2) GATES (CC, 2026-09-26): `tsc --noEmit` exit 0 · `eslint` 0 Fehler, 1 vorbestehende Warnung
+    · `vitest run` 98 Dateien, 2360 Tests grün, vorher 2345 · `next build` exit 0.
+    Byte-Kontrolle am committeten Objekt: beide Dateien CR 0, NUL 0, letztes Byte ein
+    Zeilenumbruch, `i/lf`.
+(3) MUTATIONEN (CC, 2026-09-26; je volle Suite mit 2360 Tests, Rücknahme per sha256 geprüft),
+    fachlich rot:
+    MR1 (Code-Hülle ausgehängt) -> RT2 · MR2 (`key={leftTab}` am Rahmen) -> NUR RT3 · MR2b
+    (`leftTab` fliesst in `editHtml`) -> NUR RT3, erst nach der Korrektur von RT3 (unten) ·
+    MR3 (Standard immer "code") -> RT1, RT4 · MR3b (immer "elements") -> RT1b, RT8a · MR4
+    (Versteck-Bedingungen vertauscht) -> NUR RT4 · MR5 (Skripte-Hülle ausgehängt) -> RT5, erst
+    nach der Korrektur von RT5 (unten) · MR6 (Sprung in `onMessage` fehlt) -> NUR RT7 · MR7
+    (Zen-Wechsel beim Einfügen fehlt) -> NUR RT8a · MR8 (Flag der manuellen Wahl fehlt) -> NUR
+    RT8b · MR9 (Wechsel leert die Auswahl) -> NUR RT6 · MR9b (Wechsel setzt den Filter zurück)
+    -> NUR RT6 · MR10 (Warnung in der Code-Hülle) -> NUR RT9 · MR11 (Hinweistext im
+    `ActionPanel` geändert) -> RT10, RT7 (Positivkontrolle) · MR12 (⚙-Knopf in einer
+    `<section>`) -> NUR RT11 · MR13 (`applyZenForLoadedCode` setzt keinen Reiter) -> NUR RT8c.
+    KASKADE, GETRENNT GEFÜHRT: MR1 zusätzlich RT4, RT9 (Hüllen-Suche) sowie RT8a, "Text-Mapping-
+    Aenderung bei unveraendertem Code erzeugt KEIN neues srcDoc; Code-Aenderung schon (Bake)",
+    TEST 1, U2, U9, U10, SK13, SK14, SK19 (Textfeld fehlt); dazu TEST 2 als
+    REIHENFOLGE-Kaskade — isoliert grün, TEST 1 lässt eine `mockImplementationOnce` liegen
+    (Vorrat P12.5-58). MR4 zusätzlich der Test "verkraftet riesigen Input …" in
+    src/lib/detect.test.ts, `detect.ts` nicht mutiert — Vorrat P12.5-35. MR5 zusätzlich 26
+    Tests, weil die Liste bei ausgehängtem Reiter fehlt: 23 SK-Tests, RT1b, RT4, RT9 (Zählung
+    aus dem Baubericht; welche 23 der 28 SK-Tests, ist nicht festgehalten). Keiner der vier
+    Differenz-Nachweise (W1', W2', T1, T9) wurde unter irgendeiner Mutation rot.
+(4) STOPP IM BAU UND TEST-KORREKTUREN (CC, 2026-09-26; Korrektur vom ARCHITEKTEN freigegeben
+    vor dem Code-Commit):
+    · MR2b blieb im ersten Lauf GRÜN: RT3 prüfte nur den Endzustand, und die Folge Code ->
+      Skripte -> Elemente endet auf dem Startreiter, der srcdoc war dann wieder gleich.
+      KORREKTUR RT3: Knoten und srcdoc nach JEDEM Wechsel. Probe: ohne Mutation grün, unter
+      MR2b rot ("expected '<!DOCTYPE…' to be …").
+    · MR5 wurde im ersten Lauf nur über eine Kaskade rot (27 Tests: 23 SK-Tests, RT1b, RT4,
+      RT5, RT9): RT5 suchte die Überschrift der Liste VOR dem Wechsel auf "Skripte" und
+      erreichte seine trennende Prüfung nie. KORREKTUR RT5: erst `findByText("Titel")`, dann
+      umschalten, dann suchen. Probe: ohne Mutation grün, unter MR5 fachlich rot ("expected
+      <details…> to be <details…>").
+    · WIEDERHOLUNG in der vollen Suite nach der Korrektur: MR2b -> NUR RT3 (srcdoc weicht nach
+      einem Wechsel ab); MR5 -> RT5 fachlich (anderer `<details>`-Knoten), dazu die 26 aus
+      Punkt (3); MR2 als Stichprobe -> weiter NUR RT3.
+    · Die Mutationen wurden per `node` gesetzt, das die ganze Datei neu schreibt; Rücknahme
+      deshalb per Kopie aus der Sicherung, geprüft per sha256.
+(5) LIVE-TEST — GEMESSEN, OWNER, LIVE, 2026-09-26 (von CC nicht prüfbar; Browser nicht
+    übermittelt):
+    · Reiterzeile "Elemente · Code · Skripte" vorhanden; ein Bestandsprojekt öffnet mit
+      "Elemente".
+    · Regression: Vorschau-Klick markiert und zeigt die Aktionen; Listen-Klick markiert in der
+      Vorschau; "Formular auswählen" wirkt; der Vorschau-Modus feuert; Einstellungen
+      (Messen/Live) öffnen und schliessen; Kopieren und Exportieren laufen; Anlegen und
+      Löschen eines Projekts funktionieren.
+    · D1: Ein neues Projekt startet im Reiter "Code". D2: Ein Klick in die Vorschau aus "Code"
+      und aus "Skripte" springt auf "Elemente", der Eintrag ist markiert und ins Bild
+      gescrollt.
+    · Beim Wechsel erhalten: Scroll-Position der Elementliste (L-N11, beantwortet: JA; damit
+      ist die Frage "UNGEPRÜFT" aus Vermerk P12.5-48, Punkt (2), für diesen Browser
+      beantwortet), Filter, Auswahl, Scroll und Markierung im Vorschau-Rahmen, Offenzustand
+      von "Weitere Skripte".
+    · Die Bausteine-Warnung eines früheren Exports steht über den Reitern.
+    · BEFUND 1 (L-N2): Erstes Einfügen in ein neues Projekt — der Reiter springt auf
+      "Elemente", der Code kommt NICHT an. Zurück auf "Code", erneut einfügen — der Code kommt
+      an, der Reiter bleibt auf "Code" (nach manueller Wahl gewollt, RT8b). -> Scheibe 2b;
+      der Backlog-Posten "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL …" ist dorthin
+      überführt.
+    · BEFUND 2 (L-N12): Unterhalb etwa 1100 px Breite (bei 1108 px beobachtet, Screenshot)
+      verdeckt die rechte Spalte "Ungespeicherte Änderungen" und "Speichern" in der Kopfzeile
+      der Mitte. Bei 980 px stapeln sich die Spalten, dort ist alles erreichbar. -> Scheibe 2b.
+    · BEFUND 3 (L-N4): Im Reiter "Code" bleibt der Text nach Elemente -> Skripte -> Code,
+      Cursor und Fokus sind weg; Strg+Z setzt den Cursor ans Zeilenende und nimmt je Druck einen
+      Buchstaben zurück; "Ungespeicherte Änderungen" bleibt. -> in Scheibe 2b NUR geklärt.
+    · BEFUND 4 (L-N9): Der Hinweis ohne Auswahl erscheint nur, solange nie etwas gewählt wurde;
+      ein Klick ins Leere hebt eine Auswahl nicht auf. -> Backlog, Vorrat P12.5-57.
+    · OWNER-WUNSCH: Name beim Anlegen, Speichern ohne Code. -> Vorrat P12.5-56.
+(6) GRENZEN DER MESSUNG UND EINORDNUNG:
+    · BEFUND 2 IST NICHT VON DER SCHEIBE ERZEUGT — ABGELEITET am Repo (CC, 2026-09-26): Die
+      Klassen der Drei-Zonen-Zeile, der linken Spalte, der Kopfzeile der Mitte
+      (src/components/CodeImporter.tsx) und des `<aside>` im `ActionPanel` stehen auf
+      `f83ae5b^` zeichengleich (`git show`). Live vor dem Bau-Commit gemessen ist es nicht.
+    · Die Anleitung fragte in L-N12 nach Breiten unter 1024 px; der Befund liegt darüber.
+    · BEFUND 3: RT2 prüft `selectionStart` in jsdom; dass live der Fokus mit dem Klick auf
+      einen Reiter-Knopf die Textarea verlässt, ist ABGELEITET, nicht gemessen. Ob Strg+Z vor
+      dem Bau-Commit anders wirkte, ist nicht gemessen.
+    · Kein Neu-Veröffentlichen nötig: Der ausgelieferte Text ist unverändert (`generate.ts`
+      nicht im Bau-Commit).
+(7) VERDICHTUNG DES ZUSCHNITTS (CC, 2026-09-26) — GESTRICHEN, weil mit der Scheibe abgelaufen,
+    mit seinem Inhalt:
+    · ZIEL: "Die linke Spalte steht in drei Reitern — "Elemente", "Code", "Skripte" —, die
+      inaktiven per CSS-Klasse `hidden` versteckt, nie ausgehängt; die Eigene-Bausteine-Warnung
+      steht über den Reitern; die Zen-Regeln wirken auf den Reiter; ein Klick in die Vorschau
+      springt auf "Elemente". Die rechte Spalte (`ActionPanel`) ist bereits strikt kontextuell
+      und bleibt unverändert; die globalen Einstellungen liegen seit Phase 10 in Kopfleiste und
+      Drawer. NUR Struktur, keine Optik." — erfüllt, Punkte (1) und (5).
+    · SCOPE DES BAUS: "src/components/CodeImporter.tsx und src/components/CodeImporter.test.tsx,
+      sonst nichts." — eingehalten (Bau-Commit `f83ae5b`, zwei Dateien).
+    GEBLIEBEN: Invarianten (I1)–(I5) mit Grund · Vermerk P12.5-48 · Entscheidungen P12.5-49 bis
+    P12.5-54 · Vorrat P12.5-56.
+
+**Vorrat P12.5-56 — OWNER-WUNSCH: EIN PROJEKT BEIM ANLEGEN BENENNEN UND AUCH OHNE CODE SPEICHERN
+KÖNNEN.** Heute (OWNER, LIVE, 2026-09-26; Fundstellen GELESEN am Repo, CC, 2026-09-26): Ein
+neues Projekt heisst "Unbenanntes Projekt" (`activeName` in src/components/CodeImporter.tsx;
+fester Name im Insert-Zweig von `saveProject`, src/app/projects/actions.ts); "Speichern" ist
+ohne Code gesperrt (`disabled` mit `code.trim() === ""` am Knopf in der Kopfzeile der Mitte);
+Umbenennen geht erst nach dem Speichern über den Stift im Projekte-Menü (`renameProject`).
+PROVENIENZ: OWNER-WUNSCH 2026-09-26, geäussert im Live-Test der Scheibe 2. TRIGGER: das Ergebnis
+von G3 im Plan der Scheibe 2b (Fakten und Preis, keine Empfehlung); danach entscheidet der
+Owner, ob und wo es gebaut wird.
+
 ## Register der Phase 12.5
 
 Je Eintrag Zieldatei und wörtlicher Titelanfang; Titel ohne Überschriften-Marke.
@@ -1241,15 +1360,22 @@ Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) — drei Befunde der ersten Au
 P12.5-10, P12.5-11, P12.5-12; Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) — Scheibe 1b,
 ein Oberflächen-Hinweis": P12.5-30; Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) —
 Scheibe 1b, ein flackernder Test": P12.5-35; Abschnitt "Aus Phase 12.5 vorgemerkt
-(2026-09-26) — Scheibe 1c, ein liegengebliebener Spion": P12.5-46.
+(2026-09-26) — Scheibe 1c, ein liegengebliebener Spion": P12.5-46; Abschnitt "Aus Phase 12.5
+vorgemerkt (2026-09-26) — Scheibe 2, zwei Befunde": P12.5-57, P12.5-58.
+
+IN DIESE PHASE ÜBERFÜHRT (docs/claude-history/backlog-polish.md): "ZEN-MODUS: ERSTES EINFÜGEN
+SCHLIESST DAS PANEL, OHNE DASS DER CODE LANDET" — in Scheibe 2b (Vermerk P12.5-55, Punkt (5),
+Befund 1).
 
 ## Nächster Schritt der Phase 12.5
 
 Scheibe 1 ist abgeschlossen (Vermerk P12.5-20), Scheibe 1b ebenso (Vermerk P12.5-36), Scheibe
-1c ebenso (Vermerk P12.5-45). Die Owner-Entscheidung zum Ort von Vorrat P12.5-29 ist gefallen
-(Entscheidung P12.5-47). Danach, in dieser Reihenfolge:
-(1) Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7) — Plan freigegeben am 2026-09-26,
-    Zuschnitt im Abschnitt "Scheibe 2 — Editor-Gerüst".
+1c ebenso (Vermerk P12.5-45), Scheibe 2 ebenso (Vermerk P12.5-55). Die Owner-Entscheidung zum
+Ort von Vorrat P12.5-29 ist gefallen (Entscheidung P12.5-47). Danach, in dieser Reihenfolge:
+(1) Scheibe 2b: Befund 1 (erstes Einfügen) und Befund 2 (verdeckte Kopfzeile der Mitte) aus
+    Vermerk P12.5-55, Punkt (5), beheben; Befund 3 und den Owner-Wunsch (Vorrat P12.5-56) NUR
+    klären. Unter den Invarianten (I1)–(I5) der Scheibe 2. PROVENIENZ: ARCHITEKT, Plan-Auftrag
+    2026-09-26; der Plan ist in Arbeit, noch nicht freigegeben.
 (2) Das Phasenende 12.5 mit Neuzuschnitt (Entscheidung P12.5-47): 12.5 schliesst mit den
     Klick- und Formular-Korrekturen und dem Editor-Gerüst; die Medien bekommen eine eigene
     Roadmap-Zeile nach Phase 13, die Entscheidungen P12.5-1 bis P12.5-6 ziehen mit. Name des

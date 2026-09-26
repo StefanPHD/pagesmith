@@ -391,7 +391,8 @@ miterledigen, sondern gebündelt abarbeiten.
   9b-1-Befund kam. Fix wäre eine reine Funktion in variant.ts, die beide
   aufrufen: Code-Commit, keine Doku-Sache.
 - ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL, OHNE DASS DER CODE LANDET
-  (CodeImporter.tsx, gemeldet, Trigger: eilt nicht, low priority): Beim
+  (CodeImporter.tsx, gemeldet, Trigger: Scheibe 2b der Phase 12.5 — ÜBERFÜHRT am 2026-09-26;
+  der frühere Trigger "eilt nicht, low priority" ist ERSETZT, nicht gestempelt): Beim
   ERSTEN Einfügen von Code nach Import schliesst sich das Code-Panel, der
   Code landet aber NICHT im Feld; erst ein ZWEITES Einfügen übernimmt den
   Code, das Panel bleibt dann aber offen.
@@ -439,6 +440,14 @@ miterledigen, sondern gebündelt abarbeiten.
   Er ist weder behoben noch verschärft. In Punkt (3) oben tritt `leftTab` an die Stelle von
   `isInputCollapsed`. Beobachtungsdaten liefert der Live-Schritt L-N2 der Scheibe 2 (erstes
   Einfügen in ein leeres Projekt: kommt der Code an?).
+  LIVE BEOBACHTET 2026-09-26 (OWNER, LIVE, Schritt L-N2 der Scheibe 2 der Phase 12.5, nach
+  Bau-Commit `f83ae5b`): Erstes Einfügen in ein neues Projekt — der Reiter springt auf
+  "Elemente", der Code kommt NICHT an. Zurück auf "Code", erneut einfügen — der Code kommt an,
+  der Reiter bleibt auf "Code". Damit ist das Symptom mit Reitern REPRODUZIERT, beide Hälften.
+  Nicht erhoben: der Eingabeweg (Punkt (1)), die Reihenfolge (Punkt (2)) und der Zustand
+  (Punkt (3)) der Aufgabe oben; die zweite Hälfte entspricht der Gegenprobe aus Punkt (4) nur
+  dem Symptom nach. Fundstelle: Vermerk P12.5-55, Punkt (5), Befund 1, der Phase 12.5. Die
+  Klärung der Ursache und der Fix gehören zu Scheibe 2b.
 - ROHES NUL-BYTE IN mappings.ts (Trigger: bei Gelegenheit prüfen, keine
   bekannte Auswirkung): src/lib/mappings.ts enthält bei Offset ~6974 ein
   rohes NUL-Byte (macht die Datei für grep ohne -a-Flag "binär"). Herkunft
@@ -6189,3 +6198,34 @@ FIX-VORSCHLAG über das Benannte hinaus.
   zusätzlicher roter Test, der wie ein Treffer aussieht), nicht still. Ob weitere Tests
   dasselbe Muster tragen, ist nicht erhoben. TRIGGER: die nächste Mutationsrunde, in der eine
   Mutation diesen Test vor `mockRestore` brechen lässt, oder die nächste Arbeit an diesem Test.
+
+## Aus Phase 12.5 vorgemerkt (2026-09-26) — Scheibe 2, zwei Befunde
+
+Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummern setzen die Reihe `P12.5-n` jener
+Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+FIX-VORSCHLAG über das Benannte hinaus.
+
+- **Vorrat P12.5-57 — EINE AUSWAHL LÄSST SICH NICHT AUFHEBEN**
+  GEMESSEN (OWNER, LIVE, 2026-09-26, Schritt L-N9 der Scheibe 2 der Phase 12.5): Der Hinweis
+  ohne Auswahl in der rechten Spalte erscheint nur, solange nie etwas gewählt wurde; ein Klick
+  ins Leere hebt eine Auswahl nicht auf. GELESEN am Repo (CC, 2026-09-26): Die Editor-Brücke
+  (`LISTENER_SCRIPT`, src/lib/detect.ts) kehrt bei einem Klick ohne markiertes Element vor dem
+  `postMessage` zurück (`if (!el) return;`); `ELEMENT_CLICKED` trägt immer eine Kennung.
+  Fundstelle: Vermerk P12.5-55, Punkt (5), Befund 4, der Phase 12.5. Vorgemerkt für die
+  Neugestaltung der Oberfläche (ARCHITEKT, Abschluss-Auftrag der Scheibe 2, 2026-09-26).
+  TRIGGER: das UI-Redesign.
+
+- **Vorrat P12.5-58 — "TEST 1: saveProject WIRFT …" LÄSST EINE `mockImplementationOnce`
+  LIEGEN, WENN ER VOR DEM SPEICHERKLICK FÄLLT**
+  Im Block "CodeImporter — safeAction: geworfene Server-Action-Fehler"
+  (src/components/CodeImporter.test.tsx) setzen "TEST 1: saveProject WIRFT -> Meldung, Button
+  wieder klickbar, dirty bleibt" und "TEST 2 (Invariante iii): sofortiger zweiter Versuch
+  gelingt, ohne Reload" je `saveProject.mockImplementationOnce(BOOM)`. Fällt TEST 1 vor dem
+  Klick auf "Speichern", bleibt seine Implementierung liegen, und TEST 2 fällt mit;
+  `vi.clearAllMocks` leert keine Implementierungen. GEMESSEN (CC, 2026-09-26, Mutationsrunde
+  der Scheibe 2 der Phase 12.5): unter der Mutation MR1 fiel TEST 2 in der vollen Suite,
+  isoliert war er grün. Fundstelle: Vermerk P12.5-55, Punkt (3), der Phase 12.5. Dieselbe
+  Klasse wie Vorrat P12.5-46 (ein liegengebliebener Mock verfälscht Mutationsläufe LAUT, nicht
+  still). Die Namen "TEST 1" und "TEST 2" stehen in derselben Datei ein zweites Mal, in einem
+  anderen Block. TRIGGER: die nächste Mutationsrunde, in der eine Mutation TEST 1 vor dem
+  Speicherklick brechen lässt, oder die nächste Arbeit an diesem Block.

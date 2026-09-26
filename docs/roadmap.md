@@ -2415,6 +2415,14 @@ liegen beide hier und finden einander.
       PROVENIENZ: OWNER-ENTSCHEIDUNGEN 2026-09-25; Wortlaut, Gründe und Fundstellen stehen in
       der Standdatei (Entscheidungen P12.5-1 bis P12.5-7, Vermerke P12.5-8 und P12.5-9 der Phase
       12.5).
+      NACHGETRAGEN 2026-09-26 — NEUZUSCHNITT BEIM PHASENENDE ANGEKÜNDIGT, DIE MEDIEN-STUFEN
+      WANDERN (OWNER 2026-09-26, Verfahren ARCHITEKT 2026-09-26). Phase 13 wird vor Medien
+      Stufe 1 gezogen. Das Editor-Gerüst läuft noch in dieser Phase; danach schliesst sie mit den
+      Klick- und Formular-Korrekturen (Scheiben 1, 1b, 1c) und dem Editor-Gerüst. Die drei
+      Medien-Stufen bekommen eine eigene Zeile NACH Phase 13; die Entscheidungen P12.5-1 bis
+      P12.5-6 ziehen mit. Name des Archivs und Nummer der Medien-Zeile entscheidet der Owner beim
+      Phasenende. Der Text dieser Zeile oben bleibt bis dahin stehen. Wortlaut und Grund:
+      Entscheidung P12.5-47 der Phase 12.5.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.
@@ -2456,6 +2464,14 @@ liegen beide hier und finden einander.
       WIRD: Sieht sie kundeneigene Endpunkte vor, ist sie der Trigger (i) des
       Postens zur Eindeutigkeit (project_id, target) auf project_secrets
       (s. "## Offene Punkte").
+      NACHGETRAGEN 2026-09-26 — VORGEZOGEN VOR DIE MEDIEN (OWNER 2026-09-26). Diese Phase
+      folgt auf das Phasenende 12.5 und kommt vor Medien Stufe 1. Ihre ERSTE Scheibe ist die
+      Danke-Seite nach dem Absenden eines Formulars (Vorrat P12.5-29 der Phase 12.5). Grund: Das
+      Kernversprechen ist "tote KI-Seiten funktional machen"; ein Lead-Formular ohne
+      Datenspeicherung ist nicht funktional, eine Seite mit altem Bild schon. Verworfen: die
+      Weiterleitung allein vorab, nur für Formulare ohne Ziel — mit Danke-Seite wirkte ein
+      Formular funktionsfähig, während die Leads nirgends gespeichert werden. Wortlaut:
+      Entscheidung P12.5-47 der Phase 12.5. Der Zuschnitt beginnt mit einer ersten Aufklärung.
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in

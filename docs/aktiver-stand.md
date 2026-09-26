@@ -23,6 +23,7 @@ P12.5-1, Vermerk P12.5-8 …) — dieselbe Form wie in der Phase 11.9.
 - Scheibe 1 — Schatten-Korrektur
 - Scheibe 1b — Formular-Track am Abschicken
 - Scheibe 1c — Absende-Buttons ohne eigene Aktionen
+- Owner-Entscheidung zur Reihenfolge vom 2026-09-26
 - Register der Phase 12.5
 - Nächster Schritt der Phase 12.5
 
@@ -660,6 +661,13 @@ OWNER-EINWAND (OWNER-AUSSAGE 2026-09-26, übermittelt im Auftrag der Abschluss-R
 1c): Nutzer wollen die Danke-Seite im Tool eintragen, nicht im Formular-Code. OFFEN: die
 Owner-Entscheidung, ob dieser Vorrat vorgezogen wird oder mit Phase 13 kommt (Nächster Schritt
 der Phase 12.5, Punkt (1)). Bis dahin gilt der Trigger oben.
+ENTSCHIEDEN AM 2026-09-26 (Entscheidung P12.5-47) — NEUER TRIGGER: die erste Scheibe der
+vorgezogenen Phase 13; der Vorrat IST diese Scheibe. Der Trigger oben ("der Zuschnitt der Phase
+13") ist damit ersetzt, nicht erweitert. VERWORFEN: Option A, die Weiterleitung allein jetzt,
+nur für Formulare ohne Ziel — ein Formular ohne Datenweiterleitung speichert die Eingaben
+nirgends, und mit Danke-Seite wirkte es funktionsfähig, während Leads verschwinden
+(widerspricht Entscheidung P12.5-37, Grundsatz "nur anbieten, was wirkt"). PROVENIENZ:
+OWNER-ENTSCHEIDUNG 2026-09-26.
 
 **Vermerk P12.5-36 — ABSCHLUSS DER SCHEIBE 1b (FORMULAR-TRACK AM ABSCHICKEN). Bau-Commit
 `0530c4b`** ("fix(generate): Formular-Track zaehlt beim Abschicken, nicht beim Klick");
@@ -1054,6 +1062,28 @@ der Scheibe `9f43fc1` (Entscheidungen).
     GEBLIEBEN: Entscheidungen P12.5-37, P12.5-39 bis P12.5-43, P12.5-44 (verdichtet) ·
     Invarianten (I2)–(I4) mit Wächtern und Grund · Vermerk P12.5-38.
 
+## Owner-Entscheidung zur Reihenfolge vom 2026-09-26
+
+**Entscheidung P12.5-47 — PHASE 13 (FORMULAR-DATEN, ESP-WEBHOOKS) WIRD VOR MEDIEN STUFE 1
+GEZOGEN; DIE DANKE-SEITE NACH DEM ABSENDEN (VORRAT P12.5-29) WIRD IHRE ERSTE SCHEIBE.**
+VERWORFEN: die Weiterleitung allein jetzt, nur für Formulare ohne Ziel (Option A). GRUND DER
+VERWERFUNG: Ein Formular ohne Datenweiterleitung speichert die Eingaben nirgends; mit
+Danke-Seite wirkte es funktionsfähig, während Leads verschwinden — das widerspricht
+Entscheidung P12.5-37 und dem Grundsatz "nur anbieten, was wirkt". GRUND FÜR DIE GEWÄHLTE
+OPTION (C): Das Kernversprechen ist "tote KI-Seiten funktional machen"; ein Lead-Formular ohne
+Datenspeicherung ist nicht funktional, eine Seite mit altem Bild schon.
+VERFAHREN (ARCHITEKT, 2026-09-26): Scheibe 2 (Editor-Gerüst, Entscheidung P12.5-7) läuft noch in
+Phase 12.5. Danach das Phasenende 12.5 mit Neuzuschnitt: 12.5 schliesst mit den Klick- und
+Formular-Korrekturen (Scheiben 1, 1b, 1c) und dem Editor-Gerüst; die Medien bekommen eine eigene
+Roadmap-Zeile NACH Phase 13, die Entscheidungen P12.5-1 bis P12.5-6 ziehen mit. Den Namen des
+Archivs und die Nummer der Medien-Zeile entscheidet der Owner beim Phasenende. Danach Phase 13
+mit erster Aufklärung.
+VERHÄLTNIS ZU ENTSCHEIDUNG P12.5-1: Deren Bauplan "Schatten-Korrektur -> Medien Stufe 1 ->
+Rich-Text (Phase 12)" gilt ab hier mit Phase 13 vor Medien Stufe 1; der Satz dort bleibt als
+Zeitdokument stehen.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-26, übermittelt im Auftrag der Doku-Runde desselben
+Tages; das Verfahren ARCHITEKT 2026-09-26.
+
 ## Register der Phase 12.5
 
 Je Eintrag Zieldatei und wörtlicher Titelanfang; Titel ohne Überschriften-Marke.
@@ -1091,8 +1121,13 @@ Scheibe 1b, ein flackernder Test": P12.5-35; Abschnitt "Aus Phase 12.5 vorgemerk
 ## Nächster Schritt der Phase 12.5
 
 Scheibe 1 ist abgeschlossen (Vermerk P12.5-20), Scheibe 1b ebenso (Vermerk P12.5-36), Scheibe
-1c ebenso (Vermerk P12.5-45). Danach, in dieser Reihenfolge:
-(1) Die Owner-Entscheidung zum Ort von Vorrat P12.5-29 (Weiterleitung nach dem Abschicken):
-    vorziehen oder mit Phase 13. Der Owner-Einwand vom 2026-09-26 steht am Vorrat.
-(2) Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7).
-Diese Datei entwirft keine von beiden.
+1c ebenso (Vermerk P12.5-45). Die Owner-Entscheidung zum Ort von Vorrat P12.5-29 ist gefallen
+(Entscheidung P12.5-47). Danach, in dieser Reihenfolge:
+(1) Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7).
+(2) Das Phasenende 12.5 mit Neuzuschnitt (Entscheidung P12.5-47): 12.5 schliesst mit den
+    Klick- und Formular-Korrekturen und dem Editor-Gerüst; die Medien bekommen eine eigene
+    Roadmap-Zeile nach Phase 13, die Entscheidungen P12.5-1 bis P12.5-6 ziehen mit. Name des
+    Archivs und Nummer der Medien-Zeile entscheidet der Owner.
+(3) Phase 13, erste Aufklärung; ihre erste Scheibe ist die Danke-Seite nach dem Absenden
+    (Vorrat P12.5-29).
+Diese Datei entwirft keinen der drei Schritte.

@@ -24,6 +24,7 @@ P12.5-1, Vermerk P12.5-8 …) — dieselbe Form wie in der Phase 11.9.
 - Scheibe 1b — Formular-Track am Abschicken
 - Scheibe 1c — Absende-Buttons ohne eigene Aktionen
 - Owner-Entscheidung zur Reihenfolge vom 2026-09-26
+- Scheibe 2 — Editor-Gerüst
 - Register der Phase 12.5
 - Nächster Schritt der Phase 12.5
 
@@ -1084,6 +1085,130 @@ Zeitdokument stehen.
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-26, übermittelt im Auftrag der Doku-Runde desselben
 Tages; das Verfahren ARCHITEKT 2026-09-26.
 
+## Scheibe 2 — Editor-Gerüst
+
+**ZIEL (Entscheidung P12.5-7; Plan freigegeben 2026-09-26):** Die linke Spalte steht in drei
+Reitern — "Elemente", "Code", "Skripte" —, die inaktiven per CSS-Klasse `hidden` versteckt,
+nie ausgehängt; die Eigene-Bausteine-Warnung steht über den Reitern; die Zen-Regeln wirken auf
+den Reiter; ein Klick in die Vorschau springt auf "Elemente". Die rechte Spalte (`ActionPanel`)
+ist bereits strikt kontextuell und bleibt unverändert; die globalen Einstellungen liegen seit
+Phase 10 in Kopfleiste und Drawer. NUR Struktur, keine Optik. SCOPE DES BAUS:
+src/components/CodeImporter.tsx und src/components/CodeImporter.test.tsx, sonst nichts.
+
+**INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-26, wörtlich):
+- (I1) Keine Änderung an Erkennung, Mappings, Veröffentlichen, Export oder Laufzeit:
+  generate.ts, detect.ts, mappings.ts, alles unter src/lib/tracking/, src/lib/capi/,
+  ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts, actions.ts bleiben unberührt.
+- (I2) Ein Tab-Wechsel lädt den Vorschau-Rahmen nicht neu und verwirft keinen ungespeicherten
+  Code, keine Auswahl, keinen Filter.
+- (I3) Jedes heutige Bedienelement bleibt erreichbar, höchstens einen Klick weiter.
+- (I4) Keine neue Abhängigkeit.
+- (I5) Keine Test-Prüfung fällt weg; ein Test darf einen Tab öffnen, nicht eine Aussage
+  verlieren.
+
+**Vermerk P12.5-48 — AUFKLÄRUNG ZUM PLAN DER SCHEIBE 2 (KEIN BAU, daher kein Bau-Commit: die
+Aufklärung war read-only; die jsdom-Probe lief im Scratchpad, nicht im Repo; CC, 2026-09-26,
+HEAD `69df9f0`).** GEMESSEN am Repo, soweit nicht anders gekennzeichnet.
+(1) INVENTUR (`CodeImporter`, src/components/CodeImporter.tsx): Kopfleiste — Projekte-Menü
+    (Wechseln, Umbenennen, Löschen), "Aktiv:" mit Dirty-Punkt, "+ Neues Projekt", Variante A/B
+    bzw. "+ Variante B" samt `variantError`, "⚙ Einstellungen", Orphan-Zähltext,
+    Kopier-Rückmeldung, Kopieren, Exportieren. Darunter das Testmodus-Banner, der Drawer
+    (fixed, nur bei `isSettingsOpen`: Reiter Messen/Live, `MeasureView`, `PublishView` mit
+    Veröffentlichen, Domains, Einwilligung, Variante B) und die Orphan-Sektion — alles global.
+    Linke Spalte (Zone 1): Akkordeon mit Textarea, Upload/Drop und `uploadError`;
+    Eigene-Bausteine-Warnung; Zähler; Filter-Pillen; Elementliste; "Skripte und Tags im Code".
+    Mitte (Zone 2): Editieren/Vorschau, `saveError`, "Ungespeicherte Änderungen", Speichern,
+    die Rahmen `preview` (immer montiert) und `functional-preview`. Rechte Spalte:
+    `ActionPanel` — ohne Auswahl die Überschrift "Aktion" und "Wähle ein Element in der
+    Vorschau, um eine Aktion zu verknüpfen.", sonst `ElementActions` (key = ps-ID). Unter dem
+    `ActionPanel` steht nichts: es ist das letzte Kind der Drei-Zonen-Zeile, src/app/page.tsx
+    rendert nach `CodeImporter` nichts. Einziges globales Bedienelement in einer Spalte:
+    Speichern im Kopf der MITTE.
+(2) ZUSTAND: `code`, `debouncedCode`, `savedCode`, `mappings`, `settings`,
+    `selectedElementId`, `activeFilter`, `uploadError`, `previewMode` und die Zen-Flags leben
+    im Container und überleben auch ein Aushängen der Spaltenteile — der ungespeicherte Code
+    ginge beim Aushängen NICHT verloren; ein Test auf den Wert allein trennt deshalb Verstecken
+    nicht von Aushängen. Am DOM-KNOTEN hängen: Cursor, Undo-Verlauf und Scroll der Textarea;
+    die Scroll-Position der Elementliste und `activeItemRef`; der Offenzustand der
+    `<details>` der Skripte-Liste (lebt bewusst im DOM, Entscheidung P11.11-41, Punkt (G)).
+    UNGEPRÜFT: ob ein Browser die Scroll-Position eines Elements mit `display:none` behält.
+(3) RAHMEN-NEULADEN: zwei Wege — der `srcDoc`-Wert ändert sich (Memo `editHtml`,
+    Abhängigkeiten `[previewHtml, activeVariant]`), oder der Rahmen wird neu montiert (`key`
+    oder Struktur der Vorfahren). Ein Reiter-State, der in kein Memo eingeht und den Baum
+    oberhalb des Rahmens nicht verändert, lädt ihn nicht neu; `annotateAndDetect` hängt nur an
+    `debouncedCode`, ein Wechsel kostet keinen Parse.
+(4) TESTS: CodeImporter.test.tsx — keine Prüfung setzt Sichtbarkeit voraus; per Klasse
+    versteckte Teilbäume bleiben im DOM und für `getByRole` sichtbar (belegt durch T1 des
+    Blocks 10b-1). Das Textfeld greifen die Platzhalter-Abfragen und
+    `document.querySelector("textarea")` (U2 und zwei Helfer), die Liste
+    `findByText("Erkannte Elemente (2)")` und die Listen-Klicks, die Skripte-Liste der Block
+    11.11b/c/e über die Überschrift "Skripte und Tags im Code". Der Zen-Modus ist in KEINEM
+    Test gedeckt (Achse `Code anzeigen|Dein Code|aria-expanded` über alle Testdateien: 0);
+    `scrollIntoView` ist nur gemockt. SK10 (`toContain("Skripte")`) wird künftig auch vom
+    Reiter-Namen erfüllt. Keine Kollision der Namen "Elemente", "Code", "Skripte" mit den
+    Regex-Namen der Tests (CodeImporter.test.tsx und TargetCard.test.tsx) und keine mit den
+    Abwesenheits-Prüfungen `/%/`, `/gerettet/i`, `/mindestens/`, `/NaN/`.
+(5) IDIOM: in src/ 0 × `role="tablist"`/`role="tab"`; viermal `role="group"` +
+    `aria-pressed` (Variante, Drawer-"Bereich", Filter-Pillen, Editieren/Vorschau). Der
+    Kommentar an der Drawer-Reiterzeile verlangt, dass nicht zwei Umschalt-Idiome auf einer
+    Oberfläche stehen. Keine Pfeiltasten-Navigation im Projekt.
+(6) SCROLL UND FOKUS ÜBER SPALTEN: Der Auswahl-Effekt ruft
+    `activeItemRef.current?.scrollIntoView` bei jeder Auswahl — bei versteckter Liste
+    wirkungslos. `SET_SELECTED_ID` und `IFRAME_READY` betreffen den Rahmen der Mitte. Kein
+    `.focus()` über Spalten; `autoFocus` nur im Umbenennen-Feld und in drei Formularen des
+    `ActionPanel`.
+(7) PROBE ZU `e.source` (GEMESSEN, CC, 2026-09-26, reines jsdom 29.1.1 im Scratchpad,
+    AUSSERHALB von vitest): Ein `MessageEvent` mit `source: iframe.contentWindow` kommt mit
+    `e.source === contentWindow` an; Gegenprobe mit dem Fenster selbst als Quelle: false. In
+    der Testumgebung im Bau zu bestätigen.
+(8) STOPP-BEFUND — KOLLISION MIT EINEM DOKUMENT UND MIT KOMMENTAREN:
+    docs/claude-history/phase-4.5-editor-politur.md, Abschnitt B: "Die Liste der erkannten
+    Elemente bleibt IMMER sichtbar — sie ist das Arbeitswerkzeug des Marketers, nur der rohe
+    Code ist die Ablenkung" und "EIN Mechanismus, keine zwei konkurrierenden Pfeile";
+    dasselbe in den Kommentaren von `CodeImporter` an Zone 1 und am Block "(3) Erkannte
+    Elemente". Mit Reitern ist die Liste bei offenem "Code" oder "Skripte" nicht sichtbar.
+    Entschieden in Entscheidung P12.5-49.
+(9) DER BACKLOG-POSTEN "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL …" nennt
+    `isInputCollapsed` in seiner Reproduktions-Aufgabe; Nachtrag dort vom 2026-09-26.
+
+PROVENIENZ DER ENTSCHEIDUNGEN P12.5-49 BIS P12.5-54: ARCHITEKT, Bau-Auftrag 2026-09-26, zum
+Plan der Scheibe 2 (vorgelegt von CC, Buchstaben wie im Auftrag); P12.5-49 zusätzlich
+OWNER-ENTSCHEIDUNG (Empfehlung des Architekten, vom Owner mit Weitergabe des Auftrags
+angenommen).
+
+**Entscheidung P12.5-49 ((K)) — E7 LÖST DEN SATZ "DIE LISTE DER ERKANNTEN ELEMENTE BLEIBT
+IMMER SICHTBAR" AB** (Phase 4.5). Sein ZWECK bleibt: die Liste als Arbeitswerkzeug, getragen
+durch den Standard-Reiter "Elemente", den Sprung bei Klick in die Vorschau und den Sprung nach
+dem Einfügen. Verloren geht allein die Sichtbarkeit der Liste während der Arbeit im Code oder
+in den Skripten. GRUND: Owner-Befund — die Spalten werden durch Stapeln zu langen
+Scrolllisten. Das Archiv phase-4.5-editor-politur.md bleibt Zeitdokument; die Kommentare in
+src/components/CodeImporter.tsx werden im Bau-Commit neu gefasst.
+
+**Entscheidung P12.5-50 ((D1)) — STANDARD-REITER:** "Elemente" bei einem Projekt mit Code,
+"Code" bei leerem Projekt. GRUND: die Zen-Regel übertragen — ein leeres Projekt muss sofort
+importierbar sein. VERWORFEN: immer "Elemente" (ein leeres Projekt bräuchte einen Klick mehr).
+
+**Entscheidung P12.5-51 ((D2)) — DER SPRUNG AUF "ELEMENTE" GESCHIEHT ALLEIN BEI
+`ELEMENT_CLICKED`,** im selben Handler wie `setSelectedElementId`. GRUND: Beides landet in
+einem Render-Durchlauf, die Liste ist beim Auswahl-Effekt sichtbar und das Mitscrollen greift.
+NICHT bei Zuweisungen aus der rechten Spalte oder bei "Formular auswählen" — dort arbeitet der
+Nutzer gerade.
+
+**Entscheidung P12.5-52 ((D3)) — SPEICHERN BLEIBT IM KOPF DER MITTE.** GRUND: es liegt nicht in
+der linken oder rechten Spalte; ein Umzug verschöbe die Dokumentreihenfolge des zentralen
+Fehlerkanals `span.truncate.text-red-600` und vier Testkommentare. Ob der Drawer den Knopf
+verdeckt, ist ABGELEITET, nicht gemessen.
+
+**Entscheidung P12.5-53 ((D4)) — LEERTEXTE:** Elemente ohne Code: "Noch nichts erkannt – füge im
+Reiter Code deinen HTML-Code ein." (der bisherige Text "füge oben Code ein" wird mit den Reitern
+unwahr). Skripte ohne Code: "Noch kein Code."
+
+**Entscheidung P12.5-54 — DAS UMSCHALT-IDIOM DES PROJEKTS GILT (`role="group"`, `aria-label`,
+`aria-pressed`); V1 IST VERWORFEN** (Rollen `tablist`/`tab`/`tabpanel` mit Pfeiltasten). GRUND:
+ein zweites Idiom neben dem am Drawer festgeschriebenen, neue Tastaturlogik, und das bei
+`tabpanel` übliche `hidden`-Attribut verbietet die Dauerregel "VERSTECKEN PER CSS-KLASSE —
+WEDER DAS HTML-ATTRIBUT hidden NOCH aria-hidden". Kandidat für das Redesign.
+
 ## Register der Phase 12.5
 
 Je Eintrag Zieldatei und wörtlicher Titelanfang; Titel ohne Überschriften-Marke.
@@ -1123,7 +1248,8 @@ Scheibe 1b, ein flackernder Test": P12.5-35; Abschnitt "Aus Phase 12.5 vorgemerk
 Scheibe 1 ist abgeschlossen (Vermerk P12.5-20), Scheibe 1b ebenso (Vermerk P12.5-36), Scheibe
 1c ebenso (Vermerk P12.5-45). Die Owner-Entscheidung zum Ort von Vorrat P12.5-29 ist gefallen
 (Entscheidung P12.5-47). Danach, in dieser Reihenfolge:
-(1) Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7).
+(1) Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7) — Plan freigegeben am 2026-09-26,
+    Zuschnitt im Abschnitt "Scheibe 2 — Editor-Gerüst".
 (2) Das Phasenende 12.5 mit Neuzuschnitt (Entscheidung P12.5-47): 12.5 schliesst mit den
     Klick- und Formular-Korrekturen und dem Editor-Gerüst; die Medien bekommen eine eigene
     Roadmap-Zeile nach Phase 13, die Entscheidungen P12.5-1 bis P12.5-6 ziehen mit. Name des

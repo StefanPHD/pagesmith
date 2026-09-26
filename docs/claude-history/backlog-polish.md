@@ -428,6 +428,17 @@ miterledigen, sondern gebündelt abarbeiten.
       als Ganzes.
   ERST DANACH ist entscheidbar, ob der Fix am Collapse-Zeitpunkt, am kontrollierten
   Feld oder an beidem ansetzt.
+  NACHTRAG 2026-09-26 (Phase 12.5, Scheibe 2, Editor-Gerüst; Vermerk P12.5-48 der Phase
+  12.5): `isInputCollapsed` und `toggleInputCollapsed` ENTFALLEN mit Scheibe 2; das
+  Akkordeon wird durch den Reiter "Code" der linken Spalte ersetzt (State `leftTab` in
+  src/components/CodeImporter.tsx). `userExpandedManually`, `autoCollapseOnImport` und
+  `applyZenForLoadedCode` bleiben unter diesem Namen. Der vermutete Mechanismus WANDERT
+  UNVERÄNDERT auf den Reiterwechsel: `autoCollapseOnImport` schaltet weiter aus dem
+  onPaste-Handler, also vor dem onChange-Commit, und versteckt das weiterhin gemountete
+  Textfeld per Klasse — jetzt durch den Wechsel auf "Elemente" statt durch das Einklappen.
+  Er ist weder behoben noch verschärft. In Punkt (3) oben tritt `leftTab` an die Stelle von
+  `isInputCollapsed`. Beobachtungsdaten liefert der Live-Schritt L-N2 der Scheibe 2 (erstes
+  Einfügen in ein leeres Projekt: kommt der Code an?).
 - ROHES NUL-BYTE IN mappings.ts (Trigger: bei Gelegenheit prüfen, keine
   bekannte Auswirkung): src/lib/mappings.ts enthält bei Offset ~6974 ein
   rohes NUL-Byte (macht die Datei für grep ohne -a-Flag "binär"). Herkunft

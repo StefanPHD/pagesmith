@@ -775,7 +775,8 @@ Doku-Commits der Scheibe `625712f` (Formular-Befund, Zuschnitt), `fcb0969` (Ents
 **ZIEL** (Entscheidung P12.5-37; Befund: Vermerk P12.5-36, Punkt (5)): Ein Absende-Button in
 einem Formular trägt keine eigenen Aktionen — weder im `ActionPanel` noch zur Laufzeit.
 Aktionen, Events und Weiterleitungen eines Formulars werden am `<form>` eingestellt. Der
-PLAN FOLGT (Stufe 1); gebaut wird nach seiner Freigabe.
+Plan (Stufe 1) ist vorgelegt und am 2026-09-25 freigegeben, mit den Entscheidungen P12.5-39
+bis P12.5-44; Aufklärung: Vermerk P12.5-38.
 
 **Entscheidung P12.5-37 — ABSENDE-BUTTONS IN EINEM FORMULAR TRAGEN KEINE EIGENEN AKTIONEN.**
 Das `ActionPanel` zeigt bei einem Absende-Button KEINE Aktions-Kacheln, nur den Hinweis
@@ -789,6 +790,122 @@ Weiterleitung am Absende-Button verhindert das Abschicken (Vermerk P12.5-36, Pun
 ABGELEITET); ein Track dort doppelt die Conversion und zählt ungültige Klicks. PROVENIENZ:
 OWNER-ENTSCHEIDUNG 2026-09-25, geschärft vom ARCHITEKTEN 2026-09-25. Verhältnis zu
 Entscheidung P12.5-25: dort.
+
+**Vermerk P12.5-38 — AUFKLÄRUNG ZUM PLAN DER SCHEIBE 1c (KEIN BAU, daher kein Bau-Commit: die
+Aufklärung war read-only; die zwei Proben liefen im Scratchpad, nicht im Repo; CC, 2026-09-26,
+HEAD `d6c4b27`).** GEMESSEN, soweit nicht anders gekennzeichnet.
+(1) WAS jsdom (29.1.1) ALS ABSENDE-BUTTON FÜHRT — Probe an einem `DOMParser`-Dokument wie im
+    Test-Harness (`mountAndWire`, src/lib/generate.test.ts), Klick per `dispatchEvent`
+    (`MouseEvent` "click"), ein `submit`-Listener im Capture an `document`:
+    · im `<form>`: `<button>` ohne type, `type="submit"`, `type="quatsch"` -> `type` "submit",
+      `form` gesetzt, Klick löst `submit` aus · `input[type=submit]` -> "submit", löst aus ·
+      `input[type=image]` -> "image", löst aus · `type="button"`, `type="reset"`,
+      `input[type=button]` -> kein `submit` · `div[role=button]` -> `type` und `form`
+      undefined, kein `submit`.
+    · ausserhalb: `<button form="f1">` -> `form` f1, löst aus · `<button>` ohne Formular und
+      ohne `form`-Attribut -> `type` "submit", `form` null, kein `submit`.
+    · ein Formular mit `required`-Feld ohne Wert: kein `submit` (statische Prüfung, Vermerk
+      P12.5-22, Punkt (5)).
+    · ein `preventDefault` im Capture-Listener auf den Klick unterbindet das `submit` (Button
+      und `input[type=image]`) — der Mechanismus aus Vermerk P12.5-36, Punkt (5), in jsdom
+      nachgebildet. GELESEN dazu: `_activationBehavior` in
+      node_modules/jsdom/lib/jsdom/living/nodes/HTMLButtonElement-impl.js, das canceled-Flag
+      in .../events/EventTarget-impl.js.
+(2) DER `object`-FALL: `<object type="submit" role="button">` in einem `<form>` hat in jsdom
+    `type` "submit" und `form` gesetzt; `<fieldset role="button">` -> "fieldset",
+    `<input type="text" role="button">` -> "text". Ein Urteil allein über `form` und `type`
+    hielte das `object` für einen Absende-Button; `[role="button"]` macht es zum Kandidaten
+    (`BUTTON_SELECTOR`, src/lib/detect.ts). Daher der Riegel auf `BUTTON`/`INPUT`.
+(3) jsdom UND DIE FORM-ZUORDNUNG: `formOwner` (…/helpers/form-controls.js, GELESEN) nimmt das
+    `form`-Attribut, sonst das nächste `<form>` darüber; einen Form-Element-Pointer des
+    Parsers kennt es nicht. Falsch verschachtelte Formulare sind eine Live-Achse.
+    `notImplemented` (…/browser/not-implemented.js, GELESEN) kehrt bei fehlendem Fenster still
+    zurück; `defaultView` des Test-Dokuments ist `null` (GEMESSEN) — die Meldung "not
+    implemented" aus dem Kommentar des Helfers `submit` entsteht dort nicht.
+(4) PIN-SUCHE ERNEUT, OHNE KAPPUNG: Achse `createHash|subtle.digest|sha256|byteLength|BASELINE|
+    toMatchSnapshot|toMatchInlineSnapshot` über alle `*.test.ts`/`*.test.tsx` unter src/ —
+    dieselben acht Dateien wie in Vermerk P12.5-18, Punkt (2). Kein weiterer Pin.
+    Positivkontrolle: src/lib/own-blocks-waechter.test.ts trägt 9 Treffer auf `sha256`.
+(5) EDITOR: `DetectedElement` (src/lib/detect.ts) trägt weder "schickt ab" noch das Formular
+    darüber. Die Quelle für das Urteil im Editor ist `previewHtml` aus DEMSELBEN Parse wie
+    `elements` (`annotateAndDetect`-Memo, src/components/CodeImporter.tsx) — nur dort tragen
+    auch frisch gewürfelte Kennungen dieselbe ID wie die Liste. Jedes `<form>` ist Kandidat
+    (`classify`) und wird von `stabilizeDoc` markiert. Die Auswahl eines Elements per ID ist
+    `setSelectedElementId`; der bestehende Effekt sendet `SET_SELECTED_ID` an den Rahmen —
+    "Formular auswählen" braucht keine Änderung an der Editor-Brücke.
+(6) S9 (src/lib/generate.test.ts) nutzt `type="button"` und liegt ausserhalb von P12.5-37; kein
+    bestehender Test setzt eine Aktion auf einen Absende-Button in einem Formular (Achse
+    `ps-dddddd` und `<form` in src/lib/generate.test.ts, GEMESSEN).
+(7) NEBENBEFUND, BEKANNT, AUSSERHALB DES SCOPES: src/lib/mappings.ts trägt ein literales NUL-Byte
+    (`mappingsEqual`, gezählt per `tr`: 1; git führt die Datei als `-text`) — bereits im
+    Backlog (docs/claude-history/backlog-polish.md, "ROHES NUL-BYTE IN mappings.ts").
+
+PROVENIENZ DER ENTSCHEIDUNGEN P12.5-39 BIS P12.5-44: ARCHITEKT, Bau-Auftrag 2026-09-25, zum
+Plan der Scheibe 1c (vorgelegt von CC, Buchstaben wie im Auftrag).
+
+**Entscheidung P12.5-39 ((E-a)) — V1: DER ABSENDE-BUTTON ALS EIGENTÜMER WIRD AUF null GESETZT,
+DIE SUCHE LÄUFT NICHT WEITER.** Nach `actionOwner` und hinter E4/E5 setzt eine eigene Zeile
+`el = null`, wenn der Eigentümer ein Absende-Button ist. GRUND: dieselbe Figur wie E4/E5; reine
+Einsetzung, `actionOwner` bleibt unberührt. VERWORFEN: V2 (ein toter Button zählt als "ohne
+Aktion", die Suche läuft weiter) — unterscheidet sich nur bei einem Button mit `form`-Attribut
+ausserhalb seines Formulars unter einem Element mit Aktion und verlangte einen Eingriff in die
+Schleife. Test U10 hält V1 fest. GRENZE: Ein Absende-Button OHNE Aktion mit `form`-Attribut
+ausserhalb seines Formulars kann weiter die Aktion eines umschliessenden Elements auslösen — wie
+nach Scheibe 1b.
+
+**Entscheidung P12.5-40 ((E-b)) — DAS URTEIL IM EDITOR IST EIN EXPORT `submitFormOf` IN
+src/lib/generate.ts,** neben `buildWiringScript`, ausserhalb des ausgelieferten Textes. GRUND:
+beide Urteile in einer Datei; keine dritte Kopie von `PAGESMITH_ID_ATTR`; keine neue Datei;
+detect.ts bleibt unberührt. Beide Seiten werden gegen DIESELBE Tabelle geprüft (Z1–Z13).
+
+**Entscheidung P12.5-41 ((E-c)) — DIE ENTFERNEN-KNÖPFE HEISSEN "Weiterleitung entfernen" UND
+"Event entfernen", AUCH AM FORMULAR.** GRUND: Am Formular stehen heute bei toter Weiterleitung und
+lebendem Track zwei Knöpfe "Entfernen" mit verschiedener Wirkung (docs/immer-beachten.md, "ZWEI
+BEDIENELEMENTE MIT GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG SIND EIN OBERFLÄCHEN-PROBLEM").
+
+**Entscheidung P12.5-42 ((E-d)) — DIE HINWEISTEXTE.** Hinweis am Absende-Button wörtlich aus
+P12.5-37; Link "Formular auswählen". Tote Weiterleitung am Absende-Button: "Absende-Buttons
+leiten nicht mehr weiter; der Button schickt das Formular ab. Diese Weiterleitung kannst du
+entfernen." Toter Track: "Absende-Buttons zählen kein eigenes Event mehr; das Event des
+Formulars zählt beim Abschicken. Dieses Event kannst du entfernen." An BEIDEN Hinweisen
+(Absende-Button und Formular) zusätzlich: "Auf bereits veröffentlichten Seiten erst nach
+erneutem Veröffentlichen." GRUND: Eine vor dem Bau veröffentlichte Seite führt die Aktion weiter
+aus (docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY"); ohne den
+Satz behauptete die Anzeige etwas, was die Live-Seite noch nicht tut.
+
+**Entscheidung P12.5-43 ((E-e)) — LESART ZU (I5): TOTE MAPPINGS BLEIBEN IN DER TABELLE.** Eine
+Seite, deren einzige Aktion an einem Absende-Button hängt, bekommt weiter ein (wirkungsloses)
+Skript — derselbe Zustand wie beim toten Formular-Redirect seit Scheibe 1b; der Betreiber räumt
+über "entfernen" auf. VERWORFEN: ein Filter im Erzeuger — er urteilte zur Erzeugungszeit statt am
+lebenden DOM und wiche vom Wortlaut "die Laufzeit ignoriert" (P12.5-37) ab.
+
+**Entscheidung P12.5-44 ((E-f)) — SCOPE DES BAUS:** src/lib/generate.ts,
+src/lib/generate.test.ts, src/lib/own-blocks-waechter.test.ts,
+src/lib/tracking/consent-setter.test.ts, src/lib/tracking/custom-pixel.test.ts,
+src/components/ActionPanel.tsx, src/components/CodeImporter.tsx,
+src/components/CodeImporter.test.tsx. Alles andere unberührt. Die vier Differenz-Nachweise
+(W1', W2', T1, T9) werden um die Einsetzungen E7–E9 erweitert, Sollwerte unverändert
+(Entscheidung P12.5-14); der Scope-Riegel ist dafür nur für die zwei Testdateien unter
+src/lib/tracking/ aufgehoben, wie in Entscheidung P12.5-19. GRUND für CodeImporter.tsx: das
+Memo für `submitFormOf` und die zwei Props des `ActionPanel`.
+
+**INVARIANTEN DER SCHEIBE 1c** (ARCHITEKT, Plan-Auftrag 2026-09-25, wörtlich):
+- (I1) Alle Elemente ausser Absende-Buttons verhalten sich wie nach 1b; die Tests der Scheiben 1
+  und 1b bleiben grün (ausser S9 nach G5, begründet). — S9 bleibt unverändert grün (Vermerk
+  P12.5-38, Punkt (6)).
+- (I2) Ein Button type="button" in einem Formular behält seine Klick-Aktionen.
+- (I3) Die Form des Datenblocks und die Typnamen bleiben unverändert; bestehende Mappings
+  bleiben gültige Daten.
+- (I4) Das native Abschicken des Betreibers bleibt unberührt; kein preventDefault von uns.
+- (I5) Eine Seite ohne Laufzeit-Aktion bekommt weiter kein Skript. — Lesart: Entscheidung
+  P12.5-43.
+- (I6) ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts, der Produktionscode unter
+  src/lib/tracking/ und src/lib/capi/ und die Editor-Brücke bleiben unberührt.
+
+**FOLGE FÜR VORRAT P12.5-30 (Backlog; CC, 2026-09-26):** NICHT gegenstandslos, aber enger. Mit
+P12.5-37 trägt ein Absende-Button keinen eigenen Track mehr; der Fall "Knopf mit Track in einem
+Formular mit Track" bleibt für Knöpfe, die nicht abschicken — `type="button"`, `type="reset"`,
+Elemente mit `role="button"`. Nachgezogen im Backlog-Posten.
 
 ## Register der Phase 12.5
 
@@ -827,6 +944,7 @@ Scheibe 1b, ein flackernder Test": P12.5-35.
 
 Scheibe 1 ist abgeschlossen (Vermerk P12.5-20), Scheibe 1b ebenso (Vermerk P12.5-36). Danach,
 in dieser Reihenfolge:
-(1) Der Plan der Scheibe 1c — Absende-Buttons ohne eigene Aktionen (Entscheidung P12.5-37).
+(1) Der Bau der Scheibe 1c — Absende-Buttons ohne eigene Aktionen (Entscheidung P12.5-37;
+    Plan freigegeben, Entscheidungen P12.5-39 bis P12.5-44).
 (2) Danach Scheibe 2, das Editor-Gerüst (Entscheidung P12.5-7).
 Diese Datei entwirft keine von beiden.

@@ -6137,6 +6137,11 @@ FIX-VORSCHLAG über das Benannte hinaus.
   (Test S9 der Scheibe 1b). Die Oberfläche (`ActionPanel`, src/components/ActionPanel.tsx)
   sagt das nicht. Vorgemerkt für die Neugestaltung der Oberfläche (ARCHITEKT, Bau-Auftrag
   2026-09-25). TRIGGER: das UI-Redesign.
+  NACHGEZOGEN 2026-09-26 (CC, Scheibe 1c der Phase 12.5): NICHT gegenstandslos, aber enger.
+  Nach Entscheidung P12.5-37 der Phase 12.5 trägt ein Absende-Button keinen eigenen Track
+  mehr; der Fall bleibt für Knöpfe, die nicht abschicken — `type="button"`, `type="reset"`,
+  Elemente mit `role="button"`. Fundstelle: Vermerk P12.5-38 und der Satz "FOLGE FÜR VORRAT
+  P12.5-30" im Abschnitt "Scheibe 1c" der Standdatei der Phase 12.5. Trigger unverändert.
 
 ## Aus Phase 12.5 vorgemerkt (2026-09-25) — Scheibe 1b, ein flackernder Test
 

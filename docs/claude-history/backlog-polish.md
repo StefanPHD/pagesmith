@@ -6160,3 +6160,21 @@ FIX-VORSCHLAG über das Benannte hinaus.
   Tests in einer Mutationsrunde ist kein Befund über die Mutation, bis es wiederholt ist.
   TRIGGER: das nächste rote Auftreten dieses Tests, oder die nächste Arbeit an
   `detectElements`.
+
+## Aus Phase 12.5 vorgemerkt (2026-09-26) — Scheibe 1c, ein liegengebliebener Spion
+
+Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummer setzt die Reihe `P12.5-n` jener
+Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+FIX-VORSCHLAG über das Benannte hinaus.
+
+- **Vorrat P12.5-46 — DER SPION AUS "KEINE Pixel-ID -> kein fbq im Output; Track-Aktion ist
+  no-op (console.warn)" WIRD NICHT IN EINEM afterEach AUFGERÄUMT**
+  Der Test in src/lib/generate.test.ts legt einen Spion auf `console.warn` und ruft
+  `warnSpy.mockRestore()` erst hinter seinen Zusicherungen. Fällt eine davon, bleibt der Spion
+  liegen. GEMESSEN (CC, 2026-09-26, Mutationsrunde der Scheibe 1c der Phase 12.5): Unter der
+  Mutation M11 fiel dieser Test, und in derselben vollen Suite fiel danach S12a ("expected
+  [ …(3) ] to have a length of 1 but got 3"); S12a isoliert unter M11 war grün. Fundstelle:
+  Vermerk P12.5-45, Punkt (4), der Phase 12.5. Folge: verfälscht Mutationsläufe — LAUT (ein
+  zusätzlicher roter Test, der wie ein Treffer aussieht), nicht still. Ob weitere Tests
+  dasselbe Muster tragen, ist nicht erhoben. TRIGGER: die nächste Mutationsrunde, in der eine
+  Mutation diesen Test vor `mockRestore` brechen lässt, oder die nächste Arbeit an diesem Test.

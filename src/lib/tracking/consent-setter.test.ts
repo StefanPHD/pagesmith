@@ -97,8 +97,9 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
   // SEIT DER PHASE 12.5, SCHEIBE 1, EIN DIFFERENZ-NACHWEIS (Entscheidung P12.5-19 der
   // Phase 12.5; docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN
   // WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE"). Die Schatten-Korrektur (Scheibe
-  // 1: E1–E3) und der Formular-Track am Abschicken (Scheibe 1b: E4–E6, Entscheidung
-  // P12.5-21) setzen BEWUSST sechs Stuecke in das Wiring-Script ein (unten). Die
+  // 1: E1–E3), der Formular-Track am Abschicken (Scheibe 1b: E4–E6, Entscheidung
+  // P12.5-21) und die Absende-Buttons ohne eigene Aktionen (Scheibe 1c: E7–E9,
+  // Entscheidung P12.5-44) setzen BEWUSST neun Stuecke in das Wiring-Script ein (unten). Die
   // Vergleichswerte sind UNVERAENDERT; sie stehen jetzt auf der ENTFERNTEN Seite: der
   // Text ist der von vor 11.5a plus GENAU diese Einsetzungen, sonst kein Zeichen. Die
   // Einsetzungen sind aus den Bau-Auftraegen GETIPPT, nicht aus generate.ts abgelesen;
@@ -175,17 +176,38 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
     if (auf === -1 || zu === -1) throw new Error("Track-Zweig des click-Listeners nicht gefunden");
     return E6_VOR + s.slice(auf + TRACK_AUF.length, zu) + E6_NACH;
   };
+  // E7 (Scheibe 1c): die lokale Funktion direkt hinter actionOwner. E8 (click) und E9
+  // (auxclick): je eine Zeile hinter E4 bzw. E5, ueber den fuehrenden Zeilenumbruch
+  // disjunkt. GETIPPT aus dem freigegebenen Plan.
+  const E7 = [
+    "  // ABSENDE-BUTTONS (Phase 12.5, Scheibe 1c; Entscheidung P12.5-37): ein Knopf, der",
+    "  // ein Formular abschickt, traegt keine eigene Klick-Aktion - sein Klick gehoert dem",
+    '  // Abschicken. Das Urteil faellt der Browser (form, type); type="button" schickt',
+    "  // nicht ab und behaelt seine Aktionen. Nur BUTTON und INPUT: bei anderen Tags ist",
+    "  // type frei waehlbar (object).",
+    "  function isSubmitButton(el) {",
+    '    if (el.tagName !== "BUTTON" && el.tagName !== "INPUT") return false;',
+    "    if (!el.form) return false;",
+    '    return el.type === "submit" || el.type === "image";',
+    "  }",
+    "",
+  ].join("\n");
+  const E8 = "\n      if (el && isSubmitButton(el)) el = null;";
+  const E9 = "\n        if (el && isSubmitButton(el)) el = null;";
   const count = (s: string, part: string) => s.split(part).length - 1;
   const withoutInsertions = (s: string) =>
     s
       .split(e6Of(s)).join("")
+      .split(E9).join("")
+      .split(E8).join("")
       .split(E5).join("")
       .split(E4).join("")
+      .split(E7).join("")
       .split(E1).join("")
       .split(E3).join("")
       .split(E2).join("");
 
-  it("T1: bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text der von vor der Scheibe plus GENAU E1–E6", () => {
+  it("T1: bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text der von vor der Scheibe plus GENAU E1–E9", () => {
     const out = deliver("off");
     // DER DISKRIMINATOR GEGEN EINEN NEBENEFFEKT-ZWEIG: Diese Fixture hat eine
     // NICHT-LEERE Schluesselmenge. Haenge der Zweig an der Leere einer Menge statt
@@ -198,6 +220,9 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
     expect(count(out, E4)).toBe(1);
     expect(count(out, E5)).toBe(1);
     expect(count(out, e6Of(out))).toBe(1);
+    expect(count(out, E7)).toBe(1);
+    expect(count(out, E8)).toBe(1);
+    expect(count(out, E9)).toBe(1);
     const rest = withoutInsertions(out);
     expect(Buffer.byteLength(rest, "utf8")).toBe(BASELINE_BYTES);
     expect(createHash("sha256").update(rest, "utf8").digest("hex")).toBe(

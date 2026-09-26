@@ -6017,3 +6017,115 @@ describe("CodeImporter — die Fundliste buendelt (11.11e)", () => {
     expect(knopfZeile.querySelector(".font-mono")).toBeNull();
   });
 });
+
+describe("CodeImporter — Absende-Buttons ohne eigene Aktionen (Phase 12.5, Scheibe 1c)", () => {
+  // Entscheidungen P12.5-37 und P12.5-40 bis P12.5-42 der Phase 12.5. Kanonisches Dokument
+  // mit festen ps-IDs: ein Formular (ps-ffffff) mit Absende-Button (ps-bbbbbb) und einem
+  // Knopf type="button" (ps-cccccc); ausserhalb ein Button ohne Formular (ps-dddddd).
+  const SUBMIT_DOC =
+    '<!DOCTYPE html><html><head></head><body><form data-pagesmith-id="ps-ffffff" action="#unten"><input type="email" name="email"><button type="submit" data-pagesmith-id="ps-bbbbbb">Absenden</button><button type="button" data-pagesmith-id="ps-cccccc">Mehr Info</button></form><button data-pagesmith-id="ps-dddddd">Aussen</button></body></html>';
+  // Wortlaut aus Entscheidung P12.5-37 bzw. P12.5-42 — GETIPPT, nicht aus ActionPanel.tsx.
+  const HINWEIS =
+    "Aktionen, Events und Weiterleitungen bitte direkt am übergeordneten Formular (<form>) einstellen.";
+  const NEU_VEROEFFENTLICHEN = /Auf bereits veröffentlichten Seiten erst nach erneutem Veröffentlichen\./;
+
+  it("A1: Absende-Button ohne Aktion -> nur Hinweis und 'Formular auswählen', KEINE Kacheln", async () => {
+    // Rot, wenn der Zweig fuer Absende-Buttons im Panel fehlt (M-UI1).
+    render(<CodeImporter initialCode={SUBMIT_DOC} />);
+    fireEvent.click(await screen.findByText("Absenden"));
+    expect(screen.getByText(HINWEIS)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Formular auswählen" })).toBeTruthy();
+    expect(screen.queryByText(/Link \/ Weiterleitung/)).toBeNull();
+    expect(screen.queryByText(/Tracking-Event/)).toBeNull();
+  });
+
+  it("A2: Absende-Button mit Weiterleitung und Track -> beide 'wirkt nicht mehr', einzeln entfernbar", async () => {
+    render(
+      <CodeImporter
+        initialCode={SUBMIT_DOC}
+        initialMappings={[
+          { elementId: "ps-bbbbbb", type: "redirect", config: { url: "https://example.com/weg", openInNewTab: false } },
+          { elementId: "ps-bbbbbb", type: "track", config: { event: "ButtonProbe" } },
+        ]}
+      />
+    );
+    fireEvent.click(await screen.findByText("Absenden"));
+    expect(screen.getByText(/Weiterleitung — wirkt nicht mehr/)).toBeTruthy();
+    expect(screen.getByText("https://example.com/weg")).toBeTruthy();
+    expect(screen.getByText(/Tracking-Event — wirkt nicht mehr/)).toBeTruthy();
+    expect(screen.getByText("ButtonProbe")).toBeTruthy();
+    expect(screen.getAllByText(NEU_VEROEFFENTLICHEN)).toHaveLength(2);
+    expect(screen.queryByRole("button", { name: "Bearbeiten" })).toBeNull();
+    expect(screen.queryByText(/Link \/ Weiterleitung/)).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Weiterleitung entfernen" }));
+    expect(screen.queryByTitle("Verknüpft: redirect")).toBeNull();
+    expect(screen.getByTitle("Verknüpft: track")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Event entfernen" }));
+    expect(screen.queryByTitle("Verknüpft: track")).toBeNull();
+    // Danach steht nur noch der Hinweis da — weiterhin keine Kacheln.
+    expect(screen.getByText(HINWEIS)).toBeTruthy();
+    expect(screen.queryByText(/Tracking-Event/)).toBeNull();
+  });
+
+  it("A3: 'Formular auswählen' waehlt das Formular — Panel des Formulars, SET_SELECTED_ID mit seiner ps-ID", async () => {
+    // Rot, wenn der Link eine andere ID waehlt (M-UI3) oder fehlt (M-UI1).
+    render(<CodeImporter initialCode={SUBMIT_DOC} />);
+    fireEvent.click(await screen.findByText("Absenden"));
+    const frame = screen.getByTitle("preview") as HTMLIFrameElement;
+    const spy = vi.spyOn(frame.contentWindow!, "postMessage");
+    fireEvent.click(screen.getByRole("button", { name: "Formular auswählen" }));
+    expect(
+      await screen.findByText("Feuert beim Abschicken des Formulars ein Event.")
+    ).toBeTruthy();
+    expect(screen.queryByText(HINWEIS)).toBeNull();
+    const sel = spy.mock.calls
+      .map((c) => c[0] as { type?: string; elementId?: string })
+      .filter((m) => m?.type === "SET_SELECTED_ID");
+    expect(sel.at(-1)?.elementId).toBe("ps-ffffff");
+  });
+
+  it("A4: Knopf type=\"button\" im Formular -> normale Kacheln, kein Hinweis", async () => {
+    // Rot, wenn das Editor-Urteil type="button" als Absende-Button fuehrt (M-E1).
+    render(<CodeImporter initialCode={SUBMIT_DOC} />);
+    fireEvent.click(await screen.findByText("Mehr Info"));
+    expect(screen.getByText(/Link \/ Weiterleitung/)).toBeTruthy();
+    expect(screen.getByText(/Tracking-Event/)).toBeTruthy();
+    expect(screen.queryByText(HINWEIS)).toBeNull();
+  });
+
+  it("A5 (N8 der Scheibe 1b): bestehende Weiterleitung am Formular -> 'wirkt nicht mehr', entfernbar, keine Kachel", async () => {
+    // Die Auflage aus Entscheidung P12.5-23. Rot, wenn die tote Weiterleitung am Formular
+    // nicht mehr erscheint (M-UI2).
+    render(
+      <CodeImporter
+        initialCode={SUBMIT_DOC}
+        initialMappings={[
+          { elementId: "ps-ffffff", type: "redirect", config: { url: "https://example.com/formular", openInNewTab: false } },
+          { elementId: "ps-ffffff", type: "track", config: { event: "Contact" } },
+        ]}
+      />
+    );
+    fireEvent.click(await screen.findByText("#unten"));
+    expect(screen.getByText(/Weiterleitung — wirkt nicht mehr/)).toBeTruthy();
+    expect(screen.getByText("https://example.com/formular")).toBeTruthy();
+    expect(screen.getByText(NEU_VEROEFFENTLICHEN)).toBeTruthy();
+    expect(screen.queryByText(/Link \/ Weiterleitung/)).toBeNull();
+    // Der lebende Track daneben traegt SEINEN Entfernen-Knopf; die tote Weiterleitung
+    // einen eigenen Namen (Entscheidung P12.5-41).
+    expect(screen.getByRole("button", { name: "Entfernen" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Weiterleitung entfernen" }));
+    expect(screen.queryByTitle("Verknüpft: redirect")).toBeNull();
+    expect(screen.getByTitle("Verknüpft: track")).toBeTruthy();
+    expect(screen.queryByText(/Weiterleitung — wirkt nicht mehr/)).toBeNull();
+  });
+
+  it("A6: Button ausserhalb eines Formulars -> normale Kacheln, kein Hinweis", async () => {
+    render(<CodeImporter initialCode={SUBMIT_DOC} />);
+    fireEvent.click(await screen.findByText("Aussen"));
+    expect(screen.getByText(/Link \/ Weiterleitung/)).toBeTruthy();
+    expect(screen.getByText(/Tracking-Event/)).toBeTruthy();
+    expect(screen.queryByText(HINWEIS)).toBeNull();
+  });
+});

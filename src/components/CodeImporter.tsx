@@ -44,7 +44,7 @@ import {
   type TextConfig,
   type TrackConfig,
 } from "@/lib/mappings";
-import { editPreviewHtml, generateFunctional } from "@/lib/generate";
+import { editPreviewHtml, generateFunctional, submitFormOf } from "@/lib/generate";
 // KOMPATIBILITAETS-RIEGEL DER ZWEI EDITOR-RAHMEN (Scheibe 11.12a). NUR HIER
 // importiert — der Export- und Veroeffentlichungsweg (buildDocumentFor) ruft ihn
 // NIE, und diese Trennung ist die Bauart, nicht eine Modus-Verzweigung
@@ -965,6 +965,18 @@ export default function CodeImporter({
   const selectedElement = useMemo(
     () => elements.find((e) => e.id === selectedElementId) ?? null,
     [elements, selectedElementId]
+  );
+
+  // ABSENDE-BUTTON (Phase 12.5, Scheibe 1c; Entscheidung P12.5-40 der Phase 12.5):
+  // abgeleitet, nie gespeichert. Quelle ist previewHtml aus DEMSELBEN Parse wie elements —
+  // nur dort tragen frisch gewuerfelte ps-IDs dieselbe Kennung wie die Liste. Geparst wird
+  // nur, wenn ein Button gewaehlt ist.
+  const selectedSubmitForm = useMemo(
+    () =>
+      selectedElement?.type === "button"
+        ? submitFormOf(previewHtml, selectedElement.id)
+        : null,
+    [previewHtml, selectedElement]
   );
 
   // ps-ID -> Set der Mapping-Typen fuer die "verknuepft"-Badges (Compound-Key,
@@ -3822,6 +3834,8 @@ export default function CodeImporter({
         onSaveTrack={handleAssignTrack}
         onSaveText={handleAssignTextMapping}
         onRemove={handleRemoveMapping}
+        submitForm={selectedSubmitForm}
+        onSelectElement={setSelectedElementId}
       />
       </div>
     </div>

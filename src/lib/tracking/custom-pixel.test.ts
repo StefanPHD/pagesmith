@@ -279,8 +279,9 @@ describe("11.6a — der erzeugte Text", () => {
   // SEIT DER PHASE 12.5, SCHEIBE 1, EIN DIFFERENZ-NACHWEIS (Entscheidung P12.5-19 der
   // Phase 12.5; docs/immer-beachten.md, "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN
   // WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE"). Die Schatten-Korrektur (Scheibe
-  // 1: E1–E3) und der Formular-Track am Abschicken (Scheibe 1b: E4–E6, Entscheidung
-  // P12.5-21) setzen BEWUSST sechs Stuecke in das Wiring-Script ein (unten). Die
+  // 1: E1–E3), der Formular-Track am Abschicken (Scheibe 1b: E4–E6, Entscheidung
+  // P12.5-21) und die Absende-Buttons ohne eigene Aktionen (Scheibe 1c: E7–E9,
+  // Entscheidung P12.5-44) setzen BEWUSST neun Stuecke in das Wiring-Script ein (unten). Die
   // Vergleichswerte sind UNVERAENDERT; sie stehen jetzt auf der ENTFERNTEN Seite: der
   // Text ist der von vor 11.6a plus GENAU diese Einsetzungen, sonst kein Zeichen. Die
   // Einsetzungen sind aus den Bau-Auftraegen GETIPPT, nicht aus generate.ts abgelesen;
@@ -358,17 +359,38 @@ describe("11.6a — der erzeugte Text", () => {
     if (auf === -1 || zu === -1) throw new Error("Track-Zweig des click-Listeners nicht gefunden");
     return E6_VOR + s.slice(auf + TRACK_AUF.length, zu) + E6_NACH;
   };
+  // E7 (Scheibe 1c): die lokale Funktion direkt hinter actionOwner. E8 (click) und E9
+  // (auxclick): je eine Zeile hinter E4 bzw. E5, ueber den fuehrenden Zeilenumbruch
+  // disjunkt. GETIPPT aus dem freigegebenen Plan.
+  const E7 = [
+    "  // ABSENDE-BUTTONS (Phase 12.5, Scheibe 1c; Entscheidung P12.5-37): ein Knopf, der",
+    "  // ein Formular abschickt, traegt keine eigene Klick-Aktion - sein Klick gehoert dem",
+    '  // Abschicken. Das Urteil faellt der Browser (form, type); type="button" schickt',
+    "  // nicht ab und behaelt seine Aktionen. Nur BUTTON und INPUT: bei anderen Tags ist",
+    "  // type frei waehlbar (object).",
+    "  function isSubmitButton(el) {",
+    '    if (el.tagName !== "BUTTON" && el.tagName !== "INPUT") return false;',
+    "    if (!el.form) return false;",
+    '    return el.type === "submit" || el.type === "image";',
+    "  }",
+    "",
+  ].join("\n");
+  const E8 = "\n      if (el && isSubmitButton(el)) el = null;";
+  const E9 = "\n        if (el && isSubmitButton(el)) el = null;";
   const count = (s: string, part: string) => s.split(part).length - 1;
   const withoutInsertions = (s: string) =>
     s
       .split(e6Of(s)).join("")
+      .split(E9).join("")
+      .split(E8).join("")
       .split(E5).join("")
       .split(E4).join("")
+      .split(E7).join("")
       .split(E1).join("")
       .split(E3).join("")
       .split(E2).join("");
 
-  it("T9: ohne Snippet und ohne Ereigniszeile ist der erzeugte Text der von vor 11.6a plus GENAU E1–E6", () => {
+  it("T9: ohne Snippet und ohne Ereigniszeile ist der erzeugte Text der von vor 11.6a plus GENAU E1–E9", () => {
     const ohne = generateFunctional(T9_HTML, [trackMapping()], "export", {
       metaPixelId: "",
       trackingKey: "",
@@ -383,6 +405,9 @@ describe("11.6a — der erzeugte Text", () => {
     expect(count(ohne, E4)).toBe(1);
     expect(count(ohne, E5)).toBe(1);
     expect(count(ohne, e6Of(ohne))).toBe(1);
+    expect(count(ohne, E7)).toBe(1);
+    expect(count(ohne, E8)).toBe(1);
+    expect(count(ohne, E9)).toBe(1);
     const ohneRest = withoutInsertions(ohne);
     expect(Buffer.byteLength(ohneRest, "utf8")).toBe(OHNE_ALLES.bytes);
     expect(sha16(ohneRest)).toBe(OHNE_ALLES.sha);
@@ -402,6 +427,9 @@ describe("11.6a — der erzeugte Text", () => {
     expect(count(mitMeta, E4)).toBe(1);
     expect(count(mitMeta, E5)).toBe(1);
     expect(count(mitMeta, e6Of(mitMeta))).toBe(1);
+    expect(count(mitMeta, E7)).toBe(1);
+    expect(count(mitMeta, E8)).toBe(1);
+    expect(count(mitMeta, E9)).toBe(1);
     const mitMetaRest = withoutInsertions(mitMeta);
     expect(Buffer.byteLength(mitMetaRest, "utf8")).toBe(MIT_META.bytes);
     expect(sha16(mitMetaRest)).toBe(MIT_META.sha);

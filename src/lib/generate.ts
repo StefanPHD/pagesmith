@@ -64,7 +64,20 @@ export type GenerateMode = "export" | "preview" | "edit";
 // beim ABSCHICKEN (submit-Listener an document, Capture, KEIN preventDefault, einmal
 // je Formular und Seitenleben); eine Weiterleitung fuehrt ein Formular nicht mehr aus,
 // weder beim Klick noch beim Abschicken. Ein Element IM Formular mit eigener Aktion
-// (etwa ein Knopf mit Track) feuert beim Klick weiter seine eigene (P12.5-25).
+// (etwa ein Knopf type="button" mit Track) feuert beim Klick weiter seine eigene
+// (P12.5-25); ein Absende-Button traegt keine (P12.5-37, naechster Absatz).
+//
+// ABSENDE-BUTTONS (Phase 12.5, Scheibe 1c; Entscheidungen P12.5-37 und P12.5-39 der
+// Phase 12.5): Ist der Eigentuemer eines Klicks ein Knopf, der ein Formular abschickt,
+// wird er auf null gesetzt — keine Aktion, und die Suche laeuft NICHT weiter nach oben
+// (dieselbe Figur wie beim <form>). Sein Klick gehoert dem Abschicken: kein
+// preventDefault von uns, das Formular schickt ab, sein Track zaehlt im
+// submit-Listener. Absende-Button = BUTTON oder INPUT mit Formular (el.form) und type
+// "submit" oder "image"; das Urteil ueber type faellt der Browser (ein <button> ohne
+// oder mit ungueltigem type ist "submit"). Der Riegel auf BUTTON/INPUT ist gemessen:
+// bei <object role="button"> ist type frei waehlbar (Vermerk P12.5-38, Punkt (2)).
+// DASSELBE URTEIL faellt der Editor in submitFormOf (unten); Waechter ist die
+// gemeinsame Tabelle Z1–Z13 in generate.test.ts — wer eines aendert, aendert beide.
 // PREVIEW (srcDoc-iframe erbt unsere Origin -> Containment noetig): gemappte
 //   Weiterleitung oeffnet IMMER escaped einen neuen Tab (openInNewTab ignoriert,
 //   NIE location.href, das wuerde das iframe selbst framen); JEDER andere
@@ -185,6 +198,16 @@ function buildWiringScript(
     }
     return el;
   }
+  // ABSENDE-BUTTONS (Phase 12.5, Scheibe 1c; Entscheidung P12.5-37): ein Knopf, der
+  // ein Formular abschickt, traegt keine eigene Klick-Aktion - sein Klick gehoert dem
+  // Abschicken. Das Urteil faellt der Browser (form, type); type="button" schickt
+  // nicht ab und behaelt seine Aktionen. Nur BUTTON und INPUT: bei anderen Tags ist
+  // type frei waehlbar (object).
+  function isSubmitButton(el) {
+    if (el.tagName !== "BUTTON" && el.tagName !== "INPUT") return false;
+    if (!el.form) return false;
+    return el.type === "submit" || el.type === "image";
+  }
   // Text-Override (Vorschau + Editieren, einmalig beim Laden). Im Export ist kein
   // text-Mapping im Datenblock -> diese Schleife findet nichts.
   if (MODE !== "export") {
@@ -209,6 +232,7 @@ function buildWiringScript(
       var el = t.closest("[${PAGESMITH_ID_ATTR}]");
       el = actionOwner(el);
       if (el && el.tagName === "FORM") el = null;
+      if (el && isSubmitButton(el)) el = null;
       var actions = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
       if (actions && actions.length) {
         // Track-Aktionen feuern SOFORT in der Schleife; die (max. eine) Redirect-
@@ -272,6 +296,7 @@ function buildWiringScript(
         var el = t.closest("[${PAGESMITH_ID_ATTR}]");
         el = actionOwner(el);
         if (el && el.tagName === "FORM") el = null;
+        if (el && isSubmitButton(el)) el = null;
         var actions = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
         if (!actions || !actions.length) return;
         for (var j = 0; j < actions.length; j++) {
@@ -310,6 +335,53 @@ function buildWiringScript(
     true
   );
 })();`;
+}
+
+/**
+ * ABSENDE-BUTTON IM EDITOR (Phase 12.5, Scheibe 1c; Entscheidungen P12.5-37 und P12.5-40
+ * der Phase 12.5). Sagt dem ActionPanel, ob das Element mit dieser ps-ID ein Formular
+ * abschickt, und welches.
+ * - null: kein Absende-Button (auch: Element nicht gefunden, kein DOMParser, Wurf).
+ * - { formId }: Absende-Button; formId ist die ps-ID seines Formulars, null, wenn das
+ *   Formular keine traegt (dann bietet das Panel keinen Link zum Formular an).
+ *
+ * DASSELBE URTEIL wie isSubmitButton im Wiring (buildWiringScript): BUTTON oder INPUT, mit
+ * Formular (el.form, also auch ueber das form-Attribut), type "submit" oder "image". Der
+ * Waechter ist die gemeinsame Tabelle Z1–Z13 in generate.test.ts, gegen die BEIDE Seiten
+ * laufen — wer eines aendert, aendert beide.
+ *
+ * html MUSS das Vorschau-HTML aus DEMSELBEN Parse sein, aus dem die Elementliste stammt
+ * (previewHtml aus annotateAndDetect): nur dort tragen auch frisch gewuerfelte ps-IDs
+ * dieselbe Kennung wie die Liste. Gesucht wird per getAttribute-Vergleich, nicht ueber
+ * einen Selektor mit eingesetzter ID.
+ *
+ * FAIL-OPEN NUR IN DER ANZEIGE: Liefert diese Funktion faelschlich null, zeigt das Panel
+ * die normalen Kacheln; die Laufzeit urteilt selbst und ignoriert die Aktion trotzdem.
+ */
+export function submitFormOf(
+  html: string,
+  elementId: string
+): { formId: string | null } | null {
+  if (!html || typeof DOMParser === "undefined") return null;
+  try {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    let el: Element | null = null;
+    for (const cand of Array.from(doc.querySelectorAll(`[${PAGESMITH_ID_ATTR}]`))) {
+      if (cand.getAttribute(PAGESMITH_ID_ATTR) === elementId) {
+        el = cand;
+        break;
+      }
+    }
+    if (!el) return null;
+    if (el.tagName !== "BUTTON" && el.tagName !== "INPUT") return null;
+    const control = el as HTMLButtonElement | HTMLInputElement;
+    const form = control.form;
+    if (!form) return null;
+    if (control.type !== "submit" && control.type !== "image") return null;
+    return { formId: form.getAttribute(PAGESMITH_ID_ATTR) || null };
+  } catch {
+    return null;
+  }
 }
 
 /**

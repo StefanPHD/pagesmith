@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { editPreviewHtml, editVariantMarker, generateFunctional } from "./generate";
+import {
+  editPreviewHtml,
+  editVariantMarker,
+  generateFunctional,
+  submitFormOf,
+} from "./generate";
 import { nonEmptyHtml } from "./hosting/variant";
 import { annotateAndDetect } from "./detect";
 import type { Mapping } from "./mappings";
@@ -2252,5 +2257,180 @@ describe("Formular-Track am Abschicken (Phase 12.5, Scheibe 1b)", () => {
     );
     click("p");
     expect(fbqCalls(fbq, "track")).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ABSENDE-BUTTONS OHNE EIGENE AKTIONEN (Phase 12.5, Scheibe 1c; Entscheidungen P12.5-37
+// und P12.5-39 bis P12.5-44 der Phase 12.5). Ein Knopf, der ein Formular abschickt,
+// traegt keine eigene Klick-Aktion; sein Klick gehoert dem Abschicken.
+//
+// DIESE TESTS KLICKEN DEN ABSENDE-BUTTON ECHT (dispatchEvent "click") und verlassen sich
+// darauf, dass jsdom 29.1.1 die AKTIVIERUNG nachbildet: Klick -> requestSubmit ->
+// submit-Ereignis; ein preventDefault auf dem Klick unterbindet es (GEMESSEN, Vermerk
+// P12.5-38, Punkt (1)). Die Meldung "not implemented", vor der der Helfer submit warnt,
+// entsteht am Test-Dokument nicht: es hat kein Fenster (Punkt (3) dort). U0 ist die
+// Positivkontrolle fuer das INSTRUMENT: wird sie rot, sagen U1/U2b/U8 nichts mehr.
+// ---------------------------------------------------------------------------
+
+describe("Absende-Buttons ohne eigene Aktionen (Phase 12.5, Scheibe 1c)", () => {
+  const BTN = '[data-pagesmith-id="ps-dddddd"]';
+
+  it("U0 (Positivkontrolle fuer das Instrument): Klick auf den Absende-Button schickt in jsdom ab -> 1 'Contact'", () => {
+    // Schon vor der Scheibe grün. Belegt, dass der Klick die Aktivierung ausloest; ohne
+    // das waeren U1/U2b/U8 aus dem falschen Grund grün.
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(FORM_PAGE, [track("ps-cccccc", "Contact")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    const ev = click(BTN);
+    expect(ev.defaultPrevented).toBe(false);
+    expect(fbqCalls(fbq, "track").map((c) => c[1])).toEqual(["Contact"]);
+  });
+
+  it("U1: Absende-Button mit Weiterleitung -> keine Weiterleitung, das Formular wird abgeschickt, Formular-Track 1x", () => {
+    // Rot ohne E8 (M7): dann preventDefault + Navigation, und das Abschicken unterbleibt —
+    // der stille Conversion-Verlust aus Vermerk P12.5-36, Punkt (5).
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        FORM_PAGE,
+        [
+          redirect("ps-dddddd", "https://example.com/weg", false),
+          track("ps-cccccc", "Contact"),
+        ],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    const ev = click(BTN);
+    expect(ev.defaultPrevented).toBe(false);
+    expect(hrefValue).toBe("");
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(fbqCalls(fbq, "track").map((c) => c[1])).toEqual(["Contact"]);
+  });
+
+  it("U2b: Absende-Button mit Track in einem Formular mit Track -> genau ['Contact'], kein Button-Track", () => {
+    // Hoechstens eine Conversion je Abschicken ((I2) der Scheibe 1b). Rot ohne E8 (M7):
+    // ['Inner', 'Contact'].
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        FORM_PAGE,
+        [track("ps-dddddd", "Inner"), track("ps-cccccc", "Contact")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    click(BTN);
+    expect(fbqCalls(fbq, "track").map((c) => c[1])).toEqual(["Contact"]);
+  });
+
+  it("U7: Mittelklick auf den Absende-Button mit Track -> 0; Mittelklick auf den Link -> 1 (Positivkontrolle)", () => {
+    // Rot NUR ohne E9 (M8): der auxclick-Pfad fuehrte den Button-Track aus.
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        FORM_PAGE,
+        [track("ps-dddddd", "Inner"), track("ps-aaaaaa", "Lead")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    aux(BTN, 1);
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+    aux('[data-pagesmith-id="ps-aaaaaa"]', 1);
+    expect(fbqCalls(fbq, "track").map((c) => c[1])).toEqual(["Lead"]);
+  });
+
+  it("U8: markiertes Kind im Absende-Button mit Track -> Klick aufs Kind ergibt genau ['Contact']", () => {
+    // actionOwner steigt vom <p> zum Button (er traegt eine Aktion), E8 setzt ihn auf null;
+    // der Klick aktiviert den Button, das Formular schickt ab.
+    const html = `<!DOCTYPE html><html><body><form data-pagesmith-id="ps-cccccc" action="#unten"><input type="email" name="email"><button type="submit" data-pagesmith-id="ps-dddddd"><p data-pagesmith-id="ps-eeeeee">Jetzt senden</p></button></form></body></html>`;
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        html,
+        [track("ps-dddddd", "Inner"), track("ps-cccccc", "Contact")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    click('[data-pagesmith-id="ps-eeeeee"]');
+    expect(fbqCalls(fbq, "track").map((c) => c[1])).toEqual(["Contact"]);
+  });
+
+  it("U10: Absende-Button (form-Attribut) mit Track in einem Element mit Track -> genau ['Contact'] (V1, Entscheidung P12.5-39)", () => {
+    // Haelt V1 fest: der Absende-Button als Eigentuemer wird auf null gesetzt, die Suche
+    // laeuft NICHT weiter zum umschliessenden Element. Unter V2 kaeme ['Outer', 'Contact'],
+    // ohne E8 (M7) ['Inner', 'Contact'].
+    const html = `<!DOCTYPE html><html><body><div role="button" data-pagesmith-id="ps-aaaaaa"><button form="f1" data-pagesmith-id="ps-dddddd">Senden</button></div><form id="f1" data-pagesmith-id="ps-cccccc"><input type="email" name="email"></form></body></html>`;
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        html,
+        [
+          track("ps-aaaaaa", "Outer"),
+          track("ps-dddddd", "Inner"),
+          track("ps-cccccc", "Contact"),
+        ],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    click(BTN);
+    expect(fbqCalls(fbq, "track").map((c) => c[1])).toEqual(["Contact"]);
+  });
+
+  // DIE GEMEINSAME TABELLE (Entscheidung P12.5-40): Laufzeit (isSubmitButton im Wiring)
+  // und Editor (submitFormOf) werden gegen DIESELBE Erwartung geprueft — sie ist aus
+  // Entscheidung P12.5-37 und den Messungen in Vermerk P12.5-38, Punkt (1) und (2),
+  // GETIPPT, nicht aus dem Code abgelesen. Aendert sich nur eine Seite, wird ihre Zeile rot.
+  // Das Element traegt immer ps-zzzzzz und Track "Inner"; das Formular ps-ffffff ohne
+  // Aktion. submits = "schickt ab": dann feuert "Inner" nicht, und submitFormOf nennt das
+  // Formular.
+  const FORM_OPEN = '<form id="f1" data-pagesmith-id="ps-ffffff"><input type="email" name="email">';
+  const Z_ROWS: { name: string; body: string; submits: boolean }[] = [
+    { name: "Z1 <button> ohne type im Formular", body: `${FORM_OPEN}<button data-pagesmith-id="ps-zzzzzz">X</button></form>`, submits: true },
+    { name: "Z2 <button type=submit>", body: `${FORM_OPEN}<button type="submit" data-pagesmith-id="ps-zzzzzz">X</button></form>`, submits: true },
+    { name: "Z3 <button type=quatsch> (ungueltig -> submit)", body: `${FORM_OPEN}<button type="quatsch" data-pagesmith-id="ps-zzzzzz">X</button></form>`, submits: true },
+    { name: "Z4 <button type=button> im Formular", body: `${FORM_OPEN}<button type="button" data-pagesmith-id="ps-zzzzzz">X</button></form>`, submits: false },
+    { name: "Z5 <button type=reset>", body: `${FORM_OPEN}<button type="reset" data-pagesmith-id="ps-zzzzzz">X</button></form>`, submits: false },
+    { name: "Z6 <input type=submit>", body: `${FORM_OPEN}<input type="submit" value="X" data-pagesmith-id="ps-zzzzzz"></form>`, submits: true },
+    { name: "Z7 <input type=image>", body: `${FORM_OPEN}<input type="image" alt="X" data-pagesmith-id="ps-zzzzzz"></form>`, submits: true },
+    { name: "Z8 <input type=button>", body: `${FORM_OPEN}<input type="button" value="X" data-pagesmith-id="ps-zzzzzz"></form>`, submits: false },
+    { name: "Z9 <div role=button> im Formular", body: `${FORM_OPEN}<div role="button" data-pagesmith-id="ps-zzzzzz">X</div></form>`, submits: false },
+    { name: "Z10 <object type=submit role=button> im Formular (tagName-Riegel)", body: `${FORM_OPEN}<object type="submit" role="button" data-pagesmith-id="ps-zzzzzz"></object></form>`, submits: false },
+    { name: "Z11 <button> ausserhalb, ohne Formular", body: `${FORM_OPEN}</form><button data-pagesmith-id="ps-zzzzzz">X</button>`, submits: false },
+    { name: "Z12 <button type=SUBMIT> (Grossschreibung)", body: `${FORM_OPEN}<button type="SUBMIT" data-pagesmith-id="ps-zzzzzz">X</button></form>`, submits: true },
+    { name: "Z13 <button form=f1> ausserhalb", body: `${FORM_OPEN}</form><button form="f1" data-pagesmith-id="ps-zzzzzz">X</button>`, submits: true },
+  ];
+  const zDoc = (body: string) => `<!DOCTYPE html><html><body>${body}</body></html>`;
+
+  it.each(Z_ROWS)("Laufzeit — $name", ({ body, submits }) => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(zDoc(body), [track("ps-zzzzzz", "Inner")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click('[data-pagesmith-id="ps-zzzzzz"]');
+    expect(fbqCalls(fbq, "track").map((c) => c[1])).toEqual(submits ? [] : ["Inner"]);
+  });
+
+  it.each(Z_ROWS)("Editor — $name", ({ body, submits }) => {
+    expect(submitFormOf(zDoc(body), "ps-zzzzzz")).toEqual(
+      submits ? { formId: "ps-ffffff" } : null
+    );
+  });
+
+  it("submitFormOf: unbekannte ps-ID -> null; leeres HTML -> null; Formular ohne ps-ID -> formId null", () => {
+    expect(submitFormOf(zDoc(Z_ROWS[1].body), "ps-nichtda")).toBeNull();
+    expect(submitFormOf("", "ps-zzzzzz")).toBeNull();
+    expect(
+      submitFormOf(zDoc('<form><button data-pagesmith-id="ps-zzzzzz">X</button></form>'), "ps-zzzzzz")
+    ).toEqual({ formId: null });
   });
 });

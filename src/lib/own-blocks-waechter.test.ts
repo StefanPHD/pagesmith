@@ -7,9 +7,10 @@
 // an SCRIPT_ID (lib/analytics/pageview-emitter.ts). Ein Export aendert kein Verhalten;
 // dieser Waechter belegte damals, dass der erzeugte Text davon byte-gleich unberuehrt ist.
 //
-// WAS ER HEUTE FESTNAGELT: Die Schatten-Korrektur (Phase 12.5, Scheibe 1: E1–E3) und der
-// Formular-Track am Abschicken (Phase 12.5, Scheibe 1b: E4–E6) aendern das Wiring-Script
-// BEWUSST — als reine EINSETZUNG an sechs Stellen (unten). Nach docs/immer-beachten.md,
+// WAS ER HEUTE FESTNAGELT: Die Schatten-Korrektur (Phase 12.5, Scheibe 1: E1–E3), der
+// Formular-Track am Abschicken (Phase 12.5, Scheibe 1b: E4–E6) und die Absende-Buttons ohne
+// eigene Aktionen (Phase 12.5, Scheibe 1c: E7–E9) aendern das Wiring-Script BEWUSST — als
+// reine EINSETZUNG an neun Stellen (unten). Nach docs/immer-beachten.md,
 // "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE
 // STELLE", gilt jetzt: der erzeugte Text ist der alte plus GENAU diese Einsetzungen,
 // sonst kein Zeichen. Geprueft wird: jede Einsetzung steht genau so oft da wie vorher
@@ -152,6 +153,26 @@ function e6Of(s: string): string {
   return E6_VOR + s.slice(auf + TRACK_AUF.length, zu) + E6_NACH;
 }
 
+// DIE EINSETZUNGEN DER ABSENDE-BUTTONS (Phase 12.5, Scheibe 1c) — GETIPPT aus dem
+// freigegebenen Plan. E7: die lokale Funktion direkt hinter actionOwner (also direkt hinter
+// E1). E8 (click) und E9 (auxclick): je eine Zeile hinter E4 bzw. E5; wie dort macht der
+// fuehrende Zeilenumbruch die beiden disjunkt.
+const E7 = [
+  "  // ABSENDE-BUTTONS (Phase 12.5, Scheibe 1c; Entscheidung P12.5-37): ein Knopf, der",
+  "  // ein Formular abschickt, traegt keine eigene Klick-Aktion - sein Klick gehoert dem",
+  "  // Abschicken. Das Urteil faellt der Browser (form, type); type=\"button\" schickt",
+  "  // nicht ab und behaelt seine Aktionen. Nur BUTTON und INPUT: bei anderen Tags ist",
+  "  // type frei waehlbar (object).",
+  "  function isSubmitButton(el) {",
+  '    if (el.tagName !== "BUTTON" && el.tagName !== "INPUT") return false;',
+  "    if (!el.form) return false;",
+  '    return el.type === "submit" || el.type === "image";',
+  "  }",
+  "",
+].join("\n");
+const E8 = "\n      if (el && isSubmitButton(el)) el = null;";
+const E9 = "\n        if (el && isSubmitButton(el)) el = null;";
+
 // Wie oft eine Einsetzung im Text steht (nicht ueberlappend).
 const count = (s: string, part: string) => s.split(part).length - 1;
 // Der Text ohne die Einsetzungen. E6 zuerst (es haengt am Track-Zweig, der danach
@@ -160,8 +181,11 @@ const count = (s: string, part: string) => s.split(part).length - 1;
 const withoutInsertions = (s: string) =>
   s
     .split(e6Of(s)).join("")
+    .split(E9).join("")
+    .split(E8).join("")
     .split(E5).join("")
     .split(E4).join("")
+    .split(E7).join("")
     .split(E1).join("")
     .split(E3).join("")
     .split(E2).join("");
@@ -179,7 +203,7 @@ function publishedDoc(): string {
 }
 
 describe("Byte-Waechter: der ausgelieferte Text eines SAUBEREN Projekts", () => {
-  it("W1': generateFunctional('export') = Vorher-Wert plus GENAU die Einsetzungen E1–E6", () => {
+  it("W1': generateFunctional('export') = Vorher-Wert plus GENAU die Einsetzungen E1–E9", () => {
     const doc = exportDoc();
     // (3) die Einsetzungen zaehlen — erwartet je GENAU EINMAL (ein Wiring-Script mit
     // click-, auxclick- und submit-Listener, weil die Sonde exportiert).
@@ -189,6 +213,9 @@ describe("Byte-Waechter: der ausgelieferte Text eines SAUBEREN Projekts", () => 
     expect(count(doc, E4)).toBe(1);
     expect(count(doc, E5)).toBe(1);
     expect(count(doc, e6Of(doc))).toBe(1);
+    expect(count(doc, E7)).toBe(1);
+    expect(count(doc, E8)).toBe(1);
+    expect(count(doc, E9)).toBe(1);
     // (4) entfernen -> byte-gleich zum Vorher-Wert.
     const rest = withoutInsertions(doc);
     expect(bytes(rest)).toBe(SOLL_EXPORT.bytes);
@@ -198,7 +225,7 @@ describe("Byte-Waechter: der ausgelieferte Text eines SAUBEREN Projekts", () => 
     expect(bytes(doc)).not.toBe(SOLL_EXPORT.bytes);
   });
 
-  it("W2': danach injectPageViewEmitter = Vorher-Wert plus GENAU die Einsetzungen E1–E6", () => {
+  it("W2': danach injectPageViewEmitter = Vorher-Wert plus GENAU die Einsetzungen E1–E9", () => {
     const doc = publishedDoc();
     expect(count(doc, E1)).toBe(1);
     expect(count(doc, E2)).toBe(1);
@@ -206,6 +233,9 @@ describe("Byte-Waechter: der ausgelieferte Text eines SAUBEREN Projekts", () => 
     expect(count(doc, E4)).toBe(1);
     expect(count(doc, E5)).toBe(1);
     expect(count(doc, e6Of(doc))).toBe(1);
+    expect(count(doc, E7)).toBe(1);
+    expect(count(doc, E8)).toBe(1);
+    expect(count(doc, E9)).toBe(1);
     const rest = withoutInsertions(doc);
     expect(bytes(rest)).toBe(SOLL_PUBLISHED.bytes);
     expect(sha(rest)).toBe(SOLL_PUBLISHED.sha256);

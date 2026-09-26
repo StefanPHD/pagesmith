@@ -35,6 +35,13 @@ type ActionPanelProps = {
   onSaveText: (config: TextConfig) => void;
   // Aktion entfernen — type waehlt den Slot (redirect | track | text).
   onRemove: (type: Mapping["type"]) => void;
+  // ABSENDE-BUTTON (Phase 12.5, Scheibe 1c): null, wenn das gewaehlte Element kein
+  // Absende-Button ist; sonst die ps-ID seines Formulars (null, wenn es keine traegt).
+  // Der Parent leitet es per submitFormOf (lib/generate.ts) aus dem Vorschau-HTML ab.
+  submitForm: { formId: string | null } | null;
+  // Ein anderes Element auswaehlen (Link "Formular auswählen"). Derselbe Weg wie ein
+  // Klick in die Elementliste — keine Aenderung an der Editor-Bruecke.
+  onSelectElement: (elementId: string) => void;
 };
 
 /**
@@ -50,6 +57,8 @@ export default function ActionPanel({
   onSaveTrack,
   onSaveText,
   onRemove,
+  submitForm,
+  onSelectElement,
 }: ActionPanelProps) {
   return (
     <aside className="flex w-80 shrink-0 flex-col rounded-lg border border-gray-300 bg-white">
@@ -73,6 +82,8 @@ export default function ActionPanel({
           onSaveTrack={onSaveTrack}
           onSaveText={onSaveText}
           onRemove={onRemove}
+          submitForm={submitForm}
+          onSelectElement={onSelectElement}
         />
       )}
     </aside>
@@ -88,6 +99,10 @@ export default function ActionPanel({
  * AUSNAHME FORMULAR (Phase 12.5, Scheibe 1b): kein Redirect-Slot zum Anlegen, eine
  * bestehende Weiterleitung nur noch sichtbar und entfernbar; der Track mit den Texten
  * fuer das Abschicken.
+ * AUSNAHME ABSENDE-BUTTON (Phase 12.5, Scheibe 1c; Entscheidung P12.5-37): KEINE
+ * Aktions-Kacheln, nur der Hinweis auf das Formular und der Link dorthin; bestehende
+ * Aktionen nur noch sichtbar und entfernbar. Ein Knopf, der NICHT abschickt
+ * (type="button"), bleibt im Zweig "interaktiv".
  */
 function ElementActions({
   element,
@@ -96,6 +111,8 @@ function ElementActions({
   onSaveTrack,
   onSaveText,
   onRemove,
+  submitForm,
+  onSelectElement,
 }: {
   element: DetectedElement;
   mappings: Mapping[];
@@ -103,6 +120,8 @@ function ElementActions({
   onSaveTrack: (config: TrackConfig) => void;
   onSaveText: (config: TextConfig) => void;
   onRemove: (type: Mapping["type"]) => void;
+  submitForm: { formId: string | null } | null;
+  onSelectElement: (elementId: string) => void;
 }) {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
@@ -129,8 +148,9 @@ function ElementActions({
         // dem Hinweis, dass sie nicht mehr wirkt, und ist entfernbar (das Mapping bleibt
         // gueltige Daten).
         <div className="flex flex-col gap-4">
-          <InactiveFormRedirect
+          <InactiveRedirect
             mapping={findMapping(mappings, element.id, "redirect")}
+            note={FORM_REDIRECT_NOTE}
             onRemove={() => onRemove("redirect")}
           />
           <TrackActions
@@ -140,6 +160,15 @@ function ElementActions({
             onRemove={() => onRemove("track")}
           />
         </div>
+      ) : submitForm !== null ? (
+        // ABSENDE-BUTTON (Phase 12.5, Scheibe 1c): siehe Doc-Block oben.
+        <SubmitButtonActions
+          formId={submitForm.formId}
+          redirect={findMapping(mappings, element.id, "redirect")}
+          track={findMapping(mappings, element.id, "track")}
+          onSelectElement={onSelectElement}
+          onRemove={onRemove}
+        />
       ) : (
         // Interaktiv = zwei unabhaengige Slots, gestapelt.
         <div className="flex flex-col gap-4">
@@ -459,17 +488,82 @@ function RedirectView({
   );
 }
 
+// DIE HINWEISE AN TOTEN AKTIONEN (Phase 12.5, Scheiben 1b und 1c; Entscheidung P12.5-42
+// der Phase 12.5). Der letzte Satz steht an JEDEM: Eine vor dem Bau veroeffentlichte Seite
+// fuehrt die Aktion weiter aus, bis sie neu veroeffentlicht ist — ohne ihn behauptete die
+// Anzeige etwas, was die Live-Seite noch nicht tut.
+const REPUBLISH_NOTE =
+  "Auf bereits veröffentlichten Seiten erst nach erneutem Veröffentlichen.";
+const FORM_REDIRECT_NOTE = `Formulare leiten nicht mehr weiter; das Formular schickt so ab, wie es gebaut ist. Diese Weiterleitung kannst du entfernen. ${REPUBLISH_NOTE}`;
+const SUBMIT_REDIRECT_NOTE = `Absende-Buttons leiten nicht mehr weiter; der Button schickt das Formular ab. Diese Weiterleitung kannst du entfernen. ${REPUBLISH_NOTE}`;
+const SUBMIT_TRACK_NOTE = `Absende-Buttons zählen kein eigenes Event mehr; das Event des Formulars zählt beim Abschicken. Dieses Event kannst du entfernen. ${REPUBLISH_NOTE}`;
+// Wortlaut aus Entscheidung P12.5-37 der Phase 12.5.
+const SUBMIT_BUTTON_HINT =
+  "Aktionen, Events und Weiterleitungen bitte direkt am übergeordneten Formular (<form>) einstellen.";
+
 /**
- * Die Weiterleitung eines FORMULARS (Phase 12.5, Scheibe 1b; Entscheidung P12.5-23 der
- * Phase 12.5). Ohne Mapping: nichts — neu anlegen geht nicht. Mit Mapping: sichtbar, mit
- * dem Hinweis, dass sie nicht mehr wirkt, und entfernbar; kein Bearbeiten, denn eine
- * Aenderung an einer Aktion, die nicht ausgefuehrt wird, saehe aus wie eine wirksame.
+ * ABSENDE-BUTTON (Phase 12.5, Scheibe 1c; Entscheidungen P12.5-37 und P12.5-42 der Phase
+ * 12.5). KEINE Aktions-Kacheln: die Laufzeit ignoriert Klick-Aktionen an einem Knopf, der
+ * abschickt. Stattdessen der Hinweis und der Link zum Formular (nur, wenn es eine ps-ID
+ * traegt); bestehende Aktionen bleiben sichtbar als "wirkt nicht mehr" und entfernbar.
  */
-function InactiveFormRedirect({
+function SubmitButtonActions({
+  formId,
+  redirect,
+  track,
+  onSelectElement,
+  onRemove,
+}: {
+  formId: string | null;
+  redirect: Mapping | null;
+  track: Mapping | null;
+  onSelectElement: (elementId: string) => void;
+  onRemove: (type: Mapping["type"]) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-3">
+        <p className="text-sm text-gray-700">{SUBMIT_BUTTON_HINT}</p>
+        {formId !== null && (
+          <button
+            type="button"
+            onClick={() => onSelectElement(formId)}
+            className="mt-2 text-sm font-medium text-blue-700 underline hover:text-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            Formular auswählen
+          </button>
+        )}
+      </div>
+      <InactiveRedirect
+        mapping={redirect}
+        note={SUBMIT_REDIRECT_NOTE}
+        onRemove={() => onRemove("redirect")}
+      />
+      <InactiveTrack
+        mapping={track}
+        note={SUBMIT_TRACK_NOTE}
+        onRemove={() => onRemove("track")}
+      />
+    </div>
+  );
+}
+
+/**
+ * Eine Weiterleitung, die NICHT MEHR WIRKT — am FORMULAR (Phase 12.5, Scheibe 1b;
+ * Entscheidung P12.5-23) und am ABSENDE-BUTTON (Scheibe 1c; Entscheidung P12.5-37). Ohne
+ * Mapping: nichts — neu anlegen geht nicht. Mit Mapping: sichtbar, mit dem Hinweis, dass
+ * sie nicht mehr wirkt, und entfernbar; kein Bearbeiten, denn eine Aenderung an einer
+ * Aktion, die nicht ausgefuehrt wird, saehe aus wie eine wirksame. Der Knopf heisst
+ * "Weiterleitung entfernen" und nicht "Entfernen" (Entscheidung P12.5-41): daneben kann
+ * ein zweiter Entfernen-Knopf mit anderer Wirkung stehen.
+ */
+function InactiveRedirect({
   mapping,
+  note,
   onRemove,
 }: {
   mapping: Mapping | null;
+  note: string;
   onRemove: () => void;
 }) {
   const redirectMapping = mapping?.type === "redirect" ? mapping : null;
@@ -483,10 +577,7 @@ function InactiveFormRedirect({
         <p className="break-all text-sm text-gray-500 line-through">
           {redirectMapping.config.url}
         </p>
-        <p className="mt-1 text-xs text-gray-600">
-          Formulare leiten nicht mehr weiter; das Formular schickt so ab, wie es gebaut ist.
-          Diese Weiterleitung kannst du entfernen.
-        </p>
+        <p className="mt-1 text-xs text-gray-600">{note}</p>
       </div>
       <div className="flex gap-2">
         <button
@@ -494,7 +585,47 @@ function InactiveFormRedirect({
           onClick={onRemove}
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
         >
-          Entfernen
+          Weiterleitung entfernen
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Ein Tracking-Event, das NICHT MEHR WIRKT — am ABSENDE-BUTTON (Phase 12.5, Scheibe 1c;
+ * Entscheidung P12.5-37). Dieselbe Bauform wie InactiveRedirect: ohne Mapping nichts, mit
+ * Mapping sichtbar, durchgestrichen, ohne Bearbeiten, entfernbar ("Event entfernen").
+ */
+function InactiveTrack({
+  mapping,
+  note,
+  onRemove,
+}: {
+  mapping: Mapping | null;
+  note: string;
+  onRemove: () => void;
+}) {
+  const trackMapping = mapping?.type === "track" ? mapping : null;
+  if (!trackMapping) return null;
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-3">
+        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">
+          🎯 Tracking-Event — wirkt nicht mehr
+        </p>
+        <p className="break-all text-sm text-gray-500 line-through">
+          {trackMapping.config.event || "(kein Event)"}
+        </p>
+        <p className="mt-1 text-xs text-gray-600">{note}</p>
+      </div>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={onRemove}
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
+        >
+          Event entfernen
         </button>
       </div>
     </div>

@@ -1073,6 +1073,15 @@ Unterüberschrift "Messung 2026-09-28", Befunde (s) bis (ab). Offen geführt ist
 WIDERSPRUCH: Befund (z) (Szenario AUS → 200 und Queue) steht gegen eine Doku-Aussage in
 Befund (i).
 
+**Arbeit P13-64 — ANBIETER-LESUNG DER E-MAIL-ANBIETER: BREVO, SYSTEME.IO, MAILCHIMP,
+KLICKTIPP** (ARCHITEKT, 2026-09-28, Auftrag der Anbieter-Lesung; Reihenfolge wie im Auftrag).
+Vor der Lesung ist der Fragenkatalog um K8 bis K14 erweitert (docs/formular-empfaenger-
+befunde.md, "Erweiterung für E-Mail-Anbieter mit eigenem Formular-Empfang (2026-09-28)").
+KEINE Angabe der Lesung ist gemessen; je Anbieter stehen Messkandidaten und eine EINORDNUNG
+als Befund, keine Entscheidung.
+- Brevo: docs/formular-empfaenger-befunde.md, Abschnitt "Brevo", Befunde (a) bis (m),
+  Messkandidaten B1 bis B4. EINORDNUNG: nicht entscheidbar; Umweg über Make trägt nach Doku.
+
 **Arbeit P13-12 — BEKANNTE SCHWÄCHEN DES WEGS, die Lesung oder Plan beantworten müssen**
 (ARCHITEKTEN-SETZUNG 2026-09-28; jede Schwäche ABGELEITET, keine gemessen):
 · Die Zustellung ist vom Browser aus nicht bestätigbar — bei falscher Adresse erscheint die

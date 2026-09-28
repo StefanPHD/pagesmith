@@ -705,3 +705,260 @@ und die Einstellungen eines Blockers sind nicht erfasst.
 - GEMESSEN: M13 → (ad).
 - ERWEITERT, WEITER TEILWEISE: M5 → (ac), (ad) — die 410 im Browser; M10 → (ae) — ein Blocker.
 - UNVERÄNDERT OFFEN: M6, M7, M12; M4 und M8 wie zuvor.
+
+## Brevo
+
+### Anbieter-Lesung vom 2026-09-28 (CC, Phase 13, Arbeit P13-64)
+
+**INSTRUMENT:** Playwright-MCP, wie bei Make: Text je Seite über `textContent` des
+Artikelkörpers nach Entfernen von `script`, `style`, `noscript`, `svg`, `template`. Damit
+sind auch die NICHT vorausgewählten Reiter erfasst (gezählt über `role=tab`, je Seite unten
+genannt). Die Seiten der Hilfe tragen kein `time`-Element; ein Stand der Seite ist daher
+nicht angegeben. Ablage des Werkzeugs unter `.playwright-mcp/` (in `.gitignore`).
+**KEINE ANGABE DIESER LESUNG IST GEMESSEN.** Keine Eingabe, keine Anmeldung, kein Download,
+kein Aufruf eines Formular-Endpunkts.
+
+**GELESENER UMFANG — VOLL** (Lesedatum je Seite 2026-09-28):
+- https://help.brevo.com/hc/en-us/articles/208771869-Create-a-sign-up-form-in-Brevo —
+  "Create a sign-up form in Brevo" (5 Reiter: "Build tab"/"Form design tab" und "Double
+  confirmation"/"Simple confirmation"/"No confirmation"; alle über `textContent` gelesen)
+- https://help.brevo.com/hc/en-us/articles/19591451188114-Protect-your-forms-from-bots-and-spam-signups
+  — "Protect your forms from bots and spam signups"
+- https://help.brevo.com/hc/en-us/articles/360019551939-Add-a-CAPTCHA-to-a-sign-up-form-created-in-Brevo
+  — "Add a CAPTCHA to a sign-up form created in Brevo" (Reiter "Create a Google reCAPTCHA",
+  "Create a Cloudflare Turnstile CAPTCHA", "Standard sign-up form", "Pop-up form"; alle
+  gelesen)
+- https://help.brevo.com/hc/en-us/articles/360019846960-Troubleshooting-issues-with-your-forms
+  — "Troubleshooting issues with your forms"
+- https://help.brevo.com/hc/en-us/articles/208733449-Double-opt-in-DOI-What-it-is-and-how-to-track-user-sign-ups
+  — "Double opt-in (DOI): What it is and how to track user sign-ups" (Reiter "The DOI is
+  confirmed"/"The DOI is not confirmed"; beide gelesen)
+- https://help.brevo.com/hc/en-us/articles/27353832123026-Set-up-a-double-opt-in-process-for-a-sign-up-form-created-outside-of-Brevo
+  — "Set up a double opt-in process for a sign-up form created outside of Brevo"
+- https://help.brevo.com/hc/en-us/articles/360019485320-About-sign-up-unsubscribe-and-profile-update-forms
+  — "About sign-up, unsubscribe, and profile update forms"
+- https://help.brevo.com/hc/en-us/articles/360000454204-Guidelines-for-a-GDPR-compliant-sign-up-form
+  — "Guidelines for a GDPR-compliant sign-up form"
+- https://help.brevo.com/hc/en-us/articles/360001005510-Data-storage-location — "Data storage
+  location"
+- https://help.brevo.com/hc/en-us/articles/115000764784-Use-Make-to-integrate-an-app-with-Brevo
+  — "Use Make to integrate an app with Brevo" (Reiter "Supported triggers"/"Supported
+  actions"; beide gelesen)
+- https://apps.make.com/sendinblue — "Brevo - Apps Documentation" (Updated 09 Dec 2025; die
+  Make-Seite zur Brevo-App)
+- Das Verzeichnis der Hilfe-Sektion "Forms":
+  https://help.brevo.com/hc/en-us/sections/202171729-Forms (13 Artikel; welche geöffnet sind,
+  steht hier und unter "GESEHEN, NICHT GEÖFFNET").
+
+**GELESENER UMFANG — GEZIELT** (Suche über den Seitentext, Achse und Positivkontrolle):
+- https://help.brevo.com/hc/en-us/articles/208849249-Brevo-plugin-for-WordPress-Connect-your-WordPress-site-with-Brevo
+  — Achse `sibforms|simple html|form action|endpoint|honeypot|email_address_check|double
+  opt|api key|cors`; 27 Treffer, alle zu Plugin-Aktivierung, reCAPTCHA-Fehlern und
+  Plugin-Einstellungen, keiner zu Adresse oder Feldnamen eines Formular-Endpunkts.
+  Positivkontrolle: "Brevo" 181-mal.
+- https://help.brevo.com/hc/en-us/articles/360000545200-Enable-your-contacts-to-subscribe-or-unsubscribe-from-specific-lists-using-a-form-multi-list-subscriptions
+  — Achse `html|field name|hidden|lists?\[|input|name=|sibforms|endpoint|captcha|embed`;
+  0 Treffer auf 3 280 Zeichen. Positivkontrolle: "list" 30-mal.
+- https://developers.brevo.com/reference/create-doi-contact — "Create Contact via DOI
+  (Double-Opt-In) Flow | Brevo API Documentation", der Inhaltsteil ab der Überschrift, über
+  `innerText` (die Seite rendert Navigation und Inhalt in einem Baum). Nur für K13.1 gelesen;
+  "Show 4 variants" ist NICHT aufgeklappt.
+- Websuchen (2026-09-28): `"sibforms.com/serve" form action EMAIL "email_address_check"
+  locale` und `site:help.brevo.com "Simple HTML" form code sibforms` — unter den Treffern
+  KEINE Seite der Brevo-Hilfe oder der Entwickler-Doku, die Adresse oder Feldnamen des
+  Formular-Endpunkts beschreibt.
+
+**REITER, TABELLEN, SYMBOLE, BILDER:** Reiter je Seite oben. Die Tabellen der CAPTCHA-Seite
+(Vergleich reCAPTCHA/Turnstile, reCAPTCHA-Typen, Domain je Freigabeweg) tragen Text, keine
+Symbole. BILDER SIND NICHT GELESEN — u. a. 42 Bilder auf "Create a sign-up form in Brevo";
+was sie zeigen (etwa den erzeugten HTML-Code), steht hier nicht.
+
+**GESEHEN, NICHT GEÖFFNET** (je mit Grund):
+- "Create a pop-up sign-up form in Brevo" (…/20791391306770) — Pop-up per Skript des
+  Anbieters, nicht unser Weg; laut CAPTCHA-Seite zudem nur Professional und Enterprise.
+- "Create a custom double opt-in (DOI) email template …" (…/360019540880) — Gestaltung der
+  Vorlage; wer versendet (K11.2), steht auf den gelesenen Seiten.
+- "Notify your team by email when a contact submits a form" (…/27278282993682) und "Classic
+  editor - Receive a notification …" (…/4406337619474) — Benachrichtigung des TEAMS, nicht
+  Bestätigung an den Kontakt (K14); K6.1 ist über "Create a sign-up form", Step 8, gelesen.
+- "Update your contacts details and preferences (profile update form)" (…/360003644360) und
+  "Customize an unsubscribe form …" (…/360022160120) — andere Formular-Arten.
+- "Set up a double opt-in subscription automation for forms created outside of Brevo"
+  (…/211244629) — der Link trägt denselben Gegenstand wie der gelesene Artikel …/27353832123026;
+  ob er eine ältere Fassung ist, ist nicht geprüft.
+- "Authorize IP addresses for API calls to improve security", "Create and manage your API
+  keys" — K13.1 wird nur abgelegt.
+- https://developers.brevo.com/reference/create-contact — K13.1 wird nur abgelegt; der
+  DOI-Weg ist über create-doi-contact gelesen.
+- Öffentlich gehostete Formulare DRITTER unter `sibforms.com` im Suchindex — keine
+  Anbieter-Doku; nicht geöffnet (fremde Formulare).
+- Community (community.brevo.com) — nicht durchsucht.
+**PRÜFUNG DER AUSSCHLUSSLISTE GEGEN DIE OFFENEN FRAGEN** (2026-09-28): Offen nach der Lesung
+sind K8.2 (Form der Adresse), K9.1/K9.3/K9.4 (Feldnamen, versteckte Angaben), K10.2
+(Origin/Referer), K12 (Antwort), K1/K2 (Formate, CORS) und K4 (Grenzen). Nach dem Titel
+trug EINE Seite der Liste eine dieser Fragen: "Guidelines for a GDPR-compliant sign-up form"
+(K11.3) — sie ist GEÖFFNET und oben geführt. Die übrigen Ausschlüsse tragen nach ihrem Titel
+keine offene Frage; die Community ist nicht durchsucht, ein "steht dort nicht" reicht nicht
+in sie hinein.
+
+**(a) K8.1, K8.4 — EIN FORMULAR OHNE SKRIPT DES ANBIETERS IST EIN ANGEBOTENER WEG.** GELESEN,
+"Create a sign-up form in Brevo", Step 6: Es gibt drei Einbettungs-Codes — "[Recommended]
+Iframe", "HTML" ("with Ajax animation for messages") und "Simple HTML: A simplified version
+of HTML form code that does not require calling JavaScript." Dazu: "Elements that require
+calling JavaScript, such as CAPTCHA, default confirmation pages, and success and error
+messages, cannot be included in the simple HTML code." GELESEN, CAPTCHA-Seite: "If you
+include a CAPTCHA, you won't be able to share your form with Simple HTML."
+FOLGERUNG: Brevo selbst liefert ein Formular, das ohne sein Skript absendet. Ob ein
+EIGENES Formular mit denselben Feldnamen an dieselbe Adresse genauso angenommen wird, sagt
+keine gelesene Seite — MESSUNG NÖTIG (B1).
+
+**(b) K8.2, K8.3 — FORM UND FUNDORT DER ADRESSE.** GELESEN, "Create a sign-up form in
+Brevo", Step 6: Der Code steht im Schritt "Share" des Formulars (Marketing > Forms > Formular
+öffnen > Share); die Adresse ist je FORMULAR. Die Form der Adresse steht auf KEINER gelesenen
+Seite — Reichweite: alle voll gelesenen Seiten, die gezielten Suchen und die zwei Websuchen
+oben; die Bilder sind nicht gelesen. GELESEN, CAPTCHA-Seite: `sibforms.com` ist "the domain
+Brevo uses to host the form".
+BEOBACHTET IM SUCHINDEX, 2026-09-28 (weder Anbieter-Doku noch Messung, nicht geöffnet):
+öffentliche Formulare Dritter unter `https://sibforms.com/serve/<Kennung>`,
+`https://<8 Hex-Zeichen>.sibforms.com/serve/<Kennung>` und `…/v2/serve/<Kennung>`; die
+Kennung beginnt in allen Treffern mit `MUIE`. Ob die `action` des "Simple HTML"-Codes
+dieselbe Adresse trägt, ist nicht belegt — ablesbar am Code eines Owner-Formulars (B1).
+
+**(c) K9.1, K9.2 — FELDER.** GELESEN, "Create a sign-up form in Brevo": "Each field in your
+sign-up form corresponds to a contact or company attribute in your Brevo account"; ein Feld
+für Vorname ist das Attribut `FIRSTNAME`; eigene Felder brauchen vorher ein
+Kontakt-Attribut ("Settings > Contacts > Contact attributes"). "Only text, number, and date
+attributes are available" im Attribut-Block; Textfelder einzeilig bis 200, mehrzeilig bis
+500 Zeichen. "Your form must include at least one field for Email, SMS, or WhatsApp."
+GELESEN, "Troubleshooting issues with your forms": die Attribute `SMS`, `LANDLINE_NUMBER`,
+`WHATSAPP` erscheinen im HTML-Code als `data-placeholder` eines `div` mit Klasse
+`sib-sms-input`.
+WELCHE `name`-ATTRIBUTE DIE EINGABEFELDER IM HTML-CODE TRAGEN (etwa `EMAIL`), UND OB GROSS
+UND KLEIN ZÄHLEN, STEHT AUF KEINER GELESENEN SEITE — Reichweite wie (b). MESSUNG NÖTIG (B1).
+Was mit fehlenden Pflichtfeldern geschieht: nur als Meldungstext "Empty field: A required
+field has not been completed" (Step 5) — der Status einer solchen Antwort steht dort nicht.
+
+**(d) K9.3 — VERSTECKTE ANGABEN.** Liste(n) werden am FORMULAR in Brevo gewählt ("Step 3:
+Select the list(s)"), nicht im Formular-Code beschrieben (GELESEN). Ob der Code versteckte
+Felder trägt (Sprache, Liste, Honeypot), steht auf KEINER gelesenen Seite — Reichweite wie
+(b). MESSUNG NÖTIG (B1). K9.4 (unbekannte Felder): NICHT GEFUNDEN, Reichweite wie (b).
+
+**(e) K10 — BOT-SCHUTZ.** GELESEN, "Protect your forms …": empfohlen werden CAPTCHA, Double
+Opt-In, Sperre von Freemail- und Wegwerf-Adressen, Honeypot, Ratenbegrenzung, Anti-Spam-
+Werkzeuge, eine eigene Frage, eine WAF — als BEST PRACTICE des Betreibers, nicht als
+Schutz, den Brevo am Endpunkt erzwingt. "If one of your forms is unprotected and experiences
+a bot attack, your account can be suspended […] To reactivate your account, add a CAPTCHA to
+the affected form." GELESEN, CAPTCHA-Seite: CAPTCHA ist wählbar (reCAPTCHA v2/v3 oder
+Cloudflare Turnstile) und schliesst "Simple HTML" aus (s. (a)); bei eingebettetem HTML muss
+die Domain der WEBSITE in der CAPTCHA-Konfiguration stehen. GELESEN, "Create a sign-up
+form", "Block sign-ups": Freemail- und Wegwerf-Sperre ab Standard.
+Eine Prüfung von `Origin` oder `Referer` am Endpunkt steht auf KEINER gelesenen Seite —
+Reichweite wie (b). MESSUNG NÖTIG (B2).
+FOLGERUNG: Ein Formular MIT CAPTCHA ist über unseren Weg nicht erreichbar, weil es kein
+"Simple HTML" hat. Ein Formular OHNE CAPTCHA ist nach Brevos eigener Aussage ein Risiko für
+das KONTO des Betreibers — BEZUG, KEINE ENTSCHEIDUNG: Arbeit P13-12 ("Die öffentliche Adresse
+ist spam-anfällig").
+
+**(f) K11 — DOUBLE-OPT-IN.** GELESEN, "Create a sign-up form", Step 4: drei Optionen je
+Formular — "Double confirmation" (empfohlen; Kontakt erst nach Klick im Bestätigungslink),
+"Simple confirmation" (sofort angelegt, Bestätigungsmail), "No confirmation" (sofort
+angelegt, keine Mail). "Double and single confirmations are only available if you have added
+an email address field." GELESEN, DOI-Seite: vor der Bestätigung ist der Kontakt NICHT in der
+Liste, "Their information is only stored in the event logs"; der Link läuft nach 30 Tagen
+ab. Versender ist Brevo mit einer Vorlage aus "Marketing > Templates" (K11.2; Absender auf
+den gelesenen Seiten nicht genannt).
+K11.3: Die Einwilligungs-Checkbox ist der Block "GDPR field", "highly recommend[ed]", nicht
+als Pflicht beschrieben (GELESEN, "Create a sign-up form" und "Guidelines for a
+GDPR-compliant sign-up form"). Ihr Feldname im Code: NICHT GEFUNDEN, Reichweite wie (b).
+Die GDPR-Seite nennt zusätzlich: DOI nur für E-Mail-Formulare, "For SMS sign-up forms, no
+confirmation will be sent".
+
+**(g) K12 — ANTWORT.** GELESEN, "Create a sign-up form", Step 4: optional "Confirmation page
+after submitting the form" — Weiterleitung auf eine Standard- oder eigene Seite; sonst eine
+"Success message […] at the top of your sign-up form without changing the page". Nach (a)
+kann "Simple HTML" die Standard-Bestätigungsseite und die Meldungen NICHT tragen. Was der
+Endpunkt auf einen Aufruf ohne Skript antwortet (Status, Weiterleitung, Rumpf), steht auf
+KEINER gelesenen Seite. MESSUNG NÖTIG (B1). NUR ABGELEGT (Katalog K12): im Modus `no-cors` ist
+das für unser Skript `opaque`.
+
+**(h) K13 — ANDERE WEGE.** GELESEN, apps.make.com/sendinblue: Make führt eine Brevo-App mit
+u. a. "Create a Contact", "Update a Contact", "Add Existing Contacts to a List", "Make an API
+Call"; Verbindung über einen Brevo-API-Schlüssel. GELESEN, "Use Make to integrate an app with
+Brevo": dieselben Module; "the Brevo app is free to all Brevo clients with up to 1,000
+operations per month"; bei 401 ist die IP-Freigabe für API-Aufrufe zu prüfen. GELESEN, "Set
+up a double opt-in process for a sign-up form created outside of Brevo": Kontakte aus
+Formularen AUSSERHALB von Brevo kommen über "one of our plugins, the API, or Zapier" in eine
+temporäre Liste; das Double-Opt-In baut der Betreiber als Automatisierung. GELESEN,
+developers.brevo.com, create-doi-contact: `POST https://api.brevo.com/v3/contacts/
+doubleOptinConfirmation` mit `email`, `includeListIds`, `redirectionUrl`, `templateId`
+(Pflicht), `attributes` (optional), Schlüssel in der Kopfzeile `api-key`.
+K13.1 NUR ABGELEGT: der Schlüssel wäre im ausgelieferten Text öffentlich — nach Setzung P13-6
+für uns ausgeschlossen. In Make liegt er beim Betreiber, nicht im Browser.
+
+**(i) K14 — EIGENE BESTÄTIGUNG.** GELESEN, "Create a sign-up form", Step 4: "Simple
+confirmation" schickt eine Bestätigungsmail sofort nach dem Absenden, Vorlage "Default
+Template Simple confirmation", änderbar unter "Marketing > Templates > Email" — ohne
+Kampagne und ohne Automatisierung. Bei "Double confirmation" optional eine "Final
+Confirmation Email" nach der Bestätigung.
+OB DIESE EINSTELLUNG AUCH BEI EINEM EINTRAG ÜBER "SIMPLE HTML" GREIFT, sagt keine gelesene
+Seite; FOLGERUNG: sie ist eine Einstellung des FORMULARS und nicht an sein Skript gebunden
+— ERSETZT DIE MESSUNG NICHT (B1). Beim Weg über Make oder die API greift sie NICHT von selbst:
+dort baut der Betreiber das Double-Opt-In und die Bestätigung als Automatisierung ("Set up a
+double opt-in process … outside of Brevo", Step 2 und Step 4) oder nutzt den DOI-Endpunkt.
+
+**(j) K4 — STILLE VERLUSTE.** GELESEN, "Troubleshooting issues with your forms": "Phone
+number is not valid" erscheint auch bei gültiger Nummer, wenn sie bereits zu einem
+bestehenden Kontakt gehört — "it is not possible to submit a phone number that is already
+associated with an existing contact". Gesperrte Formulare bei Verdacht auf Phishing ("You do
+not have access to Forms at this time") und ein gesperrtes Konto nennt die Seite als
+Ursachen, warum ein Formular nicht funktioniert. Wie der Endpunkt in diesen Fällen antwortet,
+steht dort nicht. Ratenlimits am Formular-Endpunkt: NICHT GEFUNDEN, Reichweite wie (b).
+FOLGERUNG: Ein Formular mit Telefonfeld kann einen Wiederkehrer abweisen; im Modus `no-cors`
+sähe unser Skript davon nichts.
+
+**(k) K5 — AUFBEWAHRUNG, REGION.** GELESEN, "Data storage location": "The hosting servers on
+which Brevo processes and stores its databases are all located within the European Union";
+OVH in Frankreich und Deutschland, Google Cloud in Belgien; Sicherungen mindestens
+wöchentlich, verschlüsselt. Wählbar ist die Region auf keiner gelesenen Seite. GELESEN,
+DOI-Seite: Ein Absenden wird in den "event logs" mit Zeitpunkt und E-Mail-Adresse abgelegt,
+auch ohne spätere Bestätigung; die DOI-Mail samt Inhalt in den "transactional logs"; "You
+can delete those logs." Aufbewahrungsdauern: NICHT GEFUNDEN, Reichweite: die voll gelesenen
+Seiten.
+
+**(l) K6 — NACHWEIS.** GELESEN, "Create a sign-up form", Step 8: Spalten "New contacts" und
+"Submits" unter Marketing > Forms; Kontakte in der gewählten Liste; Verlauf je Kontakt;
+"Automations > Logs > Event logs", Ereignisart "Forms", als CSV. Das Attribut `DOUBLE_OPT-IN`
+zeigt Yes/No bzw. leer bei anderem Eingang.
+
+**(m) K1, K2, K3, K7 — FORMATE, CORS, GEHEIMHALTUNG, BLOCKER.** Methode und Content-Type des
+Endpunkts, CORS-Kopfzeilen, Preflight: NICHT GEFUNDEN, Reichweite wie (b). K3.2: Dass die
+Adresse geheim zu halten sei, steht nirgends; sie steht nach (a) im öffentlichen
+Einbettungs-Code — BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-6 ("kein Geheimnis") wird davon
+nicht berührt. K7: Messfrage (B4).
+
+### Messkandidaten Brevo (aus der Lesung vom 2026-09-28)
+
+Keiner gemessen; die Liste entscheidet nicht, welcher gemessen wird. Testkonto des Owners
+vorhanden (Entscheidung P13-4 der Phase 13).
+- B1 — Den "Simple HTML"-Code eines Owner-Formulars OHNE CAPTCHA ablesen: `action`,
+  `method`, `enctype`, die `name`-Attribute aller Felder (E-Mail, Vorname, eigene
+  Attribute, GDPR-Feld), versteckte Felder. Danach ein `POST` mit
+  `application/x-www-form-urlencoded` an diese Adresse: Status, Weiterleitung, Rumpf,
+  CORS-Kopfzeilen; kommt der Kontakt an, greift die "Simple confirmation"? (K8.2, K9, K12,
+  K14; zu (a)–(d), (g), (i))
+- B2 — Derselbe `POST` mit `Origin` einer fremden Seite und ohne `Referer`, dann aus dem
+  Browser im Modus `no-cors` von einer Seite unter publayer.net. (K10.2, K2; zu (e))
+- B3 — Wiederkehrer: dieselbe E-Mail zweimal, dieselbe Telefonnummer zweimal. (K4; zu (j))
+- B4 — Erfassen gängige Filterlisten `sibforms.com`? (K7.1)
+
+### EINORDNUNG Brevo (Befund, keine Entscheidung)
+
+NICHT ENTSCHEIDBAR nach der Lesung. Der Weg aus 13-1 ist bei Brevo ANGELEGT — Brevo liefert
+selbst ein Formular ohne Skript ("Simple HTML", (a)) —, aber Adresse, Feldnamen, versteckte
+Felder und Antwort stehen in keiner gelesenen Doku, und ein Formular mit CAPTCHA fällt nach
+(a) heraus. FOLGERUNG, NICHT GELESEN: Trägt er, dann höchstens MIT DEN FELDNAMEN VON BREVO
+(je Kontakt-Attribut, (c)); welche genau, klärt erst B1. Brevos eigene Warnung vor ungeschützten
+Formularen ((e)) steht daneben.
+DER UMWEG ÜBER MAKE TRÄGT NACH DER DOKU ((h)): Make führt Module zum Anlegen und Aktualisieren
+von Kontakten; der Schlüssel bleibt in Make. Eine eigene Bestätigung durch Brevo greift auf
+diesem Weg nicht von selbst ((i)).

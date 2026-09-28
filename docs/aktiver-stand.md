@@ -949,6 +949,7 @@ Setzungen P13-51 bis P13-59).
       CR 0; `i/lf` ausser src/lib/mappings.ts (`i/-text`, NUL 1 — vorbestehend, Vorrat P13-37).
     · eslint, `next build` und die Mutationsproben der Bau-Sitzung stehen in keiner Datei; sie
       lagen nur ihrem Bericht bei und sind hier NICHT nachgetragen.
+      → NACHGETRAGEN am 2026-09-28, ZWEITHAND: Punkt (8).
 (3) ABWEICHUNGEN VOM WORTLAUT DER ARBEIT P13-34, deklariert im Zuschnitt: Die Namen stehen ZUR
     ERZEUGUNGSZEIT im ausgelieferten Text (Setzung P13-43), nicht "beim Versand"; die Herkunft
     ist erweitert (Setzung P13-44). Unverändert bleiben der Quelltext (J1) und die Laufzeit
@@ -1011,6 +1012,33 @@ Setzungen P13-51 bis P13-59).
     · Setzungen P13-43 bis P13-49 und P13-51 bis P13-59.
     · Vermerk P13-50 samt Nachtrag aus B0.
     · Die Invarianten J1 bis J9, je mit Wächter.
+(8) NACHTRAG: PIPELINE UND MUTATIONEN DER BAU-SITZUNG (2026-09-28). PROVENIENZ: gelesen:
+    Baubericht der Bau-Sitzung 13-1c vom 2026-09-28, vom Architekten übermittelt — ZWEITHAND.
+    Von CC weder gemessen noch am Protokoll der Bau-Sitzung geprüft; nachgemessen sind allein
+    die Zahlen in Punkt (2).
+    · PIPELINE VOR DER VORLAGE: `tsc` exit 0 · `eslint` 0 Fehler, 1 vorbestehende Warnung
+      (src/lib/tracking/consent.test.ts) · `vitest` 99 Dateien, 2446 → 2497 Tests (+51) ·
+      `next build` exit 0.
+    · MUTATIONEN, je über die volle Suite, die Vorhersage vor dem Lauf im Scratchpad der
+      Bau-Sitzung:
+      - M-J2 (Benennung für jedes `form`, jeden Modus) → J2a, J2b, J2c, N-Diff; W1′, W2′, T1,
+        T9 grün, wie vorhergesagt.
+      - M-J3 (benannte Felder gehen in die Ableitung) → 27 = 17 der Klasse J3 + 10 Kaskade über
+        `fill()` (F1, F1b, F1c, F2, G1–G6); die Kaskade ist geprüft.
+      - M-J5 (Erzeugung mit eigener Kopie der Beschriftungs-Ableitung) → nur J5-T.
+      - M-J6 (`uniqueName` gibt immer `base` zurück) → J3, J6 ×2, J5.
+      - M-J7 (Zeile "names" im Riegel entfernt) → 2 Unit- und 3 CodeImporter-Tests.
+      - M-J7b (Listenprüfung im Server-Tor entfernt) → F8′ ×4, F8′ nur B.
+      - M-Strip (`fieldNames` bleibt im Datenblock) → F6b, F6c, F6c-b, F7, N-Diff.
+      Keine blieb grün, keine wich von der Vorhersage ab.
+      ZUR ZÄHLUNG "F8′ ×4" (GELESEN am Test, CC, 2026-09-28): die vier Fälle des `it.each`
+      "F8': %s -> Abbruch mit eigener Meldung, NICHTS geschrieben" in
+      src/app/projects/publish.test.ts; "F8′ nur B" ist der Test "F8': eine fehlende Liste NUR
+      in Variante B bricht ebenfalls ab".
+    · BEFUND DER BAU-SITZUNG: F6c war im ersten Lauf aus dem FALSCHEN Grund grün — die Fixture
+      löste den Vorgabewert aus und verglich ein Ziel mit sich selbst. Behoben; seitdem fällt
+      F6c unter M-Strip. BEZUG: Dauerregel "EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND
+      ERFÜLLT, IST KEINE VORBEDINGUNG" (docs/immer-beachten.md).
 
 **Hebungs-Kandidat P13-63 — EIN LIVE-BYTE-VERGLEICH ÜBER AUSGELIEFERTEN TEXT** (ARCHITEKT,
 2026-09-28; das Phasenende entscheidet).

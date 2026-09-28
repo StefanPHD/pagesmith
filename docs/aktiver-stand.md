@@ -266,9 +266,11 @@ danach als Gegenprobe für ESP-Formular-Endpunkte.
 
 ## Zuschnitt Scheibe 13-1
 
-GEGENSTAND: "Formular-Ziel mit Danke-Seite" — der Datenweg aus Entscheidung P13-2 samt
-Danke-Seite, für Formulare, die der Nutzer im Tool ausdrücklich mit einem Ziel versieht
-(Setzung P13-5). Zugeschnitten am 2026-09-28; der Plan folgt in einer eigenen Runde.
+**ABGESCHLOSSEN AM 2026-09-28 — Bau-Commit `434dc86`, Live-Test bestanden; Abschluss-Vermerk
+P13-35.**
+- Der Zuschnitt ist verdichtet: Hier stehen nur noch die Entscheidungen, Setzungen und
+  Invarianten, die über die Scheibe hinaus binden, dazu die Vermerke der Scheibe.
+- Was gestrichen ist und wo sein Inhalt steht: Vermerk P13-35, Punkt (8).
 
 ### Owner-Entscheidungen zur Scheibe 13-1
 
@@ -303,9 +305,11 @@ EINEM Empfänger (Make, Zone eu2); Brevo und systeme.io sind ungemessen (Setzung
 ZIELADRESSE UND KEIN DATEI-FELD TRAGEN.**
 GRUND: Setzung P13-5 (Formulare mit eigener `action` bleiben unberührt; Datei-Felder sind nicht
 Teil der ersten Scheibe).
-GRENZE: Was "fremd" heisst (eine `action` auf denselben Ursprung, `#`, leer), ist nicht
-festgelegt; das "eigene Skript" aus Setzung P13-5 bleibt am Code ohne Merkmal (Vermerk P13-1,
-Punkt (4)).
+GRENZE:
+- Was "fremd" heisst, legt Setzung P13-31 fest, gebaut in `formTargetCheck`: eine ABSOLUTE
+  Adresse in `action` oder `formaction`. Relativ, `#` und leer zählen nicht.
+- Das "eigene Skript" aus Setzung P13-5 bleibt am Code ohne Merkmal (Vermerk P13-1, Punkt (4)).
+  Ein Inline-`onsubmit` ist nur ein Hinweis (Setzung P13-31).
 
 **Setzung P13-21 — DAS SIGNAL "ERREICHT / NICHT ERREICHT": DER AUFRUF LÄUFT IM MODUS
 `no-cors`; "ERREICHT" GILT NUR, WENN ER AUFGELÖST IST UND `r.type === 'opaque'` TRÄGT.** Jeder
@@ -325,8 +329,8 @@ GRENZEN:
 - Der harte Block (`net::ERR_BLOCKED_BY_CLIENT`) ist ABGELEITET — als Netzfehler, also Wurf —,
   nicht gemessen.
 - Ein Blocker, der selbst eine `opaque`-Antwort erzeugt, ist nicht ausgeschlossen.
-- An der Make-Adresse ist `opaque` im Erfolgsfall ABGELEITET, NICHT GEMESSEN: Die Ausgabe von N1
-  trug `r.type` nicht, `opaque` ist nur an einer anderen Adresse gemessen (N4).
+- An der Make-Adresse ist `opaque` im Erfolgsfall GEMESSEN (B0, Vermerk P13-35, Punkt (0)):
+  `OK opaque 0` und ein Eingang bei Make; ein Browser, eine Zone (eu2).
 - Eine falsche Adresse fängt dieses Signal nicht (Setzung P13-18; Beleg:
   docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (ac)).
 BEZUG, KEINE ENTSCHEIDUNG: ebenda, Befunde (x) und (ad) — im Modus `cors` ist die
@@ -356,41 +360,47 @@ GRENZE: ein Browser, ein Blocker. `r.type` ist in N1–N6 nicht ausgegeben worde
 
 ### Invarianten der Scheibe 13-1
 
-Der Massstab für Plan, Bau und Protokoll. PROVENIENZ: ARCHITEKT 2026-09-28, Auftrag der
-Zuschnitt-Runde.
+Sie binden über die Scheibe hinaus: Jede spätere Änderung am Formular-Ziel oder am Submit-Weg
+misst sich daran. PROVENIENZ: ARCHITEKT 2026-09-28, Auftrag der Zuschnitt-Runde. Seit dem
+Abschluss steht je Invariante ihr WÄCHTER dabei. Die Tests F…/G…/K… stehen in
+src/lib/form-target.test.ts, F8 in src/app/projects/publish.test.ts, F14/F15 in
+src/components/CodeImporter.test.tsx.
 - I1 Formularinhalte gehen AUSSCHLIESSLICH an die eingetragene Adresse — nie an `/api/e`, nie an
-  ein Tracking-Ziel, nie in unsere Datenbank oder unsere Logs (Entscheidung P13-7). Ein Test
-  beweist es.
+  ein Tracking-Ziel, nie in unsere Datenbank oder unsere Logs (Entscheidung P13-7).
+  WÄCHTER: F1 (einziger Test, der einen Weg an `/api/e` fängt; Mutation M-I1); dahinter die
+  Laufzeit-Wache G1–G6 (keine Sendung bei kaputter Konfiguration, G3 allein für den gleichen
+  Ursprung).
+  GRENZE: Am Beacon ist I1 live NICHT gezeigt (Vermerk P13-35, Punkt (7)).
 - I2 Keine Feldwerte in der Adresse der Danke-Seite — und damit nie in `eventSourceUrl`.
-- I3 Zur Danke-Seite nur, wenn der Empfänger erreicht wurde; sonst bleibt das Formular, eine
-  eigene Meldung erscheint, ein erneuter Versuch ist möglich (Entscheidung P13-17).
-- I4 Formulare OHNE Ziel verhalten sich unverändert; die (I4) der Scheiben 1b und 1c der Phase
-  12.5 gelten für sie weiter (Wortlaut: Vermerk P13-1, Punkt (3)). Für Formulare MIT Ziel werden
-  sie ausdrücklich abgegrenzt.
+  WÄCHTER: F2, dazu F1, F3a, F3e, F3f, K3b, F9 (Mutation M-I2).
+- I3 Zur Danke-Seite nur bei `r.type === "opaque"` (Setzung P13-21); sonst bleibt das Formular,
+  eine eigene Meldung erscheint, ein erneuter Versuch ist möglich (Entscheidung P13-17).
+  WÄCHTER: F3b, F3d, K3c (Mutation M-I3), dazu F3c (Wurf).
+- I4 Formulare OHNE Ziel verhalten sich unverändert.
   DIE ABGRENZUNG IM WORTLAUT (ARCHITEKT 2026-09-28, Vorschlag der Planrunde, übernommen im
   Bau-Auftrag): "(I4) der Scheiben 1b und 1c gelten für Formulare OHNE Formular-Ziel
   unverändert (Wächter S1, U1). Für ein Formular MIT Ziel ersetzt unser `preventDefault` das
   native Abschicken: `action`, `method` und `target` des Betreibers wirken dann nicht mehr; die
   Daten gehen an die eingetragene Adresse, die Navigation an die Danke-Seite (Scheibe 13-1,
   I3)."
-- I5 KANDIDAT: Projekte ohne ein Formular-Ziel bekommen byte-gleichen ausgelieferten Text.
-  Trägt der Code das nicht, sagt der Plan, warum.
+  WÄCHTER: S1, S4, S6, S7, U1 (src/lib/generate.test.ts), F5.
+- I5 Projekte ohne ein Formular-Ziel bekommen byte-gleichen ausgelieferten Text — sie TRÄGT
+  (seit dem Bau kein Kandidat mehr).
+  WÄCHTER: W1′, W2′, T1, T9 (Mutation M-I5 fängt genau diese vier und F6b).
+  LIVE GEMESSEN: Vermerk P13-35, Punkt (6), L1.
 - I6 Kein fremder Knoten wird verändert (Stil, Klasse, Attribut, Scroll-Position, Fokus); die
   Meldung lebt im eigenen Schattenbaum.
-- I7 Adresse und Danke-Seite gehen nur über `embedInScript` in Script-Rohtext.
+  WÄCHTER: F10.
+  Die zwei Eingriffe, die die Dauerregel ausdrücklich ausnimmt, stehen seit Entscheidung
+  P13-24 in ihrer Ausnahme-Liste.
+- I7 Adresse und Danke-Seite gehen nur über `embedInScript` in Script-Rohtext (der Datenblock,
+  Setzung P13-28).
+  WÄCHTER: F7.
 - I8 Ein ungültiger oder unbekannter Wert lässt das Veröffentlichen laut abbrechen.
-- I9 Ingest, Proxy, Middleware, Serve-Route und Adapter bleiben unberührt.
+  WÄCHTER: F8 (Mutation N-B).
+  Die BERECHTIGUNG eines Formulars prüft allein der Client (G5 im Vermerk P13-33).
 - I10 Der Versand hängt an keinem Einwilligungs-Tor (Setzung P13-8).
-
-### Auflagen aus Arbeit P13-13 an diese Scheibe
-
-- Die Abgrenzung der (I4) — oben, I4.
-- Die Ausnahme-Liste der Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT
-  EINEN FREMDEN KNOTEN AN" nachziehen; der Plan schlägt Wortlaut und Zeitpunkt vor.
-- Die Einsetzungen in den vier Differenz-Nachweisen (Vermerk P13-1, Punkt (9)), falls I5 nicht
-  trägt.
-- Die Frage "Mapping-Typ oder Einstellung" beantwortet der Plan (Arbeit P13-13, vierter Punkt).
-  → beantwortet: Setzung P13-25.
+  WÄCHTER: F9.
 
 ### Owner-Entscheidungen vor dem Bau der Scheibe 13-1
 
@@ -552,6 +562,188 @@ Modus-Sperre sitzt im Erzeuger, dieselbe Bauform wie Entscheidung P11.6-6, Teil 
 - (G8) Keine neue Server-Action; der Trigger von "DIE IDOR-WÄCHTER SIND NAMENTLICH …" tritt
   nicht ein. Keine Migration (Setzung P13-25).
 
+### Abschluss der Scheibe 13-1
+
+**Vermerk P13-35 — ABSCHLUSS DER SCHEIBE 13-1 (FORMULAR-ZIEL MIT DANKE-SEITE). Bau-Commit
+`434dc86`** ("feat(forms): Formular-Ziel mit Danke-Seite (Phase 13, Scheibe 13-1)").
+Doku-Commits der Scheibe: `29a07b0` (Zuschnitt), `fbffe3b` (G0), `ab4681d` (vor dem Bau:
+Entscheidungen P13-23/P13-24, Setzungen P13-25 bis P13-32, Dauerregel).
+
+(0) B0 — VOR DEM ERSTEN CODE (OWNER, 2026-09-28):
+    · Konsole einer veröffentlichten Seite unter publayer.net, Blocker AUS: `OK opaque 0`,
+      Eingang `probe: b0` bei Make.
+    · SQL-Editor, `pg_constraint` auf `public.projects`:
+      - `projects_pkey` PRIMARY KEY (id)
+      - `projects_user_id_fkey` FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE
+        CASCADE
+      - `projects_ab_test_needs_variant_b` CHECK (((NOT ab_test_active) OR (html_b IS NOT
+        NULL)))
+      - `projects_variant_b_pair` CHECK (((html_b IS NULL) = (mappings_b IS NULL)))
+    · KEIN CHECK auf `mappings` — die Aussage "keine Migration" (Setzung P13-25) ist damit am
+      Live-Stand gemessen.
+(1) GEBAUT (GEMESSEN am Repo, CC, 2026-09-28):
+    · src/lib/form-target.ts (neu):
+      - `formTargetProblem` und `ownFormTargetDomains` — die Werte.
+      - `formTargetCheck` — die Berechtigung, DOMParser, Felder über `form.elements`.
+      - `formTargetDocumentProblem` und `formTargetDocumentMessage` — die Riegel im Editor.
+      - `buildFormTargetRuntime` — Versand, Laufzeit-Wache, Zeitlimit
+        `FORM_TARGET_TIMEOUT_MS`, Sperre, Meldung im Host `pagesmith-form-notice`.
+      - die drei Meldungskonstanten.
+    · src/lib/mappings.ts: Union-Zweig `"formTarget"` mit `FormTargetConfig { endpoint,
+      thanksUrl }` und der Zweig in `configEqual`.
+    · src/lib/generate.ts, in `buildWiringScript`:
+      - der neue Parameter `formTargetLanguage`;
+      - Einsetzung R1 (der Baustein) hinter `metaRuntime`;
+      - Einsetzung B1 im submit-Listener hinter der FORM-Prüfung, VOR der Sperre
+        `submittedForms`.
+    · src/lib/generate.ts, in `generateFunctional`: Option `formTargetLanguage`, Sperre auf
+      "export" und ein Formular-Ziel in der gefilterten Tabelle, Datenblock über
+      `embedInScript`.
+    · src/lib/script-embed.ts: nur der Kommentar zur Datenblock-Stelle.
+    · src/app/projects/actions.ts: das Tor in `publishProject` hinter `zeileKaputt` (Werte, dann
+      Sprache).
+    · src/components/ActionPanel.tsx: `FormTargetActions` im Formular-Zweig; Knöpfe "Ziel
+      übernehmen", "Eingabe abbrechen", "Ziel bearbeiten", "Ziel entfernen".
+    · src/components/CodeImporter.tsx:
+      - `handleAssignFormTarget` und das Memo `selectedFormTarget`;
+      - die Riegel `formTargetPublishProblem` (in `handlePublish` und im Anzeigeslot) und
+        `formTargetExportProblem` (Download, Kopieren, `exportBlockedMessage`);
+      - `formTargetLanguage` in `buildDocumentFor`;
+      - `isRelinkTarget`, Relink-Verzweigung und Karte verwaister Mappings für den neuen Typ.
+(2) GATES (CC, 2026-09-28):
+    · `tsc --noEmit` exit 0 · `eslint` 0 Fehler, 1 vorbestehende Warnung
+      (src/lib/tracking/consent.test.ts) · `next build` exit 0.
+    · `vitest run` 99 Dateien, 2446 Tests grün. Zählweg: vorher 98/2362, nach dem Bau
+      99/2439, nach der Nachschärfung (Punkt (4)) 99/2446.
+    · Byte-Kontrolle am committeten Objekt:
+      - src/lib/form-target.ts CR 0, LF 514, NUL 0.
+      - src/lib/form-target.test.ts CR 0, LF 720, NUL 0.
+      - Die übrigen `i/lf`, CR 0.
+      - src/lib/mappings.ts trägt `i/-text` wegen eines vorbestehenden NUL (Vorrat P13-37).
+(3) MUTATIONEN (CC, 2026-09-28; jede Vorhersage vor dem Lauf gegen den aktuellen Bestand).
+    Die Pflicht-Mutationen liefen je über die volle Suite, alle wie vorhergesagt:
+    · M-I1 (`navigator.sendBeacon("/api/e", body)` nach dem Rumpf-Bau) → F1, F9.
+    · M-I2 (`thanksUrl + "?" + body`) → F1, F2, F3a, F3e, F3f, K3b, F9.
+    · M-I3 (Prüfung auf `opaque` → `r`) → F3b, F3d, K3c; F3c bleibt grün (vorhergesagt).
+    · M-I5 (Sperre `table.some(formTarget)` entfernt) → W1′, W2′, T1, T9, F6b, kein
+      Überschuss.
+    · M-T (Zeitlimit entfernt) → K3a, K3b.
+    · M-G (Ursprungsprüfung der Laufzeit-Wache entfernt) → NUR G3.
+    Freiwillig, nur über die betroffene Datei:
+    · N-A (`thanksUrl` in `configEqual`) → F12.
+    · N-B (Tor in `publishProject`) → die 7 F8-Fälle ohne Positivkontrolle.
+    · N-C (Sperrprüfung vor `preventDefault`) → F4 und F6b. F6b ist eine KASKADE: Er pinnt den
+      Wortlaut von B1, in den die Mutation schreibt — nicht die Sperre; F4 fällt aus eigenem
+      Grund.
+    · N-D (`isRelinkTarget`-Zweig) → F14.
+    Alle Rücknahmen geprüft: 0 Marker, Suche mit Positivkontrolle.
+(4) NACHSCHÄRFUNG VOR DEM GO (ARCHITEKT, 2026-09-28): die Laufzeit-Wache in
+    `__psFormTargetSend`, VOR Rumpf-Bau und `fetch`.
+    · Zieladresse: keine Zeichenkette, kein `https://`-Präfix, nicht zu parsen, oder derselbe
+      Ursprung wie die Seite → `fail()`, nichts gesendet.
+    · Danke-Seite: keine Zeichenkette oder weder `http://` noch `https://` → ebenso.
+    · ABWEICHUNG VOM WORTLAUT, DEKLARIERT: Das Präfix wird am getrimmten Wert und ohne
+      Gross/Klein geprüft. Das Tor parst mit `new URL` und nimmt " https://…" und "HTTPS://…"
+      an; eine strengere Laufzeit verweigerte sie lautlos.
+    · Tests G0 (Positivkontrolle) bis G6.
+(5) ABWEICHUNGEN IM BAU (im Baubericht deklariert):
+    · Die Meldungskonstanten stehen in form-target.ts, nicht in settings.ts.
+    · PublishView.tsx ist unberührt, der Knopf bleibt klickbar. Der Riegel sitzt in
+      `handlePublish`; die Meldung steht vorher schon als Hinweis im Anzeigeslot.
+    · Die Meldung sitzt OBEN, weil die Einwilligungs-Leiste unten mit derselben Stapel-Ebene
+      sitzt. Ihre Texte sind reines ASCII ("Ausblenden"/"Dismiss").
+    · "Eingabefeld" (Entscheidung P13-23): `input` ausser submit/button/reset/image/hidden,
+      dazu `select` und `textarea`. Ein Name aus Leerraum gilt als leer; auch deaktivierte
+      Felder zählen.
+    · `formaction`/`formmethod="dialog"` an Absende-Elementen und die protokoll-relative
+      Adresse `//x` zählen wie `action`/`method`.
+    · Das Server-Tor prüft auch verwaiste Ziele; der Riegel im Client nur Ziele mit `<form>` im
+      Dokument.
+    · F12 steht in form-target.test.ts. R1 in F6b kommt aus dem Erzeuger, B1 und D1 sind
+      getippt.
+    · Werkzeug: Ein Python-Ersetzungsversuch brach vor dem Schreiben ab. Ein überflüssiger
+      Anker-Test in publish.test.ts wurde angelegt und zurückgenommen, der Diff war danach
+      leer.
+(6) LIVE-TEST — GEMESSEN, OWNER, LIVE, 2026-09-28. Aufbau ABWEICHEND von der Anleitung:
+    TESTAUFBAU:
+    · R: ein bestehendes Projekt mit E-Mail-Feld, veröffentlicht, OHNE Formular-Track.
+    · Z: ein neues Projekt aus test-formular-13-1.html mit zwei Formularen. Beide tragen einen
+      Track "Lead".
+      - Formular A: name, email, nachricht, Checkbox-Gruppe "interesse"; bekommt das Ziel.
+      - Formular B: `action` https://example.com/, `method` post, Feld email_b; ohne Ziel.
+    · Danke-Seite in L2: https://danke-seite.de.
+    · Meta-Pixel und Tracking-Schlüssel erst ab dem Nachtest N-A gesetzt.
+    · V1 (A/B-Betrieb): nicht gemeldet.
+    I5 LIVE — V2 (vor dem Push), L1.1 (nach dem Deploy) und L1.3 (nach Neu-Veröffentlichen),
+    Live-Seite R, je Script Bytes und sha256 der Tag-Form. In allen DREI Zuständen identisch:
+      pagesmith-consent    790  854831d25209b54ec1df0f4f27d9d8594748772624e09fda1d99a87abcce9253
+      pagesmith-mappings   203  b50768c9725f427494615cc5dac1648b4553a1a02509c2819d577861e9934a48
+      (ohne id)          14766  f87034c89e8d7343ca7419dfa1bba346db5b8cb41d18b8ace2b251dbf7366244
+      __ps_pve             806  02390d820fe7427b2c858f7f3ec7c3bd59dc34f54d9e70b5d924e8640c2ad41b
+    WEITERE ERGEBNISSE:
+    · L1.4, Formular B: schickt nativ an example.com, keine Meldung.
+    · L1.5: keine events (ohne Pixel und Schlüssel).
+    · L2: Vorher `[]`. Speichern ohne bzw. mit ungültiger Danke-Seite gesperrt, mit Meldung.
+      Danach genau ein `formTarget` in `mappings`; neu veröffentlicht; Laufzeit im Live-Text
+      (`true`).
+    · L3: Navigation auf die Danke-Seite. Bei Make kam "interesse" als Liste mit beiden Werten
+      an — M9 (docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (w)) am echten
+      Formular bestätigt. events: keine (ohne Pixel), ersetzt durch N-A.
+    · L4, Offline: Das Formular bleibt samt Werten, Meldung oben, keine Navigation. Wieder
+      online: genau ein Eingang bei Make.
+    · L5, uBlock Origin Lite "Vollständig": nicht blockiert, Navigation und Make-Eingang.
+    · L6, Doppelklick: genau ein Eingang bei Make.
+    · L7: `[true, true, "PAGESMITH-FORM-NOTICE"]`.
+    · L8 und N-C: Meldung oben lesbar, "Ausblenden" wirkt; bei 360 px und gescrollter Seite oben
+      fixiert.
+    · L9, WIE AUSGEFÜHRT: Gemessen wurde die native Pflichtfeld-Prüfung des Browsers — NICHT
+      der geplante Schritt. Der geplante Riegel ist N-B.
+    · N-A (Pixel und Schlüssel gesetzt, `tracking_key` vorhanden):
+      - Die `/api/e`-Anfrage stand im Netzwerk-Tab und überlebte die Navigation; ihr PAYLOAD
+        WAR NICHT LESBAR (sendBeacon, text/plain).
+      - Einzel-Absendung: genau EIN Paar server+browser mit gleicher `event_id` (645c32c6-…).
+      - Doppelklick: genau EIN weiteres Paar (1097c5a2-…).
+    · N-B: ein unbenanntes Feld in A → Veröffentlichen gesperrt, das Panel nennt das Feld.
+    · N-C, Panel B: Hinweis "kein Ziel möglich: eigene Zieladresse (action oder formaction)".
+(7) GRENZEN DER MESSUNG:
+    · Das Paar für ein Formular OHNE Ziel (L1.5) ist live NICHT gezeigt. I4 ruht dort auf S1,
+      S4, S6, S7, U1 und F5; live gezeigt ist nur das native Abschicken (L1.4).
+    · I1 AM BEACON ist live NICHT gezeigt, weil der Payload nicht lesbar war. I1 ruht dort
+      allein auf F1 (samt M-I1).
+    · Die Überdeckung der Einwilligungs-Leiste durch die Meldung ist UNGEPRÜFT (nicht
+      gemeldet).
+    · Ein Browser (Google Chrome 153.0.8010.53), ein Blocker (uBlock Origin Lite), ein Empfänger
+      (Make, Zone eu2). Der A/B-Betrieb ist nicht gemeldet (V1).
+    · Der Riegel im Editor (N-B) ist live gezeigt, das Server-Tor bei ungültigen Werten nur im
+      Test (F8).
+    WIRKUNG: erst nach erneutem Veröffentlichen; heruntergeladene Exporte bleiben unverändert.
+(8) VERDICHTUNG DES ZUSCHNITTS (CC, 2026-09-28) — GESTRICHEN, weil mit der Scheibe abgelaufen,
+    mit ihrem Inhalt:
+    · GEGENSTAND: "'Formular-Ziel mit Danke-Seite' — der Datenweg aus Entscheidung P13-2 samt
+      Danke-Seite, für Formulare, die der Nutzer im Tool ausdrücklich mit einem Ziel versieht
+      (Setzung P13-5). Zugeschnitten am 2026-09-28; der Plan folgt in einer eigenen Runde." —
+      erfüllt, Punkte (1) und (6).
+    · Aus I5 das Wort "KANDIDAT" und der Satz "Trägt der Code das nicht, sagt der Plan, warum."
+      — erledigt: I5 trägt (Punkte (3) und (6)).
+    · I9 "Ingest, Proxy, Middleware, Serve-Route und Adapter bleiben unberührt." — Scope-Riegel;
+      eingehalten (Bau-Commit `434dc86`, zehn Dateien, keine davon).
+    · Der Satz "Der Massstab für Plan, Bau und Protokoll." vor den Invarianten — ersetzt durch
+      die Wächter je Invariante.
+    · Der Abschnitt mit den Auflagen aus Arbeit P13-13 und der Volltext der Arbeit P13-13 selbst:
+      - "(I4) ausdrücklich abgrenzen" — erledigt, an I4.
+      - "die Ausnahme-Liste der Dauerregel … nachziehen" — erledigt (Entscheidung P13-24,
+        Commit `ab4681d`).
+      - "eine Einsetzung in ALLEN vier Differenz-Nachweisen … falls I5 nicht trägt" —
+        GEGENSTANDSLOS, I5 trägt; die vier Nachweise sind unverändert.
+      - "die Frage 'Mapping-Typ oder Einstellung' beantworten" — Setzung P13-25; der Trigger von
+        "`settingsEqual` IST EINE ALLOWLIST …" tritt damit nicht ein.
+    GEBLIEBEN:
+    · Entscheidungen P13-16, P13-17, P13-23, P13-24.
+    · Setzungen P13-18 bis P13-21 und P13-25 bis P13-32; an P13-21 die Grenze zum Erfolgsfall an
+      der Make-Adresse durch B0 ersetzt.
+    · Die Vermerke P13-22 und P13-33.
+    · Die Invarianten I1 bis I8 und I10, je mit Wächter.
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13-11 — ANBIETER-LESUNG MAKE VOR JEDER ANBINDUNG** (Dauerregel "EIN NEUER ANBIETER
@@ -586,15 +778,9 @@ Befund (i).
   "WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE …"; docs/offene-punkte.md,
   "NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST").
 
-**Arbeit P13-13 — AUFLAGEN AN DEN ZUSCHNITT** (ARCHITEKTEN-SETZUNG 2026-09-28):
-· (I4) der Scheibe 1c der Phase 12.5 ausdrücklich für den neuen Aktionstyp abgrenzen.
-· Die Ausnahme-Liste der Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT
-  EINEN FREMDEN KNOTEN AN" nachziehen (Vermerk P13-1, Punkt (5)).
-· Eine Einsetzung in ALLEN vier Differenz-Nachweisen (Vermerk P13-1, Punkt (9); Entscheidung
-  P12.5-14 der Phase 12.5).
-· Die Frage "Mapping-Typ oder Einstellung" beantworten. Fällt sie auf den Einstellungs-Blob,
-  greift der offene Punkt "`settingsEqual` IST EINE ALLOWLIST — JEDES NEUE MITGLIED DES
-  EINSTELLUNGS-BLOBS IST FÜR dirty UNSICHTBAR BY DEFAULT …".
+**Arbeit P13-13 — AUFLAGEN AN DEN ZUSCHNITT** (ARCHITEKTEN-SETZUNG 2026-09-28) — ERLEDIGT mit
+Scheibe 13-1. Gegenstand: vier Auflagen an den ersten Zuschnitt. BELEG DER ERLEDIGUNG: Vermerk
+P13-35, Punkt (8).
 
 **Arbeit P13-34 — SCHEIBE 13-1c: AUTOMATISCHE BENENNUNG UNBENANNTER FELDER** (OWNER-ENTSCHEIDUNG
 2026-09-28, Entscheidung P13-23).
@@ -604,6 +790,14 @@ Befund (i).
 - Der Editor zeigt die ankommenden Namen.
 - Bis dahin gilt die strenge Grenze aus 13-1: ein Ziel nur, wenn alle Eingabefelder benannt
   sind.
+
+**Arbeit P13-36 — SCHEIBE 13-1b: DER TESTKNOPF IM EDITOR** (Setzungen P13-18 und P13-21;
+ARCHITEKTEN-SETZUNG 2026-09-28).
+- Er leistet, was die Laufzeit nicht kann: eine falsche Adresse erkennen. Im Modus `no-cors`
+  ist eine 410 unsichtbar (docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (ac)).
+- Der Testknopf läuft im Modus `cors` (Setzung P13-21); dort wirft die 410 (ebenda, Befund
+  (ad)).
+- REIHENFOLGE ZWISCHEN 13-1b UND 13-1c (Arbeit P13-34): NICHT ENTSCHIEDEN.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -616,3 +810,42 @@ UNGEMESSEN: der Antwortcode (erwartet 405, Kenntnis des Next-Verhaltens, nicht g
 die Plattform den Rumpf überhaupt annimmt. BEZUG: Dauerregel "MEDIENBYTES LAUFEN NIE ÜBER
 UNSERE VERCEL-ROUTEN — UND DAS GILT FÜR JEDE AUSLIEFERUNG VON DATEI-BYTES, NICHT NUR FÜR MEDIEN"
 (docs/immer-beachten.md). KEIN TRIGGER GESETZT.
+FOLGE AUS SCHEIBE 13-1: Ein Formular MIT Ziel läuft nicht mehr hinein — unser
+`preventDefault` ersetzt das native Abschicken. Für Formulare OHNE Ziel gilt der Eintrag
+unverändert.
+
+**Vorrat P13-37 — IN `mappingsEqual` STEHT EIN LITERALES NUL-BYTE ALS TRENNER; DER KOMMENTAR
+DARÜBER NENNT EIN LEERZEICHEN** (GEMESSEN, CC, 2026-09-28).
+- Befund: In src/lib/mappings.ts ist der Schlüssel `${m.elementId}<NUL>${m.type}`. `tr -cd
+  '\000' | wc -c` ergibt 1, in HEAD vor und nach `434dc86`. `git ls-files --eol` meldet
+  `i/-text`.
+- Folge: Werkzeuge, die Text erwarten, behandeln die Datei als binär, und ein Lese-Werkzeug
+  zeigt das NUL als Leerzeichen — so ist es in der Planrunde übersehen worden.
+- Scheibe 13-1 hat das NUL erhalten, nicht verursacht.
+- BEZUG: die Dauerregeln "EIN NACHWEIS AN EINER NEUEN DATEI IST BLIND …" und "`grep` TAUGT IN
+  DIESER UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL …" (docs/immer-beachten.md).
+- WER DIE DATEI ANFASST: Byte-Kontrolle einschliesslich NUL.
+- KEIN TRIGGER GESETZT.
+
+**Vorrat P13-38 — OHNE EINGESCHALTETEN EINWILLIGUNGS-DIALOG IST DIE SPRACHE DER
+FORMULAR-MELDUNG NICHT WÄHLBAR** (GELESEN AM CODE, CC, 2026-09-28).
+- Befund: `PublishView` (src/components/PublishView.tsx) zeigt die Sprach-Wahl nur, wenn der
+  Dialog "bar" oder "modal" ist.
+- `getConsentLanguage` liefert bei fehlendem Wert "de".
+- Die Meldung des Formular-Ziels nimmt ihre Sprache aus derselben Quelle (Setzung P13-27). Eine
+  englische Seite ohne Dialog zeigt die Meldung deutsch.
+- Die Behebung braucht PublishView, das in Scheibe 13-1 unberührt blieb.
+- KEIN TRIGGER GESETZT.
+
+**Vorrat P13-39 — `ownFormTargetDomains` LIEST DIE HOSTING-DOMÄNE EIN ZWEITES MAL NEBEN
+`host.ts`** (GELESEN AM CODE, CC, 2026-09-28).
+- Befund: src/lib/form-target.ts liest NEXT_PUBLIC_HOSTING_DOMAIN mit eigener Bereinigung und
+  trägt das feste "lvh.me". Dieselben Aufgaben erfüllen in src/lib/hosting/host.ts
+  `servingSuffixes` und `FALLBACK_SUFFIX` (nicht exportiert).
+- host.ts ist eine Kern-Datei und blieb deshalb unberührt.
+- Ändert sich die Bereinigung an einer der beiden Stellen, laufen sie still auseinander.
+- GEMILDERT, nicht aufgehoben: Die Laufzeit-Wache verweigert eine Zieladresse auf dem
+  Ursprung der Seite selbst (G3), unabhängig von jeder Umgebung.
+- BEZUG: offener Punkt "isAppHost-PLATZHALTER" (docs/offene-punkte.md, Ergänzung vom
+  2026-09-28).
+- KEIN TRIGGER GESETZT.

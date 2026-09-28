@@ -32,6 +32,19 @@ aufeinander; sie liegen alle hier und finden einander.
   in die isAppHost-Allowlist (+ NEXT_PUBLIC_APP_URL + Doku) — sonst landet die eigene App auf
   ihrer eigenen Domain im SERVING-Zweig und 404t. In Prod heute harmlos (nur *.vercel.app ist
   relevant), aber vor dem Brand-Domain-Livegang nicht vergessen.
+  ERGÄNZT 2026-09-28 (Phase 13, Scheibe 13-1; GELESEN AM CODE, CC) — DERSELBE SCHRITT BETRIFFT
+  EINE ZWEITE STELLE:
+  - `ownFormTargetDomains` (src/lib/form-target.ts) bestimmt die eigenen Hosts, auf die kein
+    Formular-Ziel zeigen darf (Setzung P13-29 der Phase 13).
+  - Sie liest NEXT_PUBLIC_HOSTING_DOMAIN und NEXT_PUBLIC_APP_URL, dazu das feste "lvh.me".
+  - Sie liest NICHT die Menge `APP_HOSTS` hinter `isAppHost` (src/lib/hosting/host.ts). Die
+    trägt "pagesmith.app", "www.pagesmith.app" und prüft zusätzlich "*.vercel.app".
+  - Folge: Eine Brand-Domain, die NUR in `APP_HOSTS` nachgetragen wird, fehlt dort. Ein
+    Formular-Ziel auf die Brand-Domain käme durch das Tor in `publishProject`.
+  - Die Laufzeit-Wache im ausgelieferten Baustein deckt nur den Ursprung der SEITE selbst,
+    nicht einen anderen eigenen Host.
+  - Beim Brand-Domain-Schritt deshalb beide Stellen prüfen; die doppelte Lesung ist Vorrat
+    P13-39 der Phase 13.
 - HOBBY-50-DOMAIN-DECKE (Trigger: echte Skalierung): Vercel Hobby deckelt bei 50 Custom-
   Domains PRO PROJEKT — geteilt über ALLE Kunden, also eine Multi-Tenant-Decke, nicht ein
   Per-Kunde-Limit. Der Per-User-Cap (Richtwert 3/User) schützt sie doppelt (Abuse + geteilte

@@ -849,3 +849,23 @@ FORMULAR-MELDUNG NICHT WÄHLBAR** (GELESEN AM CODE, CC, 2026-09-28).
 - BEZUG: offener Punkt "isAppHost-PLATZHALTER" (docs/offene-punkte.md, Ergänzung vom
   2026-09-28).
 - KEIN TRIGGER GESETZT.
+
+**Vorrat P13-40 — DER RUMPF EINES `keepalive`-AUFRUFS IST BEGRENZT; EIN FORMULAR MIT SEHR LANGEM
+TEXT KÄME NIE AN** (ARCHITEKT, 2026-09-28; im GO vorgemerkt, beim Abschluss der Scheibe 13-1
+nicht eingetragen, hier nachgetragen).
+- Der Ort: `__psFormTargetSend` im Baustein aus `buildFormTargetRuntime` (src/lib/form-target.ts)
+  sendet mit `keepalive: true`. Das ist die in G0 und B0 gemessene Form; Test F1b hält sie fest.
+- DIE GRENZE — UNGEPRÜFT, eine MESSFRAGE: Nach Architekten-Wissen begrenzen Browser den Rumpf
+  eines `keepalive`-Aufrufs auf rund 64 KB. Weder gelesen noch gemessen.
+- DIE FOLGE, ABGELEITET: Ein Formular mit sehr langem Textfeld (etwa "nachricht") endete bei
+  JEDEM Versuch als "nicht erreicht".
+  - `fetch` wirft oder verweigert; beides fängt der Baustein als Fehlschlag.
+  - Der Besucher sähe dauerhaft die eigene Meldung; ein erneuter Versuch hülfe nicht.
+  - Das ist fail-closed im Sinne von Setzung P13-21, der Lead ginge aber verloren, ohne dass
+    es jemand bemerkt.
+- DIE MESSFRAGE: Was tut `fetch(…, {method: "POST", mode: "no-cors", keepalive: true, body})`
+  mit einem Rumpf über der Grenze — Wurf beim Aufruf, abgewiesene Promise oder Versand? Wo
+  liegt die Grenze je Browser?
+- BEZUG: Entscheidung P13-17, Setzung P13-32 (das Zeitlimit greift hier nicht, der Aufruf
+  scheitert sofort).
+- KEIN TRIGGER GESETZT.

@@ -717,6 +717,9 @@ Entscheidungen P13-23/P13-24, Setzungen P13-25 bis P13-32, Dauerregel).
       (Make, Zone eu2). Der A/B-Betrieb ist nicht gemeldet (V1).
     · Der Riegel im Editor (N-B) ist live gezeigt, das Server-Tor bei ungültigen Werten nur im
       Test (F8).
+    · NACHGETRAGEN beim Abschluss der Scheibe 13-1c (ARCHITEKT, 2026-09-28): I5 LIVE ist über
+      `document.scripts` gemessen — am Browser-Zustand, NICHT am Zwischenspeicher vorbei.
+      Bestätigt mit `fetch` no-store über die ganze Antwort: Vermerk P13-60, Punkt (4), R.
     WIRKUNG: erst nach erneutem Veröffentlichen; heruntergeladene Exporte bleiben unverändert.
 (8) VERDICHTUNG DES ZUSCHNITTS (CC, 2026-09-28) — GESTRICHEN, weil mit der Scheibe abgelaufen,
     mit ihrem Inhalt:
@@ -747,18 +750,11 @@ Entscheidungen P13-23/P13-24, Setzungen P13-25 bis P13-32, Dauerregel).
 
 ## Zuschnitt Scheibe 13-1c
 
-**GEGENSTAND:** "Automatische Benennung der Formularfelder" — Arbeit P13-34 (Entscheidung
-P13-23). Ein Formular mit Ziel darf unbenannte Eingabefelder tragen; sie bekommen in der
-ausgelieferten Seite einen abgeleiteten Namen. Zugeschnitten am 2026-09-28; der Plan folgt in
-einer eigenen Runde.
-
-**ABWEICHUNG VOM WORTLAUT DER ARBEIT P13-34, DEKLARIERT:**
-- Dort steht "bekommt seinen Namen beim Versand" und "Das HTML wird dabei nicht geändert".
-- Dieser Zuschnitt schreibt den Namen ZUR ERZEUGUNGSZEIT in den ausgelieferten Text (Setzung
-  P13-43). Unverändert bleiben der Quelltext im Editor (J1) und die Laufzeit aus 13-1 (J9) —
-  nicht der ausgelieferte Text.
-- Die Herkunft des Namens ist gegenüber "`id`, sonst Beschriftung oder Platzhalter" erweitert
-  (Setzung P13-44).
+**ABGESCHLOSSEN AM 2026-09-28 — Bau-Commit `a1f009c`, Live-Test bestanden; Abschluss-Vermerk
+P13-60.**
+- Der Zuschnitt ist verdichtet: Hier stehen nur noch die Entscheidungen, Setzungen und
+  Invarianten, die über die Scheibe hinaus binden, dazu die Vermerke der Scheibe.
+- Was gestrichen ist und wo sein Inhalt steht: Vermerk P13-60, Punkt (7).
 
 ### Owner-Entscheidungen zur Scheibe 13-1c
 
@@ -809,19 +805,37 @@ WIEDER VERÖFFENTLICHT ODER EXPORTIERT WERDEN.**
 
 ### Invarianten der Scheibe 13-1c
 
-PROVENIENZ: ARCHITEKT 2026-09-28, Auftrag der Zuschnitt-Runde der Scheibe 13-1c. Der Massstab
-für Plan, Bau und Protokoll; die Wächter trägt der Abschluss nach.
+PROVENIENZ: ARCHITEKT 2026-09-28, Auftrag der Zuschnitt-Runde der Scheibe 13-1c. Sie binden über
+die Scheibe hinaus. Seit dem Abschluss steht je Invariante ihr WÄCHTER dabei (GELESEN am
+Test-Diff von `a1f009c`, CC, 2026-09-28). Die Tests ohne Dateiangabe stehen in
+src/lib/form-target.test.ts; "CI" meint src/components/CodeImporter.test.tsx, "PT"
+src/app/projects/publish.test.ts.
 - J1 Der Quelltext im Editor bleibt unverändert; Namen stehen nur im erzeugten Text.
+  WÄCHTER: "K1b + J1" (CI).
 - J2 Projekte ohne Formular-Ziel bleiben byte-gleich (I5 der Scheibe 13-1).
+  WÄCHTER: J2a, J2b (mit Positivkontrolle), J2c; dazu W1′, W2′, T1, T9 aus I5, unverändert.
+  LIVE GEMESSEN: Vermerk P13-60, Punkt (4), R.
 - J3 Ein vorhandener `name` wird nie überschrieben.
+  WÄCHTER: J3 (Gross/Klein und Randleerraum bleiben zeichengleich).
 - J4 Radios ohne `name` → kein Ziel.
+  WÄCHTER: "J4 (P13-46)", "J4/F3" (Erzeugung), "K1 (13-1c, J4)" (CI).
 - J5 Editor-Anzeige und Erzeugung nutzen DIESELBE Ableitungsfunktion.
+  WÄCHTER: J5 (`previewHtml` aus `annotateAndDetect` gegen die Erzeugung).
 - J6 Namen sind im Formular eindeutig und kollidieren mit keinem vorhandenen.
+  WÄCHTER: die zwei J6-Tests (Hochzählen, Kollision auch mit einem späteren Namen,
+  `FIELD_NAME_MAX` mit Suffix).
 - J7 Abweichende oder fehlende Liste → Veröffentlichen UND Export gesperrt, bis bestätigt; die
   Meldung nennt alt → neu; beide Varianten (A/B).
+  WÄCHTER: die J7-Tests (Abweichung, Meldung, Liste fehlt), "J7 (Export)", "J7 / P13-48
+  (Export)", "J7 (Veroeffentlichen, A/B)" (CI); das Server-Tor (Setzung P13-56): die zwei
+  F8′-Tests (PT).
 - J8 In der gespeicherten Liste stehen nur Namen, nie Werte.
+  WÄCHTER: der Köder im J5-Test; die Formprüfung "J8 und die Form der gespeicherten Liste".
 - J9 Die Laufzeit aus 13-1 und ihre Invarianten bleiben unverändert — das sind I1 bis I8 und
   I10; I9 ist mit der Verdichtung gestrichen (Vermerk P13-35, Punkt (8)).
+  WÄCHTER: die Wächter von I1 bis I8 und I10; `a1f009c` ändert keinen von ihnen (GELESEN an den
+  entfernten Zeilen des Test-Diffs: geändert sind nur K1, "nachtraeglich unbenanntes Feld" und
+  Test-Helfer, u. a. `target`, weil Entscheidung P13-23 die Grenze bewusst verschiebt).
 
 ### Messung der Planrunde 13-1c
 
@@ -848,6 +862,15 @@ für Plan, Bau und Protokoll; die Wächter trägt der Abschluss nach.
   bei unsauberem HTML andere sehen.
 - GRENZE: gemessen am ORIGINAL-Quelltext, nicht an der Ausgabe von `generateFunctional` (dazu
   B0 der Bau-Runde). Ein Browser.
+- NACHTRAG AUS B0 DER BAU-SITZUNG (übermittelt im Abschluss-Auftrag, ARCHITEKT 2026-09-28):
+  - Die Ausgabe von `generateFunctional` ist die Serialisierung des DOMParser-Dokuments
+    (src/lib/generate.ts, `return` im `try`-Pfad).
+  - GEMESSEN (Chrome 153, Playwright): Ein ungeschlossenes `<form>` sieht live NACH der
+    Erzeugung dieselben Felder wie DOMParser.
+  - FOLGE: Die Lücke "Formular-Zeiger" (zweiter Live-Punkt oben) ist für Formulare mit Ziel
+    geschlossen. `<noscript>` bleibt durch Setzung P13-54 (F4) abgedeckt.
+  - Beleg im Repo: der Body des Bau-Commits `a1f009c`. Das Protokoll im Einzelnen stand nur
+    im Bericht der Bau-Sitzung.
 
 ### Architekten-Setzungen aus der Planrunde der Scheibe 13-1c
 
@@ -891,6 +914,117 @@ für ein Formular-Ziel nur `endpoint` und `thanksUrl`.
 - GRUND: Der Text-Bake ändert `h1`–`h6` und `p`; ein `<p>` in einem `<label>` gäbe der Erzeugung
   sonst einen anderen Label-Text als dem Editor (Befund G2 der Planrunde).
 
+### Abschluss der Scheibe 13-1c
+
+**Vermerk P13-60 — ABSCHLUSS DER SCHEIBE 13-1c (AUTOMATISCHE BENENNUNG DER FORMULARFELDER).
+Bau-Commit `a1f009c`** ("feat(forms): Formularfelder ohne Namen werden benannt (Phase 13, Scheibe
+13-1c)"). Doku-Commits der Scheibe: `ed13b93` (Zuschnitt), `b70f059` (vor dem Bau: G2-Messung,
+Setzungen P13-51 bis P13-59).
+
+(0) B0 — VOR DEM ERSTEN CODE: Nachtrag an Vermerk P13-50 (Ausgabe = Serialisierung des
+    DOMParser-Dokuments; ungeschlossenes `<form>` live nach der Erzeugung gleich DOMParser).
+(1) GEBAUT (GEMESSEN am Repo, `git show --stat a1f009c`, CC, 2026-09-28): neun Dateien,
+    1145 Zeilen hinzu, 66 entfernt.
+    · src/lib/form-target.ts: `shortFieldName`, `FIELD_NAME_MAX`, `deriveFormFieldNames`,
+      `sortedFieldNames`, `sameFieldNames`, `formTargetNamesProblem`, `formTargetNameDrift`,
+      `formTargetNamesMessage`, `FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE`; der Problemwert
+      `"names"` in `FormTargetDocumentProblem`; `formTargetCheck` nimmt die Namen aus
+      `deriveFormFieldNames` (J5).
+    · src/lib/mappings.ts: `FormTargetConfig.fieldNames` (optional); `configEqual` vergleicht
+      die Liste (`sameOptionalList`).
+    · src/lib/generate.ts, `generateFunctional`: die Benennung im Modus "export" VOR dem
+      Text-Bake (Setzung P13-59); `fieldNames` wird aus der Tabelle entfernt (Setzung P13-58).
+    · src/app/projects/actions.ts: das Tor in `publishProject` bricht bei fehlender oder
+      unbrauchbarer Liste ab (Setzung P13-56).
+    · src/components/ActionPanel.tsx: Anzeige der Namen samt Herkunft (`FieldNamesList`),
+      Kasten alt → neu, Knopf "Neue Feldnamen bestätigen".
+    · src/components/CodeImporter.tsx: die Riegel für Veröffentlichen und Export um "names"
+      erweitert, Meldung je Variante.
+    · Tests: form-target.test.ts, publish.test.ts, CodeImporter.test.tsx.
+(2) GATES — NACHGEMESSEN beim Abschluss an HEAD `a1f009c` (CC, 2026-09-28), NICHT die Zahlen
+    der Bau-Sitzung:
+    · `tsc --noEmit` exit 0.
+    · `vitest run` 99 Dateien, 2497 Tests grün (13-1 schloss mit 99/2446).
+    · Byte-Kontrolle am committeten Objekt (`git show HEAD:<pfad>`, `tr`): alle neun Dateien
+      CR 0; `i/lf` ausser src/lib/mappings.ts (`i/-text`, NUL 1 — vorbestehend, Vorrat P13-37).
+    · eslint, `next build` und die Mutationsproben der Bau-Sitzung stehen in keiner Datei; sie
+      lagen nur ihrem Bericht bei und sind hier NICHT nachgetragen.
+(3) ABWEICHUNGEN VOM WORTLAUT DER ARBEIT P13-34, deklariert im Zuschnitt: Die Namen stehen ZUR
+    ERZEUGUNGSZEIT im ausgelieferten Text (Setzung P13-43), nicht "beim Versand"; die Herkunft
+    ist erweitert (Setzung P13-44). Unverändert bleiben der Quelltext (J1) und die Laufzeit
+    (J9).
+(4) LIVE-TEST — GEMESSEN, OWNER, LIVE, 2026-09-28. Instrument: `fetch(location.href,
+    {cache:'no-store'})`, sha256 über die GESAMTE Antwort, jede Messung doppelt und je gleich.
+    Längen in JavaScript-Zeichen.
+    · R (ohne Formular-Ziel): vor dem Push, nach dem Push, nach Neu-Veröffentlichen — je 17170
+      `d961843ee67f2feeaeed06cd25ab07a35464050dbd935879a86d65a3c7fcd278`. J2 live gemessen, am
+      Zwischenspeicher vorbei.
+    · Z (Ziel aus 13-1, Formular A voll benannt, Meta-Pixel gesetzt), je 23616 Zeichen:
+      `09b76e8c…` (vor dem Push) → `e75ffd02…` (nach Bestätigen + Veröffentlichen) →
+      `803e4695…` (erneut veröffentlicht, ohne Änderung).
+      URSACHE, GEMESSEN DURCH NACHBAU (CC, 2026-09-28; `curl` no-store, Nachbau des Datenblocks
+      `pagesmith-mappings` in allen acht Reihenfolgen): Alle drei Werte entstehen aus der
+      heutigen Seite allein durch die Schlüssel-Reihenfolge der zwei Mappings — Datenbank-Form
+      (`type, config, elementId`) gegen Editor-Form (`elementId, type, config`). Sonst kein
+      Zeichen verschieden. Ein weiteres Veröffentlichen ohne Änderung ergab erneut `803e4695…`.
+      FOLGE: Setzung P13-58 (G4/G5 der Planrunde) ist inhaltlich live gezeigt, bis auf die
+      Reihenfolge. Die Ursache steht als Vorrat P13-62.
+    · N: vorher 16556 `1141440f…`; nach Umbenennung vorname → vname, Bestätigen und
+      Veröffentlichen 16552 `ed1ca006…` (−4). Positivkontrolle des Instruments.
+    · Schritt 5 (Z, Alt-Ziel ohne Liste): Veröffentlichen gesperrt, Meldung "Die Feldnamen eines
+      Formulars mit Ziel sind geändert oder noch nicht bestätigt — alt: (keine bestätigt) → neu:
+      email, interesse, nachricht, name. …". Nach Bestätigen frei (Setzung P13-48).
+    · Schritt 6 (N): Panel zeigt vorname (id), e_mail (Beschriftung), deine_stadt
+      (Platzhalter), land (Beschriftung); bei Make genau diese vier Schlüssel mit den Werten.
+    · Schritt 7 (N, Formular 2): kein Ziel; der Hinweis nennt die Auswahlknöpfe ohne Namen (J4).
+    · Schritt 8 (N): Meldung "alt: deine_stadt, e_mail, land, vorname → neu: deine_stadt,
+      e_mail, land, vname"; nach Bestätigen kommt bei Make "vname" an.
+(5) GRENZEN DER MESSUNG:
+    · NICHT live gezeigt, durch Tests gedeckt: die Export-Sperre (J7, CI), Variante B (J7, CI;
+      F8′, PT), der Name aus Leerraum (Setzung P13-53, "F3 (P13-53)").
+    · Ein Browser, ein Empfänger (Make).
+    · BEWUSST NICHT DOKUMENTIERT als Befund: Das Panel führt eine Checkbox-Gruppe mit zwei
+      Feldern doppelt ("interesse" zweimal) — reine Anzeige, geht im UI-Redesign auf.
+    WIRKUNG: erst nach erneutem Veröffentlichen; heruntergeladene Exporte bleiben unverändert.
+(6) VORRAT UND KANDIDAT AUS DER SCHEIBE: Vorrat P13-61 (Bild-Knopf mit `formaction`), Vorrat
+    P13-62 (Schlüssel-Reihenfolge des Datenblocks), Hebungs-Kandidat P13-63 (Live-Byte-Vergleich).
+(7) VERDICHTUNG DES ZUSCHNITTS (CC, 2026-09-28) — GESTRICHEN, weil mit der Scheibe abgelaufen,
+    mit ihrem Inhalt:
+    · GEGENSTAND: "'Automatische Benennung der Formularfelder' — Arbeit P13-34 (Entscheidung
+      P13-23). Ein Formular mit Ziel darf unbenannte Eingabefelder tragen; sie bekommen in der
+      ausgelieferten Seite einen abgeleiteten Namen. Zugeschnitten am 2026-09-28; der Plan folgt
+      in einer eigenen Runde." — erfüllt, Punkte (1) und (4).
+    · "ABWEICHUNG VOM WORTLAUT DER ARBEIT P13-34, DEKLARIERT" mit drei Punkten ("bekommt seinen
+      Namen beim Versand" / "Das HTML wird dabei nicht geändert" gegen die Erzeugungszeit;
+      unverändert Quelltext (J1) und Laufzeit (J9); Herkunft erweitert) — steht als Punkt (3)
+      und trägt weiter in Setzungen P13-43 und P13-44.
+    · Der Satz "Der Massstab für Plan, Bau und Protokoll; die Wächter trägt der Abschluss nach."
+      vor den Invarianten — ersetzt durch die Wächter je Invariante.
+    · Der Volltext der Arbeit P13-34: "Ein Feld ohne `name` bekommt seinen Namen beim Versand aus
+      der `id`, sonst aus Beschriftung oder Platzhalter." · "Das HTML wird dabei nicht
+      geändert." · "Der Editor zeigt die ankommenden Namen." (erfüllt, Punkt (4), Schritt 6) ·
+      "Bis dahin gilt die strenge Grenze aus 13-1: ein Ziel nur, wenn alle Eingabefelder benannt
+      sind." (abgelaufen) · "ZUGESCHNITTEN am 2026-09-28 …" — die ersten beiden abweichend
+      gebaut, Punkt (3).
+    GEBLIEBEN:
+    · Entscheidungen P13-41, P13-42.
+    · Setzungen P13-43 bis P13-49 und P13-51 bis P13-59.
+    · Vermerk P13-50 samt Nachtrag aus B0.
+    · Die Invarianten J1 bis J9, je mit Wächter.
+
+**Hebungs-Kandidat P13-63 — EIN LIVE-BYTE-VERGLEICH ÜBER AUSGELIEFERTEN TEXT** (ARCHITEKT,
+2026-09-28; das Phasenende entscheidet).
+- Er misst mit `fetch(…, {cache:'no-store'})` über die GANZE Antwort; jede Messung doppelt.
+- Er trägt eine POSITIVKONTROLLE: eine geänderte Seite muss abweichen (in 13-1c: N, −4).
+- Vor jedem Vergleich kommen die Mappings aus DERSELBEN Herkunft: Editor neu laden, dann
+  veröffentlichen (Vorrat P13-62).
+- ANLASS: 13-1 hat I5 live über `document.scripts` gemessen — Browser-Zustand, nicht am
+  Zwischenspeicher vorbei (Grenze an Vermerk P13-35, Punkt (7), nachgetragen). 13-1c hat I5 an R
+  mit diesem Instrument bestätigt (Vermerk P13-60, Punkt (4)).
+- BEZUG: Dauerregel "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN DOKUMENT, NIE
+  AN EINER GESPEICHERTEN DATEI" (docs/immer-beachten.md) — sie schreibt `document.scripts` vor;
+  das Verhältnis beider klärt die Hebung.
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13-11 — ANBIETER-LESUNG MAKE VOR JEDER ANBINDUNG** (Dauerregel "EIN NEUER ANBIETER
@@ -930,15 +1064,9 @@ Scheibe 13-1. Gegenstand: vier Auflagen an den ersten Zuschnitt. BELEG DER ERLED
 P13-35, Punkt (8).
 
 **Arbeit P13-34 — SCHEIBE 13-1c: AUTOMATISCHE BENENNUNG UNBENANNTER FELDER** (OWNER-ENTSCHEIDUNG
-2026-09-28, Entscheidung P13-23).
-- Ein Feld ohne `name` bekommt seinen Namen beim Versand aus der `id`, sonst aus Beschriftung
-  oder Platzhalter.
-- Das HTML wird dabei nicht geändert.
-- Der Editor zeigt die ankommenden Namen.
-- Bis dahin gilt die strenge Grenze aus 13-1: ein Ziel nur, wenn alle Eingabefelder benannt
-  sind.
-- ZUGESCHNITTEN am 2026-09-28: Abschnitt "Zuschnitt Scheibe 13-1c" (mit deklarierter
-  Abweichung vom Wortlaut oben).
+2026-09-28, Entscheidung P13-23) — ERLEDIGT mit Scheibe 13-1c, abweichend vom Wortlaut (Namen
+zur Erzeugungszeit, Herkunft erweitert: Setzungen P13-43, P13-44). BELEG DER ERLEDIGUNG und
+gestrichener Volltext: Vermerk P13-60, Punkte (3) und (7).
 
 **Arbeit P13-36 — SCHEIBE 13-1b: DER TESTKNOPF IM EDITOR** (Setzungen P13-18 und P13-21;
 ARCHITEKTEN-SETZUNG 2026-09-28).
@@ -946,7 +1074,9 @@ ARCHITEKTEN-SETZUNG 2026-09-28).
   ist eine 410 unsichtbar (docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (ac)).
 - Der Testknopf läuft im Modus `cors` (Setzung P13-21); dort wirft die 410 (ebenda, Befund
   (ad)).
-- REIHENFOLGE ZWISCHEN 13-1b UND 13-1c (Arbeit P13-34): NICHT ENTSCHIEDEN.
+- REIHENFOLGE ZWISCHEN 13-1b UND 13-1c (Arbeit P13-34): gegenstandslos, 13-1c ist abgeschlossen
+  (Vermerk P13-60). 13-1b ist die NÄCHSTE ARBEIT (ARCHITEKT, 2026-09-28, Abschluss-Auftrag der
+  Scheibe 13-1c).
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -1018,3 +1148,53 @@ nicht eingetragen, hier nachgetragen).
 - BEZUG: Entscheidung P13-17, Setzung P13-32 (das Zeitlimit greift hier nicht, der Aufruf
   scheitert sofort).
 - KEIN TRIGGER GESETZT.
+
+**Vorrat P13-61 — BILD-KNOPF MIT `formaction`: EIN ZIEL WIRD ANGEBOTEN, OBWOHL SETZUNG P13-31 ES
+AUSSCHLIESST** (ARCHITEKT, 2026-09-28, aus der Bau-Sitzung der Scheibe 13-1c).
+- Befund, GELESEN AM CODE (CC, 2026-09-28): `formTargetCheck` (src/lib/form-target.ts, seit
+  13-1) prüft `formaction` und `formmethod` über `Array.from(form.elements)`.
+- Ein `<input type="image" formaction="https://…">` steht nicht in `form.elements` (Angabe des
+  Architekten; hier NICHT gemessen). Dann wird ein Ziel angeboten.
+- Dieselbe Stelle prüft `formmethod="dialog"`; für einen Bild-Knopf gilt dieselbe Lücke
+  (ABGELEITET, nicht gemessen).
+- KEIN DATENLECK: Unser Abfangen im submit-Listener übersteuert die fremde Adresse. Betroffen
+  ist nur die Angebotsregel.
+- KEIN TRIGGER GESETZT.
+
+**Vorrat P13-62 — DIE SCHLÜSSEL-REIHENFOLGE DES DATENBLOCKS HÄNGT AN DER HERKUNFT DER MAPPINGS**
+(GEMESSEN DURCH NACHBAU, CC, 2026-09-28; Vermerk P13-60, Punkt (4), Z).
+- Befund: `generateFunctional` (src/lib/generate.ts) schreibt die Tabelle über
+  `embedInScript`, also `JSON.stringify` in der Schlüssel-Reihenfolge der übergebenen Objekte.
+  `handlePublish` und der Export (src/components/CodeImporter.tsx, `buildDocumentFor`) geben die
+  Mappings aus dem EDITOR-ZUSTAND.
+  - Aus der Datenbank geladen: `type, config, elementId`, im config `endpoint, thanksUrl` —
+    passt zur Ordnung von jsonb, an der Datenbank selbst nicht gemessen.
+  - Im Editor gebaut (`upsertMapping(prev, { elementId, type, config })` in den
+    Zuweisungs-Handlern, auch "Neue Feldnamen bestätigen"): `elementId, type, config`.
+  - `upsertMapping` (src/lib/mappings.ts) ersetzt an derselben Stelle; die Array-Reihenfolge
+    bleibt stabil.
+- Folge: Gleicher Inhalt, andere Bytes, gleiche Länge — je nachdem, ob ein Mapping in der
+  Sitzung angefasst wurde. Kein Zufall, keine Zeitabhängigkeit. Nach dem Neuladen gilt die
+  Datenbank-Form.
+- SEIT: `380d9be` (2026-06-23, `JSON.stringify(table)` im Datenblock) und `31d2464`
+  (2026-06-29, die Editor-Form über `upsertMapping`). Vor 13-1 und 13-1c; `434dc86` hat nur
+  `embedInScript` eingesetzt (zeichengleich). Test F6c-b hält die Datenbank-Form beim Weglassen
+  von `fieldNames` fest.
+- WEN ES TRIFFT: jede Byte-Gleichheits-Aussage über ausgelieferten Text, zwischen deren Vorher
+  und Nachher ein Mapping im Editor angelegt oder geändert wurde. I5/J2 an R halten, weil R nicht
+  editiert wurde. FRÜHERE LIVE-VERGLEICHE in den Phasen 11.5, 11.11, 11.12, 11.13, 12.5 und 5
+  sind NICHT einzeln nachgeprüft.
+- KANDIDATEN (keine Auswahl getroffen):
+  (a) Beim Erzeugen an EINER Stelle in eine feste Schlüssel-Reihenfolge normalisieren. Ändert
+      den Text keiner Seite, deren Mappings aus der Datenbank kommen, wenn die Normalform die
+      Datenbank-Form ist; in Editor-Form veröffentlichte Seiten ändern sich einmalig beim
+      nächsten Veröffentlichen.
+  (b) Die Zuweisungs-Handler bauen die Objekte in Datenbank-Form. Dieselbe Wirkung auf den
+      Text, aber mehrere Stellen, und jede neue ist ungeschützt.
+  (c) Code unverändert; "Mappings aus derselben Herkunft" als Pflicht-Schritt jeder
+      Live-Anleitung (Hebungs-Kandidat P13-63). Ändert keinen Text.
+- ARCHITEKTEN-EMPFEHLUNG (2026-09-28): Kandidat (a). VORHER MESSEN, welche Reihenfolge die
+  Fixtures von W1′, W2′, T1 und T9 tragen — die Wahl der Normalform soll diese vier Pins
+  möglichst unberührt lassen.
+- TRIGGER (beobachtet): die nächste Scheibe, die einen Live-Fingerabdruck über eine Seite mit im
+  Editor geänderten Aktionen braucht.

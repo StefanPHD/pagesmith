@@ -687,7 +687,8 @@ export default function CodeImporter({
   // Reiter waehlt). Wird NUR beim Projekt-Kontext-Wechsel via applyZenForLoadedCode
   // zurueckgesetzt. Der Name stammt aus dem Akkordeon und bleibt, weil der
   // Backlog-Posten "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL …" ihn als Fundstelle
-  // nennt.
+  // nennt. Gesetzt verhindert das Flag den Wechsel ganz — deshalb kam der Code nach
+  // manueller Wahl schon vor Scheibe 2b der Phase 12.5 an (Befund 1 dort, zweite Haelfte).
   const [userExpandedManually, setUserExpandedManually] = useState(false);
   // Datei-Upload: letzter Validierungs-/Lesefehler (freundlich sichtbar, kein
   // stilles Schlucken) + Drag-Hover-Feedback fuer die Dropzone.
@@ -1500,7 +1501,9 @@ export default function CodeImporter({
             : null;
 
   // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
-  // -> "Unbenanntes Projekt" (entspricht dem spaeteren DB-Default).
+  // -> "Unbenanntes Projekt" — derselbe Name, den der Insert-Zweig von saveProject
+  // festschreibt. NICHT der DB-Default: der lautet 'Mein Projekt' (Migration 0001) und
+  // greift nicht, weil der Insert-Zweig von saveProject den Namen mitgibt.
   const activeName =
     projects.find((p) => p.id === projectId)?.name ?? "Unbenanntes Projekt";
 
@@ -1549,15 +1552,20 @@ export default function CodeImporter({
     applyZenForLoadedCode("");
   }
 
-  // Zen-Modus: an ein Import-EREIGNIS gehaengt (onPaste / erfolgreicher Upload),
-  // NICHT an den Detektions-State (sonst feuerte es bei jedem Tastendruck und
+  // Zen-Modus: an ein Import-EREIGNIS gehaengt (eingefuegter Text / erfolgreicher
+  // Upload), NICHT an den Detektions-State (sonst feuerte es bei jedem Tastendruck und
   // schaltete dem Nutzer beim Tippen den Reiter weg). Genau einmal pro Ereignis.
   // "Manuell schlaegt Auto": hat der Nutzer den Reiter "Code" selbst gewaehlt, kein
   // automatischer Wechsel. Seit Scheibe 2 der Phase 12.5 ist die Wirkung der Wechsel auf
   // "Elemente" statt des Einklappens — der Name bleibt, weil der Backlog-Posten
-  // "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL …" ihn als Fundstelle nennt; der dort
-  // vermutete Mechanismus (Wechsel im onPaste-Handler, vor dem onChange-Commit) gilt
-  // unveraendert.
+  // "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL …" ihn als Fundstelle nennt.
+  // DER ZEITPUNKT TRAEGT (Scheibe 2b der Phase 12.5, gemessen in Chromium): Beim
+  // Einfuegen ruft ihn NICHT onPaste, sondern onChange mit inputType "insertFromPaste" —
+  // also erst, wenn der Text im Feld steht. Aus onPaste committete React den Wechsel im
+  // Mikrotask VOR der Standardaktion; das Feld war dann schon display:none, und Chromium
+  // verwarf das Einfuegen (Befund 1 der Scheibe 2). Fehlt der inputType (anderer
+  // Browser, ungemessen), bleibt der Reiter auf "Code" — kein Sprung, aber der Code kommt
+  // an. Waechter: RT8a, RT13.
   function autoCollapseOnImport() {
     if (!userExpandedManually) setLeftTab("elements");
   }
@@ -3339,11 +3347,19 @@ export default function CodeImporter({
           <div className="flex flex-col gap-3 p-3">
             <textarea
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(e) => {
+                setCode(e.target.value);
+                // Der Zen-Wechsel beim Einfuegen haengt HIER, nicht an onPaste: erst
+                // dieses Ereignis traegt den eingefuegten Text (Kommentar an
+                // autoCollapseOnImport). Getippter Text ("insertText") schaltet nie.
+                if ((e.nativeEvent as InputEvent).inputType === "insertFromPaste") {
+                  autoCollapseOnImport();
+                }
+              }}
               onPaste={() => {
                 // Paste ist auch ein Import-Versuch -> alte Upload-Meldung clearen.
+                // KEIN Reiterwechsel hier — er versteckte das Feld vor dem Einfuegen.
                 setUploadError(null);
-                autoCollapseOnImport();
               }}
               placeholder="Füge hier deinen HTML-Code ein – oder nutze den Datei-Upload unten."
               className="h-96 w-full resize-none rounded-lg border border-gray-300 bg-gray-50 p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -3781,8 +3797,13 @@ export default function CodeImporter({
           und schrumpft zuerst. Das iframe bleibt an stabiler Baumposition,
           damit Ein-/Ausklappen es nicht neu mountet (kein srcDoc-Reload). */}
       <section className="flex min-w-0 flex-1 flex-col rounded-lg border border-gray-300 bg-white">
-        <div className="flex items-center justify-between gap-3 border-b border-gray-200 px-4 py-3">
-          <div className="flex items-center gap-3">
+        {/* KOPFZEILE DER MITTE: flex-wrap an der Zeile UND an beiden Gruppen (Scheibe 2b
+            der Phase 12.5). Ohne Umbruch lief sie bei schmaler Mitte rechts aus der
+            Spalte, und das spaeter gemalte <aside> des ActionPanel verdeckte
+            "Speichern" (Befund 2 der Scheibe 2, bei 1108 px). Mit Umbruch rutscht das
+            Speicher-Grueppchen in eine eigene Zeile. Waechter (STRUKTUR): RT15. */}
+        <div className="flex flex-wrap items-center justify-between gap-3 gap-y-2 border-b border-gray-200 px-4 py-3">
+          <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-sm font-medium text-gray-700">
               Live-Preview (sandboxed)
             </h2>
@@ -3816,7 +3837,7 @@ export default function CodeImporter({
               </button>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {saveStatus === "error" && saveError && (
               <span className="truncate text-xs text-red-600" title={saveError}>
                 {saveError}

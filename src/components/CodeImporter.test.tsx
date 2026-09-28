@@ -6336,21 +6336,56 @@ describe("CodeImporter — Editor-Geruest: Reiter der linken Spalte (Phase 12.5,
     expect(within(aktionsSpalte()).getByText("Kaufen")).toBeTruthy();
   });
 
-  // RT8a. Rot, wenn der Zen-Wechsel beim Einfuegen wirkungslos ist (MR7).
-  it("RT8a: Einfuegen in ein leeres Projekt springt auf Elemente", () => {
+  // Das Einfuegen, wie der Browser es liefert (Scheibe 2b, gemessen in Chromium): erst
+  // "paste" mit noch leerem Feld, dann "input" mit inputType "insertFromPaste" und dem
+  // Text. jsdom fuegt bei "paste" nichts ein — der zweite Schritt stellt das nach.
+  // fireEvent.change genuegt dafuer NICHT: es liefert ein einfaches Event ohne inputType.
+  const einfuegen = (text: string) => {
+    fireEvent.paste(feld());
+    fireEvent.input(feld(), { target: { value: text }, inputType: "insertFromPaste" });
+  };
+
+  // RT8a. Rot, wenn der Zen-Wechsel beim Einfuegen wirkungslos ist (MR7, MG3) — und,
+  // an der ZWISCHENPRUEFUNG, wenn er wieder VOR dem Ankommen des Textes geschieht (MG1):
+  // dann ist das Feld beim Einfuegen schon versteckt, und Chromium verwirft den Text
+  // (Befund 1 der Scheibe 2). Dass das Verstecken den Text verwirft, kann jsdom nicht
+  // zeigen (kein CSS, kein echtes Einfuegen) — das ist der Live-Test.
+  it("RT8a: Einfuegen in ein leeres Projekt springt auf Elemente — erst wenn der Code im Feld steht", () => {
     render(<CodeImporter />);
     expect(gedrueckt("Code")).toBe(true);
+
     fireEvent.paste(feld());
-    fireEvent.change(feld(), { target: { value: HTML } });
+    // ZWISCHENPRUEFUNG: nach "paste", vor dem Text — noch "Code", Huelle nicht versteckt.
+    expect(gedrueckt("Code")).toBe(true);
+    expect(codeHuelle().classList.contains("hidden")).toBe(false);
+    expect(feld().value).toBe("");
+
+    fireEvent.input(feld(), { target: { value: HTML }, inputType: "insertFromPaste" });
     expect(gedrueckt("Elemente")).toBe(true);
+    expect(gedrueckt("Code")).toBe(false);
+    expect(feld().value).toBe(HTML);
   });
 
   // RT8b. Rot, wenn die manuelle Wahl das Flag nicht setzt (MR8).
   it("RT8b: nach manueller Wahl des Reiters Code bleibt Einfuegen auf Code", () => {
     render(<CodeImporter />);
     fireEvent.click(reiter("Code"));
-    fireEvent.paste(feld());
-    fireEvent.change(feld(), { target: { value: HTML } });
+    einfuegen(HTML);
+    // POSITIVKONTROLLE: das Einfuegen ist angekommen — sonst waere "bleibt auf Code"
+    // trivial wahr.
+    expect(feld().value).toBe(HTML);
+    expect(gedrueckt("Code")).toBe(true);
+    expect(gedrueckt("Elemente")).toBe(false);
+  });
+
+  // RT13. Rot, wenn jede Eingabe den Reiter wechselt (MG2): Tippen ist kein Import, und
+  // ein Wechsel beim ersten Buchstaben naehme dem Nutzer das Feld unter den Fingern weg.
+  it("RT13: Tippen in ein leeres Projekt bleibt auf Code", () => {
+    render(<CodeImporter />);
+    fireEvent.input(feld(), { target: { value: "<p" }, inputType: "insertText" });
+    // POSITIVKONTROLLE: onChange ist gelaufen (Wert uebernommen, Projekt dirty).
+    expect(feld().value).toBe("<p");
+    expect(screen.getByText("Ungespeicherte Änderungen")).toBeTruthy();
     expect(gedrueckt("Code")).toBe(true);
     expect(gedrueckt("Elemente")).toBe(false);
   });
@@ -6460,6 +6495,29 @@ describe("CodeImporter — Editor-Geruest: Reiter der linken Spalte (Phase 12.5,
         screen.getAllByRole("button", { name: new RegExp(`^${name}$`) }),
       ).toHaveLength(1);
       expect(within(gruppe).getByRole("button", { name })).toBeTruthy();
+    }
+  });
+
+  // RT15. STRUKTUR, KEINE SICHTBARKEIT (die Testumgebung wertet kein CSS aus). Rot, wenn
+  // der Kopfzeile der Mitte (MG4) oder dem Speicher-Grueppchen (MG4b) flex-wrap fehlt —
+  // ohne Umbruch verdeckte das <aside> des ActionPanel "Speichern" (Befund 2 der
+  // Scheibe 2, bei 1108 px). Ob "Speichern" wirklich erreichbar ist, zeigt nur der
+  // Live-Test.
+  it("RT15 (STRUKTUR): die Kopfzeile der Mitte und ihre beiden Gruppen tragen flex-wrap", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    const speichern = screen.getByRole("button", { name: /^Speichern/ });
+    const speicherGruppe = speichern.parentElement as HTMLElement;
+    const kopfzeile = speicherGruppe.parentElement as HTMLElement;
+    // VERANKERUNG: die Kopfzeile ist die der Mitte — sie traegt auch den Titel.
+    expect(within(kopfzeile).getByText("Live-Preview (sandboxed)")).toBeTruthy();
+    const gruppen = Array.from(kopfzeile.children);
+    expect(gruppen).toHaveLength(2);
+    expect(gruppen).toContain(speicherGruppe);
+
+    expect(kopfzeile.classList.contains("flex-wrap")).toBe(true);
+    for (const gruppe of gruppen) {
+      expect(gruppe.classList.contains("flex-wrap")).toBe(true);
     }
   });
 });

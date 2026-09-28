@@ -2670,8 +2670,10 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   SCHMALER als „kein Baustein fasst einen fremden Knoten an". Ausdrücklich NICHT erfasst und
   gewollt: das Anhängen des Host-Elements an `body`, das Einfügen des fbevents-Scripts per
   `insertBefore` (`__psMetaInit`), die drei Wiring-Listener an `document` (click, auxclick,
-  submit) samt `preventDefault` beim Redirect, und zur ERZEUGUNGSZEIT die Schreibvorgänge von
-  `generateFunctional` in Kundenelemente. Wer die fünf Achsen mit „fremder Knoten" gleichsetzt,
+  submit) samt `preventDefault` beim Redirect, bei einem Formular mit eingetragenem Ziel das
+  `preventDefault` im submit-Listener, das den nativen Versand durch unseren ersetzt, das
+  Anhängen des Host-Elements der eigenen Formular-Meldung an `body`, und zur ERZEUGUNGSZEIT
+  die Schreibvorgänge von `generateFunctional` in Kundenelemente. Wer die fünf Achsen mit „fremder Knoten" gleichsetzt,
   hält eine geltende Regel für gebrochen und baut die nächste Ausnahme frei Hand.
   DIE AUFZÄHLUNG DER WIRING-LISTENER IST AUF DEM GEBAUTEN STAND (2026-09-25, Phase 12.5,
   Scheibe 1b, Bau-Commit `0530c4b`; Entscheidung P12.5-27 der Phase 12.5): Zu click und
@@ -2690,6 +2692,26 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   Knöpfen, die der Baustein selbst erzeugt (`makeButton`, `makeWay`) und die Leiste bzw.
   Modal in den eigenen Schattenbaum hängen (`attachShadow` in src/lib/tracking/consent-bar.ts
   und src/lib/tracking/consent-modal.ts; GELESEN am Code, CC, 2026-09-25).
+  ERGÄNZT 2026-09-28 — ZWEI EINGRIFFE DES FORMULAR-ZIELS IN DER AUFZÄHLUNG (OWNER-ENTSCHEIDUNG
+  2026-09-28, Phase 13, Scheibe 13-1; Vorschlag aus der Planrunde; Entscheidung P13-24 der
+  Phase 13): Ein Formular, das der Betreiber im Tool mit einem Ziel versieht, schickt nicht
+  mehr nativ ab. Der submit-Listener ruft für GENAU dieses Formular `preventDefault` und
+  schickt die Felder selbst an die eingetragene Adresse. Scheitert das, erscheint eine eigene
+  Meldung in einem eigenen Host-Element, das an `body` gehängt wird.
+  Beides ändert keine der fünf Achsen: `preventDefault` hält die Standardaktion eines
+  Ereignisses an und schreibt an keinem Knoten etwas. Das Anhängen fügt `body` ein Kind
+  hinzu, ändert dort aber weder Stil noch Klasse, Attribut, Scroll-Position oder Fokus. Die
+  Meldung verschiebt den Fokus NICHT.
+  Beides steht in der Aufzählung, weil es der Liste des ausdrücklich Nicht-Erfassten nicht
+  zuzuordnen war: Dort stand `preventDefault` nur beim Redirect, und das Host-Element war das
+  der Einwilligungs-Oberfläche. Das ist dieselbe Lage, in der Entscheidung P12.5-27 der
+  Phase 12.5 den submit-Listener nachgezogen hat (Befund: Vermerk P13-1 der Phase 13,
+  Punkt (5)).
+  Formulare OHNE Ziel sind nicht berührt: Für sie ruft der Listener weiterhin kein
+  `preventDefault`.
+  Der Stand ist ENTSCHIEDEN VOR DEM BAU; die Zahl der `document.addEventListener` im Wiring
+  bleibt nach dem Plan bei drei, der Eingriff liegt IM submit-Listener. Ob der Bau das
+  einhält, gehört zum Nachweis der Scheibe 13-1.
   WAS SIE IM BESTAND KOSTET UND WARUM DER TAUSCH RICHTIG IST: Das Center-Modal hat deshalb
   KEINE Scroll-Sperre — der Besucher kann hinter der Abdunkelung scrollen. Dazu ist gemessen,
   dass eine Sperre auf fremdem HTML nicht verlässlich hält: auf zwei realen Seiten hielt sie

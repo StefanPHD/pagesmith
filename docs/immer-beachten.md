@@ -1077,8 +1077,10 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   SCHMALER als "kein Baustein fasst einen fremden Knoten an". Ausdrücklich nicht erfasst
   und gewollt: das Anhängen des Host-Elements an `body` · das Einfügen des
   fbevents-Scripts per `insertBefore` · die drei Wiring-Listener an `document` (click,
-  auxclick, submit) samt `preventDefault` beim Redirect · und zur Erzeugungszeit die
-  Schreibvorgänge von `generateFunctional` in Kundenelemente.
+  auxclick, submit) samt `preventDefault` beim Redirect · bei einem Formular mit
+  eingetragenem Ziel das `preventDefault` im submit-Listener, das den nativen Versand durch
+  unseren ersetzt · das Anhängen des Host-Elements der eigenen Formular-Meldung an `body` ·
+  und zur Erzeugungszeit die Schreibvorgänge von `generateFunctional` in Kundenelemente.
   Was sie im Bestand kostet: Das Center-Modal hat keine SCROLL-SPERRE — der Besucher kann
   hinter der Abdunkelung scrollen. Das ist der bewusste Tausch, kein Versehen.
 

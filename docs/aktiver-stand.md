@@ -367,6 +367,12 @@ Zuschnitt-Runde.
 - I4 Formulare OHNE Ziel verhalten sich unverändert; die (I4) der Scheiben 1b und 1c der Phase
   12.5 gelten für sie weiter (Wortlaut: Vermerk P13-1, Punkt (3)). Für Formulare MIT Ziel werden
   sie ausdrücklich abgegrenzt.
+  DIE ABGRENZUNG IM WORTLAUT (ARCHITEKT 2026-09-28, Vorschlag der Planrunde, übernommen im
+  Bau-Auftrag): "(I4) der Scheiben 1b und 1c gelten für Formulare OHNE Formular-Ziel
+  unverändert (Wächter S1, U1). Für ein Formular MIT Ziel ersetzt unser `preventDefault` das
+  native Abschicken: `action`, `method` und `target` des Betreibers wirken dann nicht mehr; die
+  Daten gehen an die eingetragene Adresse, die Navigation an die Danke-Seite (Scheibe 13-1,
+  I3)."
 - I5 KANDIDAT: Projekte ohne ein Formular-Ziel bekommen byte-gleichen ausgelieferten Text.
   Trägt der Code das nicht, sagt der Plan, warum.
 - I6 Kein fremder Knoten wird verändert (Stil, Klasse, Attribut, Scroll-Position, Fokus); die
@@ -384,6 +390,167 @@ Zuschnitt-Runde.
 - Die Einsetzungen in den vier Differenz-Nachweisen (Vermerk P13-1, Punkt (9)), falls I5 nicht
   trägt.
 - Die Frage "Mapping-Typ oder Einstellung" beantwortet der Plan (Arbeit P13-13, vierter Punkt).
+  → beantwortet: Setzung P13-25.
+
+### Owner-Entscheidungen vor dem Bau der Scheibe 13-1
+
+PROVENIENZ beider: OWNER-ENTSCHEIDUNG 2026-09-28, übermittelt im Bau-Auftrag der Scheibe 13-1.
+BINDEND.
+
+**Entscheidung P13-23 — 13-1 BAUT STRENG: EIN ZIEL NUR FÜR FORMULARE, DEREN EINGABEFELDER ALLE
+EINEN NAMEN TRAGEN.**
+- Die automatische Benennung unbenannter Felder ist die nächste Scheibe 13-1c (Arbeit P13-34).
+  Sie nimmt den Namen aus der `id`, sonst aus Beschriftung oder Platzhalter, ohne das HTML zu
+  ändern, und zeigt im Editor die ankommenden Namen.
+- GRUND (Planrunde, G2): Ein Feld ohne `name` nimmt `FormData` nicht mit. Ohne diese Grenze
+  käme bei Make ein leerer oder unvollständiger Rumpf an, während die Danke-Seite erscheint —
+  der Fall aus Entscheidung P12.5-47.
+
+**Entscheidung P13-24 — DIE AUSNAHME-LISTE DER DAUERREGEL "KEIN BAUSTEIN DES AUSGELIEFERTEN
+TEXTES FASST ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN …" WIRD UM ZWEI EINGRIFFE ERWEITERT.**
+- Erstens das `preventDefault` im submit-Listener bei einem Formular mit eingetragenem Ziel.
+- Zweitens das Anhängen des Host-Elements der eigenen Formular-Meldung an `body`.
+- Vollzogen im selben Commit wie dieser Eintrag: Kern (docs/immer-beachten.md) und Volltext
+  (docs/immer-beachten-herleitung.md, datierte Ergänzung vom 2026-09-28). Der Titel der Regel
+  ist unverändert; ihr Verzeichnis-Eintrag in der Herleitung trägt nur den Titel und bleibt
+  deshalb stehen.
+
+### Architekten-Setzungen aus der Planrunde der Scheibe 13-1
+
+PROVENIENZ aller: ARCHITEKTEN-SETZUNG 2026-09-28, aus dem Plan der Planrunde (CC) übernommen im
+Bau-Auftrag desselben Tages. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf.
+
+**Setzung P13-25 — DIE KONFIGURATION IST EIN MAPPING-TYP `"formTarget"` MIT `endpoint` UND
+`thanksUrl`.** Das Mapping sitzt am `<form>`.
+- GRUND:
+  - Das Ziel gehört zu EINEM Element und zu EINER Variante (`mappings`/`mappings_b`).
+  - Verwaiste Ziele fängt das Weg-C-Netz (`findOrphans`).
+  - `publishProject` prüft Mappings bereits über beide Varianten (`alleMappings`).
+  - Der Einstellungs-Blob müsste einen Element-Verweis nachbauen und löste den Trigger von
+    "`settingsEqual` IST EINE ALLOWLIST …" aus.
+- NAMEN:
+  - Nicht `"webhook"`: kollidiert mit Setzung P13-9.
+  - Nicht `"form"`: verwechselbar mit `DetectedElement.type`.
+  - Kein Feld `url`: Die Anzeige verwaister Mappings in `CodeImporter` liest `m.config.url`
+    und bliebe sonst still als "Weiterleitung" stehen; ohne `url` meldet es der Compiler.
+- KEINE MIGRATION, NACH DOKUMENTSTAND:
+  - `projects.mappings` ist `jsonb` ohne Typ-Prüfung (supabase/migrations/0001_projects.sql).
+  - docs/db-stand.md führt für `projects` genau zwei Constraints und nur
+    `set_updated_at`-Row-Trigger.
+  - Die Prüfung am Live-Stand ist Teil von B0.
+
+**Setzung P13-26 — BEI EINEM FORMULAR MIT ZIEL ZÄHLT DER TRACK ERST BEI "ERREICHT".** Einmal je
+Formular und Seitenleben, auch nach einem erneuten Versuch.
+- GRUND: Ein Lead-Ereignis für einen verlorenen Lead verfälscht die Optimierung des Netzwerks
+  (Grundsatz "nur anbieten, was wirkt", Entscheidung P12.5-47).
+- VORBILD für "Track, dann sofort navigieren": der Klick-Redirect in `buildWiringScript`.
+
+**Setzung P13-27 — DIE MELDUNG STEHT IN DER PROJEKTSPRACHE, MIT DER ANREDE DER DEUTSCHEN TEXTE
+DES EINWILLIGUNGS-DIALOGS ("du").** Sie behauptet weder Ursache noch Ergebnis.
+- Quelle der Sprache: `getConsentLanguage`.
+- Ein unbekannter Wert lässt das Veröffentlichen laut abbrechen, sobald ein Formular-Ziel
+  besteht (I8).
+
+**Setzung P13-28 — DER MAPPING-DATENBLOCK GEHT ÜBER `embedInScript`.** Heute steht dort dieselbe
+Bauform ohne Namen.
+- Die Ausgabe ist per Definition zeichengleich; W1′, W2′, T1 und T9 pinnen sie.
+- Damit gilt I7 wörtlich.
+- Der Kommentar in src/lib/script-embed.ts ("Jene Stelle bleibt UNBERUEHRT") ist nachzuziehen.
+
+**Setzung P13-29 — DIE WERTREGELN.**
+- `endpoint`:
+  - nur `https:`, weil `http` auf einer https-Seite als Mixed Content scheitert;
+  - nicht auf eigenen Hosts. Abgeleitet aus der Umgebung: der Hosting-Domäne und ihren
+    Unterdomänen sowie dem App-Host. Dort löst ein `no-cors`-Aufruf mit Typ `basic` auf und
+    gälte als "nie erreicht".
+- `thanksUrl`: nur absolute `http:`/`https:`-Adresse. Eine relative Adresse zeigte auf einer
+  gehosteten Seite dieselbe Seite noch einmal, weil `proxy` jeden Pfad auf die pfadblinde
+  Serve-Route umschreibt.
+
+**Setzung P13-30 — IN VORSCHAU UND EDIT ENTSTEHT KEINE FORMULAR-ZIEL-LAUFZEIT.** Die
+Modus-Sperre sitzt im Erzeuger, dieselbe Bauform wie Entscheidung P11.6-6, Teil (d).
+- GRUND: Im Vorschau-Rahmen ohne `allow-forms` entsteht kein `submit` (Vermerk P12.5-22).
+- Senden erzeugte echte Leads aus der Arbeit des Betreibers.
+- Navigieren verletzte das Containment.
+- Geprüft wird über den Testknopf (13-1b).
+
+**Setzung P13-31 — DIE AUSSCHLÜSSE UND DER HINWEIS.**
+- Kein Angebot eines Ziels bei:
+  - einer eigenen fremden absoluten Zieladresse (`action` am Formular oder `formaction` an
+    einem Absende-Element);
+  - einem Datei-Feld;
+  - `method="dialog"`;
+  - einem UNBENANNTEN Eingabefeld (Entscheidung P13-23).
+- Ein Inline-`onsubmit` ist KEIN Ausschluss, sondern ein Hinweis im Panel.
+  - GRUND: Gerade tote KI-Formulare tragen es.
+  - Ein Ausschluss träfe nur die erkennbare Hälfte fremder Skripte; per `addEventListener`
+    gebundene bleiben unsichtbar.
+
+**Setzung P13-32 — ZEITLIMIT `FORM_TARGET_TIMEOUT_MS` = 10 000 (SETZUNG, NICHT GEMESSEN).**
+- Nach Ablauf erscheint die Meldung, und die Sperre wird frei.
+- Der Aufruf wird NICHT abgebrochen: Ein später "erreicht" navigiert noch.
+- GRUND: Ein doppelter Lead ist besser als ein verlorener. Ohne Limit verschluckte die Sperre
+  jeden weiteren Klick.
+- Gemessen ist bisher nur eine Make-Antwort nach rund 0,2 s (docs/formular-empfaenger-befunde.md,
+  Abschnitt "Make", Befund (aa)).
+
+### Befunde der Planrunde (G1–G8)
+
+**Vermerk P13-33 — WAS DER PLAN AM CODE GEFUNDEN HAT** (GELESEN AM CODE, CC, 2026-09-28, HEAD
+`fbffe3b`; nichts davon live gemessen). Fundstellen als Symbolnamen.
+
+- (G1) `Mapping` (src/lib/mappings.ts) ist eine Union aus `redirect`, `text` und `track`.
+  - FALLEN, DIE DER COMPILER NICHT MELDET:
+    - `configEqual` endet mit `return false`. Ein neuer Typ ohne eigenen Zweig wäre DAUERHAFT
+      dirty.
+    - `isRelinkTarget` (src/components/CodeImporter.tsx) liesse ein Formular-Ziel auf Button
+      oder Link zu.
+    - Die Anzeige verwaister Mappings in `CodeImporter` liest `m.config.url`.
+  - Der Compiler meldet dagegen die Relink-Verzweigung in `CodeImporter`, sobald die neue
+    Config kein `openInNewTab` trägt.
+  - `saveProject` prüft Mappings nicht. Das einzige Server-Tor für Mapping-Werte ist
+    `publishProject` (`zeileKaputt` über `alleMappings`).
+- (G2) Das Panel für Formulare ist der Zweig `element.type === "form"` in `ElementActions`
+  (src/components/ActionPanel.tsx).
+  - Der Absende-Button bekommt über `submitFormOf` (src/lib/generate.ts) Hinweis und Link.
+    Die Funktion wird mit `previewHtml` aufgerufen; gesucht wird per `getAttribute`-Vergleich.
+  - Die Berechtigung wird nach demselben Muster erhoben: DOMParser auf demselben `previewHtml`,
+    Felder über `form.elements`, also auch mit `form=`-Attribut.
+  - `CANDIDATE_SELECTOR` (src/lib/detect.ts) erfasst `form`; Eingabefelder bekommen keine ps-ID.
+- (G3) Der submit-Listener in `buildWiringScript` läuft in der Capture-Phase an `document`,
+  prüft `FORM` und die Sperre `submittedForms`, dann `trackAll`, ohne `preventDefault`.
+  - Die Einsetzung steht direkt hinter der `FORM`-Prüfung und VOR der Sperre `submittedForms`.
+    Stünde sie dahinter, verhinderte die Sperre den erneuten Versuch.
+  - `preventDefault` kommt ZUERST, auch während eines laufenden Versands. Sonst schickte ein
+    zweiter Klick nativ ab, bei `GET` mit den Werten in der Adresse — I2 wäre gebrochen.
+  - `form.submit()` löst kein `submit` aus und bleibt unsichtbar; das ist die Grenze aus
+    Setzung P13-5.
+  - Ein Capture-Handler des Betreibers an `window` mit `stopPropagation` hält uns an; das ist
+    eine Grenze.
+  - Ein Bubble-Listener mit Prüfung auf `defaultPrevented` ist VERWORFEN: `stopPropagation` am
+    Formular liesse den nativen Versand durch (I2).
+- (G4) I5 trägt, Vorbild ist der Custom-Pixel in `buildWiringScript`: Laufzeit und Einsetzung
+  sind "" ohne Formular-Ziel in der gefilterten Tabelle bzw. ausserhalb von "export".
+  - Die vier Differenz-Nachweise W1′, W2′ (src/lib/own-blocks-waechter.test.ts), T1
+    (src/lib/tracking/consent-setter.test.ts) und T9 (src/lib/tracking/custom-pixel.test.ts)
+    bleiben unverändert und werden zu Wächtern von I5.
+  - Mit einem Ziel ist `injectScripts` in `generateFunctional` immer wahr.
+- (G5) Die Wertprüfung sitzt an drei Stellen: im Panel (Speichern gesperrt), im Tor in
+  `publishProject` hinter `zeileKaputt` und im Export-Riegel im Client (Muster
+  `ownBlocksInActive`).
+  - Die Berechtigung braucht DOM und läuft deshalb nur im Client (Dauerregel "KEIN
+    SERVER-SEITIGES HTML-PARSING").
+  - `proxy` schreibt auf dem Serving-Host jeden Pfad um. Die Route in
+    src/app/app-serve/route.ts exportiert nur `GET` und liest den Pfad nicht.
+- (G6) Der Vorschau-Rahmen trägt `allow-scripts allow-popups allow-popups-to-escape-sandbox`,
+  kein `allow-forms` (`CodeImporter`). Der Export läuft über `buildDocumentFor` im Modus
+  "export" und trägt das Ziel.
+- (G7) Im Wiring gibt es keinen Baustein mit Schattenbaum. Vorbild ist die Leiste
+  (`buildConsentBarScript`, src/lib/tracking/consent-bar.ts): Host per `createElement`,
+  `attachShadow`, Texte per `textContent`, Strings über `embedInScript`,
+  `body.appendChild(host)`.
+- (G8) Keine neue Server-Action; der Trigger von "DIE IDOR-WÄCHTER SIND NAMENTLICH …" tritt
+  nicht ein. Keine Migration (Setzung P13-25).
 
 ## Noch nicht geschnittene Arbeit
 
@@ -428,6 +595,15 @@ Befund (i).
 · Die Frage "Mapping-Typ oder Einstellung" beantworten. Fällt sie auf den Einstellungs-Blob,
   greift der offene Punkt "`settingsEqual` IST EINE ALLOWLIST — JEDES NEUE MITGLIED DES
   EINSTELLUNGS-BLOBS IST FÜR dirty UNSICHTBAR BY DEFAULT …".
+
+**Arbeit P13-34 — SCHEIBE 13-1c: AUTOMATISCHE BENENNUNG UNBENANNTER FELDER** (OWNER-ENTSCHEIDUNG
+2026-09-28, Entscheidung P13-23).
+- Ein Feld ohne `name` bekommt seinen Namen beim Versand aus der `id`, sonst aus Beschriftung
+  oder Platzhalter.
+- Das HTML wird dabei nicht geändert.
+- Der Editor zeigt die ankommenden Namen.
+- Bis dahin gilt die strenge Grenze aus 13-1: ein Ziel nur, wenn alle Eingabefelder benannt
+  sind.
 
 ## Vorrat (gemeldet, nicht gebaut)
 

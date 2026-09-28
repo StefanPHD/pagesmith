@@ -218,6 +218,7 @@ Datenstruktur mit einer Sammlung aus `name`, `mime`, `data`. Eine Option "Get re
 method" macht die Methode im Szenario verfügbar. EINE ABSCHLIESSENDE LISTE DER METHODEN STEHT
 DORT NICHT. `text/plain` ist NICHT GENANNT — Reichweite: die zwei Kernseiten voll, die zwei
 Developer-Seiten gezielt nach `text/plain`. ERSETZT DIE MESSUNG NICHT.
+→ GEMESSEN: (t), (v).
 
 **(b) K1.3, K1.5 — ABBILDUNG DER FELDER.** GELESEN, apps.make.com/gateway: Kommen Daten in
 Query UND Form oder JSON zugleich, werden sie zu EINEM Bündel zusammengeführt; bei doppelten
@@ -230,6 +231,7 @@ JSON-Rumpf als Text weiter. help.make.com/webhooks, "Webhook logs": "Parsed item
 query parameters and body of the webhook request in one bundle." WAS BEI MEHRFACH VORKOMMENDEN
 NAMEN INNERHALB DESSELBEN RUMPFS GESCHIEHT (Checkbox-Gruppen), STEHT DORT NICHT — Reichweite
 wie (a).
+→ GEMESSEN: (w).
 
 **(c) K1.4 — GRÖSSE.** GELESEN, apps.make.com/gateway: "The maximum allowed webhook's payload
 size (Content-Length) is 5 MB (5.242.880 bytes) regardless of the subscription tier."
@@ -242,6 +244,7 @@ help.make.com/webhooks, "Webhook response module", Tabelle: angenommen in die Wa
 voneinander ab. Zeitpunkt, apps.make.com/gateway: "The response is returned to the
 webhook's caller right away during the execution of the Custom Webhook module." FOLGERUNG:
 Die Standardantwort 200 belegt die Aufnahme in die Warteschlange, nicht die Verarbeitung.
+→ GEMESSEN: (t), (x), (aa); bei Szenario AUS (z).
 
 **(e) K2.4 — KONFIGURIERBARE ANTWORT.** GELESEN, apps.make.com/gateway: Das Modul "Webhook
 response" setzt Status und Rumpf, dazu eigene Kopfzeilen; Beispiele: HTML mit
@@ -274,6 +277,7 @@ BEZUG, KEINE ENTSCHEIDUNG: Arbeit P13-12 der Phase 13 führt als ABGELEITETE Sch
 Zustellung ist vom Browser aus nicht bestätigbar". Trüge die Antwort
 `Access-Control-Allow-Origin: *`, wäre ihr Status lesbar — die Aufnahme in die
 Warteschlange, nach (d) nicht die Verarbeitung.
+→ GEMESSEN: (t), (u), (x), (y).
 
 **(g) K3.1 — FORM DER ADRESSE.** GELESEN, apps.make.com/gateway, Beispiele:
 `https://hook.make.com/yourunique32characterslongstring` (Platzhalter). GELESEN,
@@ -284,6 +288,7 @@ help.make.com/allow-connections-to-and-from-make-ip-addresses: Zonen `us2.make.c
 `eu1.make.celonis.com`; "Make uses dynamic Ingress IPs". WELCHEN HOST DIE WEBHOOK-ADRESSE JE
 ZONE TRÄGT, STEHT AUF KEINER GELESENEN SEITE — ablesbar an einer echten Adresse (Messkandidat
 M8).
+→ GEMESSEN für eine Zone: (s).
 
 **(h) K3.2, K3.3 — GEHEIMHALTUNG UND SCHUTZ.** Dass die Adresse ein Geheimnis sei oder geheim
 zu halten, steht auf KEINER gelesenen Seite — Reichweite: alle voll gelesenen Hilfeseiten und
@@ -302,6 +307,7 @@ BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-6 der Phase 13 ("DIE EINGETRAGENE ADRESSE
 GEHEIMNIS") — die Doku widerspricht ihr nicht. Würde ein API-Schlüssel eingesetzt, berührte
 das Trigger (ii) des offenen Punkts "DER PRIMÄRSCHLÜSSEL (project_id, target) AUF
 project_secrets BLEIBT" ("die Kennung selbst ein Geheimnis").
+→ GEMESSEN zum Preflight einer eigenen Kopfzeile: (u).
 
 **(i) K3.4, K4.3 — WANN DIE ADRESSE NICHT ANNIMMT.** GELESEN, help.make.com/webhooks,
 "Expiration of inactive webhooks": Webhooks, die "not connected to any scenario for more
@@ -317,6 +323,9 @@ request, the system stores the request in the webhook's queue." OB EINE ANFRAGE 
 AUSGESCHALTETEM SZENARIO IN DIE WARTESCHLANGE GEHT ODER ABGEWIESEN WIRD, IST AUS DEN
 GELESENEN SEITEN NICHT ZU ENTSCHEIDEN — sie stehen nebeneinander, ohne sich aufeinander zu
 beziehen. MESSUNG NÖTIG (M4).
+→ VORBEHALT: GEMESSEN (z) — bei ausgeschaltetem Szenario kein Fehler, sondern 200 und Queue;
+die Doku-Aussage zu "disabled" steht dazu im Widerspruch oder meint etwas anderes. Unbekannte
+Kennung: (y).
 
 **(j) K4.1 — RATENLIMITS.** GELESEN, help.make.com/webhooks, "Webhook rate limit": "Make can
 process up to 300 incoming webhook requests per 10 second interval. If you send more, the
@@ -390,27 +399,184 @@ lässt das Modul auf einen Aufruf warten; der Aufruf der Adresse im Browser zeig
 "Accepted"; "Detect new values" bestimmt die Struktur aus einem Beispielaufruf neu.
 
 **(r) K7.1 — WERBEBLOCKER.** NICHT GELESEN — per Doku nicht beantwortbar. MESSFRAGE (M10).
+→ GEMESSEN am Listentext, nicht im Browser: (ab).
 
 ### Messkandidaten Make (aus der Lesung vom 2026-09-28)
 
-Keiner ist gemessen; die Liste entscheidet nicht, welcher gemessen wird.
+Stand der Lesung: keiner gemessen; die Liste entscheidet nicht, welcher gemessen wird. Was
+seither gemessen ist, führt "Messung 2026-09-28", am Ende des Abschnitts.
 - M1 — CORS-Kopfzeilen der STANDARDANTWORT auf einen `POST` aus fremdem Ursprung, je
   Content-Type (`text/plain`, `application/x-www-form-urlencoded`, `multipart/form-data`,
-  `application/json`); sind Status und Rumpf lesbar? (K2.1, K2.3; zu (f))
+  `application/json`); sind Status und Rumpf lesbar? (K2.1, K2.3; zu (f)) — GEMESSEN (t), (x)
 - M2 — Antwort auf einen Preflight (`OPTIONS`), wie ihn `application/json` auslöst.
-  (K2.2; zu (f))
+  (K2.2; zu (f)) — GEMESSEN (u)
 - M3 — Wird ein `text/plain`-Rumpf (Form eines `sendBeacon`) angenommen, und wie wird er
-  abgebildet? (K1.2; zu (a))
+  abgebildet? (K1.2; zu (a)) — GEMESSEN (v)
 - M4 — Status und Verbleib einer Anfrage bei ausgeschaltetem Szenario, bei deaktiviertem
-  Hook und nach einer Deaktivierung durch einen Fehler. (K4.3; zu (i), (m))
+  Hook und nach einer Deaktivierung durch einen Fehler. (K4.3; zu (i), (m)) — TEILWEISE
+  GEMESSEN (z): nur Szenario AUS
 - M5 — Tragen die Fehlerantworten (400, 410, 429, 500) dieselben CORS-Kopfzeilen, sind sie
-  aus dem Browser lesbar? (K2.3; zu (d), (i), (j))
+  aus dem Browser lesbar? (K2.3; zu (d), (i), (j)) — TEILWEISE GEMESSEN (y): nur 410, nur curl
 - M6 — Folgt ein `fetch` einer 303-Weiterleitung aus "Webhook response", und woran scheitert
   CORS dabei? (K2.4; zu (e), (f))
 - M7 — Unterdrückt "Keep data confidential" den Rumpf in den Webhook-Logs? (K5.4; zu (o))
 - M8 — Host der Webhook-Adresse je Zone, abgelesen an einer echten Adresse des
-  Owner-Kontos. (K3.1; zu (g))
+  Owner-Kontos. (K3.1; zu (g)) — TEILWEISE GEMESSEN (s): nur eu2
 - M9 — Abbildung mehrfach vorkommender Feldnamen im selben Rumpf (Checkbox-Gruppen).
-  (K1.3; zu (b))
+  (K1.3; zu (b)) — GEMESSEN (w) für form-urlencoded
 - M10 — Erfassen gängige Filterlisten die Webhook-Adresse (Host bzw. Pfad)? (K7.1; zu (r))
-- M11 — Zeit bis zur Standardantwort unter normaler Last. (K2.5; zu (d))
+  — TEILWEISE GEMESSEN (ab): am Listentext, nicht im Browser
+- M11 — Zeit bis zur Standardantwort unter normaler Last. (K2.5; zu (d)) — GEMESSEN (aa),
+  ohne Last
+
+### Messung 2026-09-28 (CC mit Owner, Phase 13, Messkandidaten M1–M5, M9–M11)
+
+**AUFBAU:** EINE Webhook-Adresse im Konto des Owners, Modul "Custom webhook", KEINE
+Datenstruktur, kein Modul "Webhook response", Szenario EIN (ausser in (z)). Die Adresse steht
+hier absichtlich nur gekürzt: `hook.eu2.make.com/icdb…`. Köderwerte sind erfunden
+(`probe=m1-form`, `probe=m3` …), keine echten Daten. Insgesamt 9 Anfragen an diese Adresse (7
+per curl bei EIN, 1 aus dem Browser, 1 per curl bei Szenario AUS) und eine an eine erfundene
+Kennung auf demselben Host.
+**DREI SCHICHTEN, GETRENNT GEFÜHRT:** CURL (CC, Git Bash auf Windows, jede Anfrage mit
+`Origin: https://probe.publayer.net`; Kopfzeilen, Rumpf und `time_total` je Anfrage; Protokolle
+im Scratchpad, nicht im Repo) · BROWSER (Owner, Konsole einer veröffentlichten Seite unter
+publayer.net) · MAKE-OBERFLÄCHE (Owner, Reiter "Logs", "Queue", History; von ihm als Text
+übermittelt — OWNER-ANGABE, von CC nicht eingesehen).
+**EINE RICHTIGSTELLUNG IN DER ÜBERMITTLUNG, OFFEN GEFÜHRT:** Die erste Meldung des Owners nannte
+für zwei Anfragen die Köderwerte `m5-json` und `m7-multipart`, die nie gesendet worden waren.
+Auf Rückfrage korrigiert auf `m1-json` und `m1-multipart`, "Wurde vorhin falsch übermittelt".
+Übernommen sind nur die korrigierten Werte.
+
+**(s) M8 (teilweise) — DER HOST DIESER ADRESSE.** GEMESSEN, curl, 2026-09-28: Die Adresse des
+Owner-Kontos liegt auf `hook.eu2.make.com`, gefolgt von einem Kennzeichen aus 32 Zeichen (vgl.
+(g)). Jede Antwort kam über `Server: cloudflare` mit `x-powered-by: Make Gateway/production`
+und einer Kopfzeile `Make-Actual-Status`, die den Status wiederholt. GRENZE: eine Zone. Welcher
+Host zu eu1, us1, us2 gehört, ist nicht gemessen.
+
+**(t) M1 — CORS DER STANDARDANTWORT JE CONTENT-TYPE.** GEMESSEN, curl, 2026-09-28:
+
+| # | Anfrage | Status | Access-Control-* | Rumpf | time_total |
+|---|---|---|---|---|---|
+| 1 | POST `application/x-www-form-urlencoded`, `probe=m1-form` | 200 | `Allow-Origin: *` | `Accepted` | 0,230 s |
+| 2 | POST `multipart/form-data`, `probe=m1-multipart` | 200 | `Allow-Origin: *` | `Accepted` | 0,154 s |
+| 3 | POST `text/plain`, Rumpf `probe=m3` | 200 | `Allow-Origin: *` | `Accepted` | 0,212 s |
+| 4 | POST `application/json`, `{"probe":"m1-json"}` | 200 | `Allow-Origin: *` | `Accepted` | 0,174 s |
+| 6 | POST `application/x-www-form-urlencoded`, `box=a&box=b` | 200 | `Allow-Origin: *` | `Accepted` | 0,156 s |
+
+Die Antwort trägt `Content-Type: text/plain; charset=utf-8`. Ein `Access-Control-Expose-Headers`
+kommt nicht vor. Die Gross- und Kleinschreibung der Kopfzeilen wechselte zwischen den
+Anfragen (1, 2, 4 gross, 3, 5, 6 klein). In HTTP/1.1 ist das bedeutungslos, hier nur als
+Beobachtung geführt.
+GRENZE: curl zeigt Kopfzeilen, nicht was ein Browser daraus macht — dafür (x).
+
+**(u) M2 — PREFLIGHT.** GEMESSEN, curl, 2026-09-28. Anfrage 5: `OPTIONS` mit
+`Access-Control-Request-Method: POST` und `Access-Control-Request-Headers: content-type` → 200,
+Rumpf `ok`, `access-control-allow-origin: *`, `access-control-allow-methods: GET, PUT, POST,
+PATCH, DELETE, HEAD, OPTIONS`, `access-control-allow-headers: content-type`, dazu `allow: GET,
+HEAD, POST, PUT, PATCH, DELETE, OPTIONS`. Anfrage 7 (ZUSATZ, über die vorgegebene Matrix
+hinaus): dieselbe mit `Access-Control-Request-Headers: content-type, x-make-apikey,
+x-probe-header` → 200, `access-control-allow-headers: content-type,x-make-apikey,x-probe-header`.
+Die Antwort SPIEGELT also die angefragten Namen, auch einen erfundenen.
+GRENZE: Ob ein Browser nach dieser Freigabe den eigentlichen `POST` mit JSON-Rumpf absetzt, ist
+nicht im Browser gemessen. Der Browser-Test (x) war eine einfache Anfrage ohne Preflight.
+
+**(v) M3 — `text/plain`.** GEMESSEN, curl, 2026-09-28: Anfrage 3 → 200 `Accepted` (s. (t)).
+MAKE-OBERFLÄCHE, OWNER-ANGABE 2026-09-28: Bundle 1 enthält `value: probe=m3` — der Rumpf kommt
+als EIN Feld `value` mit dem ungeparsten Text an, nicht als Feld `probe`. Zum Vergleich
+Anfrage 1 (form-urlencoded): `probe: m1-form`. Anfragen 2 und 4: `probe: m1-multipart`
+bzw. `probe: m1-json`.
+
+**(w) M9 — MEHRFACH VORKOMMENDER NAME.** GEMESSEN, curl, 2026-09-28: Anfrage 6
+(`box=a&box=b`) → 200 `Accepted`. MAKE-OBERFLÄCHE, OWNER-ANGABE 2026-09-28: Bundle 1 enthält
+unter `box` ein ARRAY mit `1: a`, `2: b` — beide Werte bleiben erhalten, in Sendereihenfolge.
+GRENZE: nur form-urlencoded. Multipart und JSON mit Mehrfachnamen sind nicht gemessen.
+
+**(x) M1 IM BROWSER — LESBARKEIT DER STANDARDANTWORT.** GEMESSEN, Browser, Owner, 2026-09-28:
+In der Konsole einer veröffentlichten Seite unter publayer.net lief
+`fetch(<Adresse>, {method: 'POST', body: new URLSearchParams({probe: 'm1-browser'}), keepalive:
+true})` mit Ausgabe von Status und Rumpf. VORAB BENANNTE ERWARTUNG: lesbar → `STATUS 200 BODY
+Accepted`, nicht lesbar → `TypeError`. ERGEBNIS: `STATUS 200 BODY Accepted`, keine
+CORS-Meldung in der Konsole. POSITIVKONTROLLE: `probe=m1-browser` ist als sechster Durchlauf
+in Make angekommen (OWNER-ANGABE). Status und Rumpf der Standardantwort sind damit aus einem
+fremden Ursprung lesbar.
+GRENZE: eine einfache Anfrage (form-urlencoded, kein Preflight), EIN Browser (vom Owner nicht
+benannt), EINE Seite. `keepalive: true` war gesetzt.
+
+**(y) M5 (teilweise) — EINE FEHLERANTWORT OHNE CORS.** GEMESSEN, curl, 2026-09-28 (ZUSATZ,
+über die vorgegebene Matrix hinaus): `POST` an eine ERFUNDENE Kennung aus 32 Zeichen auf
+`hook.eu2.make.com` → `410 Gone`, Rumpf `Webhook not found.`, `Make-Actual-Status: 410`,
+OHNE `Access-Control-Allow-Origin`. Die Antwort deckt sich mit (i) ("410 – Webhook not found").
+FOLGERUNG, NICHT IM BROWSER GEMESSEN: Ein Browser liefert diese Antwort dem Skript nicht aus.
+`fetch` wirft einen `TypeError`, der an sich nicht von einem Netzfehler oder einem Werbeblocker
+zu unterscheiden ist.
+GRENZE: nur 410. Die Antworten 400 (Schlange voll, Datenstruktur), 429 und 500 sind nicht
+gemessen; sie herbeizuführen hiesse, Grenzen des Kontos zu belasten.
+
+**(z) M4 (teilweise) — SZENARIO AUS.** Owner schaltet das Szenario aus, dann GEMESSEN, curl,
+2026-09-28T08:29:50Z: Anfrage 1 mit `probe=m4-off` → `200 OK`, Rumpf `Accepted`,
+`access-control-allow-origin: *`, `make-actual-status: 200` — DIESELBE Antwort wie bei EIN.
+MAKE-OBERFLÄCHE, OWNER-ANGABE 2026-09-28: Die Anfrage liegt in der Queue, "gepuffert und nicht
+verworfen". Es gibt KEINEN Fehler-Log. Nach dem Wiedereinschalten ("Process old data") wird
+sie um 10:36:46 (Ortszeit des Owners) mit Status "Success" abgearbeitet, und die Queue ist
+danach leer.
+STATUS UND VERBLEIB, GETRENNT: Status 200, wie bei EIN · Verbleib: in der Queue, nach dem
+Einschalten verarbeitet.
+FOLGERUNG: Der Aufrufer kann ein ausgeschaltetes Szenario an der Antwort NICHT erkennen.
+WIDERSPRUCH ZU EINER DOKU-AUSSAGE IN (i), OFFEN GEFÜHRT: "Fix general errors" nennt "There is no
+scenario listening for this webhook" für einen Webhook, der keinem AKTIVEN Szenario zugeordnet
+ist, "deleted, disabled" eingeschlossen. Bei einem ausgeschalteten Szenario zeigte die Messung
+weder eine Ablehnung noch einen Fehler-Log. Ob "disabled" dort etwas anderes meint als OFF,
+ist nicht entschieden.
+GRENZE: nicht gemessen sind der deaktivierte Hook (API "Disable hook"), die Deaktivierung
+durch einen Fehler (m), die Wahl GEGEN "Process old data" beim Einschalten und eine volle
+Queue während AUS.
+
+**(aa) M11 — ANTWORTZEIT.** GEMESSEN, curl, 2026-09-28: `time_total` der neun curl-Anfragen
+zwischen 0,095 s (OPTIONS) und 0,230 s (POST), über den Cloudflare-Knoten `VIE` (Kennung in
+`CF-RAY`). Die Standardantwort wartet also nicht auf die Verarbeitung — zu (d), und bei
+Szenario AUS wie (z).
+GRENZE: ein Rechner, ein Knoten, je Anfrage ein Lauf — keine Aussage über Streuung oder
+Last.
+
+**(ab) M10 — FILTERLISTEN.** GEMESSEN am Listentext, 2026-09-28. Geladen wurden die öffentlichen
+Fassungen:
+- EasyList (Version 202609280810) und EasyPrivacy (Version 202609280810)
+- uBlock Origin "filters" (Last modified 2026-09-26) samt der zehn Dateien, die es per
+  `!#include` nachlädt
+- uBlock Origin "privacy" (2026-09-27) samt `resource-abuse`
+- AdGuard Base (2.4.93.60) und AdGuard Tracking Protection (2.1.12.43), jeweils in der
+  uBlock-Fassung von filters.adtidy.org
+
+Insgesamt 17 Dateien und 657 565 Zeilen, im Scratchpad, nicht im Repo.
+ACHSEN:
+- (1) jede Regel, deren Host-Token genau `make.com` ist oder auf `.make.com` endet;
+- (2) Teilwortsuche `make.com`, jeder Treffer im Wortlaut gelesen;
+- (3) `celonis`;
+- (4) `webhook`, `hook.*make`, `/wh/`.
+
+ERGEBNIS:
+- Achse (1): EIN Treffer, `email.gh-mail.make.com$image` (AdGuard Tracking) — eine andere
+  Unterdomain, nur für Bilder.
+- Achse (2): alle übrigen Treffer sind fremde Domains mit dem Wortteil "make", etwa
+  `analytics.freemake.com` und `zapandmake.com`.
+- Achse (3): `www.dxp-data.celonis.com`, `email.gh-mail.celonis.com$image`.
+- Achse (4): nur fremde Hosts.
+
+Auf `hook.eu2.make.com` zielt KEINE Regel.
+POSITIVKONTROLLE in denselben Dateien: `doubleclick.net` trifft in jeder Datei ausser
+`resource-abuse` (einer reinen Mining-Liste; dort trägt die Kontrolle nicht). `google-analytics.com`
+trifft in EasyList 0-mal — EasyList ist eine Werbeliste — und wäre dort als Kontrolle
+untauglich gewesen.
+GRENZE: Ein Listentreffer ist nicht das Verhalten eines Blockers im Browser. Allgemeine Regeln
+über Pfade oder reguläre Ausdrücke sind mit dieser Suche nicht ausgewertet. Kosmetische Regeln
+und Einstellungen eines Blockers sind nicht erfasst. Das Verhalten zeigt erst der Live-Test.
+
+**MESSKANDIDATEN NACH DIESER MESSUNG:**
+- GEMESSEN: M1 → (t), (x); M2 → (u); M3 → (v); M9 → (w); M11 → (aa).
+- TEILWEISE: M4 → (z); M5 → (y); M8 → (s); M10 → (ab), am Listentext, nicht im Browser.
+- UNVERÄNDERT OFFEN: M6, M7.
+- NEU AUS DIESER MESSUNG:
+  - M12 — Was geschieht mit der Queue, wenn beim Einschalten NICHT "Process old data"
+    gewählt wird? (K4.3; zu (z))
+  - M13 — `fetch` gegen eine unbekannte Kennung im Browser: wirft er `TypeError`, und steht
+    eine CORS-Meldung in der Konsole? (K2.3; zu (y))

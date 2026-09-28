@@ -278,12 +278,19 @@ ausgeführt und abgelegt in docs/formular-empfaenger-befunde.md — vorläufiger
 K1 bis K7, Abschnitt "Make", Befunde (a) bis (r), Messkandidaten M1 bis M11. KEINE Angabe
 darin ist gemessen; offen nach der Lesung u. a. CORS und Preflight (Befund (f)), `text/plain`
 (Befund (a)) und der Status bei ausgeschaltetem Szenario (Befund (i)).
+MESSUNG (CC mit Owner, 2026-09-28): docs/formular-empfaenger-befunde.md, Abschnitt "Make",
+Unterüberschrift "Messung 2026-09-28", Befunde (s) bis (ab). Offen geführt ist dort ein
+WIDERSPRUCH: Befund (z) (Szenario AUS → 200 und Queue) steht gegen eine Doku-Aussage in
+Befund (i).
 
 **Arbeit P13-12 — BEKANNTE SCHWÄCHEN DES WEGS, die Lesung oder Plan beantworten müssen**
 (ARCHITEKTEN-SETZUNG 2026-09-28; jede Schwäche ABGELEITET, keine gemessen):
 · Die Zustellung ist vom Browser aus nicht bestätigbar — bei falscher Adresse erscheint die
   Danke-Seite trotzdem.
+  → BEFUND, KEIN ENTSCHEID: docs/formular-empfaenger-befunde.md, Abschnitt "Make", (x), (y),
+  (z).
 · Ob Werbeblocker die fremde Adresse blockieren, ist ungemessen.
+  → BEFUND, KEIN ENTSCHEID: ebenda, (ab) — am Listentext, nicht im Browser.
 · Die öffentliche Adresse ist spam-anfällig.
 · Einbahnstrasse und Neu-Veröffentlichen: was im ausgelieferten Text steht, bekommt man nicht
   zurück, und eine Änderung wirkt erst nach erneutem Veröffentlichen (docs/immer-beachten.md,

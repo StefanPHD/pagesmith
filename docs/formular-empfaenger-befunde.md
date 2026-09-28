@@ -104,6 +104,74 @@ Formulierung CC, 2026-09-28. Wird er nach der ersten Anbindung überarbeitet, wi
 - K7.1 Wird die Adresse (Host oder Pfad) von gängigen Filterlisten erfasst? — MESSFRAGE, per
   Doku nicht beantwortbar.
 
+### Erweiterung für E-Mail-Anbieter mit eigenem Formular-Empfang (2026-09-28)
+
+ERGÄNZT am 2026-09-28 (CC, Phase 13, Auftrag der Anbieter-Lesung Brevo, systeme.io,
+Mailchimp, KlickTipp). HERKUNFT: Achsen K8 bis K13 vom Architekten vorgegeben, K14 aus der
+Ergänzung des Architekten zum selben Auftrag; Formulierung CC. GEGENSTAND: E-Mail-Anbieter
+(ESP), die ein Formular DIREKT empfangen sollen, also ohne Umweg über eine generische
+Webhook-Adresse. K1 bis K7 gelten weiter, wo sie greifen — besonders K5 (Aufbewahrung,
+Region). Weiterhin VORLÄUFIG.
+
+**K8 — Öffentlicher Formular-Endpunkt**
+- K8.1 Gibt es eine Adresse, an die ein EIGENES HTML-Formular direkt per `POST` senden kann,
+  ohne Skript des Anbieters?
+- K8.2 Welche Form hat sie (Host, Pfad, Kennungen), und ist sie je Formular, je Liste oder je
+  Konto?
+- K8.3 Wo findet der Betreiber sie in der Oberfläche des Anbieters (Menüpfad, eingebetteter
+  Code)?
+- K8.4 Nennt der Anbieter das Einbetten des nackten HTML-Formulars (ohne sein Skript) als
+  unterstützten Weg, oder nur sein Skript bzw. seinen Iframe?
+
+**K9 — Erwartete Felder**
+- K9.1 Welche Feldnamen erwartet der Endpunkt für E-Mail, Vorname, Nachname und eigene Felder
+  (Attribute, Merge-Tags)? Gross- oder Kleinschreibung?
+- K9.2 Welche Felder sind Pflicht, und was geschieht, wenn eines fehlt?
+- K9.3 Gibt es VERSTECKTE Pflichtangaben — Listen- oder Formular-Kennung, Konto-Kennung,
+  Token — und stehen sie in der Adresse oder als (verstecktes) Feld?
+- K9.4 Was geschieht mit Feldern, die der Anbieter nicht kennt (verworfen, abgewiesen,
+  angelegt)?
+
+**K10 — Schutz gegen Bots**
+- K10.1 Captcha (welches, abschaltbar?), Honeypot-Feld, Einmal-Token, Zeitstempel, Prüfung von
+  `Referer` oder `Origin`?
+- K10.2 Welche davon lassen einen `POST` aus einem fremden Browser-Ursprung scheitern, der
+  das Skript des Anbieters nicht geladen hat?
+- K10.3 Lässt sich ein solcher Schutz je Formular abschalten, und was sagt der Anbieter dazu?
+
+**K11 — Double-Opt-In**
+- K11.1 Löst ein Eintrag über das Formular ein Double-Opt-In aus — immer, wählbar, nie?
+- K11.2 Wer versendet die Bestätigungsmail (der Anbieter, aus welchem Absender)?
+- K11.3 Ist eine Einwilligungs-Checkbox Pflicht, und unter welchem Feldnamen wird sie
+  erwartet?
+- K11.4 In welchem Zustand steht der Kontakt vor der Bestätigung (angelegt, unbestätigt, gar
+  nicht)?
+
+**K12 — Antwort**
+- K12.1 Antwortet der Endpunkt mit einer Weiterleitung (auf welche Seite, einstellbar?), mit
+  HTML oder mit JSON?
+- K12.2 Unterscheidet sich die Antwort bei Erfolg und bei Fehler (Status, Rumpf)?
+- NUR ABLEGEN: Wir navigieren selbst; im Modus `no-cors` ist jede Antwort für das Skript
+  `opaque` (Setzung P13-21 der Phase 13). Eine Weiterleitung auf eine Seite des Anbieters
+  sieht der Besucher nicht.
+
+**K13 — Andere Wege**
+- K13.1 Gibt es eine API mit Schlüssel, die Kontakte anlegt? — NUR ABLEGEN: Ein Schlüssel
+  stünde im Browser öffentlich im ausgelieferten Text; nach Setzung P13-6 der Phase 13 für
+  uns ausgeschlossen.
+- K13.2 Gibt es fertige Module des Anbieters in Make oder Zapier (Kontakt anlegen, Liste
+  zuweisen)? — Beleg, dass der Umweg über eine generische Webhook-Adresse trägt.
+
+**K14 — Eigene Bestätigung des Anbieters**
+- K14.1 Sendet der Anbieter selbst eine Bestätigungs- oder Willkommensmail, sobald ein
+  Kontakt über ein Formular eingetragen wird — unabhängig vom Double-Opt-In?
+- K14.2 Ist sie ohne Kampagne, Sequenz oder Automatisierung in seiner Oberfläche einstellbar
+  (eigener Text, Absender)?
+- K14.3 Greift sie auch bei einem Eintrag über den Formular-Endpunkt aus K8 bzw. über die
+  Module aus K13.2, oder nur bei seinem eigenen Formular?
+- GRUND DER FRAGE (Ergänzung des Architekten, 2026-09-28): Deckt der Anbieter das ab, braucht
+  der Betreiber dafür keinen Versand durch Pagesmith.
+
 ## Make
 
 ### Anbieter-Lesung vom 2026-09-28 (CC, Phase 13, Arbeit P13-11)

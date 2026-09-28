@@ -1092,21 +1092,21 @@ Tages; das Verfahren ARCHITEKT 2026-09-26.
 Abschluss-Vermerk P12.5-55.** Zwei Befunde gehen in Scheibe 2b, zwei in den Backlog bzw. nur
 in die Klärung (Punkt (5) dort). Der Zuschnitt ist verdichtet: Hier stehen nur noch die
 Invarianten und Entscheidungen, die über die Scheibe hinaus binden, dazu die Vermerke und der
-Vorrat der Scheibe. Was gestrichen ist und wo sein Inhalt steht: Vermerk P12.5-55, Punkt (7).
+Vorrat der Scheibe. Was gestrichen ist und wo sein Inhalt steht: Vermerk P12.5-55, Punkt (7);
+die Invarianten (I1), (I4) und (I5) sind mit Scheibe 2b gestrichen, ihr Wortlaut steht in
+Vermerk P12.5-65, Punkt (8).
 
 **INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-26, wörtlich):
-- (I1) Keine Änderung an Erkennung, Mappings, Veröffentlichen, Export oder Laufzeit:
-  generate.ts, detect.ts, mappings.ts, alles unter src/lib/tracking/, src/lib/capi/,
-  ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts, actions.ts bleiben unberührt.
 - (I2) Ein Tab-Wechsel lädt den Vorschau-Rahmen nicht neu und verwirft keinen ungespeicherten
   Code, keine Auswahl, keinen Filter.
+  WÄCHTER in src/components/CodeImporter.test.tsx: RT2 (Mutation MR1), RT3 (MR2, MR2b), RT5
+  (MR5), RT6 (MR9, MR9b).
 - (I3) Jedes heutige Bedienelement bleibt erreichbar, höchstens einen Klick weiter.
-- (I4) Keine neue Abhängigkeit.
-- (I5) Keine Test-Prüfung fällt weg; ein Test darf einen Tab öffnen, nicht eine Aussage
-  verlieren.
-GRUND DES BLEIBENS (CC, Verdichtung 2026-09-26): Scheibe 2b arbeitet unter denselben fünf
-Invarianten (ARCHITEKT, Plan-Auftrag der Scheibe 2b, 2026-09-26); jede weitere Arbeit an der
-linken Spalte trifft auf (I2) und (I3).
+  WÄCHTER: RT11 (MR12), RT15 als Struktur-Zusicherung (MG4, MG4b); die Erreichbarkeit selbst
+  ist eine Live-Achse.
+GRUND DES BLEIBENS (CC, Verdichtung 2026-09-28): Die zwei beschreiben Eigenschaften der
+gebauten linken Spalte und der Kopfzeile der Mitte; jede weitere Arbeit dort — etwa das
+Redesign oder die Backlog-Posten P12.5-64, P12.5-66, P12.5-67 — trifft auf sie.
 
 **Vermerk P12.5-48 — AUFKLÄRUNG ZUM PLAN DER SCHEIBE 2 (KEIN BAU, daher kein Bau-Commit: die
 Aufklärung war read-only; die jsdom-Probe lief im Scratchpad, nicht im Repo; CC, 2026-09-26,
@@ -1328,20 +1328,25 @@ Ergebnis von G3 im Plan der Scheibe 2b" ist ersetzt, nicht erweitert.
 
 ## Scheibe 2b — Erstes Einfügen und verdeckte Kopfzeile
 
-**ZIEL** (ARCHITEKT, Plan-Auftrag 2026-09-26): Befund 1 (erstes Einfügen kommt nicht an) und
-Befund 2 (verdeckte Kopfzeile der Mitte) aus Vermerk P12.5-55, Punkt (5), beheben. Befund 3
-(Fokus nach dem Reiterwechsel) und der Owner-Wunsch (Vorrat P12.5-56) werden NUR geklärt. Plan
-vorgelegt von CC am 2026-09-26, freigegeben vom ARCHITEKTEN mit den Entscheidungen P12.5-60 bis
-P12.5-63.
+**ABGESCHLOSSEN AM 2026-09-28 — Bau-Commit `cbd096a`, Live-Test bestanden, mit zwei Befunden
+(beide Backlog); Abschluss-Vermerk P12.5-65.** Der Zuschnitt ist verdichtet: Hier stehen nur
+noch die Invarianten und Entscheidungen, die über die Scheibe hinaus binden, dazu die Vermerke
+der Scheibe. Was gestrichen ist und wo sein Inhalt steht: Vermerk P12.5-65, Punkt (8).
 
-**SCOPE DES BAUS** (ARCHITEKT, Bau-Auftrag der Scheibe 2b): src/components/CodeImporter.tsx und
-src/components/CodeImporter.test.tsx, sonst nichts.
-
-**INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-26):
-- (I1)–(I5): die Invarianten der Scheibe 2, wörtlich im Abschnitt "Scheibe 2 — Editor-Gerüst".
+**INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-26, wörtlich; dazu gelten (I2) und (I3) der
+Scheibe 2, Abschnitt "Scheibe 2 — Editor-Gerüst"):
 - (I6) Der Sprung nach dem Einfügen bleibt (RT8a); nach manueller Wahl von "Code" bleibt der
   Reiter (RT8b).
+  WÄCHTER in src/components/CodeImporter.test.tsx: RT8a (Mutationen MG1, MG3, MR7), RT8b
+  (MR8), RT13 (MG2).
 - (I7) Der eingefügte Code geht nie verloren.
+  WÄCHTER: RT8a prüft den Wert nach dem Einfügen und hält an der Zwischenprüfung fest, dass
+  vor dem Ankommen des Textes nicht umgeschaltet wird (MG1); dass ein verstecktes Feld den
+  Text verwirft, ist eine Live-Achse (Vermerk P12.5-59, Punkt (3); live bestanden, Vermerk
+  P12.5-65, Punkt (6)).
+GRUND DES BLEIBENS (CC, Verdichtung 2026-09-28): Die zwei beschreiben das gebaute Verhalten des
+Code-Reiters beim Einfügen; die Fokus-Rückgabe (Vorrat P12.5-64) und jede weitere Arbeit am
+Zen-Wechsel treffen genau darauf.
 
 **Vermerk P12.5-59 — AUFKLÄRUNG ZUM PLAN DER SCHEIBE 2b (KEIN BAU, daher kein Bau-Commit: die
 Aufklärung war read-only; die Proben liefen im Scratchpad, nicht im Repo; CC, 2026-09-26, HEAD
@@ -1470,15 +1475,106 @@ INS REDESIGN, NICHT IN SCHEIBE 2b.** Vorrat P12.5-56 wandert in den Backlog (Abs
 P12.5-62), mit den Fakten aus Vermerk P12.5-59, Punkt (6), als Material; TRIGGER dort: "Zuschnitt
 des UI-Redesigns" — ersetzt, nicht gestempelt.
 
-**TESTPLAN UND PFLICHT-MUTATIONEN** (Plan CC 2026-09-26, freigegeben): Tests in
-src/components/CodeImporter.test.tsx — RT8a verschärft (nach dem `paste` noch "Code", Hülle ohne
-`hidden`, Wert ""; nach `input` mit `inputType` "insertFromPaste" "Elemente" UND der Wert im
-Feld), RT8b (dieselbe Nachstellung nach manueller Wahl, Reiter bleibt "Code"), RT13 neu (Tippen,
-`inputType` "insertText", Reiter bleibt "Code"), RT15 neu (STRUKTUR: Kopfzeile und beide Gruppen
-tragen `flex-wrap`). Mutationen je volle Suite: MG1 (Umschalten wieder im `onPaste`), MG2
-(`inputType`-Bedingung entfernt), MG3 (falscher `inputType`-Wert), MG4 / MG4b (`flex-wrap` an
-der Kopfzeile bzw. an der Speicher-Gruppe entfernt), Stichprobe MR7 / MR8. Keiner der vier
-Differenz-Nachweise darf rot werden.
+**Vermerk P12.5-65 — ABSCHLUSS DER SCHEIBE 2b (ERSTES EINFÜGEN UND VERDECKTE KOPFZEILE).
+Bau-Commit `cbd096a`** ("fix(editor): erstes Einfuegen kommt an, Speichern bleibt
+erreichbar"); Doku-Commit der Scheibe `d31f3cc` (Zuschnitt).
+(1) GEBAUT (GEMESSEN am Repo, CC, 2026-09-28): In src/components/CodeImporter.tsx ruft der
+    `onChange` der Textarea `autoCollapseOnImport()` allein bei
+    `(e.nativeEvent as InputEvent).inputType === "insertFromPaste"`; `onPaste` ruft nur noch
+    `setUploadError(null)` (Entscheidung P12.5-60). Die Kopfzeile der Mitte trägt `flex
+    flex-wrap items-center justify-between gap-3 gap-y-2 …`, beide Gruppen darin `flex
+    flex-wrap items-center gap-3` (Entscheidung P12.5-61). Die Kommentare an
+    `autoCollapseOnImport` und `userExpandedManually` sind neu gefasst, der an `activeName` ist
+    berichtigt (der DB-Default `'Mein Projekt'` greift nicht). Tests in
+    src/components/CodeImporter.test.tsx, Block "CodeImporter — Editor-Geruest: Reiter der
+    linken Spalte (Phase 12.5, Scheibe 2)": Helfer `einfuegen`, RT8a verschärft (mit
+    Zwischenprüfung nach dem `paste`), RT8b mit der neuen Nachstellung, RT13 und RT15 neu.
+(2) GATES (CC, 2026-09-28): `tsc --noEmit` exit 0 · `eslint` 0 Fehler, 1 vorbestehende Warnung
+    · `vitest run` 98 Dateien, 2362 Tests grün, vorher 2360 · `next build` exit 0. Im gebauten
+    CSS steht `.gap-y-2` hinter `.gap-3` (Position 16293 gegen 15773), der Zeilenabstand
+    greift. Secret-Prüfung als eigener Schritt: Köder 1 Treffer, Diff 0. Byte-Kontrolle am
+    committeten Objekt: beide Dateien CR 0, NUL 0, LF gleich der Zeilenzahl (3987 bzw. 6523),
+    letztes Byte ein Zeilenumbruch, `i/lf`.
+(3) MUTATIONEN (CC, 2026-09-28; je volle Suite mit 2362 Tests; Rücknahme per Kopie, geprüft per
+    sha256; Vorhersagen vor dem Lauf gegen den Bestand geprüft), fachlich rot:
+    MG1 (Umschalten wieder im `onPaste`, nicht im `onChange`) -> NUR RT8a, an der
+    Zwischenprüfung · MG2 (`inputType`-Bedingung entfernt) -> NUR RT13 · MG3 (Wert
+    "insertFromDrop") -> NUR RT8a, an der Endprüfung · MG4 (`flex-wrap` an der Kopfzeile
+    entfernt) -> NUR RT15 · MG4b (`flex-wrap` an der Speicher-Gruppe entfernt) -> NUR RT15 ·
+    Stichprobe MR7 (Wechsel im `onChange` entfernt) -> NUR RT8a, an der Endprüfung · MR8
+    (`selectLeftTab` setzt das Flag nicht) -> NUR RT8b. Je Lauf genau ein roter Test, keine
+    Kaskade; keiner der vier Differenz-Nachweise (W1', W2', T1, T9) rot. Alle wie
+    vorhergesagt.
+(4) SUCHE NACH BESTANDSTESTS, DIE NACH EINER EINGABE INS TEXTFELD DEN REITER PRÜFEN (GEMESSEN
+    am Repo, CC, 2026-09-28): `fireEvent.paste` nur in RT8a und RT8b; ausserhalb des Blocks der
+    Scheibe 2 prüft kein Test Reiterzustand oder die Klasse `hidden`; RT2 ruft
+    `fireEvent.change` erst nach manueller Wahl von "Code". `fireEvent.change` liefert ein
+    einfaches `Event` ohne `inputType` — die 36 Aufrufe der Datei konnten weder vorher noch
+    jetzt einen Wechsel auslösen. Kein Befund.
+(5) ABWEICHUNGEN IM BAU (CC, 2026-09-28; im Baubericht deklariert):
+    · Der Test-Helfer `einfuegen` ist neu; RT8b nutzt ihn, RT8a schreibt die zwei Schritte aus,
+      damit die Zwischenprüfung zwischen ihnen steht.
+    · Positivkontrollen: RT8b prüft den angekommenen Wert, RT13 den Wert und "Ungespeicherte
+      Änderungen".
+    · RT15 verankert die Kopfzeile über "Live-Preview (sandboxed)" und prüft genau zwei Kinder.
+      Die Nummer RT14 ist nicht vergeben (wie im Plan).
+    · Die Auswertung des ersten Mutationslaufs scheiterte an einem Posix-Pfad an Node; die
+      JSON-Ergebnisse waren vollständig und sind nachträglich ausgewertet, kein Lauf wiederholt.
+    · Die Mutationen wurden per `node` gesetzt, das die ganze Datei neu schreibt; Rücknahme
+      deshalb per Kopie aus der Sicherung.
+    · Vermerk P12.5-59 stützt sich auf die Rohausgaben im Protokoll der Plan-Sitzung; sie
+      stehen nicht im Repo.
+    · Schritt 0a der Live-Anleitung (Vorher-Wert vor dem Deploy) entfiel: Der Push war erfolgt,
+      bevor die Anleitung vorlag. Als Vorher-Wert gelten Befund 1 und Befund 2 aus Vermerk
+      P12.5-55, Punkt (5).
+(6) LIVE-TEST — GEMESSEN, OWNER, LIVE, 2026-09-28 (von CC nicht prüfbar):
+    · L1/L2: Einfügen in ein frisches Projekt per Strg+V UND per Kontextmenü "Einfügen": der
+      Reiter springt auf "Elemente", der Code kommt an, die Liste ist gefüllt, "Ungespeicherte
+      Änderungen" erscheint. Damit ist die offene Frage zum `inputType` im Kontextmenü für
+      Chrome beantwortet: gleich.
+    · L3/L4: Nach manueller Wahl von "Code" bzw. beim Tippen bleibt der Reiter auf "Code".
+    · L5: Der Upload einer .html-Datei springt auf "Elemente".
+    · L6: "Speichern" und die Statusanzeige sind bei 1100, 1280 und 1440 px vollständig
+      sichtbar.
+    · L8: Ein Vorschau-Klick springt auf "Elemente"; der Code bleibt beim Reiterwechsel
+      erhalten.
+    · BEFUND A (L7): Unter etwa 1100 px ragt beim Offline-Speichern der rote Fehlertext über den
+      rechten Rand der Kopfzeile und wird abgeschnitten. -> Backlog, Vorrat P12.5-66.
+    · BEFUND B: Beim Tippen im Reiter "Code" lädt der Vorschau-Rahmen sichtbar neu
+      ("flackert"). OWNER-WUNSCH: längere Verzögerung, etwa 300–500 ms. -> Backlog, Vorrat
+      P12.5-67.
+(7) GRENZEN DER MESSUNG:
+    · Browser: Chrome (OWNER-ANGABE zu L1/L2); Firefox und Safari ungemessen — dort bleibt der
+      Preis aus Entscheidung P12.5-60 (fehlt der `inputType`, kein Sprung, der Code kommt an).
+    · L6: übermittelt sind 1100, 1280 und 1440 px; die Anleitung nannte 1108 px sowie 1024 und
+      980 px, diese sind nicht übermittelt.
+    · L7: übermittelt ist allein der Fehlertext; ob "Erneut versuchen" live treffbar war, ist
+      nicht übermittelt. In der Probe zu Befund A ist der Knopf treffbar (Vorrat P12.5-66).
+    · Kein Neu-Veröffentlichen nötig: der ausgelieferte Text ist unverändert (`generate.ts`
+      nicht im Bau-Commit).
+(8) VERDICHTUNG DES ZUSCHNITTS (CC, 2026-09-28) — GESTRICHEN, weil mit der Scheibe abgelaufen,
+    mit ihrem Inhalt:
+    · ZIEL: "Befund 1 (erstes Einfügen kommt nicht an) und Befund 2 (verdeckte Kopfzeile der
+      Mitte) aus Vermerk P12.5-55, Punkt (5), beheben. Befund 3 (Fokus nach dem Reiterwechsel)
+      und der Owner-Wunsch (Vorrat P12.5-56) werden NUR geklärt. Plan vorgelegt von CC am
+      2026-09-26, freigegeben vom ARCHITEKTEN mit den Entscheidungen P12.5-60 bis P12.5-63." —
+      erfüllt, Punkte (1) und (6); geklärt in Vermerk P12.5-59, Punkte (6) und (7).
+    · SCOPE DES BAUS: "src/components/CodeImporter.tsx und src/components/CodeImporter.test.tsx,
+      sonst nichts." — eingehalten (Bau-Commit `cbd096a`, zwei Dateien).
+    · TESTPLAN UND PFLICHT-MUTATIONEN (Plan CC 2026-09-26): RT8a verschärft, RT8b, RT13, RT15;
+      MG1, MG2, MG3, MG4, MG4b, Stichprobe MR7/MR8; "Keiner der vier Differenz-Nachweise darf rot
+      werden." — ausgeführt, Punkte (1) und (3).
+    · Aus den Invarianten der Scheibe 2 (ARCHITEKT, Plan-Auftrag 2026-09-26, wörtlich), die
+      Scheibe 2b mitgetragen hat: (I1) "Keine Änderung an Erkennung, Mappings, Veröffentlichen,
+      Export oder Laufzeit: generate.ts, detect.ts, mappings.ts, alles unter src/lib/tracking/,
+      src/lib/capi/, ingest.ts, resolve.ts, proxy.ts, app-serve/route.ts, actions.ts bleiben
+      unberührt." — Scope-Riegel der zwei Scheiben; eingehalten (`f83ae5b`, `cbd096a`: je nur
+      die zwei Dateien unter src/components/). (I4) "Keine neue Abhängigkeit." — Bau-Riegel;
+      eingehalten. (I5) "Keine Test-Prüfung fällt weg; ein Test darf einen Tab öffnen, nicht
+      eine Aussage verlieren." — Bau-Riegel; eingehalten (RT8a und RT8b sind nachgestellt, ihre
+      Aussage ist geblieben, bei RT8a verschärft).
+    GEBLIEBEN: (I2), (I3) der Scheibe 2 und (I6), (I7) der Scheibe 2b, je mit Wächter und Grund
+    · Vermerk P12.5-59 · Entscheidungen P12.5-60 bis P12.5-63.
 
 ## Register der Phase 12.5
 
@@ -1515,26 +1611,26 @@ Scheibe 1b, ein flackernder Test": P12.5-35; Abschnitt "Aus Phase 12.5 vorgemerk
 (2026-09-26) — Scheibe 1c, ein liegengebliebener Spion": P12.5-46; Abschnitt "Aus Phase 12.5
 vorgemerkt (2026-09-26) — Scheibe 2, zwei Befunde": P12.5-57, P12.5-58; Abschnitt "Aus Phase 12.5
 vorgemerkt (2026-09-28) — Scheibe 2b, zwei Posten fürs Redesign": P12.5-56 (aus dem Vorrat
-dieser Datei gewandert, Entscheidung P12.5-63), P12.5-64.
+dieser Datei gewandert, Entscheidung P12.5-63), P12.5-64; Abschnitt "Aus Phase 12.5 vorgemerkt
+(2026-09-28) — Scheibe 2b, zwei Befunde des Live-Tests": P12.5-66, P12.5-67.
 
 IN DIESE PHASE ÜBERFÜHRT (docs/claude-history/backlog-polish.md): "ZEN-MODUS: ERSTES EINFÜGEN
 SCHLIESST DAS PANEL, OHNE DASS DER CODE LANDET" — in Scheibe 2b (Vermerk P12.5-55, Punkt (5),
-Befund 1).
+Befund 1); ERLEDIGT mit Bau-Commit `cbd096a`, live bestanden am 2026-09-28 (Vermerk P12.5-65),
+vermerkt am Posten.
 
 ## Nächster Schritt der Phase 12.5
 
 Scheibe 1 ist abgeschlossen (Vermerk P12.5-20), Scheibe 1b ebenso (Vermerk P12.5-36), Scheibe
-1c ebenso (Vermerk P12.5-45), Scheibe 2 ebenso (Vermerk P12.5-55). Die Owner-Entscheidung zum
-Ort von Vorrat P12.5-29 ist gefallen (Entscheidung P12.5-47). Danach, in dieser Reihenfolge:
-(1) Scheibe 2b: Befund 1 (erstes Einfügen) und Befund 2 (verdeckte Kopfzeile der Mitte) aus
-    Vermerk P12.5-55, Punkt (5), beheben; Befund 3 und den Owner-Wunsch (Vorrat P12.5-56) NUR
-    klären. Unter den Invarianten (I1)–(I7) (Abschnitt "Scheibe 2b — Erstes Einfügen und
-    verdeckte Kopfzeile"). PROVENIENZ: ARCHITEKT, Plan-Auftrag 2026-09-26; der Plan ist
-    freigegeben (Entscheidungen P12.5-60 bis P12.5-63), der Bau läuft.
-(2) Das Phasenende 12.5 mit Neuzuschnitt (Entscheidung P12.5-47): 12.5 schliesst mit den
-    Klick- und Formular-Korrekturen und dem Editor-Gerüst; die Medien bekommen eine eigene
-    Roadmap-Zeile nach Phase 13, die Entscheidungen P12.5-1 bis P12.5-6 ziehen mit. Name des
-    Archivs und Nummer der Medien-Zeile entscheidet der Owner.
-(3) Phase 13, erste Aufklärung; ihre erste Scheibe ist die Danke-Seite nach dem Absenden
+1c ebenso (Vermerk P12.5-45), Scheibe 2 ebenso (Vermerk P12.5-55), Scheibe 2b ebenso (Vermerk
+P12.5-65). Die Owner-Entscheidung zum Ort von Vorrat P12.5-29 ist gefallen (Entscheidung
+P12.5-47). Danach, in dieser Reihenfolge (ARCHITEKT, Abschluss-Auftrag der Scheibe 2b,
+2026-09-28):
+(1) Das Phasenende 12.5 mit Neuzuschnitt (Entscheidung P12.5-47): zuerst die Hebung (Pflicht),
+    dann die Archivierung. 12.5 schliesst mit den Klick- und Formular-Korrekturen und dem
+    Editor-Gerüst; die Medien bekommen eine eigene Roadmap-Zeile nach Phase 13, die
+    Entscheidungen P12.5-1 bis P12.5-6 ziehen mit. Name des Archivs und Nummer der Medien-Zeile:
+    OWNER-ENTSCHEIDUNG, sie folgt im Prompt des Phasenendes.
+(2) Phase 13, erste Aufklärung; ihre erste Scheibe ist die Danke-Seite nach dem Absenden
     (Vorrat P12.5-29).
-Diese Datei entwirft keinen der drei Schritte.
+Diese Datei entwirft keinen der zwei Schritte.

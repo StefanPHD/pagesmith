@@ -448,6 +448,13 @@ miterledigen, sondern gebündelt abarbeiten.
   (Punkt (3)) der Aufgabe oben; die zweite Hälfte entspricht der Gegenprobe aus Punkt (4) nur
   dem Symptom nach. Fundstelle: Vermerk P12.5-55, Punkt (5), Befund 1, der Phase 12.5. Die
   Klärung der Ursache und der Fix gehören zu Scheibe 2b.
+  ERLEDIGT 2026-09-28 (Scheibe 2b der Phase 12.5, Bau-Commit `cbd096a`, live bestanden, OWNER,
+  LIVE, 2026-09-28, Strg+V und Kontextmenü): Die Ursache ist GEMESSEN (Vermerk P12.5-59, Punkt
+  (3), der Phase 12.5) — der Wechsel aus dem onPaste versteckte das Feld vor dem Einfügen, und
+  Chromium verwarf den Text. Die HYPOTHESE oben trifft damit im Kern (Verstecken vor dem
+  Einfügen) zu, im React-Teil (Zurückschreiben des alten Werts) nicht: beim paste ist der Wert
+  "". Der Wechsel hängt jetzt am onChange mit inputType "insertFromPaste" (Entscheidung
+  P12.5-60). Abschluss: Vermerk P12.5-65 der Phase 12.5.
 - ROHES NUL-BYTE IN mappings.ts (Trigger: bei Gelegenheit prüfen, keine
   bekannte Auswirkung): src/lib/mappings.ts enthält bei Offset ~6974 ein
   rohes NUL-Byte (macht die Datei für grep ohne -a-Flag "binär"). Herkunft
@@ -6285,3 +6292,83 @@ docs/aktiver-stand.md, solange die Phase läuft). KEIN FIX-VORSCHLAG über das B
   `display:none` hat; beim Laden eines Projekts darf der Fokus nicht springen; wer "Code" per
   Tastatur aktiviert, verlöre den Fokus auf dem Knopf. Vorgemerkt fürs Redesign (Entscheidung
   P12.5-62, ARCHITEKT 2026-09-26). TRIGGER: Zuschnitt des UI-Redesigns.
+
+## Aus Phase 12.5 vorgemerkt (2026-09-28) — Scheibe 2b, zwei Befunde des Live-Tests
+
+Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummern setzen die Reihe `P12.5-n` jener
+Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+FIX-VORSCHLAG über das Benannte hinaus; beide Kandidaten sind NICHT gebaut. Keiner der zwei
+Befunde macht ein Bedienelement unerreichbar oder lässt Code verloren gehen (Einordnung je
+Posten).
+
+- **Vorrat P12.5-66 — DER FEHLERTEXT IN DER KOPFZEILE DER MITTE KÜRZT NICHT, ER RAGT ÜBER DEN
+  RAND**
+  GEMESSEN (OWNER, LIVE, 2026-09-28, Schritt L7 der Scheibe 2b der Phase 12.5, nach Bau-Commit
+  `cbd096a`): Unter etwa 1100 px ragt beim Offline-Speichern der rote Fehlertext über den
+  rechten Rand der Kopfzeile und wird abgeschnitten.
+  FUNDSTELLE (GELESEN am Repo, CC, 2026-09-28): `<span className="truncate text-xs
+  text-red-600" title={saveError}>` in der Speicher-Gruppe `flex flex-wrap items-center gap-3`
+  der Kopfzeile der Mitte (`CodeImporter`, src/components/CodeImporter.tsx); der Text beim Wurf
+  ist `SAVE_THROW_MESSAGE` (src/lib/safe-action.ts).
+  URSACHE (ABGELEITET aus den CSS-Regeln, in der App nicht gemessen): `truncate` kürzt nur,
+  wenn die Box schmaler ist als ihr Text. Die Speicher-Gruppe ist selbst ein Flex-Element der
+  Kopfzeile mit `min-width: auto`; ihre Mindestbreite ist ihre min-content-Breite, und die eines
+  Textes mit `white-space: nowrap` ist der ganze Text. `overflow: hidden` setzt nur die
+  automatische Mindestbreite des Spans selbst auf 0, nicht seinen Beitrag zur Breite der
+  Gruppe. Die Gruppe wird also nie schmaler als der Text — und der Span nie kürzer.
+  PROBE (GEMESSEN, CC, 2026-09-28, Playwright-Chromium; Probeseite `trunc-probe.html` im
+  Scratchpad, die Klassen der Drei-Zonen-Zeile, der Kopfzeile und des `<aside>` in reinem CSS
+  nachgebildet — NICHT die App, andere Schrift): Viewport 1100 px — rechter Rand der Kopfzeile
+  731, Fehlertext rechts 951, nicht gekürzt, das `<aside>` beginnt bei 748; "Erneut versuchen"
+  steht in eigener Zeile (385–523), `elementFromPoint` an seiner Mitte trifft ihn. Mit
+  `min-width: 0` an der Speicher-Gruppe: Fehlertext rechts 715, gekürzt; der Knopf unverändert
+  treffbar. 1280 px — ohne 951 gegen 911 (ragt), mit 895, gekürzt. 1440 px — Text 951 innerhalb
+  der Kopfzeile (1071), beide Fassungen gleich, nicht gekürzt. GRENZE: In der Probe ragt der Text
+  auch bei 1280 px; der Owner meldet es unter etwa 1100 px. Die Schriftbreite der Probe
+  weicht ab, die Schwelle ist dort nicht übertragbar.
+  KANDIDAT FÜR DIE KLEINSTE KORREKTUR (NICHT gebaut): `min-w-0` an der Speicher-Gruppe — eine
+  Klasse. PREIS: Der Fehlertext wird gekürzt; der volle Text steht nur im `title`, auf
+  Touch-Geräten also nicht erreichbar. RT15 sichert allein `flex-wrap`; die neue Klasse hätte
+  ohne eigene Struktur-Zusicherung keinen Wächter.
+  EINORDNUNG: kein Bedienelement unerreichbar ("Erneut versuchen" in der Probe treffbar; live
+  nicht übermittelt), kein Code verloren. TRIGGER: Zuschnitt des UI-Redesigns.
+
+- **Vorrat P12.5-67 — BEIM TIPPEN IM REITER "Code" LÄDT DER VORSCHAU-RAHMEN NACH JEDER PAUSE NEU**
+  GEMESSEN (OWNER, LIVE, 2026-09-28, Live-Test der Scheibe 2b der Phase 12.5): Beim Tippen im
+  Reiter "Code" lädt der Vorschau-Rahmen sichtbar neu ("flackert"). OWNER-WUNSCH: längere
+  Verzögerung, etwa 300–500 ms. Die heutige Verzögerung beträgt bereits 300 ms (unten) — die
+  untere Grenze des Wunsches ist der Ist-Wert.
+  FUNDSTELLE (GELESEN am Repo, CC, 2026-09-28, HEAD `cbd096a`): `const DEBOUNCE_MS = 300;` auf
+  Modulebene von src/components/CodeImporter.tsx. Der Effekt
+  `setTimeout(() => setDebouncedCode(code), DEBOUNCE_MS)` hängt an `[code]`;
+  `annotateAndDetect(debouncedCode)` liefert `previewHtml`, das Memo `editHtml` hängt an
+  `[previewHtml, activeVariant]`, der Rahmen "preview" trägt `srcDoc={editHtml}`. ABGELEITET:
+  Jede Tipp-Pause von mindestens 300 ms ändert den `srcDoc`, und der Rahmen lädt neu.
+  BESTAND VOR SCHEIBE 2 (Vergleich am Code auf `f83ae5b^`, NICHT gemessen): zeichengleich —
+  `const DEBOUNCE_MS = 300`, derselbe Effekt, `editHtml` mit `[previewHtml, activeVariant]`,
+  `srcDoc={editHtml}`. Eingeführt mit `7c17ca0` (2026-06-12, "CodeImporter: debounced
+  Parsing/Preview + Eingabe-State getrennt"). Das Verhalten ist nicht von Scheibe 2 oder 2b
+  erzeugt.
+  TESTS, DIE AN DER ZAHL HÄNGEN (GEMESSEN am Repo, CC, 2026-09-28): Kein Test nennt
+  `DEBOUNCE_MS` oder die Zahl, keiner nutzt Fake-Timer (Achse
+  `DEBOUNCE|advanceTimersByTime|useFakeTimers|300\b` über alle `*.test.tsx`: 0). Die Tests warten
+  in echter Zeit: src/components/CodeImporter.test.tsx 244 Zeilen mit `findBy` oder `findAllBy`,
+  92 mit `waitFor(`; src/components/TargetCard.test.tsx 10 bzw. 13; keine setzt `timeout:`. Es gilt der
+  Standard `asyncUtilTimeout: 1000` (node_modules/@testing-library/dom/dist/config.js).
+  ABGELEITET: Jede Wartestelle auf die Erkennung wartet die Verzögerung mit ab — bei 500 ms
+  blieben 500 ms Spielraum statt 700; ab etwa 1000 ms bräche der Bestand.
+  KANDIDATEN MIT PREIS (NICHT gebaut, keine Empfehlung):
+  (a) `DEBOUNCE_MS` auf 500 — eine Zeile. PREIS: Liste, Skripte-Liste, Warnungen, Vorschau und
+      der Veröffentlichen-Knopf (`activePair` liest `debouncedCode`) folgen 200 ms später; auch
+      das erste Bild beim Laden eines Projekts, weil `debouncedCode` leer startet und
+      `initialCode` erst nach der Verzögerung nachzieht; die Testlaufzeit steigt, der
+      Spielraum sinkt. Der Rahmen lädt weiter nach jeder Pause neu — seltener, nicht nie.
+  (b) Eine eigene, längere Verzögerung nur für den `srcDoc` — PREIS: zwei Uhren; Liste und
+      Rahmen stammen aus verschiedenen Parse-Läufen. Frisch gewürfelte Kennungen stimmen nur
+      aus demselben Parse überein (Vermerk P12.5-38, Punkt (5), der Phase 12.5); ein Klick im
+      Rahmen könnte eine Kennung melden, die die Liste nicht führt.
+  (c) Den Rahmen während des Tippens nicht nachziehen (erst beim Verlassen des Feldes oder des
+      Reiters) — PREIS: keine Live-Vorschau beim Tippen.
+  EINORDNUNG: Der Code bleibt im Feld (`code` ist vom Rahmen unabhängig), kein Bedienelement
+  unerreichbar. TRIGGER: die nächste Runde, die src/components/CodeImporter.tsx ohnehin öffnet,
+  oder das UI-Redesign.

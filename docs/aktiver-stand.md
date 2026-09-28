@@ -1092,6 +1092,10 @@ als Befund, keine Entscheidung.
   nur allgemein belegt. KEIN TESTKONTO (Entscheidung P13-4 nennt Mailchimp nicht). BEZUG,
   KEINE ENTSCHEIDUNG: Setzung P13-21 (`opaque` = "erreicht"), dort Befund (f); Setzung
   P13-29 (nur `https:`), dort Befund (b).
+- KlickTipp: docs/formular-empfaenger-befunde.md, Abschnitt "KlickTipp", Befunde (a) bis
+  (i), Messkandidaten KT1 bis KT4. EINORDNUNG: nicht entscheidbar (RAW-Formular angeboten, mit
+  festen Feldnamen, "API-Key" und Spam-Schutz-Skript); Umweg über Make trägt nach Doku, ab
+  Premium. KEIN TESTKONTO. BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-6, dort Befund (f).
 
 **Arbeit P13-12 — BEKANNTE SCHWÄCHEN DES WEGS, die Lesung oder Plan beantworten müssen**
 (ARCHITEKTEN-SETZUNG 2026-09-28; jede Schwäche ABGELEITET, keine gemessen):

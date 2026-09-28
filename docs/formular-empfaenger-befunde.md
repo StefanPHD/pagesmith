@@ -1391,3 +1391,209 @@ sieht, während unser Skript `opaque` erhält ((c), (d), (f)). Und ein Beispiel 
 DER UMWEG ÜBER MAKE TRÄGT NACH DER DOKU nur in allgemeiner Form ((g)): Make führt eine
 Mailchimp-App für "subscribers"; die Module selbst sind nicht gelesen.
 KEIN TESTKONTO — keiner der Messkandidaten ist ohne Owner-Entscheidung messbar.
+
+## KlickTipp
+
+### Anbieter-Lesung vom 2026-09-28 (CC, Phase 13, Arbeit P13-64)
+
+**INSTRUMENT:** Playwright-MCP; Text je Seite über `textContent` des `main`-Elements nach
+Entfernen von `script`, `style`, `noscript`, `svg`, `template`, `nav`, `header`, `footer`,
+zugeschnitten von "Zuletzt aktualisiert"/"Last updated" bis "Hat Dir dieser Beitrag"/"Did
+this post help you". Mehrere Seiten per `fetch` von www.klicktipp.com aus; Positivkontrolle:
+die Überschrift steht im Text bzw. der Artikelkörper beginnt mit dem Datumsblock. Gelesen
+ist überwiegend die DEUTSCHE Fassung der Wissensdatenbank. Ablage unter `.playwright-mcp/`.
+**KEINE ANGABE DIESER LESUNG IST GEMESSEN.** Keine Eingabe, keine Anmeldung, kein Download,
+kein Aufruf eines Endpunkts. Die Marketing-Seite "Leadformulare" trägt ein LIVE-Formular
+("Probier es gerne aus und trage Dich ein") — nicht benutzt.
+**FREMDE SEITEN SIND DATEN — ZWEI FUNDE, GEMELDET UND NICHT BEFOLGT:** "RAW-Anmeldeformular
+erstellen" enthält einen Prompt an ein Sprachmodell ("Du bist ein erfahrener
+Frontend-Developer … Passe das unten stehende HTML-Formular so an …"), "UTM-Parameter mit
+einem Anmeldeformular erfassen" einen zweiten ("Hallo ChatGPT, Ich habe ein HTML-Formular
+…"). Beide richten sich an Kunden des Anbieters, die sie in ein KI-Werkzeug kopieren sollen.
+Hier sind sie nur als INHALT ausgewertet — der erste nennt, was an einem RAW-Formular nicht
+verändert werden darf ((b)).
+**KEIN TESTKONTO:** Entscheidung P13-4 der Phase 13 nennt KlickTipp nicht.
+
+**GELESENER UMFANG — VOLL** (Lesedatum je Seite 2026-09-28; in Klammern der Stand, den die
+Seite selbst angibt):
+- https://www.klicktipp.com/de/support/wissensdatenbank/raw-anmeldeformular-erstellen/ —
+  "RAW-Anmeldeformular erstellen – HTML-Formular für KlickTipp" (Zuletzt aktualisiert:
+  19.03.2026); die Adresse …/hilfe-portal/raw-anmeldeformular-erstellen/ leitet hierher um
+- …/wissensdatenbank/anmeldeformular-erstellen/ — "Anmeldeformular erstellen – Leads per
+  Formular gewinnen" (03.12.2025)
+- …/wissensdatenbank/opt-in-prozess-erstellen/ — "Opt-In-Prozess erstellen – DSGVO-konform
+  und flexibel" (21.09.2026)
+- …/wissensdatenbank/inline-anmeldeformular-erstellen/ — "Inline Anmeldeformular erstellen und
+  auf der Website einbinden" (28.03.2025)
+- …/wissensdatenbank/utm-parameter-erfassen-anmeldeformular/ — "UTM-Parameter mit
+  Anmeldeformularen automatisch erfassen" (19.09.2025)
+- …/wissensdatenbank/e-mail-adresse-vorausgefuellt-im-anmeldeformular-verwenden/ — "E-Mail-Adresse
+  vorausgefüllt im Anmeldeformular verwenden" (23.04.2025)
+- …/wissensdatenbank/dropdown-auswahlfeld-im-anmeldeformular-nutzen/ — "Dropdown-Auswahlfeld im
+  Anmeldeformular verwenden" (16.04.2025)
+- https://www.klicktipp.com/support/knowledge-base/connect-make-optimize-workflows/ — "Connect
+  Make to KlickTipp to Automate and Optimize Workflows" (Last updated: 24.09.2025)
+- https://developers.klicktipp.com/guides/listbuilding-api — "Secure & Easy Integration with
+  the Listbuilding API" (ohne Datum)
+- Das Verzeichnis …/wissensdatenbank/klicktipp-benutzen/anmeldeformulare/ — "Anmeldeformulare
+  | Leads gewinnen mit KlickTipp" (15 Artikel; geöffnet sind die oben genannten).
+
+**GELESENER UMFANG — GEZIELT:**
+- https://developers.klicktipp.com/listbuilding-api — "KlickTipp Listbuilding API" (Übersicht
+  der Spezifikation, 3 779 Zeichen). Achse `signin|cors|access-control|origin|
+  x-www-form-urlencoded|application/json|redirect|406|429|rate|limit|apikey|secret|public|
+  browser|opt-?in|double`; 7 Treffer, im Wortlaut gelesen. GRENZE, WERKZEUG: Die Abschnitte der
+  einzelnen Operationen (`#operation/api.subscriber.signin` …) sind im geladenen Text NICHT
+  enthalten; was dort steht (Content-Types, Antworten, CORS), ist nicht gelesen.
+- https://www.klicktipp.com/de/marketing-suite/leads-generieren/formulare/ — "Leadformulare von
+  KlickTipp" (Marketing-Seite). Achse `single-opt-in|double-opt-in|bestätigungs|server|
+  rechenzentr|deutschland|captcha|spam|html|raw|api|willkommen|dankesch`; 19 Treffer.
+- https://www.klicktipp.com/de/marketing-suite/datenschutz-dsgvo/ — "Newsletter Datenschutz
+  DSGVO-konform umsetzen" (Marketing-Seite, 7 aufklappbare Elemente, alle über `textContent`
+  erfasst). Achse `server|rechenzentr|deutschland|hosting|gehostet|speicher|standort|EU|europ|
+  löschfrist|aufbewahr`; 17 Treffer. Positivkontrolle: "DSGVO" 83-mal.
+- NICHT LESBAR: "Spam-Schutz-Quellcode auf der Webseite einsetzen" — die deutsche
+  (…/wissensdatenbank/spam-schutz-quellcode-auf-der-webseite-einsetzen/) und die englische
+  Adresse (…/knowledge-base/spam-protection-sign-up-forms/) leiten am 2026-09-28 auf die
+  Übersicht der Wissensdatenbank um. Ihr Inhalt ist NICHT gelesen; eine Zusammenfassung im
+  Suchindex ist KEINE Lesung und wird hier nicht wiedergegeben.
+
+**REITER, TABELLEN, SYMBOLE, BILDER:** Keine gelesene Seite trägt `role=tab`. Eine
+Vergleichstabelle auf der Datenschutz-Seite ist als Text gelesen. BILDER SIND NICHT GELESEN —
+auch keines, das den Einbettungscode eines RAW-Formulars zeigen könnte.
+
+**GESEHEN, NICHT GEÖFFNET** (je mit Grund):
+- Aus dem Verzeichnis "Anmeldeformulare": "E-Mail-Signatur …", "Combo-Box …", "Eintragung per
+  E-Mail …" (zwei), "Eintragung-per-SMS …", "Business Card Reader …", "Social-Proof-Counter
+  …", "Austragung per SMS …" — andere Eintragungswege oder Gestaltung.
+- "Create an API Key for Third-Party Integrations", "KlickTipp API Documentation –
+  Authentication & Integration", "API Connection with Developer and Customer Keys",
+  "Building Robust Integrations with the Management API" — K13.1 wird nur abgelegt; der
+  Listbuilding-Weg ist über den Developer-Guide gelesen.
+- "Error Handling and Validation", "Data Field Types and Input Formats" (developers.klicktipp.com)
+  — Fehlermodell der API; nur für K13.1.
+- support.klicktipp.com (ältere Knowledgebase, u. a. ClickFunnels, Thrive) und
+  app.klicktipp.com/anti-spam/… — ältere bzw. Anbieter-Rechtsseiten; nicht geöffnet.
+- Die Datenschutzerklärung und der AVV — K5.2 bleibt offen.
+**PRÜFUNG DER AUSSCHLUSSLISTE GEGEN DIE OFFENEN FRAGEN** (2026-09-28): Offen nach der Lesung
+sind K8.2 (Adresse), K9 (vollständige Feldnamen), K10.2 (Wirkung des Spam-Schutz-Skripts),
+K12, K1, K2, K5.2. Nach dem Titel trug eine ausgeschlossene Seite davon eine: "Error Handling
+and Validation" (K12.2, für die API) — für den Formular-Weg trägt sie nach ihrem Titel nichts,
+für K13.1 wird nur abgelegt; NICHT geöffnet, und das ist hier die benannte Lücke. Die Seite
+zum Spam-Schutz (K10) war nicht lesbar (s. oben).
+
+**(a) K8.1, K8.4 — EIN HTML-FORMULAR OHNE SKRIPT DES ANBIETERS IST ALS "RAW" ANGEBOTEN.**
+GELESEN, "RAW-Anmeldeformular erstellen": "Du kannst das RAW Anmeldeformular ganz flexibel
+nutzen, wenn Du Dich mit HTML und CSS auskennst." Anlegen unter "Listbuilding → Neues
+Listbuilding → RAW Code"; Code unter "Einbettungscode → HTML Quellcode einfügen". GELESEN,
+"Anmeldeformular erstellen" und "Inline Anmeldeformular …": das Standard- und das
+Inline-Formular gibt es nur als "JavaScript- oder … iFrame-Quellcode".
+
+**(b) K8.2, K9, K10 — WAS AM RAW-FORMULAR FEST IST.** GELESEN, ebenda: "Bitte schneide die
+letzte Code-Zeile aus – sie enthält das Spam-Schutz-Skript." — "Füge das Spam-Schutz-Skript an
+geeigneter Stelle in Dein CMS ein." — "Das stellt sicher, dass Dein RAW Anmeldeformular
+einwandfrei funktioniert." Der Prompt auf derselben Seite nennt als unveränderlich:
+"Action-URL, Feldnamen, API-Key, DSGVO-Checkbox, Captcha-Script bleiben erhalten".
+FOLGERUNG: Das RAW-Formular trägt eine feste Zieladresse, feste Feldnamen, einen
+"API-Key" und ein Skript des Anbieters zum Spam-Schutz; ob ein Absenden OHNE dieses Skript
+angenommen wird, ist nicht belegt — die Seite zum Spam-Schutz war nicht lesbar. MESSUNG NÖTIG
+(KT1, KT2). Die Form der Adresse steht auf KEINER gelesenen Seite — Reichweite: die voll
+gelesenen Seiten; Bilder nicht gelesen.
+
+**(c) K9.1, K9.3 — FELDNAMEN.** GELESEN, "UTM-Parameter …": ein zusätzliches Feld erscheint im
+Code in der Form `fields[field123456]` — "Die Zahl zeigt die ID des Feldes in KlickTipp";
+ein Feld lässt sich im RAW-Formular als "Versteckt" anlegen. GELESEN, "E-Mail-Adresse
+vorausgefüllt …": das E-Mail-Feld wird über `value` vorbelegt; sein `name` steht dort nicht.
+GELESEN, developers.klicktipp.com (Listbuilding-Guide): in der API heissen Standardfelder
+`fieldFirstName`, `fieldLastName`; "all field values must match the field types and field
+keys configured in the KlickTipp account".
+FOLGERUNG: Die Feldnamen eines RAW-Formulars sind kontoabhängig (Feld-IDs); welche Namen das
+E-Mail-Feld, die Kennung und der "API-Key" tragen, ist nicht belegt (KT1).
+
+**(d) K11 — DOUBLE-OPT-IN.** GELESEN, "RAW-Anmeldeformular erstellen": "Wähle den gewünschten
+Double-Opt-In-Prozess aus"; optional eine DSGVO-Checkbox mit änderbarem Text. GELESEN,
+"Opt-In-Prozess erstellen": Anlegen unter "Listbuilding → Opt-In-Prozesse"; Impressum in der
+Bestätigungs-E-Mail prüfen; eigene Bestätigungs- und/oder Dankeschönseite wählbar;
+unbestätigte Kontakte automatisch entfernen ("Viele Kontakte bestätigen ihre E-Mail-Adresse
+nach mehr als 7 Tagen nicht mehr"). GELESEN, Marketing-Seite "Leadformulare": "Bei
+Single-Opt-in landen Kontakte, die Dein Formular absenden, ohne Bestätigungs-E-Mail direkt in
+Deiner Liste"; bei Double-Opt-in "KlickTipp übernimmt den gesamten Bestätigungsprozess
+automatisch", die Bestätigungs-E-Mail ist anpassbar. Versender ist KlickTipp (K11.2). Die
+DSGVO-Checkbox ist optional ("Aktiviere optional").
+
+**(e) K12 — ANTWORT.** Der Opt-In-Prozess kennt eigene Bestätigungs- und Dankeschönseiten (d).
+Was die Adresse des RAW-Formulars auf ein Absenden ohne Skript antwortet, steht auf KEINER
+gelesenen Seite. MESSUNG NÖTIG (KT1). NUR ABGELEGT (Katalog K12): im Modus `no-cors` `opaque`.
+
+**(f) K13 — ANDERE WEGE.** GELESEN, "Connect Make to KlickTipp …": eine KlickTipp-App in Make
+mit u. a. "Add or Update Contact" ("If a contact with the same e-mail already exists, it will
+be updated"), "Tag Contact", "Unsubscribe Contact"; Voraussetzung "a Premium subscription or
+higher so that you have access to the API"; Anmeldung mit Benutzername und Passwort; Fehler
+u. a. "[406] Update of contact failed. The address is not reachable according to our
+validation". GELESEN, Listbuilding-Guide: `POST https://api.klicktipp.com/subscriber/signin`
+mit `Content-Type: application/json` und `apikey`, `email`, `fields` im Rumpf; je Schlüssel
+genau EIN Tag und EIN Opt-In-Prozess; dieselbe API kennt "Signout" (Tag entfernen) und
+"Signoff" (Kontakt austragen); "ideal for forms, landing pages"; "API access requires a Premium
+plan or higher". GELESEN, Spezifikation: "Authentication is performed by sending the API key
+directly in the request body"; Fehler "typically use HTTP status code 403 or 406".
+K13.1 NUR ABGELEGT — mit einem Befund, der über das Ablegen hinausweist: Ein
+Listbuilding-Schlüssel im ausgelieferten Text wäre öffentlich, und derselbe Schlüssel kann
+nach der Doku Kontakte AUSTRAGEN ("Signoff"). BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-6 der
+Phase 13 ("DIE EINGETRAGENE ADRESSE IST KEIN GEHEIMNIS") trifft die Adresse; ob der "API-Key"
+im RAW-Formular (b) dieser Listbuilding-Schlüssel ist, ist NICHT belegt. Träfe es zu, stünde
+im RAW-Formular ein Wert, der Trigger (ii) des offenen Punkts "DER PRIMÄRSCHLÜSSEL
+(project_id, target) AUF project_secrets BLEIBT" berührt ("die Kennung selbst ein
+Geheimnis").
+BEZUG (ARCHITEKTEN-SETZUNG 2026-09-28, kein Konflikt mit P13-6): Ein solcher Schlüssel im
+Formular-HTML des Anbieters steht in der Seite des Betreibers, nicht in einer Konfiguration
+von Pagesmith — würde Pagesmith einen solchen Schlüssel je SELBST in einer Konfiguration
+führen (etwa für Vorlagen je Anbieter), greift Trigger (ii) des Punkts "DER PRIMÄRSCHLÜSSEL
+(project_id, target) AUF project_secrets BLEIBT"; Neubewertung dann.
+
+**(g) K14 — EIGENE BESTÄTIGUNG.** GELESEN, Marketing-Seite "Leadformulare": "Eigene
+Bestätigungs-E-Mail" (bei Double-Opt-in), "Eigene Dankeseite", "KlickTipp sendet neuen Leads
+rund um die Uhr Dein E-Book, Deine Checkliste …" (Willkommensgeschenke). Eine Bestätigungs- oder
+Willkommensmail bei SINGLE-Opt-in OHNE Kampagne: NICHT GEFUNDEN — Reichweite: die voll und
+gezielt gelesenen Seiten. FOLGERUNG: Bei Double-Opt-in ist die Bestätigungs-E-Mail des
+Anbieters selbst die Bestätigung; darüber hinaus zeigt die Lesung nur Kampagnen.
+
+**(h) K5 — REGION.** GELESEN, Datenschutz-Seite: "Jede E-Mail, die über KlickTipp versendet
+wird, stammt garantiert von Mailservern in Deutschland"; Vergleichstabelle "Verarbeitung
+personenbezogener Daten — Garantiert nur innerhalb der EU"; AVV. Wo die DATEN (nicht der
+Versand) gespeichert werden, sagt die gelesene Stelle nur als "innerhalb der EU".
+Aufbewahrung (K5.2): NICHT GELESEN.
+
+**(i) K1, K2, K3, K4, K6, K7.** K1/K2 für die Adresse des RAW-Formulars: NICHT GEFUNDEN. Für
+die API: JSON (f) — aus dem Browser eine Anfrage mit Preflight (Fetch-Spezifikation, hier
+nicht gelesen); ob die API CORS erlaubt, ist nicht gelesen. K3.2: s. (f). K4: GELESEN, (f) —
+406 bei einer Adresse, die die Prüfung des Anbieters nicht besteht. K6: GELESEN,
+"Anmeldeformular erstellen" — Testkontakt über die Vorschau, sichtbar unter "Kontakte". K7:
+Messfrage (KT4).
+
+### Messkandidaten KlickTipp (aus der Lesung vom 2026-09-28)
+
+Keiner gemessen; die Liste entscheidet nicht, welcher gemessen wird. VORAUSSETZUNG FÜR ALLE:
+ein KlickTipp-Konto — nach Entscheidung P13-4 nicht vorhanden; ob eines angelegt wird, ist
+eine Owner-Frage. Für den API-Weg zusätzlich ein Premium-Tarif.
+- KT1 — Den Einbettungscode eines RAW-Formulars ablesen: `action`, `method`, `enctype`,
+  alle `name`-Werte, versteckte Felder, der "API-Key" (welcher Schlüssel?), die letzte Zeile
+  (Spam-Schutz-Skript). Danach ein `POST` wie der des Browsers: Status, Weiterleitung, Rumpf,
+  CORS-Kopfzeilen; kommt der Kontakt an? (K8.2, K9, K12; zu (b), (c), (e))
+- KT2 — Derselbe `POST` OHNE das Spam-Schutz-Skript auf der Seite bzw. aus einem fremden
+  Ursprung: angenommen oder abgewiesen? (K10.2; zu (b))
+- KT3 — Ist der "API-Key" im RAW-Formular ein Listbuilding-Schlüssel, der auch "Signoff"
+  erlaubt? (K3.2; zu (f)) — die Antwort entscheidet, ob ein RAW-Formular ein Geheimnis in
+  den ausgelieferten Text trüge.
+- KT4 — Erfassen gängige Filterlisten den Host aus KT1? (K7.1)
+
+### EINORDNUNG KlickTipp (Befund, keine Entscheidung)
+
+NICHT ENTSCHEIDBAR. Ein HTML-Formular ohne Skript des Anbieters ist als "RAW" ANGEBOTEN ((a)),
+aber mit festen Feldnamen, einem "API-Key" und einem Spam-Schutz-Skript, das nach der Doku für
+das "einwandfreie" Funktionieren eingebunden werden soll ((b)); dessen Beschreibung war nicht
+lesbar. Trägt der Weg, dann nur MIT DEN FELDNAMEN VON KLICKTIPP (Feld-IDs der Form
+`fields[field…]`, (c)) — welche genau und ob ohne das Skript, klärt erst KT1/KT2. Ob das
+RAW-Formular einen Schlüssel mit Austragungs-Recht trägt, ist offen (KT3).
+DER UMWEG ÜBER MAKE TRÄGT NACH DER DOKU ((f)): "Add or Update Contact" und "Tag Contact" — aber
+nur ab einem Premium-Tarif mit API-Zugang, und die Verbindung braucht Benutzername und Passwort
+des KlickTipp-Kontos in Make.

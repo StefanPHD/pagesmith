@@ -379,6 +379,8 @@ WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE".
 **IN PHASE 13 AUFGENOMMEN (2026-09-28).**
 - DIE SEITENADRESSE REIST SAMT QUERY AN UNSEREN SERVER UND AN DREI ZIELE — WAS IM QUERY
   STEHT, REIST MIT (Trigger: vor echtem Ad-Traffic, spätestens der erste fremde Nutzer)
+- VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP (Trigger:
+  bevor das erste fremde Nutzerkonto Zugang bekommt)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

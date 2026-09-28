@@ -4109,3 +4109,47 @@ aufgenommen nach Entscheidung P13-3 (OWNER 2026-09-28). Der datierte Block träg
   ARCHITEKTEN-HYPOTHESEN 2026-09-28; der Titel ARCHITEKT 2026-09-28; der Trigger
   OWNER-ENTSCHEIDUNG 2026-09-28. Der Stub in CLAUDE.md, "## Offene Punkte", Block "IN PHASE 13
   AUFGENOMMEN (2026-09-28)", trägt Titel und Trigger im SELBEN Zug.
+- VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP (Trigger:
+  bevor das erste fremde Nutzerkonto Zugang bekommt):
+  DER OWNER-WUNSCH (OWNER 2026-09-28): Bevor fremde Nutzer Zugang bekommen, entsteht ein
+  vollständiges Abnahme-Testprotokoll für die GESAMTE App. Es führt jede Funktion mit Klickweg,
+  erwartetem Ergebnis und jeder Fehlermeldung und ist für den Owner als Nicht-Entwickler
+  geschrieben. Der Owner testet alles damit durch, bevor die App öffnet.
+  DIE FORM: nach der Regel in docs/arbeitsweise.md, Abschnitt 9, "Arbeitsrhythmus", Punkt
+  "Live-Tests führt Stefan durch", Absatz "Die Anleitung, die Stefan bekommt, schreibt der
+  Architekt, nicht CC." (angenommen 2026-09-28, Commit `8216e6b`). Das heisst:
+  - je Schritt drei Teile — was der Owner tut, was er sehen soll, was er zurückmeldet;
+  - Befehle nur als fertiger Kopierblock mit höchstens einer Stelle zum Einsetzen;
+  - kein Fachwort ohne Erklärung;
+  - kann ein Schritt etwas nicht zeigen, steht das beim Schritt.
+  DIE QUELLE (ARCHITEKTEN-SETZUNG 2026-09-28): Das Protokoll entsteht aus dem FERTIGEN Code,
+  nicht aus der Historie.
+  - GRUND: Die Oberfläche wird noch neu gestaltet (docs/arbeitsweise.md, Abschnitt 9, "Das
+    UI/UX wird später komplett neu gestaltet"), heutige Klickwege veralten.
+  - Die Abschluss-Vermerke der Phasen liefern die bekannten Grenzfälle.
+  - Es ist ein EIGENES Arbeitspaket, keine Nebenarbeit einer Bau-Scheibe.
+  WARUM EIN OFFENER PUNKT UND KEINE ROADMAP-ZEILE (ARCHITEKT 2026-09-28):
+  - Der Wunsch hängt an einem EREIGNIS, nicht an einem Arbeitsabschnitt.
+  - Die Roadmap kennt keinen Beta-Anker (Befund unten).
+  - Mehrere offene Punkte tragen denselben Trigger.
+  WAS SONST STILL KAPUTTGEHT: Ein Fehler, den der Owner nie durchgeklickt hat, trifft zuerst
+  einen fremden Nutzer — und der meldet ihn womöglich nicht.
+  BEFUND, KEIN AUFTRAG (GEMESSEN am Repo, CC, 2026-09-28): docs/roadmap.md verankert den Start
+  für fremde Nutzer NIRGENDS, obwohl mehrere offene Punkte ihn als Trigger führen.
+  - Treffer je Datei (Achsen `beta-launch` · `beta-betrieb` · `fremde[nr]? nutzer`, ohne
+    Gross/Klein):
+    - docs/roadmap.md 0 · 1 · 1;
+    - CLAUDE.md 7 · 0 · 13;
+    - diese Datei 8 · 0 · 16 (vor diesem Eintrag).
+    Positivkontrolle: dieselbe Suche trifft in CLAUDE.md und hier.
+  - Der eine Treffer "beta-betrieb" ist Phase 15 (Public-Launch-Restarbeit, Tier 0): "Kein
+    Termin — App bleibt im privaten Test-/Beta-Betrieb." Sie verankert den ÖFFENTLICHEN Launch,
+    nicht den Zugang fremder Nutzer.
+  - Der eine Treffer "fremde nutzer" steht im Volltext der abgeschlossenen Phase 11.10 ("DAS
+    FENSTER SCHLIESST SICH MIT DEM ERSTEN FREMDEN NUTZER") und ist eine Begründung, kein Anker.
+  - Denselben Moment führt CLAUDE.md, "## Modus", als Trigger "das erste FREMDE Nutzerkonto
+    legt ein Projekt an".
+  PROVENIENZ: der Wunsch OWNER 2026-09-28; Quelle, Arbeitspaket, Ort und Trigger ARCHITEKT
+  2026-09-28 (Setzung, revidierbar); der Befund GEMESSEN (CC, 2026-09-28). Der Stub in
+  CLAUDE.md, "## Offene Punkte", Block "IN PHASE 13 AUFGENOMMEN (2026-09-28)", trägt Titel und
+  Trigger im SELBEN Zug.

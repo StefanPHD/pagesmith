@@ -23,6 +23,7 @@ ARCHITEKTEN-SETZUNG (revidierbar). Eine Setzung trägt je Grund und Grenze.
 - Aufklärung zur Phase 13 vom 2026-09-28
 - Owner-Entscheidungen zur Phase 13 vom 2026-09-28
 - Architekten-Setzungen zur Phase 13 vom 2026-09-28
+- Zuschnitt Scheibe 13-1
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
 
@@ -262,6 +263,87 @@ bleibt dort.
 
 **Setzung P13-10 — ERSTER TESTEMPFÄNGER IST MAKE** (generische Adresse); Brevo und systeme.io
 danach als Gegenprobe für ESP-Formular-Endpunkte.
+
+## Zuschnitt Scheibe 13-1
+
+GEGENSTAND: "Formular-Ziel mit Danke-Seite" — der Datenweg aus Entscheidung P13-2 samt
+Danke-Seite, für Formulare, die der Nutzer im Tool ausdrücklich mit einem Ziel versieht
+(Setzung P13-5). Zugeschnitten am 2026-09-28; der Plan folgt in einer eigenen Runde.
+
+### Owner-Entscheidungen zur Scheibe 13-1
+
+PROVENIENZ beider: OWNER-ENTSCHEIDUNG 2026-09-28, übermittelt im Auftrag der Zuschnitt-Runde
+desselben Tages. BINDEND.
+
+**Entscheidung P13-16 — ZU JEDER ZIELADRESSE GEHÖRT PFLICHT EINE DANKE-SEITE.** Ohne
+Danke-Seite ist kein Ziel speicherbar.
+
+**Entscheidung P13-17 — ERREICHEN DIE DATEN DIE ADRESSE NICHT, BLEIBT DAS FORMULAR STEHEN.**
+Fälle: ein Blocker, keine Verbindung. Das Formular bleibt, eine eigene Meldung erscheint, der
+Besucher kann erneut senden.
+VERWORFEN: trotzdem zur Danke-Seite. GRUND: der Verwerfungsgrund von Entscheidung P12.5-47 der
+Phase 12.5 — "mit Danke-Seite wirkte es funktionsfähig, während Leads verschwinden".
+
+### Architekten-Setzungen zur Scheibe 13-1
+
+PROVENIENZ aller vier: ARCHITEKTEN-SETZUNG 2026-09-28, übermittelt im Auftrag der
+Zuschnitt-Runde desselben Tages. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf.
+
+**Setzung P13-18 — DER SCHNITT: 13-1 UND 13-1b.** 13-1 trägt Laufzeit und Konfiguration; 13-1b
+trägt den Testknopf im Editor.
+GRUND: Eine falsche Adresse fängt das Signal aus Setzung P13-21 nicht; das soll 13-1b leisten.
+
+**Setzung P13-19 — VERSAND ALS `application/x-www-form-urlencoded` AUS DEN FORMULARFELDERN.**
+GRUND: docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befunde (t) (die Form wird mit
+`Access-Control-Allow-Origin: *` angenommen), (v) (`text/plain` kommt als EIN ungeparstes Feld
+`value` an), (w) (ein mehrfach vorkommender Name bleibt als Liste erhalten). GRENZE: gemessen an
+EINEM Empfänger (Make, Zone eu2); Brevo und systeme.io sind ungemessen (Setzung P13-10).
+
+**Setzung P13-20 — DER EDITOR BIETET EIN ZIEL NUR FÜR FORMULARE AN, DIE KEINE EIGENE FREMDE
+ZIELADRESSE UND KEIN DATEI-FELD TRAGEN.**
+GRUND: Setzung P13-5 (Formulare mit eigener `action` bleiben unberührt; Datei-Felder sind nicht
+Teil der ersten Scheibe).
+GRENZE: Was "fremd" heisst (eine `action` auf denselben Ursprung, `#`, leer), ist nicht
+festgelegt; das "eigene Skript" aus Setzung P13-5 bleibt am Code ohne Merkmal (Vermerk P13-1,
+Punkt (4)).
+
+**Setzung P13-21 — DAS SIGNAL "ERREICHT / NICHT ERREICHT" KOMMT AUS EINEM AUFRUF IM MODUS
+`no-cors` — HYPOTHESE, ZU MESSEN IN DER PLANRUNDE.** Eine falsche Adresse fängt dieses Signal
+nicht (Setzung P13-18).
+BEZUG, KEINE ENTSCHEIDUNG: ebenda, Befunde (x) (die Standardantwort ist im Modus `cors` aus
+einem fremden Ursprung lesbar) und (y) (eine 410 auf eine unbekannte Kennung trägt KEIN
+`Access-Control-Allow-Origin`; im Browser nicht gemessen, Messkandidat M13).
+
+### Invarianten der Scheibe 13-1
+
+Der Massstab für Plan, Bau und Protokoll. PROVENIENZ: ARCHITEKT 2026-09-28, Auftrag der
+Zuschnitt-Runde.
+- I1 Formularinhalte gehen AUSSCHLIESSLICH an die eingetragene Adresse — nie an `/api/e`, nie an
+  ein Tracking-Ziel, nie in unsere Datenbank oder unsere Logs (Entscheidung P13-7). Ein Test
+  beweist es.
+- I2 Keine Feldwerte in der Adresse der Danke-Seite — und damit nie in `eventSourceUrl`.
+- I3 Zur Danke-Seite nur, wenn der Empfänger erreicht wurde; sonst bleibt das Formular, eine
+  eigene Meldung erscheint, ein erneuter Versuch ist möglich (Entscheidung P13-17).
+- I4 Formulare OHNE Ziel verhalten sich unverändert; die (I4) der Scheiben 1b und 1c der Phase
+  12.5 gelten für sie weiter (Wortlaut: Vermerk P13-1, Punkt (3)). Für Formulare MIT Ziel werden
+  sie ausdrücklich abgegrenzt.
+- I5 KANDIDAT: Projekte ohne ein Formular-Ziel bekommen byte-gleichen ausgelieferten Text.
+  Trägt der Code das nicht, sagt der Plan, warum.
+- I6 Kein fremder Knoten wird verändert (Stil, Klasse, Attribut, Scroll-Position, Fokus); die
+  Meldung lebt im eigenen Schattenbaum.
+- I7 Adresse und Danke-Seite gehen nur über `embedInScript` in Script-Rohtext.
+- I8 Ein ungültiger oder unbekannter Wert lässt das Veröffentlichen laut abbrechen.
+- I9 Ingest, Proxy, Middleware, Serve-Route und Adapter bleiben unberührt.
+- I10 Der Versand hängt an keinem Einwilligungs-Tor (Setzung P13-8).
+
+### Auflagen aus Arbeit P13-13 an diese Scheibe
+
+- Die Abgrenzung der (I4) — oben, I4.
+- Die Ausnahme-Liste der Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT
+  EINEN FREMDEN KNOTEN AN" nachziehen; der Plan schlägt Wortlaut und Zeitpunkt vor.
+- Die Einsetzungen in den vier Differenz-Nachweisen (Vermerk P13-1, Punkt (9)), falls I5 nicht
+  trägt.
+- Die Frage "Mapping-Typ oder Einstellung" beantwortet der Plan (Arbeit P13-13, vierter Punkt).
 
 ## Noch nicht geschnittene Arbeit
 

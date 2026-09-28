@@ -790,9 +790,11 @@ docs/offene-punkte.md, Titel + Trigger als Stub-Zeile hier · (4) Phasenplanung 
 docs/roadmap.md, Marker im Stub hier · (5) Befund über ein FAN-OUT-ZIEL -> die Datei des
 Ziels unter docs/ziel-befunde/ (Verzeichnis und Konventionen: docs/ziel-befunde.md), offene
 FRAGE dazu -> docs/ziel-fragenkatalog.md; Befund über einen PLATTFORM-ANBIETER ->
-docs/plattform-befunde.md · (6) Schema, Policies, Analytics-Lesepfad -> docs/db-stand.md
-(Zustand) bzw. docs/db-regeln.md (Regeln) · (7) Regel über die ARBEITSWEISE selbst ->
-docs/arbeitsweise.md, als ÄNDERUNGSANTRAG · (8) keins davon -> NACHFRAGEN.
+docs/plattform-befunde.md; Befund über einen FORMULAR-EMPFÄNGER ->
+docs/formular-empfaenger-befunde.md, dort auch sein vorläufiger Fragenkatalog · (6) Schema,
+Policies, Analytics-Lesepfad -> docs/db-stand.md (Zustand) bzw. docs/db-regeln.md (Regeln) ·
+(7) Regel über die ARBEITSWEISE selbst -> docs/arbeitsweise.md, als ÄNDERUNGSANTRAG · (8)
+keins davon -> NACHFRAGEN.
 KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG — VERBOT, keine Empfehlung; genau eine Ausnahme ist
 die Standdatei, die nach Verfahren entsteht. Weg 1 führt aus DIESER Datei heraus, NICHT aus
 dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
@@ -839,8 +841,8 @@ dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   unserer Datenbank. AUSLÖSER: Wer an Schema, Policies, Migrationen, dem Geheimnis-Speicher,
   an Backup/Restore oder am Deploy-Weg arbeitet — wo es um die Datenbank geht, ZUSAMMEN mit
   docs/db-regeln.md und docs/db-stand.md. Keiner Phase zugehörig, wird NICHT archiviert.
-  SEIT DEM 2026-08-25 FÜHREN ZWEI BEFUND-DATEIEN BUCHSTABEN: Ein Verweis der Form "Teil (a)"
-  ist ab da mehrdeutig und nennt DATEI, ABSCHNITT und Buchstaben.
+  SEIT DEM 2026-08-25 FÜHREN MEHRERE BEFUND-DATEIEN BUCHSTABEN: Ein Verweis der Form
+  "Teil (a)" ist ab da mehrdeutig und nennt DATEI, ABSCHNITT und Buchstaben.
 - docs/formular-empfaenger-befunde.md — die GEMESSENEN und GELESENEN Befunde über die
   FORMULAR-EMPFÄNGER (die Adressen, an die das ausgelieferte Skript Formularinhalte im
   Browser schickt: generische Webhook-Adressen, Formular-Endpunkte eines ESP), je Empfänger
@@ -848,8 +850,7 @@ dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   Trägt KEINE Regeln und KEINE Entscheidungen. AUSLÖSER: Zuschnitt, Anbindung, Recherche oder
   Live-Test-Anleitung eines Formular-Empfängers — dann diese Datei zuerst. Keiner Phase
   zugehörig, wird NICHT archiviert. Angelegt am 2026-09-28 (OWNER-ENTSCHEIDUNG, Entscheidung
-  P13-15 der Phase 13). Auch sie führt Buchstaben je Empfänger — der Satz über ZWEI
-  Befund-Dateien am Eintrag darüber zählt sie nicht mit.
+  P13-15 der Phase 13). Auch sie führt Buchstaben je Empfänger.
 
 ## Detail-Archiv (bei Bedarf lesen — NICHT automatisch geladen)
 Abgeschlossene Phasen-Historie + Vollbegründungen, ausgelagert, damit CLAUDE.md unter dem

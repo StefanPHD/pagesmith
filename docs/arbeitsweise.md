@@ -507,7 +507,10 @@ gewinnt:
    `docs/ziel-befunde/` (Verzeichnis und Konventionen: `docs/ziel-befunde.md`) ·
    **offene Frage an ein Fan-Out-Ziel** → `docs/ziel-fragenkatalog.md` ·
    **Befund über einen PLATTFORM-ANBIETER** (Supabase, Vercel) →
-   `docs/plattform-befunde.md`.
+   `docs/plattform-befunde.md` ·
+   **Befund über einen FORMULAR-EMPFÄNGER** (Make, Brevo, systeme.io) →
+   `docs/formular-empfaenger-befunde.md`, dort auch sein vorläufiger
+   Fragenkatalog.
 6. **Schema, Policies, Analytics-Lesepfad** → `docs/db-stand.md` (Zustand) bzw.
    `docs/db-regeln.md` (Regeln).
 7. **Regel über die Arbeitsweise selbst** → dieses Dokument, als
@@ -1152,6 +1155,8 @@ die Datei des Ziels unter `docs/ziel-befunde/` samt dem Kopf von
 Fan-Out-Ziel (zusammen) · `docs/db-stand.md` und `docs/db-regeln.md` bei Migrationen ·
 `docs/plattform-befunde.md` bei Migrationen und bei Arbeit am
 Geheimnis-Speicher, zusammen mit den beiden davor ·
+`docs/formular-empfaenger-befunde.md` bei Zuschnitt, Anbindung, Recherche oder
+Live-Test-Anleitung eines Formular-Empfängers ·
 `docs/claude-history/security-manifest-full.md` bei Manifest-Arbeit ·
 `future-roadmap.md`, wenn eine Entscheidung eine spätere Richtung versperren
 könnte · `docs/claude-history/phase-*.md` für das Warum einer Regel.

@@ -841,6 +841,15 @@ dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   docs/db-regeln.md und docs/db-stand.md. Keiner Phase zugehörig, wird NICHT archiviert.
   SEIT DEM 2026-08-25 FÜHREN ZWEI BEFUND-DATEIEN BUCHSTABEN: Ein Verweis der Form "Teil (a)"
   ist ab da mehrdeutig und nennt DATEI, ABSCHNITT und Buchstaben.
+- docs/formular-empfaenger-befunde.md — die GEMESSENEN und GELESENEN Befunde über die
+  FORMULAR-EMPFÄNGER (die Adressen, an die das ausgelieferte Skript Formularinhalte im
+  Browser schickt: generische Webhook-Adressen, Formular-Endpunkte eines ESP), je Empfänger
+  ein Abschnitt, mit Provenienz, dazu der VORLÄUFIGE Fragenkatalog dieser Anbieter-Klasse.
+  Trägt KEINE Regeln und KEINE Entscheidungen. AUSLÖSER: Zuschnitt, Anbindung, Recherche oder
+  Live-Test-Anleitung eines Formular-Empfängers — dann diese Datei zuerst. Keiner Phase
+  zugehörig, wird NICHT archiviert. Angelegt am 2026-09-28 (OWNER-ENTSCHEIDUNG, Entscheidung
+  P13-15 der Phase 13). Auch sie führt Buchstaben je Empfänger — der Satz über ZWEI
+  Befund-Dateien am Eintrag darüber zählt sie nicht mit.
 
 ## Detail-Archiv (bei Bedarf lesen — NICHT automatisch geladen)
 Abgeschlossene Phasen-Historie + Vollbegründungen, ausgelagert, damit CLAUDE.md unter dem

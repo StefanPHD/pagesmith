@@ -177,8 +177,9 @@ beantworten. KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
 
 ## Owner-Entscheidungen zur Phase 13 vom 2026-09-28
 
-PROVENIENZ aller vier: OWNER-ENTSCHEIDUNG 2026-09-28 — P13-2 bis P13-4 übermittelt im Auftrag
-der Doku-Runde desselben Tages, P13-7 im Auftrag der Korrektur-Runde desselben Tages. BINDEND.
+PROVENIENZ aller fünf: OWNER-ENTSCHEIDUNG 2026-09-28 — P13-2 bis P13-4 übermittelt im Auftrag
+der Doku-Runde desselben Tages, P13-7 im Auftrag der Korrektur-Runde desselben Tages, P13-15 im
+Auftrag der Anbieter-Lesung Make desselben Tages. BINDEND.
 
 **Entscheidung P13-2 — DER DATENWEG DER FORMULARE IST BROWSER-DIREKT.** Der Browser schickt die
 Formularfelder DIREKT an eine Adresse, die der Nutzer im Tool einträgt — eine generische
@@ -215,6 +216,13 @@ Seitenadresse — etwa als Query einer Danke-Seite —, reisten sie über `event
 `/api/e` und an drei Ziele, und das Gegenstück bräche (docs/offene-punkte.md, "DIE
 SEITENADRESSE REIST SAMT QUERY AN UNSEREN SERVER UND AN DREI ZIELE — WAS IM QUERY STEHT,
 REIST MIT").
+
+**Entscheidung P13-15 — DIE BEFUNDE ÜBER FORMULAR-EMPFÄNGER STEHEN IN EINER NEUEN DATEI:
+docs/formular-empfaenger-befunde.md.** Sie beantwortet die offene Frage des Ablageorts aus
+Arbeit P13-11 (Weg 8, "Keine neue Datei ohne Owner-Entscheidung"). Die Datei trägt Kopf,
+vorläufigen Fragenkatalog und je Empfänger einen Abschnitt; in CLAUDE.md, "## Aktive
+Dokumente", steht ein Eintrag. Die Liste "WOHIN EIN NEUER SATZ GEHÖRT" ist NICHT angefasst —
+dafür folgt ein eigener Änderungsantrag.
 
 ## Architekten-Setzungen zur Phase 13 vom 2026-09-28
 
@@ -265,6 +273,11 @@ gekennzeichnet. OFFEN, OWNER-ENTSCHEIDUNG VOR DER LESUNG: der ABLAGEORT der Befu
 Formular-Empfänger — sie sind weder Fan-Out-Ziel noch Plattform-Anbieter, also Weg 8 ("Keins
 davon → nachfragen. Keine neue Datei ohne Owner-Entscheidung", docs/arbeitsweise.md, "Wohin ein
 neuer Satz gehört"). PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-28.
+ABLAGEORT ENTSCHIEDEN durch Entscheidung P13-15. ERGEBNIS (CC, 2026-09-28): die Lesung ist
+ausgeführt und abgelegt in docs/formular-empfaenger-befunde.md — vorläufiger Fragenkatalog
+K1 bis K7, Abschnitt "Make", Befunde (a) bis (r), Messkandidaten M1 bis M11. KEINE Angabe
+darin ist gemessen; offen nach der Lesung u. a. CORS und Preflight (Befund (f)), `text/plain`
+(Befund (a)) und der Status bei ausgeschaltetem Szenario (Befund (i)).
 
 **Arbeit P13-12 — BEKANNTE SCHWÄCHEN DES WEGS, die Lesung oder Plan beantworten müssen**
 (ARCHITEKTEN-SETZUNG 2026-09-28; jede Schwäche ABGELEITET, keine gemessen):

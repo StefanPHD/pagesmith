@@ -1086,6 +1086,12 @@ als Befund, keine Entscheidung.
   own native forms"), ein reines HTML-Formular ("Embedded form") ist belegt, aber nicht
   entscheidbar; Umweg über Make trägt nach Doku. BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-10
   (systeme.io als Gegenprobe "für ESP-Formular-Endpunkte"), dort Befund (b).
+- Mailchimp: docs/formular-empfaenger-befunde.md, Abschnitt "Mailchimp", Befunde (a) bis
+  (k), Messkandidaten C1 bis C5. EINORDNUNG: nur mit anderen Feldnamen (Namen der Zielgruppe
+  plus versteckte Felder `u` und `id`), dazu zwei stille Verluste nach Doku; Umweg über Make
+  nur allgemein belegt. KEIN TESTKONTO (Entscheidung P13-4 nennt Mailchimp nicht). BEZUG,
+  KEINE ENTSCHEIDUNG: Setzung P13-21 (`opaque` = "erreicht"), dort Befund (f); Setzung
+  P13-29 (nur `https:`), dort Befund (b).
 
 **Arbeit P13-12 — BEKANNTE SCHWÄCHEN DES WEGS, die Lesung oder Plan beantworten müssen**
 (ARCHITEKTEN-SETZUNG 2026-09-28; jede Schwäche ABGELEITET, keine gemessen):

@@ -1179,3 +1179,215 @@ kein reCAPTCHA, und der Anbieter rät wegen "list bombing" ausdrücklich davon a
 DER UMWEG ÜBER MAKE TRÄGT NACH DER DOKU ((g)): "Create a Contact" und "Add a Tag to a
 Contact"; der Schlüssel bleibt in Make. Eine Bestätigungsmail ist über eine Regel "Tag added"
 denkbar ((h), ungemessen).
+
+## Mailchimp
+
+### Anbieter-Lesung vom 2026-09-28 (CC, Phase 13, Arbeit P13-64)
+
+**INSTRUMENT:** Playwright-MCP; Text je Seite über `textContent` des `main`-Elements nach
+Entfernen von `script`, `style`, `noscript`, `svg`, `template`, zugeschnitten von "Copy
+Article URL" bis "Technical Support" (der Artikelkörper). Mehrere Seiten per `fetch` von
+mailchimp.com aus; Positivkontrolle je Seite: der Seitentitel steht im Text (bei "Create an
+Automated Welcome Email" trifft der Titel nicht, der Artikelkörper ist vollständig da,
+12 708 Zeichen). Die englische Fassung unter `/en/help/…` — die Adresse ohne `/en/` leitet
+auf die deutsche Fassung um; gelesen ist die ENGLISCHE. Die Seiten tragen kein Datum.
+WERKZEUG-FEHLER, OFFEN GEFÜHRT: Ein Abruf lief versehentlich von apps.make.com aus und
+lieferte dort 404 für eine Mailchimp-Seite; wiederholt von mailchimp.com aus, 200.
+Ablage des Werkzeugs unter `.playwright-mcp/`.
+**KEINE ANGABE DIESER LESUNG IST GEMESSEN.** Keine Eingabe, keine Anmeldung, kein Download,
+kein Aufruf eines Formular-Endpunkts.
+**KEIN TESTKONTO:** Entscheidung P13-4 der Phase 13 nennt als Testempfänger Make, Brevo und
+systeme.io — nicht Mailchimp.
+
+**GELESENER UMFANG — VOLL** (Lesedatum je Seite 2026-09-28; alle unter
+https://mailchimp.com/en/help/):
+- host-your-own-signup-forms/ — "Host Your Own Signup Forms"
+- add-a-signup-form-to-your-website/ — "Add an Embedded Signup Form to Your Website"
+- troubleshooting-the-embedded-signup-form/ — "Troubleshooting the Embedded Signup Form"
+- customize-embedded-signup-form/ — "Customize Your Embedded Signup Form"
+- about-signup-form-options/ — "About Signup Form Options" (4 Tabellen, Text)
+- share-your-signup-form/ — "Share Your Signup Form"
+- about-double-opt-in/ — "About Double Opt-in"
+- single-opt-in-vs-double-opt-in/ — "Single Opt-in vs. Double Opt-in"
+- about-recaptcha-for-signup-forms/ — "About reCAPTCHA for Signup Forms" (1 Tabelle, Text)
+- enable-or-disable-final-welcome-email/ — "Turn the Final Welcome Email On or Off"
+- how-the-form-builder-works/ — "How the Form Builder Works"
+- advanced-form-customization/ — "Advanced Form Customization"
+- design-and-host-your-own-thank-you-pages/ — "Design and Host Your Own "Thank You" Pages"
+- add-hidden-fields-to-a-signup-form/ — "Add Hidden Fields to a Signup Form"
+- create-an-automated-welcome-email/ — "Create an Automated Welcome Email" (1 Tabelle, Text)
+- mailchimp-european-data-transfers/ — "Mailchimp and European Data Transfers"
+- https://apps.make.com/mailchimp — "Mailchimp - Apps Documentation" (Updated 25 Sep 2026)
+- Drei geratene Adressen ohne Inhalt (404): about-the-final-welcome-email/,
+  create-signup-form-response-emails/, about-response-emails/.
+
+**REITER, TABELLEN, SYMBOLE, BILDER:** Keine Seite trägt `role=tab`; die Tabellen tragen
+Text. Videos sind nicht geladen (Cookie-Sperre). BILDER SIND NICHT GELESEN — u. a. auf
+"Advanced Form Customization" das Bild "what you can and shouldn't edit".
+
+**GESEHEN, NICHT GEÖFFNET** (je mit Grund):
+- "CSS Hooks for Customizing Forms" — Gestaltung.
+- "Manage Contacts in Mailchimp API 3.0" (/developer/marketing/guides/create-your-first-audience/)
+  — K13.1 wird nur abgelegt.
+- "Collect Consent with Pop-up Forms", "Create a Popup Form" — Pop-up per Skript des Anbieters.
+- "All the Marketing Automation Flow Triggers", "About Marketing Automation Flows" — K14 ist
+  über "Create an Automated Welcome Email" gelesen.
+- Die Unterauftragsverarbeiter-Liste und die Aufbewahrungsfristen (Privacy Policy, DPA) —
+  nicht geöffnet; K5.2 bleibt offen.
+- Seiten zu WordPress, Squarespace, Zapier, Facebook Lead Ads — andere Wege.
+- Community und Drittanbieter-Seiten (u. a. easycloudsolutions.com im Suchindex) — keine
+  Anbieter-Doku.
+**PRÜFUNG DER AUSSCHLUSSLISTE GEGEN DIE OFFENEN FRAGEN** (2026-09-28): Offen waren K9.3,
+K12 und K14; nach dem Titel trugen "Add Hidden Fields to a Signup Form" (K9.3), "Design and
+Host Your Own "Thank You" Pages" (K12) und "Create an Automated Welcome Email" (K14) eine
+davon — alle drei sind GEÖFFNET und oben geführt. Offen nach der Lesung: K1, K2, K5.2, K10.2,
+die Antwort bei Fehlern (K12.2). Die verbleibenden Ausschlüsse tragen nach ihrem Titel keine.
+
+**(a) K8.1, K8.4 — EIN EIGENES FORMULAR IST EIN DOKUMENTIERTER WEG.** GELESEN, "Host Your Own
+Signup Forms": "To use a custom signup form on your website that transmits subscriber data to
+your Mailchimp audience, you'll need to add some Mailchimp information to your form code.
+You'll locate the form action, user ID, audience ID, and input name elements in your hosted
+Mailchimp form, and insert them into the form you host on your website." — "This is an
+advanced feature". GELESEN, "About Signup Form Options": "Embedded form — An HTML form we
+create for you, which you can paste into your site."
+
+**(b) K8.2, K8.3, K9.3 — ADRESSE UND VERSTECKTE PFLICHTANGABEN.** GELESEN, "Host Your Own
+Signup Forms", Beispiel im Wortlaut: `<form action="http://mailchimp.us8.list-manage.com/
+subscribe/post" method="POST">`, dazu `<input type="hidden" name="u" value="…">` und
+`<input type="hidden" name="id" value="…">` — "The code indicates your user ID and audience
+ID". Fundort: "Forms > Other forms > Form builder > Manage forms", die "Signup form URL" im
+Browser öffnen, Quelltext ansehen. Die Adresse ist je ZIELGRUPPE (Audience), nicht je
+Formular; `u` und `id` stehen als FELDER im Rumpf, nicht in der Adresse. Das Beispiel trägt
+`http:` und den Serverteil `us8`; ob die echte Adresse `https:` trägt und wie der Serverteil
+je Konto lautet, ist nicht belegt. BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-29 lässt nur
+`https:` als Zieladresse zu — ein aus dem Beispiel abgeschriebenes `http:` würde abgewiesen.
+MESSUNG NÖTIG (C1).
+
+**(c) K9.1, K9.2, K9.4 — FELDNAMEN.** GELESEN, "Host Your Own Signup Forms": "Scroll to find
+the first audience field, like Email Address, and look for the <input> tag. `<input
+type="email" name="MERGE0" id="MERGE0">` Copy the name value […] Repeat […] for every audience
+field". "All of these values must be copied to your custom signup form for the data transfer
+to work properly." GELESEN, "Advanced Form Customization": Merge-Tags `EMAIL`, `FNAME`,
+`LNAME` in einer Weiterleitung und `<input type="hidden" name="FNAME" value="*|FNAME|*">`.
+FOLGERUNG: Die Feldnamen stehen je Konto im Quelltext des gehosteten Formulars; die Doku
+zeigt zwei Schreibweisen (`MERGE0` und `EMAIL`/`FNAME`). Welche ein Formular des Owners
+trägt, ist nicht belegt (C1) — die Vermutung "EMAIL" aus dem Auftrag ist damit weder
+bestätigt noch widerlegt.
+PFLICHTFELDER, GELESEN, "Troubleshooting …", "Subscriber submits and goes to signup form with
+alerts": Fehlt ein Pflichtfeld im Code (etwa ein verborgenes "First Name"), wird der
+Besucher auf das GEHOSTETE Formular mit Hinweisen geschickt. GELESEN, "Add Hidden Fields …":
+"The Email Address field is required on all signup forms"; versteckte Felder dürfen nicht
+Pflicht sein. Unbekannte Felder (K9.4): NICHT GEFUNDEN, Reichweite: die voll gelesenen Seiten.
+
+**(d) K10 — BOT-SCHUTZ.** GELESEN, "About reCAPTCHA for Signup Forms": Tabelle — "Mailchimp
+Basic Signup Form: Not using reCAPTCHA, but throttling to block bots"; "Embedded Forms:
+Checkbox", "Required? No"; einzuschalten unter "Forms > Settings > Audience-wide defaults".
+"If you've enabled double opt-in and use an embedded form, this will appear after your
+subscriber clicks the link in the opt-in confirmation email." GELESEN, "About Double Opt-in":
+"reCAPTCHA confirmation — After someone fills out your signup form, they'll need to check a
+reCAPTCHA box. This required step […] can't be turned off or edited." GELESEN, "How the Form
+Builder Works": "reCAPTCHA confirmation — The reCAPTCHA page that appears after someone
+enters their information into your signup form." GELESEN, "Troubleshooting …": "Too many
+subscribe attempts for this email address"; bei falschen Eintragungen neuen Code mit
+reCAPTCHA erzeugen.
+Eine Prüfung von `Origin` oder `Referer`: NICHT GEFUNDEN. MESSUNG NÖTIG (C3).
+FOLGERUNG: reCAPTCHA ist bei Mailchimp eine SEITE nach dem Absenden, nicht (nur) ein Element
+im Formular. Unser Skript folgt dieser Seite nicht, und der Besucher sieht sie nicht; ob ein
+Eintrag ohne sie wirksam wird, ist nicht belegt (C3).
+
+**(e) K11 — DOUBLE-OPT-IN.** GELESEN, "About Signup Form Options": "Mailchimp audiences are
+single opt-in by default"; "If your primary contact address is in the European Union, some of
+your audiences may be double opt-in by default." Einstellung je ZIELGRUPPE. GELESEN, "About
+Double Opt-in": Ablauf Formular → Bestätigungsmail → Klick → Kontakt "subscribed"; Versender
+ist Mailchimp mit einer im Form Builder gestaltbaren "Opt-in confirmation email". "Double
+opt-in for email contacts can only be enabled for Mailchimp signup forms. If you need help
+with a form integration or the API, contact your developer". GELESEN, "Host Your Own …": der
+Test verlangt "Confirm your subscription" — FOLGERUNG: ein selbst gehostetes Formular läuft
+durch das Double-Opt-In der Zielgruppe; ungemessen (C4). K11.3: Eine Pflicht-Checkbox ist nur
+für das SMS-Feld belegt ("The legal checkbox is required and can't be edited", "Customize
+Your Embedded Signup Form"); GDPR-Felder als Möglichkeit ("About Signup Form Options").
+
+**(f) K12 — ANTWORT.** GELESEN, "Troubleshooting …": Ohne JavaScript "they may be taken to
+the Mailchimp-hosted confirmation thank you page"; mit Double-Opt-In "redirected to another
+page, called the signup thank you page". GELESEN, "Design and Host Your Own "Thank You"
+Pages": Eine eigene Danke-Seite ist je Zielgruppe einstellbar ("Success step … redirect
+subscribers to an external link"); für ein eingebettetes Formular gilt sie nur mit "Disable
+all Javascript". GELESEN, "Advanced Form Customization": Fehler lassen sich per Meta-Weiterleitung
+mit den Werten im Query an die eigene Seite zurückgeben (`?EMAIL=…&FNAME=…`).
+FOLGERUNG: Die Antwort ohne Skript ist eine Seite bzw. eine Weiterleitung; Erfolg und Fehler
+unterscheiden sich im Ziel der Weiterleitung. NUR ABGELEGT (Katalog K12): im Modus `no-cors`
+ist das für unser Skript `opaque` — Erfolg und "signup form with alerts" sind dann nicht zu
+unterscheiden. BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-21 ("erreicht" = `opaque`) und Arbeit
+P13-12 ("Die Zustellung ist vom Browser aus nicht bestätigbar"). Die Rückgabe der Werte im
+Query berührte, auf einer Seite von uns, die Invariante I2 der Scheibe 13-1 — hier nur
+vermerkt, nicht Teil unseres Wegs.
+
+**(g) K13 — ANDERE WEGE.** GELESEN, "About Signup Form Options", "Form API": "code your signup
+form from the ground up and pass subscriber information back to Mailchimp through our API".
+K13.1 NUR ABGELEGT: ein Schlüssel im ausgelieferten Text wäre öffentlich — nach Setzung P13-6
+für uns ausgeschlossen. GELESEN, apps.make.com/mailchimp: Make führt eine Mailchimp-App ("manage
+the campaigns, merge fields, subscribers, lists, segments and more"), Verbindung über OAuth;
+die einzelnen Module stehen auf der gelesenen Seite NICHT.
+
+**(h) K14 — EIGENE BESTÄTIGUNG.** GELESEN, "Turn the Final Welcome Email On or Off": "an
+optional final welcome email, which is sent after someone subscribes", standardmässig AUS,
+einschaltbar im Form Builder ("Forms and response emails > Final welcome email"); bei einem
+Formular im "advanced mode" über die "Audience Settings". "When you use Mailchimp's signup
+forms" — ob das ein selbst gehostetes Formular einschliesst, sagt die Seite nicht (C4).
+GELESEN, "Create an Automated Welcome Email": eine Automatisierung mit Auslöser "Signs up for
+Email" für neue Kontakte mit Status "subscribed"; "Imported contacts are included by default";
+bereits abonnierte Kontakte kommen nicht erneut hinein; alternativ "Tag added". Welche Pläne
+sie tragen, verweist auf die Preisseite (nicht gelesen).
+FOLGERUNG: Eine Bestätigung ohne Kampagne ist die "Final welcome email"; über Make (Kontakt per
+API) trüge eine Automatisierung mit "Signs up for Email" oder "Tag added" — nicht gemessen.
+
+**(i) K5 — REGION.** GELESEN, "Mailchimp and European Data Transfers": "Mailchimp's
+headquarters are in the United States and our servers are also located in the United
+States"; Übermittlung auf Grundlage des EU-U.S. Data Privacy Framework, ersatzweise SCC im
+DPA. Eine wählbare Region: NICHT GEFUNDEN. Aufbewahrungsdauer (K5.2): NICHT GELESEN.
+
+**(j) K6, K4.** K6: GELESEN, "Host Your Own …" — Nachweis durch eigenes Eintragen und Suche
+des Profils; "About Signup Form Options" — Segment nach "signup source". K4: GELESEN,
+"Troubleshooting …" — "Too many subscribe attempts for this email address" (Abhilfe: in etwa 5
+Minuten erneut); "Subscribers got success message but aren't on my list" (Double-Opt-In offen
+oder falsche Kennungen im Code); "Nothing happens after someone clicks submit" bei mehreren
+Formularen mit JavaScript-Prüfung auf einer Seite. Ratenlimits am Endpunkt: NICHT GEFUNDEN.
+
+**(k) K1, K2, K3, K7.** K1: `method="POST"` im Beispiel (b); der Content-Type ist dort nicht
+genannt (FOLGERUNG: ein natives HTML-Formular ohne `enctype` sendet form-urlencoded —
+Browser-Verhalten, hier nicht gelesen). K2 (CORS, Preflight): NICHT GEFUNDEN. K3.2: Die
+Kennungen `u` und `id` stehen im öffentlichen Quelltext des gehosteten Formulars; als
+Geheimnis behandelt sie keine gelesene Seite. K7: Messfrage (C5).
+
+### Messkandidaten Mailchimp (aus der Lesung vom 2026-09-28)
+
+Keiner gemessen; die Liste entscheidet nicht, welcher gemessen wird. VORAUSSETZUNG FÜR ALLE:
+ein Mailchimp-Testkonto — nach Entscheidung P13-4 nicht vorhanden; ob eines angelegt wird, ist
+eine Owner-Frage.
+- C1 — Quelltext des gehosteten Formulars eines Testkontos: `action` (Schema, Host,
+  Serverteil), `u`, `id`, alle `name`-Werte (MERGE0 oder EMAIL?), versteckte Felder. Danach
+  ein `POST` mit `application/x-www-form-urlencoded` von einem fremden Ursprung: Status,
+  Weiterleitung, CORS-Kopfzeilen; kommt der Kontakt an? (K8.2, K9, K12; zu (b), (c), (f))
+- C2 — Derselbe `POST` OHNE ein Pflichtfeld: welche Antwort ("signup form with alerts")? Im
+  Modus `no-cors` wäre sie `opaque` — gleich dem Erfolg. (K4.6, K12.2; zu (c), (f))
+- C3 — reCAPTCHA der Zielgruppe AN: wird ein `POST` ohne den Schritt wirksam, oder bleibt der
+  Kontakt aus? Dazu fremder `Origin`/fehlender `Referer`. (K10.2; zu (d))
+- C4 — Double-Opt-In der Zielgruppe AN bzw. "Final welcome email" AN: greifen beide beim
+  selbst gehosteten Formular? (K11, K14; zu (e), (h))
+- C5 — Erfassen gängige Filterlisten `list-manage.com`? (K7.1)
+
+### EINORDNUNG Mailchimp (Befund, keine Entscheidung)
+
+NUR MIT ANDEREN FELDNAMEN — nach der Doku trägt der Weg aus 13-1 bei Mailchimp: Ein eigenes
+Formular, das an `…list-manage.com/subscribe/post` sendet, ist ein dokumentierter Weg ((a),
+(b)). Es braucht die Feldnamen der Zielgruppe (`MERGE0` im Beispiel bzw. Merge-Tags wie
+`EMAIL`, `FNAME`, aus dem Quelltext des gehosteten Formulars abzulesen) UND zwei versteckte
+Felder `u` und `id` ((b), (c)) — die heutige automatische Benennung aus Scheibe 13-1c
+erzeugt weder diese Namen noch diese Felder.
+DAZU ZWEI STILLE VERLUSTE, NACH DOKU, UNGEMESSEN: ein fehlendes Pflichtfeld und die
+reCAPTCHA-Seite enden bei Mailchimp auf einer Seite, die der Besucher bei unserem Weg nie
+sieht, während unser Skript `opaque` erhält ((c), (d), (f)). Und ein Beispiel mit `http:`
+((b)) liefe in Setzung P13-29.
+DER UMWEG ÜBER MAKE TRÄGT NACH DER DOKU nur in allgemeiner Form ((g)): Make führt eine
+Mailchimp-App für "subscribers"; die Module selbst sind nicht gelesen.
+KEIN TESTKONTO — keiner der Messkandidaten ist ohne Owner-Entscheidung messbar.

@@ -39,12 +39,19 @@ import {
   removeMapping,
   upsertMapping,
   displayTextFor,
+  type FormTargetConfig,
   type Mapping,
   type RedirectConfig,
   type TextConfig,
   type TrackConfig,
 } from "@/lib/mappings";
 import { editPreviewHtml, generateFunctional, submitFormOf } from "@/lib/generate";
+import {
+  formTargetCheck,
+  formTargetDocumentMessage,
+  formTargetDocumentProblem,
+  ownFormTargetDomains,
+} from "@/lib/form-target";
 // KOMPATIBILITAETS-RIEGEL DER ZWEI EDITOR-RAHMEN (Scheibe 11.12a). NUR HIER
 // importiert — der Export- und Veroeffentlichungsweg (buildDocumentFor) ruft ihn
 // NIE, und diese Trennung ist die Bauart, nicht eine Modus-Verzweigung
@@ -226,12 +233,19 @@ const ACTION_ICON: Record<Mapping["type"], string> = {
   redirect: "🔗",
   track: "🎯",
   text: "✎",
+  formTarget: "📨",
 };
 
 // FESTE Anzeige-Reihenfolge der Badges pro Element (Scheibe 1a): deterministisch,
 // damit ein Mehr-Aktion-Element (redirect + track) stets gleich rendert (kein
-// Set-Iterations-Flackern, stabile Tests).
-const ACTION_BADGE_ORDER: Mapping["type"][] = ["redirect", "track", "text"];
+// Set-Iterations-Flackern, stabile Tests). Das Formular-Ziel (Phase 13, Scheibe 13-1)
+// steht HINTEN: die Reihenfolge der drei bestehenden Badges bleibt unveraendert.
+const ACTION_BADGE_ORDER: Mapping["type"][] = [
+  "redirect",
+  "track",
+  "text",
+  "formTarget",
+];
 
 // Welche Element-Kategorie darf ein verwaister Mapping-Typ neu ankern? Strikte
 // Kategorientrennung (Phase 5): ein text-Override nur auf einen Textkandidaten,
@@ -239,10 +253,14 @@ const ACTION_BADGE_ORDER: Mapping["type"][] = ["redirect", "track", "text"];
 // einen "klickbaren Absatz" oder ein Text-Override auf einem Button durch die
 // Relink-Hintertuer. Weg-C unberuehrt — der Mensch waehlt, wir bieten nur
 // Sinnvolles an (kein stilles Raten).
+// FORMULAR-ZIEL (Phase 13, Scheibe 13-1): nur auf ein Formular — die Laufzeit wertet es
+// ausschliesslich am submit eines <form> aus. Ohne diesen Zweig liesse die Regel darunter
+// es auf Button oder Link zu, und der Compiler meldet das nicht (Vermerk P13-33, G1).
 function isRelinkTarget(
   orphanType: Mapping["type"],
   elType: ElementType
 ): boolean {
+  if (orphanType === "formTarget") return elType === "form";
   return orphanType === "text" ? elType === "text" : elType !== "text";
 }
 
@@ -993,6 +1011,17 @@ export default function CodeImporter({
     [previewHtml, selectedElement]
   );
 
+  // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): das Urteil ueber das gewaehlte Formular —
+  // abgeleitet, nie gespeichert, aus DEMSELBEN previewHtml wie submitFormOf darueber.
+  // Geparst wird nur, wenn ein Formular gewaehlt ist.
+  const selectedFormTarget = useMemo(
+    () =>
+      selectedElement?.type === "form"
+        ? formTargetCheck(previewHtml, selectedElement.id)
+        : null,
+    [previewHtml, selectedElement]
+  );
+
   // ps-ID -> Set der Mapping-Typen fuer die "verknuepft"-Badges (Compound-Key,
   // Scheibe 1a): ein interaktives Element kann mehrere Aktionen tragen
   // (redirect + track) -> Set statt last-wins. Die Anzeige-Reihenfolge erzwingt
@@ -1444,14 +1473,53 @@ export default function CodeImporter({
   // Fund in der INAKTIVEN, saehe er hier nichts und dort nur eine Sperre.
   const ownBlocksInActive = hasOwnBlocks(debouncedCode);
 
+  // FORMULAR-ZIEL (Phase 13, Scheibe 13-1) — DIE ZWEI RIEGEL IM EDITOR, beide ABGELEITET
+  // aus dem aktuellen Stand, nie gespeichert (dieselbe Figur wie die Nachbarn darueber).
+  // - Veroeffentlichen: BEIDE Varianten aus publishPairs (derselbe null-Vertrag: ohne B
+  //   wird B nicht geprueft). Der Server prueft Werte und Sprache selbst; die BERECHTIGUNG
+  //   des Formulars (eigene Zieladresse, Datei-Feld, dialog, unbenannte Felder) braucht DOM
+  //   und steht NUR hier.
+  // - Export: nur die AKTIVE Variante, wie der Baustein-Riegel — Download und Kopieren
+  //   liefern nur sie aus.
+  const formTargetLanguageRead = getConsentLanguage(settings);
+  const formTargetOwnDomains = ownFormTargetDomains();
+  const formTargetPublishProblem =
+    formTargetDocumentProblem(
+      publishPairs.pairA.html,
+      publishPairs.pairA.mappings,
+      formTargetOwnDomains,
+      formTargetLanguageRead
+    ) ??
+    (hasVariantB
+      ? formTargetDocumentProblem(
+          publishPairs.pairB.html,
+          publishPairs.pairB.mappings,
+          formTargetOwnDomains,
+          formTargetLanguageRead
+        )
+      : null);
+  const formTargetExportProblem = formTargetDocumentProblem(
+    debouncedCode,
+    mappings,
+    formTargetOwnDomains,
+    formTargetLanguageRead
+  );
+
   // DIE ZWEI MELDUNGEN — ABGELEITET AUS DEM AKTUELLEN TEXT, nicht gespeichert (K2).
   //
   // BEIDE LESEN debouncedCode UND NICHT code — EINE Quelle: Die Warnung darueber tut
   // es auch, und zwei Staende nebeneinander liessen Warnung und Meldung fuer einen
   // Lidschlag Verschiedenes behaupten. Der Preis ist die Entprellung von 300 ms nach
   // einem Klick; das ist unkritisch und konsistent.
-  const exportBlockedMessage =
-    exportAttempted && ownBlocksInActive ? OWN_BLOCKS_EXPORT_MESSAGE : null;
+  // Das Formular-Ziel steht HINTER den eigenen Bausteinen: dieselbe Rangfolge wie im
+  // Anzeigeslot des Veroeffentlichens.
+  const exportBlockedMessage = !exportAttempted
+    ? null
+    : ownBlocksInActive
+      ? OWN_BLOCKS_EXPORT_MESSAGE
+      : formTargetExportProblem
+        ? formTargetDocumentMessage(formTargetExportProblem, "export")
+        : null;
   // Die Fundstellen kommen aus dem JETZIGEN Text, nicht aus dem Ergebnis von damals —
   // und die Identitaetspruefung sagt, ob jener Versuch ueberhaupt noch diesen Text
   // meint. Loescht der Betreiber die Fundstelle von Hand, laufen beide Haelften
@@ -1498,7 +1566,14 @@ export default function CodeImporter({
             // erfahren, dass darin alte Bausteine stehen.
             ownBlocksPublishMessage
             ? { tone: "hint", text: ownBlocksPublishMessage }
-            : null;
+            : // DAS FORMULAR-ZIEL (Phase 13, Scheibe 13-1) HINTER den Bausteinen: ein
+              // Text mit alten Bausteinen ist der grundlegendere Mangel.
+              formTargetPublishProblem
+              ? {
+                  tone: "hint",
+                  text: formTargetDocumentMessage(formTargetPublishProblem, "publish"),
+                }
+              : null;
 
   // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
   // -> "Unbenanntes Projekt" — derselbe Name, den der Insert-Zweig von saveProject
@@ -2129,6 +2204,13 @@ export default function CodeImporter({
       // Publish-Weg bricht publishProject zusaetzlich laut ab; auf dem EXPORT-Weg gibt
       // es keinen Rueckkanal, und dort bleibt nur, ihn wegzulassen (P11.6-6, Teil (f)).
       customPixelCode: customPixelDelivered,
+      // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): die Sprache der eigenen Meldung, aus
+      // DERSELBEN Quelle wie der Einwilligungs-Dialog (Setzung P13-27). "unknown" reist
+      // NICHT: dann gilt in der Engine "de", und die Riegel davor (formTargetPublishProblem,
+      // formTargetExportProblem) sowie das Tor in publishProject lassen einen so erzeugten
+      // Text nicht hinaus.
+      formTargetLanguage:
+        formTargetLanguageRead === "unknown" ? undefined : formTargetLanguageRead,
     });
   }
 
@@ -2159,7 +2241,9 @@ export default function CodeImporter({
     // entscheidet das Praedikat auf dem aktuellen Text. Entfernt der Betreiber die
     // Bloecke danach VON HAND, verschwindet sie ohne Zutun dieses Handlers.
     setExportAttempted(true);
-    if (ownBlocksInActive) return;
+    // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): derselbe Riegel fuer ein Ziel, das nicht
+    // taugt; die Meldung leitet exportBlockedMessage aus demselben Praedikat ab.
+    if (ownBlocksInActive || formTargetExportProblem) return;
     const blob = new Blob([buildExportDocument()], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -2178,7 +2262,9 @@ export default function CodeImporter({
     // Derselbe Riegel wie beim Download — und er steht VOR dem try, weil eine
     // Verweigerung kein Fehlschlag des Kopierens ist.
     setExportAttempted(true);
-    if (ownBlocksInActive) return;
+    // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): derselbe Riegel fuer ein Ziel, das nicht
+    // taugt; die Meldung leitet exportBlockedMessage aus demselben Praedikat ab.
+    if (ownBlocksInActive || formTargetExportProblem) return;
     try {
       await navigator.clipboard.writeText(buildExportDocument());
       setCopyStatus("copied");
@@ -2252,6 +2338,16 @@ export default function CodeImporter({
   // gespiegelt (settingsEqual ignoriert hosting -> kein false-dirty), analog setCapiToken.
   async function handlePublish() {
     if (!projectId) return;
+    // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): der Riegel im Editor, VOR jedem Aufruf. Er
+    // traegt die BERECHTIGUNG des Formulars, die der Server nicht pruefen kann (kein DOM);
+    // Werte und Sprache prueft der Server zusaetzlich. Der Knopf bleibt klickbar
+    // (PublishView ist in dieser Scheibe unberuehrt) — der Klick zeigt die Meldung als
+    // Fehler im Anzeigeslot und schreibt nichts.
+    if (formTargetPublishProblem) {
+      setPublishStatus("error");
+      setPublishError(formTargetDocumentMessage(formTargetPublishProblem, "publish"));
+      return;
+    }
     setPublishStatus("publishing");
     setPublishError(null);
     // Publish bäckt den RELATIVEN /api/e-Beacon ein (Phase 7b): die gehostete Seite
@@ -2424,6 +2520,25 @@ export default function CodeImporter({
     );
   }
 
+  // FORMULAR-ZIEL zuweisen/aendern (Phase 13, Scheibe 13-1). Derselbe ps-ID-Anker-Pfad wie
+  // handleAssignTrack; die Werte hat das Panel geprueft (formTargetProblem), die Garantie
+  // ist das Tor in publishProject. Wirkt NUR in den Draft.
+  function handleAssignFormTarget(config: FormTargetConfig) {
+    if (!selectedElementId) return;
+    const { code: nextCode, canonicalId } = anchorMappingTarget(
+      code,
+      elements,
+      selectedElementId
+    );
+    if (nextCode !== code) {
+      setCode(nextCode);
+      setSelectedElementId(canonicalId);
+    }
+    setMappings((prev) =>
+      upsertMapping(prev, { elementId: canonicalId, type: "formTarget", config })
+    );
+  }
+
   // Aktion eines Slots entfernen (Compound-Key, Scheibe 1a): type waehlt den Slot
   // (redirect | track | text). Der Code (samt ps-ID) bleibt unangetastet; nur das
   // (elementId, type)-Mapping verschwindet, andere Slots desselben Elements bleiben.
@@ -2495,7 +2610,9 @@ export default function CodeImporter({
         ? { elementId: canonicalId, type: "text", config: orphan.config }
         : orphan.type === "track"
           ? { elementId: canonicalId, type: "track", config: orphan.config }
-          : { elementId: canonicalId, type: "redirect", config: orphan.config };
+          : orphan.type === "formTarget"
+            ? { elementId: canonicalId, type: "formTarget", config: orphan.config }
+            : { elementId: canonicalId, type: "redirect", config: orphan.config };
     setMappings((prev) =>
       upsertMapping(removeMapping(prev, orphanElementId, orphanType), relinked)
     );
@@ -3161,13 +3278,17 @@ export default function CodeImporter({
                   ? m.config.content
                   : m.type === "track"
                     ? m.config.event
-                    : m.config.url;
+                    : m.type === "formTarget"
+                      ? m.config.endpoint
+                      : m.config.url;
               const badgeLabel =
                 m.type === "text"
                   ? "✎ Text"
                   : m.type === "track"
                     ? "🎯 Tracking"
-                    : "🔗 Weiterleitung";
+                    : m.type === "formTarget"
+                      ? "📨 Formular-Ziel"
+                      : "🔗 Weiterleitung";
               const targets = elements.filter((el) =>
                 isRelinkTarget(m.type, el.type)
               );
@@ -3939,6 +4060,8 @@ export default function CodeImporter({
         onRemove={handleRemoveMapping}
         submitForm={selectedSubmitForm}
         onSelectElement={setSelectedElementId}
+        onSaveFormTarget={handleAssignFormTarget}
+        formTarget={selectedFormTarget}
       />
       </div>
     </div>

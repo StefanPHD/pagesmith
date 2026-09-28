@@ -45,6 +45,15 @@ export type TrackConfig = {
   code?: string;
 };
 
+// FORMULAR-ZIEL (Phase 13, Scheibe 13-1; Setzung P13-25 der Phase 13). Sitzt an einem
+// <form>: beim Abschicken gehen die Felder im Browser an endpoint, bei "erreicht" folgt
+// die Navigation auf thanksUrl. BEIDE PFLICHT (Entscheidung P13-16) — die Pruefung der
+// Werte steht in formTargetProblem (lib/form-target.ts).
+// DIE FELDER HEISSEN BEWUSST NICHT "url": Die Anzeige verwaister Mappings liest
+// m.config.url; ein Feld dieses Namens liesse ein Formular-Ziel dort still als
+// "Weiterleitung" erscheinen. So meldet es der Compiler.
+export type FormTargetConfig = { endpoint: string; thanksUrl: string };
+
 // type ist der Diskriminator. Erster Aktionstyp war "Redirect bei Klick"
 // (URL-Weiterleitung: Stripe Payment Link, PayPal-Link, generische Links); der
 // zweite ist "text" (In-Place-Override), der dritte "track" (Tracking-Event). Das
@@ -55,7 +64,8 @@ export type TrackConfig = {
 export type Mapping =
   | { elementId: string; type: "redirect"; config: RedirectConfig }
   | { elementId: string; type: "text"; config: TextConfig }
-  | { elementId: string; type: "track"; config: TrackConfig };
+  | { elementId: string; type: "track"; config: TrackConfig }
+  | { elementId: string; type: "formTarget"; config: FormTargetConfig };
 
 // Akzeptiert nur http/https. Leere/kaputte URLs werden NICHT persistiert (das
 // Formular sperrt "Speichern", solange dies false ist).
@@ -162,6 +172,15 @@ function configEqual(a: Mapping, b: Mapping): boolean {
       // faelschlich als nicht-dirty -> stiller Verlust beim Speichern. Diese Funktion
       // ist die ZWEITE Allowlist dieser Scheibe (die erste ist settingsEqual).
       a.config.code === b.config.code
+    );
+  }
+  if (a.type === "formTarget" && b.type === "formTarget") {
+    // FORMULAR-ZIEL (Scheibe 13-1): OHNE diesen Zweig fiele der Vergleich auf das
+    // return false darunter — das Projekt waere DAUERHAFT dirty, und kein Compiler
+    // meldet das (Vermerk P13-33, G1).
+    return (
+      a.config.endpoint === b.config.endpoint &&
+      a.config.thanksUrl === b.config.thanksUrl
     );
   }
   return false;

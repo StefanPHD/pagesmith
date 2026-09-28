@@ -14,6 +14,9 @@ import {
   buildCustomPixelRuntime,
   customTrackStatement,
 } from "./tracking/custom-pixel";
+import { buildFormTargetRuntime } from "./form-target";
+import { embedInScript } from "./script-embed";
+import type { ConsentLanguage } from "./settings";
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 
@@ -115,7 +118,12 @@ function buildWiringScript(
   // customCode ist bereits MODUS-GEGATET (P11.6-6, Teil (d): nur "export"); diese
   // Funktion kennt den Grund nicht und soll ihn nicht kennen.
   customCode: string,
-  customHasEventLine: boolean
+  customHasEventLine: boolean,
+  // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): die Sprache der eigenen Meldung — oder null,
+  // wenn KEIN Formular-Ziel verdrahtet wird. Die Entscheidung "gibt es eines, und sind wir
+  // im Modus export" faellt beim einzigen Aufrufer (generateFunctional); ohne Vorgabewert,
+  // damit der Compiler fragt (dieselbe Bauform wie bei customCode).
+  formTargetLanguage: ConsentLanguage | null
 ): string {
   const hasPixel = metaPixelId !== "";
   // PHASE 11, ACHTE SCHEIBE — DIE VORBEDINGUNG IST GEFALLEN.
@@ -160,8 +168,51 @@ function buildWiringScript(
         ? customStmt
         : `${trackStmt}
             ${customStmt}`;
+  // FORMULAR-ZIEL (Phase 13, Scheibe 13-1; Invariante I5 der Scheibe). BEIDE Stuecke sind
+  // "", wenn kein Formular-Ziel verdrahtet wird — der erzeugte Text ist dann zeichengleich
+  // zu dem vor der Scheibe. Die Waechter dafuer sind die vier Differenz-Nachweise W1', W2'
+  // (own-blocks-waechter.test.ts), T1 (tracking/consent-setter.test.ts) und T9
+  // (tracking/custom-pixel.test.ts): Ihre Sonden tragen kein Formular-Ziel.
+  // Der Baustein (Versand, Zeitlimit, Sperre, Meldung) steht in lib/form-target.ts; die
+  // Einsetzung in den submit-Listener steht HIER, weil sie die Track-Anweisung braucht.
+  const formTargetRuntime =
+    formTargetLanguage === null ? "" : buildFormTargetRuntime(formTargetLanguage);
+  // DIE EINSETZUNG IN DEN SUBMIT-LISTENER. Sie steht VOR der Sperre submittedForms: stuende
+  // sie dahinter, verhinderte die Sperre den erneuten Versuch nach einem Fehlschlag.
+  // preventDefault ZUERST und IMMER — auch wenn gerade gesendet wird: sonst schickte ein
+  // zweiter Klick nativ ab, bei GET mit den Feldwerten in der Adresse (Invariante I2).
+  // DER TRACK ZAEHLT ERST BEI "ERREICHT" (Setzung P13-26), einmal je Formular und
+  // Seitenleben — dieselbe Liste submittedForms wie beim Formular ohne Ziel.
+  // Die Abgrenzung von (I4) der Scheiben 1b und 1c der Phase 12.5: fuer ein Formular MIT
+  // Ziel ersetzt unser preventDefault das native Abschicken; ein Formular OHNE Ziel laeuft
+  // an diesem Block vorbei, als stuende er nicht da.
+  const formTargetBranch =
+    formTargetLanguage === null
+      ? ""
+      : `
+      var ftList = byId[f.getAttribute("${PAGESMITH_ID_ATTR}")];
+      var ft = null;
+      if (ftList) {
+        for (var q = 0; q < ftList.length; q++) {
+          if (ftList[q].type === "formTarget") ft = ftList[q].config;
+        }
+      }
+      if (ft) {
+        e.preventDefault();
+        __psFormTargetSend(f, e.submitter, ft, function () {
+          if (submittedForms.indexOf(f) !== -1) return;
+          submittedForms.push(f);
+          for (var j = 0; j < ftList.length; j++) {
+            var a = ftList[j];
+            if (a.type === "track") {
+            ${trackAll}
+            }
+          }
+        });
+        return;
+      }`;
   return `(function () {
-  var MODE = ${JSON.stringify(mode)};${customRuntime}${metaRuntime}
+  var MODE = ${JSON.stringify(mode)};${customRuntime}${metaRuntime}${formTargetRuntime}
   var dataEl = document.getElementById("${MAPPINGS_SCRIPT_ID}");
   if (!dataEl) return;
   var table;
@@ -320,7 +371,7 @@ function buildWiringScript(
     "submit",
     function (e) {
       var f = e.target;
-      if (!f || f.tagName !== "FORM") return;
+      if (!f || f.tagName !== "FORM") return;${formTargetBranch}
       if (submittedForms.indexOf(f) !== -1) return;
       var actions = byId[f.getAttribute("${PAGESMITH_ID_ATTR}")];
       if (!actions || !actions.length) return;
@@ -466,6 +517,15 @@ export function generateFunctional(
     capiProxyUrl?: string;
     consentTargets?: readonly string[];
     customPixelCode?: string;
+    // options.formTargetLanguage (Phase 13, Scheibe 13-1): die Sprache der eigenen Meldung
+    // des Formular-Ziels, vom AUFRUFER gelesen (getConsentLanguage) — dieselbe Trennung wie
+    // bei customPixelCode. Wirkt NUR, wenn die Tabelle ein Formular-Ziel traegt und der
+    // Modus "export" ist; ohne Formular-Ziel ist der erzeugte Text zeichengleich zu vorher.
+    // FEHLT sie trotz Formular-Ziel, gilt "de". Das ist KEIN Rueckfall im Sinne der
+    // Dauerregel "EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB": Der LESER liefert
+    // "unknown", und den faengt das Tor in publishProject bzw. der Export-Riegel, bevor ein
+    // so erzeugter Text irgendwo hingeht.
+    formTargetLanguage?: ConsentLanguage;
   }
 ): string {
   if (!html || !html.trim()) return "";
@@ -567,12 +627,25 @@ export function generateFunctional(
     // OHNE jedes Laufzeit-Mapping bekaeme sonst gar kein Script — der Basis-Code wuerde
     // nie geladen, lautlos. Ausserhalb von "export" ist customPixelCode immer "", der
     // Term also folgenlos; die zwei bestehenden Terme sind unangetastet.
+    // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): die Laufzeit entsteht NUR im Modus "export"
+    // (Setzung P13-30 — im Vorschau-Rahmen ohne allow-forms entsteht ohnehin kein submit,
+    // und ein Versand erzeugte echte Leads aus der Arbeit des Betreibers) und NUR, wenn
+    // die GEFILTERTE Tabelle ein Formular-Ziel traegt: ein verwaistes wird nicht verdrahtet.
+    // Mit einem Formular-Ziel ist table.length > 0, injectScripts darunter also wahr.
+    const formTargetLanguage: ConsentLanguage | null =
+      mode === "export" && table.some((m) => m.type === "formTarget")
+        ? (options?.formTargetLanguage ?? "de")
+        : null;
+
     const injectScripts =
       mode !== "export" || table.length > 0 || customPixelCode !== "";
     if (injectScripts) {
       // Datenblock (JSON), sicher kodiert: jedes "<" als Unicode-Escape maskiert
       // verhindert den "</script>"-Ausbruch und schuetzt zugleich URLs mit "<".
-      const json = JSON.stringify(table).replace(/</g, "\\u003c");
+      // SEIT SCHEIBE 13-1 UEBER embedInScript (Setzung P13-28 der Phase 13): derselbe
+      // Ausdruck, jetzt mit Namen — die Ausgabe ist zeichengleich, und die Adressen des
+      // Formular-Ziels gehen damit woertlich ueber den Helfer (Invariante I7).
+      const json = embedInScript(table);
       const dataScript = doc.createElement("script");
       dataScript.setAttribute("type", "application/json");
       dataScript.setAttribute("id", MAPPINGS_SCRIPT_ID);
@@ -586,7 +659,8 @@ export function generateFunctional(
         options?.capiProxyUrl ?? "",
         options?.consentTargets ?? [],
         customPixelCode,
-        customHasEventLine
+        customHasEventLine,
+        formTargetLanguage
       );
 
       // GETEILTES CONSENT-GATE (Phase 11, zweite Scheibe): der Block wird erzeugt,

@@ -43,6 +43,12 @@ import {
   slugForLabel,
 } from "@/lib/hosting/host";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
+import {
+  FORM_TARGET_INVALID_MESSAGE,
+  FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE,
+  formTargetProblem,
+  ownFormTargetDomains,
+} from "@/lib/form-target";
 // DIE QUELLE DES ZIEL-GATES IN setCapiToken (Scheibe 3). REINES lib-MODUL, damit diese
 // "use server"-Datei und die Karte DIESELBE Tabelle lesen; die Alternativen und der
 // Grund stehen in dessen Kopf. Ein Wert-Import, kein Typ: das Gate fragt zur LAUFZEIT.
@@ -1732,6 +1738,29 @@ export async function publishProject(
       trackCodeProblem(m.config.code) !== null
   );
   if (zeileKaputt) return { ok: false, error: TRACK_CODE_INVALID_MESSAGE };
+
+  // DAS TOR DES FORMULAR-ZIELS (Phase 13, Scheibe 13-1; Invariante I8, Setzungen P13-27
+  // und P13-29 der Phase 13). Derselbe Ort und dieselbe Bauform wie die Ereigniszeilen
+  // darueber: ueber BEIDE Varianten (alleMappings), vor dem Label-Schreiben — eine
+  // Ablehnung schreibt nichts.
+  // ZWEI ABBRUECHE, IN DIESER REIHENFOLGE: erst die WERTE (Zieladresse nur https und nicht
+  // auf einem eigenen Host, Danke-Seite absolut http(s), sonst "unbekannt"), dann die
+  // SPRACHE: Die Meldung des Formular-Ziels wird in der Projektsprache ausgeliefert, auch
+  // bei ausgeschaltetem Einwilligungs-Dialog — ein unbekannter Wert erreicht dann eine
+  // ausgelieferte Zeile, und die Dauerregel "EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT
+  // AB" verlangt den Abbruch. consentLanguage ist oben schon gelesen.
+  // WAS DER SERVER NICHT PRUEFT: die BERECHTIGUNG des Formulars (eigene Zieladresse,
+  // Datei-Feld, method="dialog", unbenannte Felder). Sie braucht DOM, und hier wird kein
+  // HTML geparst (Dauerregel "KEIN SERVER-SEITIGES HTML-PARSING"); der Riegel dafuer sitzt
+  // im Editor (handlePublish).
+  const formTargets = alleMappings.filter((m) => m.type === "formTarget");
+  if (formTargets.length > 0) {
+    const ownDomains = ownFormTargetDomains();
+    if (formTargets.some((m) => formTargetProblem(m.config, ownDomains) !== null))
+      return { ok: false, error: FORM_TARGET_INVALID_MESSAGE };
+    if (consentLanguage === "unknown")
+      return { ok: false, error: FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE };
+  }
 
   // ===== EIGENE BAUSTEINE AUS EINEM FRUEHEREN EXPORT: NICHTS DOPPELTES GEHT LIVE ====
   // (Phase 11.11, Scheibe 11.11d; bindende Entscheidungen P11.11-10 und P11.11-20)

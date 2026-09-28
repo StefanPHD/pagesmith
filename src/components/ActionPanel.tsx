@@ -6,11 +6,18 @@ import {
   displayTextFor,
   findMapping,
   isValidRedirectUrl,
+  type FormTargetConfig,
   type Mapping,
   type RedirectConfig,
   type TextConfig,
   type TrackConfig,
 } from "@/lib/mappings";
+import {
+  formTargetProblem,
+  ownFormTargetDomains,
+  type FormTargetBlock,
+  type FormTargetCheck,
+} from "@/lib/form-target";
 import { META_STANDARD_EVENTS, META_VALUE_EVENTS } from "@/lib/tracking/meta";
 
 // Sentinel im Event-Dropdown fuer "Custom…": schaltet auf ein freies Textfeld
@@ -42,6 +49,11 @@ type ActionPanelProps = {
   // Ein anderes Element auswaehlen (Link "Formular auswählen"). Derselbe Weg wie ein
   // Klick in die Elementliste — keine Aenderung an der Editor-Bruecke.
   onSelectElement: (elementId: string) => void;
+  // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): Zuweisen/Aendern, und das Urteil ueber das
+  // gewaehlte Formular (null, wenn kein <form> gewaehlt ist). Der Parent leitet es per
+  // formTargetCheck (lib/form-target.ts) aus DEMSELBEN Vorschau-HTML ab wie submitForm.
+  onSaveFormTarget: (config: FormTargetConfig) => void;
+  formTarget: FormTargetCheck | null;
 };
 
 /**
@@ -59,6 +71,8 @@ export default function ActionPanel({
   onRemove,
   submitForm,
   onSelectElement,
+  onSaveFormTarget,
+  formTarget,
 }: ActionPanelProps) {
   return (
     <aside className="flex w-80 shrink-0 flex-col rounded-lg border border-gray-300 bg-white">
@@ -84,6 +98,8 @@ export default function ActionPanel({
           onRemove={onRemove}
           submitForm={submitForm}
           onSelectElement={onSelectElement}
+          onSaveFormTarget={onSaveFormTarget}
+          formTarget={formTarget}
         />
       )}
     </aside>
@@ -113,6 +129,8 @@ function ElementActions({
   onRemove,
   submitForm,
   onSelectElement,
+  onSaveFormTarget,
+  formTarget,
 }: {
   element: DetectedElement;
   mappings: Mapping[];
@@ -122,6 +140,8 @@ function ElementActions({
   onRemove: (type: Mapping["type"]) => void;
   submitForm: { formId: string | null } | null;
   onSelectElement: (elementId: string) => void;
+  onSaveFormTarget: (config: FormTargetConfig) => void;
+  formTarget: FormTargetCheck | null;
 }) {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
@@ -158,6 +178,12 @@ function ElementActions({
             mapping={findMapping(mappings, element.id, "track")}
             onSave={onSaveTrack}
             onRemove={() => onRemove("track")}
+          />
+          <FormTargetActions
+            mapping={findMapping(mappings, element.id, "formTarget")}
+            check={formTarget}
+            onSave={onSaveFormTarget}
+            onRemove={() => onRemove("formTarget")}
           />
         </div>
       ) : submitForm !== null ? (
@@ -628,6 +654,232 @@ function InactiveTrack({
           Event entfernen
         </button>
       </div>
+    </div>
+  );
+}
+
+// FORMULAR-ZIEL (Phase 13, Scheibe 13-1): die Saetze im Panel.
+const FORM_TARGET_EXPLAIN =
+  "Beim Abschicken gehen die Felder direkt an deine Zieladresse (z. B. Make oder Zapier). Nur wenn die Adresse erreicht wurde, geht es weiter auf die Danke-Seite; sonst bleibt das Formular stehen und zeigt eine Meldung.";
+// Korrektur K2 des Bau-Auftrags / Setzung P13-31: ein Hinweis, KEIN Ausschluss.
+const FORM_TARGET_INLINE_NOTE =
+  "Das Formular hat ein eigenes Skript (onsubmit). Pagesmith übernimmt das Absenden. Prüfe nach dem Veröffentlichen, dass genau ein Eingang ankommt.";
+const FORM_TARGET_BLOCKED_INTRO = "Für dieses Formular ist kein Ziel möglich:";
+const FORM_TARGET_BLOCKED_MAPPING_NOTE =
+  "Dieses Ziel wirkt nicht mehr: Veröffentlichen und Export sind gesperrt, bis das behoben oder das Ziel entfernt ist.";
+
+function formTargetBlockText(block: FormTargetBlock): string {
+  switch (block.kind) {
+    case "foreign-action":
+      return "Das Formular hat schon eine eigene Zieladresse (action oder formaction).";
+    case "file-field":
+      return "Das Formular enthält ein Datei-Feld.";
+    case "dialog":
+      return 'Das Formular schließt einen Dialog (method="dialog").';
+    case "unnamed":
+      return `Diese Eingabefelder haben keinen Namen (name-Attribut), ihr Inhalt käme nicht an: ${block.fields.join(", ")}.`;
+  }
+}
+
+/**
+ * FORMULAR-ZIEL (Phase 13, Scheibe 13-1; Entscheidungen P13-16, P13-23, Setzung P13-31 der
+ * Phase 13). Im Formular-Zweig unter dem Track.
+ * - Ziel vorhanden: Anzeige + "Ziel bearbeiten"/"Ziel entfernen". Erfuellt das Formular
+ *   die Bedingungen nicht mehr, steht dabei, dass es nicht wirkt und was gesperrt ist.
+ * - kein Ziel, Formular nicht berechtigt: NUR die Gruende, keine Eingabe.
+ * - kein Ziel, berechtigt: Kachel -> Eingabe (Zieladresse UND Danke-Seite, beide Pflicht;
+ *   "Ziel übernehmen" gesperrt, solange formTargetProblem etwas meldet).
+ * Ein Inline-onsubmit ist ein HINWEIS, kein Ausschluss.
+ * DIE KNOEPFE TRAGEN "Ziel" IM NAMEN: Im selben Zweig steht der Track mit "Bearbeiten",
+ * "Entfernen", "Übernehmen" (Dauerregel "ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND
+ * VERSCHIEDENER WIRKUNG SIND EIN OBERFLÄCHEN-PROBLEM").
+ */
+function FormTargetActions({
+  mapping,
+  check,
+  onSave,
+  onRemove,
+}: {
+  mapping: Mapping | null;
+  check: FormTargetCheck | null;
+  onSave: (config: FormTargetConfig) => void;
+  onRemove: () => void;
+}) {
+  const targetMapping = mapping?.type === "formTarget" ? mapping : null;
+  const [isEditing, setIsEditing] = useState(false);
+  const [endpoint, setEndpoint] = useState(targetMapping?.config.endpoint ?? "");
+  const [thanksUrl, setThanksUrl] = useState(targetMapping?.config.thanksUrl ?? "");
+
+  const blocks = check?.blocks ?? [];
+  const problem = formTargetProblem(
+    { endpoint: endpoint.trim(), thanksUrl: thanksUrl.trim() },
+    ownFormTargetDomains()
+  );
+
+  function handleSubmit() {
+    if (problem !== null) return;
+    onSave({ endpoint: endpoint.trim(), thanksUrl: thanksUrl.trim() });
+    setIsEditing(false);
+  }
+
+  function handleCancel() {
+    setEndpoint(targetMapping?.config.endpoint ?? "");
+    setThanksUrl(targetMapping?.config.thanksUrl ?? "");
+    setIsEditing(false);
+  }
+
+  // Ohne Urteil (kein <form>) und ohne Ziel gibt es hier nichts zu zeigen.
+  if (!check && !targetMapping) return null;
+
+  const inlineNote = check?.inlineScript ? (
+    <p className="mt-1 text-xs text-amber-700">{FORM_TARGET_INLINE_NOTE}</p>
+  ) : null;
+
+  if (isEditing && blocks.length === 0) {
+    const endpointError = endpoint.trim() !== "" && problem === "endpoint";
+    const thanksError = thanksUrl.trim() !== "" && problem === "thanks";
+    return (
+      <div className="flex flex-col gap-3">
+        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+          📨 Formular-Ziel
+        </p>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium text-gray-700">Zieladresse</span>
+          <input
+            type="url"
+            inputMode="url"
+            value={endpoint}
+            onChange={(e) => setEndpoint(e.target.value)}
+            placeholder="https://hook.eu2.make.com/..."
+            className={`rounded-md border px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 ${
+              endpointError
+                ? "border-red-400 focus:border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            }`}
+          />
+          {endpointError && (
+            <span className="text-xs text-red-600">
+              Bitte eine https-Adresse eingeben, die nicht auf Pagesmith zeigt.
+            </span>
+          )}
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium text-gray-700">Danke-Seite</span>
+          <input
+            type="url"
+            inputMode="url"
+            value={thanksUrl}
+            onChange={(e) => setThanksUrl(e.target.value)}
+            placeholder="https://..."
+            className={`rounded-md border px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 ${
+              thanksError
+                ? "border-red-400 focus:border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            }`}
+          />
+          {thanksError && (
+            <span className="text-xs text-red-600">
+              Bitte eine vollständige Adresse (http:// oder https://) eingeben.
+            </span>
+          )}
+        </label>
+        {inlineNote}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={problem !== null}
+            className="flex-1 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Ziel übernehmen
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            Eingabe abbrechen
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (targetMapping) {
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-3">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">
+            📨 Formular-Ziel
+          </p>
+          <p className="break-all text-sm text-gray-800">
+            {targetMapping.config.endpoint}
+          </p>
+          <p className="mt-1 break-all text-xs text-gray-600">
+            Danke-Seite: {targetMapping.config.thanksUrl}
+          </p>
+          {blocks.length > 0 && (
+            <div className="mt-2 text-xs text-red-600">
+              <p>{FORM_TARGET_BLOCKED_MAPPING_NOTE}</p>
+              <ul className="mt-1 list-disc pl-4">
+                {blocks.map((b) => (
+                  <li key={b.kind}>{formTargetBlockText(b)}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {inlineNote}
+          <p className="mt-1 text-xs text-gray-500">{REPUBLISH_NOTE}</p>
+        </div>
+        <div className="flex gap-2">
+          {blocks.length === 0 && (
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              Ziel bearbeiten
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onRemove}
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
+          >
+            Ziel entfernen
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (blocks.length > 0) {
+    return (
+      <div className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-3">
+        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">
+          📨 Formular-Ziel
+        </p>
+        <p className="text-sm text-gray-700">{FORM_TARGET_BLOCKED_INTRO}</p>
+        <ul className="mt-1 list-disc pl-4 text-xs text-gray-600">
+          {blocks.map((b) => (
+            <li key={b.kind}>{formTargetBlockText(b)}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setIsEditing(true)}
+        className="flex w-full flex-col items-start gap-1 rounded-lg border border-gray-300 px-3 py-3 text-left hover:border-blue-400 hover:bg-blue-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      >
+        <span className="text-sm font-medium text-gray-800">📨 Formular-Ziel</span>
+        <span className="text-xs text-gray-500">{FORM_TARGET_EXPLAIN}</span>
+      </button>
+      {inlineNote}
     </div>
   );
 }

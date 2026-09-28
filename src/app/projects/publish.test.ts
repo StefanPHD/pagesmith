@@ -11,6 +11,10 @@ const { createAdminClient } = vi.hoisted(() => ({ createAdminClient: vi.fn() }))
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
 import { publishProject } from "./actions";
+import {
+  FORM_TARGET_INVALID_MESSAGE,
+  FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE,
+} from "@/lib/form-target";
 
 /**
  * Chainbarer Client-Mock. Unterstuetzt select().maybeSingle() (Ownership),
@@ -1809,5 +1813,85 @@ describe("publishProject — eigene Bausteine aus einem frueheren Export", () =>
     );
     expect(res.ok).toBe(true);
     expect(rec.updatePatch).not.toBeNull();
+  });
+});
+
+// ===========================================================================
+// F8 (I8): DAS TOR DES FORMULAR-ZIELS (Phase 13, Scheibe 13-1). Ein unbrauchbarer Wert
+// laesst das Veroeffentlichen laut abbrechen — ueber BEIDE Varianten, vor dem
+// Label-Schreiben (kein insert, kein update). Die Sprache bricht erst ab, wenn ein Ziel
+// besteht.
+// ===========================================================================
+describe("F8 — das Tor des Formular-Ziels in publishProject", () => {
+  const ENDPOINT = "https://hook.eu2.make.com/abc";
+  const THANKS = "https://danke.example/";
+  const ziel = (endpoint = ENDPOINT, thanksUrl = THANKS) => ({
+    elementId: "ps-f",
+    type: "formTarget" as const,
+    config: { endpoint, thanksUrl },
+  });
+  const own = () =>
+    makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {}, html_b: null }, error: null },
+    });
+
+  it("F8 (Positivkontrolle): ein taugliches Ziel wird veroeffentlicht", async () => {
+    const { rec } = own();
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", { ...snapshot, mappings: [ziel()] });
+    expect(res.ok).toBe(true);
+    expect(rec.updatePatch).not.toBeNull();
+  });
+
+  it.each([
+    ["Zieladresse http", ziel("http://hook.example/x")],
+    ["Zieladresse auf dem eigenen Serving-Host", ziel("https://kunde.lvh.me/x")],
+    ["Danke-Seite leer", ziel(ENDPOINT, "")],
+    ["Danke-Seite relativ", ziel(ENDPOINT, "/danke")],
+    ["unbekannte Form", { elementId: "ps-f", type: "formTarget" as const, config: { endpoint: 7 } }],
+  ])("F8: %s -> Abbruch mit Meldung, NICHTS geschrieben", async (_name, mapping) => {
+    // Rot ohne das Tor.
+    const { rec } = own();
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+      ...snapshot,
+      mappings: [mapping as never],
+    });
+    expect(res).toEqual({ ok: false, error: FORM_TARGET_INVALID_MESSAGE });
+    expect(rec.inserts).toHaveLength(0);
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("F8: ein ungueltiges Ziel NUR in Variante B bricht ebenfalls ab", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {}, html_b: "<h1>B</h1>" }, error: null },
+    });
+    const res = await publishProject(
+      "proj-1",
+      "<h1>LIVE</h1>",
+      { ...snapshot, mappings: [ziel()] },
+      { functionalHtml: "<h1>B</h1>", html: "<h1>B</h1>", mappings: [ziel(ENDPOINT, "/danke")] }
+    );
+    expect(res).toEqual({ ok: false, error: FORM_TARGET_INVALID_MESSAGE });
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("F8: unbekannte Sprache bricht ab, sobald ein Ziel besteht — ohne Ziel nicht (Positivkontrolle)", async () => {
+    const settings = { consent: { language: "xx" } } as never;
+    {
+      const { rec } = own();
+      const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+        ...snapshot,
+        mappings: [ziel()],
+        settings,
+      });
+      expect(res).toEqual({ ok: false, error: FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE });
+      expect(rec.updatePatch).toBeNull();
+    }
+    {
+      own();
+      const res = await publishProject("proj-1", "<h1>LIVE</h1>", { ...snapshot, settings });
+      expect(res.ok).toBe(true);
+    }
   });
 });

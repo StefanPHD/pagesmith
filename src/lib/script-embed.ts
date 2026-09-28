@@ -31,12 +31,17 @@
  * - Weder JSON.stringify noch der HTML-Serialisierer maskieren `<`. Beides gemessen, je
  *   mit Gegenprobe.
  *
- * DAS VORBILD IST generateFunctional IN lib/generate.ts. Dort steht seit jeher
+ * DAS VORBILD IST generateFunctional IN lib/generate.ts. Dort stand seit jeher
  * `JSON.stringify(table).replace(/</g, "\\u003c")` fuer den Mapping-Datenblock — bis zu
  * dieser Scheibe das EINZIGE Vorkommen der richtigen Bauform im ganzen Repo, ohne Namen
- * und ohne zweiten Aufrufer. Jene Stelle bleibt UNBERUEHRT: sie maskiert bereits richtig,
- * sie liegt in einer Kern-Datei, und ein Eingriff ohne Gewinn ist ein Risiko ohne
- * Gegenwert.
+ * und ohne zweiten Aufrufer. Jene Stelle blieb damals unberuehrt: sie maskierte bereits
+ * richtig, sie liegt in einer Kern-Datei, und ein Eingriff ohne Gewinn waere ein Risiko
+ * ohne Gegenwert gewesen.
+ * SEIT DER SCHEIBE 13-1 DER PHASE 13 RUFT SIE DIESE FUNKTION (Setzung P13-28): Der
+ * Datenblock traegt seitdem die Adressen des Formular-Ziels — Betreiber-Werte —, und die
+ * Invariante I7 jener Scheibe verlangt den Helfer beim Namen. Der Gewinn ist damit da; die
+ * Ausgabe ist per Definition zeichengleich, und die Byte-Waechter W1', W2', T1 und T9
+ * pinnen sie.
  *
  * DIE KONTEXT-GRENZE — DIE WICHTIGSTE ZEILE DIESES KOMMENTARS: DAS ESCAPE TRAEGT NUR IM
  * SCRIPT-ROHTEXT. In einem HTML-ATTRIBUT, in einem HTML-TEXTKNOTEN oder in einer URL ist

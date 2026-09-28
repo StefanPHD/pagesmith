@@ -186,6 +186,7 @@ import CodeImporter from "@/components/CodeImporter";
 // Die Fixture der 11.11d-Laeufe wird vom ECHTEN Erzeuger gebaut, nicht nachgebaut —
 // der Gegenstand jener Scheibe ist der WIEDER IMPORTIERTE EIGENE EXPORT.
 import { generateFunctional } from "@/lib/generate";
+import type { Mapping } from "@/lib/mappings";
 // Der ANBIETER-NAME aus derselben Konstante, die die Ansicht liest. Der Test
 // behauptet damit, dass der Name GERENDERT wird — nicht, wie er lautet.
 import { TARGET_CARDS } from "@/lib/tracking/target-cards";
@@ -6019,6 +6020,98 @@ describe("CodeImporter — die Fundliste buendelt (11.11e)", () => {
       .getByRole("button", { name: "Meta aus dem Code entfernen" })
       .closest("li") as HTMLElement;
     expect(knopfZeile.querySelector(".font-mono")).toBeNull();
+  });
+});
+
+describe("CodeImporter — Formular-Ziel (Phase 13, Scheibe 13-1)", () => {
+  // Kanonisches Dokument: ein Formular (ps-ffffff) mit benannten Feldern und
+  // Absende-Button (ps-bbbbbb); ausserhalb ein Button ohne Formular (ps-dddddd).
+  const DOC = (formAttrs = "", felder = '<input type="email" name="email">') =>
+    `<!DOCTYPE html><html><head></head><body><form data-pagesmith-id="ps-ffffff" action="#unten" ${formAttrs}>${felder}<button type="submit" data-pagesmith-id="ps-bbbbbb">Absenden</button></form><button data-pagesmith-id="ps-dddddd">Aussen</button></body></html>`;
+  const ENDPOINT = "https://hook.eu2.make.com/abc";
+
+  async function oeffneFormular(code: string, mappings?: Mapping[]) {
+    render(<CodeImporter initialCode={code} initialMappings={mappings} />);
+    fireEvent.click(await screen.findByText("Absenden"));
+    fireEvent.click(screen.getByRole("button", { name: "Formular auswählen" }));
+    await screen.findByText("Feuert beim Abschicken des Formulars ein Event.");
+  }
+
+  it("F15 (P13-16): ohne Danke-Seite ist das Ziel nicht uebernehmbar; mit beiden entsteht das Mapping", async () => {
+    // Rot, wenn "Ziel übernehmen" die Danke-Seite nicht verlangt.
+    await oeffneFormular(DOC());
+    fireEvent.click(screen.getByRole("button", { name: /Formular-Ziel/ }));
+    fireEvent.change(screen.getByLabelText("Zieladresse"), { target: { value: ENDPOINT } });
+    const knopf = screen.getByRole("button", { name: "Ziel übernehmen" }) as HTMLButtonElement;
+    expect(knopf.disabled).toBe(true);
+    // DAS FELD WIRD EINMAL GEHOLT: Sobald die Fehlermeldung im selben <label> steht, ist
+    // dessen Text nicht mehr genau "Danke-Seite", und ein zweites getByLabelText faende
+    // nichts.
+    const danke = screen.getByLabelText("Danke-Seite");
+    fireEvent.change(danke, { target: { value: "/danke" } });
+    expect(knopf.disabled).toBe(true);
+    expect(screen.getByText(/Bitte eine vollständige Adresse/)).toBeTruthy();
+    fireEvent.change(danke, { target: { value: "https://danke.example/" } });
+    expect(knopf.disabled).toBe(false);
+    fireEvent.click(knopf);
+    expect(await screen.findByTitle("Verknüpft: formTarget")).toBeTruthy();
+    expect(screen.getByText(ENDPOINT)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Ziel entfernen" })).toBeTruthy();
+  });
+
+  it("K1: ein unbenanntes Feld -> KEINE Eingabe, die Gruende nennen das Feld", async () => {
+    // Rot, wenn das Panel die Berechtigung nicht beachtet.
+    await oeffneFormular(DOC("", '<input type="email" name="email"><input type="text" id="vorname">'));
+    expect(screen.getByText("Für dieses Formular ist kein Ziel möglich:")).toBeTruthy();
+    expect(screen.getByText(/text #vorname/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Formular-Ziel/ })).toBeNull();
+    expect(screen.queryByLabelText("Zieladresse")).toBeNull();
+  });
+
+  it("K2: ein Inline-onsubmit ist ein Hinweis, die Eingabe bleibt angeboten", async () => {
+    await oeffneFormular(DOC('onsubmit="return false"'));
+    expect(screen.getByText(/Das Formular hat ein eigenes Skript \(onsubmit\)/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Formular-Ziel/ })).toBeTruthy();
+  });
+
+  it("F14: ein verwaistes Ziel heisst 'Formular-Ziel' und ist NUR auf ein Formular umhaengbar", async () => {
+    // Rot ohne den formTarget-Zweig in isRelinkTarget (dann stuenden die Buttons in der
+    // Auswahl) bzw. ohne eigenes Etikett (dann hiesse es "Weiterleitung").
+    render(
+      <CodeImporter
+        initialCode={DOC()}
+        initialMappings={[
+          { elementId: "ps-zzzzzz", type: "formTarget", config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/" } },
+        ]}
+      />
+    );
+    await screen.findByText(/Verwaiste Verknüpfungen/);
+    expect(screen.getByText("📨 Formular-Ziel")).toBeTruthy();
+    expect(screen.getByText(ENDPOINT)).toBeTruthy();
+    const auswahl = screen.getByLabelText("Verknüpfen mit Element") as HTMLSelectElement;
+    const werte = Array.from(auswahl.options).map((o) => o.value).filter(Boolean);
+    expect(werte).toEqual(["ps-ffffff"]);
+  });
+
+  it("Riegel: ein Ziel an einem Formular, das die Bedingungen nicht mehr erfuellt, sperrt den Export mit Meldung", async () => {
+    // Rot ohne den Export-Riegel.
+    const clipboard = vi.fn(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboard },
+      configurable: true,
+    });
+    render(
+      <CodeImporter
+        initialCode={DOC("", '<input type="email" name="email"><input type="text">')}
+        initialMappings={[
+          { elementId: "ps-ffffff", type: "formTarget", config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/" } },
+        ]}
+      />
+    );
+    await screen.findByText("Absenden");
+    fireEvent.click(screen.getByRole("button", { name: "In Zwischenablage kopieren" }));
+    expect(await screen.findByText(/^Export gesperrt: Ein Formular mit Ziel erfüllt die Bedingungen nicht mehr/)).toBeTruthy();
+    expect(clipboard).not.toHaveBeenCalled();
   });
 });
 

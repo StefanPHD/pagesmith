@@ -1292,3 +1292,19 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   `MSYS_NO_PATHCONV=1` 15 Dateien. Kein Fehler, keine Warnung: das Muster kommt verändert
   beim Werkzeug an. Abhilfe: `MSYS_NO_PATHCONV=1` bei jedem Aufruf mit einem solchen
   Argument. Entfällt, wenn die Arbeitsumgebung nicht mehr Git Bash unter Windows ist.
+
+- MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN — UND DAS GILT FÜR JEDE AUSLIEFERUNG VON
+  DATEI-BYTES, NICHT NUR FÜR MEDIEN
+  Datei-Bytes, die ein Betreiber mitbringt oder die seine Seite abruft — Medien, Uploads,
+  Downloads —, werden nie von dieser Anwendung auf Vercel ausgeliefert: nicht über die
+  Serve-Route, nicht über einen Route-Handler oder den Proxy, nicht als statische Datei des
+  Deployments. Wohin stattdessen, entscheidet der Zuschnitt, der sie braucht — nach einer
+  Anbieter-Lesung.
+  Zwei Gründe, beide nötig: Der Hobby-Tarif stoppt bei einer überschrittenen Grenze hart
+  statt zu berechnen, und zwar für ALLE Kundenseiten zugleich, weil alle Serving-Hosts
+  durch dieselbe Anwendung laufen. Und die Fair-Use-Seite des Anbieters führt "Media
+  hosting for hot-linking" unter "Never fair use".
+  Nicht erfasst: das HTML der Seite über die Serve-Route und die eigenen Build-Dateien der
+  Anwendung.
+  Entfällt, sobald der Hosting-Plan UND seine Fair-Use-Bedingungen Medien-Hosting
+  nachweislich zulassen — gelesen und datiert. Ein Wechsel auf Pro allein erfüllt das nicht.

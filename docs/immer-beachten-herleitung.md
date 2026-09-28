@@ -251,6 +251,7 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING — WER KNOTEN ...
 - JEDER FAN-OUT-ADAPTER SCHREIBT BEI EINER ANGENOMMENEN ANTWORT GENAU EINE ...
 - GIT BASH WANDELT EIN ARGUMENT, DAS MIT `@/` BEGINNT, STILL IN EINEN ...
+- MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN — UND DAS GILT FÜR ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -3262,3 +3263,58 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   PROVENIENZ: der Befund GEMESSEN (CC, 2026-09-23); die Erhebung zur Regel ist
   ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25 beim Phasenende 11.7. Herleitung: das Archiv der
   Phase 11.7, Hebungs-Kandidat P11.7-1.
+- MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN — UND DAS GILT FÜR JEDE AUSLIEFERUNG VON
+  DATEI-BYTES, NICHT NUR FÜR MEDIEN (Phase 12.5, gehoben 2026-09-28 aus Entscheidung
+  P12.5-5):
+  DER URSPRUNG: Entscheidung P12.5-5 der Phase 12.5, "MEDIENBYTES LAUFEN NIE ÜBER UNSERE
+  VERCEL-ROUTEN", dort ausdrücklich "BINDEND ÜBER DIE PHASE HINAUS" (OWNER-ENTSCHEIDUNG
+  2026-09-25). DIE ERHEBUNG ZUR DAUERREGEL UND DER GELTUNGSBEREICH — jede Auslieferung von
+  Datei-Bytes, Medien, Uploads und Downloads, nicht nur die Medien-Stufen — sind
+  ARCHITEKTEN-FESTLEGUNG F2 des Phasenendes 12.5 (2026-09-28).
+  DER ERSTE GRUND — DER HARTE STOPP, UND ER TRIFFT ALLE ZUGLEICH:
+  · CLAUDE.md, Tier 0 "KOSTEN-CIRCUIT-BREAKER": Vercel bleibt HOBBY, "der Schaden wäre ein
+    harter Stopp statt einer Rechnung".
+  · GELESEN 2026-09-02 (docs/plattform-befunde.md, Abschnitt "Vercel (Hosting · Ausspielung
+    · Deploy · zeitgesteuerte Auslöser)", Teil (d)): die Hobby-Grenzen, darunter "Fast Data
+    Transfer 100 GB" und "Function Invocations 1 Million"; die Folge einer Überschreitung,
+    wörtlich: "if you exceed your usage limits on the Hobby plan, you will have to wait
+    until 30 days have passed before you can use the feature again."
+  · ABLEITUNG, NICHT GEMESSEN: Alle Serving-Hosts laufen durch dieselbe Anwendung
+    (src/proxy.ts); eine überschrittene Grenze träfe damit jede Kundenseite gleichzeitig,
+    nicht nur die, deren Dateien sie verursacht haben.
+  DER ZWEITE GRUND — DIE FAIR-USE-SEITE: GELESEN 2026-09-02 an
+  `/docs/limits/fair-use-guidelines`, Doku-Stand 2026-07-29 (docs/plattform-befunde.md,
+  derselbe Abschnitt, Teil (g)): unter "Never fair use" wörtlich "Media hosting for
+  hot-linking", und "Circumventing or otherwise misusing Vercel's limits or usage guidelines
+  is a violation of our fair use guidelines."
+  WARUM ZWEI GRÜNDE UND NICHT EINER: Der erste hängt am Tarif, der zweite nicht erkennbar.
+  Mit einem Wechsel auf Pro ersetzte eine Rechnung den harten Stopp; ob die Zeile "Never
+  fair use" für Pro anders gilt, ist NICHT gelesen. Deshalb erfüllt ein Tarifwechsel allein
+  die Bedingung des Entfallens nicht.
+  DER ZUSTAND, AN DEM DIE REGEL HEUTE NICHTS ÄNDERT — GEMESSEN am Repo (CC, 2026-09-25,
+  Vermerk P12.5-8, Punkte (8) und (9), der Phase 12.5): Supabase Storage ist ungenutzt; der
+  einzige Upload-Pfad ist der HTML-Import im Browser (`validateUploadFile`,
+  src/lib/upload.ts); keine Route streamt Datei-Bytes; next.config.ts trägt
+  `images.unoptimized: true`. Die Regel bindet also künftige Arbeit, nicht bestehenden Code.
+  DIE GRENZE — WAS NICHT ERFASST IST, und warum: das HTML der Seite über die Serve-Route
+  (`GET`, src/app/app-serve/route.ts) — es IST das Produkt; und die eigenen Build-Dateien der
+  Anwendung. Eine NACHBARFRAGE, ausdrücklich nicht entschieden: ob die fünf SVGs der
+  Next-Vorlage in `public/` auch unter Kunden-Domains ausgeliefert werden
+  (docs/claude-history/backlog-polish.md, Vorrat P12.5-12).
+  WAS DIE REGEL NICHT SAGT: wohin die Bytes stattdessen gehen. Das entscheidet der Zuschnitt,
+  der sie braucht — für Uploads Stufe 2 der Roadmap-Zeile 13.5, und vor einem neuen Anbieter
+  gilt "EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE DOKUMENTATION ABSCHNITTSWEISE
+  GELESEN UND DIE BEFUNDE VERORTET SIND …".
+  ABGRENZUNG ZU "KEIN SERVER-SEITIGES HTML-PARSING": Jene verbietet ein Werkzeug auf dem
+  Server; diese verbietet einen Auslieferungsweg. Dass ein serverseitiges Bereinigen von SVG
+  mit jener kollidiert, steht als Befund an der Roadmap-Zeile 13.5 (Entscheidung P12.5-4) —
+  die zwei Regeln treffen sich dort, ohne einander zu ändern.
+  ABGRENZUNG ZU "DIE NEXT-KONVENTIONSDATEI IST src/proxy.ts UND LÄUFT IN DER NODE-RUNTIME":
+  Dass ihr Matcher Bilddateien ausschliesst, heisst nur, dass der Proxy für sie nicht läuft;
+  ausgeliefert würden sie trotzdem vom Deployment. Die Regel hier greift unabhängig davon.
+  DIE BEDINGUNG DES ENTFALLENS: Der Hosting-Plan UND seine Fair-Use-Bedingungen lassen
+  Medien-Hosting nachweislich zu — gelesen und datiert, an der Anbieter-Dokumentation, nicht
+  aus dem Gedächtnis (ARCHITEKTEN-FESTLEGUNG F2, 2026-09-28).
+  PROVENIENZ: die Entscheidung OWNER 2026-09-25; die Fundstellen GELESEN wie oben; die
+  Erhebung zur Regel, ihr Geltungsbereich und die Bedingung des Entfallens ARCHITEKT
+  2026-09-28; der Wortlaut CC, 2026-09-28. Herleitung: das Archiv der Phase 12.5.

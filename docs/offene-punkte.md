@@ -805,6 +805,19 @@ aufeinander; sie liegen alle hier und finden einander.
   KUNDENSEITEN" weiter unten. EINE Aufklärung, drei Antworten.
   Was still kaputtgeht: Ein Kunde, der nach dem Publish auf seiner Seite nachsieht, macht
   dieselbe Erfahrung — und schliesst, das Publish habe nicht gegriffen.
+  ERGÄNZT AM 2026-09-28 (Phasenende 12.5) — EIN ANLASS OHNE ÄNDERUNG DES BETREIBERS: Drei
+  Korrekturen der Phase 12.5 ändern den ausgelieferten Klick-Skript-Text (Bau-Commits
+  `5f1f4bf`, `0530c4b`, `aad4292`). Eine Seite, die vor ihnen veröffentlicht wurde, führt
+  bis zum erneuten Veröffentlichen das alte Verhalten aus: ein markiertes Kind verdeckt die
+  Aktion seines Elternelements, und der Track eines Formulars zählt jeden Klick in ein Feld,
+  das Abschicken aber nicht (beides GEMESSEN, OWNER, LIVE, 2026-09-25); ein Absende-Button
+  mit Weiterleitung verhindert das Abschicken (ABGELEITET, in jsdom nachgebildet).
+  Heruntergeladene Exporte bleiben unverändert. Welche Projekte seitdem neu veröffentlicht
+  sind, ist nicht erhoben. DER UNTERSCHIED ZUM ABLAUF OBEN: Der Betreiber hat nichts
+  geändert, und der Editor-Stand ist derselbe — ein Hinweis, der allein Editor gegen
+  Veröffentlicht vergleicht, sähe diesen Anlass nicht (ABLEITUNG, keine Entscheidung über den
+  Bau). Fundstellen: Vermerke P12.5-9, Punkt (4), P12.5-20, Punkt (6), P12.5-36, Punkt (6),
+  und P12.5-45, Punkt (7), der Phase 12.5. Trigger unverändert.
 - JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN (Trigger: der erste
   echte Kunden-Traffic. HEUTE IST NICHTS ZU TUN, und der Grund gehört in den Eintrag: Bis
   der Owner das Produkt selbst vollständig geprüft hat, sieht es kein Kunde; ein Ausfall

@@ -5209,6 +5209,20 @@ alternde Angabe, sondern als Kopie, die stärker wurde als ihr Original. **Wer d
 abarbeitet, hat die Formulierung damit schon.**
 PROVENIENZ: der Kommentar GELESEN am Repo, der Ursprungswert GEMESSEN (CC, 2026-09-17); die
 Fundstelle in der Phase-4-Historie GELESEN (CC, 2026-09-17).
+**ERGÄNZT 2026-09-28 (Phasenende 12.5; Entscheidung P12.5-16 der Phase 12.5, ARCHITEKT
+2026-09-25) — WER DIESEN POSTEN ABARBEITET, ÄNDERT DEN AUSGELIEFERTEN TEXT.** Die falsche
+Begründung steht in src/lib/generate.ts ZWEIMAL: im Kopfkommentar von `buildWiringScript`
+ausserhalb des Scripts und im Kommentar INNERHALB des ausgelieferten Scripts ("srcDoc-Basis
+(unsere Origin)"). Die innere Stelle zu ändern ändert den Text, den das Wiring-Script trägt;
+die vier Differenz-Nachweise des Klick-Skripts (W1' und W2' in
+src/lib/own-blocks-waechter.test.ts, T1 in src/lib/tracking/consent-setter.test.ts, T9 in
+src/lib/tracking/custom-pixel.test.ts) werden dann rot, und die Änderung braucht eine eigene
+Entscheidung und eine eigene benannte Einsetzung in allen vier (Entscheidung P12.5-14 der Phase
+12.5; Kopf von src/lib/own-blocks-waechter.test.ts). Nur die äussere Stelle zu ändern fiele
+unter docs/immer-beachten.md, "WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR
+FALLE". Deshalb ist der Posten in Scheibe 1 der Phase 12.5 NICHT mitgenommen worden. Wirkung
+erst nach erneutem Veröffentlichen (docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT
+NICHT MIT DEM DEPLOY"). Trigger unverändert.
 
 **(P11.12-4) FIREFOX UND WEBKIT SIND FÜR DEN KOMPATIBILITÄTS-RIEGEL UNGEMESSEN.** Alles, was
 über den Riegel gemessen ist — die Serialisierung der Attributwerte, das Verhalten im
@@ -6306,6 +6320,11 @@ Posten).
   GEMESSEN (OWNER, LIVE, 2026-09-28, Schritt L7 der Scheibe 2b der Phase 12.5, nach Bau-Commit
   `cbd096a`): Unter etwa 1100 px ragt beim Offline-Speichern der rote Fehlertext über den
   rechten Rand der Kopfzeile und wird abgeschnitten.
+  WAS DABEI VERLORENGEHT (OWNER-EINORDNUNG 2026-09-28): Abgeschnitten wird ausgerechnet der
+  beruhigende Teil der Meldung — `SAVE_THROW_MESSAGE` lautet "Speichern konnte nicht
+  abgeschlossen werden — deine Änderungen sind noch da. Bitte erneut versuchen." (GELESEN am
+  Repo, CC, 2026-09-28), und der Rand schneidet das Ende ab. Information geht verloren, keine
+  Funktion.
   FUNDSTELLE (GELESEN am Repo, CC, 2026-09-28): `<span className="truncate text-xs
   text-red-600" title={saveError}>` in der Speicher-Gruppe `flex flex-wrap items-center gap-3`
   der Kopfzeile der Mitte (`CodeImporter`, src/components/CodeImporter.tsx); der Text beim Wurf
@@ -6331,7 +6350,9 @@ Posten).
   Touch-Geräten also nicht erreichbar. RT15 sichert allein `flex-wrap`; die neue Klasse hätte
   ohne eigene Struktur-Zusicherung keinen Wächter.
   EINORDNUNG: kein Bedienelement unerreichbar ("Erneut versuchen" in der Probe treffbar; live
-  nicht übermittelt), kein Code verloren. TRIGGER: Zuschnitt des UI-Redesigns.
+  sichtbar in eigener Zeile, OWNER-Screenshot 2026-09-28, nicht geklickt), kein Code
+  verloren; verloren geht der beruhigende Teil der Meldung (oben). TRIGGER: Zuschnitt des
+  UI-Redesigns.
 
 - **Vorrat P12.5-67 — BEIM TIPPEN IM REITER "Code" LÄDT DER VORSCHAU-RAHMEN NACH JEDER PAUSE NEU**
   GEMESSEN (OWNER, LIVE, 2026-09-28, Live-Test der Scheibe 2b der Phase 12.5): Beim Tippen im
@@ -6372,3 +6393,32 @@ Posten).
   EINORDNUNG: Der Code bleibt im Feld (`code` ist vom Rahmen unabhängig), kein Bedienelement
   unerreichbar. TRIGGER: die nächste Runde, die src/components/CodeImporter.tsx ohnehin öffnet,
   oder das UI-Redesign.
+
+## Aus Phase 12.5 gehoben (2026-09-28) — ein Vorrats-Eintrag der Standdatei
+
+Gehoben beim Phasenende 12.5 aus dem Vorrat der Standdatei; die Nummer gehört zur Reihe
+`P12.5-n` der Phase 12.5 (ihr Archiv trägt den Wortlaut unter derselben Nummer). KEIN
+FIX-VORSCHLAG über das Benannte hinaus.
+
+- **Vorrat P12.5-28 — DIE BESTÄTIGUNG DES PIXELS KANN BEI EINER NAVIGATION VERLOREN GEHEN; DIE
+  VERLUSTRATE FIELE DANN ZU HOCH AUS**
+  DIE ABLEITUNG (CC, 2026-09-25, am Code): fbevents lädt erst im ersten Aufruf; `__psConfirm`
+  (`buildMetaRuntime`, src/lib/tracking/meta.ts) puffert die Bestätigung im Pixel-Zustand
+  "pending" in einer Variablen der Seite; ein Neuladen verwirft den Puffer. Der Beacon selbst
+  geht per `sendBeacon` (`buildCapiBeaconStatement`). Dieselbe Ableitung gilt für einen Klick
+  mit Weiterleitung.
+  FÜR DEN GEMESSENEN AUFBAU WIDERLEGT (OWNER, LIVE, 2026-09-25; Chrome, ohne Blocker,
+  Abschicken eines Formulars mit Neuladen, Link vorher nicht geklickt): 2 Requests "Contact"
+  vor dem Neuladen; die Kontroll-Abfrage in der Datenbank zeigt für jede event_id von
+  "Contact" eine Zeile `server` UND eine Zeile `browser`. Fundstelle: Vermerk P12.5-36, Punkt
+  (3), der Phase 12.5.
+  OFFEN: Warum die Ableitung in diesem Aufbau nicht zutrifft, ist NICHT untersucht. Ob sie in
+  einem anderen Aufbau (anderer Browser, Blocker, langsames Netz) zutrifft, ist UNGEMESSEN.
+  Träfe sie zu, zählte die Verlustrate ein angekommenes Ereignis still als Verlust.
+  WARUM HIER UND NICHT BEI DEN OFFENEN PUNKTEN (CC, Phasenende 12.5, 2026-09-28): Am einzigen
+  gemessenen Aufbau ist der Defekt widerlegt; dass etwas still kaputtgeht, ist damit nicht
+  belegt, sondern eine offene Messfrage.
+  TRIGGER (gesetzt beim Phasenende, CC, 2026-09-28; bis dahin war keiner gesetzt): die nächste
+  Arbeit an `__psConfirm` bzw. `buildMetaRuntime`, ODER eine Live-Messung in einem anderen
+  Aufbau, ODER eine angezeigte Verlustrate, die bei Formularen mit Neuladen auffällig hoch
+  ist.

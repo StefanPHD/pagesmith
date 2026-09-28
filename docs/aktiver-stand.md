@@ -28,6 +28,7 @@ P12.5-1, Vermerk P12.5-8 …) — dieselbe Form wie in der Phase 11.9.
 - Scheibe 2b — Erstes Einfügen und verdeckte Kopfzeile
 - Register der Phase 12.5
 - Nächster Schritt der Phase 12.5
+- Vollzogen — was hier stand und wohin es gegangen ist
 
 ## Owner-Entscheidungen zur Phase 12.5 vom 2026-09-25
 
@@ -1548,8 +1549,10 @@ erreichbar"); Doku-Commit der Scheibe `d31f3cc` (Zuschnitt).
       Preis aus Entscheidung P12.5-60 (fehlt der `inputType`, kein Sprung, der Code kommt an).
     · L6: übermittelt sind 1100, 1280 und 1440 px; die Anleitung nannte 1108 px sowie 1024 und
       980 px, diese sind nicht übermittelt.
-    · L7: übermittelt ist allein der Fehlertext; ob "Erneut versuchen" live treffbar war, ist
-      nicht übermittelt. In der Probe zu Befund A ist der Knopf treffbar (Vorrat P12.5-66).
+    · L7: Ein Screenshot des Owners (OWNER, LIVE, 2026-09-28) zeigt "Erneut versuchen"
+      sichtbar in eigener Zeile. Geklickt ist er nicht — live belegt ist die Sichtbarkeit,
+      nicht die Treffbarkeit. In der Probe zu Befund A ist der Knopf treffbar (Vorrat
+      P12.5-66).
     · Kein Neu-Veröffentlichen nötig: der ausgelieferte Text ist unverändert (`generate.ts`
       nicht im Bau-Commit).
 (8) VERDICHTUNG DES ZUSCHNITTS (CC, 2026-09-28) — GESTRICHEN, weil mit der Scheibe abgelaufen,
@@ -1634,3 +1637,105 @@ P12.5-47). Danach, in dieser Reihenfolge (ARCHITEKT, Abschluss-Auftrag der Schei
 (2) Phase 13, erste Aufklärung; ihre erste Scheibe ist die Danke-Seite nach dem Absenden
     (Vorrat P12.5-29).
 Diese Datei entwirft keinen der zwei Schritte.
+
+## Vollzogen — was hier stand und wohin es gegangen ist
+
+**DIE HEBUNG DES PHASENENDES 12.5, 2026-09-28.** Anlass: Phasenende mit Neuzuschnitt
+(Entscheidung P12.5-47); Archivname, Nummer der Medien-Zeile (13.5) und Titel der Zeile 12.5:
+OWNER-ENTSCHEIDUNGEN 2026-09-28; die Zuordnung folgt den ARCHITEKTEN-FESTLEGUNGEN F1 bis F5
+desselben Tages. Dieser Abschnitt ist das REGISTER; an den Einträgen oben steht kein
+Einzelzeiger. Titel-Zitate ohne Überschriften-Marke. Die vierzehn Vermerke (P12.5-8, -9, -13,
+-18, -20, -22, -31, -36, -38, -45, -48, -55, -59, -65) werden nicht zugeordnet; sie bleiben im
+Archiv. Aus Vermerk P12.5-8 ist Punkt (13) als Auflage an die Roadmap-Zeile 13.5 gegangen (F3),
+der Vermerk selbst ist dort als Befundlage des Zuschnitts genannt.
+
+**DIE ZIELE UND IHRE FUNDSTELLEN:**
+- **RM13.5** — docs/roadmap.md, Zeile "Phase 13.5 — Medien" (neu), Stub in CLAUDE.md im selben
+  Zug (F1).
+- **RM13** — docs/roadmap.md, Zeile "Phase 13 — E-Mail-/ESP-Webhooks".
+- **DR** — Dauerregel: docs/immer-beachten.md (Kern, hinten) und
+  docs/immer-beachten-herleitung.md (Volltext hinten, Verzeichnis-Zeile), Titel "MEDIENBYTES
+  LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN — UND DAS GILT FÜR JEDE AUSLIEFERUNG VON DATEI-BYTES,
+  NICHT NUR FÜR MEDIEN" (F2).
+- **BL** — docs/claude-history/backlog-polish.md: der neue Abschnitt "Aus Phase 12.5 gehoben
+  (2026-09-28) — ein Vorrats-Eintrag der Standdatei" am Dateiende, bzw. eine datierte Ergänzung
+  an einem bestehenden Posten, bzw. ein Posten, der schon vor dem Phasenende dort stand.
+- **ERL** — gestrichen mit Beleg; der Eintrag steht oben unverändert, der Beleg hier.
+- **ARCH** — NICHT GEHOBEN, bleibt im Archiv (F4); Sammelvermerk unten.
+
+**JE EINTRAG — NUMMER MIT GATTUNG → ZIEL, FUNDSTELLE BZW. BELEG:**
+- Entscheidung P12.5-1 → RM13.5, Satz "REIHENFOLGE DES BAUS" (der erste Bauplan als
+  überholt benannt).
+- Entscheidung P12.5-2 → RM13.5, Satz "VORBEDINGUNGEN ERFÜLLT".
+- Entscheidung P12.5-3 → RM13.5, Satz "DREI STUFEN".
+- Entscheidung P12.5-4 → RM13.5, Satz "GRENZEN, ALS BEFUND".
+- Entscheidung P12.5-5 → DR; an der Zeile 13.5 ein Zeiger ("MEDIENBYTES — SEIT DEM 2026-09-28
+  EINE DAUERREGEL").
+- Entscheidung P12.5-6 → RM13.5, Satz "WARUM VOR RICH-TEXT".
+- Entscheidung P12.5-7 → ERL. Beleg: das Editor-Gerüst ist gebaut und live bestanden —
+  Bau-Commits `f83ae5b` (Scheibe 2, Vermerk P12.5-55) und `cbd096a` (Scheibe 2b, Vermerk
+  P12.5-65); rechte Spalte und globale Einstellungen lagen schon vorher so (Vermerk P12.5-55,
+  Punkt (7)).
+- Entscheidungen P12.5-14, -15, -19, -21, -23, -24, -25, -32 → ARCH.
+- Entscheidung P12.5-16 → BL, Ergänzung vom 2026-09-28 am Posten "(P11.12-2) DER
+  KOPFKOMMENTAR VON `src/lib/generate.ts` BEGRÜNDET DAS PREVIEW-CONTAINMENT FALSCH." — dort
+  handelt, wen sie bindet.
+- Entscheidungen P12.5-37, -39, -40, -41, -42, -43, -44 → ARCH.
+- Entscheidung P12.5-47 → RM13, angekommen mit Commit `69df9f0` (Satz "NACHGETRAGEN
+  2026-09-26 — VORGEZOGEN VOR DIE MEDIEN"); die Reihenfolge steht zusätzlich an der Zeile
+  13.5.
+- Entscheidungen P12.5-49, -50, -51, -52, -53, -54, -60, -61 → ARCH.
+- Entscheidung P12.5-62 → ERL. Beleg: ihr Gegenstand war der Ort der Fokus-Rückgabe; Vorrat
+  P12.5-64 steht im Backlog-Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-28) — Scheibe 2b,
+  zwei Posten fürs Redesign", mit Trigger.
+- Entscheidung P12.5-63 → ERL. Beleg: ihr Gegenstand war der Ort des Owner-Wunsches; Vorrat
+  P12.5-56 steht im selben Backlog-Abschnitt, Trigger "Zuschnitt des UI-Redesigns".
+- Vorrat P12.5-17 → ERL. Beleg: gemessen (OWNER, LIVE, 2026-09-25), überführt in Scheibe 1b,
+  gebaut in Bau-Commit `0530c4b`, live bestanden (Vermerk P12.5-36).
+- Vorrat P12.5-28 → BL, neuer Abschnitt "Aus Phase 12.5 gehoben (2026-09-28) — ein
+  Vorrats-Eintrag der Standdatei", mit Trigger (bis dahin war keiner gesetzt).
+- Vorrat P12.5-29 → RM13, Satz "NACHGETRAGEN 2026-09-28 (Phasenende 12.5; Vorrat P12.5-29 der
+  Phase 12.5, hierher gehoben)". F5 GEPRÜFT: Der Nachtrag vom 2026-09-26 an der Zeile 13
+  trug die Danke-Seite als erste Scheibe samt Grund und Verwerfung, aber NICHT die Kollision
+  mit (I4) der Scheibe 1b und NICHT den Owner-Einwand — er trug also nicht allein; beides
+  steht jetzt dort.
+- Vorrat P12.5-56 → BL, seit dem 2026-09-28 im Abschnitt "Aus Phase 12.5 vorgemerkt
+  (2026-09-28) — Scheibe 2b, zwei Posten fürs Redesign" (Entscheidung P12.5-63).
+
+**DIE BILANZ: 38 = RM13.5 5 · RM13 2 · DR 1 · BL 3 · ERL 4 · ARCH 23.** Keine Zuordnung nach
+docs/offene-punkte.md: kein Eintrag erfüllt BEIDE Bedingungen (Trigger UND "geht sonst still
+kaputt"); Vorrat P12.5-28 ist am einzigen gemessenen Aufbau widerlegt (Grund am Backlog-Posten).
+
+**SAMMELVERMERK — NICHT GEHOBEN (F4, ARCHITEKT 2026-09-28): die 23 Entscheidungen der Klasse
+ARCH und die Invarianten der Scheiben** — Scheibe 1 (I1) bis (I3), Scheibe 1b (I2) bis (I4),
+Scheibe 1c (I2) bis (I4), Scheibe 2 (I2) und (I3), Scheibe 2b (I6) und (I7). GRUND: Sie
+beschreiben, WIE der Code dieser Phase gebaut ist — die Differenz-Nachweise des Klick-Skripts
+(P12.5-14, -19, -32), der FORM-Halt und der Formular-Track (P12.5-15, -21, -23, -24, -25), die
+Absende-Buttons (P12.5-37, -39 bis -44), die Ablösung des Satzes aus Phase 4.5 und die Reiter
+der linken Spalte (P12.5-49 bis -54), das erste Einfügen und die Kopfzeile (P12.5-60, -61).
+Sie gelten, solange der Code steht; gestrichen zu nennen wären sie falsch. Am Ort der Handlung
+stehen sie als Kommentare (`buildWiringScript` und `submitFormOf` in src/lib/generate.ts,
+`ActionPanel` in src/components/ActionPanel.tsx, `CodeImporter` in
+src/components/CodeImporter.tsx) und als Wächter in den genannten Tests; auffindbar ist das
+Archiv über seinen Eintrag unter "## Detail-Archiv" in CLAUDE.md.
+
+**DIE REGISTER-EINTRÄGE — ANKUNFT GEPRÜFT, ZEIGER BEIM UMZUG NACHGEZOGEN:** die zwölf
+Backlog-Posten P12.5-10, -11, -12, -30, -35, -46, -56, -57, -58, -64, -66, -67 in ihren sieben
+Abschnitten "Aus Phase 12.5 vorgemerkt …"; die sieben offenen Punkte aus dem Register oben (an
+der Zeile 13.5 wiederholt, soweit die Medien sie auslösen); die Backlog-Posten "ELEMENTLISTE:
+VERSCHACHTELTE ELEMENTE ERSCHEINEN ALS DOPPEL-EINTRAG." und "(P11.12-2) …"; der überführte
+Posten "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL, OHNE DASS DER CODE LANDET" (ERLEDIGT am
+Posten vermerkt). Die Kopfsätze der sieben Backlog-Abschnitte zeigen bis zur Archivierung auf
+docs/aktiver-stand.md; nachgezogen werden sie im Commit, der den Pfad frei macht.
+
+**SACHKORREKTUREN IM SELBEN COMMIT (Auftrag des Phasenendes, OWNER-ANGABEN 2026-09-28):**
+(a) Vermerk P12.5-65, Punkt (7), Zeile L7: ersetzt — "Erneut versuchen" ist live sichtbar in
+eigener Zeile (Screenshot), nicht geklickt; dieselbe Angabe an der Einordnung des
+Backlog-Postens P12.5-66. (b) Vorrat P12.5-66 (steht allein im Backlog): ergänzt, dass
+ausgerechnet der beruhigende Teil der Meldung abgeschnitten wird — Information geht verloren,
+keine Funktion.
+
+**AUSSERHALB DER BILANZ, IM SELBEN COMMIT:** docs/offene-punkte.md, Posten "NICHTS ZEIGT AN,
+DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST" — datierte Ergänzung: die drei Korrekturen
+dieser Phase am Klick-Skript sind ein Anlass ohne Änderung des Betreibers. Titel und Trigger
+unverändert, der Stub in CLAUDE.md bleibt.

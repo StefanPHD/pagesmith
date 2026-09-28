@@ -2472,6 +2472,109 @@ liegen beide hier und finden einander.
       Weiterleitung allein vorab, nur für Formulare ohne Ziel — mit Danke-Seite wirkte ein
       Formular funktionsfähig, während die Leads nirgends gespeichert werden. Wortlaut:
       Entscheidung P12.5-47 der Phase 12.5. Der Zuschnitt beginnt mit einer ersten Aufklärung.
+      NACHGETRAGEN 2026-09-28 (Phasenende 12.5; Vorrat P12.5-29 der Phase 12.5, hierher
+      gehoben) — WAS DIE ERSTE SCHEIBE VORFINDET:
+      · Ein `<form>` führt KEINE Weiterleitung aus, weder beim Klick noch beim Abschicken; das
+        `ActionPanel` bietet dort keinen Redirect-Slot an, eine bestehende Weiterleitung steht
+        als "wirkt nicht mehr" und ist entfernbar (Entscheidung P12.5-23, ARCHITEKT
+        2026-09-25). Ein Absende-Button trägt keine eigenen Aktionen (Entscheidung P12.5-37,
+        OWNER 2026-09-25). Der Track eines `<form>` zählt beim Abschicken (Entscheidung
+        P12.5-21, ARCHITEKT 2026-09-25).
+      · DIE KOLLISION, DIE DER ZUSCHNITT LÖSEN MUSS: Eine Weiterleitung NACH dem Abschicken
+        verlangt ein `preventDefault` und eine eigene Navigation (Vorrat P12.5-29, CC
+        2026-09-25). Das bricht die Invariante (I4) der Scheibe 1b, wörtlich "Die
+        Formular-Aktion des Betreibers (Ziel, Methode, Absenden) wird durch einen Track nicht
+        verändert — kein preventDefault für einen Track." (Wächter S1 in
+        src/lib/generate.test.ts). Dass sie ebenso (I4) der Scheibe 1c bricht — "Das native
+        Abschicken des Betreibers bleibt unberührt; kein preventDefault von uns." (Wächter U1)
+        —, ist eine ABLEITUNG (CC, 2026-09-28). Ob der Zuschnitt die Invarianten ändert oder
+        einen Weg ohne `preventDefault` findet, entscheidet er selbst, nicht diese Zeile.
+      · OWNER-EINWAND (OWNER-AUSSAGE 2026-09-26): Nutzer wollen die Danke-Seite im Tool
+        eintragen, nicht im Formular-Code.
+      Wortlaut von Vorrat, Entscheidungen und Invarianten: das Archiv der Phase 12.5.
+- [ ] Phase 13.5 — Medien: Bilder, SVG, Video und Hintergrundbilder im importierten
+      Kunden-HTML erkennen und ändern. ANGELEGT am 2026-09-28 beim Phasenende 12.5; Nummer
+      und Reihenfolge OWNER-ENTSCHEIDUNG 2026-09-28. Die Medien waren bis dahin der
+      Gegenstand der Zeile 12.5; die Entscheidungen P12.5-1 bis P12.5-6 ziehen hierher
+      (Entscheidung P12.5-47, OWNER 2026-09-26; ARCHITEKTEN-FESTLEGUNG F1 2026-09-28). Ihr
+      Wortlaut bleibt im Archiv der Phase 12.5 als Zeitdokument.
+      REIHENFOLGE DES BAUS: Phase 13 -> diese Phase -> Rich-Text (Phase 12) (OWNER-ENTSCHEIDUNG
+      2026-09-28). Der erste Bauplan "Schatten-Korrektur -> Medien Stufe 1 -> Rich-Text"
+      (Entscheidung P12.5-1, OWNER 2026-09-25) ist damit überholt. Die Reihenfolge der Zeilen
+      ist eine Ablage, kein Bauplan (Eintrag 11.10, Punkt (d)).
+      VORBEDINGUNGEN ERFÜLLT: Die Schatten-Korrektur war Vorbedingung dieser Phase und der
+      Phase 12 (Entscheidung P12.5-2, OWNER 2026-09-25); sie ist gebaut (Bau-Commit
+      `5f1f4bf`, live bestanden 2026-09-25, Vermerk P12.5-20). Das Editor-Gerüst sollte vor der
+      ersten Medien-Oberfläche stehen (Entscheidung P12.5-7, OWNER 2026-09-25); es ist gebaut
+      (Bau-Commits `f83ae5b` und `cbd096a`, live bestanden 2026-09-26 bzw. 2026-09-28, Vermerke
+      P12.5-55 und P12.5-65) — die linke Spalte in Reitern, die rechte Spalte strikt
+      kontextuell zum gewählten Element.
+      DREI STUFEN (Entscheidung P12.5-3, OWNER 2026-09-25): (1) ohne neue Infrastruktur —
+      Erkennung von img, picture, inline-svg, video, background-image; Änderung NUR
+      VORHANDENER Medien-Elemente (src, alt, poster, Video-Schalter); Warnung bei stark
+      abweichendem Seitenverhältnis statt Zwang; Hinweis auf kaputte relative Pfade · (2)
+      Uploads — Speicher, Umwandlung, Ursprungs-Isolation, Missbrauch, Löschregel; davor eine
+      Anbieter-Lesung (Supabase Storage oder ein neuer Anbieter) · (3) Asset-Bibliothek,
+      SVG-Farben einbrennen, ZIP-Export, neu eingefügte Einbettungen (die Einwilligung wird
+      dann UNSERE Frage).
+      GRENZEN, ALS BEFUND (Entscheidung P12.5-4, OWNER 2026-09-25): serverseitiges
+      SVG-Bereinigen per DOMPurify kollidiert mit docs/immer-beachten.md, "KEIN SERVER-SEITIGES
+      HTML-PARSING" — die Gefahr liegt im URSPRUNG des Speichers, nicht in der Seite · ein
+      neuer Speicher-Anbieter nur nach einer Lesung (docs/immer-beachten.md, "EIN NEUER
+      ANBIETER WIRD ERST ANGEBUNDEN …") · Uploads sind eine neue Missbrauchsklasse: der
+      Kill-Switch sperrt heute keine Dateien — er wirkt in der Serve-Route und im Ingest
+      (`resolvePublished`, src/lib/hosting/resolve.ts), eine Datei-Route gibt es nicht; ein
+      gelöschtes Asset bricht ausgelieferte Seiten still (ABLEITUNG aus docs/immer-beachten.md,
+      "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY") · YouTube- und
+      Vimeo-Einbettungen berühren die Einwilligung · KI-Markierungen gehören zu Phase 18 und
+      werden nicht vorgebaut.
+      MEDIENBYTES — SEIT DEM 2026-09-28 EINE DAUERREGEL: docs/immer-beachten.md, "MEDIENBYTES
+      LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN — UND DAS GILT FÜR JEDE AUSLIEFERUNG VON
+      DATEI-BYTES, NICHT NUR FÜR MEDIEN" (Entscheidung P12.5-5, OWNER 2026-09-25; zur
+      Dauerregel erhoben ARCHITEKTEN-FESTLEGUNG F2 2026-09-28). Gründe und Fundstellen stehen
+      dort und werden hier nicht verdoppelt.
+      WARUM VOR RICH-TEXT (Entscheidung P12.5-6, OWNER 2026-09-25): "Rich-Text zuerst" ist
+      verworfen. Rich-Text verlangt die schwerere Senken-Entscheidung — die Engine schreibt über
+      `textContent` (`generateFunctional`, src/lib/generate.ts) — und profitiert von einem
+      Modell, das den zweiten Änderungstyp schon kennt. Dieselbe Aussage steht an der Zeile 12.
+      AUFLAGE — EINE TAILWIND-KLASSE IM TEXT EINER DATEI BRICHT DEN BUILD
+      (ARCHITEKTEN-FESTLEGUNG F3, 2026-09-28; der Befund GEMESSEN, CC, 2026-09-25, Vermerk
+      P12.5-8, Punkt (13)): Stand die Tailwind-Schreibweise eines Hintergrundbilds — "bg-"
+      gefolgt von einer URL mit Platzhalter in eckigen Klammern — als Literal in einer Datei
+      unter docs/, scheiterte `next build` mit "Module not found: Can't resolve '...'" in
+      src/app/globals.css: Tailwind hatte die Zeichenkette als Klasse erzeugt, Turbopack wollte
+      den Platzhalter als Datei auflösen. tsc, lint und vitest blieben grün. FOLGE: Kein Text
+      dieser Phase — Doku, Kommentar, Test — schreibt eine solche Klasse als Literal in eine
+      Datei, die Tailwind scannt; welche Dateien das sind, ist NICHT erhoben (docs/
+      nachweislich). Braucht ein Test die Klasse als Eingabe, setzt er sie zur Laufzeit
+      zusammen (ABLEITUNG, CC, 2026-09-28, nicht gemessen). Ob eine Klasse mit vollständiger
+      Adresse statt Platzhalter ebenso bricht, ist ungemessen. Allein `next build` fängt es.
+      WAS DER ZUSCHNITT VORFINDET: Die erste Aufklärung steht als Vermerk P12.5-8 im Archiv der
+      Phase 12.5 — Erkennung, Ablage und Wirkung eines Änderungstyps, der Export-Filter als
+      Negativ-Ausschluss, Medien im Bestand, relative Pfade, Supabase Storage ungenutzt, der
+      Serve-Pfad nur HTML, die eigenen Markierungen, die Einwilligung und die vier Kandidaten
+      K1 bis K4 für einen zweiten Änderungstyp (KEINE WAHL). GEMESSEN am Repo, CC, 2026-09-25,
+      HEAD `c172e17`; Klick-Skript und Editor haben sich seither geändert — vor dem Zuschnitt
+      am Code nachmessen. Ein neuer Mapping-Typ (K1) trifft auf die Invarianten (I3) der
+      Scheiben 1, 1b und 1c (Form des Datenblocks, veröffentlichte Datenblöcke bleiben gültig)
+      und, sobald er das Klick-Skript ändert, auf die vier Differenz-Nachweise (Entscheidung
+      P12.5-14) — beides im Archiv der Phase 12.5.
+      OFFENE PUNKTE, DEREN TRIGGER DIESE PHASE AUSLÖSEN KANN (aus dem Register der Phase 12.5;
+      Titel wörtlich, Volltext in docs/offene-punkte.md): "`settingsEqual` IST EINE ALLOWLIST
+      …" — bei einer Ablage im Einstellungs-Blob (K3) · "DIE GRANT-VORGABE DER PLATTFORM KIPPT
+      AM 30.10.2026" — bei einer neuen Tabelle in public (K4, Stufe 2) · "DIE IDOR-WÄCHTER SIND
+      NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY DEFAULT …" — bei einer neuen
+      Server-Action (Stufe 2) · "DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER
+      PROJEKTREGEL AB" — bei einer neuen DB-Funktion oder RPC (Stufe 2) · "DIE MIDDLEWARE
+      LEITET API-ROUTEN AUF EINE HTML-SEITE UM" — bei einem programmatischen Aufrufer einer
+      neuen API-Route (Stufe 2) · "COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG
+      FEHLT NOCH" — falls eingefügte Einbettungen Cookies setzen (Stufe 3) · "NICHTS ZEIGT AN,
+      DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST" — jede Änderung am ausgelieferten Text
+      wirkt erst nach erneutem Veröffentlichen. Als Nachbarfrage der Dauerregel dazu der
+      Backlog-Vorrat P12.5-12 (`public/*.svg` der Next-Vorlage auf Kunden-Domains).
+      PROVENIENZ: je Satz wie angegeben. Die Entscheidungen P12.5-1 bis P12.5-6 sind hier
+      verdichtet übernommen, nicht zeichengleich; ihr Wortlaut mit Fundstellen steht im Archiv
+      der Phase 12.5.
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in

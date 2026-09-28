@@ -962,3 +962,220 @@ Formularen ((e)) steht daneben.
 DER UMWEG ÜBER MAKE TRÄGT NACH DER DOKU ((h)): Make führt Module zum Anlegen und Aktualisieren
 von Kontakten; der Schlüssel bleibt in Make. Eine eigene Bestätigung durch Brevo greift auf
 diesem Weg nicht von selbst ((i)).
+
+## systeme.io
+
+### Anbieter-Lesung vom 2026-09-28 (CC, Phase 13, Arbeit P13-64)
+
+**INSTRUMENT:** Playwright-MCP; Text je Seite über `textContent` des `article`-Elements nach
+Entfernen von `script`, `style`, `noscript`, `svg`, `template`. Das Verzeichnis der Hilfe
+(fünf Kategorien, 213 Artikel-Einträge) ist über `fetch` der Kategorieseiten erhoben.
+WERKZEUG-BEFUND, OFFEN GEFÜHRT: Derselbe `fetch`-Weg lieferte für sieben von zwölf
+ARTIKELN nur die Sprachleiste, ohne Artikeltext — eine vom Werkzeug erzeugte Abwesenheit
+(Dauerregel "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND"). Jeder
+Artikel, bei dem der Abruf leer blieb, ist deshalb per Navigation gelesen; bei JEDEM
+gelesenen Artikel gilt als Positivkontrolle, dass der Titel der Seite im gelesenen Text
+steht. Die Seiten tragen ein "Last updated on …", hier je Seite.
+Ablage des Werkzeugs unter `.playwright-mcp/`.
+**KEINE ANGABE DIESER LESUNG IST GEMESSEN.** Keine Eingabe (auch nicht in das Werkzeug unter
+(a)), keine Anmeldung, kein Download, kein Aufruf eines Formular-Endpunkts.
+
+**GELESENER UMFANG — VOLL** (Lesedatum je Seite 2026-09-28):
+- https://help.systeme.io/article/266-how-to-create-and-integrate-a-form-or-a-popup-on-your-external-site
+  — "How to embed a systeme.io form or popup on an external website" (Last updated on May 18,
+  2026)
+- https://systeme.io/free-tools/html-form-connector — "Connect a Custom HTML Form to
+  systeme.io | Free Tool" (ohne Datum; eine Werkzeug-Seite des Anbieters, kein Hilfe-Artikel)
+- https://help.systeme.io/article/3990-how-can-i-prevent-list-bombing — "How can I prevent
+  list bombing?" (Last updated on March 26, 2026)
+- https://help.systeme.io/article/10921-secure-your-registration-forms-with-recaptcha —
+  "Secure your registration forms with reCAPTCHA" (Last updated on May 15, 2026)
+- https://help.systeme.io/article/271-how-to-set-up-double-opt-in — "How to set up double
+  opt-in" (Last updated on April 13, 2026)
+- https://help.systeme.io/article/280-how-to-send-an-automatic-email-when-a-lead-subscribes —
+  "How to automatically send an email when a lead subscribes" (Last updated on April 27, 2026)
+- https://help.systeme.io/article/140-automation-rules — "How automation rules work" (Last
+  updated on May 15, 2026)
+- https://help.systeme.io/article/2292-how-to-receive-an-email-notification-after-a-new-subscription-on-your-page
+  — "How to receive email notifications for new leads in systeme.io" (Last updated on April 9,
+  2026)
+- https://help.systeme.io/article/2930-how-to-use-systeme-ios-webhook-service — "How to use
+  systeme.io's Webhook service" (Last updated on June 12, 2026)
+- https://help.systeme.io/article/2323-how-to-use-systeme-io-public-api — "How to use the
+  systeme.io public API (Application Programming Interface)" (Last updated on September 25,
+  2026)
+- https://help.systeme.io/article/628-is-it-possible-to-integrate-systeme-io-with-an-external-autoresponder
+  — "Is it possible to integrate systeme.io with an external autoresponder?" (Last updated on
+  June 30, 2026)
+- https://help.systeme.io/article/1592-how-to-integrate-a-form-or-a-popup-on-wordpress —
+  "How to integrate a systeme.io form or popup on a WordPress site" (Last updated on March 3,
+  2026)
+- https://help.systeme.io/article/231-how-to-connect-a-sales-funnel-or-a-page-to-your-website
+  — "How to link a sales funnel or a page to your external website" (Last updated on May 8,
+  2026)
+- https://help.systeme.io/article/152-how-to-create-a-opt-in-page — "How to create an
+  opt-in page" (Last updated on January 8, 2026)
+- https://help.systeme.io/article/11433-how-to-view-and-download-customer-consent-records —
+  "How to view and download customer consent records" (Last updated on September 2, 2026)
+- https://apps.make.com/systeme-io — "Systeme IO - Apps Documentation" (Updated 25 Sep 2026)
+
+**GELESENER UMFANG — GEZIELT:**
+- https://systeme.io/privacy-policy — "Privacy Policy". Achse `ireland|amazon|aws|hosted|
+  server|retention|retain|kept for|duration|years|months|processor|sub-?processor|data of
+  (your|the) (contacts|leads)|last updated|effective`; 23 Treffer, im Wortlaut gelesen.
+  Positivkontrolle: "data" 34-mal. Ein Datum der Fassung trifft die Achse nicht.
+- Das Verzeichnis der Kategorien "General" (131), "Contact management" (537), "Sales
+  funnels" (146), "Emails" (156), "Deliverability" (3251) — nach Titeln gesichtet.
+
+**REITER, TABELLEN, SYMBOLE, BILDER:** Keine gelesene Seite trägt `role=tab` oder eine
+Tabelle. BILDER SIND NICHT GELESEN (bis zu 13 je Seite); was sie zeigen — etwa den Code
+hinter "Script" —, steht hier nicht.
+
+**GESEHEN, NICHT GEÖFFNET** (je mit Grund):
+- "How to create and trigger a webhook after an opt-in or a sale" (…/144) — AUSGEHENDE
+  Webhooks von systeme.io; der gelesene Artikel …/2930 trägt denselben Gegenstand.
+- "How to add a CAPTCHA to a Contact us page" (…/1673) — K10 ist über …/10921 gelesen, das
+  auf ihn verweist.
+- "How to build your contact list using a funnel" (…/1602), "How to create a thank you page"
+  (…/321), "How to create workflows in systeme.io" (…/1542) — Arbeit IN systeme.io; K14 ist
+  über …/280 und …/140 gelesen.
+- "What happens when my account gets restricted" (…/1086), "How to report abuse on
+  systeme.io" (…/2046) — Kontosperre allgemein; der Formularbezug steht in …/3990.
+- Die übrigen Titel der fünf Kategorien (Domains, Zahlungen, Kurse, Zustellbarkeit, DNS) —
+  andere Gegenstände.
+- Die öffentliche API-Dokumentation, auf die …/2323 verlinkt — K13.1 wird nur abgelegt.
+- Community (roadmap.systeme.io, community.make.com) — nicht durchsucht.
+- Die deutschsprachige Hilfe (help-de.systeme.io) — nicht gelesen; die englische ist die
+  Fassung dieser Lesung.
+**PRÜFUNG DER AUSSCHLUSSLISTE GEGEN DIE OFFENEN FRAGEN** (2026-09-28): Offen nach der Lesung
+sind K8.2 (Form der Adresse im "Embedded form"-Code), K9 (Feldnamen dort), K10.2, K12, K1,
+K2, K4. Nach dem Titel trug EINE Seite der Liste eine offene Frage: "How to link a sales
+funnel or a page to your external website" (K8) — sie ist GEÖFFNET und oben geführt (sie
+beschreibt nur einen Link auf die Funnel-Seite). Die übrigen Ausschlüsse tragen nach ihrem
+Titel keine.
+
+**(a) K8.1, K8.4 — DER ANBIETER SAGT: NUR ÜBER SEINE EIGENEN FORMULARE.** GELESEN,
+html-form-connector: "systeme.io only captures leads through its own native forms. This
+tool bridges the gap: your visitor fills out your custom form, and the script copies every
+field into the hidden native form and clicks submit for them." Das Werkzeug erzeugt ein
+Brücken-Skript für eine Seite IM EDITOR von systeme.io ("Drop a systeme.io opt-in form
+element onto your page in the editor. It will sit next to your Raw HTML element"); die
+Kennung des nativen Formulars hat die Form `optinform-36cb97c2`.
+GELESEN, …/266: Der Weg auf eine EXTERNE Seite ist ein Skript ("click Script to generate the
+code for your external site") für ein "Inline form" oder ein "Popup form" aus einem Funnel.
+**(b) K8.1, K8.2 — UND DOCH GIBT ES EIN "EMBEDDED FORM" OHNE SKRIPT.** GELESEN, …/3990: "Use
+the Script button instead of the Embedded form button to re-embed the form on your external
+page." — "ReCAPTCHA will not work on forms added via the 'Embedded form'. This is because an
+embedded form is a stripped HTML form that cannot be protected by Captcha natively." — "Even
+if the form does not show on your external page, having the code in the page's source code
+still allows bots to attack it." — Duplizieren und Löschen des Formulars "changes the URLs in
+the code".
+FOLGERUNG: Neben dem Skript gibt es einen Einbettungs-Code als reines HTML-Formular, dessen
+Code eine oder mehrere Adressen trägt, an die Bots erfolgreich absenden. Die Anleitung …/266
+(Stand 18. Mai 2026) nennt nur noch "Script"; ob der Knopf "Embedded form" heute noch
+angeboten wird, sagt keine gelesene Seite. Die Form der Adresse steht auf KEINER gelesenen
+Seite — Reichweite: die voll gelesenen Seiten; Bilder nicht gelesen. MESSUNG NÖTIG (S1).
+WIDERSPRUCH ZWISCHEN (a) UND (b), OFFEN GEFÜHRT: (a) sagt "only … through its own native
+forms", (b) beschreibt ein reines HTML-Formular, das von aussen angenommen wird. Beides
+lässt sich vereinbaren, wenn das "Embedded form" als natives Formular zählt — entschieden ist
+das nicht.
+BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-10 der Phase 13 nennt systeme.io als Gegenprobe "für
+ESP-Formular-Endpunkte". Nach (a) gibt es einen öffentlichen Endpunkt für EIGENE Formulare
+nach Aussage des Anbieters nicht; nach (b) gibt es einen für SEIN reines HTML-Formular.
+
+**(c) K9 — FELDER.** GELESEN, html-form-connector: Das Werkzeug liest aus den Seitendaten
+von systeme.io "a name for every field it holds: email, first_name, phone, and so on"; die
+Zuordnung eigener Felder geschieht über `name`, `type`, `autocomplete`, Platzhalter und
+Beschriftung. "An email field is required." GELESEN, apps.make.com/systeme-io: Module "List
+Contact Fields", "Create a Contact Field"; GELESEN, …/2323: eigene Felder haben
+Kennungen ("slugs").
+FOLGERUNG: `email`, `first_name`, `phone` sind die Namen der Felder im NATIVEN Formular —
+ob ein von aussen gesendetes Formular dieselben Namen tragen muss, ist nicht belegt (S1).
+Versteckte Angaben (K9.3) und unbekannte Felder (K9.4): NICHT GEFUNDEN, Reichweite: die voll
+gelesenen Seiten.
+
+**(d) K10 — BOT-SCHUTZ.** GELESEN, …/10921: reCAPTCHA v2, Schlüssel je Domain unter
+"Settings > Custom domains", als Element im Editor. GELESEN, …/3990: gegen "list bombing"
+"you must implement these two procedures": reCAPTCHA und Double-Opt-In; ein "Embedded form"
+kann KEIN reCAPTCHA tragen (s. (b)). Folge eines Angriffs: "email sending may be temporarily
+suspended. It will only be reinstated after you complete a remediation plan provided by our
+team." Eine Prüfung von `Origin` oder `Referer`: NICHT GEFUNDEN, Reichweite: die voll gelesenen
+Seiten. MESSUNG NÖTIG (S2).
+FOLGERUNG: Ein reines HTML-Formular ist nach Aussage des Anbieters der Weg, über den Bots
+eintragen, und er rät davon ab.
+
+**(e) K11 — DOUBLE-OPT-IN.** GELESEN, …/271: je FORMULAR einschaltbar ("Do you want to
+enable double opt-in on this form?", Einstellung am Knopf); die Bestätigungsmail ist unter
+"Settings > Emails > Double opt-in" änderbar; "If a contact doesn't click the confirmation
+link within 24 hours of registering, they will automatically be deleted"; "All emails and
+automations are paused until the contact has confirmed". Versender ist systeme.io (K11.2;
+Absender auf den gelesenen Seiten nicht genannt). K11.3 (Pflicht-Checkbox): NICHT GEFUNDEN;
+GELESEN, …/11433: Einwilligungs-Nachweise mit Checkbox-Text, E-Mail, Zeit, User-Agent und
+IP gibt es für BESTELLFORMULARE, nicht für Opt-in-Formulare.
+
+**(f) K12 — ANTWORT.** NICHT GEFUNDEN — Reichweite: die voll gelesenen Seiten. MESSUNG NÖTIG
+(S1).
+
+**(g) K13 — ANDERE WEGE.** GELESEN, …/2323: öffentliche API mit Schlüssel (Settings > "MCP &
+API keys" > "Public API keys"), u. a. Kontakte anlegen und ändern, Tags setzen; bis zu drei
+Schlüssel je Konto; ohne Ablaufdatum unbegrenzt gültig. GELESEN, apps.make.com/systeme-io:
+Make führt eine App mit "Create a Contact", "Update a Contact", "Add a Tag to a Contact",
+"Make an API Call"; Verbindung über den API-Schlüssel. GELESEN, …/628: externe
+Autoresponder "via Zapier"; ActiveCampaign über eine API-Integration.
+K13.1 NUR ABGELEGT: ein Schlüssel im ausgelieferten Text wäre öffentlich — nach Setzung P13-6
+für uns ausgeschlossen.
+
+**(h) K14 — EIGENE BESTÄTIGUNG.** GELESEN, …/280: Automatisierungsregel mit Auslöser "Funnel
+step form subscribed" und Aktion "Send email", eigener Text, ohne Kampagne; "The form
+button's action must be set to Submit form for the automation rule to be triggered". GELESEN,
+…/140: Auslöser u. a. "Funnel step form subscribed", "New sale", "Tag added" ("The tag must
+be added to the contacts after the rule is set up"); höchstens 20 Auslösungen je Kontakt und
+Auslöser; Verlauf einen Monat.
+FOLGERUNG: Für einen Eintrag über SEIN Formular ist eine Bestätigung ohne Kampagne
+einstellbar. Beim Weg über Make ("Create a Contact" plus "Add a Tag to a Contact") trägt der
+Auslöser "Tag added" nach dem Wortlaut von …/140 — nicht gemessen.
+
+**(i) K5 — AUFBEWAHRUNG, REGION.** GELESEN, Privacy Policy: "Our servers are hosted by Amazon
+Web Services in Ireland […] It is not transferred outside the European Union." Die Policy
+spricht von "a User's data"; ob sie die KONTAKTE der Betreiber meint, sagt sie nicht
+ausdrücklich (FOLGERUNG: nicht belegt). Aufbewahrungsdauer: "only for as long as necessary"
+ohne Frist. Wählbare Region: NICHT GEFUNDEN. GELESEN, …/2930: Webhook-Logs mit "Message log"
+und "Delivery log"; Dauer nicht genannt.
+
+**(j) K6 — NACHWEIS.** GELESEN, …/280 und …/2292: Test durch eigenes Eintragen auf der
+Opt-in-Seite; eine Benachrichtigung an den Betreiber als Automatisierungsregel ("Send email to
+a specific email address"). GELESEN, …/2930: ausgehende Webhooks je Ereignis ("Opt-In",
+"Contact created" …) mit Logs.
+
+**(k) K1, K2, K3, K4, K7.** Methode, Content-Type, CORS, Preflight, Ratenlimits am
+Formular-Endpunkt: NICHT GEFUNDEN, Reichweite: die voll gelesenen Seiten. K3.2: Dass die
+Adresse geheim sei, steht nirgends; nach (b) steht sie im Quelltext der Seite, und der
+Anbieter behandelt ihr Bekanntsein als Angriffsfläche (Duplizieren ändert die Adressen).
+K4: GELESEN, …/140 — die Grenze von 20 Auslösungen je Kontakt. K7: Messfrage (S3).
+
+### Messkandidaten systeme.io (aus der Lesung vom 2026-09-28)
+
+Keiner gemessen; die Liste entscheidet nicht, welcher gemessen wird. Testkonto des Owners
+vorhanden (Entscheidung P13-4 der Phase 13).
+- S1 — Im Owner-Konto nachsehen, ob ein Inline-Formular heute noch einen Einbettungs-Code
+  als reines HTML ("Embedded form") anbietet; wenn ja: `action`, `method`, Feldnamen,
+  versteckte Felder ablesen. Danach ein `POST` mit `application/x-www-form-urlencoded`
+  dorthin: Status, Weiterleitung, Rumpf, CORS-Kopfzeilen; kommt der Kontakt an, feuert die
+  Regel "Funnel step form subscribed"? (K8.2, K9, K12, K14; zu (b), (c), (f), (h))
+- S2 — Derselbe `POST` mit fremdem `Origin` bzw. ohne `Referer`, dann im Modus `no-cors` aus
+  einer Seite unter publayer.net. (K10.2, K2; zu (d))
+- S3 — Erfassen gängige Filterlisten den Host aus S1? (K7.1)
+- S4 — Weg über Make: "Create a Contact" plus "Add a Tag to a Contact" — feuert eine Regel
+  "Tag added" mit "Send email"? (K14.3; zu (h))
+
+### EINORDNUNG systeme.io (Befund, keine Entscheidung)
+
+NACH AUSSAGE DES ANBIETERS: NICHT — "systeme.io only captures leads through its own native
+forms" ((a)); sein eigenes Werkzeug für eigene Formulare läuft nur auf einer Seite IN
+systeme.io. Dagegen steht ein reines HTML-Formular ("Embedded form"), das Bots von aussen
+erreicht ((b)); ob es heute noch angeboten wird und ob ein EIGENES Formular mit denselben
+Feldnamen dort angenommen würde, ist NICHT ENTSCHEIDBAR ohne S1. Ein solches Formular trüge
+kein reCAPTCHA, und der Anbieter rät wegen "list bombing" ausdrücklich davon ab ((d)).
+DER UMWEG ÜBER MAKE TRÄGT NACH DER DOKU ((g)): "Create a Contact" und "Add a Tag to a
+Contact"; der Schlüssel bleibt in Make. Eine Bestätigungsmail ist über eine Regel "Tag added"
+denkbar ((h), ungemessen).

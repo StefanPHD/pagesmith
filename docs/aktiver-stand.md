@@ -1081,6 +1081,11 @@ KEINE Angabe der Lesung ist gemessen; je Anbieter stehen Messkandidaten und eine
 als Befund, keine Entscheidung.
 - Brevo: docs/formular-empfaenger-befunde.md, Abschnitt "Brevo", Befunde (a) bis (m),
   Messkandidaten B1 bis B4. EINORDNUNG: nicht entscheidbar; Umweg über Make trägt nach Doku.
+- systeme.io: docs/formular-empfaenger-befunde.md, Abschnitt "systeme.io", Befunde (a) bis
+  (k), Messkandidaten S1 bis S4. EINORDNUNG: nach Aussage des Anbieters nicht ("only … its
+  own native forms"), ein reines HTML-Formular ("Embedded form") ist belegt, aber nicht
+  entscheidbar; Umweg über Make trägt nach Doku. BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-10
+  (systeme.io als Gegenprobe "für ESP-Formular-Endpunkte"), dort Befund (b).
 
 **Arbeit P13-12 — BEKANNTE SCHWÄCHEN DES WEGS, die Lesung oder Plan beantworten müssen**
 (ARCHITEKTEN-SETZUNG 2026-09-28; jede Schwäche ABGELEITET, keine gemessen):

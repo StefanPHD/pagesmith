@@ -6229,3 +6229,59 @@ FIX-VORSCHLAG über das Benannte hinaus.
   still). Die Namen "TEST 1" und "TEST 2" stehen in derselben Datei ein zweites Mal, in einem
   anderen Block. TRIGGER: die nächste Mutationsrunde, in der eine Mutation TEST 1 vor dem
   Speicherklick brechen lässt, oder die nächste Arbeit an diesem Block.
+
+## Aus Phase 12.5 vorgemerkt (2026-09-28) — Scheibe 2b, zwei Posten fürs Redesign
+
+Der erste Posten ist aus dem Vorrat der Standdatei hierher gewandert, der zweite ist direkt
+abgelegt; die Nummern gehören zur Reihe `P12.5-n` jener Standdatei (Phase 12.5,
+docs/aktiver-stand.md, solange die Phase läuft). KEIN FIX-VORSCHLAG über das Benannte hinaus.
+
+- **Vorrat P12.5-56 — OWNER-WUNSCH: EIN PROJEKT BEIM ANLEGEN BENENNEN UND AUCH OHNE CODE
+  SPEICHERN KÖNNEN**
+  PROVENIENZ: OWNER-WUNSCH 2026-09-26, geäussert im Live-Test der Scheibe 2 der Phase 12.5;
+  hierher gewandert mit Entscheidung P12.5-63 derselben Phase (OWNER-ENTSCHEIDUNG 2026-09-26:
+  ins Redesign, nicht in Scheibe 2b). Heute (OWNER, LIVE, 2026-09-26): Ein neues Projekt heisst
+  "Unbenanntes Projekt", "Speichern" ist ohne Code gesperrt, Umbenennen geht erst nach dem
+  Speichern über den Stift im Projekte-Menü.
+  MATERIAL — die Fakten aus G3 (GELESEN am Repo, CC, 2026-09-26, HEAD `ed5249d`; Vermerk
+  P12.5-59, Punkt (6), der Phase 12.5):
+  · UI-SPERRE ALLEIN: Ohne Code sperrt nur die Bedingung am Knopf "Speichern"
+    (`disabled={saveStatus === "saving" || code.trim() === ""}`,
+    src/components/CodeImporter.tsx). `saveProject` (src/app/projects/actions.ts) prüft `html`
+    nicht; `stabilizeIds("")` liefert "". Migration 0001: `html text not null default ''`;
+    docs/db-stand.md führt an `projects` nur die CHECKs `projects_variant_b_pair` und
+    `projects_ab_test_needs_variant_b` (gelesen, in der laufenden DB NICHT nachgemessen). Keine
+    Migration nötig.
+  · NAMENSPFAD: Ein neues Projekt hat bis zum ersten Speichern keine Zeile (`resetToEmpty`,
+    `projectId` null). Die Kopfleiste zeigt `activeName` mit dem Rückfall "Unbenanntes
+    Projekt"; der Insert-Zweig von `saveProject` schreibt diesen Namen fest. Der DB-Default
+    `'Mein Projekt'` (0001) wird nie benutzt. Umbenennen nur über `renameProject`, nur für
+    Projekte in der Liste.
+  · PREIS DER DREI WEGE zu "Name beim Anlegen": (i) Namensfeld und ein `name`-Parameter an
+    `saveProject` — berührt actions.ts und actions.test.ts; (ii) nach dem ersten Insert
+    `renameProject` aus dem Client — nur CodeImporter.tsx, zwei nicht-atomare Aufrufe; (iii)
+    die Zeile schon bei "+ Neues Projekt" anlegen — eine neue Server-Action, löst den offenen
+    Punkt "DIE IDOR-WÄCHTER SIND NAMENTLICH …" aus, jeder Klick hinterlässt eine Zeile. Preis
+    von "Speichern ohne Code": eine Bedingung in CodeImporter.tsx; Kopieren und Exportieren
+    tragen eigene `disabled`-Bedingungen.
+  · RISIKEN: leere Projekte in der Liste; `loadProject()` ohne ID öffnet das zuletzt geänderte
+    Projekt — ein leeres gespeichertes Projekt wird nach dem Neuladen zum Startprojekt;
+    Veröffentlichen ohne Code sperrt der Server schon heute (`emptyPublishVariant` in
+    `publishProject`, `EMPTY_PUBLISH_MESSAGE`); ein unberührtes neues Projekt ist nicht dirty,
+    "Speichern" legte eine Zeile ohne Änderung an; kein Test sichert die heutige Sperre ohne
+    Code.
+  TRIGGER: Zuschnitt des UI-Redesigns. (Der frühere Trigger "das Ergebnis von G3 im Plan der
+  Scheibe 2b" ist ersetzt.)
+
+- **Vorrat P12.5-64 — BEIM WECHSEL AUF DEN REITER "Code" BEKOMMT DIE TEXTAREA IHREN FOKUS NICHT
+  ZURÜCK**
+  GEMESSEN (OWNER, LIVE, 2026-09-26, Schritt L-N4 der Scheibe 2 der Phase 12.5; Vermerk
+  P12.5-55, Punkt (5), Befund 3): Nach Elemente -> Skripte -> Code bleibt der Text, Cursor und
+  Fokus sind weg. GEMESSEN (CC, 2026-09-26, Playwright-Chromium, Probe im Scratchpad; Vermerk
+  P12.5-59, Punkt (7)): Der Klick auf einen Knopf nimmt der Textarea den Fokus; die
+  Cursor-Position überlebt Verstecken und Zeigen, `focus()` stellt sie wieder her. PREIS
+  (ABGELEITET am Code): eine `ref` an der Textarea, ein Effekt auf `leftTab`, eine Bedingung
+  "nur bei manueller Wahl" — aus dem Klick-Handler geht es nicht, weil das Feld dort noch
+  `display:none` hat; beim Laden eines Projekts darf der Fokus nicht springen; wer "Code" per
+  Tastatur aktiviert, verlöre den Fokus auf dem Knopf. Vorgemerkt fürs Redesign (Entscheidung
+  P12.5-62, ARCHITEKT 2026-09-26). TRIGGER: Zuschnitt des UI-Redesigns.

@@ -25,6 +25,7 @@ P12.5-1, Vermerk P12.5-8 …) — dieselbe Form wie in der Phase 11.9.
 - Scheibe 1c — Absende-Buttons ohne eigene Aktionen
 - Owner-Entscheidung zur Reihenfolge vom 2026-09-26
 - Scheibe 2 — Editor-Gerüst
+- Scheibe 2b — Erstes Einfügen und verdeckte Kopfzeile
 - Register der Phase 12.5
 - Nächster Schritt der Phase 12.5
 
@@ -1319,14 +1320,165 @@ linke Spalte in Reitern (Elemente, Code, Skripte)"); Doku-Commit der Scheibe `5a
     P12.5-54 · Vorrat P12.5-56.
 
 **Vorrat P12.5-56 — OWNER-WUNSCH: EIN PROJEKT BEIM ANLEGEN BENENNEN UND AUCH OHNE CODE SPEICHERN
-KÖNNEN.** Heute (OWNER, LIVE, 2026-09-26; Fundstellen GELESEN am Repo, CC, 2026-09-26): Ein
-neues Projekt heisst "Unbenanntes Projekt" (`activeName` in src/components/CodeImporter.tsx;
-fester Name im Insert-Zweig von `saveProject`, src/app/projects/actions.ts); "Speichern" ist
-ohne Code gesperrt (`disabled` mit `code.trim() === ""` am Knopf in der Kopfzeile der Mitte);
-Umbenennen geht erst nach dem Speichern über den Stift im Projekte-Menü (`renameProject`).
-PROVENIENZ: OWNER-WUNSCH 2026-09-26, geäussert im Live-Test der Scheibe 2. TRIGGER: das Ergebnis
-von G3 im Plan der Scheibe 2b (Fakten und Preis, keine Empfehlung); danach entscheidet der
-Owner, ob und wo es gebaut wird.
+KÖNNEN.** IN DEN BACKLOG GEWANDERT (Entscheidung P12.5-63, OWNER-ENTSCHEIDUNG 2026-09-26):
+docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-28) —
+Scheibe 2b, zwei Posten fürs Redesign". Dort stehen der Wortlaut, die Fakten aus G3 (Vermerk
+P12.5-59, Punkt (6)) und der neue Trigger "Zuschnitt des UI-Redesigns"; der Trigger "das
+Ergebnis von G3 im Plan der Scheibe 2b" ist ersetzt, nicht erweitert.
+
+## Scheibe 2b — Erstes Einfügen und verdeckte Kopfzeile
+
+**ZIEL** (ARCHITEKT, Plan-Auftrag 2026-09-26): Befund 1 (erstes Einfügen kommt nicht an) und
+Befund 2 (verdeckte Kopfzeile der Mitte) aus Vermerk P12.5-55, Punkt (5), beheben. Befund 3
+(Fokus nach dem Reiterwechsel) und der Owner-Wunsch (Vorrat P12.5-56) werden NUR geklärt. Plan
+vorgelegt von CC am 2026-09-26, freigegeben vom ARCHITEKTEN mit den Entscheidungen P12.5-60 bis
+P12.5-63.
+
+**SCOPE DES BAUS** (ARCHITEKT, Bau-Auftrag der Scheibe 2b): src/components/CodeImporter.tsx und
+src/components/CodeImporter.test.tsx, sonst nichts.
+
+**INVARIANTEN** (ARCHITEKT, Plan-Auftrag 2026-09-26):
+- (I1)–(I5): die Invarianten der Scheibe 2, wörtlich im Abschnitt "Scheibe 2 — Editor-Gerüst".
+- (I6) Der Sprung nach dem Einfügen bleibt (RT8a); nach manueller Wahl von "Code" bleibt der
+  Reiter (RT8b).
+- (I7) Der eingefügte Code geht nie verloren.
+
+**Vermerk P12.5-59 — AUFKLÄRUNG ZUM PLAN DER SCHEIBE 2b (KEIN BAU, daher kein Bau-Commit: die
+Aufklärung war read-only; die Proben liefen im Scratchpad, nicht im Repo; CC, 2026-09-26, HEAD
+`ed5249d`).** GEMESSEN bzw. GELESEN, soweit nicht anders gekennzeichnet.
+(1) G1, DER CODE (GELESEN am Repo): Der `onPaste`-Handler der Textarea
+    (src/components/CodeImporter.tsx) ruft `setUploadError(null)` und `autoCollapseOnImport()`;
+    diese setzt `setLeftTab("elements")`, ausser `userExpandedManually` ist gesetzt. Die
+    Code-Hülle trägt die Klasse `hidden`, sobald `leftTab !== "code"`.
+(2) G1, REACT (GELESEN in node_modules/next/dist/compiled/react-dom/cjs/
+    react-dom-client.development.js, Fassung 19.3.0-canary-cbb046ab-20260731):
+    `getEventPriority` führt "paste" (ebenso "input") unter `DiscreteEventPriority`.
+    `ensureRootIsScheduled` ruft `scheduleImmediateRootScheduleTask`, diese `scheduleMicrotask`
+    mit `processRootScheduleInMicrotask`, die `flushSyncWorkAcrossRoots_impl` aufruft.
+    ABGELEITET, NICHT GEMESSEN: Der im `onPaste` gesetzte Reiter wird im Mikrotask direkt nach
+    dem Handler gerendert und committet — vor der Standardaktion des Browsers.
+    `createAndAccumulateChangeEvent` baut das `onChange`-Ereignis als
+    `new SyntheticEvent("onChange", "change", null, nativeEvent, target)`;
+    `getTargetInstForInputOrChangeEvent` bedient "input" und "change". Das native
+    `input`-Ereignis liegt damit als `nativeEvent` am `onChange` — die Grundlage von K-a.
+(3) G1, DIE BROWSER-PROBE (GEMESSEN, CC, 2026-09-26): Playwright-Chromium, User-Agent
+    "Chrome/153.0.0.0"; Probeseite `paste-probe.html` im Scratchpad, ohne React, über
+    `file://`; eine Textarea in einem `div`; Zwischenablage "<h1>Probe</h1>", Klick ins Feld,
+    Strg+V, 300 ms Wartezeit. Drei Zeitpunkte des Versteckens (`display:none` am `div`), dazu
+    die Kontrolle zweimal (erster und letzter Lauf):
+    · gar nicht (Kontrolle): Wert "<h1>Probe</h1>"; Log "paste value=\"\"", danach "input
+      inputType=insertFromPaste value=\"<h1>Probe</h1>\"" — in beiden Kontroll-Läufen gleich.
+    · im Mikrotask des `paste`-Handlers (`queueMicrotask`, die Stelle, an der React heute
+      committet, Punkt (2)): Wert "" ; Log "paste value=\"\"", "hidden(micro)" — KEIN
+      `input`-Ereignis.
+    · im `input`-Handler: Wert "<h1>Probe</h1>"; Log "paste value=\"\"", "input
+      inputType=insertFromPaste …", "hidden(input)".
+    FOLGE: Ist das Feld beim Einfügen schon `display:none`, verwirft Chromium das Einfügen.
+    Das erklärt beide Hälften von Befund 1: Nach manueller Wahl von "Code" ist das Flag
+    gesetzt, es gibt keinen Wechsel, und der Code kommt an.
+    VERHÄLTNIS ZUR BACKLOG-HYPOTHESE (Posten "ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL
+    …"): Das Verstecken vor dem Einfügen trifft zu; ein Zurückschreiben eines alten Werts durch
+    React wird nicht gebraucht — beim `paste` ist der Wert "" (Log).
+    GRENZEN: Probe in Playwright-Chromium, nicht in der App und nicht im Chrome des Owners;
+    Firefox und Safari ungemessen; nur der Weg Strg+V, nicht das Kontextmenü.
+(4) G1, WAS jsdom ZEIGEN KANN (GEMESSEN, CC, 2026-09-26, jsdom des Projekts im Scratchpad):
+    `new InputEvent("input", { inputType: "insertFromPaste" }).inputType` liefert
+    "insertFromPaste", ohne Angabe "". In @testing-library/dom (dist/event-map.js) ist `input`
+    ein `InputEvent`, `change` ein einfaches `Event`. jsdom fügt bei `paste` nichts ein und
+    wertet kein CSS aus. PRÜFBAR in jsdom: kein Wechsel beim `paste`, Wechsel erst mit dem
+    Ereignis, das den Wert trägt; kein Wechsel beim Tippen; das Flag. NUR LIVE: das echte
+    Einfügen, die Wirkung von `display:none`, der `inputType` je Eingabeweg.
+(5) G2 (GELESEN am Repo, KEIN Layout gemessen): Die Kopfzeile der Mitte ist `flex items-center
+    justify-between gap-3`, ohne `flex-wrap`; beide Gruppen darin (`flex items-center gap-3`)
+    ebenso. Die Mitte (`min-w-0 flex-1`) erhält die Restbreite neben `lg:w-80 shrink-0` links
+    und dem `<aside className="w-80 shrink-0 …">` des `ActionPanel`. ABGELEITET, NICHT
+    GEMESSEN: Die Kopfzeile kann nicht umbrechen und läuft rechts aus der Mitte heraus; das
+    `<aside>` steht später im DOM, trägt einen weissen Hintergrund und wird darüber gemalt.
+(6) G3, OWNER-WUNSCH (GELESEN am Repo, HEAD `ed5249d`):
+    · Ohne Code sperrt ALLEIN die UI-Bedingung am Knopf "Speichern":
+      `disabled={saveStatus === "saving" || code.trim() === ""}`. `saveProject`
+      (src/app/projects/actions.ts) prüft `html` nicht; `stabilizeIds("")` liefert "".
+      Migration 0001 definiert `html text not null default ''`; docs/db-stand.md führt an
+      `projects` nur die CHECKs `projects_variant_b_pair` und `projects_ab_test_needs_variant_b`
+      (gelesen, in der laufenden DB NICHT nachgemessen). Keine Migration nötig.
+    · Name heute: Ein neues Projekt hat bis zum ersten Speichern keine Zeile (`resetToEmpty`,
+      `projectId` null); die Kopfleiste zeigt `activeName` mit dem Rückfall "Unbenanntes
+      Projekt"; der Insert-Zweig von `saveProject` schreibt diesen Namen fest. Der DB-Default
+      ist `'Mein Projekt'` (0001) und wird nie benutzt — der Kommentar an `activeName`
+      ("entspricht dem spaeteren DB-Default") ist falsch. Umbenennen nur über `renameProject`,
+      nur für Projekte in der Liste, also erst nach dem Speichern.
+    · Preis "Speichern ohne Code": eine Bedingung in src/components/CodeImporter.tsx; Kopieren
+      und Exportieren tragen eigene `disabled`-Bedingungen.
+    · Preis "Name beim Anlegen", drei Wege: (i) Namensfeld und ein `name`-Parameter an
+      `saveProject` — berührt actions.ts (in (I1) der Scheibe 2) und actions.test.ts; (ii)
+      nach dem ersten Insert `renameProject` aus dem Client — nur CodeImporter.tsx, zwei
+      nicht-atomare Aufrufe; (iii) die Zeile schon bei "+ Neues Projekt" anlegen — eine neue
+      Server-Action, löst den offenen Punkt "DIE IDOR-WÄCHTER SIND NAMENTLICH …" aus, und jeder
+      Klick hinterlässt eine Zeile.
+    · Risiken: leere Projekte in der Liste; `loadProject()` ohne ID öffnet das zuletzt
+      geänderte Projekt — ein leeres gespeichertes Projekt wird nach dem Neuladen zum
+      Startprojekt (Reiter "Code"); Veröffentlichen ohne Code sperrt der Server schon heute
+      (`emptyPublishVariant` in `publishProject`, `EMPTY_PUBLISH_MESSAGE`); ein unberührtes neues
+      Projekt ist nicht dirty, "Speichern" legte eine Zeile ohne Änderung an. Kein Test sichert
+      die heutige Sperre ohne Code; zwei `disabled`-Treffer in src/components/CodeImporter.test.tsx
+      sind nicht geöffnet.
+(7) G4, BEFUND 3 (GEMESSEN, CC, 2026-09-26, Playwright-Chromium, Probeseite `focus-probe.html`
+    im Scratchpad: ein Knopf, eine Textarea "abcdefghij klmnop" in einem `div`):
+    · Cursor auf 5 gesetzt: aktiv die Textarea, 5/5. Klick auf den Knopf: aktiv der Knopf,
+      Cursor 5/5. Verstecken (`display:none`), Zeigen: aktiv der Knopf, 5/5. `focus()`: aktiv
+      die Textarea, 5/5. Taste "X": Wert "abcdeXfghij klmnop", Cursor 6.
+    · Kontrolle: Cursor auf 2, Klick auf den Knopf, `focus()` ohne Verstecken: aktiv die
+      Textarea, 2/2.
+    FOLGE: Verloren geht der Fokus, nicht die Cursor-Position. PREIS (ABGELEITET am Code): mehr
+    als eine Zeile — eine `ref` an der Textarea (heute keine), ein Effekt auf `leftTab`, eine
+    Bedingung "nur bei manueller Wahl"; aus dem Klick-Handler selbst geht es nicht, weil das
+    Feld dort noch `display:none` hat; beim Laden eines Projekts darf der Fokus nicht springen.
+    Nebenpreis: Wer "Code" per Tastatur aktiviert, verlöre den Fokus auf dem Knopf. Strg+Z
+    (buchstabenweise) ist keine Fokusfrage; ob es vor Scheibe 2 anders wirkte, ist nicht
+    gemessen.
+
+PROVENIENZ DER ENTSCHEIDUNGEN P12.5-60 BIS P12.5-62: ARCHITEKT, Bau-Auftrag 2026-09-26, zum Plan
+der Scheibe 2b (Buchstaben wie im Auftrag). P12.5-63: OWNER-ENTSCHEIDUNG 2026-09-26, übermittelt
+im selben Auftrag.
+
+**Entscheidung P12.5-60 ((G1)) — K-a: DER REITER SCHALTET IM `onChange` UM, ALLEIN BEI
+`inputType` "insertFromPaste"; `onPaste` BEHÄLT NUR `setUploadError(null)`.** GRUND: Der Wechsel
+geschieht erst mit dem Ereignis, das den eingefügten Wert trägt (Vermerk P12.5-59, Punkt (3)).
+PREIS: hängt am `inputType` (in Chromium gemessen, anderswo nicht); fehlt er, bleibt der Reiter
+auf "Code" — kein Sprung, der Code kommt an, (I7) bleibt gewahrt. Der Upload-Pfad
+(`importFile`) bleibt unverändert. VERWORFEN: K-b (Merker im `onPaste`, der nächste `onChange`
+schaltet) — fügt ein `paste` nichts ein, bleibt der Merker liegen, und der nächste getippte
+Buchstabe schaltet den Reiter weg · K-c (Umschalten per `setTimeout` verzögern) — eine
+Zeitannahme statt eines Signals; der Timer überlebt einen Projektwechsel · K-d (`preventDefault`
+und selbst einfügen) — das native Undo geht verloren, die Ersetzung der Auswahl wäre
+nachzubauen.
+
+**Entscheidung P12.5-61 ((G2)) — `flex-wrap` UND `gap-y-2` AN DER KOPFZEILE DER MITTE,
+`flex-wrap` AN BEIDEN GRUPPEN DARIN.** "Speichern" bleibt im Kopf der Mitte (Entscheidung
+P12.5-52). PREIS: Bei schmaler Mitte wird die Kopfzeile mehrzeilig, der Rahmen rückt nach unten.
+VERWORFEN: Breakpoint `lg` -> `xl` (verschiebt das Stapeln für einen ganzen Breitenbereich, ohne
+eigene Garantie für die Kopfzeile) · `z-index` an der Kopfzeile ("Speichern" verdeckte dann das
+`ActionPanel`) · `overflow-hidden` ("Speichern" abgeschnitten statt verdeckt).
+
+**Entscheidung P12.5-62 ((G4)) — DIE FOKUS-RÜCKGABE BEIM WECHSEL AUF "Code" KOMMT NICHT IN
+SCHEIBE 2b,** sondern in den Backlog, fürs Redesign: Vorrat P12.5-64 (docs/claude-history/
+backlog-polish.md, Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-28) — Scheibe 2b, zwei Posten
+fürs Redesign"). Befund: Vermerk P12.5-59, Punkt (7).
+
+**Entscheidung P12.5-63 ((G3)) — DER OWNER-WUNSCH (NAME BEIM ANLEGEN, SPEICHERN OHNE CODE) GEHT
+INS REDESIGN, NICHT IN SCHEIBE 2b.** Vorrat P12.5-56 wandert in den Backlog (Abschnitt wie bei
+P12.5-62), mit den Fakten aus Vermerk P12.5-59, Punkt (6), als Material; TRIGGER dort: "Zuschnitt
+des UI-Redesigns" — ersetzt, nicht gestempelt.
+
+**TESTPLAN UND PFLICHT-MUTATIONEN** (Plan CC 2026-09-26, freigegeben): Tests in
+src/components/CodeImporter.test.tsx — RT8a verschärft (nach dem `paste` noch "Code", Hülle ohne
+`hidden`, Wert ""; nach `input` mit `inputType` "insertFromPaste" "Elemente" UND der Wert im
+Feld), RT8b (dieselbe Nachstellung nach manueller Wahl, Reiter bleibt "Code"), RT13 neu (Tippen,
+`inputType` "insertText", Reiter bleibt "Code"), RT15 neu (STRUKTUR: Kopfzeile und beide Gruppen
+tragen `flex-wrap`). Mutationen je volle Suite: MG1 (Umschalten wieder im `onPaste`), MG2
+(`inputType`-Bedingung entfernt), MG3 (falscher `inputType`-Wert), MG4 / MG4b (`flex-wrap` an
+der Kopfzeile bzw. an der Speicher-Gruppe entfernt), Stichprobe MR7 / MR8. Keiner der vier
+Differenz-Nachweise darf rot werden.
 
 ## Register der Phase 12.5
 
@@ -1361,7 +1513,9 @@ P12.5-10, P12.5-11, P12.5-12; Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) 
 ein Oberflächen-Hinweis": P12.5-30; Abschnitt "Aus Phase 12.5 vorgemerkt (2026-09-25) —
 Scheibe 1b, ein flackernder Test": P12.5-35; Abschnitt "Aus Phase 12.5 vorgemerkt
 (2026-09-26) — Scheibe 1c, ein liegengebliebener Spion": P12.5-46; Abschnitt "Aus Phase 12.5
-vorgemerkt (2026-09-26) — Scheibe 2, zwei Befunde": P12.5-57, P12.5-58.
+vorgemerkt (2026-09-26) — Scheibe 2, zwei Befunde": P12.5-57, P12.5-58; Abschnitt "Aus Phase 12.5
+vorgemerkt (2026-09-28) — Scheibe 2b, zwei Posten fürs Redesign": P12.5-56 (aus dem Vorrat
+dieser Datei gewandert, Entscheidung P12.5-63), P12.5-64.
 
 IN DIESE PHASE ÜBERFÜHRT (docs/claude-history/backlog-polish.md): "ZEN-MODUS: ERSTES EINFÜGEN
 SCHLIESST DAS PANEL, OHNE DASS DER CODE LANDET" — in Scheibe 2b (Vermerk P12.5-55, Punkt (5),
@@ -1374,8 +1528,9 @@ Scheibe 1 ist abgeschlossen (Vermerk P12.5-20), Scheibe 1b ebenso (Vermerk P12.5
 Ort von Vorrat P12.5-29 ist gefallen (Entscheidung P12.5-47). Danach, in dieser Reihenfolge:
 (1) Scheibe 2b: Befund 1 (erstes Einfügen) und Befund 2 (verdeckte Kopfzeile der Mitte) aus
     Vermerk P12.5-55, Punkt (5), beheben; Befund 3 und den Owner-Wunsch (Vorrat P12.5-56) NUR
-    klären. Unter den Invarianten (I1)–(I5) der Scheibe 2. PROVENIENZ: ARCHITEKT, Plan-Auftrag
-    2026-09-26; der Plan ist in Arbeit, noch nicht freigegeben.
+    klären. Unter den Invarianten (I1)–(I7) (Abschnitt "Scheibe 2b — Erstes Einfügen und
+    verdeckte Kopfzeile"). PROVENIENZ: ARCHITEKT, Plan-Auftrag 2026-09-26; der Plan ist
+    freigegeben (Entscheidungen P12.5-60 bis P12.5-63), der Bau läuft.
 (2) Das Phasenende 12.5 mit Neuzuschnitt (Entscheidung P12.5-47): 12.5 schliesst mit den
     Klick- und Formular-Korrekturen und dem Editor-Gerüst; die Medien bekommen eine eigene
     Roadmap-Zeile nach Phase 13, die Entscheidungen P12.5-1 bis P12.5-6 ziehen mit. Name des

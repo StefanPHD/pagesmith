@@ -13,8 +13,13 @@ import {
   type TrackConfig,
 } from "@/lib/mappings";
 import {
+  formTargetNamesProblem,
   formTargetProblem,
   ownFormTargetDomains,
+  sameFieldNames,
+  sortedFieldNames,
+  type FieldNameSource,
+  type FormField,
   type FormTargetBlock,
   type FormTargetCheck,
 } from "@/lib/form-target";
@@ -676,9 +681,47 @@ function formTargetBlockText(block: FormTargetBlock): string {
       return "Das Formular enthält ein Datei-Feld.";
     case "dialog":
       return 'Das Formular schließt einen Dialog (method="dialog").';
-    case "unnamed":
-      return `Diese Eingabefelder haben keinen Namen (name-Attribut), ihr Inhalt käme nicht an: ${block.fields.join(", ")}.`;
+    case "unnamed-radio":
+      return `Diese Auswahlknöpfe (Radio) haben keinen Namen (name-Attribut): ${block.fields.join(", ")}. Ein Name bestimmt, welche Knöpfe sich gegenseitig ausschließen — Pagesmith vergibt ihn deshalb nicht selbst.`;
+    case "blank-name":
+      return `Diese Felder haben einen Namen nur aus Leerzeichen: ${block.fields.join(", ")}. Pagesmith überschreibt vorhandene Namen nicht.`;
   }
+}
+
+// FELDNAMEN (Phase 13, Scheibe 13-1c): woher ein Name stammt, im Wortlaut des Panels.
+const FIELD_NAME_SOURCE_TEXT: Record<FieldNameSource, string> = {
+  code: "im Code",
+  id: "aus der id",
+  label: "aus der Beschriftung",
+  "aria-label": "aus aria-label",
+  placeholder: "aus dem Platzhalter",
+  type: "aus dem Feldtyp",
+};
+const FIELD_NAMES_INTRO = "Diese Feldnamen kommen an:";
+const FIELD_NAMES_MISSING_NOTE =
+  "Für dieses Ziel sind die Feldnamen noch nicht bestätigt. Veröffentlichen und Export sind gesperrt, bis du sie bestätigst.";
+const FIELD_NAMES_CHANGED_NOTE =
+  "Die Feldnamen haben sich geändert. Veröffentlichen und Export sind gesperrt, bis du die neuen Namen bestätigst — prüfe vorher dein Szenario beim Empfänger.";
+
+// Die Felder, wie sie ankommen: Name und Herkunft (Scheibe 13-1c). Doppelte Namen (eine
+// Checkbox-Gruppe) stehen so oft da, wie es Felder gibt.
+function FieldNamesList({ fields }: { fields: readonly FormField[] }) {
+  return (
+    <div className="mt-2 text-xs text-gray-600">
+      <p className="font-medium text-gray-700">{FIELD_NAMES_INTRO}</p>
+      {fields.length === 0 ? (
+        <p>(keine)</p>
+      ) : (
+        <ul className="mt-1 list-disc pl-4">
+          {fields.map((f, i) => (
+            <li key={`${f.name}-${i}`}>
+              <code className="text-gray-800">{f.name}</code> ({FIELD_NAME_SOURCE_TEXT[f.source]})
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 /**
@@ -690,6 +733,11 @@ function formTargetBlockText(block: FormTargetBlock): string {
  * - kein Ziel, berechtigt: Kachel -> Eingabe (Zieladresse UND Danke-Seite, beide Pflicht;
  *   "Ziel übernehmen" gesperrt, solange formTargetProblem etwas meldet).
  * Ein Inline-onsubmit ist ein HINWEIS, kein Ausschluss.
+ * SEIT SCHEIBE 13-1c: In allen drei Ansichten stehen die Feldnamen, wie sie ankommen
+ * (FieldNamesList, aus formTargetCheck). Weicht die bestaetigte Liste ab oder fehlt sie,
+ * nennt ein Kasten alt -> neu, und "Neue Feldnamen bestätigen" speichert die aktuelle Liste
+ * (Entscheidung P13-41, Setzung P13-48). Auch "Ziel übernehmen" speichert sie mit — die
+ * Eingabe zeigt sie.
  * DIE KNOEPFE TRAGEN "Ziel" IM NAMEN: Im selben Zweig steht der Track mit "Bearbeiten",
  * "Entfernen", "Übernehmen" (Dauerregel "ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND
  * VERSCHIEDENER WIRKUNG SIND EIN OBERFLÄCHEN-PROBLEM").
@@ -716,10 +764,40 @@ function FormTargetActions({
     ownFormTargetDomains()
   );
 
+  // DIE BESTAETIGTE LISTE (Scheibe 13-1c; Entscheidung P13-41, Setzung P13-48): null = keine
+  // oder unbrauchbar. Eine Abweichung zeigt das Panel nur, wenn das Formular berechtigt ist —
+  // eine Sperre wiegt schwerer und steht dann allein da.
+  const savedNames =
+    targetMapping && formTargetNamesProblem(targetMapping.config) === null
+      ? sortedFieldNames(targetMapping.config.fieldNames ?? [])
+      : null;
+  const namesDrift =
+    !!targetMapping &&
+    !!check &&
+    blocks.length === 0 &&
+    (savedNames === null || !sameFieldNames(savedNames, check.fieldNames));
+
+  // Die Liste, die mit einem Speichern bestaetigt wird: die AKTUELLE, wenn das Formular im
+  // Dokument steht — die Eingabe zeigt sie, also bestaetigt "Ziel übernehmen" sie. Ohne
+  // Urteil bleibt die gespeicherte stehen.
+  function withNames(config: { endpoint: string; thanksUrl: string }): FormTargetConfig {
+    const fieldNames = check ? check.fieldNames : targetMapping?.config.fieldNames;
+    return fieldNames === undefined ? config : { ...config, fieldNames };
+  }
+
   function handleSubmit() {
     if (problem !== null) return;
-    onSave({ endpoint: endpoint.trim(), thanksUrl: thanksUrl.trim() });
+    onSave(withNames({ endpoint: endpoint.trim(), thanksUrl: thanksUrl.trim() }));
     setIsEditing(false);
+  }
+
+  function handleConfirmNames() {
+    if (!targetMapping || !check) return;
+    onSave({
+      endpoint: targetMapping.config.endpoint,
+      thanksUrl: targetMapping.config.thanksUrl,
+      fieldNames: check.fieldNames,
+    });
   }
 
   function handleCancel() {
@@ -783,6 +861,7 @@ function FormTargetActions({
             </span>
           )}
         </label>
+        {check && <FieldNamesList fields={check.fields} />}
         {inlineNote}
         <div className="flex gap-2">
           <button
@@ -828,9 +907,28 @@ function FormTargetActions({
               </ul>
             </div>
           )}
+          {check && blocks.length === 0 && <FieldNamesList fields={check.fields} />}
+          {namesDrift && check && (
+            <div className="mt-2 text-xs text-red-600">
+              <p>{savedNames === null ? FIELD_NAMES_MISSING_NOTE : FIELD_NAMES_CHANGED_NOTE}</p>
+              <p className="mt-1 break-words">
+                alt: {savedNames === null ? "(keine bestätigt)" : savedNames.join(", ") || "(keine)"}{" "}
+                → neu: {check.fieldNames.join(", ") || "(keine)"}
+              </p>
+            </div>
+          )}
           {inlineNote}
           <p className="mt-1 text-xs text-gray-500">{REPUBLISH_NOTE}</p>
         </div>
+        {namesDrift && (
+          <button
+            type="button"
+            onClick={handleConfirmNames}
+            className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+          >
+            Neue Feldnamen bestätigen
+          </button>
+        )}
         <div className="flex gap-2">
           {blocks.length === 0 && (
             <button
@@ -879,6 +977,7 @@ function FormTargetActions({
         <span className="text-sm font-medium text-gray-800">📨 Formular-Ziel</span>
         <span className="text-xs text-gray-500">{FORM_TARGET_EXPLAIN}</span>
       </button>
+      {check && <FieldNamesList fields={check.fields} />}
       {inlineNote}
     </div>
   );

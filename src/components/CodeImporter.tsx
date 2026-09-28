@@ -50,6 +50,8 @@ import {
   formTargetCheck,
   formTargetDocumentMessage,
   formTargetDocumentProblem,
+  formTargetNameDrift,
+  formTargetNamesMessage,
   ownFormTargetDomains,
 } from "@/lib/form-target";
 // KOMPATIBILITAETS-RIEGEL DER ZWEI EDITOR-RAHMEN (Scheibe 11.12a). NUR HIER
@@ -1504,6 +1506,43 @@ export default function CodeImporter({
     formTargetOwnDomains,
     formTargetLanguageRead
   );
+  // DIE MELDUNGEN DER BEIDEN RIEGEL (Scheibe 13-1c). Bei "names" nennt sie die vollen Listen
+  // alt -> neu samt Variante (Entscheidung P13-41, Setzung P13-57); die Abweichungen kommen
+  // aus DENSELBEN Paaren wie die Riegel darueber. Die Variante steht nur, wenn es B gibt.
+  // Beim Export geht nur die AKTIVE Variante hinaus, also nennt die Meldung nur sie.
+  const formTargetVariantLabel = (v: "a" | "b"): "A" | "B" | null =>
+    hasVariantB ? (v === "a" ? "A" : "B") : null;
+  const formTargetPublishMessage =
+    formTargetPublishProblem === null
+      ? null
+      : formTargetPublishProblem === "names"
+        ? formTargetNamesMessage(
+            [
+              ...formTargetNameDrift(publishPairs.pairA.html, publishPairs.pairA.mappings).map(
+                (d) => ({ ...d, variant: formTargetVariantLabel("a") })
+              ),
+              ...(hasVariantB
+                ? formTargetNameDrift(
+                    publishPairs.pairB.html,
+                    publishPairs.pairB.mappings
+                  ).map((d) => ({ ...d, variant: formTargetVariantLabel("b") }))
+                : []),
+            ],
+            "publish"
+          )
+        : formTargetDocumentMessage(formTargetPublishProblem, "publish");
+  const formTargetExportMessage =
+    formTargetExportProblem === null
+      ? null
+      : formTargetExportProblem === "names"
+        ? formTargetNamesMessage(
+            formTargetNameDrift(debouncedCode, mappings).map((d) => ({
+              ...d,
+              variant: formTargetVariantLabel(activeVariant),
+            })),
+            "export"
+          )
+        : formTargetDocumentMessage(formTargetExportProblem, "export");
 
   // DIE ZWEI MELDUNGEN — ABGELEITET AUS DEM AKTUELLEN TEXT, nicht gespeichert (K2).
   //
@@ -1517,9 +1556,7 @@ export default function CodeImporter({
     ? null
     : ownBlocksInActive
       ? OWN_BLOCKS_EXPORT_MESSAGE
-      : formTargetExportProblem
-        ? formTargetDocumentMessage(formTargetExportProblem, "export")
-        : null;
+      : formTargetExportMessage;
   // Die Fundstellen kommen aus dem JETZIGEN Text, nicht aus dem Ergebnis von damals —
   // und die Identitaetspruefung sagt, ob jener Versuch ueberhaupt noch diesen Text
   // meint. Loescht der Betreiber die Fundstelle von Hand, laufen beide Haelften
@@ -1568,11 +1605,8 @@ export default function CodeImporter({
             ? { tone: "hint", text: ownBlocksPublishMessage }
             : // DAS FORMULAR-ZIEL (Phase 13, Scheibe 13-1) HINTER den Bausteinen: ein
               // Text mit alten Bausteinen ist der grundlegendere Mangel.
-              formTargetPublishProblem
-              ? {
-                  tone: "hint",
-                  text: formTargetDocumentMessage(formTargetPublishProblem, "publish"),
-                }
+              formTargetPublishMessage
+              ? { tone: "hint", text: formTargetPublishMessage }
               : null;
 
   // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
@@ -2343,9 +2377,9 @@ export default function CodeImporter({
     // Werte und Sprache prueft der Server zusaetzlich. Der Knopf bleibt klickbar
     // (PublishView ist in dieser Scheibe unberuehrt) — der Klick zeigt die Meldung als
     // Fehler im Anzeigeslot und schreibt nichts.
-    if (formTargetPublishProblem) {
+    if (formTargetPublishMessage) {
       setPublishStatus("error");
-      setPublishError(formTargetDocumentMessage(formTargetPublishProblem, "publish"));
+      setPublishError(formTargetPublishMessage);
       return;
     }
     setPublishStatus("publishing");

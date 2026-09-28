@@ -46,6 +46,8 @@ import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import {
   FORM_TARGET_INVALID_MESSAGE,
   FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE,
+  FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE,
+  formTargetNamesProblem,
   formTargetProblem,
   ownFormTargetDomains,
 } from "@/lib/form-target";
@@ -1750,7 +1752,8 @@ export async function publishProject(
   // ausgelieferte Zeile, und die Dauerregel "EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT
   // AB" verlangt den Abbruch. consentLanguage ist oben schon gelesen.
   // WAS DER SERVER NICHT PRUEFT: die BERECHTIGUNG des Formulars (eigene Zieladresse,
-  // Datei-Feld, method="dialog", unbenannte Felder). Sie braucht DOM, und hier wird kein
+  // Datei-Feld, method="dialog", Radio ohne Namen, Name aus Leerraum) und seit 13-1c, ob die
+  // bestaetigten Feldnamen noch zum Formular passen. Beides braucht DOM, und hier wird kein
   // HTML geparst (Dauerregel "KEIN SERVER-SEITIGES HTML-PARSING"); der Riegel dafuer sitzt
   // im Editor (handlePublish).
   const formTargets = alleMappings.filter((m) => m.type === "formTarget");
@@ -1758,6 +1761,12 @@ export async function publishProject(
     const ownDomains = ownFormTargetDomains();
     if (formTargets.some((m) => formTargetProblem(m.config, ownDomains) !== null))
       return { ok: false, error: FORM_TARGET_INVALID_MESSAGE };
+    // DIE LISTE DER FELDNAMEN (Scheibe 13-1c, Setzung P13-56): fehlt sie oder ist sie
+    // unbrauchbar, bricht das Tor ab — auch ein Ziel aus 13-1 wird erst nach einer
+    // Bestaetigung wieder veroeffentlicht (Setzung P13-48). Ob sie zum Formular PASST,
+    // sieht der Server nicht (kein DOM); das prueft der Riegel im Editor.
+    if (formTargets.some((m) => formTargetNamesProblem(m.config) !== null))
+      return { ok: false, error: FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE };
     if (consentLanguage === "unknown")
       return { ok: false, error: FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE };
   }

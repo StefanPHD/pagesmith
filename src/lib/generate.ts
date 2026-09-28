@@ -14,7 +14,7 @@ import {
   buildCustomPixelRuntime,
   customTrackStatement,
 } from "./tracking/custom-pixel";
-import { buildFormTargetRuntime } from "./form-target";
+import { buildFormTargetRuntime, deriveFormFieldNames } from "./form-target";
 import { embedInScript } from "./script-embed";
 import type { ConsentLanguage } from "./settings";
 
@@ -543,6 +543,30 @@ export function generateFunctional(
       if (id) present.add(id);
     });
 
+    // FELDNAMEN (Phase 13, Scheibe 13-1c; Setzungen P13-43 und P13-59 der Phase 13). Nur
+    // im Export und nur an einem <form>, dessen Formular-Ziel im Dokument steht (J2: ein
+    // Projekt ohne Formular-Ziel und ein Formular ohne Ziel bleiben byte-gleich). Die Namen
+    // kommen aus DERSELBEN Funktion, die der Editor ueber formTargetCheck anzeigt (J5); hier
+    // wird nur geschrieben — und nur, was sie als ABGELEITET liefert, nie ueber einen
+    // vorhandenen Namen (J3). Der Quelltext des Editors bleibt unberuehrt (J1): geschrieben
+    // wird in dieses Dokument, nicht in den Code.
+    // VOR DEM TEXT-BAKE (Setzung P13-59): Er aendert h1–h6 und p; ein <p> in einem <label>
+    // gaebe der Erzeugung sonst einen anderen Label-Text als dem Editor.
+    // Die Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN
+    // FREMDEN KNOTEN AN" nimmt die Schreibvorgaenge dieser Funktion zur Erzeugungszeit aus.
+    if (mode === "export") {
+      for (const m of mappings) {
+        if (m.type !== "formTarget" || !present.has(m.elementId)) continue;
+        const form = doc.querySelector(
+          `[${PAGESMITH_ID_ATTR}="${m.elementId}"]`
+        );
+        if (!form || form.tagName !== "FORM") continue;
+        for (const a of deriveFormFieldNames(form as HTMLFormElement).assignments) {
+          a.element.setAttribute("name", a.name);
+        }
+      }
+    }
+
     // TEXT-Bake (nur Export): praesente text-Overrides direkt in den DOM schreiben,
     // VOR der Serialisierung, auf demselben doc. present.has = derselbe typ-agnostische
     // Orphan-Filter; verwaiste text-Mappings werden weder gebacken noch verdrahtet.
@@ -594,12 +618,25 @@ export function generateFunctional(
     // Orphans raus: nur Mappings mit lebendem Anker. Danach je Modus filtern:
     // export -> alle ausser text (redirect + track-Stub); edit -> nur text;
     // preview -> alle Laufzeit-Typen.
-    const table = mappings.filter((m) => {
-      if (!present.has(m.elementId)) return false;
-      if (mode === "export") return m.type !== "text";
-      if (mode === "edit") return m.type === "text";
-      return true; // preview
-    });
+    // DIE LISTE DER FELDNAMEN GEHT NICHT HINAUS (Scheibe 13-1c, Setzung P13-58): Die
+    // Laufzeit liest nur endpoint und thanksUrl, und was ausgeliefert ist, bekommt man nicht
+    // zurueck. Nur fieldNames wird entfernt, alles andere bleibt in SEINER Reihenfolge
+    // (Spread) — ein Mapping aus der Datenbank kommt mit der Schluessel-Reihenfolge von
+    // jsonb an, und ein Formular mit Ziel, dessen Felder alle benannt sind, bleibt so
+    // zeichengleich zu seiner Ausgabe unter 13-1 (Waechter F6b, F6c, F7).
+    const table = mappings
+      .filter((m) => {
+        if (!present.has(m.elementId)) return false;
+        if (mode === "export") return m.type !== "text";
+        if (mode === "edit") return m.type === "text";
+        return true; // preview
+      })
+      .map((m): Mapping => {
+        if (m.type !== "formTarget" || m.config.fieldNames === undefined) return m;
+        const config = { ...m.config };
+        delete config.fieldNames;
+        return { ...m, config };
+      });
 
     // CUSTOM-PIXEL (Phase 11.6, Scheibe 11.6a) — DIE MODUS-GATUNG STEHT HIER UND NUR
     // HIER (Entscheidung P11.6-6, Teil (d)): Der Baustein entsteht AUSSCHLIESSLICH in

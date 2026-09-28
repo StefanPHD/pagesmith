@@ -2,15 +2,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
 import { generateFunctional } from "./generate";
 import {
+  FIELD_NAME_MAX,
   FORM_TARGET_NOTICE_HOST_TAG,
   FORM_TARGET_TIMEOUT_MS,
   buildFormTargetRuntime,
+  deriveFormFieldNames,
   formTargetCheck,
   formTargetDocumentProblem,
+  formTargetNameDrift,
+  formTargetNamesMessage,
+  formTargetNamesProblem,
   formTargetProblem,
   ownFormTargetDomains,
+  shortFieldName,
 } from "./form-target";
 import { mappingsEqual, type Mapping } from "./mappings";
+import { annotateAndDetect } from "./detect";
 
 // ===========================================================================
 // FORMULAR-ZIEL (Phase 13, Scheibe 13-1). Die Tests F1–F13 und K1/K3 aus dem Plan der
@@ -26,8 +33,25 @@ const PIXEL = "123456789012345";
 const TK = "tk-public-123";
 const PROXY = "https://app.pagesmith.io/api/e";
 
-function target(elementId: string, endpoint = ENDPOINT, thanksUrl = THANKS): Mapping {
-  return { elementId, type: "formTarget", config: { endpoint, thanksUrl } };
+// Die bestaetigte Liste des Formulars ps-cccccc in PAGE (Scheibe 13-1c): email, name und der
+// Name des Absende-Knopfes "go" (Setzung P13-55) — sortiert. Das Feld mit form="ps-x"
+// gehoert zu keinem Formular (es gibt kein Element mit dieser id).
+const PAGE_NAMES = ["email", "go", "name"];
+
+// fieldNames null = ein Ziel OHNE Liste (wie aus 13-1). Bewusst null und nicht undefined: Ein
+// ausdrueckliches undefined loest den Vorgabewert aus, und der Test pruefte dann still ein
+// Ziel MIT Liste.
+function target(
+  elementId: string,
+  endpoint = ENDPOINT,
+  thanksUrl = THANKS,
+  fieldNames: string[] | null = PAGE_NAMES
+): Mapping {
+  return {
+    elementId,
+    type: "formTarget",
+    config: fieldNames === null ? { endpoint, thanksUrl } : { endpoint, thanksUrl, fieldNames },
+  };
 }
 function track(elementId: string, event: string): Mapping {
   return { elementId, type: "track", config: { event } };
@@ -651,6 +675,8 @@ describe("F13/K1 — formTargetCheck", () => {
     expect(formTargetCheck(form("", '<input name="a"><button>Senden</button>'), "ps-cccccc")).toEqual({
       blocks: [],
       inlineScript: false,
+      fields: [{ name: "a", source: "code" }],
+      fieldNames: ["a"],
     });
   });
 
@@ -671,21 +697,51 @@ describe("F13/K1 — formTargetCheck", () => {
     expect(kinds(html)).toEqual(soll);
   });
 
-  it("K1: unbenannte Felder werden erkennbar genannt — Typ, id oder Platzhalter; auch per form=-Attribut", () => {
+  // SEIT 13-1c ist ein unbenanntes Eingabefeld KEIN Ausschluss mehr (es ist benennbar); die
+  // Sperre "unnamed" aus 13-1 ist ersetzt durch "unnamed-radio" (J4) und "blank-name" (F3).
+  it("K1 (13-1c): unbenannte Felder sind benennbar — kein Ausschluss, auch per form=-Attribut", () => {
     const html = form(
       "",
       '<input name="ok"><input type="email" id="mail"><input placeholder="Dein Name"><textarea></textarea><select id="land"></select>',
       '<input type="tel" form="ps-f">'
     );
     const check = formTargetCheck(html, "ps-cccccc")!;
-    expect(check.blocks).toEqual([
-      { kind: "unnamed", fields: ["email #mail", 'text "Dein Name"', "textarea", "select #land", "tel"] },
+    expect(check.blocks).toEqual([]);
+    expect(check.fields).toEqual([
+      { name: "ok", source: "code" },
+      { name: "mail", source: "id" },
+      { name: "dein_name", source: "placeholder" },
+      { name: "textarea", source: "type" },
+      { name: "land", source: "id" },
+      { name: "tel", source: "type" },
     ]);
+  });
+
+  it("J4 (P13-46): ein Radio ohne Namen sperrt und wird genannt; ein benanntes Radio nicht (Positivkontrolle)", () => {
+    // Rot, wenn Radios benannt werden.
+    const check = formTargetCheck(
+      form("", '<input name="a"><input type="radio" id="r1" value="x"><input type="radio" name="farbe" value="y">'),
+      "ps-cccccc"
+    )!;
+    expect(check.blocks).toEqual([{ kind: "unnamed-radio", fields: ["radio #r1"] }]);
+    expect(check.fieldNames).toEqual(["a", "farbe"]);
+  });
+
+  it("F3 (P13-53): ein Name nur aus Leerraum sperrt und wird NICHT ersetzt", () => {
+    // Rot, wenn ein Leerraum-Name als unbenannt gilt und einen abgeleiteten Namen bekommt.
+    const check = formTargetCheck(form("", '<input name="a"><input name="   " id="leer">'), "ps-cccccc")!;
+    expect(check.blocks).toEqual([{ kind: "blank-name", fields: ["text #leer"] }]);
+    expect(check.fieldNames).toEqual(["a"]);
   });
 
   it("K2: ein Inline-onsubmit ist ein Hinweis, KEIN Ausschluss", () => {
     const check = formTargetCheck(form('onsubmit="return false"', '<input name="a">'), "ps-cccccc")!;
-    expect(check).toEqual({ blocks: [], inlineScript: true });
+    expect(check).toEqual({
+      blocks: [],
+      inlineScript: true,
+      fields: [{ name: "a", source: "code" }],
+      fieldNames: ["a"],
+    });
   });
 
   it("kein <form> oder unbekannte ID -> null", () => {
@@ -707,8 +763,21 @@ describe("formTargetDocumentProblem — die Riegel vor Veroeffentlichen und Expo
   it("ungueltiger Wert -> invalid", () => {
     expect(formTargetDocumentProblem(PAGE, [target("ps-cccccc", "http://x.example")], OWN, "de")).toBe("invalid");
   });
-  it("nachtraeglich unbenanntes Feld -> ineligible", () => {
+  it("nachtraeglich ein Radio ohne Namen -> ineligible", () => {
+    const html = PAGE.replace('<input type="text" name="name">', '<input type="text" name="name"><input type="radio">');
+    expect(formTargetDocumentProblem(html, [target("ps-cccccc")], OWN, "de")).toBe("ineligible");
+  });
+  it("J7: nachtraeglich unbenanntes Feld -> names (seit 13-1c benennbar, aber die Liste weicht ab)", () => {
     const html = PAGE.replace('<input type="text" name="name">', '<input type="text">');
+    expect(formTargetDocumentProblem(html, [target("ps-cccccc")], OWN, "de")).toBe("names");
+  });
+  it("J7 / P13-48: ein Ziel OHNE Liste -> names, auch wenn die Felder passen", () => {
+    expect(
+      formTargetDocumentProblem(PAGE, [target("ps-cccccc", ENDPOINT, THANKS, null)], OWN, "de")
+    ).toBe("names");
+  });
+  it("Reihenfolge: ineligible schlaegt names", () => {
+    const html = PAGE.replace('<input type="text" name="name">', '<input type="radio">');
     expect(formTargetDocumentProblem(html, [target("ps-cccccc")], OWN, "de")).toBe("ineligible");
   });
   it("unbekannte Sprache bei einem Ziel -> language", () => {
@@ -716,5 +785,340 @@ describe("formTargetDocumentProblem — die Riegel vor Veroeffentlichen und Expo
   });
   it("verwaistes Ziel zaehlt nicht", () => {
     expect(formTargetDocumentProblem(PAGE, [target("ps-weg000", "http://x")], OWN, "unknown")).toBeNull();
+  });
+});
+
+// ===========================================================================
+// SCHEIBE 13-1c — AUTOMATISCHE BENENNUNG DER FORMULARFELDER. Der Massstab sind die
+// Invarianten J1–J9 und die Setzungen P13-43 bis P13-59 im Zuschnitt 13-1c der Standdatei.
+// Die ERWARTETEN Namen sind aus den Setzungen geschrieben, nicht aus dem Code abgelesen.
+// ===========================================================================
+
+const formDoc = (inner: string, after = "", formAttrs = "") =>
+  `<!DOCTYPE html><html><head></head><body><form data-pagesmith-id="ps-cccccc" ${formAttrs}>${inner}</form>${after}</body></html>`;
+
+function formOf(html: string, id = "ps-cccccc"): HTMLFormElement {
+  const d = new DOMParser().parseFromString(html, "text/html");
+  const f = d.querySelector(`[data-pagesmith-id="${id}"]`);
+  if (!f || f.tagName !== "FORM") throw new Error(`kein <form> ${id}`);
+  return f as HTMLFormElement;
+}
+
+// Die Namen, unter denen die Felder eines Formulars im AUSGELIEFERTEN Text stehen — gelesen
+// am Attribut, in Dokument-Reihenfolge, ohne noscript-Inhalt. Ein eigener, schlichter Leser:
+// NICHT deriveFormFieldNames, die hier geprueft wird.
+function namesInOutput(output: string, id = "ps-cccccc"): string[] {
+  return Array.from(formOf(output, id).elements)
+    .filter((el) => !el.closest("noscript") && el.hasAttribute("name"))
+    .map((el) => el.getAttribute("name") as string);
+}
+
+function exportOf(
+  html: string,
+  mappings: Mapping[],
+  mode: "export" | "preview" | "edit" = "export"
+): string {
+  return generateFunctional(html, mappings, mode, {
+    metaPixelId: PIXEL,
+    trackingKey: TK,
+    capiProxyUrl: PROXY,
+    formTargetLanguage: "de",
+  });
+}
+
+describe("13-1c — die Kurzform (Setzung P13-51)", () => {
+  const ZERLEGT = `Mu${String.fromCharCode(0x308)}ller`; // Vokal plus kombinierendes Trema
+  it.each([
+    ["E-Mail *", "e_mail"],
+    ["Straße & Hausnr.", "strasse_hausnr"],
+    ["Größe", "groesse"],
+    ["ÄRGER Über", "aerger_ueber"],
+    [ZERLEGT, "mueller"],
+    ["  __x__  ", "x"],
+    ["Vor-Name", "vor_name"],
+    ["!!!", ""],
+    ["a".repeat(50), "a".repeat(40)],
+    [`${"b".repeat(39)} c`, "b".repeat(39)],
+  ])("%s -> %s", (roh, soll) => {
+    expect(shortFieldName(roh)).toBe(soll);
+  });
+});
+
+describe("13-1c — die Quellen (Setzung P13-44) und die Label-Falle (Vermerk P13-50)", () => {
+  it("Reihenfolge id · Beschriftung · aria-label · Platzhalter · Feldtyp; die Beschriftung ohne den Text enthaltener Felder", () => {
+    // Rot, wenn eine Quelle fehlt, die Reihenfolge kippt oder "Land DE" statt "land" entsteht.
+    const html = formDoc(
+      '<label for="i1">Vorname</label><input id="i1">' +
+        "<label>Land <select><option>DE</option></select></label>" +
+        '<input aria-label="Telefon (mobil)" placeholder="0171">' +
+        '<input placeholder="Deine Stadt">' +
+        '<input type="tel">' +
+        '<input id="!!!" placeholder="Rest">'
+    );
+    expect(deriveFormFieldNames(formOf(html)).fields).toEqual([
+      { name: "i1", source: "id" },
+      { name: "land", source: "label" },
+      { name: "telefon_mobil", source: "aria-label" },
+      { name: "deine_stadt", source: "placeholder" },
+      { name: "tel", source: "type" },
+      { name: "rest", source: "placeholder" },
+    ]);
+  });
+
+  it("aria-labelledby ist KEINE Quelle (Setzung P13-52)", () => {
+    const html = formDoc('<span id="t">Telefon</span><input type="tel" aria-labelledby="t">');
+    expect(deriveFormFieldNames(formOf(html)).fields).toEqual([{ name: "tel", source: "type" }]);
+  });
+
+  it("F5 (P13-55): benannte Absende-Knoepfe gehoeren in die Liste, ein Bild-Knopf als .x/.y; type=button nicht", () => {
+    const html = formDoc(
+      '<input name="a"><button name="go">S</button><input type="image" name="img" src="x.png"><button type="button" name="nie">B</button><input type="hidden" name="quelle">'
+    );
+    expect(deriveFormFieldNames(formOf(html)).names).toEqual(["a", "go", "img.x", "img.y", "quelle"]);
+  });
+});
+
+describe("13-1c — J3: ein vorhandener Name wird nie ueberschrieben", () => {
+  it("J3: Namen mit Gross/Klein und Leerzeichen am Rand bleiben zeichengleich; ein gleichlautender abgeleiteter weicht aus", () => {
+    // Rot, wenn die Erzeugung ein benanntes Feld anfasst.
+    const html = formDoc('<input name="E-Mail Adresse " id="a1"><input name="vorname"><input id="vorname">');
+    const out = exportOf(html, [target("ps-cccccc")]);
+    expect(namesInOutput(out)).toEqual(["E-Mail Adresse ", "vorname", "vorname_2"]);
+  });
+});
+
+describe("13-1c — J6: eindeutig und nie auf einem vorhandenen Namen", () => {
+  it("J6: gleiche Beschriftung zaehlt hoch; ein abgeleiteter Name trifft keinen vorhandenen, auch keinen spaeteren", () => {
+    // Rot ohne den Kollisionszaehler.
+    const html = formDoc(
+      '<label>Telefon <input></label><label>Telefon <input></label><input id="email"><input name="email">'
+    );
+    const names = deriveFormFieldNames(formOf(html)).fields.map((f) => f.name);
+    expect(names).toEqual(["telefon", "telefon_2", "email_2", "email"]);
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  it("J6: auch mit Suffix hoechstens FIELD_NAME_MAX Zeichen", () => {
+    const lang = "x".repeat(60);
+    const html = formDoc(`<input placeholder="${lang}"><input placeholder="${lang}">`);
+    const names = deriveFormFieldNames(formOf(html)).fields.map((f) => f.name);
+    expect(names).toEqual(["x".repeat(40), `${"x".repeat(38)}_2`]);
+    expect(names.every((n) => n.length <= FIELD_NAME_MAX)).toBe(true);
+  });
+});
+
+describe("13-1c — F4: noscript", () => {
+  it("F4 (P13-54): ein Feld mit noscript-Vorfahren fehlt in Liste und Anzeige und bekommt keinen Namen", () => {
+    // Rot, wenn noscript-Felder benannt oder gelistet werden.
+    const html = formDoc('<input id="a"><noscript><input id="ns"><input name="nsname"></noscript>');
+    // VORBEDINGUNG: Die Testumgebung parst den noscript-Inhalt als ELEMENTE, die zum Formular
+    // gehoeren (wie DOMParser im Browser, Vermerk P13-50) — sonst truege die Fixture den
+    // Gegenstand gar nicht, und der Test waere trivial gruen.
+    expect(Array.from(formOf(html).elements).map((e) => e.getAttribute("id") ?? e.getAttribute("name"))).toEqual([
+      "a",
+      "ns",
+      "nsname",
+    ]);
+    const check = formTargetCheck(html, "ps-cccccc")!;
+    expect(check.fieldNames).toEqual(["a"]);
+    const out = exportOf(html, [target("ps-cccccc", ENDPOINT, THANKS, ["a"])]);
+    expect(out).toContain('id="a" name="a"');
+    expect(out).toContain('<input id="ns">');
+  });
+});
+
+describe("13-1c — J4 und F3 in der Erzeugung", () => {
+  it("J4/F3: ein Radio ohne Namen und ein Leerraum-Name bleiben im erzeugten Text unberuehrt", () => {
+    const html = formDoc('<input type="radio" id="r1"><input name="   " id="leer"><input id="ok">');
+    const out = exportOf(html, [target("ps-cccccc")]);
+    expect(out).toContain('<input type="radio" id="r1">');
+    expect(out).toContain('<input name="   " id="leer">');
+    // Positivkontrolle: das benennbare Feld daneben IST benannt.
+    expect(out).toContain('<input id="ok" name="ok">');
+  });
+});
+
+// J2 — DIE VIER DIFFERENZ-NACHWEISE W1', W2', T1, T9 KOENNEN DAS NICHT FANGEN: Ihre Sonden
+// tragen KEIN einziges Eingabefeld (gezaehlt in der Planrunde: input, select, textarea je 0).
+// Diese Tests sind deshalb die Waechter von J2 (Mutation M-J2).
+describe("13-1c — J2: ohne Formular-Ziel keine Namen", () => {
+  const ZWEI = `<!DOCTYPE html><html><head></head><body><form data-pagesmith-id="ps-cccccc"><input id="vorname"></form><form data-pagesmith-id="ps-eeeeee"><input id="zweit"><textarea></textarea></form></body></html>`;
+
+  it("J2a: ein Projekt ohne Formular-Ziel — kein Name im erzeugten Text", () => {
+    const out = exportOf(ZWEI, [track("ps-cccccc", "Lead"), track("ps-eeeeee", "Lead")]);
+    expect(namesInOutput(out, "ps-cccccc")).toEqual([]);
+    expect(namesInOutput(out, "ps-eeeeee")).toEqual([]);
+  });
+
+  it("J2b: ein Formular OHNE Ziel neben einem MIT Ziel bleibt unbenannt (Positivkontrolle: das mit Ziel ist benannt)", () => {
+    const out = exportOf(ZWEI, [target("ps-cccccc", ENDPOINT, THANKS, ["vorname"])]);
+    expect(namesInOutput(out, "ps-cccccc")).toEqual(["vorname"]);
+    expect(namesInOutput(out, "ps-eeeeee")).toEqual([]);
+  });
+
+  it("J2c: Vorschau und Edit schreiben keine Namen, auch mit Ziel", () => {
+    for (const mode of ["preview", "edit"] as const) {
+      const out = exportOf(ZWEI, [target("ps-cccccc", ENDPOINT, THANKS, ["vorname"])], mode);
+      expect(namesInOutput(out, "ps-cccccc")).toEqual([]);
+    }
+  });
+});
+
+// N-Diff: der Text MIT Ziel ist der Text OHNE Ziel plus GENAU R1, B1, D1 (wie F6b) und die
+// Namens-Einsetzungen — die fuenf Schritte der Dauerregel "WO EINE BYTE-GLEICHHEIT BEWUSST
+// AUFGEGEBEN WIRD …". Die Seite traegt nur die Quellen id und Platzhalter (keine Beschriftung).
+describe("13-1c — N-Diff: Nachher = Vorher plus R1, B1, D1 und genau die Namen", () => {
+  it("N-Diff: zwei Namens-Einsetzungen, danach zeichengleich", () => {
+    const SEITE = `<!DOCTYPE html><html><body><form data-pagesmith-id="ps-cccccc" action="#unten"><input type="email" name="email"><input type="text" id="vorname"><input placeholder="Deine Stadt"><button data-pagesmith-id="ps-dddddd" type="submit" name="go" value="ja">Absenden</button></form></body></html>`;
+    // (1) Vorher-Wert: dieselbe Seite und Optionen, OHNE das Ziel.
+    const vorher = exportOf(SEITE, [track("ps-cccccc", "Lead")]);
+    // (2) Nachher-Wert: an derselben Form, mit demselben Treiber.
+    const nachher = exportOf(SEITE, [
+      track("ps-cccccc", "Lead"),
+      target("ps-cccccc", ENDPOINT, THANKS, ["deine_stadt", "email", "go", "vorname"]),
+    ]);
+    const R1 = buildFormTargetRuntime("de");
+    const EINSETZUNGEN = [' name="vorname"', ' name="deine_stadt"'];
+    // (3) je genau einmal — erwartet: R1, B1, D1 je 1, die zwei Namen je 1.
+    for (const teil of [R1, B1, D1, ...EINSETZUNGEN]) expect(count(nachher, teil)).toBe(1);
+    // (4) entfernen -> zeichengleich zum Vorher-Wert.
+    let rest = nachher;
+    for (const teil of [R1, B1, D1, ...EINSETZUNGEN]) rest = rest.split(teil).join("");
+    expect(bytes(rest)).toBe(bytes(vorher));
+    expect(sha(rest)).toBe(sha(vorher));
+    // (5) POSITIVKONTROLLE: ohne die Namens-Entfernung besteht ein Unterschied.
+    const ohneNamen = nachher.split(R1).join("").split(B1).join("").split(D1).join("");
+    expect(sha(ohneNamen)).not.toBe(sha(vorher));
+  });
+});
+
+describe("13-1c — F6c (Setzung P13-58): die Liste geht nicht hinaus", () => {
+  it("F6c: ein Ziel MIT Liste an einer voll benannten Seite erzeugt denselben Text wie ein Ziel aus 13-1 ohne Liste", () => {
+    // Rot, wenn fieldNames in den Datenblock gelangt.
+    const alt = exportDoc([track("ps-cccccc", "Lead"), target("ps-cccccc", ENDPOINT, THANKS, null)]);
+    const neu = exportDoc([track("ps-cccccc", "Lead"), target("ps-cccccc")]);
+    expect(sha(neu)).toBe(sha(alt));
+    expect(neu).not.toContain("fieldNames");
+  });
+
+  it("F6c-b: die Schluessel-Reihenfolge eines Mappings aus der Datenbank (jsonb) bleibt erhalten", () => {
+    // jsonb ordnet Schluessel nach Laenge: type, config, elementId; im config endpoint,
+    // thanksUrl, fieldNames. Rot, wenn das Weglassen das Mapping in anderer Reihenfolge neu baut.
+    const ausDb = (config: Record<string, unknown>) =>
+      ({ type: "formTarget", config, elementId: "ps-cccccc" }) as unknown as Mapping;
+    const alt = exportDoc([ausDb({ endpoint: ENDPOINT, thanksUrl: THANKS })]);
+    const neu = exportDoc([ausDb({ endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: PAGE_NAMES })]);
+    expect(sha(neu)).toBe(sha(alt));
+    expect(neu).toContain(
+      `{"type":"formTarget","config":{"endpoint":"${ENDPOINT}","thanksUrl":"${THANKS}"},"elementId":"ps-cccccc"}`
+    );
+  });
+});
+
+// J5 — DIESELBE FUNKTION IM EDITOR UND IN DER ERZEUGUNG. Die Editor-Seite laeuft ueber die
+// ECHTE Funktion, die im Editor previewHtml erzeugt: annotateAndDetect (lib/detect.ts;
+// gerufen in CodeImporter.tsx im Memo, das previewHtml liefert) — keine Nachbildung. Die
+// Erwartung ist aus den Setzungen P13-44, P13-51, P13-54, P13-55 geschrieben.
+// Ein Text-Override auf dem <p> IN einer Beschriftung faengt eine Benennung NACH dem
+// Text-Bake (Setzung P13-59).
+describe("13-1c — J5: Editor-Anzeige und Erzeugung liefern dieselben Namen", () => {
+  it("J5: previewHtml aus annotateAndDetect und die Erzeugung — dieselben Namen in derselben Zuordnung", () => {
+    const CODE =
+      '<!DOCTYPE html><html><head></head><body><form data-pagesmith-id="ps-cccccc">' +
+      '<input type="email" name="email">' +
+      '<input type="text" id="Vor-Name">' +
+      '<label><p data-pagesmith-id="ps-pppppp">Straße</p><input type="text"></label>' +
+      "<label>Land <select><option>DE</option></select></label>" +
+      '<input type="tel" aria-label="Telefon (mobil)">' +
+      '<input placeholder="Ihre Nachricht">' +
+      "<textarea></textarea>" +
+      '<input type="checkbox">' +
+      '<input type="text" id="email">' +
+      `<input type="hidden" name="quelle" value="${KOEDER}">` +
+      '<button type="submit" name="go">Senden</button>' +
+      '<noscript><input id="ns"></noscript>' +
+      "</form></body></html>";
+    const SOLL = [
+      "email",
+      "vor_name",
+      "strasse",
+      "land",
+      "telefon_mobil",
+      "ihre_nachricht",
+      "textarea",
+      "checkbox",
+      "email_2",
+      "quelle",
+      "go",
+    ];
+    // Editor-Seite.
+    const previewHtml = annotateAndDetect(CODE).html;
+    const check = formTargetCheck(previewHtml, "ps-cccccc")!;
+    expect(check.fields.map((f) => f.name)).toEqual(SOLL);
+    // Erzeugungs-Seite, MIT Text-Override im Label.
+    const out = exportOf(CODE, [
+      { elementId: "ps-pppppp", type: "text", config: { content: "Anders" } },
+      target("ps-cccccc", ENDPOINT, THANKS, [...SOLL].sort()),
+    ]);
+    expect(namesInOutput(out)).toEqual(SOLL);
+    // Vorbedingung, dass der Override wirklich im Label steht — sonst prueft der Satz oben
+    // die Reihenfolge nicht.
+    expect(out).toContain(">Anders</p>");
+    // J8: nur Namen, nie Werte.
+    expect(check.fieldNames.join(" ")).not.toContain(KOEDER);
+    // Keine Abweichung zwischen Anzeige und bestaetigter Liste.
+    expect(
+      formTargetNameDrift(previewHtml, [target("ps-cccccc", ENDPOINT, THANKS, [...SOLL].sort())])
+    ).toEqual([]);
+  });
+});
+
+describe("13-1c — J8 und die Form der gespeicherten Liste", () => {
+  it.each([
+    ["Liste tauglich", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: ["a"] }, null],
+    ["Liste leer ist tauglich", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: [] }, null],
+    ["Liste fehlt", { endpoint: ENDPOINT, thanksUrl: THANKS }, "missing"],
+    ["kein Array", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: "a" }, "shape"],
+    ["null", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: null }, "shape"],
+    ["Zahl darin", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: ["a", 1] }, "shape"],
+    ["Leerraum darin", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: [" "] }, "shape"],
+    ["kein Objekt", "x", "shape"],
+  ])("%s", (_name, config, soll) => {
+    expect(formTargetNamesProblem(config)).toBe(soll);
+  });
+});
+
+describe("13-1c — J7: Abweichung und Meldung", () => {
+  it("J7: formTargetNameDrift nennt alt und neu; ohne Liste ist alt null; passende Liste -> leer (Positivkontrolle)", () => {
+    const html = PAGE.replace('<input type="text" name="name">', '<input type="text" id="vorname">');
+    expect(formTargetNameDrift(html, [target("ps-cccccc")])).toEqual([
+      { elementId: "ps-cccccc", saved: ["email", "go", "name"], current: ["email", "go", "vorname"] },
+    ]);
+    expect(formTargetNameDrift(PAGE, [target("ps-cccccc", ENDPOINT, THANKS, null)])).toEqual([
+      { elementId: "ps-cccccc", saved: null, current: ["email", "go", "name"] },
+    ]);
+    expect(formTargetNameDrift(PAGE, [target("ps-cccccc")])).toEqual([]);
+  });
+
+  it("J7 / P13-57: die Meldung traegt die vollen Listen alt -> neu samt Variante; beim Export ohne den Veroeffentlichen-Schluss", () => {
+    const drifts = [
+      { elementId: "ps-a", saved: ["email"], current: ["email", "vorname"], variant: "B" as const },
+      { elementId: "ps-b", saved: null, current: ["email"], variant: null },
+    ];
+    const pub = formTargetNamesMessage(drifts, "publish");
+    expect(pub).toContain("Variante B: alt: email → neu: email, vorname");
+    expect(pub).toContain("alt: (keine bestätigt) → neu: email");
+    expect(pub).toContain("Es wurde nichts veröffentlicht.");
+    const exp = formTargetNamesMessage(drifts, "export");
+    expect(exp.startsWith("Export gesperrt: ")).toBe(true);
+    expect(exp).not.toContain("Es wurde nichts veröffentlicht.");
+  });
+
+  it("F12': eine geaenderte Liste ist dirty; gleiche nicht; fehlend gegen vorhanden ist dirty", () => {
+    // Rot ohne den Listen-Term in configEqual.
+    const a = [target("ps-cccccc")];
+    expect(mappingsEqual(a, [target("ps-cccccc")])).toBe(true);
+    expect(mappingsEqual(a, [target("ps-cccccc", ENDPOINT, THANKS, ["email"])])).toBe(false);
+    expect(mappingsEqual(a, [target("ps-cccccc", ENDPOINT, THANKS, null)])).toBe(false);
   });
 });

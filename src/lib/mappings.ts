@@ -52,7 +52,16 @@ export type TrackConfig = {
 // DIE FELDER HEISSEN BEWUSST NICHT "url": Die Anzeige verwaister Mappings liest
 // m.config.url; ein Feld dieses Namens liesse ein Formular-Ziel dort still als
 // "Weiterleitung" erscheinen. So meldet es der Compiler.
-export type FormTargetConfig = { endpoint: string; thanksUrl: string };
+// fieldNames (Scheibe 13-1c; Entscheidung P13-41, Setzungen P13-47 bis P13-49): die am Ziel
+// BESTAETIGTE Liste der Feldnamen, sortiert, nur Namen, nie Werte. OPTIONAL, weil Ziele aus
+// 13-1 sie nicht tragen — eine fehlende Liste heisst NICHT "passt" (Setzung P13-48), das
+// urteilt formTargetNamesProblem (lib/form-target.ts). Sie geht NICHT in den ausgelieferten
+// Text (Setzung P13-58, generateFunctional).
+export type FormTargetConfig = {
+  endpoint: string;
+  thanksUrl: string;
+  fieldNames?: string[];
+};
 
 // type ist der Diskriminator. Erster Aktionstyp war "Redirect bei Klick"
 // (URL-Weiterleitung: Stripe Payment Link, PayPal-Link, generische Links); der
@@ -178,12 +187,21 @@ function configEqual(a: Mapping, b: Mapping): boolean {
     // FORMULAR-ZIEL (Scheibe 13-1): OHNE diesen Zweig fiele der Vergleich auf das
     // return false darunter — das Projekt waere DAUERHAFT dirty, und kein Compiler
     // meldet das (Vermerk P13-33, G1).
+    // Scheibe 13-1c: DIE LISTE GEHOERT DAZU — sonst waere ein reines Bestaetigen neuer
+    // Feldnamen nicht dirty und ginge beim Speichern still verloren.
     return (
       a.config.endpoint === b.config.endpoint &&
-      a.config.thanksUrl === b.config.thanksUrl
+      a.config.thanksUrl === b.config.thanksUrl &&
+      sameOptionalList(a.config.fieldNames, b.config.fieldNames)
     );
   }
   return false;
+}
+
+// Zwei optionale Listen, Element fuer Element. Beide fehlend = gleich; eine fehlend = nicht.
+function sameOptionalList(a?: readonly string[], b?: readonly string[]): boolean {
+  if (a === undefined || b === undefined) return a === b;
+  return a.length === b.length && a.every((x, i) => x === b[i]);
 }
 
 // Reihenfolge-UNABHAENGIGER Mengen-Vergleich, pro (elementId, type) geschluesselt

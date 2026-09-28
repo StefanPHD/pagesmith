@@ -12,8 +12,13 @@
 //    Sperre, eigene Meldung. Die Einsetzung in den submit-Listener steht in
 //    buildWiringScript (lib/generate.ts), weil sie die Track-Anweisung des Wirings braucht.
 //
+// SEIT SCHEIBE 13-1c ein Teil 2a: deriveFormFieldNames — die EINE Ableitung der Feldnamen,
+// die der Editor anzeigt und die Erzeugung (generateFunctional) schreibt; dazu die am Ziel
+// bestaetigte Liste und ihr Riegel.
+//
 // DIE REGELN, AUF DENEN DAS STEHT, stehen in der Standdatei der Phase 13 (Zuschnitt
-// Scheibe 13-1): Invarianten I1 bis I10, Setzungen P13-25 bis P13-32.
+// Scheibe 13-1): Invarianten I1 bis I10, Setzungen P13-25 bis P13-32; fuer 13-1c der
+// Zuschnitt Scheibe 13-1c: Invarianten J1 bis J9, Setzungen P13-43 bis P13-59.
 
 import { isValidRedirectUrl, type Mapping } from "./mappings";
 import { embedInScript } from "./script-embed";
@@ -126,26 +131,265 @@ export function formTargetProblem(
  * - "file-field": ein Datei-Feld (Setzung P13-5).
  * - "dialog": `method="dialog"` am Formular oder `formmethod="dialog"` an einem
  *   Absende-Element — unser preventDefault verhinderte dort das Schliessen des Dialogs.
- * - "unnamed": mindestens ein Eingabefeld ohne `name` (Entscheidung P13-23). `fields`
- *   nennt sie erkennbar: Typ, dazu id oder Platzhalter.
+ * - "unnamed-radio": ein Auswahlknopf (Radio) ohne `name` (Scheibe 13-1c, Setzung P13-46).
+ *   Ein Name aenderte sein Verhalten — gleichnamige Radios schliessen sich aus —, deshalb
+ *   vergibt Pagesmith ihn nicht. Alle UEBRIGEN unbenannten Eingabefelder sind seit 13-1c
+ *   BENENNBAR und kein Ausschluss mehr (deriveFormFieldNames).
+ * - "blank-name": ein `name` nur aus Leerraum (Setzung P13-53). Er wird NICHT ueberschrieben
+ *   (J3), und gesendet kaeme er als Leerzeichen-Name an.
+ * `fields` nennt die Felder erkennbar: Typ, dazu id oder Platzhalter.
  */
 export type FormTargetBlock =
   | { kind: "foreign-action" }
   | { kind: "file-field" }
   | { kind: "dialog" }
-  | { kind: "unnamed"; fields: string[] };
+  | { kind: "unnamed-radio"; fields: string[] }
+  | { kind: "blank-name"; fields: string[] };
 
 /**
  * Das Urteil ueber ein Formular. `blocks` leer = ein Ziel ist erlaubt. `inlineScript` ist
  * KEIN Ausschluss, sondern ein Hinweis (Setzung P13-31): das Formular traegt ein
  * Inline-`onsubmit`.
+ * `fields` und `fieldNames` (Scheibe 13-1c) kommen aus deriveFormFieldNames: die Felder
+ * mit dem Namen, unter dem sie ankommen, und die Liste, die am Ziel bestaetigt wird.
  */
-export type FormTargetCheck = { blocks: FormTargetBlock[]; inlineScript: boolean };
+export type FormTargetCheck = {
+  blocks: FormTargetBlock[];
+  inlineScript: boolean;
+  fields: FormField[];
+  fieldNames: string[];
+};
 
 // Eingabefelder im Sinne von Entscheidung P13-23 (Korrektur K1 des Bau-Auftrags): input
 // ausser den Typen submit, button, reset, image, hidden — dazu select und textarea.
 // fieldset, output, object und button tragen keinen Wert, den der Besucher eingibt.
 const NOT_INPUT_TYPES = new Set(["submit", "button", "reset", "image", "hidden"]);
+
+// ===========================================================================
+// 2a. DIE NAMEN DER FELDER (Phase 13, Scheibe 13-1c)
+// ===========================================================================
+
+/**
+ * Woher der Name eines Feldes stammt. "code": er steht im Quelltext und wird nie
+ * angefasst (J3). Die uebrigen sind abgeleitet, in dieser Reihenfolge (Setzung P13-44;
+ * aria-labelledby ist KEINE Quelle, Setzung P13-52). Die "Nummer" aus P13-44 ist keine
+ * eigene Quelle: Der Feldtyp liefert immer etwas, die Nummer wirkt nur als Suffix bei einer
+ * Kollision.
+ */
+export type FieldNameSource = "code" | "id" | "label" | "aria-label" | "placeholder" | "type";
+
+/** Ein Feld, wie es ankommt: sein Name und dessen Herkunft. */
+export type FormField = { name: string; source: FieldNameSource };
+
+/** Die Hoechstlaenge eines abgeleiteten Namens, Suffix eingeschlossen (Setzung P13-51). */
+export const FIELD_NAME_MAX = 40;
+
+/**
+ * DIE KURZFORM (Setzung P13-51), fuer ALLE Quellen einschliesslich id: Umlaute vorher
+ * umschreiben, Kleinbuchstaben, erlaubt [a-z0-9_], jedes andere Zeichen wird "_", mehrfaches
+ * "_" zusammengefasst, "_" am Rand abgeschnitten, hoechstens FIELD_NAME_MAX Zeichen. Ergibt
+ * sie "", gilt die naechste Quelle.
+ * normalize("NFC") zuerst: Ein zerlegtes Umlaut-Zeichen (Vokal plus Trema) traefe die
+ * Umschreibung sonst nicht.
+ */
+export function shortFieldName(raw: string): string {
+  const s = raw
+    .normalize("NFC")
+    .toLowerCase()
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9_]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return s.slice(0, FIELD_NAME_MAX).replace(/_+$/, "");
+}
+
+// Was aus einer Beschriftung NICHT in ihren Text gehoert: der Inhalt enthaltener Felder
+// (Vermerk P13-50 — "<label>Land <select><option>DE</option></select></label>" liefert
+// sonst "Land DE") und Script-artiger Inhalt.
+const LABEL_SKIP =
+  "button, input, meter, output, progress, select, textarea, datalist, script, style, template";
+
+// Der Text einer Beschriftung — an einer KOPIE ermittelt: Die Kopie haengt an keinem Baum,
+// und an der Beschriftung selbst aendert sich nichts.
+function labelText(label: Element): string {
+  const copy = label.cloneNode(true) as Element;
+  copy.querySelectorAll(LABEL_SKIP).forEach((n) => n.remove());
+  return copy.textContent ?? "";
+}
+
+function isEntryField(el: Element): boolean {
+  if (el.tagName === "INPUT") return !NOT_INPUT_TYPES.has((el as HTMLInputElement).type);
+  return el.tagName === "SELECT" || el.tagName === "TEXTAREA";
+}
+
+// Was mit seinem Namen gesendet werden KANN: Eingabefelder, versteckte Felder und
+// Absende-Elemente (Setzung P13-55 — die Laufzeit sendet mit new FormData(f, submitter)).
+// Knoepfe type=button/reset senden nie.
+function isSendable(el: Element): boolean {
+  if (isEntryField(el) || isSubmitControl(el)) return true;
+  return el.tagName === "INPUT" && (el as HTMLInputElement).type === "hidden";
+}
+
+// Unter welchen Namen ein Feld ankommt: ein Bild-Absendeknopf als "<name>.x" und "<name>.y".
+function sentNames(el: Element, name: string): string[] {
+  const isImage =
+    el.tagName === "INPUT" && (el as HTMLInputElement).type === "image";
+  return isImage ? [`${name}.x`, `${name}.y`] : [name];
+}
+
+function nameBase(el: Element): { base: string; source: Exclude<FieldNameSource, "code"> } {
+  const id = shortFieldName(el.getAttribute("id") ?? "");
+  if (id) return { base: id, source: "id" };
+  const labels = (el as HTMLInputElement).labels;
+  for (const label of labels ? Array.from(labels) : []) {
+    const text = shortFieldName(labelText(label));
+    if (text) return { base: text, source: "label" };
+  }
+  const aria = shortFieldName(el.getAttribute("aria-label") ?? "");
+  if (aria) return { base: aria, source: "aria-label" };
+  const placeholder = shortFieldName(el.getAttribute("placeholder") ?? "");
+  if (placeholder) return { base: placeholder, source: "placeholder" };
+  const kind =
+    el.tagName === "INPUT" ? (el as HTMLInputElement).type : el.tagName.toLowerCase();
+  return { base: shortFieldName(kind) || "feld", source: "type" };
+}
+
+// Kollisionen hochzaehlen: "x", dann "x_2", "x_3" … — nie ein vergebener Name (J6), nie
+// laenger als FIELD_NAME_MAX.
+function uniqueName(base: string, reserved: ReadonlySet<string>): string {
+  if (!reserved.has(base)) return base;
+  for (let i = 2; ; i++) {
+    const suffix = `_${i}`;
+    const head = base.slice(0, FIELD_NAME_MAX - suffix.length).replace(/_+$/, "");
+    const candidate = `${head}${suffix}`;
+    if (!reserved.has(candidate)) return candidate;
+  }
+}
+
+/** Das Ergebnis der Ableitung fuer EIN Formular. */
+export type FormFieldNames = {
+  /** Die Felder in Dokument-Reihenfolge, mit Name und Herkunft (Anzeige im Panel). */
+  fields: FormField[];
+  /** Die Liste, die am Ziel bestaetigt wird: sortiert, jeder Name einmal (Setzung P13-47). */
+  names: string[];
+  /** Was die Erzeugung schreibt: nur ABGELEITETE Namen, nie ein vorhandener (J3). */
+  assignments: { element: Element; name: string }[];
+  /** Radios ohne Namen (Setzung P13-46) — kein Ziel. */
+  unnamedRadios: Element[];
+  /** Felder mit einem Namen nur aus Leerraum (Setzung P13-53) — kein Ziel. */
+  blankNames: Element[];
+};
+
+/**
+ * DIE ABLEITUNGSFUNKTION DER SCHEIBE 13-1c — DIE EINZIGE (J5). Der Editor ruft sie ueber
+ * formTargetCheck auf previewHtml, die Erzeugung in generateFunctional auf ihrem eigenen
+ * Dokument; beide sind DOMParser-Dokumente desselben Quelltexts und sehen dieselben Felder
+ * (Vermerk P13-50). Sie SCHREIBT NICHTS — das Schreiben steht beim Aufrufer.
+ *
+ * - Die Felder kommen aus `form.elements` (auch per form=-Attribut ausserhalb), OHNE die mit
+ *   einem noscript-Vorfahren: live sind sie Text (Setzung P13-54).
+ * - Reserviert sind ALLE vorhandenen Namen in `form.elements`, auch die ausgelassenen: ein
+ *   abgeleiteter Name trifft nie einen vorhandenen (J6).
+ * - Ein vorhandener Name ("code") bleibt, wie er ist (J3) — auch mit Gross/Klein oder
+ *   Leerzeichen am Rand; nur ein Name AUS Leerraum ist eine Sperre (Setzung P13-53). Ein
+ *   LEERES Attribut (name="") traegt keinen Namen und gilt als unbenannt.
+ * - Ein unbenanntes Eingabefeld bekommt seinen Namen aus id · Beschriftung · aria-label ·
+ *   Platzhalter · Feldtyp (Setzungen P13-44, P13-51); Radios ausgenommen (Setzung P13-46).
+ * - Deaktivierte Felder zaehlen mit, wie in 13-1: ob sie beim Absenden aktiv sind,
+ *   entscheidet das Skript der Seite.
+ * - Die Liste traegt nur NAMEN, nie Werte (J8).
+ */
+export function deriveFormFieldNames(form: HTMLFormElement): FormFieldNames {
+  // BILD-ABSENDEKNOEPFE stehen NICHT in form.elements (HTML-Spezifikation: "listed elements,
+  // excluding image buttons") — als Absender senden sie trotzdem "<name>.x"/"<name>.y"
+  // (Setzung P13-55). Sie werden ueber ihr form-Eigentum dazugeholt und in
+  // Dokument-Reihenfolge einsortiert.
+  const images = Array.from(form.ownerDocument.querySelectorAll("input")).filter(
+    (el) => el.type === "image" && el.form === form
+  );
+  const all = [...Array.from(form.elements), ...images].sort((a, b) =>
+    a === b ? 0 : a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+  );
+  const reserved = new Set<string>();
+  for (const el of all) {
+    const name = el.getAttribute("name");
+    if (name) reserved.add(name);
+  }
+  const fields: FormField[] = [];
+  const sent: string[] = [];
+  const assignments: { element: Element; name: string }[] = [];
+  const unnamedRadios: Element[] = [];
+  const blankNames: Element[] = [];
+
+  for (const el of all) {
+    if (el.closest("noscript")) continue;
+    if (!isSendable(el)) continue;
+    const raw = el.getAttribute("name");
+    if (raw) {
+      if (raw.trim() === "") {
+        blankNames.push(el);
+        continue;
+      }
+      fields.push({ name: raw, source: "code" });
+      sent.push(...sentNames(el, raw));
+      continue;
+    }
+    // Ohne Namen sendet ein verstecktes Feld oder ein Absende-Element nichts, und es
+    // bekommt auch keinen: Es ist kein Eingabefeld.
+    if (!isEntryField(el)) continue;
+    if (el.tagName === "INPUT" && (el as HTMLInputElement).type === "radio") {
+      unnamedRadios.push(el);
+      continue;
+    }
+    const { base, source } = nameBase(el);
+    const name = uniqueName(base, reserved);
+    reserved.add(name);
+    assignments.push({ element: el, name });
+    fields.push({ name, source });
+    sent.push(...sentNames(el, name));
+  }
+
+  return {
+    fields,
+    names: sortedFieldNames(sent),
+    assignments,
+    unnamedRadios,
+    blankNames,
+  };
+}
+
+/** Sortiert, jeder Name einmal — die Form der gespeicherten Liste. */
+export function sortedFieldNames(names: readonly string[]): string[] {
+  return Array.from(new Set(names)).sort();
+}
+
+/** Zwei Listen als MENGE gleich (Reihenfolge und Doppelte zaehlen nicht). */
+export function sameFieldNames(a: readonly string[], b: readonly string[]): boolean {
+  const x = sortedFieldNames(a);
+  const y = sortedFieldNames(b);
+  return x.length === y.length && x.every((n, i) => n === y[i]);
+}
+
+/**
+ * Die gespeicherte Liste eines Formular-Ziels (Setzungen P13-47, P13-48, P13-56).
+ * - "missing": keine Liste — ein Ziel aus 13-1 oder ein nie bestaetigtes. Fehlend heisst
+ *   NICHT "passt" (Setzung P13-48).
+ * - "shape": keine Liste aus nicht-leeren Zeichenketten — ein Wert, den der Code nicht
+ *   kennt (Dauerregel "EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB").
+ * Der Server kann damit pruefen, OB eine Liste da ist; ob sie zum Formular passt, kann er
+ * nicht (kein DOM).
+ */
+export function formTargetNamesProblem(config: unknown): "missing" | "shape" | null {
+  if (!config || typeof config !== "object") return "shape";
+  const { fieldNames } = config as Record<string, unknown>;
+  if (fieldNames === undefined) return "missing";
+  if (!Array.isArray(fieldNames)) return "shape";
+  if (fieldNames.some((n) => typeof n !== "string" || n.trim() === "")) return "shape";
+  return null;
+}
 
 function isAbsoluteAddress(raw: string | null): boolean {
   const value = (raw ?? "").trim();
@@ -220,19 +464,19 @@ export function formTargetCheck(html: string, elementId: string): FormTargetChec
     )
       blocks.push({ kind: "dialog" });
 
-    const unnamed = controls
-      .filter((el) => {
-        if (el.tagName === "INPUT") {
-          if (NOT_INPUT_TYPES.has((el as HTMLInputElement).type)) return false;
-        } else if (el.tagName !== "SELECT" && el.tagName !== "TEXTAREA") {
-          return false;
-        }
-        return (el.getAttribute("name") ?? "").trim() === "";
-      })
-      .map(describeField);
-    if (unnamed.length > 0) blocks.push({ kind: "unnamed", fields: unnamed });
+    // DIE NAMEN (Scheibe 13-1c): DIESELBE Funktion wie in generateFunctional (J5).
+    const names = deriveFormFieldNames(form);
+    if (names.unnamedRadios.length > 0)
+      blocks.push({ kind: "unnamed-radio", fields: names.unnamedRadios.map(describeField) });
+    if (names.blankNames.length > 0)
+      blocks.push({ kind: "blank-name", fields: names.blankNames.map(describeField) });
 
-    return { blocks, inlineScript: form.hasAttribute("onsubmit") };
+    return {
+      blocks,
+      inlineScript: form.hasAttribute("onsubmit"),
+      fields: names.fields,
+      fieldNames: names.names,
+    };
   } catch {
     return null;
   }
@@ -247,14 +491,60 @@ export function formTargetCheck(html: string, elementId: string): FormTargetChec
  * - "invalid":    ein Wert (formTargetProblem).
  * - "ineligible": ein Formular erfuellt die Bedingungen nicht mehr (formTargetCheck) — der
  *                 Betreiber kann den Code NACH dem Anlegen des Ziels geaendert haben.
+ * - "names":      die Feldnamen weichen von der am Ziel bestaetigten Liste ab, oder es gibt
+ *                 keine (Scheibe 13-1c; Entscheidung P13-41, Setzung P13-48). Die
+ *                 Einzelheiten alt -> neu liefert formTargetNameDrift.
  * - "language":   die Projektsprache hat einen unbekannten Wert; die Meldung des Ziels
  *                 braucht sie (Setzung P13-27).
  * Gezaehlt wird nur ein Ziel, dessen <form> im Dokument steht: ein verwaistes wird nicht
  * verdrahtet (generateFunctional filtert es) und erreicht keine ausgelieferte Zeile.
- * DOM-ABHAENGIG, also NUR im Client. Der Server prueft Werte und Sprache selbst, ohne
- * Parser (publishProject); die Berechtigung kann er nicht pruefen.
+ * DOM-ABHAENGIG, also NUR im Client. Der Server prueft Werte, Sprache und das VORHANDENSEIN
+ * der Liste selbst, ohne Parser (publishProject); Berechtigung und Abweichung kann er nicht
+ * pruefen.
  */
-export type FormTargetDocumentProblem = "invalid" | "ineligible" | "language";
+export type FormTargetDocumentProblem = "invalid" | "ineligible" | "names" | "language";
+
+/** Eine Abweichung der Feldnamen an einem Formular-Ziel. saved null = keine Liste. */
+export type FormTargetNameDrift = {
+  elementId: string;
+  saved: string[] | null;
+  current: string[];
+};
+
+type LiveTarget = { mapping: Extract<Mapping, { type: "formTarget" }>; check: FormTargetCheck };
+
+function liveTargets(html: string, mappings: readonly Mapping[]): LiveTarget[] {
+  const out: LiveTarget[] = [];
+  for (const m of mappings) {
+    if (m.type !== "formTarget") continue;
+    const check = formTargetCheck(html, m.elementId);
+    if (check) out.push({ mapping: m, check });
+  }
+  return out;
+}
+
+function driftOf({ mapping, check }: LiveTarget): FormTargetNameDrift | null {
+  const saved =
+    formTargetNamesProblem(mapping.config) === null
+      ? sortedFieldNames(mapping.config.fieldNames ?? [])
+      : null;
+  if (saved !== null && sameFieldNames(saved, check.fieldNames)) return null;
+  return { elementId: mapping.elementId, saved, current: check.fieldNames };
+}
+
+/**
+ * Die Abweichungen der Feldnamen in einem Dokument — je Ziel die gespeicherte Liste (null =
+ * keine oder unbrauchbar) und die aktuelle. Leer = alles bestaetigt. Nur Ziele, deren
+ * <form> im Dokument steht.
+ */
+export function formTargetNameDrift(
+  html: string,
+  mappings: readonly Mapping[]
+): FormTargetNameDrift[] {
+  return liveTargets(html, mappings)
+    .map(driftOf)
+    .filter((d): d is FormTargetNameDrift => d !== null);
+}
 
 export function formTargetDocumentProblem(
   html: string,
@@ -262,13 +552,12 @@ export function formTargetDocumentProblem(
   ownDomains: readonly string[],
   language: ConsentLanguageRead
 ): FormTargetDocumentProblem | null {
-  const live = mappings.filter(
-    (m) => m.type === "formTarget" && formTargetCheck(html, m.elementId) !== null
-  );
+  const live = liveTargets(html, mappings);
   if (live.length === 0) return null;
-  if (live.some((m) => formTargetProblem(m.config, ownDomains) !== null)) return "invalid";
-  if (live.some((m) => (formTargetCheck(html, m.elementId)?.blocks.length ?? 0) > 0))
-    return "ineligible";
+  if (live.some((t) => formTargetProblem(t.mapping.config, ownDomains) !== null))
+    return "invalid";
+  if (live.some((t) => t.check.blocks.length > 0)) return "ineligible";
+  if (live.some((t) => driftOf(t) !== null)) return "names";
   if (language === "unknown") return "language";
   return null;
 }
@@ -286,11 +575,25 @@ export const FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE =
 
 /** Nur im Client: ein Formular mit Ziel erfuellt die Bedingungen nicht mehr. */
 export const FORM_TARGET_INELIGIBLE_MESSAGE =
-  "Ein Formular mit Ziel erfüllt die Bedingungen nicht mehr (eigene Zieladresse, Datei-Feld, method=\"dialog\" oder ein Eingabefeld ohne Namen). Bitte das Formular auswählen und den Hinweis dort lesen. Es wurde nichts veröffentlicht.";
+  "Ein Formular mit Ziel erfüllt die Bedingungen nicht mehr (eigene Zieladresse, Datei-Feld, method=\"dialog\", ein Auswahlknopf ohne Namen oder ein Name nur aus Leerzeichen). Bitte das Formular auswählen und den Hinweis dort lesen. Es wurde nichts veröffentlicht.";
 
-/** Die Meldung eines Riegels im EDITOR — beim Veroeffentlichen oder beim Export. */
+/**
+ * Abbruch in publishProject, wenn ein Formular-Ziel keine brauchbare Liste der Feldnamen
+ * traegt (Setzung P13-56). Der Server sieht nur, DASS sie fehlt, nicht welche Namen gelten.
+ */
+export const FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE =
+  "Für ein Formular-Ziel sind die Feldnamen nicht bestätigt. Bitte das Formular auswählen und „Neue Feldnamen bestätigen“ klicken. Es wurde nichts veröffentlicht.";
+
+function withoutPublishTail(text: string): string {
+  return `Export gesperrt: ${text.replace(" Es wurde nichts veröffentlicht.", "")}`;
+}
+
+/**
+ * Die Meldung eines Riegels im EDITOR — beim Veroeffentlichen oder beim Export. "names"
+ * steht nicht hier: seine Meldung braucht die Listen (formTargetNamesMessage).
+ */
 export function formTargetDocumentMessage(
-  problem: FormTargetDocumentProblem,
+  problem: Exclude<FormTargetDocumentProblem, "names">,
   where: "publish" | "export"
 ): string {
   const text =
@@ -300,7 +603,27 @@ export function formTargetDocumentMessage(
         ? FORM_TARGET_INELIGIBLE_MESSAGE
         : FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE;
   if (where === "publish") return text;
-  return `Export gesperrt: ${text.replace(" Es wurde nichts veröffentlicht.", "")}`;
+  return withoutPublishTail(text);
+}
+
+/**
+ * DIE MELDUNG BEI ABWEICHENDEN ODER FEHLENDEN FELDNAMEN (Entscheidung P13-41, Setzung
+ * P13-57): die VOLLEN Listen "alt → neu", je Ziel, samt Variante, wenn das Projekt zwei hat.
+ */
+export function formTargetNamesMessage(
+  drifts: readonly (FormTargetNameDrift & { variant: "A" | "B" | null })[],
+  where: "publish" | "export"
+): string {
+  const list = (names: readonly string[]) => (names.length > 0 ? names.join(", ") : "(keine)");
+  const parts = drifts.map(
+    (d) =>
+      `${d.variant ? `Variante ${d.variant}: ` : ""}alt: ${
+        d.saved === null ? "(keine bestätigt)" : list(d.saved)
+      } → neu: ${list(d.current)}`
+  );
+  const text = `Die Feldnamen eines Formulars mit Ziel sind geändert oder noch nicht bestätigt — ${parts.join("; ")}. Bitte das Formular auswählen und „Neue Feldnamen bestätigen“ klicken. Es wurde nichts veröffentlicht.`;
+  if (where === "publish") return text;
+  return withoutPublishTail(text);
 }
 
 // ===========================================================================

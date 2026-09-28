@@ -6059,13 +6059,116 @@ describe("CodeImporter — Formular-Ziel (Phase 13, Scheibe 13-1)", () => {
     expect(screen.getByRole("button", { name: "Ziel entfernen" })).toBeTruthy();
   });
 
-  it("K1: ein unbenanntes Feld -> KEINE Eingabe, die Gruende nennen das Feld", async () => {
+  // SEIT 13-1c sperrt nur noch ein Radio ohne Namen (J4, Setzung P13-46); ein unbenanntes
+  // Textfeld ist benennbar (K1b darunter).
+  it("K1 (13-1c, J4): ein Radio ohne Namen -> KEINE Eingabe, die Gruende nennen es", async () => {
     // Rot, wenn das Panel die Berechtigung nicht beachtet.
-    await oeffneFormular(DOC("", '<input type="email" name="email"><input type="text" id="vorname">'));
+    await oeffneFormular(DOC("", '<input type="email" name="email"><input type="radio" id="r1" value="a">'));
     expect(screen.getByText("Für dieses Formular ist kein Ziel möglich:")).toBeTruthy();
-    expect(screen.getByText(/text #vorname/)).toBeTruthy();
+    expect(screen.getByText(/radio #r1/)).toBeTruthy();
     expect(screen.queryByRole("button", { name: /Formular-Ziel/ })).toBeNull();
     expect(screen.queryByLabelText("Zieladresse")).toBeNull();
+  });
+
+  it("K1b + J1 (13-1c): ein unbenanntes Feld ist benennbar — das Panel nennt Name und Herkunft; der Name steht im Export, NICHT im Quelltext", async () => {
+    // Rot, wenn das Panel die Namen nicht zeigt, die Erzeugung sie nicht schreibt oder der
+    // Editor-Quelltext sie aufnimmt.
+    const clipboard = vi.fn<(text: string) => Promise<undefined>>(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboard },
+      configurable: true,
+    });
+    await oeffneFormular(DOC("", '<input type="email" name="email"><input type="text" id="vorname">'));
+    expect(screen.getByText("Diese Feldnamen kommen an:")).toBeTruthy();
+    expect(screen.getByText("vorname")).toBeTruthy();
+    expect(screen.getByText("(aus der id)", { exact: false })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Formular-Ziel/ }));
+    fireEvent.change(screen.getByLabelText("Zieladresse"), { target: { value: ENDPOINT } });
+    fireEvent.change(screen.getByLabelText("Danke-Seite"), { target: { value: "https://danke.example/" } });
+    fireEvent.click(screen.getByRole("button", { name: "Ziel übernehmen" }));
+    expect(await screen.findByTitle("Verknüpft: formTarget")).toBeTruthy();
+    // Das Uebernehmen hat die Liste bestaetigt: der Export ist frei (J7, Positivkontrolle).
+    fireEvent.click(screen.getByRole("button", { name: "In Zwischenablage kopieren" }));
+    await waitFor(() => expect(clipboard).toHaveBeenCalledTimes(1));
+    const exportText = clipboard.mock.calls[0][0];
+    expect(exportText).toContain('id="vorname" name="vorname"');
+    // J1: der Quelltext im Editor traegt den Namen NICHT.
+    const quelltext = (document.querySelector("textarea") as HTMLTextAreaElement).value;
+    expect(quelltext).toContain('id="vorname"');
+    expect(quelltext).not.toContain('name="vorname"');
+  });
+
+  it("J7 (Export): abweichende Namen sperren mit alt -> neu; 'Neue Feldnamen bestätigen' gibt frei", async () => {
+    // Rot ohne den Riegel "names" oder ohne den Bestaetigen-Weg.
+    const clipboard = vi.fn(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboard },
+      configurable: true,
+    });
+    await oeffneFormular(DOC("", '<input type="email" name="email"><input type="text" id="vorname">'), [
+      {
+        elementId: "ps-ffffff",
+        type: "formTarget",
+        config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/", fieldNames: ["email"] },
+      },
+    ]);
+    fireEvent.click(screen.getByRole("button", { name: "In Zwischenablage kopieren" }));
+    expect(
+      await screen.findByText(/^Export gesperrt: Die Feldnamen eines Formulars mit Ziel .*alt: email → neu: email, vorname/)
+    ).toBeTruthy();
+    expect(clipboard).not.toHaveBeenCalled();
+    // Das Panel nennt dasselbe und bietet die Bestaetigung an.
+    expect(screen.getByText(/Die Feldnamen haben sich geändert/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Neue Feldnamen bestätigen" }));
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Neue Feldnamen bestätigen" })).toBeNull());
+    fireEvent.click(screen.getByRole("button", { name: "In Zwischenablage kopieren" }));
+    await waitFor(() => expect(clipboard).toHaveBeenCalledTimes(1));
+  });
+
+  it("J7 / P13-48 (Export): ein Ziel aus 13-1 OHNE Liste sperrt, obwohl die Felder passen", async () => {
+    const clipboard = vi.fn(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboard },
+      configurable: true,
+    });
+    render(
+      <CodeImporter
+        initialCode={DOC()}
+        initialMappings={[
+          { elementId: "ps-ffffff", type: "formTarget", config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/" } },
+        ]}
+      />
+    );
+    await screen.findByText("Absenden");
+    fireEvent.click(screen.getByRole("button", { name: "In Zwischenablage kopieren" }));
+    expect(await screen.findByText(/alt: \(keine bestätigt\) → neu: email/)).toBeTruthy();
+    expect(clipboard).not.toHaveBeenCalled();
+  });
+
+  it("J7 (Veroeffentlichen, A/B): eine Abweichung NUR in Variante B sperrt, und die Meldung nennt B", async () => {
+    // Rot, wenn der Riegel nur die aktive Variante prueft oder die Variante nicht nennt.
+    const ZIEL_OK: Mapping = {
+      elementId: "ps-ffffff",
+      type: "formTarget",
+      config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/", fieldNames: ["email"] },
+    };
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={DOC()}
+        initialMappings={[ZIEL_OK]}
+        initialVariantBHtml={DOC("", '<input type="email" name="email"><input type="text" id="vorname">')}
+        initialVariantBMappings={[ZIEL_OK]}
+      />
+    );
+    await screen.findByText("Absenden");
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+    expect(
+      (await screen.findAllByText(/Variante B: alt: email → neu: email, vorname/)).length
+    ).toBeGreaterThan(0);
+    expect(screen.queryByText(/Variante A: alt:/)).toBeNull();
+    expect(publishProject).not.toHaveBeenCalled();
   });
 
   it("K2: ein Inline-onsubmit ist ein Hinweis, die Eingabe bleibt angeboten", async () => {
@@ -6100,9 +6203,10 @@ describe("CodeImporter — Formular-Ziel (Phase 13, Scheibe 13-1)", () => {
       value: { writeText: clipboard },
       configurable: true,
     });
+    // Seit 13-1c ist ein Radio ohne Namen der Fall, der die Bedingungen bricht.
     render(
       <CodeImporter
-        initialCode={DOC("", '<input type="email" name="email"><input type="text">')}
+        initialCode={DOC("", '<input type="email" name="email"><input type="radio">')}
         initialMappings={[
           { elementId: "ps-ffffff", type: "formTarget", config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/" } },
         ]}

@@ -14,6 +14,7 @@ import { publishProject } from "./actions";
 import {
   FORM_TARGET_INVALID_MESSAGE,
   FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE,
+  FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE,
 } from "@/lib/form-target";
 
 /**
@@ -1825,10 +1826,12 @@ describe("publishProject — eigene Bausteine aus einem frueheren Export", () =>
 describe("F8 — das Tor des Formular-Ziels in publishProject", () => {
   const ENDPOINT = "https://hook.eu2.make.com/abc";
   const THANKS = "https://danke.example/";
+  // SEIT 13-1c traegt ein taugliches Ziel die bestaetigte Liste der Feldnamen (Setzung
+  // P13-56) — ohne sie bricht das Tor ab (F8', unten).
   const ziel = (endpoint = ENDPOINT, thanksUrl = THANKS) => ({
     elementId: "ps-f",
     type: "formTarget" as const,
-    config: { endpoint, thanksUrl },
+    config: { endpoint, thanksUrl, fieldNames: ["email"] },
   });
   const own = () =>
     makeClient({
@@ -1893,5 +1896,53 @@ describe("F8 — das Tor des Formular-Ziels in publishProject", () => {
       const res = await publishProject("proj-1", "<h1>LIVE</h1>", { ...snapshot, settings });
       expect(res.ok).toBe(true);
     }
+  });
+
+  // F8' (Scheibe 13-1c, Setzungen P13-48 und P13-56): Ein Ziel OHNE brauchbare Liste der
+  // Feldnamen bricht ab — ueber BEIDE Varianten, vor dem Label-Schreiben. Die Positivkontrolle
+  // ist der erste F8-Fall oben (Ziel mit Liste wird veroeffentlicht).
+  it.each([
+    ["Liste fehlt (Ziel aus 13-1)", { endpoint: ENDPOINT, thanksUrl: THANKS }],
+    ["Liste mit leerem Namen", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: [" "] }],
+    ["Liste mit Zahl", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: ["a", 1] }],
+    ["Liste kein Array", { endpoint: ENDPOINT, thanksUrl: THANKS, fieldNames: "email" }],
+  ])("F8': %s -> Abbruch mit eigener Meldung, NICHTS geschrieben", async (_name, config) => {
+    // Rot ohne die Pruefung der Liste im Tor.
+    const { rec } = own();
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+      ...snapshot,
+      mappings: [{ elementId: "ps-f", type: "formTarget", config } as never],
+    });
+    expect(res).toEqual({ ok: false, error: FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE });
+    expect(rec.inserts).toHaveLength(0);
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("F8': eine fehlende Liste NUR in Variante B bricht ebenfalls ab", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {}, html_b: "<h1>B</h1>" }, error: null },
+    });
+    const res = await publishProject(
+      "proj-1",
+      "<h1>LIVE</h1>",
+      { ...snapshot, mappings: [ziel()] },
+      {
+        functionalHtml: "<h1>B</h1>",
+        html: "<h1>B</h1>",
+        mappings: [{ elementId: "ps-f", type: "formTarget", config: { endpoint: ENDPOINT, thanksUrl: THANKS } }],
+      }
+    );
+    expect(res).toEqual({ ok: false, error: FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE });
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("F8': Reihenfolge — ein ungueltiger Wert meldet sich vor der fehlenden Liste", async () => {
+    own();
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+      ...snapshot,
+      mappings: [{ elementId: "ps-f", type: "formTarget", config: { endpoint: "http://x.example", thanksUrl: THANKS } }],
+    });
+    expect(res).toEqual({ ok: false, error: FORM_TARGET_INVALID_MESSAGE });
   });
 });

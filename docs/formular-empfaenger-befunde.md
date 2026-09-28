@@ -399,7 +399,7 @@ lässt das Modul auf einen Aufruf warten; der Aufruf der Adresse im Browser zeig
 "Accepted"; "Detect new values" bestimmt die Struktur aus einem Beispielaufruf neu.
 
 **(r) K7.1 — WERBEBLOCKER.** NICHT GELESEN — per Doku nicht beantwortbar. MESSFRAGE (M10).
-→ GEMESSEN am Listentext, nicht im Browser: (ab).
+→ GEMESSEN am Listentext, nicht im Browser: (ab). Im Browser für EINEN Blocker: (ae).
 
 ### Messkandidaten Make (aus der Lesung vom 2026-09-28)
 
@@ -416,7 +416,8 @@ seither gemessen ist, führt "Messung 2026-09-28", am Ende des Abschnitts.
   Hook und nach einer Deaktivierung durch einen Fehler. (K4.3; zu (i), (m)) — TEILWEISE
   GEMESSEN (z): nur Szenario AUS
 - M5 — Tragen die Fehlerantworten (400, 410, 429, 500) dieselben CORS-Kopfzeilen, sind sie
-  aus dem Browser lesbar? (K2.3; zu (d), (i), (j)) — TEILWEISE GEMESSEN (y): nur 410, nur curl
+  aus dem Browser lesbar? (K2.3; zu (d), (i), (j)) — TEILWEISE GEMESSEN (y): nur 410, nur curl;
+  die 410 im Browser: (ac), (ad)
 - M6 — Folgt ein `fetch` einer 303-Weiterleitung aus "Webhook response", und woran scheitert
   CORS dabei? (K2.4; zu (e), (f))
 - M7 — Unterdrückt "Keep data confidential" den Rumpf in den Webhook-Logs? (K5.4; zu (o))
@@ -425,7 +426,7 @@ seither gemessen ist, führt "Messung 2026-09-28", am Ende des Abschnitts.
 - M9 — Abbildung mehrfach vorkommender Feldnamen im selben Rumpf (Checkbox-Gruppen).
   (K1.3; zu (b)) — GEMESSEN (w) für form-urlencoded
 - M10 — Erfassen gängige Filterlisten die Webhook-Adresse (Host bzw. Pfad)? (K7.1; zu (r))
-  — TEILWEISE GEMESSEN (ab): am Listentext, nicht im Browser
+  — TEILWEISE GEMESSEN (ab): am Listentext, nicht im Browser; im Browser für EINEN Blocker (ae)
 - M11 — Zeit bis zur Standardantwort unter normaler Last. (K2.5; zu (d)) — GEMESSEN (aa),
   ohne Last
 
@@ -511,6 +512,7 @@ FOLGERUNG, NICHT IM BROWSER GEMESSEN: Ein Browser liefert diese Antwort dem Skri
 zu unterscheiden ist.
 GRENZE: nur 410. Die Antworten 400 (Schlange voll, Datenstruktur), 429 und 500 sind nicht
 gemessen; sie herbeizuführen hiesse, Grenzen des Kontos zu belasten.
+→ Die FOLGERUNG ist im Browser GEMESSEN, für EINEN Browser: (ad).
 
 **(z) M4 (teilweise) — SZENARIO AUS.** Owner schaltet das Szenario aus, dann GEMESSEN, curl,
 2026-09-28T08:29:50Z: Anfrage 1 mit `probe=m4-off` → `200 OK`, Rumpf `Accepted`,
@@ -579,4 +581,59 @@ und Einstellungen eines Blockers sind nicht erfasst. Das Verhalten zeigt erst de
   - M12 — Was geschieht mit der Queue, wenn beim Einschalten NICHT "Process old data"
     gewählt wird? (K4.3; zu (z))
   - M13 — `fetch` gegen eine unbekannte Kennung im Browser: wirft er `TypeError`, und steht
-    eine CORS-Meldung in der Konsole? (K2.3; zu (y))
+    eine CORS-Meldung in der Konsole? (K2.3; zu (y)) — GEMESSEN (ad)
+
+### Messung 2026-09-28, im Browser (Owner, Phase 13, Planrunde der Scheibe 13-1, G0)
+
+**AUFBAU:** Der Owner setzte Konsolen-Einzeiler ab, die CC vorgegeben hatte. Ort war eine
+veröffentlichte Seite unter publayer.net, Adresse wie in "Messung 2026-09-28" (Szenario EIN, keine
+Datenstruktur, kein Modul "Webhook response"). Köderwerte `probe=n1` … `probe=n7`. Die Adresse
+steht hier nicht.
+Browser: Google Chrome 153.0.8010.53 (64-Bit). Blocker: uBlock Origin Lite (MV3), Filtermodus
+"Vollständig", Standard-Filterlisten. Beides ist OWNER-ANGABE zur zweiten Reihe (N3, N4, N7) und
+für die erste Reihe (N1–N6) nicht gesondert benannt; dort hiess der Blocker "uBlock Origin".
+Die Einzeiler gaben `r.type` und `r.status` aus. Die Ausgabe der ersten Reihe trug nach Angabe
+des Owners `r.type` NICHT — belegt ist dort nur OK bzw. FEHLER.
+Was UNSERE Laufzeit betrifft (Umleitung eines Blockers, Offline, Signal), steht nicht hier,
+sondern in docs/aktiver-stand.md, Vermerk P13-22 der Phase 13; dort gilt es auch nur für die
+laufende Phase.
+Die Ergebnisse sind OWNER-ANGABE 2026-09-28: Konsole, Netzwerk-Tab und Make-Oberfläche.
+
+**(ac) DIE 410 IST IM MODUS `no-cors` FÜR DAS SKRIPT UNSICHTBAR.** GEMESSEN, Browser, 2026-09-28.
+Beide Aufrufe liefen mit `mode: 'no-cors'`, `keepalive: true` und einem Rumpf aus
+`URLSearchParams`.
+- N1 (echte Adresse, Blocker AUS): Konsole OK, Netzwerk 200; `probe: n1` ist in den Make-Logs
+  angekommen. `keepalive` hat den Aufruf also nicht verhindert.
+- N2 (dieselbe Adresse, letztes Zeichen der Kennung verfälscht, Blocker AUS): Konsole OK,
+  Netzwerk 410 (Gone).
+
+FOLGERUNG: Eine gelöschte oder falsch abgeschriebene Adresse ist im Modus `no-cors` am Ausgang
+des Aufrufs nicht von einer gültigen zu unterscheiden. Der Typ der Antwort ist NICHT gemessen,
+weil `r.type` fehlte. Dass er `opaque` war, folgt aus der Fetch-Spezifikation und ist hier nicht
+gelesen.
+GRENZE: ein Browser, eine Zone (eu2).
+
+**(ad) M13 — DIE 410 IM MODUS `cors` WIRFT.** GEMESSEN, Browser, 2026-09-28, Blocker AUS.
+Beide Aufrufe ohne `mode`, also im Standardmodus `cors`, mit `keepalive: true`.
+- N5 (echte Adresse): Konsole OK, Netzwerk 200.
+- N6 (verfälschte Kennung wie N2): Konsole `FEHLER TypeError Failed to fetch`, Netzwerk
+  410 (Gone) bzw. `net::ERR_FAILED`; nach Angabe des Owners eine CORS-Blockade wegen der 410.
+
+Die FOLGERUNG aus (y) ist damit für einen Browser bestätigt: Die Fehlerantwort ohne
+`Access-Control-Allow-Origin` erreicht das Skript nicht, `fetch` wirft.
+FOLGERUNG: Im Modus `cors` unterscheidet sich eine unbekannte Kennung am Ausgang von einer
+gültigen. Vom Netzfehler (s. Vermerk P13-22) unterscheidet sie sich dort NICHT — beide sind
+`TypeError`.
+GRENZE: ein Browser, nur 410. Die Antworten 400, 429 und 500 sind im Browser nicht gemessen.
+
+**(ae) K7.1 — UBLOCK ORIGIN LITE LÄSST DIE MAKE-ADRESSE DURCH.** GEMESSEN, Browser, 2026-09-28,
+im ersten Lauf "N3". Dort ging der Aufruf, anders als vorgegeben, an die echte Make-Adresse und
+nicht an eine sicher gesperrte. Blocker EIN, `mode: 'no-cors'`: Konsole OK, Netzwerk 200.
+Das ist der erste Browser-Nachweis zu (ab).
+GRENZE: ein Blocker in der Standard-Konfiguration, eine Zone (eu2). Andere Blocker, andere Listen
+und die Einstellungen eines Blockers sind nicht erfasst.
+
+**MESSKANDIDATEN NACH DIESER MESSUNG:**
+- GEMESSEN: M13 → (ad).
+- ERWEITERT, WEITER TEILWEISE: M5 → (ac), (ad) — die 410 im Browser; M10 → (ae) — ein Blocker.
+- UNVERÄNDERT OFFEN: M6, M7, M12; M4 und M8 wie zuvor.

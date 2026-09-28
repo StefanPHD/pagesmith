@@ -307,12 +307,52 @@ GRENZE: Was "fremd" heisst (eine `action` auf denselben Ursprung, `#`, leer), is
 festgelegt; das "eigene Skript" aus Setzung P13-5 bleibt am Code ohne Merkmal (Vermerk P13-1,
 Punkt (4)).
 
-**Setzung P13-21 — DAS SIGNAL "ERREICHT / NICHT ERREICHT" KOMMT AUS EINEM AUFRUF IM MODUS
-`no-cors` — HYPOTHESE, ZU MESSEN IN DER PLANRUNDE.** Eine falsche Adresse fängt dieses Signal
-nicht (Setzung P13-18).
-BEZUG, KEINE ENTSCHEIDUNG: ebenda, Befunde (x) (die Standardantwort ist im Modus `cors` aus
-einem fremden Ursprung lesbar) und (y) (eine 410 auf eine unbekannte Kennung trägt KEIN
-`Access-Control-Allow-Origin`; im Browser nicht gemessen, Messkandidat M13).
+**Setzung P13-21 — DAS SIGNAL "ERREICHT / NICHT ERREICHT": DER AUFRUF LÄUFT IM MODUS
+`no-cors`; "ERREICHT" GILT NUR, WENN ER AUFGELÖST IST UND `r.type === 'opaque'` TRÄGT.** Jeder
+andere Ausgang gilt als "nicht erreicht" und führt zu Entscheidung P13-17: ein Fehler, der Typ
+`basic`, jeder andere oder unerwartete Typ.
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-28, in dieser Fassung nach der G0-Messung der Planrunde
+(Vermerk P13-22). Dieselbe Setzung legt den Testknopf der Scheibe 13-1b auf den Modus `cors`.
+Die frühere Fassung dieser Setzung nannte den Modus des Testknopfs nicht.
+GRUND: Es wird positiv auf den EINEN Erfolgszustand geprüft, statt Fehlerbilder aufzuzählen —
+fail-closed. Ein falsches "nicht erreicht" kostet einen erneuten Klick; ein falsches "erreicht"
+kostet still den Lead.
+WIDERLEGT, DIE FASSUNG VOR DER MESSUNG: "Ein Blocker lässt den Aufruf im Modus `no-cors`
+scheitern; aufgelöst heisst erreicht". Beleg: Vermerk P13-22, N3 — uBlock Origin Lite leitet auf
+eine lokale Datei um, der Aufruf löst mit Typ `basic` und Status 200 auf.
+GRENZEN:
+- Gemessen an einem Browser, einem Blocker und einer Umleitungsregel.
+- Der harte Block (`net::ERR_BLOCKED_BY_CLIENT`) ist ABGELEITET — als Netzfehler, also Wurf —,
+  nicht gemessen.
+- Ein Blocker, der selbst eine `opaque`-Antwort erzeugt, ist nicht ausgeschlossen.
+- An der Make-Adresse ist `opaque` im Erfolgsfall ABGELEITET, NICHT GEMESSEN: Die Ausgabe von N1
+  trug `r.type` nicht, `opaque` ist nur an einer anderen Adresse gemessen (N4).
+- Eine falsche Adresse fängt dieses Signal nicht (Setzung P13-18; Beleg:
+  docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (ac)).
+BEZUG, KEINE ENTSCHEIDUNG: ebenda, Befunde (x) und (ad) — im Modus `cors` ist die
+Standardantwort lesbar, und eine 410 wirft.
+
+### G0-Messung der Planrunde
+
+**Vermerk P13-22 — DER AUSGANG EINES `no-cors`-AUFRUFS UNTER BLOCKER UND OFFLINE** (GEMESSEN,
+Browser, 2026-09-28; OWNER-ANGABE aus Konsole und Netzwerk-Tab; Einzeiler von CC). Ort war eine
+veröffentlichte Seite unter publayer.net, Google Chrome 153.0.8010.53 (64-Bit), uBlock Origin
+Lite (MV3), Filtermodus "Vollständig", Standard-Filterlisten. Jeder Aufruf lief als `POST` mit
+`mode: 'no-cors'`, `keepalive: true` und einem Rumpf aus `URLSearchParams`; ausgegeben wurden
+`r.type` und `r.status`.
+- N3 — `https://ad.doubleclick.net/pagesmith-probe`, Blocker EIN: Konsole `OK basic 200`. Im
+  Netzwerk-Tab 307 (Internal Redirect), danach 200 auf `noop.txt`. Der Blocker sperrt nicht hart,
+  er leitet auf eine lokale Ersatzdatei um — der Aufruf LÖST AUF.
+- N4 — dieselbe Adresse, Blocker AUS (Positivkontrolle zu N3): Konsole `OK opaque 0`. Im
+  Netzwerk-Tab 404 bzw. `net::ERR_ABORTED`.
+- N7 — die Make-Adresse, DevTools "Offline": Konsole `FEHLER TypeError Failed to fetch`. Im
+  Netzwerk-Tab `net::ERR_INTERNET_DISCONNECTED`; bei Make kein Eingang.
+
+Was die Make-Adresse selbst betrifft (N1, N2, N5, N6, und der erste Lauf "N3" an der Make-Adresse
+unter Blocker), steht in docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befunde (ac) bis
+(ae).
+FOLGE: Setzung P13-21 in der heutigen Fassung.
+GRENZE: ein Browser, ein Blocker. `r.type` ist in N1–N6 nicht ausgegeben worden.
 
 ### Invarianten der Scheibe 13-1
 

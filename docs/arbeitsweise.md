@@ -1121,6 +1121,12 @@ nächsten Refactor als unnötig defensiv wegoptimiert.
 - **Live-Tests führt Stefan durch.** Jede Bau-Freigabe bekommt eine kurze,
   nummerierte Testanleitung, Regression zuerst — sonst wird ein Fehlschlag als
   Nebenwirkung eines späteren Schritts missdeutet.
+  **Die Anleitung, die Stefan bekommt, schreibt der Architekt, nicht CC.** CCs
+  technische Fassung ist die Vorlage. Je Schritt drei Teile: was Stefan tut, was
+  er sehen soll, was er zurückmeldet. Befehle nur als fertiger Kopierblock mit
+  höchstens einer Stelle zum Einsetzen, kein Fachwort ohne Erklärung, nicht mehr
+  Schritte, als die Invarianten verlangen. Kann ein Schritt etwas nicht zeigen,
+  steht das beim Schritt, samt dem, was dann zu melden ist.
 - **Stefans Einwände sind ein Signal, keine Störung.** Sie sind oft richtig
   („der Code war doch gar nicht deployt?"). Die Begründung wird geprüft, bevor
   die eigene Empfehlung verteidigt wird.

@@ -2384,45 +2384,53 @@ liegen beide hier und finden einander.
       acht Punkte sind GEMESSEN am Repo (CC, 2026-09-18). Sämtliche Live-Angaben der Phase sind
       OWNER-MESSUNGEN bzw. OWNER-ANGABEN und von CC nicht prüfbar; welche das je Scheibe sind,
       steht an der Provenienz des jeweiligen Vermerks im Archiv.
-- [ ] Phase 12.5 — Medien: Bilder, SVG, Video und Hintergrundbilder im importierten
-      Kunden-HTML erkennen und ändern. Laufend: docs/aktiver-stand.md.
-      REIHENFOLGE DES BAUS (OWNER 2026-09-25): Schatten-Korrektur -> Medien Stufe 1 ->
-      Rich-Text (Phase 12). Die Zeile steht VOR der Zeile 12; die Reihenfolge der Zeilen ist
-      eine Ablage (Eintrag 11.10, Punkt (d)), der Bauplan ist dieser Satz. Scheibe 1 ist die
-      Schatten-Korrektur — ein markiertes Kind verdeckt die Aktion seines Elternelements, live
-      bestätigt (OWNER, 2026-09-25) — und Vorbedingung beider Phasen.
-      DREI STUFEN: (1) ohne neue Infrastruktur — Erkennung von img, picture, inline-svg, video,
-      background-image; Änderung NUR VORHANDENER Medien-Elemente (src, alt, poster,
-      Video-Schalter); Warnung bei stark abweichendem Seitenverhältnis statt Zwang; Hinweis auf
-      kaputte relative Pfade · (2) Uploads — Speicher, Umwandlung, Ursprungs-Isolation,
-      Missbrauch, Löschregel; davor eine Anbieter-Lesung · (3) Asset-Bibliothek, SVG-Farben
-      einbrennen, ZIP-Export, neu eingefügte Einbettungen (die Einwilligung wird dann UNSERE
-      Frage).
-      GRENZEN, ALS BEFUND: serverseitiges SVG-Bereinigen per DOMPurify kollidiert mit "KEIN
-      SERVER-SEITIGES HTML-PARSING" — die Gefahr liegt im Speicher-URSPRUNG, nicht in der Seite ·
-      ein neuer Speicher-Anbieter nur nach Lesung · Uploads sind eine neue Missbrauchsklasse
-      (der Kill-Switch sperrt heute keine Dateien; ein gelöschtes Asset bricht ausgelieferte
-      Seiten still) · YouTube-/Vimeo-Einbettungen berühren die Einwilligung · KI-Markierungen
-      gehören zu Phase 18 und werden nicht vorgebaut.
-      BINDEND ÜBER DIE PHASE HINAUS: MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN. Grund:
-      Hobby stoppt hart statt zu berechnen, für alle Kundenseiten zugleich; die Fair-Use-Seite
-      führt "Media hosting for hot-linking" unter "Never fair use" (docs/plattform-befunde.md,
-      Abschnitt "Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)", Teil (g)).
-      EDITOR-GERÜST ALS EIGENE SCHEIBE, nach der Schatten-Korrektur und vor der ersten
-      Medien-Oberfläche: linke Spalte in Reitern (Elemente, Code, Skripte), rechte Spalte strikt
-      kontextuell zum gewählten Element, globale Einstellungen in Kopfleiste bzw. Modal. NUR
-      Struktur, keine Optik; nicht mit der Schatten-Korrektur bündeln.
-      PROVENIENZ: OWNER-ENTSCHEIDUNGEN 2026-09-25; Wortlaut, Gründe und Fundstellen stehen in
-      der Standdatei (Entscheidungen P12.5-1 bis P12.5-7, Vermerke P12.5-8 und P12.5-9 der Phase
-      12.5).
-      NACHGETRAGEN 2026-09-26 — NEUZUSCHNITT BEIM PHASENENDE ANGEKÜNDIGT, DIE MEDIEN-STUFEN
-      WANDERN (OWNER 2026-09-26, Verfahren ARCHITEKT 2026-09-26). Phase 13 wird vor Medien
-      Stufe 1 gezogen. Das Editor-Gerüst läuft noch in dieser Phase; danach schliesst sie mit den
-      Klick- und Formular-Korrekturen (Scheiben 1, 1b, 1c) und dem Editor-Gerüst. Die drei
-      Medien-Stufen bekommen eine eigene Zeile NACH Phase 13; die Entscheidungen P12.5-1 bis
-      P12.5-6 ziehen mit. Name des Archivs und Nummer der Medien-Zeile entscheidet der Owner beim
-      Phasenende. Der Text dieser Zeile oben bleibt bis dahin stehen. Wortlaut und Grund:
-      Entscheidung P12.5-47 der Phase 12.5.
+- [x] Phase 12.5 — Korrekturen am Klick- und Formular-Tracking und Editor-Gerüst:
+      ABGESCHLOSSEN (2026-09-25 bis 2026-09-28). Angelegt als "Medien", beim Phasenende neu
+      zugeschnitten (Entscheidung P12.5-47, OWNER 2026-09-26; Titel OWNER-ENTSCHEIDUNG
+      2026-09-28); die Medien stehen seither an der Zeile 13.5. FÜNF Scheiben, je mit
+      bestätigtem Live-Test: 1 — ein Klick auf ein markiertes Kind löst die Aktion des nächsten
+      Vorfahren aus, der eine trägt (Schatten-Korrektur, `5f1f4bf`) · 1b — der Track eines
+      Formulars zählt beim Abschicken, nicht beim Klick; Formulare führen keine Weiterleitung
+      mehr aus (`0530c4b`) · 1c — Absende-Buttons tragen keine eigenen Aktionen (`aad4292`) · 2
+      — die linke Spalte des Editors steht in den Reitern Elemente, Code, Skripte (`f83ae5b`) ·
+      2b — das erste Einfügen kommt an, "Speichern" bleibt erreichbar (`cbd096a`). Volle
+      Herleitung, die Vermerke, die bindenden Entscheidungen und die Invarianten:
+      docs/claude-history/phase-12.5-tracking-korrekturen-editor.md.
+      WAS ZUM ZEITPUNKT DES HAKENS UNBEWIESEN ODER ALS MANGELHAFT BEKANNT IST — der Haken heisst
+      BAU-FERTIG. Das Kriterium und seine Auflage stehen in CLAUDE.md, "## Roadmap & aktueller
+      Stand", unter "WANN [x] GESETZT WIRD — DAS KRITERIUM"; sie werden hier NICHT wiederholt,
+      sondern eingelöst. SECHS PUNKTE:
+      · DIE KORREKTUREN AM KLICK-SKRIPT WIRKEN ERST NACH ERNEUTEM VERÖFFENTLICHEN. Jede vorher
+        veröffentlichte Seite führt das alte Verhalten weiter aus, auch das gemessene
+        Überzählen bei Klicks in ein Formularfeld und Unterzählen beim Abschicken;
+        heruntergeladene Exporte bleiben unverändert; welche Projekte neu veröffentlicht sind,
+        ist nicht erhoben; nichts in der Oberfläche weist darauf hin (docs/offene-punkte.md,
+        "NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST", Ergänzung vom
+        2026-09-28). DIESER PUNKT IST DER TRAGENDE.
+      · FIREFOX UND SAFARI SIND NIRGENDS GEMESSEN. Gemeldet ist Chrome (Scheiben 1b, 1c, 2b);
+        bei den Scheiben 1 und 2 ist der Browser nicht übermittelt. Am Einfügen hängt ein
+        benannter Preis: fehlt der `inputType` "insertFromPaste", springt der Reiter nicht, der
+        Code kommt an (Entscheidung P12.5-60).
+      · LIVE UNGEPRÜFT, NUR IM TEST GEDECKT: ein Knopf `type="button"` im Formular, das
+        `form`-Attribut, der Mittelklick auf "Absenden". Dass eine Weiterleitung am
+        Absende-Button das Abschicken verhinderte, ist in jsdom nachgebildet; live gesehen ist
+        nur die feuernde Weiterleitung (Vermerk P12.5-45, Punkt (7)).
+      · DIE VORSCHAU FÜHRT DEN FORMULAR-TRACK NICHT VOR. Der Rahmen "functional-preview" trägt
+        kein `allow-forms`; dass das Abschicken dort abbricht, bevor ein `submit` entsteht, ist
+        UNGEPRÜFT, und live ist die Vorschau nicht gemeldet (Vermerke P12.5-22, Punkt (3), und
+        P12.5-36, Punkt (6)).
+      · EIN BEWUSSTER PREIS: Ein AJAX-Formular, das auf derselben Seite mehrfach legitim
+        abschickt, zählt einmal je Seitenleben (Entscheidung P12.5-24).
+      · OFFEN IM BACKLOG (docs/claude-history/backlog-polish.md): ob die Pixel-Bestätigung bei
+        einer Navigation in einem anderen Aufbau verloren geht (Vorrat P12.5-28, im gemessenen
+        Aufbau widerlegt) · der Fehlertext der Kopfzeile ragt unter etwa 1100 px über den Rand,
+        abgeschnitten wird der beruhigende Teil (P12.5-66) · der Vorschau-Rahmen lädt beim
+        Tippen nach jeder Pause neu (P12.5-67) · eine Auswahl lässt sich nicht aufheben
+        (P12.5-57) · der Fokus kehrt beim Wechsel auf "Code" nicht zurück (P12.5-64).
+      DER VOLLTEXT DIESER ZEILE VOR DEM ABHAKEN STEHT IM COMMIT `886d438` (`git show
+      886d438:docs/roadmap.md`). Sein MEDIEN-TEIL — Stufen, Grenzen, die Bindung zu den
+      Medienbytes — IST NICHT KOLLABIERT, SONDERN UMGEZOGEN: an die Zeile 13.5 und, für die
+      Medienbytes, in die Dauerregel.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.
@@ -2449,6 +2457,11 @@ liegen beide hier und finden einander.
         deckt <br> mit Override.
       · li, span, div, td und andere Textträger werden nicht erkannt — `TEXT_SELECTOR` nennt nur
         h1–h6 und p.
+      NACHGETRAGEN 2026-09-28 (Phasenende 12.5) — DIESE PHASE FOLGT JETZT NACH DER PHASE 13.5:
+      Die Medien sind aus der Zeile 12.5 an die Zeile 13.5 gewandert; die Reihenfolge des Baus
+      ist 13 -> 13.5 -> 12 (OWNER-ENTSCHEIDUNG 2026-09-28). Der Satz "DIESE PHASE FOLGT NACH DER
+      PHASE 12.5" oben bleibt als Stand vom 2026-09-25 stehen. Die Schatten-Korrektur ist gebaut
+      (Bau-Commit `5f1f4bf`, Scheibe 1 der Phase 12.5).
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks: Pagesmith wird KEIN Versender
       (Owner-Entscheidung) — stattdessen Webhooks auf Performance-Events, der
       Kunde behält seinen bestehenden ESP.

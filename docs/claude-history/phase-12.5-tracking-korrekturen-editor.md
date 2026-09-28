@@ -1,4 +1,108 @@
-# Phase 12.5 — Medien: DER AKTIVE STAND
+# Phase 12.5 — Korrekturen am Klick- und Formular-Tracking und Editor-Gerüst: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 12.5. **Sie hiess bis zum Phasenende
+`docs/aktiver-stand.md`** und war das Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der
+Phase arbeitete. IHR NAME IST OWNER-ENTSCHEIDUNG (2026-09-28). Die Phase hiess bis zum
+Phasenende "Medien"; den Titel nach ihrem tatsächlichen Inhalt hat der Owner am 2026-09-28
+gesetzt. Die Medien sind an die Roadmap-Zeile 13.5 gewandert.
+
+**ZEITRAUM UND UMFANG:** 2026-09-25 bis 2026-09-28. Zwanzig Commits bis zum Phasenende
+(`0529e02` bis `e7ea91a`), darunter FÜNF Bau-Commits — `5f1f4bf` (Scheibe 1,
+Schatten-Korrektur), `0530c4b` (Scheibe 1b, Formular-Track am Abschicken), `aad4292` (Scheibe
+1c, Absende-Buttons), `f83ae5b` (Scheibe 2, Editor-Gerüst), `cbd096a` (Scheibe 2b, erstes
+Einfügen und Kopfzeile) —, dazu die Hebung `886d438`. Die Reihe `P12.5-n` endet bei 67: hier
+stehen vierzehn Vermerke, 34 Entscheidungen und vier Vorrats-Einträge; elf Nummern sind direkt
+im Backlog abgelegt (P12.5-10, -11, -12, -30, -35, -46, -57, -58, -64, -66, -67); vier sind in
+Verdichtungen gestrichen, ihr Wortlaut steht in Vermerk P12.5-36, Punkt (7) (P12.5-26, -27,
+-33, -34).
+
+**WIE SIE ENDETE: `[x]`.** Neuzuschnitt nach Entscheidung P12.5-47 (OWNER 2026-09-26), Titel
+und Medien-Zeile OWNER-ENTSCHEIDUNG 2026-09-28. WAS AM HAKEN UNBEWIESEN ODER ALS MANGELHAFT
+BEKANNT IST, STEHT AN DER ROADMAP-ZEILE 12.5 (docs/roadmap.md) und wird hier NICHT verdoppelt;
+der tragende Punkt: jede Korrektur am Klick-Skript wirkt erst nach erneutem Veröffentlichen.
+
+**HIER NACHSEHEN, WER AM KLICK-SKRIPT ODER AN FORMULAREN ARBEITET:** die Differenz-Nachweise
+(Entscheidungen P12.5-14, P12.5-19, P12.5-44; Inventur der Pins in Vermerk P12.5-18),
+`actionOwner` und der FORM-Halt (P12.5-15, P12.5-32; Invarianten der Scheibe 1), der
+Formular-Track am Abschicken (P12.5-21, P12.5-23 bis P12.5-25; Invarianten der Scheibe 1b),
+die Absende-Buttons (P12.5-37, P12.5-39 bis P12.5-43; Invarianten der Scheibe 1c). WER DIE
+LINKE SPALTE DES EDITORS ODER DAS REDESIGN ZUSCHNEIDET: die Invarianten (I2), (I3) der Scheibe
+2 und (I6), (I7) der Scheibe 2b, die Entscheidungen P12.5-49 bis P12.5-54, P12.5-60 und
+P12.5-61. WER DIE MEDIEN ZUSCHNEIDET: Vermerk P12.5-8 (erste Aufklärung) und die Entscheidungen
+P12.5-1 bis P12.5-6 im Wortlaut; ihr verbindlicher Stand steht an der Roadmap-Zeile 13.5.
+
+**DER MESSWERT NACH docs/arbeitsweise.md, ABSCHNITT 2b** (GEMESSEN am Repo, CC, 2026-09-28,
+`git log --numstat`, Summen aus Einfügungen und Löschungen je Pfadpräfix; in der Spanne führt
+git keine Datei als binär):
+
+| Spanne | `docs/` | `src/` | Verhältnis docs : src |
+|---|---|---|---|
+| `0529e02^..e7ea91a` (bis vor dem Phasenende, wie bei 11.7 und 11.9) | 2 453 | 2 641 | **0,93 : 1** |
+| `0529e02^..886d438` (mit dem Hebungs-Commit) | 2 802 | 2 641 | 1,06 : 1 |
+
+Ausserhalb von `docs/` und `src/` liegt allein `CLAUDE.md` (1 bzw. 2 Zeilen).
+ZUM VERGLEICH, aus den Köpfen der Archive übernommen und NICHT nachgemessen: Phase 11.9
+(`57a94ff^..31c7404`) `docs/` 820, `src/` 0 — kein Verhältnis; Phase 11.7 (`354a6e5^..3e080b2`)
+`docs/` 41 191, 32 316 bzw. 12 202 je Lesart gegen `src/` 3 755 — 10,97, 8,61 bzw. 3,25 : 1.
+**DER BEFUND DER ARBEITSWEISE TRITT NICHT EIN:** Das Verhältnis ist nicht zwei Phasen in Folge
+gestiegen — 11.9 hat keines, und 12.5 liegt unter jeder Lesart von 11.7.
+
+**DAS PROTOKOLL DER HEBUNG — 2026-09-28, EIN COMMIT (`886d438`).** Das REGISTER steht im
+Abschnitt "Vollzogen — was hier stand und wohin es gegangen ist" am Ende des Rumpfes, mit dem
+SAMMELVERMERK "NICHT GEHOBEN". **DIE BILANZ: 38 = RM13.5 5 · RM13 2 · DR 1 · BL 3 · ERL 4 ·
+ARCH 23**; die vierzehn Vermerke sind nicht zugeordnet. EINE neue Dauerregel: "MEDIENBYTES
+LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN — UND DAS GILT FÜR JEDE AUSLIEFERUNG VON DATEI-BYTES,
+NICHT NUR FÜR MEDIEN". Ausserhalb der Bilanz: eine Ergänzung am offenen Punkt "NICHTS ZEIGT
+AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST".
+ABWEICHUNG VOM PROMPT DES PHASENENDES, deklariert: Die Roadmap-Zeile 13.5 und ihr Stub sind im
+Hebungs-Commit entstanden, nicht in der Archivierung — sie sind das Ziel von F1 und F3, und die
+Gegenprobe prüft die Ankunft am Zielort vor dem Commit. Die Zeiger auf den Archivpfad sind
+erst in der Archivierung nachgezogen, weil der Pfad vorher nicht existierte.
+**DIE GEGENPROBE — AM BESTAND DER ZIELDATEIEN, JE EINTRAG, NICHT GEGEN DAS REGISTER**
+(GEMESSEN, CC, 2026-09-28, Skript über die Dateien, leerraum-normalisiert, vor dem
+Hebungs-Commit; umgezogen ist derselbe Stand):
+
+| Ziel | Soll | gefunden | geprüft am Bestand |
+|---|---|---|---|
+| RM13.5 | 5 | 5 | "(Entscheidung P12.5-n," im Block der Zeile 13.5 für n = 1, 2, 3, 4, 6; dazu der Stub in CLAUDE.md |
+| RM13 | 2 | 2 | im Block der Zeile 13: "Entscheidung P12.5-47 der Phase 12.5"; "Vorrat P12.5-29 der Phase 12.5, hierher gehoben" samt "(I4) der Scheibe 1b" und Owner-Einwand |
+| DR | 1 | 1 | Titel im Kern, im Volltext und gekappt im Verzeichnis; "Entscheidung P12.5-5" im Volltext und als Zeiger an der Zeile 13.5 |
+| BL | 3 | 3 | P12.5-16 im Posten "(P11.12-2) …"; P12.5-28 im neuen Abschnitt am Dateiende, mit Trigger; P12.5-56 im Abschnitt "… Scheibe 2b, zwei Posten fürs Redesign", mit Trigger |
+| ERL | 4 | 4 | Eintrag steht in dieser Datei; Beleg am Bestand: Commits `f83ae5b`, `cbd096a`, `0530c4b` (`git cat-file`), Vermerk P12.5-36, Backlog-Posten P12.5-64 und P12.5-56 mit Trigger |
+| ARCH | 23 | 23 | Eintrag steht in dieser Datei |
+| **Summe** | **38** | **38** | Register-Pfeile je Ziel ebenfalls 5 · 2 · 1 · 3 · 4 · 23 |
+
+Daneben, ausserhalb der Summe: die zwölf Register-Posten im Backlog 12 von 12, die sieben
+offenen Punkte 7 von 7, die drei weiteren Backlog-Posten samt ERLEDIGT-Vermerk 4 von 4, die
+zwei Sachkorrekturen 2 von 2, die Ergänzung am offenen Punkt 1 von 1. NEGATIVKONTROLLE: vier
+erfundene Anker ("(Entscheidung P12.5-8," an der Zeile 13.5, "Vorrat P12.5-68" im Backlog, ein
+Eintrag "Entscheidung P12.5-26" hier, "P12.5-16" an der Zeile 13.5) je 0.
+
+**ZEIGER AUF `docs/aktiver-stand.md`, DIE DIESE PHASE MEINEN — GEMESSEN VOR DEM UMZUG (CC,
+2026-09-28).** ACHSE: die in `0529e02^..886d438` hinzugefügten Zeilen ausser der Standdatei
+mit dem Pfad; daneben über alle verfolgten Dateien `P12.5-`, und über docs/ der Pfad mit
+"12.5" im Umfeld von drei Zeilen. POSITIVKONTROLLE: die Achse trifft die sieben bekannten
+Kopfsätze der Backlog-Abschnitte "Aus Phase 12.5 vorgemerkt …".
+- **SIEBEN NACHGEZOGEN:** die Kopfsätze jener sieben Backlog-Abschnitte ("(Phase 12.5,
+  docs/aktiver-stand.md, solange die Phase läuft)"); danach 7 neue Fassungen, 0 alte.
+- **EINER KOLLABIERT:** Roadmap-Zeile 12.5, "Laufend: docs/aktiver-stand.md." — mit dem Haken
+  entfallen.
+- **IN `src/` KEIN ZEIGER AUF DEN PFAD, DER DIESE PHASE MEINT.** Die Treffer auf `P12.5-` in
+  acht Dateien unter `src/` (Kommentare und Testnamen) nennen die PHASE ("Entscheidung P12.5-37
+  der Phase 12.5"), nicht den Pfad; sie lösen über das Archiv auf und sind nicht angefasst.
+  `supabase/` trägt keinen Treffer auf "12.5".
+- Die Treffer in docs/offene-punkte.md, docs/immer-beachten-herleitung.md und docs/roadmap.md
+  nennen die Phase, nicht den Pfad.
+
+**DER RUMPF IST ZEICHENGLEICH MIT DEM STAND IN `886d438`**, ab der Zeile "**PFLICHT-GATE:**":
+1 739 Zeilen, 133 618 Bytes, sha256
+c3d40c85173917ddb04785434acb75d3f865ee24fa570182dfb7d1e72a7a29bb. Die Treffer auf
+`docs/aktiver-stand.md` in ihm bleiben als Zeitdokument stehen, ebenso der Gegenstand "Medien"
+im Satz "GEGENSTAND".
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **PFLICHT-GATE:** Diese Datei ist ab ihrer Anlage (2026-09-25) das Pflicht-Gate ("Auftrag 0")
 jedes Bau- und Aufklärungs-Prompts der Phase 12.5 (CLAUDE.md, "## Aktiver Stand — Verfahren

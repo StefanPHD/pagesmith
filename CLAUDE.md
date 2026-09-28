@@ -124,7 +124,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.11 — Import-Bereinigung
 - [x] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
 - [x] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs
-- [ ] Phase 12.5 — Medien
+- [x] Phase 12.5 — Korrekturen am Klick- und Formular-Tracking und Editor-Gerüst
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 13.5 — Medien
@@ -951,6 +951,17 @@ das Archiv soll gerade NICHT geladen werden. Der EINE @-Import des Repos steht u
   Grund und Kipp-Bedingungen des `[-]`: Roadmap-Zeile 11.9; die Anbieter-Befunde:
   docs/ziel-befunde/ga4.md. Ihr Kopf trägt das Protokoll der Hebung samt Gegenprobe und den
   Messwert nach Abschnitt 2b.
+- docs/claude-history/phase-12.5-tracking-korrekturen-editor.md — gesamte Phase 12.5
+  (angelegt als "Medien", beim Phasenende neu zugeschnitten; fünf Scheiben 1, 1b, 1c, 2, 2b).
+  HIER NACHSEHEN, WER AM KLICK-SKRIPT ODER AN FORMULAREN ARBEITET: die vier
+  Differenz-Nachweise des Klick-Skripts (P12.5-14, -19, -44) samt Inventur der Pins (Vermerk
+  P12.5-18), `actionOwner` und der FORM-Halt, der Formular-Track am Abschicken, die
+  Absende-Buttons. Ebenso, wer die linke Spalte des Editors oder das Redesign zuschneidet
+  (Invarianten der Scheiben 2 und 2b, P12.5-49 bis -54, -60, -61). 23 Entscheidungen und die
+  Invarianten der Scheiben stehen NUR dort, unter einem SAMMELVERMERK "NICHT GEHOBEN" im
+  Abschnitt "Vollzogen". Die Medien-Entscheidungen P12.5-1 bis -6 sind an die Roadmap-Zeile
+  13.5 gegangen, P12.5-5 als Dauerregel. Ihr Kopf trägt das Protokoll der Hebung samt
+  Gegenprobe und den Messwert nach Abschnitt 2b.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung (RISIKO /
   TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item). AUSLÖSER: Manifest-Arbeit;
   immer im SELBEN Commit wie die Tier-Übersicht hier.

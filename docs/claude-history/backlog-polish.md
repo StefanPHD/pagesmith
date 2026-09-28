@@ -6142,7 +6142,8 @@ KEINE EMPFEHLUNG.
 ## Aus Phase 12.5 vorgemerkt (2026-09-25) — drei Befunde der ersten Aufklärung
 
 Abgelegt ohne Umweg über die Standdatei; die Nummern setzen die Reihe `P12.5-n` jener
-Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+Standdatei fort (docs/claude-history/phase-12.5-tracking-korrekturen-editor.md, das Archiv der Phase 12.5;
+NACHGEZOGEN 2026-09-28 beim Phasenende, bis dahin docs/aktiver-stand.md). KEIN
 FIX-VORSCHLAG über das Benannte hinaus.
 
 - **Vorrat P12.5-10 — DIE KLICK-ELEMENTE WERDEN NACH TAG GEZÄHLT: EIN ALS BUTTON GESTALTETES `<a>` STEHT UNTER "Links", UND "0 Buttons" VERWIRRT**
@@ -6169,7 +6170,8 @@ FIX-VORSCHLAG über das Benannte hinaus.
 ## Aus Phase 12.5 vorgemerkt (2026-09-25) — Scheibe 1b, ein Oberflächen-Hinweis
 
 Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummer setzt die Reihe `P12.5-n` jener
-Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+Standdatei fort (docs/claude-history/phase-12.5-tracking-korrekturen-editor.md, das Archiv der Phase 12.5;
+NACHGEZOGEN 2026-09-28 beim Phasenende, bis dahin docs/aktiver-stand.md). KEIN
 FIX-VORSCHLAG über das Benannte hinaus.
 
 - **Vorrat P12.5-30 — KEIN HINWEIS, WENN EIN KNOPF MIT TRACK IN EINEM FORMULAR MIT TRACK LIEGT**
@@ -6187,7 +6189,8 @@ FIX-VORSCHLAG über das Benannte hinaus.
 ## Aus Phase 12.5 vorgemerkt (2026-09-25) — Scheibe 1b, ein flackernder Test
 
 Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummer setzt die Reihe `P12.5-n` jener
-Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+Standdatei fort (docs/claude-history/phase-12.5-tracking-korrekturen-editor.md, das Archiv der Phase 12.5;
+NACHGEZOGEN 2026-09-28 beim Phasenende, bis dahin docs/aktiver-stand.md). KEIN
 FIX-VORSCHLAG über das Benannte hinaus.
 
 - **Vorrat P12.5-35 — "verkraftet riesigen Input (~hunderttausende Knoten) ohne Crash" FLACKERT
@@ -6205,7 +6208,8 @@ FIX-VORSCHLAG über das Benannte hinaus.
 ## Aus Phase 12.5 vorgemerkt (2026-09-26) — Scheibe 1c, ein liegengebliebener Spion
 
 Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummer setzt die Reihe `P12.5-n` jener
-Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+Standdatei fort (docs/claude-history/phase-12.5-tracking-korrekturen-editor.md, das Archiv der Phase 12.5;
+NACHGEZOGEN 2026-09-28 beim Phasenende, bis dahin docs/aktiver-stand.md). KEIN
 FIX-VORSCHLAG über das Benannte hinaus.
 
 - **Vorrat P12.5-46 — DER SPION AUS "KEINE Pixel-ID -> kein fbq im Output; Track-Aktion ist
@@ -6223,7 +6227,8 @@ FIX-VORSCHLAG über das Benannte hinaus.
 ## Aus Phase 12.5 vorgemerkt (2026-09-26) — Scheibe 2, zwei Befunde
 
 Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummern setzen die Reihe `P12.5-n` jener
-Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+Standdatei fort (docs/claude-history/phase-12.5-tracking-korrekturen-editor.md, das Archiv der Phase 12.5;
+NACHGEZOGEN 2026-09-28 beim Phasenende, bis dahin docs/aktiver-stand.md). KEIN
 FIX-VORSCHLAG über das Benannte hinaus.
 
 - **Vorrat P12.5-57 — EINE AUSWAHL LÄSST SICH NICHT AUFHEBEN**
@@ -6254,8 +6259,9 @@ FIX-VORSCHLAG über das Benannte hinaus.
 ## Aus Phase 12.5 vorgemerkt (2026-09-28) — Scheibe 2b, zwei Posten fürs Redesign
 
 Der erste Posten ist aus dem Vorrat der Standdatei hierher gewandert, der zweite ist direkt
-abgelegt; die Nummern gehören zur Reihe `P12.5-n` jener Standdatei (Phase 12.5,
-docs/aktiver-stand.md, solange die Phase läuft). KEIN FIX-VORSCHLAG über das Benannte hinaus.
+abgelegt; die Nummern gehören zur Reihe `P12.5-n` jener Standdatei
+(docs/claude-history/phase-12.5-tracking-korrekturen-editor.md, das Archiv der Phase 12.5;
+NACHGEZOGEN 2026-09-28 beim Phasenende, bis dahin docs/aktiver-stand.md). KEIN FIX-VORSCHLAG über das Benannte hinaus.
 
 - **Vorrat P12.5-56 — OWNER-WUNSCH: EIN PROJEKT BEIM ANLEGEN BENENNEN UND AUCH OHNE CODE
   SPEICHERN KÖNNEN**
@@ -6310,7 +6316,8 @@ docs/aktiver-stand.md, solange die Phase läuft). KEIN FIX-VORSCHLAG über das B
 ## Aus Phase 12.5 vorgemerkt (2026-09-28) — Scheibe 2b, zwei Befunde des Live-Tests
 
 Abgelegt ohne Umweg über den Vorrat der Standdatei; die Nummern setzen die Reihe `P12.5-n` jener
-Standdatei fort (Phase 12.5, docs/aktiver-stand.md, solange die Phase läuft). KEIN
+Standdatei fort (docs/claude-history/phase-12.5-tracking-korrekturen-editor.md, das Archiv der Phase 12.5;
+NACHGEZOGEN 2026-09-28 beim Phasenende, bis dahin docs/aktiver-stand.md). KEIN
 FIX-VORSCHLAG über das Benannte hinaus; beide Kandidaten sind NICHT gebaut. Keiner der zwei
 Befunde macht ein Bedienelement unerreichbar oder lässt Code verloren gehen (Einordnung je
 Posten).

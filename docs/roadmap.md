@@ -2505,6 +2505,10 @@ liegen beide hier und finden einander.
       · OWNER-EINWAND (OWNER-AUSSAGE 2026-09-26): Nutzer wollen die Danke-Seite im Tool
         eintragen, nicht im Formular-Code.
       Wortlaut von Vorrat, Entscheidungen und Invarianten: das Archiv der Phase 12.5.
+      NACHGETRAGEN 2026-09-28 — DER DATENWEG DER FORMULARE IST ENTSCHIEDEN (OWNER 2026-09-28):
+      Der Browser schickt die Felder direkt an eine Adresse, die der Nutzer im Tool einträgt;
+      unser Server sieht keinen Klartext, und es gibt keine Ablage bei Pagesmith. Wortlaut
+      und Verworfenes: Standdatei der Phase 13, Entscheidung P13-2.
 - [ ] Phase 13.5 — Medien: Bilder, SVG, Video und Hintergrundbilder im importierten
       Kunden-HTML erkennen und ändern. ANGELEGT am 2026-09-28 beim Phasenende 12.5; Nummer
       und Reihenfolge OWNER-ENTSCHEIDUNG 2026-09-28. Die Medien waren bis dahin der

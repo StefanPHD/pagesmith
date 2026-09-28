@@ -374,6 +374,39 @@ aufeinander; sie liegen alle hier und finden einander.
   Tag am selben Code bestätigt. Dass der Halbsatz an der Roadmap-Zeile 11.9 seit (E2) die
   engere Beschreibung trägt, ist eine ABLEITUNG aus dem Vergleich beider Wortlaute, keine
   Messung.
+
+  ERGÄNZT AM 2026-09-28 (Phase 13) — DER TRIGGER IST EINGETRETEN, UND DIE AUFLAGE VOM
+  2026-08-19 IST IN IHRER REICHWEITE KLARGESTELLT (OWNER-ENTSCHEIDUNG 2026-09-28; Standdatei
+  der Phase 13, Entscheidung P13-7). DER GESAMTE TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN
+  STEHEN; diese Ergänzung tritt DANEBEN.
+  DER ANLASS: Phase 13 baut einen Datenweg für Formulare. Unser ausgeliefertes Skript schickt
+  die Formularinhalte im Browser direkt an eine Adresse, die der Betreiber im Tool einträgt
+  (Standdatei der Phase 13, Entscheidung P13-2). DER TRIGGER DIESES EINTRAGS IST DAMIT
+  EINGETRETEN; diese Entscheidung ist seine Bewertung für Phase 13.
+  ERSTE HÄLFTE — DIE REICHWEITE: Die Auflage vom 2026-08-19 ("E-MAIL UND TELEFON: im Browser
+  gehasht (SHA-256), der eigene Server sieht KEINEN Klartext") gilt für Daten an
+  Tracking-Ziele und an unseren Server. Formularinhalte, die unser ausgeliefertes Skript an
+  die vom Betreiber eingetragene Adresse schickt, reisen im KLARTEXT.
+  ZWEITE HÄLFTE — DAS BINDENDE GEGENSTÜCK: Formularinhalte gehen AUSSCHLIESSLICH an die
+  eingetragene Adresse — nie an /api/e, nie an ein Tracking-Ziel, nie in unsere Datenbank,
+  nie in unsere Logs. Die Bau-Scheibe beweist das mit einem Test. OHNE DIESE HÄLFTE WÄRE DIE
+  ERSTE EINE LOCKERUNG; sie gehören zusammen.
+  DIE GRENZE, UND SIE IST ENG: Die Klarstellung betrifft AUSSCHLIESSLICH Formularinhalte an
+  die eingetragene Adresse. Für Match-Felder an Tracking-Ziele gilt die Auflage unverändert.
+  Die in der Präzisierung vom 2026-08-19 als ANDERE Entscheidung offen gelassene Frage — ein
+  Merkmal, das ein Ziel im Klartext zur Zuordnung erwartet — ist davon NICHT berührt.
+  WAS UNVERÄNDERT GILT: die Festlegung vom 2026-08-15 — der Weg legt bei Pagesmith nichts ab
+  (Entscheidung P13-2: "keine Ablage bei Pagesmith"). Der Satz "NICHT-SPEICHERN IST NICHT
+  NICHT-VERARBEITEN" gilt auch hier: Unser Skript verarbeitet die Inhalte im Browser. Die
+  vierte Frage, die RECHTSGRUNDLAGE, ist von dieser Ergänzung nicht berührt.
+  EIN BEZUG, ABGELEITET (CC, 2026-09-28), KEINE ENTSCHEIDUNG: Das Gegenstück bräche, sobald
+  Formularinhalte in die SEITENADRESSE gerieten — sie reisten dann über `eventSourceUrl` an
+  /api/e und an drei Ziele (Eintrag "DIE SEITENADRESSE REIST SAMT QUERY AN UNSEREN SERVER UND
+  AN DREI ZIELE — WAS IM QUERY STEHT, REIST MIT" in dieser Datei).
+  PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-28 — beide Hälften, die Grenze und das Eintreten des
+  Triggers. Die Beschreibung des Datenwegs: Entscheidung P13-2 der Phase 13. Der Bezug im
+  vorletzten Absatz ist eine ABLEITUNG. Der Stub in CLAUDE.md trägt das Eintreten im SELBEN
+  Zug.
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
   (__Host-ps_v) stellt Pagesmith dem Kunden heute KEINEN fertigen
@@ -445,6 +478,20 @@ aufeinander; sie liegen alle hier und finden einander.
   EMPFEHLUNG.
   PROVENIENZ DIESER ERSETZUNG: OWNER-ENTSCHEIDUNG 2026-09-19; der Stub in CLAUDE.md,
   "## Offene Punkte", trägt den neuen Trigger-Wortlaut im SELBEN Zug und wörtlich gleich.
+  ERGÄNZT AM 2026-09-28 (Phase 13) — TRIGGER (i) IST EINGETRETEN; DIE NEUBEWERTUNG ERGIBT:
+  DIE EINDEUTIGKEIT AUF (project_id, target) BLEIBT UNBERÜHRT. Der Text darüber bleibt stehen.
+  EINGETRETEN: Phase 13 sieht kundeneigene Endpunkte vor — der Browser schickt
+  Formularinhalte an eine Adresse, die der Betreiber im Tool einträgt (Standdatei der Phase
+  13, Entscheidung P13-2). Genau diesen Fall nennt Trigger (i): "insbesondere die Phase 13,
+  falls sie kundeneigene Endpunkte vorsieht".
+  NEUBEWERTUNG — UNBERÜHRT. GRUND: Die Adressen liegen nicht in project_secrets; sie stehen
+  öffentlich im ausgelieferten Text und sind kein Geheimnis (Standdatei der Phase 13, Setzung
+  P13-6). Was dieser Eintrag als still kaputtgehend nennt — mehrere Zeilen mit demselben
+  target im selben Projekt —, entsteht auf diesem Weg nicht.
+  GRENZE: Die Neubewertung kippt, sobald ein Weg über unseren Server gewählt wird; dann ist
+  sie neu zu treffen. Trigger (ii) ist von dieser Ergänzung nicht berührt.
+  PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-28 (Setzung P13-6 der Phase 13), REVIDIERBAR. Der
+  Stub in CLAUDE.md trägt das Eintreten im SELBEN Zug.
 - DREI WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE — RANG OFFEN,
   UNGEMESSEN (Trigger: die Messung selbst — ein Lauf, der prüft, ob ein Wurf auf dem
   Ingest-Pfad die garantierte leere 204 bricht): (1) die zwei deckungsgleichen
@@ -3975,3 +4022,77 @@ docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.7 gehoben (2026-0
   "kein fachlicher Abgleich an irgendeinem Ziel" aus der Inventur des Phasenendes. Die
   Code-Befunde GEMESSEN (CC, 2026-09-23 bis 2026-09-25); die Anbieter-Angaben GELESEN bzw.
   GEMESSEN je an der genannten Stelle; die Live-Belege sind OWNER-ANGABEN.
+
+**IN PHASE 13 AUFGENOMMEN (2026-09-28).** Nicht aus einem Phasenende gehoben, sondern aus der
+ersten Aufklärung der Phase 13 (Standdatei der Phase 13, Vermerk P13-1, Punkt (11));
+aufgenommen nach Entscheidung P13-3 (OWNER 2026-09-28). Der datierte Block trägt die Herkunft
+(ARCHITEKTEN-SETZUNG 2026-09-28).
+- DIE SEITENADRESSE REIST SAMT QUERY AN UNSEREN SERVER UND AN DREI ZIELE — WAS IM QUERY
+  STEHT, REIST MIT (Trigger: vor echtem Ad-Traffic, spätestens der erste fremde Nutzer):
+  DER BEFUND — ABGELEITET AM CODE (CC, 2026-09-28, HEAD 78136ab), NICHT GEMESSEN. Je Glied
+  die Klasse:
+  (1) Der Conversion-Beacon setzt `eventSourceUrl: location.href` — die volle Seitenadresse
+      samt Query-String (`buildCapiBeaconStatement`, src/lib/tracking/meta.ts). GELESEN AM
+      CODE.
+  (2) `forwardToMeta` und `forwardToPinterest` senden sie als `event_source_url`,
+      `forwardToTiktok` als `page.url`; `forwardToLinkedin` sendet sie nicht
+      (src/lib/capi/meta-forward.ts, pinterest-forward.ts, tiktok-forward.ts,
+      linkedin-forward.ts). GELESEN AM CODE.
+  (3) `stripForeignClickIds` (src/lib/capi/click-id-strip.ts) entfernt ausschliesslich die
+      Klick-Kennungen der Tabelle `CLICK_ID_TABLE`; jeder andere Parameter reist mit. GELESEN
+      AM CODE.
+  (4) Ein Formular ohne `action` (oder mit `action` auf dieselbe Seite) und ohne `method`
+      schickt per GET ab; die Felder mit `name` stehen danach im Query-String der
+      neugeladenen Seite. ABGELEITET aus der HTML-Spezifikation, NICHT GELESEN.
+  (5) Der Formular-Track selbst feuert VOR der Navigation und trägt die alte Adresse. Die
+      Sperre `submittedForms` (`buildWiringScript`, src/lib/generate.ts) gilt aber nur je
+      Seitenleben: Auf der neugeladenen Seite trägt JEDER weitere Track — ein Klick auf einen
+      Link mit Track, ein erneutes Abschicken — die Feldwerte. ABGELEITET.
+  DIE FOLGE, ABGELEITET: Eine E-Mail-Adresse kann im Klartext /api/e erreichen und an meta,
+  pinterest und tiktok gehen. Das widerspricht der Auflage vom 2026-08-19 im Eintrag
+  "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" in dieser Datei ("E-MAIL UND TELEFON: im
+  Browser gehasht (SHA-256), der eigene Server sieht KEINEN Klartext"); jener Text bleibt
+  unberührt.
+  DIE KLASSE IST DER MECHANISMUS, NICHT DAS FORMULAR (ARCHITEKT 2026-09-28, Grund des Titels):
+  Was im Query steht, reist mit — das Formular ist nur ein Weg, Werte dorthin zu bringen.
+  WAS NICHT GESCHIEHT, GELESEN AM CODE: Nichts davon gelangt in unsere Tabellen —
+  `persistEvent` (src/lib/analytics/persist.ts) schreibt fünf Spalten, keine trägt eine
+  Adresse. Nichts davon gelangt in unsere Logs — keine `console`-Zeile der vier Adapter, der
+  Serve-Route (src/app/app-serve/route.ts), von `proxy` (src/proxy.ts) oder von
+  src/lib/hosting/resolve.ts, host.ts, variant.ts gibt die Adresse aus (Achse: `console.` in
+  diesen Dateien, gelesen). Die Zählung ALLER console-Aufrufe unter src/ stammt aus dem Eintrag
+  "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE", Punkt (c) des Blocks vom 2026-08-28, und ist
+  hier NICHT neu gezählt.
+  NICHT ENTSCHEIDBAR AM CODE: ob die Plattform-Logs von Vercel die angefragte Adresse samt
+  Query ablegen · ob ein Anbieter-Fehlertext `event_source_url` zurückspiegelt und
+  `describeMetaError` (src/lib/capi/meta-forward.ts) ihn loggt.
+  DIE GRENZE DES BEFUNDS: In keinem Live-Test ist der Fall ausgelöst worden. Im Live-Test der
+  Scheibe 1c der Phase 12.5 lud die Seite nach dem Abschicken auf "/?#unten" (Archiv der
+  Phase 12.5, Vermerk P12.5-45, Punkt (6)); dass das Feld dort kein `name` trug, ist eine
+  ABLEITUNG aus dem leeren Query.
+  MESSKANDIDAT: ein Probeformular mit Köderwert, danach die Vercel-Logs durchsuchen — mit
+  Positivkontrolle.
+  ARCHITEKTEN-HYPOTHESEN (2026-09-28), ALS SOLCHE GEKENNZEICHNET — KEINE BEFUNDE:
+  (H1) Dieselbe Klasse entsteht ohne Formular, wenn E-Mail-Programme Parameter wie `email=`
+       an Links anhängen.
+  (H2) Kandidat der Abhilfe: serverseitig am Ingest vor den Adaptern auf eine POSITIVLISTE
+       kürzen — wirkte ohne Neu-Veröffentlichen und ohne Änderung am ausgelieferten Text.
+       DIE GEGENPOSITION IM BESTAND, GELESEN am Kopf von src/lib/capi/click-id-strip.ts:
+       "NEGATIVLISTE: Entfernt werden nur Kennungen der Tabelle, die einem ANDEREN Ziel
+       gehoeren. Die Adresse gehoert dem Betreiber; URL-basierte Regeln beim Anbieter
+       braechen still, wenn hier mehr wegfiele." Eine Positivliste bräche genau diese
+       URL-basierten Regeln (ABLEITUNG aus dem Zitat).
+  (H3) Zweiter Kandidat: Werte nach ihrer FORM schwärzen (E-Mail- und Telefon-Muster), statt
+       Parameter zu streichen — Adresse und URL-basierte Regeln blieben erhalten. Bezug:
+       Dauerregel "SCHWÄRZUNG — VIER TEILE, DIE NUR ZUSAMMEN TRAGEN" (docs/immer-beachten.md),
+       Teil (c): "Eine Schwärzung nach Form trifft auch das, was formgleich und GEWOLLT ist
+       — die Ausnahme braucht einen eigenen Namen (kein Schalter-Argument) und einen eigenen
+       Test."
+  (H4) Ob der ausgelieferte Meta-Browser-Pixel die Adresse selbst an meta sendet, ist NICHT
+       GELESEN.
+  KEINE EMPFEHLUNG, welcher Kandidat gewählt wird.
+  PROVENIENZ: (1)–(3) und "WAS NICHT GESCHIEHT" GELESEN AM CODE (CC, 2026-09-28, HEAD
+  78136ab); (4), (5), die Folge und die Grenze ABGELEITET; die Hypothesen
+  ARCHITEKTEN-HYPOTHESEN 2026-09-28; der Titel ARCHITEKT 2026-09-28; der Trigger
+  OWNER-ENTSCHEIDUNG 2026-09-28. Der Stub in CLAUDE.md, "## Offene Punkte", Block "IN PHASE 13
+  AUFGENOMMEN (2026-09-28)", trägt Titel und Trigger im SELBEN Zug.

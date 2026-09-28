@@ -163,7 +163,8 @@ in docs/claude-md-herleitung.md.
   das ist aber KEIN Freibrief für diese beiden anderen Fälle)
 - DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE (Trigger: die erste Scheibe, die
   personenbezogene Merkmale erfasst — Click-IDs, IP/UA, gehashte Kontaktdaten,
-  Fingerprint-artige Merkmale; spätestens VOR dem ersten echten Ad-Traffic)
+  Fingerprint-artige Merkmale; spätestens VOR dem ersten echten Ad-Traffic — EINGETRETEN
+  am 2026-09-28 mit Phase 13, bewertet durch Entscheidung P13-7 der Phase 13)
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9)
 - LABEL-VERGABE IST UNPROTOKOLLIERT (Trigger: vor öffentlichem Traffic bzw. mit
@@ -173,7 +174,9 @@ in docs/claude-md-herleitung.md.
   PROJEKT baut — insbesondere die Phase 13, falls sie kundeneigene Endpunkte vorsieht;
   (ii) es zeigt sich, dass die KENNUNG NICHT IN DEN EINSTELLUNGS-BLOB GEHÖRT — GLEICHGÜLTIG
   AUS WELCHEM GRUND (Beispiele, KEINE abschliessende Liste: je Kennung ein eigenes
-  Zugangsdatum · die Kennung selbst ein Geheimnis · server-autoritativ vergeben).)
+  Zugangsdatum · die Kennung selbst ein Geheimnis · server-autoritativ vergeben). (i) IST
+  EINGETRETEN am 2026-09-28 mit Phase 13 — Neubewertung: die Eindeutigkeit bleibt unberührt,
+  die Adressen liegen nicht in project_secrets.)
 - DREI WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE — RANG OFFEN,
   UNGEMESSEN (Trigger: die Messung selbst — ein Lauf, der prüft, ob ein Wurf auf dem
   Ingest-Pfad die garantierte leere 204 bricht)
@@ -372,6 +375,10 @@ WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE".
 - KEINE KLICK-KENNUNG IST AN EINEM ECHTEN ANZEIGENKLICK GEPRÜFT — WEDER IHRE FORM NOCH DER
   ABGLEICH (Trigger: der erste echte Anzeigenklick je Ziel — spätestens vor echtem
   Ad-Traffic)
+
+**IN PHASE 13 AUFGENOMMEN (2026-09-28).**
+- DIE SEITENADRESSE REIST SAMT QUERY AN UNSEREN SERVER UND AN DREI ZIELE — WAS IM QUERY
+  STEHT, REIST MIT (Trigger: vor echtem Ad-Traffic, spätestens der erste fremde Nutzer)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

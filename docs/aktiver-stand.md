@@ -823,6 +823,74 @@ für Plan, Bau und Protokoll; die Wächter trägt der Abschluss nach.
 - J9 Die Laufzeit aus 13-1 und ihre Invarianten bleiben unverändert — das sind I1 bis I8 und
   I10; I9 ist mit der Verdichtung gestrichen (Vermerk P13-35, Punkt (8)).
 
+### Messung der Planrunde 13-1c
+
+**Vermerk P13-50 — DOMParser GEGEN LIVE: WELCHE FELDER EIN FORMULAR HAT** (GEMESSEN, CC,
+2026-09-28, Planrunde der Scheibe 13-1c; Google Chrome 153 über Playwright, Seiten
+`about:blank` und eine `data:`-Adresse; Instrument: `Array.from(form.elements)`, je Feld der
+`name`).
+- DOMParser, einfach gegen zweifach geparst (zweifach = Serialisierung
+  `"<!DOCTYPE html>" + documentElement.outerHTML` erneut geparst):
+  - Positivkontrolle, wohlgeformtes Formular: `a,b` einfach, zweifach und dreifach.
+  - Ungeschlossenes `<form>` in einem `<div>`, danach ein Feld ausserhalb: `a` in allen drei
+    Läufen.
+  - `<form>` in einer `<table>`: keine Felder in allen drei Läufen.
+  - Die Serialisierung war in allen drei Fällen stabil (erste gleich zweite).
+- Live (Navigation auf eine `data:`-Adresse) gegen DOMParser derselben Live-Serialisierung:
+  - Wohlgeformtes Formular: `x,y` gegen `x,y`.
+  - Ungeschlossenes `<form>`: live `a,b,c`, DOMParser `a` — live ordnet über den
+    Formular-Zeiger des Parsers auch Felder zu, die nicht im Formular stehen, DOMParser nicht.
+  - `<form>` in `<noscript>`: live kein Formular (Text), DOMParser ein Formular mit Feld `n`.
+- `labels` wirkt im DOMParser-Dokument für `for=` und für ein umschliessendes `<label>`. DIE
+  FALLE: Der Text eines umschliessenden Labels trägt den Text enthaltener Felder —
+  `<label>Land <select><option>DE</option></select></label>` liefert "Land DE".
+- FOLGE: Editor und Erzeugung (beide DOMParser) sehen dieselben Felder; die Live-Seite kann
+  bei unsauberem HTML andere sehen.
+- GRENZE: gemessen am ORIGINAL-Quelltext, nicht an der Ausgabe von `generateFunctional` (dazu
+  B0 der Bau-Runde). Ein Browser.
+
+### Architekten-Setzungen aus der Planrunde der Scheibe 13-1c
+
+PROVENIENZ aller: ARCHITEKTEN-SETZUNG 2026-09-28, aus dem Plan der Planrunde (CC, Fragen F1 bis
+F7 und Befunde G2/G4) übernommen im Bau-Auftrag der Scheibe 13-1c. REVIDIERBAR; ein
+Owner-Widerspruch hebt jede auf.
+
+**Setzung P13-51 (F1) — DIE KURZFORM EINES ABGELEITETEN NAMENS.** Für ALLE Quellen einschliesslich
+`id`:
+- Umlaute vorher umschreiben (ä→ae, ö→oe, ü→ue, ß→ss);
+- Kleinbuchstaben; erlaubt `[a-z0-9_]`, jedes andere Zeichen wird zu "_";
+- mehrfaches "_" zusammenfassen, "_" am Rand abschneiden;
+- höchstens 40 Zeichen.
+- Ergibt eine Quelle danach nichts, gilt die nächste (Setzung P13-44).
+
+**Setzung P13-52 (F2) — `aria-labelledby` IST KEINE QUELLE.** Die Reihenfolge aus Setzung P13-44
+bleibt.
+
+**Setzung P13-53 (F3) — EIN NAME NUR AUS LEERRAUM IST EINE EIGENE SPERRE, KEIN ÜBERSCHREIBEN.**
+- GRUND: J3 bleibt streng — ein vorhandenes `name`-Attribut wird nie angefasst.
+
+**Setzung P13-54 (F4) — FELDER MIT EINEM `noscript`-VORFAHREN WERDEN AUS ABLEITUNG UND LISTE
+AUSGELASSEN.**
+- GRUND: Live sind sie Text (Vermerk P13-50).
+
+**Setzung P13-55 (F5) — DIE NAMEN VON ABSENDE-KNÖPFEN GEHÖREN IN DIE LISTE.**
+- GRUND: Die Laufzeit sendet mit `new FormData(f, submitter)`; ein benannter Knopf kommt an.
+
+**Setzung P13-56 (F6) — DAS SERVER-TOR IN `publishProject` BRICHT BEI FEHLENDER LISTE AB.**
+- Eine Abweichung erkennt der Server nicht (kein DOM); die fehlende Liste erkennt er.
+
+**Setzung P13-57 (F7) — DIE MELDUNG NENNT DIE VOLLEN LISTEN "alt → neu" SAMT VARIANTE.**
+
+**Setzung P13-58 — DIE LISTE WIRD AUS DEM AUSGELIEFERTEN TEXT ENTFERNT.** Der Datenblock trägt
+für ein Formular-Ziel nur `endpoint` und `thanksUrl`.
+- GRUND: Die Laufzeit liest nur diese beiden; was ausgeliefert ist, bekommt man nicht zurück;
+  und ein Formular mit Ziel, dessen Felder alle benannt sind, bleibt damit zeichengleich zu
+  seiner Ausgabe unter 13-1 (Befund G4/G5 der Planrunde).
+
+**Setzung P13-59 — DIE BENENNUNG LÄUFT VOR DEM TEXT-BAKE.**
+- GRUND: Der Text-Bake ändert `h1`–`h6` und `p`; ein `<p>` in einem `<label>` gäbe der Erzeugung
+  sonst einen anderen Label-Text als dem Editor (Befund G2 der Planrunde).
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13-11 — ANBIETER-LESUNG MAKE VOR JEDER ANBINDUNG** (Dauerregel "EIN NEUER ANBIETER

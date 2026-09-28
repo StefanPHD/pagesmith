@@ -24,6 +24,7 @@ ARCHITEKTEN-SETZUNG (revidierbar). Eine Setzung trägt je Grund und Grenze.
 - Owner-Entscheidungen zur Phase 13 vom 2026-09-28
 - Architekten-Setzungen zur Phase 13 vom 2026-09-28
 - Zuschnitt Scheibe 13-1
+- Zuschnitt Scheibe 13-1c
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
 
@@ -744,6 +745,84 @@ Entscheidungen P13-23/P13-24, Setzungen P13-25 bis P13-32, Dauerregel).
     · Die Vermerke P13-22 und P13-33.
     · Die Invarianten I1 bis I8 und I10, je mit Wächter.
 
+## Zuschnitt Scheibe 13-1c
+
+**GEGENSTAND:** "Automatische Benennung der Formularfelder" — Arbeit P13-34 (Entscheidung
+P13-23). Ein Formular mit Ziel darf unbenannte Eingabefelder tragen; sie bekommen in der
+ausgelieferten Seite einen abgeleiteten Namen. Zugeschnitten am 2026-09-28; der Plan folgt in
+einer eigenen Runde.
+
+**ABWEICHUNG VOM WORTLAUT DER ARBEIT P13-34, DEKLARIERT:**
+- Dort steht "bekommt seinen Namen beim Versand" und "Das HTML wird dabei nicht geändert".
+- Dieser Zuschnitt schreibt den Namen ZUR ERZEUGUNGSZEIT in den ausgelieferten Text (Setzung
+  P13-43). Unverändert bleiben der Quelltext im Editor (J1) und die Laufzeit aus 13-1 (J9) —
+  nicht der ausgelieferte Text.
+- Die Herkunft des Namens ist gegenüber "`id`, sonst Beschriftung oder Platzhalter" erweitert
+  (Setzung P13-44).
+
+### Owner-Entscheidungen zur Scheibe 13-1c
+
+PROVENIENZ beider: OWNER-ENTSCHEIDUNG 2026-09-28, übermittelt im Auftrag der Zuschnitt-Runde der
+Scheibe 13-1c. BINDEND.
+
+**Entscheidung P13-41 — WEICHT DIE NAMENSLISTE EINES FORMULARS MIT ZIEL VON DER GESPEICHERTEN
+AB, SIND VERÖFFENTLICHEN UND EXPORT GESPERRT, BIS DER BETREIBER DIE NEUEN NAMEN AM ZIEL
+BESTÄTIGT.**
+- Die Meldung nennt alt → neu.
+- VERWORFEN: nur hinweisen. GRUND: Ein übersehener Hinweis ist stiller Datenverlust im
+  Make-Szenario.
+
+**Entscheidung P13-42 — EIGENES UMBENENNEN IM EDITOR IST NICHT TEIL VON 13-1c.** Eine spätere
+Scheibe bei Bedarf.
+
+### Architekten-Setzungen zur Scheibe 13-1c
+
+PROVENIENZ aller sieben: ARCHITEKTEN-SETZUNG 2026-09-28, übermittelt im Auftrag der
+Zuschnitt-Runde der Scheibe 13-1c. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf.
+
+**Setzung P13-43 — DIE NAMEN WERDEN ZUR ERZEUGUNGSZEIT IN DIE AUSGELIEFERTE SEITE GESCHRIEBEN.**
+- Die Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN FREMDEN
+  KNOTEN AN …" (docs/immer-beachten.md) nimmt "zur Erzeugungszeit die Schreibvorgänge von
+  `generateFunctional` in Kundenelemente" ausdrücklich aus.
+- Die Laufzeit aus 13-1 bleibt unverändert; der Quelltext im Editor bleibt unverändert.
+
+**Setzung P13-44 — DIE HERKUNFT DES NAMENS, IN DIESER REIHENFOLGE:** `id` · Beschriftung
+(`label`) · `aria-label` · Platzhalter · Feldtyp · Nummer.
+- Umlaute werden umgeschrieben (ä→ae, ö→oe, ü→ue, ß→ss), sonstige Zeichen zu "_".
+- Kollisionen werden hochgezählt; ein abgeleiteter Name kollidiert nie mit einem vorhandenen.
+
+**Setzung P13-45 — EIN VORHANDENER NAME WIRD NIE ÜBERSCHRIEBEN.**
+
+**Setzung P13-46 — RADIO-BUTTONS OHNE NAMEN: WEITERHIN KEIN ZIEL, MIT HINWEIS.**
+- GRUND: Ein Name änderte ihr Verhalten — gleichnamige Radios schliessen sich gegenseitig aus.
+
+**Setzung P13-47 — DIE GESPEICHERTE LISTE UMFASST ALLE NAMEN, DIE DAS FORMULAR SENDEN WÜRDE,
+EXPLIZITE WIE ABGELEITETE.**
+- GRUND: Auch eine Umbenennung im Code bricht ein Make-Szenario still.
+
+**Setzung P13-48 — ZIELE AUS 13-1 OHNE GESPEICHERTE LISTE WERDEN EINMAL BESTÄTIGT, BEVOR SIE
+WIEDER VERÖFFENTLICHT ODER EXPORTIERT WERDEN.**
+- GRUND: Eine fehlende Liste heisst nicht "passt".
+
+**Setzung P13-49 — DIE LISTE ENTHÄLT NUR NAMEN, NIE WERTE.**
+- BEZUG: Entscheidung P13-7 (Formularinhalte nie in unsere Datenbank).
+
+### Invarianten der Scheibe 13-1c
+
+PROVENIENZ: ARCHITEKT 2026-09-28, Auftrag der Zuschnitt-Runde der Scheibe 13-1c. Der Massstab
+für Plan, Bau und Protokoll; die Wächter trägt der Abschluss nach.
+- J1 Der Quelltext im Editor bleibt unverändert; Namen stehen nur im erzeugten Text.
+- J2 Projekte ohne Formular-Ziel bleiben byte-gleich (I5 der Scheibe 13-1).
+- J3 Ein vorhandener `name` wird nie überschrieben.
+- J4 Radios ohne `name` → kein Ziel.
+- J5 Editor-Anzeige und Erzeugung nutzen DIESELBE Ableitungsfunktion.
+- J6 Namen sind im Formular eindeutig und kollidieren mit keinem vorhandenen.
+- J7 Abweichende oder fehlende Liste → Veröffentlichen UND Export gesperrt, bis bestätigt; die
+  Meldung nennt alt → neu; beide Varianten (A/B).
+- J8 In der gespeicherten Liste stehen nur Namen, nie Werte.
+- J9 Die Laufzeit aus 13-1 und ihre Invarianten bleiben unverändert — das sind I1 bis I8 und
+  I10; I9 ist mit der Verdichtung gestrichen (Vermerk P13-35, Punkt (8)).
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13-11 — ANBIETER-LESUNG MAKE VOR JEDER ANBINDUNG** (Dauerregel "EIN NEUER ANBIETER
@@ -790,6 +869,8 @@ P13-35, Punkt (8).
 - Der Editor zeigt die ankommenden Namen.
 - Bis dahin gilt die strenge Grenze aus 13-1: ein Ziel nur, wenn alle Eingabefelder benannt
   sind.
+- ZUGESCHNITTEN am 2026-09-28: Abschnitt "Zuschnitt Scheibe 13-1c" (mit deklarierter
+  Abweichung vom Wortlaut oben).
 
 **Arbeit P13-36 — SCHEIBE 13-1b: DER TESTKNOPF IM EDITOR** (Setzungen P13-18 und P13-21;
 ARCHITEKTEN-SETZUNG 2026-09-28).

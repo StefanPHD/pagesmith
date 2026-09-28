@@ -460,6 +460,23 @@ Fremdsystem -> ans Ende oder auslagern.
   bestehenden ESP. Begründung: Zustellbarkeit, Opt-in-Nachweise, WhatsApp-Business-
   Freigabe und Carrier-Regeln sind ein eigenes, ops-schweres Geschäft — für einen
   Solo-Betrieb der teuerste Baustein bei geringstem Differenzierungswert (Commodity).
+  OWNER-IDEE 2026-09-28 — NICHT ENTSCHIEDEN. Sie hebt die Entscheidung darüber NICHT auf;
+  übermittelt vom Architekten im Auftrag der Anbieter-Lesung der Phase 13, Formulierung CC.
+  · DIE IDEE — zwei Wege für den Nutzer: (1) ein EINGEBAUTER AUTORESPONDER für punktuelle
+    Bestätigungen — eine Checkbox "Bestätigungs-Mail senden" und ein eigener Text, ohne
+    Vorwissen; (2) der DAUERHAFTE KONTAKT im eigenen Werkzeug des Nutzers — Make, oder "per
+    Klick" ein Anbieter wie KlickTipp.
+  · ARCHITEKTEN-EINORDNUNG (2026-09-28): Weg 2 IST Phase 13 (Roadmap-Zeile 13). "Per Klick"
+    ist denkbar als VORLAGEN JE ANBIETER im Editor — Feldnamen je Anbieter, ohne Server; das
+    Material liefert die Anbieter-Lesung (docs/formular-empfaenger-befunde.md). Weg 1 KEHRT
+    ZWEI FESTLEGUNGEN UM: die Owner-Entscheidung "kein Versender" (2026-07-24, darüber) und
+    Entscheidung P13-7 der Phase 13 (Formularinhalte gehen ausschliesslich an die
+    eingetragene Adresse, kein Klartext bei uns). Er wäre eine EIGENE, spätere Phase.
+  · VOR EINER ENTSCHEIDUNG ZU KLÄREN: Missbrauch (Mails an fremde, eingetippte Adressen) ·
+    Zustellbarkeit bei wechselnden Kunden-Domains (SPF/DKIM) bzw. die Reputation einer
+    eigenen Absender-Domain · Datenschutz und Werberecht (JURISTISCH ZU PRÜFEN, NICHT
+    GEPRÜFT) · ob die eigene Bestätigung des Anbieters den Bedarf schon deckt (Frage K14 in
+    docs/formular-empfaenger-befunde.md).
 
 ### GESTRICHEN (nicht "später", sondern NICHT)
 - BROWSER-FINGERPRINTING: widerspricht dem KERNVERSPRECHEN. Fingerprinting ist unter

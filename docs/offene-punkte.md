@@ -743,6 +743,16 @@ aufeinander; sie liegen alle hier und finden einander.
   wundert sich über Einträge, die kein Besucher seiner Seite abgeschickt hat — oder sein
   Empfänger verbraucht Kontingent dafür (beides ABGELEITET). KEINE EMPFEHLUNG, was zu schreiben
   wäre; gemessen ist am Spam-Verhalten nichts. Der Trigger ist der des Postens.
+  (7) DIE VORSCHAU IM EDITOR SENDET NIE EREIGNISSE — ERGÄNZT AM 2026-09-29 (Abschluss der
+  Scheibe 13.6-2 der Phase 13.6; Owner-Entscheidung P13.6-13 der Phase 13.6). Seit Bau-Commit
+  `8be7bb3` baut die funktionale Vorschau weder Meta-Pixel noch Beacon an `/api/e`; der
+  Custom-Pixel und der Seitenaufruf liefen dort schon vorher nicht. Tracking prüft der
+  Betreiber an der VERÖFFENTLICHTEN Seite, etwa mit dem Testmodus (Punkt (3); nicht jedes Ziel
+  hat einen). Was still kaputtgeht: Wer Tracking in der Vorschau testet, sieht nichts ankommen
+  und hält es für kaputt. GRENZE, die mit in die Hilfe gehört: Skripte, die im importierten
+  HTML des Betreibers selbst stehen, laufen in der Vorschau weiter (Setzung P13.6-39 der Phase
+  13.6) — ein eigenes Pixel im HTML kann von dort also sehr wohl senden. KEINE EMPFEHLUNG, wie
+  der Satz lautet. Der Trigger ist der des Postens.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
   ENTSCHEIDUNG). Grund: Die Achse hat keinen realen Konsumenten; was still kaputtginge, setzt

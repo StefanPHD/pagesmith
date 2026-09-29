@@ -186,7 +186,8 @@ in docs/claude-md-herleitung.md.
   (2) TRIGGER FÜR DIE KLÄRUNG: sobald echter Traffic eine Zuordnung zu einer echten Person
   erzeugt. Der Eintrag trägt seit dem 2026-09-19 einen PUNKT (4) aus der Phase 11.6, seit
   dem 2026-09-24 einen PUNKT (5), Warnungen in den Oberflächen der Netzwerke, und seit dem
-  2026-09-29 einen PUNKT (6) aus der Phase 13, die öffentliche Adresse eines Formular-Ziels)
+  2026-09-29 einen PUNKT (6) aus der Phase 13, die öffentliche Adresse eines Formular-Ziels,
+  sowie einen PUNKT (7) aus der Phase 13.6, die Vorschau im Editor sendet nie)
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real — EINGETRETEN mit dem Abschluss der
   Phase 11.5 am 2026-09-16, nachgezogen am 2026-09-25)

@@ -387,6 +387,9 @@ Vercel-Befunde, Reihenfolge". BINDEND.
   mitgemeint.
 - EBENFALLS ABGELEITET: Die Entscheidung gilt dem Editor, nicht der Umgebung — auch die lokale
   Vorschau (`next dev`) baut den Beacon heute und schickt ihn an den lokalen Server.
+- UMGESETZT 2026-09-29: Scheibe 13.6-2 der Phase 13.6, Bau-Commit `8be7bb3`, live bestanden
+  (Vermerk P13.6-45). Die GRENZE und der Satz über die lokale Vorschau darüber beschreiben den
+  Stand davor.
 
 **Owner-Entscheidung P13.6-16 — NEUFASSUNG DER DATENKLASSEN-REGEL FÜR FORMULARINHALTE IM RELAY:
 TRANSIT JA — NIE GESPEICHERT, NIE GELOGGT, NIE AN `/api/e`, NIE AN EIN TRACKING-ZIEL.**
@@ -800,9 +803,13 @@ Hosts gesperrt"). LIVE-TEST BESTANDEN.
 
 ## Zuschnitt Scheibe 13.6-2
 
-**GEGENSTAND:** "Die Vorschau sendet nie" — die zweite Bau-Scheibe der Phase 13.6. Sie setzt
-Owner-Entscheidung P13.6-13 um, in der Reihenfolge der Setzung P13.6-14. Zugeschnitten am
-2026-09-29; der Plan folgt in einer eigenen Runde.
+**ABGESCHLOSSEN AM 2026-09-29 — Bau-Commit `8be7bb3`, Live-Test bestanden; Abschluss-Vermerk
+P13.6-45.**
+- GEGENSTAND: "Die Vorschau sendet nie" — die zweite Bau-Scheibe der Phase 13.6. Sie setzt
+  Owner-Entscheidung P13.6-13 um, in der Reihenfolge der Setzung P13.6-14.
+- Der Zuschnitt ist verdichtet: Hier stehen die Setzungen und Grenzen, die über die Scheibe
+  hinaus binden, dazu die Vermerke der Scheibe.
+- Was gestrichen ist: Vermerk P13.6-45, Punkt (12).
 
 ### Architekten-Setzungen zur Scheibe 13.6-2
 
@@ -875,9 +882,14 @@ BEKOMMT EINEN WÄCHTER-TEST.**
   `fbq` hängen allein an der Pixel-ID (`buildMetaRuntime`); wo eine gesetzt ist, sind sie in der
   Vorschau heute gebaut und werden beim Track-Klick gerufen. Ob `fbevents.js` im Rahmen lädt und
   bei Meta etwas ankommt, ist NICHT gemessen.
+  GEMESSEN 2026-09-29 (OWNER, vor dem Push): `fbevents.js` lädt im Rahmen und sendet von dort;
+  ob Meta die Ereignisse angenommen hat, bleibt ungemessen (Vermerk P13.6-45, Punkte (2) und
+  (7)).
 
 **Setzung P13.6-41 — FOLGE: ERST NACH DIESER SCHEIBE WIRD `NEXT_PUBLIC_APP_URL` KORRIGIERT.**
 - Bestätigt die Reihenfolge der Setzung P13.6-14; dort steht der Grund.
+- ERFÜLLT 2026-09-29: Die Scheibe ist abgeschlossen (Vermerk P13.6-45). Als Nächstes steht die
+  Korrektur von `NEXT_PUBLIC_APP_URL` an (Vorrat P13.6-12 der Phase 13.6).
 
 ### Grenzen der Scheibe 13.6-2
 
@@ -930,6 +942,9 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
     GEMESSEN: `fbevents.js` lädt im Rahmen. NICHT ENTSCHEIDBAR: ob Meta Ereignisse aus einem
     `null`-Ursprung annimmt; ob der Browser den Beacon an `http://localhost:3000` von einer
     öffentlichen Seite zulässt.
+    GEMESSEN 2026-09-29 (OWNER, vor dem Push): `fbevents.js` lädt im Rahmen und sendet; die zwei
+    Anfragen an `http://localhost:3000/api/e` schlugen fehl (Vermerk P13.6-45, Punkt (2)). Ob
+    Meta annimmt, bleibt ungemessen.
 (6) WEITERLEITUNG UND TEXTERSETZUNG hängen an Datenblock und Wiring, die in der Vorschau immer
     entstehen, nicht an der Meta-Laufzeit, dem Custom-Baustein oder dem Gate.
 (7) SKRIPTE IM IMPORTIERTEN HTML laufen in beiden Rahmen: der `DOMParser`-Rundlauf behält sie.
@@ -965,12 +980,127 @@ REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
 (5) ALTE PAGESMITH-BAUSTEINE IM IMPORTIERTEN HTML: nicht Teil der Scheibe, Vorrat P13.6-44.
 (6) KEIN NEUER OBERFLÄCHENTEXT in der Vorschau. Der Satz für die Betreiber-Dokumentation folgt
     mit dem Abschluss-Vermerk.
+    ERLEDIGT 2026-09-29: Punkt (7) am offenen Punkt "BETREIBER-DOKUMENTATION FEHLT — DREI
+    PUNKTE" (docs/offene-punkte.md).
 (7) Ob `fbevents.js` im Rahmen lädt und bei Meta ankommt, klärt der Live-Test (Vorher-Schritt).
+    GEKLÄRT 2026-09-29, zur Hälfte: Er lädt und sendet; ob Meta annimmt, ist nicht gemessen
+    (Vermerk P13.6-45, Punkt (7)).
 (8) Ob `.env.local` auf die Produktions-Datenbank zeigt: keine Handlung — dort liegen nur eigene
     Testdaten des Owners.
 
-## Noch nicht geschnittene Arbeit
+### Abschluss der Scheibe 13.6-2
 
+**Vermerk P13.6-45 — ABSCHLUSS DER SCHEIBE 13.6-2 (DIE VORSCHAU SENDET NIE). Bau-Commit
+`8be7bb3`** ("feat(preview): Die Vorschau sendet nie — keine Meta-Laufzeit, keine
+Tracking-Eingaben"). LIVE-TEST BESTANDEN.
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (5): GEMESSEN, OWNER, live, 2026-09-29, Chrome (Version nicht
+    angegeben), übermittelt im Auftrag der Abschluss-Runde.
+
+(1) V1/L1 — LIVE-SEITE:
+    · vor dem Push: 30493 Bytes, sha256
+      `40c83cb36a543162717af8a01143246ed139d2cbfa7373f7888c39ca848f37e5`;
+    · nach Deploy und Neu-Veröffentlichen: identisch; je zweimal gleich gemessen.
+    · GRENZE: Welche Seite gemessen wurde, ist nicht angegeben. Bytes und sha256 gleichen den
+      Werten der "SEITE OHNE FORMULAR-ZIEL" in Vermerk P13.6-37, Punkt (1) (GEMESSEN AM
+      BESTAND, CC: beide Werte zeichengleich). Trägt die Seite keine Meta-Laufzeit, belegt die
+      Byte-Gleichheit MIT Tracking allein der Test W-B2, die Funktion live allein L4.
+    · ABWEICHUNG VOM AUFTRAG, GEMELDET (CC): Der Auftrag nannte sie "Seite P0"; der Bestand führt
+      sie als "L0/L1 — SEITE OHNE FORMULAR-ZIEL".
+
+(2) V3 — VORSCHAU VOR DEM PUSH, Track-Klick:
+    · im Netzwerk zwei Anfragen mit Initiator `fbevents.js`: eine mit dem Ereignis "Lead", eine
+      mit "SubscribedButtonClick";
+    · unter `api/e` zwei fehlgeschlagene Anfragen an `http://localhost:3000/api/e` — nach dem
+      Code Beacon und Bestätigung (ABGELEITET, nicht einzeln erhoben).
+
+(3) L2 — VORSCHAU NACH DEM DEPLOY, derselbe Klick: Filter "facebook" und "api/e" je ohne
+    Treffer.
+
+(4) L3 — Weiterleitung und Textersetzung funktionieren in der Vorschau.
+
+(5) L4 — LIVE-SEITE:
+    · `fbevents.js` geladen;
+    · eine Anfrage an `/api/e` mit `event` "Lead", `eventID`
+      `8297cf28-5666-4417-9817-8ed482125222`, `cns` mit allen fünf Zielen erlaubt;
+    · eine Bestätigung mit derselben `eventID` und `obs` "__ps_browser"
+      (`BROWSER_CONFIRM_MARKER`, src/lib/analytics/events.ts).
+    · Tracking-Schlüssel und `_fbp`-Wert stehen bewusst nicht in dieser Datei.
+
+(6) NICHT GEMELDET: V2 (Bytes und sha256 des Exports vor dem Push) und damit die
+    Byte-Gleichheit des Exports live, dazu L5 (Metas Test-Ereignisse). Die Byte-Gleichheit des
+    Exports belegt allein der Test W-B1.
+
+(7) FRAGE Q5 DER PLANRUNDE BEANTWORTET: `fbevents.js` lädt im Vorschau-Rahmen (Ursprung `null`)
+    und sendet von dort (Punkt (2)). Ob Meta die Ereignisse angenommen hat, ist nicht gemessen.
+    Damit beantwortet: Vermerk P13.6-42, Punkt (5), und Setzung P13.6-43, Punkt (7).
+
+(8) BAU (CC, 2026-09-29, am Stand vor dem Commit `8be7bb3`; die Gates danach erneut):
+    · Vorher-Werte, erhoben an `038a6d2` vor der ersten Code-Änderung (Sonde ausserhalb des
+      Repos, `jiti` mit jsdom 29.1.1): W-B1 (Export) 24078 Bytes, sha256
+      `4917c6eb06523dc666b75d608288d28fc4ca723607ccc4dab8dc89ac4c575f5e`; W-B2
+      (Veröffentlichung mit Dialog "bar") 37865 Bytes, sha256
+      `33139d44144abc659d94ddece86ee5e873e7df5a4c6ce6bcf66e395ff913c79b`. Die Tests tragen sie als
+      Konstanten. Sonde und Testumgebung stimmen überein: der Fixture-Block ist zeichengleich
+      (sha256 des Blocks), und W-B lief am unveränderten Code grün.
+    · Gates: `tsc --noEmit` exit 0; `eslint` 0 Fehler, 1 Warnung in
+      src/lib/tracking/consent.test.ts (von der Scheibe nicht berührt); `vitest run` 99 Dateien,
+      2554 Tests (vorher 2546); `next build` exit 0.
+    · Mutationen, volle Suite, Vorhersage je vor dem Lauf: M1 (Beacon zurück) → W-P1, W-P2 ·
+      M1a (Teilprobe: nur die Laufzeit, ohne Aufruf) → W-P1 · M2 (Lader und `fbq` zurück) →
+      W-P1, W-P2 · M3 (Meta-Laufzeit in keinem Modus) → 101 rot, darunter W-B1 und W-B2 · M4
+      (Custom-Gatung entfällt) → W-E2E, W-P1, W-P2, T13 · M5 (Memo im Modus "export") →
+      W-E2E. Bei M1 und M2 blieb W-E2E grün, wie vorhergesagt (Setzung P13.6-43, Punkt (4)).
+    · M3, ABWEICHUNG VON DER VORHERSAGE: T9 wurde rot, vorhergesagt war grün. Seine zweite
+      Hälfte (`MIT_META`) trägt eine Pixel-ID und gehört damit zur Klasse "Export mit
+      Meta-Laufzeit"; beim Plan war nur sein erster Aufruf gelesen. Alle 101 Roten gehören zu
+      dieser Klasse.
+    · M5, ZWEIMAL: Im ersten Lauf wurde W-E2E allein über die Ereigniszeile rot
+      (`__psCustomFire`); ohne Ereigniszeile in der Vorlage wäre der Moduswechsel grün geblieben.
+      Vor dem Commit bekam W-E2E deshalb die Zusicherung `var MODE = "preview"` (Positivkontrolle
+      `var MODE = "export"` am Export desselben Renders); im zweiten Lauf wurde W-E2E an genau
+      dieser Zusicherung rot.
+    · Kurzprobe ausserhalb des Plans: K4 ohne `setTrackingKey("")` in `resetToEmpty` → rot.
+
+(9) ABWEICHUNGEN VOM PLAN, IM BAU DEKLARIERT:
+    · Die Engine-Tests stehen in der bestehenden src/lib/generate.test.ts, keine neue Datei.
+    · Die Track-Anweisung ist nur in "preview" leer; "edit" bleibt byte-gleich.
+    · K4 misst am Export: im neuen Kontext Code eingefügt, Track-Aktion über die Oberfläche.
+    · W-E2E prüft zusätzlich die Modus-Konstante (Punkt (8), M5).
+    · Berichtigt sind fünf Kommentarstellen in src/lib/generate.ts und zusätzlich der Absatz am
+      Export in src/components/CodeImporter.tsx ("GENAU dieselben Eingaben wie die funktionale
+      Vorschau …").
+
+(10) WÄCHTER, je Festlegung (G = src/lib/generate.test.ts, CI =
+    src/components/CodeImporter.test.tsx):
+    · Setzung P13.6-40 (Export und Veröffentlichung byte-gleich): W-B1, W-B2 samt
+      Positivkontrolle (G).
+    · Setzung P13.6-38 mit P13.6-43 (2) (keine Meta-Laufzeit in der Vorschau): W-P1 (Text),
+      W-P2 (Verhalten), je mit Positivkontrolle am Export (G).
+    · Setzung P13.6-43 (4) (keine Tracking-Eingaben, Modus "preview"): W-E2E (CI).
+    · Invariante (iii) nach P13.6-43 (1): W-P3 und T6 (G).
+    · Entscheidung P11.6-6 (d) der Phase 11.6: T13, unverändert.
+
+(11) GRENZEN, als Grenzen benannt:
+    · nur Chrome;
+    · ob Meta Ereignisse aus der Vorschau bis heute gezählt hat, ist nicht gemessen;
+    · Skripte im HTML des Betreibers laufen in der Vorschau weiter (Setzung P13.6-39), darunter
+      alte Pagesmith-Bausteine (Vorrat P13.6-44);
+    · Metas automatische Ereignisse: Vorrat P13.6-46.
+
+(12) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN: aus dem GEGENSTAND der Satz
+    "Zugeschnitten am 2026-09-29; der Plan folgt in einer eigenen Runde."; der Gegenstand selbst
+    steht im Abschluss-Kopf des Zuschnitts. Eine weitere Bau-Anweisung, die mit der Scheibe
+    abgelaufen wäre, trug der Zuschnitt nicht.
+    STEHEN GEBLIEBEN: Setzungen P13.6-38, P13.6-39, P13.6-40 und P13.6-41, die Grenzen der
+    Scheibe, Vermerk P13.6-42 und Setzung P13.6-43. Je ein Auflösungs-Satz steht an P13.6-40,
+    P13.6-41, P13.6-42 Punkt (5) und P13.6-43 Punkte (6) und (7).
+
+(13) NACHGEZOGEN IN DIESEM COMMIT: Owner-Entscheidung P13.6-13 (UMGESETZT); Vorrat P13.6-12
+    (Status); Punkt (7) am offenen Punkt "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE"
+    (docs/offene-punkte.md) samt Stub-Zeile in CLAUDE.md.
+
+## Noch nicht geschnittene Arbeit
 
 **Arbeit P13.6-5 — AUFKLÄRUNG A2: SICHERHEITS-INFRASTRUKTUR, DATENBANK, GEHEIMNISSE**
 (ARCHITEKT 2026-09-29; die Fragen aus dem A1-Bericht, CC, 2026-09-29). Zu beantworten:
@@ -1179,6 +1309,14 @@ EXPORTIERTER SEITEN ERREICHEN UNSEREN SERVER NIE** (2026-09-29).
       Produktion) ist mit diesem Eintrag beantwortet; dort steht der Rückverweis.
   STATUS, NACHGEZOGEN: Die Korrektur folgt erst nach Scheibe 2 (Setzung P13.6-14 der Phase
   13.6). Der Satz "AUSGESETZT, bis … geklärt" darüber beschreibt den Stand vor dieser Runde.
+- STATUS, NACHGEZOGEN 2026-09-29 (Abschluss der Scheibe 13.6-2): Die Vorbedingung
+  "Vorschau-Scheibe" ist erfüllt (Vermerk P13.6-45 der Phase 13.6). ALS NÄCHSTES STEHT DIE
+  KORREKTUR VON `NEXT_PUBLIC_APP_URL` AN; Wert und Preview-Scope entscheidet der Architekt beim
+  Korrekturschritt (Setzung P13.6-14).
+  Punkte (a) und (b) oben beschreiben den Stand davor: Seit Bau-Commit `8be7bb3` übergibt das
+  Memo `functionalHtml` der Vorschau keine Beacon-Adresse mehr, und die Vorschau baut keinen
+  Beacon. `getCapiProxyUrl` speist nur noch den Export; die Korrektur schaltet in der Vorschau
+  nichts mehr ein.
 
 **Vorrat P13.6-15 — IM DEPLOYMENT LIEGEN GEHEIMNISSE, DIE DER CODE NICHT LIEST — DARUNTER SOLCHE
 MIT DIREKTEM DATENBANKZUGANG** (2026-09-29).
@@ -1255,3 +1393,23 @@ Setzung P13.6-43, Punkt (5).
 - GRENZE: Setzung P13.6-39 (Skripte im HTML des Betreibers erfasst Owner-Entscheidung P13.6-13
   nicht).
 - KEIN TRIGGER GESETZT.
+
+**Vorrat P13.6-46 — METAS AUTOMATISCHE EREIGNISSE SIND AKTIV; OB DER AUTOMATISCHE ERWEITERTE
+ABGLEICH FORMULARFELDER ÜBER UNSEREN PIXEL AN META SENDET, IST OFFEN** (2026-09-29).
+- BEFUND, GEMESSEN (OWNER, live, 2026-09-29, in der Vorschau vor dem Deploy der Scheibe
+  13.6-2): Nach einem Track-Klick sandte `fbevents.js` neben "Lead" von sich aus ein Ereignis
+  "SubscribedButtonClick" (Vermerk P13.6-45 der Phase 13.6, Punkt (2)). Die automatischen
+  Ereignisse des Pixels sind damit für diese Pixel-ID aktiv.
+- FRAGE, ABGELEITET — NICHT GEMESSEN, NICHT GELESEN: Ist Metas automatischer erweiterter Abgleich
+  eingeschaltet, liest `fbevents.js` Formularfelder (etwa eine E-Mail) und sendet sie gehasht an
+  Meta — über den Pixel, den wir auf veröffentlichten Seiten laden (Lader in `__psMetaInit`,
+  src/lib/tracking/meta.ts). Unser Code hasht und sendet selbst keine E-Mail (Vermerk P13.6-1,
+  Punkt (3)); dieser Weg liefe allein über Metas Skript.
+- BEZUG: Entscheidung P13-7 der Phase 13 (Archiv docs/claude-history/phase-13-formular-ziel.md);
+  die nicht entschiedene Frage, ob eine gehashte E-Mail an Tracking-Ziele gehen darf
+  (Owner-Entscheidung P13.6-16 der Phase 13.6, "NICHT ENTSCHIEDEN"; Roadmap-Zeile 13.6, Block
+  "ANPASSUNGEN AN DEN FAN-OUT-ZIELEN").
+- SEIT DER SCHEIBE 13.6-2 betrifft der Weg nicht mehr die Vorschau, sondern allein
+  veröffentlichte Seiten und Exporte.
+- TRIGGER: der Zuschnitt der Fan-Out-Scheibe (Roadmap-Zeile 13.6, Block "ANPASSUNGEN AN DEN
+  FAN-OUT-ZIELEN"). KEINE HANDLUNG JETZT.

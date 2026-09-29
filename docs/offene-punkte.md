@@ -4119,6 +4119,21 @@ aufgenommen nach Entscheidung P13-3 (OWNER 2026-09-28). Der datierte Block träg
   ARCHITEKTEN-HYPOTHESEN 2026-09-28; der Titel ARCHITEKT 2026-09-28; der Trigger
   OWNER-ENTSCHEIDUNG 2026-09-28. Der Stub in CLAUDE.md, "## Offene Punkte", Block "IN PHASE 13
   AUFGENOMMEN (2026-09-28)", trägt Titel und Trigger im SELBEN Zug.
+  ERGÄNZT 2026-09-29 (Phase 13.6, Aufklärung A1) — EIN KONKRETER FALL: DER NATIVE RÜCKFALL EINES
+  FORMULARS MIT ZIEL. Titel, Trigger und der Text darüber sind unverändert; Glied (4) bleibt die
+  allgemeine Form.
+  - Ein Formular MIT Ziel (Phase 13) schickt im Normalfall nicht nativ ab: der submit-Listener
+    aus `buildWiringScript` (src/lib/generate.ts) ruft `preventDefault`. Greift er nicht —
+    `form.submit()`, ein Capture-Handler des Betreibers an `window` mit `stopPropagation`
+    (Roadmap-Zeile 13, Punkt (7) der Liste beim Haken), kein laufendes Skript —, schickt der
+    Browser an die eigene Seitenadresse, weil ein solches Formular keine fremde absolute
+    `action` trägt (Setzung P13-31 der Phase 13). Beim Default `method=GET` stehen die
+    Feldwerte dann im Query und reisen über die Glieder (1) bis (3) weiter.
+  - Das widerspricht zusätzlich dem Gegenstück von Entscheidung P13-7 der Phase 13 ("nie an
+    `/api/e` …"); Invariante I2 der Phase 13 deckt nur die Adresse der Danke-Seite.
+  - PROVENIENZ: ABGELEITET am Code (CC, 2026-09-29, HEAD `a3797d9`), NICHT gemessen. Volltext:
+    Vorrat P13.6-7 der Phase 13.6 (docs/aktiver-stand.md, Standdatei der Phase 13.6); die
+    Reparatur ist dort als erste Bau-Scheibe gesetzt (Setzung P13.6-3 der Phase 13.6).
 - VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP (Trigger:
   bevor das erste fremde Nutzerkonto Zugang bekommt):
   DER OWNER-WUNSCH (OWNER 2026-09-28): Bevor fremde Nutzer Zugang bekommen, entsteht ein

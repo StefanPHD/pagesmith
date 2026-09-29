@@ -2518,6 +2518,23 @@ liegen beide hier und finden einander.
         QUERY AN UNSEREN SERVER UND AN DREI ZIELE — WAS IM QUERY STEHT, REIST MIT".
       DER VOLLTEXT DIESER ZEILE VOR DEM ABHAKEN STEHT IM COMMIT `4a45d46` (`git show
       4a45d46:docs/roadmap.md`).
+      NACHGETRAGEN 2026-09-29 (Aufklärung A1 der Phase 13.6) — NACH DEM `[x]` GEMELDET: ZWEI WEGE,
+      AUF DENEN FORMULARINHALTE UNTER BEDINGUNGEN UNSEREN SERVER ERREICHEN; beide widersprechen
+      dann Entscheidung P13-7 der Phase 13. Beide ABGELEITET am Code, NICHT gemessen. Die Liste
+      der acht Punkte darüber beschreibt den Zeitpunkt des Hakens und bleibt unverändert; der
+      Marker bleibt `[x]`.
+      · B-1 — eine Zieladresse auf einer von Pagesmith ausgelieferten Custom-Domain oder auf
+        `*.vercel.app` passiert Tor und Laufzeit-Wache. Dass `ownFormTargetDomains` die Menge
+        hinter `isAppHost` samt `*.vercel.app` nicht liest, stand schon seit dem 2026-09-28 am
+        offenen Punkt "isAppHost-PLATZHALTER" (docs/offene-punkte.md); neu sind die Lesung
+        gegen P13-7 und die Custom-Domains. Vorrat P13.6-6 der Phase 13.6.
+      · B-2 — der native Rückfall eines Formulars mit Ziel schickt an die eigene Seitenadresse;
+        bei GET stehen die Feldwerte im Query und reisen per Klick-Track an `/api/e` und drei
+        Ziele. Er hängt an den blinden Stellen aus Punkt (7). Vorrat P13.6-7 der Phase 13.6;
+        Ergänzung vom 2026-09-29 am offenen Punkt "DIE SEITENADRESSE REIST SAMT QUERY …".
+      Die Reparatur beider ist als ERSTE BAU-SCHEIBE der Phase 13.6 gesetzt, vor jedem
+      Relay-Code (Setzung P13.6-3 der Phase 13.6, ARCHITEKT 2026-09-29, revidierbar). Fundort:
+      Standdatei der Phase 13.6 (docs/aktiver-stand.md).
 - [ ] Phase 13.5 — Medien: Bilder, SVG, Video und Hintergrundbilder im importierten
       Kunden-HTML erkennen und ändern. ANGELEGT am 2026-09-28 beim Phasenende 12.5; Nummer
       und Reihenfolge OWNER-ENTSCHEIDUNG 2026-09-28. Die Medien waren bis dahin der

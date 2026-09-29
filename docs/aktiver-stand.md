@@ -458,6 +458,10 @@ STANDARD; DER DATENSPARMODUS IST JE ZIEL EIN SCHALTER.**
   nicht. Setzung P13.6-20 beschränkt das Relay auf veröffentlichte, gehostete Seiten; ein
   Formular-Ziel in einem Export bliebe danach browser-direkt, auch bei einer Adresse der
   Host-Liste. Ob "Standard" so gemeint ist, sagt der Wortlaut nicht.
+- GRENZE, AUSLEGUNG DES ARCHITEKTEN (2026-09-29, Setzung P13.6-59, Q11; dem Owner mitgeteilt):
+  EXPORTE BLEIBEN BROWSER-DIREKT, auch wenn ihre Adresse auf der Host-Liste steht. Für einen
+  Export gibt es weder eine geprüfte Serverfassung noch einen Host, aus dem das Relay das
+  Projekt bestimmen könnte (Setzungen P13.6-20 und P13.6-57).
 
 **Owner-Entscheidung P13.6-55 — DIENSTE DER STUFE 1: MAKE UND ZAPIER. EIN DIENST KOMMT ERST IN
 DIE HOST-LISTE, WENN SEINE WEBHOOK-ADRESSEN GELESEN UND EINMAL LIVE GETESTET SIND.**
@@ -561,6 +565,8 @@ der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDI
 KOMMT AUSSCHLIESSLICH AUS `published_content`.**
 - Bestimmt über trackingKey und Formular-Kennung — nie aus der Anfrage, nie aus dem Entwurf.
   Exporte bleiben browser-direkt.
+  ERSETZT DURCH P13.6-57 (ARCHITEKT 2026-09-29, Setzung P13.6-59, Q10): Das Projekt kommt aus
+  dem Host, nicht aus einem Schlüssel. Der übrige Wortlaut dieser Setzung gilt unverändert.
 - GRUND: Für Exporte gibt es keine geprüfte Serverfassung, und der Entwurf (`saveProject`) ist
   ungeprüft; `published_content` ist der beim Veröffentlichen geprüfte Stand (Vermerk
   P13.6-19, Punkt (2)).
@@ -694,6 +700,10 @@ SCHLÜSSEL IM RUMPF.**
   "Bestimmt über trackingKey und Formular-Kennung", und Vermerk P13.6-19, Punkt (3), führt
   trackingKey plus Formular-Kennung als KANDIDATEN. Diese Setzung ersetzt den trackingKey durch
   den Host. Welche Fassung gilt, entscheidet der Architekt; P13.6-20 ist hier nicht geändert.
+  AUFGELÖST 2026-09-29 (ARCHITEKT, Setzung P13.6-59, Q10): Diese Setzung gilt; an P13.6-20 steht
+  der Ersetzungs-Satz.
+- GRENZE BEANTWORTET 2026-09-29 (Vermerk P13.6-58, G2): Der vorhandene Resolver ist NICHT
+  unverändert wiederverwendbar; gewählt ist eine eigene Relay-Suche (Setzung P13.6-59, Q1).
 
 ## Zuschnitt Scheibe 13.6-1
 
@@ -1254,6 +1264,113 @@ Zugeschnitten am 2026-09-29; der Plan folgt in einer eigenen Runde.
 - Ohne Aufrufer in ausgelieferten Seiten erreicht der Endpunkt kein Besucher über unseren Code;
   er ist trotzdem öffentlich erreichbar (Setzung P13.6-56, GRENZE).
 - Kein ausgelieferter Text ändert sich in dieser Scheibe.
+- DER ENDPUNKT IST AB DEPLOY ÖFFENTLICH UND OHNE RATENBEGRENZUNG, BIS 13.6-5 (ARCHITEKT
+  2026-09-29). Weiterleiten kann er nur an veröffentlichte Adressen der Host-Liste des aus dem
+  Host bestimmten Projekts.
+
+### Planrunde der Scheibe 13.6-3
+
+**Vermerk P13.6-58 — BEFUNDE DER GATES G1 BIS G10 DER PLANRUNDE** (CC, 2026-09-29, HEAD
+`8e6c1f2`). GELESEN AM CODE, soweit nicht anders gekennzeichnet; KEIN BEFUND DIESES VERMERKS
+IST LIVE GEMESSEN. ABGELEITET heisst: aus einer Spezifikation oder dem Verhalten eines
+Frameworks geschlossen, weder gelesen noch gemessen.
+(1) G1 — ROUTE. Die Ausnahme-Liste in `proxy` (src/proxy.ts) ist exakt (`/api/e`, `/api/capi`);
+    jeder andere Pfad geht an `/app-serve`, die nur `GET` kennt. Ein neuer Pfad braucht dort
+    eine weitere exakte Gleichheit. Die Messung "POST /api/projects auf Serving-Host → 405"
+    steht im Archiv der Phase 7 (docs/claude-history/phase-7-hosting.md, "Chirurgischer
+    Passthrough"). Auf dem App-Host muss der Pfad NICHT erreichbar sein: `isPublicRoute`
+    (src/lib/supabase/middleware.ts) bleibt unverändert, ein Aufruf ohne Sitzung wird dort auf
+    `/login` umgeleitet, einer mit Sitzung erreicht die Route und wird dort als App-Host
+    (`isAppHost`) abgewiesen. Eine gemeinsame Konstante für beide Listen (Vorrat P13.6-9) wäre
+    falsch: sie öffnete den Pfad auf dem App-Host. Vorrat P13.6-9 bleibt.
+(2) G2 — PROJEKT AUS DEM HOST. `resolvePublished` (src/lib/hosting/resolve.ts) ist nicht
+    exportiert; die exportierten Funktionen liefern `ServeResult` mit `html` (und bei A/B
+    `variantBHtml`), aber keine `mappings`. Die Projektion trägt sie (`published_content`
+    ganz), gibt sie aber nicht heraus. Der Resolver ist damit NICHT unverändert
+    wiederverwendbar. Kandidaten: K1 den Lookup in resolve.ts teilen (invasiv) · K2 eine eigene
+    Relay-Suche mit derselben Projektion (resolve.ts unberührt) · K3 `ServeResult` erweitern
+    (invasiv, bricht die Zusage "shape-gleich"). Client: der Admin-Client (service_role).
+(3) G3 — A/B. Derselbe Split wie in der Auslieferung: `ab_test_active === true` und
+    `deliverableVariantB` (src/lib/hosting/variant.ts). Das Flag ist die Autorität, nicht das
+    Cookie (Archiv der Phase 9, "DEAKTIVIEREN"). ABGELEITET: Das Varianten-Cookie
+    (`__Host-ps_v`, HttpOnly, Secure, SameSite=Lax, Path=/) geht bei einem same-origin-`fetch`
+    mit (Standard `credentials: "same-origin"`).
+(4) G4 — FORMULAR-KENNUNG. Format `PS_ID_RE` (`/^ps-[a-z0-9]{6}$/`, src/lib/detect.ts), nicht
+    exportiert. Gesucht wird allein im Mapping-Satz des aus dem Host bestimmten Projekts
+    (`elementId` und `type: "formTarget"`); eine globale Suche gibt es nicht. GRENZE: ein
+    verwaistes Mapping (Formular nicht mehr im HTML) sieht der Server nicht (kein
+    HTML-Parsing); seine Adresse hat `publishProject` trotzdem geprüft (alle `formTarget` in
+    `alleMappings`).
+(5) G5 — HOST-LISTE. Belegt ist allein `hook.eu2.make.com` (docs/formular-empfaenger-befunde.md,
+    Abschnitt "Make", Befund (s)). Ein Muster (`*.make.com`, `hook.*.make.com`) liesse fremde
+    Make-Dienste (Befund (ab): `email.gh-mail.make.com`) und ungelesene Zonen zu.
+(6) G6 — WEITERLEITUNG. Die Form des Browser-Versands ist `application/x-www-form-urlencoded`
+    aus `URLSearchParams(new FormData(…))` (`buildFormTargetRuntime`, src/lib/form-target.ts).
+    Make: 200 "Accepted" = in der Warteschlange, nicht verarbeitet (Befund (d), gemessen (t)),
+    auch bei Szenario AUS (Befund (z)); 410 bei unbekannter Kennung (Befund (y)); 400, 429 und
+    500 gelesen, nicht gemessen; ein 3xx aus dem Modul "Webhook response" (Befund (e)); Rumpf
+    bis 5 MB (Befund (c)); Standardantwort nach 0,095–0,230 s (Befund (aa)). EINE RUMPFGRENZE
+    DER VERCEL-FUNKTIONEN STEHT NICHT IM BESTAND (docs/plattform-befunde.md, Vercel, Teil (d)
+    zitiert Laufzeit, Nebenläufigkeit und Speicher). ABGELEITET: das Verhalten von Node-`fetch`
+    bei `redirect: "manual"` (gibt den 3xx-Status zurück).
+(7) G7 — ANTWORT. ABGELEITET: Next beantwortet eine nicht exportierte Methode mit 405. Sie sagt
+    etwas über den Endpunkt, nicht über ein Projekt.
+(8) G8 — LOGFREIHEIT. `errorName` (src/lib/errors.ts) gibt nur `err.name` aus. Die
+    Detailansicht der Vercel-Logs führt "Outgoing Requests" (docs/plattform-befunde.md, Vercel,
+    Teile (k) und (r)); die Make-Adresse samt Kennung erscheint damit im Log der Plattform. Ein
+    Rumpf-Feld führt die Detailansicht nicht (Teil (r)).
+(9) G9 — KILL-SWITCH. Die Auslieferung prüft `domains.blocked_at` und `projects.blocked_at`
+    (resolve.ts); der Ingest nur den zweiten (Vorrat P13.6-29).
+(10) G10 — MANDANTENTRENNUNG. Die Suche ist durch `.eq("id", domain.project_id)` auf ein Projekt
+    beschränkt; ein Test braucht eine gefälschte Datenbank, die Filter WIRKLICH auswertet.
+(11) DIE SUPABASE-DOKU-LESUNG DER PLANRUNDE (docs/db-regeln.md, vierte Regel; Skill
+    `supabase-doku`) — DATUM 2026-09-29; FORM gezielte Suche mit `textContent` des
+    `<main>`-Elements (Playwright), keine Volllesung. FUNDSTELLEN: JS-Referenz
+    (supabase.com/docs/reference/javascript), Abschnitt `maybeSingle()` — "Query result must be
+    zero or one row (e.g. using .limit(1)), otherwise this returns an error." · dieselbe Seite,
+    "Response types" — "supabase-js always returns a data object (for success), and an error
+    object (for unsuccessful requests)." · dieselbe Seite, Abschnitt `abortSignal(signal)` —
+    "Set the AbortSignal for the fetch request. You can use this to set a timeout for the
+    request." · Guide "Row Level Security", Abschnitt "Bypassing Row Level Security" — "A
+    secret key authorizes access through the service_role Postgres role, which has the
+    bypassrls attribute." FOLGE FÜR DEN BAU: `maybeSingle` mit mehr als einer Zeile ist ein
+    Fehler und gilt als "nicht zugestellt"; `{data, error}` getrennt ausgewertet; jede Abfrage
+    mit `abortSignal` und Zeitlimit (Muster `persistEvent`, src/lib/analytics/persist.ts); die
+    Autorisierung trägt allein die Host-Bestimmung. Sonst nichts.
+
+**Setzung P13.6-59 — DIE ENTSCHEIDUNGEN DER PLANRUNDE 13.6-3.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Bau-Auftrag der Scheibe 13.6-3.
+REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
+- Q1 — K2: eine eigene Relay-Suche mit derselben Projektion; die geteilten Prädikate
+  (`deliverableVariantB`, `nonEmptyHtml`, `parseVariantCookie`) werden nur lesend
+  wiederverwendet; ein Paritäts-Test (R-PARITY) hält die Urteile von Relay-Suche und Resolver
+  zusammen. GRUND: Die Serve-Route wird für ein Refactoring nicht angefasst.
+- Q2 — A/B BEI AKTIVEM TEST OHNE GÜLTIGES COOKIE: beide Mapping-Sätze durchsuchen; weiterleiten,
+  wenn genau einer ein Ziel zur Kennung trägt oder beide dieselbe Adresse; bei zwei
+  verschiedenen Adressen "nicht zugestellt". GRUND: A/B-Tests ändern fast immer Text, nicht
+  das Formular-Ziel; fail-closed kostete echte Leads. Das Cookie wählt nur zwischen zwei
+  veröffentlichten und geprüften Adressen desselben Projekts.
+- Q3 — "zugestellt" 204, "nicht zugestellt" 502, je ohne Rumpf; 405 für andere Methoden ist
+  hinnehmbar.
+- Q4 — eine Logzeile je Fehlschlag, geschlossenes Vokabular, der Upstream-Status als Zahl.
+- Q5 bis Q7 — Zeitlimits 1 500 ms je Abfrage und 5 000 ms für die Weiterleitung, eingehender
+  Rumpf höchstens 64 KiB, die Kennung in der Query (`?f=`) — wie geplant.
+- Q8 — UMLEITUNGEN: `redirect: "manual"`, NIE folgen; 2xx UND 3xx gelten als "zugestellt".
+  GRUND: Ein 3xx von Make entsteht laut Befund (e) aus einem Antwort-Modul des Szenarios, also
+  nach Empfang; als Fehlschlag gewertet entstünden doppelte Leads. GRENZE: gelesen, nicht
+  gemessen; dass Node-`fetch` mit "manual" den 3xx-Status zurückgibt, ist ABGELEITET.
+  GRENZE DER STUFE: Braucht ein Szenario mit Antwort-Modul länger als das Zeitlimit, meldet das
+  Relay "nicht zugestellt", obwohl Make verarbeitet — ein erneutes Absenden erzeugt einen
+  doppelten Lead. Messkandidat, offen; für die Betreiber-Dokumentation Punkt (8) am offenen
+  Punkt "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" (docs/offene-punkte.md).
+- Q9 — Die Make-Adresse in Vercels "Outgoing Requests" ist hinnehmbar (Setzung P13-6 der Phase
+  13; seit Scheibe 13.6-1 steht sie ohnehin im `action`-Attribut).
+- Q10 — An Setzung P13.6-20, erster Punkt: ersetzt durch P13.6-57. Der übrige Wortlaut bleibt.
+- Q11 — Exporte bleiben browser-direkt, auch mit einer Adresse der Host-Liste; vermerkt als
+  GRENZE an Owner-Entscheidung P13.6-54 (Auslegung des Architekten, dem Owner mitgeteilt).
+- Q12 — Der Regions-Befund steht in docs/plattform-befunde.md, Vercel, Teil (u).
+- Q13 — 405 bei nicht exportierten Methoden, das Verhalten von Node-`fetch` bei `redirect` und
+  das Cookie bei same-origin sind ABGELEITET (Vermerk P13.6-58, Punkte (3), (6), (7)).
 
 ## Plattform-Schritte der Phase 13.6
 

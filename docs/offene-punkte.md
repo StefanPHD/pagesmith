@@ -753,6 +753,18 @@ aufeinander; sie liegen alle hier und finden einander.
   HTML des Betreibers selbst stehen, laufen in der Vorschau weiter (Setzung P13.6-39 der Phase
   13.6) — ein eigenes Pixel im HTML kann von dort also sehr wohl senden. KEINE EMPFEHLUNG, wie
   der Satz lautet. Der Trigger ist der des Postens.
+  (8) IM RELAY-MODUS DARF EIN MAKE-SZENARIO MIT ANTWORT-MODUL NICHT LÄNGER ALS DAS ZEITLIMIT
+  DES RELAYS BRAUCHEN — ERGÄNZT AM 2026-09-29 (Planrunde der Scheibe 13.6-3 der Phase 13.6,
+  Setzung P13.6-59 der Phase 13.6, Entscheidung Q8). Trägt ein Szenario das Modul "Webhook
+  response", antwortet Make erst, wenn das Szenario so weit gelaufen ist — bis zu 180 Sekunden
+  (docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (e); GELESEN, nicht gemessen).
+  Braucht es länger als das Zeitlimit der Weiterleitung im Relay (5 000 ms, Setzung P13.6-59),
+  meldet die Seite "nicht zugestellt", obwohl Make die Anfrage angenommen hat und verarbeitet;
+  ein erneutes Absenden erzeugt einen DOPPELTEN LEAD. Was still kaputtgeht: Der Betreiber
+  sieht doppelte Einträge und Besucher, die eine Fehlermeldung bekommen haben, ohne dass
+  irgendwo ein Fehler steht. Ohne das Modul antwortet Make sofort (ebenda, Befund (aa):
+  0,095–0,230 s, GEMESSEN). KEINE EMPFEHLUNG, wie der Satz lautet; das Verhalten mit Modul ist
+  ein offener Messkandidat. Der Trigger ist der des Postens.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
   ENTSCHEIDUNG). Grund: Die Achse hat keinen realen Konsumenten; was still kaputtginge, setzt

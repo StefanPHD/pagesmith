@@ -94,6 +94,8 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
     Logs, Log Drains, Firewall, Observability, Tracing) — die Teile (i) bis (q)
   · Sonde 2026-09-29 im Dashboard "Logs" (Query-, Rumpf- und Referer-Marker) — die Teile (r)
     bis (t)
+  · Messung 2026-09-29 der Funktionsregion vor und nach der Umstellung auf Frankfurt — der
+    Teil (u)
 
 ## DIE HERKUNFT DIESER DATEI
 
@@ -1853,6 +1855,9 @@ Detailtabelle von #13 ist unvollständig. Die Query steht im Klartext.
   (src/lib/supabase/middleware.ts).
 · DIE 145 ms sind eine Einzelmessung auf dem Abweisungs-Pfad (400 vor jedem
   Datenbank-Zugriff); sie enthalten keinen Datenbank-Umlauf.
+· NACHZUG 2026-09-29: Die Funktionsregion ist seither auf Frankfurt (`fra1`) umgestellt; die
+  Angabe "die Funktion lief in `iad1`" oben gilt für den Stand der Sonde. Messung vorher und
+  nachher: Teil (u).
 
 **(t) DIE DASHBOARD-SUCHE ERFASST SEARCH PARAMS NICHT — DIE POSITIVKONTROLLE IST GESCHEITERT,
 UND DAS IST DER BEFUND.** **NEU.** GEMESSEN (Owner): Die Suche im Dashboard fand WEDER
@@ -1869,3 +1874,32 @@ Positivkontrolle wäre der Rumpf-Nicht-Treffer als Entwarnung gelesen worden.
 **PROVENIENZ DER SONDE:** GEMESSEN 2026-09-29 (OWNER), eine Anfrage, ein Eintrag, Tarif Hobby.
 Die Zitate aus #13 in (t) und die Einordnung am Code sind GELESEN (CC, 2026-09-29). **KEINE
 Aussage über Pro, über Drains oder über andere Pfade als `/api/e`.**
+
+### Messung 2026-09-29 der Funktionsregion vor und nach der Umstellung auf Frankfurt — der Teil (u)
+
+**HERKUNFT: GEMESSEN 2026-09-29 (OWNER), Vercel-Dashboard "Logs" des Projekts, Tarif Hobby**,
+übermittelt im Auftrag der Runde "Region festhalten, Owner-Entscheidungen Relay, Zuschnitt
+13.6-3" der Phase 13.6. KEINE Doku-Lesung. Die Umstellung selbst ist ein Schritt am
+Projekt; warum sie erfolgte, steht nicht hier (diese Datei trägt keine Entscheidungen).
+
+**(u) NACH DER UMSTELLUNG AUF `fra1` EMPFÄNGT UND FÜHRT DIE FUNKTION IN FRANKFURT AUS; DER
+HOBBY-TARIF LÄSST DIE WAHL DER REGION ZU.** **NEU.**
+· DIE MESSANFRAGE: aus der Konsole der App, dreimal `POST /api/e` mit einem nicht existierenden
+  Tracking-Schlüssel, Antwort je 204. EINORDNUNG AM CODE (CC, GELESEN, Stand `33ff5cc`):
+  `handleIngest` (src/lib/capi/ingest.ts) macht dabei über `getCapiConfigByTrackingKey`
+  (src/lib/capi/token.ts) genau eine Datenbank-Abfrage und antwortet vor Persist und Forward.
+· VORHER (Region `iad1`): je "Routed to Washington, D.C., USA (iad1)"; Ausführung
+  315 / 131 / 780 ms.
+· UMSTELLUNG: Funktionsregion Frankfurt (`fra1`) in den Projekt-Einstellungen, Redeploy,
+  Status "Ready".
+· NACHHER: keine "Routed"-Zeile mehr, "Received in Frankfurt, Germany (fra1)"; Ausführung
+  45 / 69 / 557 ms.
+· DER TARIF: Die Einstellung war auf Hobby wählbar und wirkte. Das stellt Teil (d) ("Runs in a
+  single region by default (iad1)", GELESEN 2026-09-02) nicht in Frage — dort steht die Vorgabe,
+  hier die geänderte Einstellung.
+· UNGEKLÄRT, NICHT UNTERSUCHT: Die dritte Anfrage war in beiden Läufen langsam.
+· GRENZE: drei Anfragen je Lauf, eine Anfrageform, Angaben der Dashboard-Detailansicht. Auf dem
+  App-Host läuft vor der Funktion die Middleware, die mit Sitzungs-Cookie eine Anfrage an den
+  Supabase-Host macht (Teil (s)); ob sie in der angezeigten Ausführung steckt, ist nicht
+  erhoben. Über den Weg mit Persist und Forward, über die Serve-Route und darüber, wo die
+  Plattform Daten sonst verarbeitet, sagt die Messung nichts.

@@ -2466,58 +2466,58 @@ liegen beide hier und finden einander.
       (OWNER-ENTSCHEIDUNG 2026-09-29): Zwischen 13 und 13.5 tritt die Zeile 13.6
       (Formular-Relay). Der Satz "13 -> 13.5 -> 12" darüber bleibt als Stand vom 2026-09-28
       stehen.
-- [ ] Phase 13 — E-Mail-/ESP-Webhooks: Pagesmith wird KEIN Versender
-      (Owner-Entscheidung) — stattdessen Webhooks auf Performance-Events, der
-      Kunde behält seinen bestehenden ESP.
-      HIERHER VERWIESEN (OWNER-ENTSCHEIDUNG 2026-09-19): die Lesart (b) der
-      Phase 11.6 — ein SERVER-seitiger Empfänger mit KUNDENEIGENEM Endpunkt —
-      samt ihren drei Fragen, die kein Fan-Out-Ziel stellt: SSRF-Schutz bei
-      einem betreiber-konfigurierten ausgehenden Aufruf, die Instanz-Achse
-      (mehrere Empfänger desselben Typs je Projekt, heute von der Eindeutigkeit
-      project_secrets_project_id_target_key ausgeschlossen) und ein dynamisches
-      Nutzlast-Mapping ohne bekanntes Zielschema. SIE IST NICHT VERWORFEN,
-      SONDERN VERSCHOBEN — der Grund steht an der Roadmap-Zeile 11.6 und wird
-      hier NICHT verdoppelt. WAS DARAUS FOLGT, SOBALD DIESE PHASE ZUGESCHNITTEN
-      WIRD: Sieht sie kundeneigene Endpunkte vor, ist sie der Trigger (i) des
-      Postens zur Eindeutigkeit (project_id, target) auf project_secrets
-      (s. "## Offene Punkte").
-      NACHGETRAGEN 2026-09-26 — VORGEZOGEN VOR DIE MEDIEN (OWNER 2026-09-26). Diese Phase
-      folgt auf das Phasenende 12.5 und kommt vor Medien Stufe 1. Ihre ERSTE Scheibe ist die
-      Danke-Seite nach dem Absenden eines Formulars (Vorrat P12.5-29 der Phase 12.5). Grund: Das
-      Kernversprechen ist "tote KI-Seiten funktional machen"; ein Lead-Formular ohne
-      Datenspeicherung ist nicht funktional, eine Seite mit altem Bild schon. Verworfen: die
-      Weiterleitung allein vorab, nur für Formulare ohne Ziel — mit Danke-Seite wirkte ein
-      Formular funktionsfähig, während die Leads nirgends gespeichert werden. Wortlaut:
-      Entscheidung P12.5-47 der Phase 12.5. Der Zuschnitt beginnt mit einer ersten Aufklärung.
-      NACHGETRAGEN 2026-09-28 (Phasenende 12.5; Vorrat P12.5-29 der Phase 12.5, hierher
-      gehoben) — WAS DIE ERSTE SCHEIBE VORFINDET:
-      · Ein `<form>` führt KEINE Weiterleitung aus, weder beim Klick noch beim Abschicken; das
-        `ActionPanel` bietet dort keinen Redirect-Slot an, eine bestehende Weiterleitung steht
-        als "wirkt nicht mehr" und ist entfernbar (Entscheidung P12.5-23, ARCHITEKT
-        2026-09-25). Ein Absende-Button trägt keine eigenen Aktionen (Entscheidung P12.5-37,
-        OWNER 2026-09-25). Der Track eines `<form>` zählt beim Abschicken (Entscheidung
-        P12.5-21, ARCHITEKT 2026-09-25).
-      · DIE KOLLISION, DIE DER ZUSCHNITT LÖSEN MUSS: Eine Weiterleitung NACH dem Abschicken
-        verlangt ein `preventDefault` und eine eigene Navigation (Vorrat P12.5-29, CC
-        2026-09-25). Das bricht die Invariante (I4) der Scheibe 1b, wörtlich "Die
-        Formular-Aktion des Betreibers (Ziel, Methode, Absenden) wird durch einen Track nicht
-        verändert — kein preventDefault für einen Track." (Wächter S1 in
-        src/lib/generate.test.ts). Dass sie ebenso (I4) der Scheibe 1c bricht — "Das native
-        Abschicken des Betreibers bleibt unberührt; kein preventDefault von uns." (Wächter U1)
-        —, ist eine ABLEITUNG (CC, 2026-09-28). Ob der Zuschnitt die Invarianten ändert oder
-        einen Weg ohne `preventDefault` findet, entscheidet er selbst, nicht diese Zeile.
-      · OWNER-EINWAND (OWNER-AUSSAGE 2026-09-26): Nutzer wollen die Danke-Seite im Tool
-        eintragen, nicht im Formular-Code.
-      Wortlaut von Vorrat, Entscheidungen und Invarianten: das Archiv der Phase 12.5.
-      NACHGETRAGEN 2026-09-28 — DER DATENWEG DER FORMULARE IST ENTSCHIEDEN (OWNER 2026-09-28):
-      Der Browser schickt die Felder direkt an eine Adresse, die der Nutzer im Tool einträgt;
-      unser Server sieht keinen Klartext, und es gibt keine Ablage bei Pagesmith. Wortlaut
-      und Verworfenes: Standdatei der Phase 13, Entscheidung P13-2.
-      NACHGETRAGEN 2026-09-29 — NEUAUSRICHTUNG ZUM LEAD-RELAY (OWNER 2026-09-28): Beschlossen
-      ist die RICHTUNG, Formulardaten flüchtig über unseren Server an den Empfänger zu reichen —
-      NICHT die Neufassung der Datenklassen-Regel; bis dahin gelten sie und Entscheidung P13-2
-      unverändert. Phase 13 schliesst mit den Scheiben 13-1 und 13-1c, der Testknopf (13-1b)
-      und die Zapier-Messung entfallen; Wortlaut: Entscheidung P13-65 der Phase 13.
+- [x] Phase 13 — Formular-Ziel mit Danke-Seite: ABGESCHLOSSEN (2026-09-28 bis 2026-09-29).
+      Angelegt als "E-Mail-/ESP-Webhooks"; Titel OWNER-ENTSCHEIDUNG 2026-09-29. ZWEI Scheiben, je
+      mit bestätigtem Live-Test: 13-1 — ein Formular, das der Betreiber im Tool mit einem Ziel
+      versieht, schickt seine Felder im Browser direkt an die eingetragene Adresse und führt
+      danach zur Pflicht-Danke-Seite; erreichen die Daten die Adresse nicht, bleibt das Formular
+      stehen (`434dc86`) · 13-1c — Felder ohne Namen bekommen in der ausgelieferten Seite einen
+      abgeleiteten Namen; eine geänderte Namensliste sperrt Veröffentlichen und Export bis zur
+      Bestätigung (`a1f009c`). Die Scheibe 13-1b (Testknopf) und die Zapier-Messung sind
+      entfallen (Entscheidung P13-65, OWNER 2026-09-28). Der browser-direkte Weg bleibt als
+      DATENSPARMODUS; die Richtung danach, ein Formular-Relay, steht an der Zeile 13.6.
+      Entscheidungen P13-2 und P13-7 gelten unverändert, bis der Owner die Datenklassen-Regel neu
+      fasst. Volle Herleitung, die Vermerke, die bindenden Entscheidungen und die Invarianten:
+      docs/claude-history/phase-13-formular-ziel.md.
+      NICHT GEBAUT, SEIT DEM 2026-09-29 ANGRENZEND AN DER ZEILE 13.6: "Webhooks auf
+      Performance-Events" aus dem Grundtext dieser Zeile (Setzung P13-9) und die am 2026-09-19
+      hierher verwiesene Lesart (b) der Phase 11.6 (Grund an der Roadmap-Zeile 11.6). "Pagesmith
+      wird KEIN Versender" (Owner-Entscheidung) gilt weiter.
+      WAS ZUM ZEITPUNKT DES HAKENS UNBEWIESEN ODER ALS MANGELHAFT BEKANNT IST — der Haken heisst
+      BAU-FERTIG. Das Kriterium und seine Auflage stehen in CLAUDE.md, "## Roadmap & aktueller
+      Stand", unter "WANN [x] GESETZT WIRD — DAS KRITERIUM"; sie werden hier NICHT wiederholt,
+      sondern eingelöst. ACHT PUNKTE:
+      · (1) DIE FALSCHE ODER GELÖSCHTE ADRESSE: Im browser-direkten Weg erscheint die
+        Danke-Seite, der Lead ist verloren, und niemand sieht es — die Antwort 410 ist im Modus
+        `no-cors` für das Skript unsichtbar (docs/formular-empfaenger-befunde.md, Abschnitt
+        "Make", Befund (ac)); seit 13-1b entfallen ist, gibt es keine geplante Abhilfe
+        (docs/offene-punkte.md, "IM BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER ODER GELÖSCHTER
+        ZIELADRESSE DIE DANKE-SEITE …"). DIESER PUNKT IST DER TRAGENDE.
+      · (2) DIE WIRKUNG TRITT ERST NACH ERNEUTEM VERÖFFENTLICHEN EIN; heruntergeladene Exporte
+        bleiben unverändert (Vermerke P13-35, Punkt (7), und P13-60, Punkt (5);
+        docs/offene-punkte.md, "NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN
+        IST").
+      · (3) GEMESSEN AN EINEM BROWSER (Chrome 153), EINEM BLOCKER (uBlock Origin Lite) UND EINEM
+        EMPFÄNGER (Make, Zone eu2). Brevo und systeme.io sind am Formular nicht gemessen (Setzung
+        P13-19, Grenze); für Mailchimp und KlickTipp gibt es kein Testkonto; Firefox und Safari
+        fehlen.
+      · (4) LIVE NICHT GEZEIGT: I1 am Beacon — der Payload war nicht lesbar, I1 ruht dort allein
+        auf Test F1 · das Paar server+browser für ein Formular OHNE Ziel · die Überdeckung der
+        Einwilligungs-Leiste durch die Meldung (Vermerk P13-35, Punkt (7)).
+      · (5) NUR IM TEST GEDECKT: das Server-Tor bei ungültigen Werten (F8), die Export-Sperre,
+        Variante B, der Name aus Leerraum (Vermerke P13-35, Punkt (7), und P13-60, Punkt (5)).
+      · (6) ABGELEITET, NICHT GEMESSEN: der harte Block eines Blockers
+        (`net::ERR_BLOCKED_BY_CLIENT`); ein Blocker, der selbst eine `opaque`-Antwort erzeugt, ist
+        nicht ausgeschlossen (Setzung P13-21, Grenzen). Das Zeitlimit von 10 s ist gesetzt, nicht
+        gemessen (Setzung P13-32).
+      · (7) BLINDE STELLEN DES SUBMIT-WEGS: `form.submit()` löst kein `submit` aus · ein
+        Capture-Handler des Betreibers an `window` mit `stopPropagation` hält uns an · ein
+        "eigenes Skript" hat am Code kein Merkmal (Vermerk P13-33, Punkt (G3); Setzung P13-5,
+        Grenze).
+      · (8) VOR ECHTEM TRAFFIC ZU BEHEBEN: docs/offene-punkte.md, "DIE SEITENADRESSE REIST SAMT
+        QUERY AN UNSEREN SERVER UND AN DREI ZIELE — WAS IM QUERY STEHT, REIST MIT".
+      DER VOLLTEXT DIESER ZEILE VOR DEM ABHAKEN STEHT IM COMMIT `4a45d46` (`git show
+      4a45d46:docs/roadmap.md`).
 - [ ] Phase 13.5 — Medien: Bilder, SVG, Video und Hintergrundbilder im importierten
       Kunden-HTML erkennen und ändern. ANGELEGT am 2026-09-28 beim Phasenende 12.5; Nummer
       und Reihenfolge OWNER-ENTSCHEIDUNG 2026-09-28. Die Medien waren bis dahin der

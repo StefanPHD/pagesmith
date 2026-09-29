@@ -126,7 +126,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs
 - [x] Phase 12.5 — Korrekturen am Klick- und Formular-Tracking und Editor-Gerüst
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
-- [ ] Phase 13 — E-Mail-/ESP-Webhooks
+- [x] Phase 13 — Formular-Ziel mit Danke-Seite
 - [ ] Phase 13.5 — Medien
 - [ ] Phase 13.6 — Formular-Relay (Lead-Relay)
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
@@ -989,6 +989,19 @@ das Archiv soll gerade NICHT geladen werden. Der EINE @-Import des Repos steht u
   Abschnitt "Vollzogen". Die Medien-Entscheidungen P12.5-1 bis -6 sind an die Roadmap-Zeile
   13.5 gegangen, P12.5-5 als Dauerregel. Ihr Kopf trägt das Protokoll der Hebung samt
   Gegenprobe und den Messwert nach Abschnitt 2b.
+- docs/claude-history/phase-13-formular-ziel.md — gesamte Phase 13 (angelegt als
+  "E-Mail-/ESP-Webhooks", beim Phasenende umbenannt; zwei Scheiben 13-1 und 13-1c, 13-1b
+  entfallen). HIER NACHSEHEN, WER AM FORMULAR-ZIEL, AN DER DANKE-SEITE, AN
+  FORMULAR-EMPFÄNGERN ODER AM RELAY ARBEITET: der browser-direkte Datenweg und seine
+  Datenklasse (P13-2, P13-7 — unverändert in Kraft bis zur Neufassung durch den Owner), das
+  Signal "erreicht" und seine Grenzen (P13-21, Vermerk P13-22), Wertregeln und Ausschlüsse
+  (P13-29, P13-31), die Invarianten I1 bis I8, I10 und J1 bis J9 samt Wächtern, die Benennung
+  der Felder (P13-43 bis P13-59), die Relay-Richtung im Wortlaut (P13-65). 43 Entscheidungen
+  und Setzungen und die Invarianten stehen NUR dort, unter einem SAMMELVERMERK "NICHT GEHOBEN"
+  im Abschnitt "Vollzogen". P13-65 und P13-9 sind an die Roadmap-Zeile 13.6 gegangen,
+  Hebungs-Kandidat P13-63 als additive Ergänzung einer Dauerregel. Die Befunde über die
+  Empfänger stehen in docs/formular-empfaenger-befunde.md. Ihr Kopf trägt das Protokoll der
+  Hebung samt Gegenprobe und den Messwert nach Abschnitt 2b.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung (RISIKO /
   TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item). AUSLÖSER: Manifest-Arbeit;
   immer im SELBEN Commit wie die Tier-Übersicht hier.

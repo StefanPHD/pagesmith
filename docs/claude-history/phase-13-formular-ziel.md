@@ -1,4 +1,122 @@
-# Phase 13 — E-Mail-/ESP-Webhooks: DER AKTIVE STAND
+# Phase 13 — Formular-Ziel mit Danke-Seite: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 13. **Sie hiess bis zum Phasenende
+`docs/aktiver-stand.md`** und war das Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der
+Phase arbeitete. IHR NAME IST OWNER-ENTSCHEIDUNG (E1, 2026-09-29). Die Phase hiess bis zum
+Phasenende "E-Mail-/ESP-Webhooks"; den Titel nach ihrem tatsächlichen Inhalt, mit dem Kern
+"Formular-Ziel", hat der Owner am 2026-09-29 gesetzt.
+
+**ZEITRAUM UND UMFANG:** 2026-09-28 bis 2026-09-29. Vierundzwanzig Commits bis zum Phasenende
+(`0456b0b` bis `50110fd`), darunter ZWEI Bau-Commits — `434dc86` (Scheibe 13-1, Formular-Ziel
+mit Danke-Seite) und `a1f009c` (Scheibe 13-1c, automatische Benennung der Formularfelder) —,
+dazu die Hebung `4a45d46`. Die Reihe `P13-n` endet bei 65: sechs Vermerke, zwölf
+Owner-Entscheidungen, 33 Architekten-Setzungen, sechs Arbeiten, sieben Vorrats-Einträge, ein
+Hebungs-Kandidat; dazu die Invarianten I1 bis I8 und I10 der Scheibe 13-1 (I9 ist mit der
+Verdichtung gestrichen, Vermerk P13-35, Punkt (8)) und J1 bis J9 der Scheibe 13-1c.
+
+**WIE SIE ENDETE: `[x]`.** Abgeschlossen mit den Scheiben 13-1 und 13-1c nach Entscheidung
+P13-65 (OWNER 2026-09-28); die Scheibe 13-1b (Testknopf) und die Zapier-Messung sind
+entfallen. Titel OWNER-ENTSCHEIDUNG 2026-09-29. WAS AM HAKEN UNBEWIESEN ODER ALS MANGELHAFT
+BEKANNT IST, STEHT AN DER ROADMAP-ZEILE 13 (docs/roadmap.md) und wird hier NICHT verdoppelt;
+der tragende Punkt: Im browser-direkten Weg erscheint bei falscher oder gelöschter Zieladresse
+die Danke-Seite, und der Lead ist verloren (docs/offene-punkte.md, Block "AUS DEM PHASENENDE 13
+GEHOBEN (2026-09-29)"). Die Richtung danach — ein Formular-Relay — steht an der Roadmap-Zeile
+13.6; Entscheidungen P13-2 und P13-7 gelten unverändert, bis der Owner die Datenklassen-Regel
+neu fasst.
+
+**HIER NACHSEHEN, WER AM FORMULAR-ZIEL, AN DER DANKE-SEITE, AN FORMULAR-EMPFÄNGERN ODER AM
+RELAY ARBEITET:** der Datenweg und seine Datenklasse (Entscheidungen P13-2, P13-7), das Signal
+"erreicht" und seine Grenzen (Setzung P13-21, Vermerk P13-22), die Wertregeln und Ausschlüsse
+(Setzungen P13-29, P13-31), die Invarianten I1 bis I8 und I10 der Scheibe 13-1 samt Wächtern,
+die Benennung der Felder (Setzungen P13-43 bis P13-59, Invarianten J1 bis J9, Vermerk P13-50
+zu DOMParser gegen die Live-Seite), die Live-Tests (Vermerke P13-35 und P13-60) und die Richtung
+zum Relay im Wortlaut (Entscheidung P13-65). Die Befunde über die Empfänger selbst stehen in
+docs/formular-empfaenger-befunde.md, nicht hier.
+
+**DER MESSWERT NACH docs/arbeitsweise.md, ABSCHNITT 2b** (GEMESSEN am Repo, CC, 2026-09-29,
+`git log --numstat`, Summen aus Einfügungen und Löschungen je Pfadpräfix; in der Spanne führt
+git keine Datei als binär — auch src/lib/mappings.ts, das ein NUL-Byte trägt, erscheint mit
+Zahlen):
+
+| Spanne | `docs/` | `src/` | Verhältnis docs : src |
+|---|---|---|---|
+| `0456b0b^..50110fd` (bis vor dem Phasenende, wie bei 12.5, 11.7 und 11.9) | 3 382 | 3 164 | **1,07 : 1** |
+| `0456b0b^..4a45d46` (mit dem Hebungs-Commit) | 3 846 | 3 164 | 1,22 : 1 |
+
+Ausserhalb von `docs/` und `src/` liegt allein `CLAUDE.md` (37 bzw. 49 Zeilen). In `docs/` bis
+vor dem Phasenende die grössten Posten: docs/formular-empfaenger-befunde.md 1 631 (die
+Anbieter-Lesungen) und die Standdatei 1 502.
+ZUM VERGLEICH, aus den Köpfen der Archive übernommen und NICHT nachgemessen: Phase 12.5
+(`0529e02^..e7ea91a`) `docs/` 2 453, `src/` 2 641 — 0,93 : 1; Phase 11.9 (`57a94ff^..31c7404`)
+`docs/` 820, `src/` 0 — kein Verhältnis.
+**DER BEFUND DER ARBEITSWEISE TRITT NICHT EIN:** Das Verhältnis steigt von 12.5 auf 13 EINMAL
+(0,93 : 1 auf 1,07 : 1); vor 12.5 stieg es nicht — 11.9 hat keines, und 12.5 liegt unter jeder
+Lesart von 11.7. Es ist nicht zwei Phasen in Folge gestiegen.
+
+**DAS PROTOKOLL DER HEBUNG — 2026-09-29, EIN COMMIT (`4a45d46`).** Das REGISTER steht im
+Abschnitt "Vollzogen — was hier stand und wohin es gegangen ist" am Ende des Rumpfes, mit dem
+SAMMELVERMERK "NICHT GEHOBEN". **DIE BILANZ: 63 = BL 9 · OP 1 · OPE 1 · DR 1 · RM13.6 2 · ERL 6
+· ARCH 43**; die sechs Vermerke sind nicht zugeordnet. Keine neue Dauerregel; eine bestehende ist
+rein additiv ergänzt: "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN DOKUMENT,
+NIE AN EINER GESPEICHERTEN DATEI". Ein neuer offener Punkt, eine neue Roadmap-Zeile 13.6.
+Ausserhalb der Bilanz: die Sachkorrektur an Entscheidung P13-15, der Zeiger an Entscheidung
+P13-65, E3 an den Roadmap-Zeilen 12 und 13.5, der Bezugssatz an der Roadmap-Zeile 17.
+Wie beim Phasenende 12.5 ist die neue Roadmap-Zeile im Hebungs-Commit entstanden, nicht in der
+Archivierung — sie ist ein Ziel der Hebung, und die Gegenprobe prüft die Ankunft vor dem Umzug.
+**DIE GEGENPROBE — AM BESTAND DER ZIELDATEIEN, JE EINTRAG, NICHT GEGEN DAS REGISTER**
+(GEMESSEN, CC, 2026-09-29, Skript über `git show HEAD:<pfad>` nach dem Hebungs-Commit,
+leerraum-normalisiert, je Eintrag am Block seines Ziels; umgezogen ist derselbe Stand):
+
+| Ziel | Soll | gefunden | geprüft am Bestand |
+|---|---|---|---|
+| BL | 9 | 9 | je Titelanfang im Abschnitt "Aus Phase 13 gehoben (2026-09-29) …" am Dateiende von docs/claude-history/backlog-polish.md; der Trigger bei P13-14, P13-40, P13-62 und dem Posten ohne Nummer; bei P13-37 beide Bestandsposten ("ROHES NUL-BYTE IN mappings.ts", "DER KOMMENTAR AN `mappingsEqual` …") vorhanden |
+| OP | 1 | 1 | Titel mit Trigger und "HERKUNFT: Arbeit P13-12 der Phase 13, erste Schwäche" im Block "AUS DEM PHASENENDE 13 GEHOBEN (2026-09-29)" von docs/offene-punkte.md; der Stub mit Titel und Trigger im gleichnamigen Block von CLAUDE.md |
+| OPE | 1 | 1 | Punkt (6) innerhalb des Postens "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE", mit "aus Arbeit P13-12, dritte Schwäche"; im Stub "PUNKT (6) aus der Phase 13" |
+| DR | 1 | 1 | Kern: die Ergänzung am Ende des Eintrags, "Was trägt …" daneben unverändert; Volltext: "ERGÄNZT 2026-09-29 …" hinter dem unveränderten letzten Satz; die Verzeichnis-Zeile unverändert; der Diff beider Dateien 52 Zeilen hinzu, 0 entfernt |
+| RM13.6 | 2 | 2 | im Block der Zeile 13.6: P13-65 samt Fahrplan, "NICHT ENTSCHIEDEN", "UNVERÄNDERT IN KRAFT" mit P13-2 und P13-7, Einordnung, E4, Prüfliste (P13-6, I1, P13-49, Phase 14); P13-9 mit der Lesart (b) unter "ANGRENZEND"; der Stub zwischen 13.5 und 14 in CLAUDE.md |
+| ERL | 6 | 6 | Eintrag steht in dieser Datei; Beleg am Bestand: zehn Commits (`git cat-file`), für P13-12 (4) die Dauerregel "WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT …" und der offene Punkt "NICHTS ZEIGT AN …" |
+| ARCH | 43 | 43 | Eintrag steht in dieser Datei |
+| **Summe** | **63** | **63** | Register-Pfeile je Ziel 9 · 1 · 1 · 1 · 2 · 6; ARCH in drei Sammelzeilen mit 43 verschiedenen Nummern |
+
+Daneben, ausserhalb der Summe: E3 an den Zeilen 12 und 13.5, der Bezugssatz an der Zeile 17,
+der Zeiger an P13-65, die ersetzte Sachkorrektur an P13-15 und der Sammelvermerk samt Satz zum
+Testknopf — 6 von 6. NEGATIVKONTROLLE: vier erfundene Anker ("**Vorrat P13-66" und "Arbeit
+P13-12, fünfte Schwäche" im Backlog, "(7) DIE ADRESSE EINES FORMULAR-ZIELS" am Betreiber-Posten,
+"- [ ] Phase 13.7" in der Roadmap) je 0.
+
+**ZEIGER AUF `docs/aktiver-stand.md`, DIE DIESE PHASE MEINEN — GEMESSEN VOR DEM UMZUG (CC,
+2026-09-29).** ACHSEN: die in `0456b0b^..4a45d46` hinzugefügten Zeilen ausser der Standdatei mit
+dem Pfad; über alle verfolgten Dateien in docs/, src/, supabase/ und CLAUDE.md der Pfad mit
+"Phase 13" oder "P13-" im Umfeld von drei Zeilen; daneben die hinzugefügten Zeilen mit "aktiver"
+oder "Standdatei". POSITIVKONTROLLE: Die ersten beiden Achsen treffen den bekannten Zeiger in
+docs/formular-empfaenger-befunde.md — und nur ihn; weil genau diese Übereinstimmung ein
+Warnsignal ist, lief die dritte, breitere Achse.
+- **EINER NACHGEZOGEN:** docs/formular-empfaenger-befunde.md, Abschnitt "Messung 2026-09-28, im
+  Browser …", der Satz über "UNSERE Laufzeit" mit Vermerk P13-22 — jetzt auf diese Datei.
+- **IN `src/` KEIN ZEIGER AUF DEN PFAD.** Drei Kommentare nennen die Standdatei ohne Pfad und
+  lösen über Phase bzw. Scheibe auf dieses Archiv auf; sie sind NICHT angefasst:
+  src/lib/form-target.ts:19 ("in der Standdatei der Phase 13"), src/lib/form-target.test.ts:24
+  ("im Zuschnitt 13-1 der Standdatei") und :793 ("im Zuschnitt 13-1c der Standdatei").
+  GEMELDET, NICHT ANGEFASST: form-target.ts:20 und form-target.test.ts:24 nennen "I1 bis I10"
+  bzw. "I1–I10"; I9 ist gestrichen (Vermerk P13-35, Punkt (8)). `supabase/` trägt keinen
+  Treffer auf "P13-" oder "Phase 13".
+- Die Treffer "Standdatei der Phase 13" in docs/offene-punkte.md, docs/roadmap.md und
+  docs/claude-history/backlog-polish.md nennen die Phase, nicht den Pfad.
+- NICHT DIESE PHASE: docs/offene-punkte.md trägt einen Zeiger der Phase 11.2 auf
+  "docs/aktiver-stand.md, Abschnitt 'Vorrat (gemeldet, nicht gebaut)', Eintrag 36"; er traf bis
+  zum Umzug einen gleichnamigen Abschnitt dieser Datei. Das ist der Fall des offenen Punktes
+  "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI …" und hier nicht angefasst.
+
+**DER RUMPF IST ZEICHENGLEICH MIT DEM STAND IN `4a45d46`**, ab der Zeile "**PFLICHT-GATE:**":
+1 479 Zeilen, 99 484 Bytes, sha256
+0c059696a3e7ed5ec5718c34005f074adfc066d769a1fc46e3a0943b9d935641. Die Treffer auf
+`docs/aktiver-stand.md` in ihm bleiben als Zeitdokument stehen. Ersetzt ist allein die erste
+Zeile, die Überschrift "Phase 13 — E-Mail-/ESP-Webhooks: DER AKTIVE STAND"; an ihrer Stelle
+steht dieser Kopf.
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **PFLICHT-GATE:** Diese Datei ist ab ihrer Anlage (2026-09-28) das Pflicht-Gate ("Auftrag 0")
 jedes Bau- und Aufklärungs-Prompts der Phase 13 (CLAUDE.md, "## Aktiver Stand — Verfahren ab

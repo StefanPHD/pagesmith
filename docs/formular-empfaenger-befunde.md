@@ -663,8 +663,9 @@ für die erste Reihe (N1–N6) nicht gesondert benannt; dort hiess der Blocker "
 Die Einzeiler gaben `r.type` und `r.status` aus. Die Ausgabe der ersten Reihe trug nach Angabe
 des Owners `r.type` NICHT — belegt ist dort nur OK bzw. FEHLER.
 Was UNSERE Laufzeit betrifft (Umleitung eines Blockers, Offline, Signal), steht nicht hier,
-sondern in docs/aktiver-stand.md, Vermerk P13-22 der Phase 13; dort gilt es auch nur für die
-laufende Phase.
+sondern im Archiv der Phase 13, docs/claude-history/phase-13-formular-ziel.md, Vermerk P13-22
+(NACHGEZOGEN 2026-09-29 beim Phasenende; bis dahin docs/aktiver-stand.md, solange die Phase
+lief).
 Die Ergebnisse sind OWNER-ANGABE 2026-09-28: Konsole, Netzwerk-Tab und Make-Oberfläche.
 
 **(ac) DIE 410 IST IM MODUS `no-cors` FÜR DAS SKRIPT UNSICHTBAR.** GEMESSEN, Browser, 2026-09-28.

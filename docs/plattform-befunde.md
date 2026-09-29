@@ -85,10 +85,15 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
     Teile (ah) bis (ar)
   · Vermerk 2026-09-11 (Abkündigung eines Management-API-Endpunkts, Suche im Repo,
     abgelesene Versionsstände) — die Teile (as) und (at)
+  · Vermerk 2026-09-29 (Region des Projekts, Owner-Angabe) — der Teil (au)
 · Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
   · Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-
     Grenzen, Absicherung) — die Teile (a) bis (g)
   · Messung 2026-09-24 der DNS-Einträge der Label-Hosts (AAAA) — der Teil (h)
+  · Abschnitts-Lesung 2026-09-29 der Vercel-Dokumentation, LAUF 2 (Protokollierung: Runtime
+    Logs, Log Drains, Firewall, Observability, Tracing) — die Teile (i) bis (q)
+  · Sonde 2026-09-29 im Dashboard "Logs" (Query-, Rumpf- und Referer-Marker) — die Teile (r)
+    bis (t)
 
 ## DIE HERKUNFT DIESER DATEI
 
@@ -1266,6 +1271,19 @@ beiden Fassungen durch das Upgrade bewegt hat, ist NICHT erhoben.
   (Zusatz unter (ar)) bleibt, was sie ist: eine Messung an der laufenden Instanz jenes
   Tages, deren Fassung nicht erhoben war.
 
+### Vermerk 2026-09-29 (Region des Projekts, Owner-Angabe) — der Teil (au)
+
+**HERKUNFT: KEIN DOKU-LAUF UND KEINE MESSUNG.** Eine OWNER-ANGABE vom 2026-09-29, übermittelt
+im Auftrag der Runde "Lesung und Sonde zur Vercel-Protokollierung" der Phase 13.6. Von CC
+weder gelesen noch gemessen.
+
+**(au) DAS SUPABASE-PROJEKT LIEGT IN DER REGION FRANKFURT.** **NEU.**
+OWNER-ANGABE 2026-09-29: Die Region ist bei der Anlage des Projekts bewusst so gewählt worden.
+**NICHT GELESEN, NICHT GEMESSEN** — weder an den Projekteinstellungen noch am Host des
+Projekts. Die Gegenüberstellung mit der Region, in der die Vercel-Funktion läuft, steht im
+Vercel-Abschnitt, Teil (s); was daraus folgt, ist eine Entscheidung und steht nicht in
+dieser Datei.
+
 ## Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
 
 ### Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-Grenzen, Absicherung) — die Teile (a) bis (g)
@@ -1472,7 +1490,7 @@ nicht" keine Reichweite.
 | 3 | vercel.com/docs/cron-jobs/manage-cron-jobs | Managing Cron Jobs | 2026-08-11 | **VOLLTEXT** (15 189) |
 | 4 | vercel.com/docs/cron-jobs/quickstart | Getting started with cron jobs | 2026-08-11 | **VOLLTEXT** (8 167) |
 | 5 | vercel.com/docs/limits | Limits | 2026-08-25 | gezielt: Cron-Umkreis + Hobby-Nutzungstabelle. **NICHT vollständig** (45 285) |
-| 6 | vercel.com/docs/plans/hobby | Vercel Hobby Plan | 2026-08-11 | **VOLLTEXT** (13 268) |
+| 6 | vercel.com/docs/plans/hobby | Vercel Hobby Plan | 2026-08-11 | **VOLLTEXT** (13 268) — **am 2026-09-29 ERNEUT gezielt gelesen (Doku-Stand dann 2026-09-14), s. Teil (i)** |
 | 7 | vercel.com/docs/limits/fair-use-guidelines | Fair Use Guidelines | **2026-07-29** | **VOLLTEXT** (10 566) |
 | 8 | vercel.com/docs/queues | Vercel Queues | 2026-08-12 | gezielt (Kopf, delay, schedule, plan, beta). **NICHT vollständig** |
 | 9 | vercel.com/docs/workflows | Vercel Workflows | 2026-08-27 | gezielt (Kopf, sleep, cron, plan). **NICHT vollständig** |
@@ -1659,3 +1677,195 @@ AUF EINEM LABEL-HOST LIEFERT DEM INGEST HEUTE KEINE IPv6-ADRESSE.** **NEU.**
   belegt. (2) KUNDEN-DOMAINS (`custom_host`) — ihr DNS führt der Kunde; NICHT gemessen.
 - **GRENZE:** gemessen per DNS, nicht an einem echten Besuch. Der Befund kippt, sobald Vercel
   oder die DNS-Konfiguration IPv6 einführt — **und kein Instrument in diesem Repo meldet das.**
+
+### Abschnitts-Lesung 2026-09-29 der Vercel-Dokumentation, LAUF 2 (Protokollierung: Runtime Logs, Log Drains, Firewall, Observability, Tracing) — die Teile (i) bis (q)
+
+**HERKUNFT DIESES LAUFS: GELESEN 2026-09-29 (CC), 19 Seiten, Instrument Browser-Werkzeug
+(Playwright-MCP), durchgehend `textContent` des `<main>`-Elements.** **KEINE MESSUNG** — weder
+an einer Vercel-Schnittstelle noch am eigenen Projekt-Dashboard. Der Anlass war Arbeit P13.6-26
+der Phase 13.6 (Standdatei der Phase 13.6): die Frage, was Vercel protokolliert — Rümpfe, Query,
+IP —, als Bedingung (2) der Owner-Entscheidung P13.6-16 der Phase 13.6. Der Lauf gehört keiner
+Phase und wird nicht archiviert.
+**ABLAGE DES WERKZEUGS:** Das Werkzeug legt je Aufruf ungefragt eine Datei in
+`.playwright-mcp/` ab (in `.gitignore`); Auszüge sind nur als Rückgabewert gelesen, keine
+Auszugsdatei geschrieben. `git status --short` war nach dem Lauf leer (GEMESSEN, CC).
+**EINE DOKU-AUSSAGE ZU EINER FRAGE, DIE EINE MESSUNG VERLANGT, IST HIER ABGELEGT UND NICHT ALS
+BEANTWORTET GEZÄHLT.** Die Messung dazu ist die Sonde darunter, Teile (r) bis (t).
+
+**(i) DER GELESENE UMFANG — 19 SEITEN.** **NEU.** Ohne diese Liste hat jedes "das steht dort
+nicht" keine Reichweite. Die Zeichenzahl ist die des ganzen `<main>`-Elements samt
+Navigation (GEMESSEN am eigenen Lauf, CC); der HTTP-Status ist in diesem Lauf NICHT erhoben —
+jede Seite lud mit ihrem Titel. Der Doku-Stand ist `dateModified` aus dem JSON-LD der Seite.
+
+| # | URL (vercel.com) | Titel | Doku-Stand | Umfang |
+|---|---|---|---|---|
+| 13 | /docs/logs/runtime (angesteuert über /docs/observability/runtime-logs, Weiterleitung) | Runtime Logs | 2026-08-28 | VOLLTEXT (20 573) |
+| 14 | /docs/functions/logs | Vercel Function Logs | 2026-08-11 | VOLLTEXT (7 871) |
+| 15 | /docs/drains/reference/logs | Log Drains Reference | 2026-09-11 | VOLLTEXT (16 243) |
+| 16 | /docs/drains | Working with Drains | 2026-09-01 | VOLLTEXT (18 141) |
+| 17 | /docs/drains/security | Drains Security | 2026-07-29 | VOLLTEXT (9 148); Reiter s. (j) |
+| 18 | /docs/drains/using-drains | Using Drains | 2026-09-17 | VOLLTEXT (19 498) |
+| 19 | /docs/logs | Logs | 2026-06-16 | VOLLTEXT (7 382) |
+| 20 | /docs/vercel-firewall/firewall-observability | Firewall Observability | 2026-09-10 | VOLLTEXT (9 372) |
+| 21 | /docs/vercel-firewall/vercel-waf/rule-configuration | Rule Configuration Reference | 2025-04-21 | VOLLTEXT (10 778) |
+| 22 | /docs/observability/debug-production-errors | Debugging production 500 errors | 2026-05-28 | VOLLTEXT (13 335) |
+| 23 | /docs/observability | Observability | 2026-09-10 | VOLLTEXT (19 552) |
+| 24 | /docs/observability/insights | Observability Insights | 2026-08-11 | VOLLTEXT (15 394) |
+| 25 | /docs/functions/runtimes/node-js | Using the Node.js Runtime with Vercel Functions | 2026-08-11 | gezielt: `unhandled\|uncaught\|exception\|crash\|stack trace\|request body\|body is\|log`. NICHT vollständig (18 953) |
+| 26 | /docs/tracing | Tracing | 2026-09-16 | VOLLTEXT (18 508) |
+| 27 | /docs/drains/reference/traces | Trace Drains Reference | 2026-08-21 | VOLLTEXT (9 895) |
+| 28 | /docs/security/shared-responsibility | Shared Responsibility Model | 2026-08-11 | gezielt: `log\|body\|bodies\|personal\|retain\|retention\|store\|PII`. NICHT vollständig (15 812) |
+| 29 | /docs/observability/observability-plus | Observability Plus | 2026-07-06 | gezielt: `body\|header\|query\|IP\|retention\|disable\|exclude\|opt out`. NICHT vollständig (18 567) |
+| 30 | /changelog/referer-now-available-in-runtime-logs | Referer now available in runtime logs | 12 Dec 2025 | Eintrag vollständig; **Zeitdokument** |
+| 6 | /docs/plans/hobby | Vercel Hobby Plan | **2026-09-14** (in LAUF 1: 2026-08-11) | ERNEUT gelesen, gezielt: `Runtime Logs\|Log Drain\|Drains\|Observability`. NICHT vollständig (13 684) |
+
+**DIE NUMMERIERUNG SETZT DIE TABELLE AUS (e) FORT UND BEGINNT NICHT NEU**, nach demselben
+Verfahren wie im Supabase-Abschnitt: 18 Seiten sind neu (#13 bis #30), EINE trägt bereits eine
+Nummer und BEKOMMT KEINE ZWEITE — die Hobby-Seite (#6). Ihre Umfangs-Angabe in (e) ist im
+selben Zug nachgezogen.
+
+**(j) GESEHEN, NICHT GEÖFFNET — und drei Meldepunkte.** **NEU.**
+Die Ausschlussliste ist vor dem Abschluss gegen die offenen Fragen gehalten worden; Seite 30
+ist deshalb nachträglich geöffnet worden, weil ihr Titel die Frage nach den Feldern trägt.
+· Changelog "30-day runtime log retention, now available in Observability Plus", "Caching
+  details now available in Runtime Logs", "Rewrites and redirects now available in runtime
+  logs" — Zeitdokumente; die Aufbewahrung ist über die Doku-Seiten #13 und #6 gelesen.
+· KB "Add structured application logs to Vercel Functions" — gilt dem eigenen Loggen; trägt
+  nach ihrem Titel keine der offenen Fragen.
+· "Always-on Tracing", "Session Tracing" — die Regel-Semantik der Stichprobe steht auf #26.
+· `/docs/cli/logs` — nicht angesteuert. **Mögliche Lücke** für die Frage nach den Feldern:
+  die Felder der JSON-Ausgabe der CLI.
+· Privacy Policy, DPA — Rechtsdokumente ausserhalb der Doku. Was Vercel intern ablegt, ohne es
+  anzuzeigen, beantwortet vermutlich nur dieser Weg.
+MELDEPUNKTE: (1) #22 enthält CLI-Befehlsfolgen (`vercel deploy --prod`, `vercel rollback` …) —
+ein Leitfaden, kein an ein Werkzeug gerichteter Auftrag; gemeldet, nichts ausgeführt. (2) #17
+trägt Framework-Reiter, vorausgewählt "Next.js (/app)"; die übrigen Reiter sind NICHT geöffnet.
+Nach dem gelesenen Text betreffen sie das Codebeispiel; der Abschnitt zur IP-Sichtbarkeit steht
+ausserhalb. (3) Keine Seite verlangte Anmeldung oder Eingabe.
+
+**(k) WELCHE FELDER EIN LOG-EINTRAG FESTHÄLT.** **NEU.**
+· DIE DETAILANSICHT DER RUNTIME LOGS (#13), gelesen in der Tabelle "Log details": Request
+  Method · Request Path · Time · Status Code · Host · Request Id · **Request User Agent** ·
+  **"Search Params — Search parameters of the request path"** · Region · Firewall · Vercel Cache
+  samt Cache-Feldern · Middleware · Function · Deployment · Events · **"Outgoing Requests —
+  Sub-requests made during the function execution"** · Log Messages.
+· DIE IP: In der Detailtabelle steht KEIN IP-Feld. Dieselbe Seite sagt zum Filter "Logs from
+  your browser": "The filter works by matching your IP address and User Agent against incoming
+  requests". Gelesen ist also ein ABGLEICH; ob und wie lange die IP gespeichert wird, steht
+  nicht dort.
+· DER REFERER: Die Detailtabelle von #13 führt ihn NICHT. #30 (2025-12-12) sagt: "you can now
+  view the referer (if any) for that request in the right hand details panel". Zwei
+  anbietereigene Quellen, zwei Aussagen; die Sonde in Teil (r) entscheidet sie.
+· DIE LOG DRAINS (#15), Schema: `proxy.method`, `proxy.host`, **`proxy.path` "Request path
+  with query parameters"** (Beispiel `/dynamic/some-value.json?route=some-value`),
+  **`proxy.clientIp`**, `proxy.userAgent`, **`proxy.referer`**, `proxy.region`,
+  `proxy.statusCode`, `proxy.wafAction`, `ja3Digest`, `ja4Digest`, `message` ("may be truncated
+  if over 256 KB").
+· ALLGEMEINE REQUEST-HEADER: nicht gefunden in #13 bis #30 und #6.
+
+**(l) OB ANFRAGE-RÜMPFE PROTOKOLLIERT ODER GESPEICHERT WERDEN — NICHT GEFUNDEN, IN KEINER
+RICHTUNG.** **NEU.** Keine der 19 Seiten sagt "Rümpfe werden gespeichert" oder "werden nicht
+gespeichert". Was gelesen ist:
+· #13: kein Rumpf-Feld in der Detailtabelle. Log-Messages sind die Ausgabe des eigenen Codes:
+  "Each action of writing to standard output, such as using console.log, results in a
+  separate log entry"; bis 256 KB je Zeile, 256 Zeilen und 1 MB je Anfrage.
+· #15: kein Rumpf-Feld im Schema.
+· #21: Die Parameter einer WAF-Regel sind Request Path, Route, Server Action Name, Raw Path,
+  Method, User Agent, Request Header, **Query**, Cookie, Hostname, IP Address, Protocol,
+  Environment, Region, Continent, State, Country, City, AS Number, JA3/JA4 Digest,
+  `@vercel/firewall` — **kein Body.**
+· #20: Die Firewall-Auswertung gruppiert nach Client IP, User Agent, Request Path, ASN, JA4 und
+  Land.
+· #23, #24, #26: "External APIs" und Fetch-Spans erfassen ausgehende Anfragen, laut #26 mit
+  "information on the length of time, location, and other attributes". Ob die volle URL oder
+  Rumpfteile darunter sind, ist nicht gefunden. Always-on Tracing sammelt ohne Regeln nichts:
+  "With no rules, always-on tracing collects nothing".
+
+**(m) WAS BEI EINER UNBEHANDELTEN EXCEPTION IM LOG LANDET — NICHT GEFUNDEN.** **NEU.**
+Gelesen in #13, #14, #19, #22, #23 im Volltext, #25 gezielt. Was sich belegen lässt: #15
+`statusCode` "-1 means no response returned and the lambda crashed"; #13 führt `stderr` bzw.
+`console.error` als "error" und markiert 5xx rot; #22 zeigt Fehlermeldungen samt "stack traces"
+im Log. Welche Angaben zur ANFRAGE dabei im Log stehen, belegt keine gelesene Seite. Die
+Ausgabe bei einem Wurf bestimmt das Framework, nicht die Plattform-Doku.
+
+**(n) LOG DRAINS.** **NEU.**
+· TARIF: "Drains are available on Enterprise and Pro plans" (#16); "If you are on the Hobby or
+  Pro Trial plan, you'll need to upgrade to Pro to access non-audit-log drains." Preis $0.50 je
+  GB.
+· FELDER: s. Teil (k).
+· BESCHRÄNKUNG: nach Quelle (static, lambda, edge, build, external, firewall, redirect) und
+  Umgebung; dazu Stichprobenregeln mit "request path prefix" — "Rules run from top to bottom.
+  Requests that match a rule use that rule’s sampling rate, and any other requests are
+  dropped." (#15, #18). Ob 0 % zulässig ist, ist nicht gefunden.
+· IP AUSBLENDEN: "IP addresses are hidden in your Drains" als teamweiter Schalter, für Pro und
+  Enterprise, Rollen owner und admin (#17).
+
+**(o) AUFBEWAHRUNG — DER STAND AUS TEIL (d) GILT.** **NEU.**
+Runtime Logs Hobby "1 hour of logs", Pro "1 day of logs" (#13, 2026-08-28; #6, 2026-09-14).
+NEU GELESEN (#13): Pro mit Observability Plus 30 Tage, Enterprise 3 Tage, Enterprise mit
+Observability Plus 30 Tage. EINE ANDERE DATENKLASSE, nicht zu verwechseln: die
+**Observability-Daten** bewahrt Hobby 12 Stunden auf (#29, 2026-07-06).
+
+**(p) OB SICH DAS PROTOKOLLIEREN JE ROUTE UNTERDRÜCKEN LÄSST.** **NEU.**
+Für Runtime Logs: keine Option gefunden (#13, #14, #19, #23). Beschränkbar sind Drains und
+Traces über die Stichprobenregeln je Pfad-Präfix (Teil (n), #26, #27) und Observability Plus je
+PROJEKT, nicht je Route (#29).
+
+**(q) WAS NACH DIESEM LAUF OFFEN IST.** **NEU.**
+1. Ob Vercel Rümpfe intern ablegt, ohne sie anzuzeigen — an der Doku nicht entscheidbar; eine
+   Frage an den DPA.
+2. Welche Angaben zur Anfrage bei einem Absturz im Log stehen — nicht gefunden (Teil (m)).
+3. Welche Attribute ein Fetch-Span bzw. "Outgoing Requests" trägt — nicht gefunden (Teil (l)).
+4. Ob und wie lange die IP gespeichert wird — nicht gefunden (Teil (k)).
+
+**PROVENIENZ DES GANZEN LAUFS 2:** GELESEN am 2026-09-29 (CC) an den 19 unter (i) genannten
+Seiten, Instrument Browser-Werkzeug, `textContent`. Wo "GEMESSEN" steht, betrifft es
+ausschliesslich das eigene Vorgehen (Zeichenzahlen, Weiterleitung, Werkzeug-Ablage). **KEINE
+Messung an einer Vercel-Schnittstelle und KEINE am eigenen Dashboard.**
+
+### Sonde 2026-09-29 im Dashboard "Logs" (Query-, Rumpf- und Referer-Marker) — die Teile (r) bis (t)
+
+**HERKUNFT: GEMESSEN 2026-09-29 (OWNER), Vercel-Dashboard "Logs" des Projekts, Tarif Hobby**,
+übermittelt im Auftrag der Runde "Lesung und Sonde zur Vercel-Protokollierung" der Phase 13.6.
+Der Vorgang: eine Anfrage `POST /api/e?probe=QPROBE7731` mit dem Rumpf `BPROBE8842`
+(`text/plain`), abgesetzt aus der Konsole der eingeloggten App; Antwort 400. Request-ID,
+Deployment-ID und Host-Namen stehen bewusst nicht in dieser Datei.
+EINORDNUNG DER 400 (GELESEN AM CODE, CC): Der Rumpf ist kein JSON; `handleIngest`
+(src/lib/capi/ingest.ts) weist ihn vor jedem Datenbank-Zugriff ab — dieselbe Antwort nennt
+Vorrat P13.6-6 der Phase 13.6.
+
+**(r) DIE DETAILANSICHT DES EINTRAGS.** **NEU.** GEMESSEN (Owner): Path `/api/e` · Host ·
+User Agent · **Referer mit der vollen Adresse der aufrufenden Seite** · **Search Params mit
+`probe=QPROBE7731` im Klartext** · "Received in Frankfurt, Germany (fra1)" · Firewall
+"Allowed" · Middleware 200 mit **einer ausgehenden GET-Anfrage an den Supabase-Host des
+Projekts** · "Routed to Washington, D.C., USA (iad1)" · Function Invocation `/api/e`, 145 ms,
+ohne ausgehende Anfragen. **KEIN IP-Feld, KEIN Rumpf-Feld.**
+FOLGE FÜR TEIL (k): Der Referer steht in der Detailansicht — der Changelog #30 trifft zu, die
+Detailtabelle von #13 ist unvollständig. Die Query steht im Klartext.
+
+**(s) ZWEI NEBENBEFUNDE DER SONDE.** **NEU.**
+· DIE REGIONEN: Empfangen in `fra1`, die Funktion lief in `iad1`. Das deckt sich mit Teil (d)
+  ("Runs in a single region by default (iad1)", GELESEN 2026-09-02). Die Supabase-Region nennt
+  der Supabase-Abschnitt, Teil (au) (Owner-Angabe: Frankfurt).
+· DIE MIDDLEWARE-ANFRAGE AN SUPABASE lief bei einer Anfrage MIT Sitzungs-Cookie (Konsole der
+  eingeloggten App). Ohne Cookie ist NICHT gemessen. Welche Funktion sie auslöst, ist nicht
+  gemessen; ABGELEITET am Code ist `auth.getUser()` in `updateSession`
+  (src/lib/supabase/middleware.ts).
+· DIE 145 ms sind eine Einzelmessung auf dem Abweisungs-Pfad (400 vor jedem
+  Datenbank-Zugriff); sie enthalten keinen Datenbank-Umlauf.
+
+**(t) DIE DASHBOARD-SUCHE ERFASST SEARCH PARAMS NICHT — DIE POSITIVKONTROLLE IST GESCHEITERT,
+UND DAS IST DER BEFUND.** **NEU.** GEMESSEN (Owner): Die Suche im Dashboard fand WEDER
+`QPROBE7731` NOCH `BPROBE8842`. Der Query-Wert steht aber nachweislich in der Detailansicht
+(Teil (r)). Die Suche erfasst die Search Params also nicht — dazu passt #13: "This free text
+search feature is limited to the message and requestPath field."
+**FOLGE: Ihr Nicht-Treffer beim Rumpf-Marker ist KEIN Beleg**, dass der Rumpf nirgends liegt.
+Belegt ist allein: Die Detailansicht führt kein Rumpf-Feld. Ob Vercel Rümpfe intern ablegt, ist
+weder gelesen noch gemessen (Teil (q), Punkt 1).
+DAS IST DIE REGEL "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND"
+(docs/immer-beachten.md) — hier an der Suche eines Anbieter-Dashboards, und ohne die
+Positivkontrolle wäre der Rumpf-Nicht-Treffer als Entwarnung gelesen worden.
+
+**PROVENIENZ DER SONDE:** GEMESSEN 2026-09-29 (OWNER), eine Anfrage, ein Eintrag, Tarif Hobby.
+Die Zitate aus #13 in (t) und die Einordnung am Code sind GELESEN (CC, 2026-09-29). **KEINE
+Aussage über Pro, über Drains oder über andere Pfade als `/api/e`.**

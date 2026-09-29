@@ -4180,6 +4180,23 @@ aufgenommen nach Entscheidung P13-3 (OWNER 2026-09-28). Der datierte Block träg
   - PROVENIENZ: ABGELEITET am Code (CC, 2026-09-29, HEAD `a3797d9`), NICHT gemessen. Volltext:
     Vorrat P13.6-7 der Phase 13.6 (docs/aktiver-stand.md, Standdatei der Phase 13.6); die
     Reparatur ist dort als erste Bau-Scheibe gesetzt (Setzung P13.6-3 der Phase 13.6).
+  ERGÄNZT 2026-09-29 (Phase 13.6, Sonde zur Vercel-Protokollierung) — VERCEL PROTOKOLLIERT DIE
+  QUERY UND DEN REFERER. Titel, Trigger und der Text darüber sind unverändert; der Titel bleibt
+  sachlich richtig, der Befund erweitert "reist an unseren Server".
+  - GEMESSEN (Owner, Vercel-Dashboard "Logs", Tarif Hobby, 2026-09-29): Für eine Anfrage an
+    `/api/e` zeigt die Detailansicht den Referer mit der vollen Adresse der aufrufenden Seite
+    und die Query der Anfrage selbst im Klartext ("Search Params"). Aufbewahrung Hobby 1 Stunde
+    (GELESEN, docs/plattform-befunde.md, Vercel, Teil (o)). Die Frage "ob die Plattform-Logs von
+    Vercel die angefragte Adresse samt Query ablegen" (Absatz "NICHT ENTSCHEIDBAR AM CODE"
+    oben) ist damit für die sichtbare Detailansicht beantwortet: ja.
+  - GRENZE DER MESSUNG: Gemessen ist eine Anfrage aus der Konsole der eingeloggten App, nicht ein
+    Beacon einer Kundenseite. ABGELEITET, NICHT GEMESSEN: Die Beacons gehosteter Seiten gehen
+    same-origin an `/api/e` und tragen nach der Browser-Vorgabe den Referer mit der vollen
+    Seitenadresse samt Query; er steht damit im Vercel-Log. Exportierte Seiten senden
+    cross-origin; dort gibt dieselbe Vorgabe nur den Ursprung weiter. Die Seitenanfrage einer
+    gehosteten Seite an die Serve-Route trägt ihre Query ebenfalls als Search Params (ABGELEITET).
+  - VERWEIS: docs/plattform-befunde.md, Vercel-Abschnitt, Teile (r) bis (t) (Sonde) und (k)
+    (Lesung); Setzung P13.6-48 der Phase 13.6 (R1: der Relay-Aufruf trägt keinen Referer).
 - VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP (Trigger:
   bevor das erste fremde Nutzerkonto Zugang bekommt):
   DER OWNER-WUNSCH (OWNER 2026-09-28): Bevor fremde Nutzer Zugang bekommen, entsteht ein

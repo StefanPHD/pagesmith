@@ -514,6 +514,11 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
   `NEXT_PUBLIC_APP_URL` → Lesung, was Vercel protokolliert (Arbeit P13.6-26) → erster
   Relay-Zuschnitt. GRUND für die Lesung vor dem Zuschnitt: sie ist Bedingung (2) der
   Owner-Entscheidung P13.6-16.
+- FORTGESCHRIEBEN 2026-09-29 (ARCHITEKT, Runde "Lesung und Sonde zur Vercel-Protokollierung
+  festhalten, Bauregeln, Region"; der Text darüber bleibt stehen): Scheibe 1, Scheibe 2, die
+  Korrektur von `NEXT_PUBLIC_APP_URL` (Vermerk P13.6-47) und die Lesung (Arbeit P13.6-26) sind
+  erledigt. DIE REIHENFOLGE IST JETZT: Region umstellen (Setzung P13.6-52) → erster
+  Relay-Zuschnitt.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -572,6 +577,55 @@ CHIFFRIERT NACH DEM OAUTH-MUSTER, EINER JE ANBIETER UND PROJEKT.**
   zu lösen. Ein neuer Anbieter-Zielwert verlangt eine Migration am CHECK
   `project_secrets_target_valid` (Dauerregel "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
   CONSTRAINT-ERWEITERUNG MIT …").
+
+PROVENIENZ von P13.6-48 bis P13.6-52: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag der
+Runde "Lesung und Sonde zur Vercel-Protokollierung festhalten, Bauregeln, Region". REVIDIERBAR;
+ein Owner-Widerspruch hebt jede auf. Die Befunde, auf die sie sich stützen, stehen in
+docs/plattform-befunde.md, Vercel-Abschnitt, Teile (i) bis (t) (Lesung und Sonde vom
+2026-09-29), und Supabase-Abschnitt, Teil (au). P13.6-48 bis P13.6-51 sind die im Auftrag als
+R1 bis R4 geführten Bauregeln des Relays.
+
+**Setzung P13.6-48 (R1) — DER RELAY-AUFRUF TRÄGT KEINEN REFERER (`referrerPolicy: "no-referrer"`).**
+- GRUND: Der Referer steht im Vercel-Log und trüge die volle Seitenadresse samt Query
+  (GEMESSEN, Sonde vom 2026-09-29, docs/plattform-befunde.md, Vercel, Teil (r)).
+- GRENZE: Die Regel gilt dem Relay-Aufruf. Die Beacons an `/api/e` und die Seitenanfrage selbst
+  berührt sie nicht (offener Punkt "DIE SEITENADRESSE REIST SAMT QUERY …", Ergänzung vom
+  2026-09-29).
+
+**Setzung P13.6-49 (R2) — FORMULARWERTE STEHEN NIE IN PFAD ODER QUERY, NUR IM RUMPF.**
+- GRUND: Search Params stehen im Klartext im Vercel-Log (GEMESSEN, ebenda, Teil (r)).
+- GRENZE: Ob der Rumpf bei Vercel intern abgelegt wird, ist offen (Setzung P13.6-51); die
+  Regel schützt vor dem sichtbaren Log, nicht vor der Plattform.
+
+**Setzung P13.6-50 (R3) — DER RELAY-CODE GIBT DEN RUMPF NIE IN EINE LOGZEILE ODER EINE
+FEHLERMELDUNG; JEDER FEHLER WIRD IM RELAY-PFAD GEFANGEN.**
+- GRUND: Was bei einem Absturz ins Log gelangt, ist weder gelesen noch gemessen
+  (docs/plattform-befunde.md, Vercel, Teile (m) und (q)).
+- GESICHERT durch einen Wächter-Test (Dauerregel "NUR EIN TEST IST EIN WÄCHTER — EIN KOMMENTAR
+  ODER EIN NEBENEFFEKT IST KEINER"); er ist Bedingung (1) der Owner-Entscheidung P13.6-16.
+- GRENZE: Wie der Wächter gebaut wird, entscheidet der Zuschnitt.
+
+**Setzung P13.6-51 (R4) — OB VERCEL RÜMPFE INTERN ABLEGT, KLÄRT DIE AVV-ARBEIT ÜBER DEN DPA; BIS
+DAHIN GILT "NIE IM LOG" FÜR UNSEREN CODE, NICHT FÜR DIE PLATTFORM.**
+- GRUND: Weder die Lesung noch die Sonde entscheidet die Frage; die Dashboard-Suche fand nicht
+  einmal den Query-Marker, der in der Detailansicht steht, ihr Nicht-Treffer beim Rumpf ist
+  deshalb kein Beleg (docs/plattform-befunde.md, Vercel, Teile (l), (q) und (t)).
+- BEZUG: Owner-Entscheidung P13.6-18 (das Relay für fremde Nutzer erst mit Kunden-AVV).
+- GRENZE: Die Zusage "nie geloggt" aus Owner-Entscheidung P13.6-16 bleibt eine Zusage über
+  unseren Code.
+
+**Setzung P13.6-52 — REGION: DIE FUNKTIONSREGION WIRD VON `iad1` AUF FRANKFURT (`fra1`)
+UMGESTELLT, ALS EIGENER PLATTFORM-SCHRITT VOR DEM ERSTEN RELAY-ZUSCHNITT.**
+- GRUND: Supabase liegt in Frankfurt (OWNER-ANGABE, docs/plattform-befunde.md, Supabase, Teil
+  (au)); die Funktion lief gemessen in `iad1` (Sonde, Vercel, Teil (r)). Jede
+  Datenbankabfrage ging damit über den Atlantik, und Daten europäischer Besucher würden in den
+  USA verarbeitet (ARCHITEKT, Begründung; nicht gemessen).
+- GRENZE: Ob der Hobby-Tarif die Wahl erlaubt, prüft der Owner in den Einstellungen.
+- VORHER-WERT: die gemessene Ausführung von `/api/e`, 145 ms, `iad1` (Sonde, ebenda).
+  EINSCHRÄNKUNG, GELESEN AM CODE (CC): Die Sonde lief auf dem Abweisungs-Pfad — eine 400 vor
+  jedem Datenbank-Zugriff (`handleIngest`, src/lib/capi/ingest.ts); die 145 ms enthalten keinen
+  Datenbank-Umlauf. Ein Vergleich nach dem Umstellen braucht dieselbe Anfrageform, und für die
+  Wirkung auf Datenbank-Umläufe braucht es eine Anfrage, die die Datenbank erreicht.
 
 ## Zuschnitt Scheibe 13.6-1
 
@@ -1161,6 +1215,11 @@ Vercel und ein Redeploy; im Repo ändert sich keine Zeile. Er schliesst Vorrat P
 P13.6-16. Heute nicht gelesen (Vermerk P13.6-19, Punkt (8)). Die Methode ist die der Dauerregel
 "ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN …"; der Befund geht nach
 docs/plattform-befunde.md, Vercel-Abschnitt.
+- ERLEDIGT 2026-09-29: Lesung (CC, 19 Seiten) und Sonde im Dashboard (Owner) stehen in
+  docs/plattform-befunde.md, Vercel-Abschnitt, Teile (i) bis (q) (Lesung) und (r) bis (t)
+  (Sonde); die Region des Supabase-Projekts im Supabase-Abschnitt, Teil (au). Die Bauregeln
+  daraus: Setzungen P13.6-48 bis P13.6-51 der Phase 13.6; die Region: Setzung P13.6-52.
+  OFFEN BLEIBT: ob Vercel Rümpfe intern ablegt (Setzung P13.6-51).
 
 **Arbeit P13.6-27 — DIE HOST-LISTE DER WEBHOOK-DIENSTE (RECHERCHE)** (ARCHITEKT 2026-09-29).
 Grundlage der Stufe 1 (Owner-Entscheidung P13.6-17). BEZUG: docs/formular-empfaenger-befunde.md
@@ -1268,7 +1327,14 @@ zurückgespiegeltes Besucher-Merkmal schwärzt, ist offen.
   BEANTWORTET 2026-09-29: Vorrat P13.6-12 der Phase 13.6 (eingebackener Wert
   `http://localhost:3000`, gemessen am Export).
 - Ob Vercel Rümpfe, Query oder IP in seinen Logs ablegt.
+  TEILWEISE BEANTWORTET 2026-09-29 (Sonde, Owner; docs/plattform-befunde.md, Vercel, Teile (r)
+  bis (t)): Query und Referer stehen im Klartext in der Detailansicht, ein IP-Feld und ein
+  Rumpf-Feld nicht. Ob Rümpfe oder IPs intern abgelegt werden, bleibt offen (Setzung P13.6-51
+  der Phase 13.6).
 - Ob `auth.getUser()` in `updateSession` ohne Sitzungs-Cookie einen Netzruf kostet.
+  TEILWEISE GEMESSEN 2026-09-29 (Sonde, Owner; ebenda, Teil (s)): MIT Sitzungs-Cookie macht die
+  Middleware eine ausgehende GET-Anfrage an den Supabase-Host. Ohne Cookie ist nicht gemessen;
+  die Zuordnung zu `auth.getUser()` ist ABGELEITET.
 - KEIN TRIGGER GESETZT.
 
 **Vorrat P13.6-12 — `NEXT_PUBLIC_APP_URL` IST IN PRODUCTION `http://localhost:3000` — DIE BEACONS

@@ -6429,3 +6429,136 @@ FIX-VORSCHLAG über das Benannte hinaus.
   Arbeit an `__psConfirm` bzw. `buildMetaRuntime`, ODER eine Live-Messung in einem anderen
   Aufbau, ODER eine angezeigte Verlustrate, die bei Formularen mit Neuladen auffällig hoch
   ist.
+
+## Aus Phase 13 gehoben (2026-09-29) — sieben Vorrats-Einträge, eine Schwäche und ein Anzeige-Befund der Standdatei
+
+Gehoben beim Phasenende 13 aus der Standdatei der Phase 13 (Formular-Ziel); die Nummern gehören
+zur Reihe `P13-n` jener Phase, ihr Archiv trägt den Wortlaut unter derselben Nummer. Die
+Zuordnung ist ein Vorschlag aus Teil 1 des Phasenendes (CC, 2026-09-29), vom Architekten
+geprüft und im Auftrag des Teils 2 vom 2026-09-29 übermittelt. KEIN FIX-VORSCHLAG über das
+Benannte hinaus. Was einen offenen Punkt ergibt, steht in docs/offene-punkte.md, Block "AUS DEM
+PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN".
+
+- **Vorrat P13-14 — EIN POST-FORMULAR OHNE `action` AUF EINER GEHOSTETEN SEITE LÄUFT MIT SEINEM
+  RUMPF IN DIE VERCEL-ROUTE `/app-serve`**
+  ABGELEITET am Code (CC, 2026-09-28), NICHT gemessen; am Code nachgelesen (CC, 2026-09-29):
+  `proxy` (src/proxy.ts) schreibt auf dem Serving-Host jeden Pfad ausser `/api/e` und
+  `/api/capi` auf `/app-serve` um; die Serve-Route (src/app/app-serve/route.ts) exportiert nur
+  `GET`. Der Rumpf des Abschickens — bei einem Datei-Feld Datei-Bytes — erreicht damit eine
+  Vercel-Route. Ein Formular MIT Formular-Ziel läuft seit Scheibe 13-1 nicht mehr hinein
+  (unser `preventDefault` ersetzt das native Abschicken); für Formulare OHNE Ziel gilt der
+  Befund.
+  UNGEMESSEN: der Antwortcode (erwartet 405, Kenntnis des Next-Verhaltens, nicht gelesen) und
+  ob die Plattform den Rumpf überhaupt annimmt. BEZUG, KEIN GLEICHER GEGENSTAND: Gemessen ist
+  eine 405 von Next für einen POST auf eine SEITE (docs/offene-punkte.md, "DIE MIDDLEWARE
+  LEITET API-ROUTEN AUF EINE HTML-SEITE UM"), nicht für einen Route-Handler, der nur `GET`
+  exportiert.
+  MESSFRAGE (Phasenende 13, 2026-09-29): Was kostet ein EINGEHENDER Rumpf — Datei-Bytes — im
+  Hobby-Tarif? Die Dauerregel "MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN — UND DAS GILT
+  FÜR JEDE AUSLIEFERUNG VON DATEI-BYTES, NICHT NUR FÜR MEDIEN" (docs/immer-beachten.md) nennt
+  die Auslieferung; den Empfang eines Rumpfes durch eine Route nennt ihr Kern nicht.
+  TRIGGER: der Zuschnitt des Relay-Endpunkts in Phase 13.6 — dort nimmt erstmals ein Endpunkt
+  Formularrümpfe absichtlich an.
+
+- **Vorrat P13-37 — IN `mappingsEqual` STEHT EIN LITERALES NUL-BYTE ALS TRENNER; DER KOMMENTAR
+  DARÜBER NENNT EIN LEERZEICHEN**
+  DUBLETTE, KEIN NEUER VOLLTEXT: Der Gegenstand steht in dieser Datei bereits zweimal — "ROHES
+  NUL-BYTE IN mappings.ts" (Polish-Liste) und "DER KOMMENTAR AN `mappingsEqual` NENNT DEN
+  FALSCHEN SEPARATOR" (Abschnitt "Aus Phase 11.1 gehoben (2026-08-19) …"). NEU AUS PHASE 13
+  (GEMESSEN, CC, 2026-09-28 und 2026-09-29): `git ls-files --eol` meldet für src/lib/mappings.ts
+  `i/-text`, `tr -cd '\000'` zählt 1; die Scheiben 13-1 (`434dc86`) und 13-1c (`a1f009c`) haben
+  das NUL erhalten, nicht verursacht.
+
+- **Vorrat P13-38 — OHNE EINGESCHALTETEN EINWILLIGUNGS-DIALOG IST DIE SPRACHE DER
+  FORMULAR-MELDUNG NICHT WÄHLBAR**
+  GELESEN AM CODE (CC, 2026-09-28; nachgelesen 2026-09-29): Die Sprach-Wahl in `PublishView`
+  (src/components/PublishView.tsx) steht im Zweig, der nur bei Dialog "bar" oder "modal"
+  sichtbar ist; `getConsentLanguage` (src/lib/settings.ts) liefert ohne Wert "de". Die Meldung
+  des Formular-Ziels nimmt ihre Sprache aus derselben Quelle (Setzung P13-27). Folge: Eine
+  englische Seite ohne Dialog zeigt die Meldung deutsch. Es geht kein Lead verloren; die Meldung
+  erscheint nur, wenn der Versand scheitert. Die Behebung braucht `PublishView`, das in Scheibe
+  13-1 unberührt blieb. KEIN TRIGGER GESETZT.
+
+- **Vorrat P13-39 — `ownFormTargetDomains` LIEST DIE HOSTING-DOMÄNE EIN ZWEITES MAL NEBEN
+  `host.ts`**
+  GELESEN AM CODE (CC, 2026-09-28; nachgelesen 2026-09-29): `ownFormTargetDomains`
+  (src/lib/form-target.ts) liest NEXT_PUBLIC_HOSTING_DOMAIN mit eigener Bereinigung und trägt
+  das feste "lvh.me"; dieselben Aufgaben erfüllen in src/lib/hosting/host.ts `servingSuffixes`
+  und `FALLBACK_SUFFIX` (nicht exportiert). host.ts ist eine Kern-Datei und blieb unberührt.
+  Ändert sich die Bereinigung an einer der beiden Stellen, laufen sie still auseinander.
+  GEMILDERT, nicht aufgehoben: Die Laufzeit-Wache verweigert eine Zieladresse auf dem Ursprung
+  der Seite selbst, unabhängig von jeder Umgebung. DER STILL BRECHENDE TEIL STEHT NICHT HIER:
+  Eine Brand-Domain, die nur in `APP_HOSTS` nachgetragen wird, führt der offene Punkt
+  "isAppHost-PLATZHALTER" (Ergänzung vom 2026-09-28), der auf diese Nummer zeigt. KEIN
+  TRIGGER GESETZT.
+
+- **Vorrat P13-40 — DER RUMPF EINES `keepalive`-AUFRUFS IST BEGRENZT; EIN FORMULAR MIT SEHR LANGEM
+  TEXT KÄME NIE AN**
+  DER ORT: `__psFormTargetSend` im Baustein aus `buildFormTargetRuntime` (src/lib/form-target.ts)
+  sendet mit `keepalive: true` — die in G0 und B0 gemessene Form; Test F1b hält sie fest.
+  DIE FOLGE, ABGELEITET (ARCHITEKT, 2026-09-28): Ein Formular mit sehr langem Textfeld endete
+  bei JEDEM Versuch als "nicht erreicht"; der Besucher sähe dauerhaft die eigene Meldung, ein
+  erneuter Versuch hülfe nicht, der Lead ginge verloren.
+  MESSFRAGE: Nach Architekten-Wissen liegt die Grenze bei rund 64 KB — weder gelesen noch
+  gemessen. Was tut `fetch(…, {method: "POST", mode: "no-cors", keepalive: true, body})` mit
+  einem Rumpf über der Grenze — Wurf beim Aufruf, abgewiesene Promise oder Versand? Wo liegt
+  die Grenze je Browser?
+  WARUM NICHT BEI DEN OFFENEN PUNKTEN (Zuordnung des Phasenendes, 2026-09-29): Das Formular
+  bleibt stehen (Entscheidung P13-17), der Verlust ist für den Besucher sichtbar. Dem
+  BETREIBER zeigt nichts den Fehlschlag (ABGELEITET).
+  TRIGGER: der Zuschnitt des Datensparmodus (der browser-direkte Weg, der neben dem Relay
+  bestehen bleibt; Roadmap-Zeile 13.6).
+
+- **Vorrat P13-61 — BILD-KNOPF MIT `formaction`: EIN ZIEL WIRD ANGEBOTEN, OBWOHL SETZUNG P13-31 ES
+  AUSSCHLIESST**
+  GELESEN AM CODE (CC, 2026-09-28; nachgelesen 2026-09-29): `formTargetCheck`
+  (src/lib/form-target.ts) prüft `formaction` und `formmethod` über `Array.from(form.elements)`.
+  Ein `<input type="image" formaction="https://…">` steht nicht in `form.elements` (Angabe des
+  Architekten, NICHT gemessen); dann wird ein Ziel angeboten. Für `formmethod="dialog"` an
+  einem Bild-Knopf gilt dieselbe Lücke (ABGELEITET).
+  DIE DOPPELANTWORT IN DERSELBEN DATEI (GELESEN AM CODE, CC, 2026-09-29): `deriveFormFieldNames`
+  holt Bild-Absendeknöpfe eigens dazu — über `form.ownerDocument` und `el.form === form`, mit
+  dem Kommentar, sie stünden "NICHT in form.elements (HTML-Spezifikation …)". Die Datei gibt
+  damit zwei verschiedene Antworten auf die Frage, welche Elemente zu einem Formular gehören;
+  der Kommentar zitiert die Spezifikation, gemessen ist keine der beiden.
+  KEIN DATENLECK: Unser Abfangen im submit-Listener übersteuert die fremde Adresse; betroffen
+  ist nur die Angebotsregel. KEIN TRIGGER GESETZT.
+
+- **Vorrat P13-62 — DIE SCHLÜSSEL-REIHENFOLGE DES DATENBLOCKS HÄNGT AN DER HERKUNFT DER MAPPINGS**
+  GEMESSEN DURCH NACHBAU (CC, 2026-09-28; Vermerk P13-60, Punkt (4), Z, der Phase 13):
+  `generateFunctional` (src/lib/generate.ts) schreibt die Tabelle über `embedInScript`, also
+  `JSON.stringify` in der Schlüssel-Reihenfolge der übergebenen Objekte. Aus der Datenbank
+  geladen: `type, config, elementId`; im Editor gebaut (`upsertMapping(prev, { elementId, type,
+  config })` in den Zuweisungs-Handlern von src/components/CodeImporter.tsx):
+  `elementId, type, config`. Gleicher Inhalt, andere Bytes, gleiche Länge — je nachdem, ob ein
+  Mapping in der Sitzung angefasst wurde. SEIT `380d9be` (2026-06-23) und `31d2464`
+  (2026-06-29), vor Phase 13.
+  WEN ES TRIFFT: jede Byte-Gleichheits-Aussage über ausgelieferten Text, zwischen deren Vorher
+  und Nachher ein Mapping im Editor angelegt oder geändert wurde. Frühere Live-Vergleiche der
+  Phasen 5, 11.5, 11.11, 11.12, 11.13 und 12.5 sind NICHT einzeln nachgeprüft.
+  KANDIDATEN (keine Auswahl): (a) beim Erzeugen an EINER Stelle in eine feste
+  Schlüssel-Reihenfolge normalisieren · (b) die Zuweisungs-Handler bauen Datenbank-Form ·
+  (c) Code unverändert, "Mappings aus derselben Herkunft" als Pflicht-Schritt jeder
+  Live-Anleitung. Architekten-Empfehlung (2026-09-28): (a), vorher messen, welche Reihenfolge
+  die Fixtures von W1′, W2′, T1 und T9 tragen. Kandidat (c) steht seit dem 2026-09-29 als
+  Herkunfts-Auflage in der Dauerregel "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM
+  GELADENEN DOKUMENT, NIE AN EINER GESPEICHERTEN DATEI"; sie entfällt, sobald (a) gebaut ist.
+  TRIGGER (beobachtet): die nächste Scheibe, die einen Live-Fingerabdruck über eine Seite mit
+  im Editor geänderten Aktionen braucht.
+
+- **Arbeit P13-12, zweite Schwäche — OB WERBEBLOCKER DIE EINGETRAGENE ADRESSE BLOCKIEREN, IST NUR
+  FÜR EINEN BLOCKER GEMESSEN**
+  GEMESSEN: uBlock Origin Lite, Filtermodus "Vollständig", Standard-Filterlisten, Chrome 153 —
+  nicht blockiert, Navigation und Eingang bei Make (Vermerk P13-35, Punkt (6), L5, der Phase 13;
+  docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (ae)); am Listentext
+  docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (ab). UNGEMESSEN: andere
+  Blocker, andere Listen und Einstellungen, andere Browser, andere Empfänger als Make. Scheitert
+  der Versand an einem Blocker, bleibt das Formular stehen (Entscheidung P13-17). KEIN TRIGGER
+  GESETZT.
+
+- **Ohne Nummer, aus Vermerk P13-60, Punkt (5), der Phase 13 — DAS PANEL "FORMULAR-ZIEL" FÜHRT
+  EINE CHECKBOX-GRUPPE DOPPELT**
+  GEMESSEN (OWNER, LIVE, 2026-09-28, Live-Test der Scheibe 13-1c): Eine Checkbox-Gruppe mit zwei
+  Feldern erscheint in der Namensliste des Panels doppelt ("interesse" zweimal). Reine Anzeige;
+  dort als "bewusst nicht dokumentiert" vermerkt, hier gehoben, damit der Befund das Redesign
+  erreicht. TRIGGER: Zuschnitt des UI-Redesigns.

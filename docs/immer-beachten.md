@@ -1144,6 +1144,17 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   (`<script id="…">` + Rumpf + `</script>`), nicht der blosse Rumpf, und die Vorher-Werte
   werden an derselben Form erhoben.
   Ohne Positivkontrolle ist der Fehlschlag von einem Befund nicht zu unterscheiden.
+  Ein zweites zulässiges Instrument: `fetch(location.href, {cache: 'no-store'})` in der
+  Konsole der Live-Seite, sha256 über die GANZE Antwort, jede Messung doppelt, mit
+  Positivkontrolle — eine geänderte Seite muss abweichen.
+  Die Grenze gilt für beide Instrumente: Für keines ist gemessen, dass es jeden
+  Zwischenspeicher umgeht, und ein Vergleich beider am selben Zustand fehlt.
+  Vor jedem Vergleich stammen die Mappings aus derselben Herkunft — Editor neu laden, dann
+  veröffentlichen; sonst unterscheidet allein die Schlüssel-Reihenfolge des Datenblocks zwei
+  inhaltsgleiche Stände. Diese Auflage entfällt, sobald Vorrat P13-62 der Phase 13, Kandidat
+  (a), gebaut ist.
+  Gleichheit entscheidet sha256; jede Längenangabe nennt ihre Einheit — Bytes oder
+  JavaScript-Zeichen.
 
 - EIN ESCAPE, DAS IM QUELLTEXT STEHEN SOLL, WIRD AUF DEM SCHREIBWEG IN SEIN ZEICHEN
   VERWANDELT — UND DER DIFF SIEHT UNAUFFÄLLIG AUS

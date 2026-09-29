@@ -709,6 +709,16 @@ aufeinander; sie liegen alle hier und finden einander.
   WANN DER TEXT ENTSTEHT: ERST vor dem Launch, nicht jetzt — die Warntexte der Anbieter
   ändern sich, und ein früh geschriebener Text zitierte dann Meldungen, die es nicht mehr
   gibt. Der Trigger ist der des Postens.
+  (6) DIE ADRESSE EINES FORMULAR-ZIELS STEHT ÖFFENTLICH IM QUELLTEXT DER SEITE — ERGÄNZT AM
+  2026-09-29 (Phasenende 13, aus Arbeit P13-12, dritte Schwäche, der Phase 13). Die Adresse,
+  die ein Betreiber im Tool als Formular-Ziel einträgt, ist kein Geheimnis und steht im
+  ausgelieferten Text (Setzung P13-6 der Phase 13); jeder Besucher kann sie lesen und
+  unmittelbar ansprechen. DER SCHUTZ GEGEN SPAM LIEGT BEIM EMPFÄNGER — Pagesmith filtert im
+  browser-direkten Weg nichts, weil der Versand unseren Server nicht berührt (Entscheidung
+  P13-2 der Phase 13). Was still kaputtgeht: Der Betreiber hält die Adresse für intern und
+  wundert sich über Einträge, die kein Besucher seiner Seite abgeschickt hat — oder sein
+  Empfänger verbraucht Kontingent dafür (beides ABGELEITET). KEINE EMPFEHLUNG, was zu schreiben
+  wäre; gemessen ist am Spam-Verhalten nichts. Der Trigger ist der des Postens.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
   ENTSCHEIDUNG). Grund: Die Achse hat keinen realen Konsumenten; was still kaputtginge, setzt
@@ -4152,4 +4162,45 @@ aufgenommen nach Entscheidung P13-3 (OWNER 2026-09-28). Der datierte Block träg
   PROVENIENZ: der Wunsch OWNER 2026-09-28; Quelle, Arbeitspaket, Ort und Trigger ARCHITEKT
   2026-09-28 (Setzung, revidierbar); der Befund GEMESSEN (CC, 2026-09-28). Der Stub in
   CLAUDE.md, "## Offene Punkte", Block "IN PHASE 13 AUFGENOMMEN (2026-09-28)", trägt Titel und
+  Trigger im SELBEN Zug.
+
+**AUS DEM PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN.** Aus der Standdatei der Phase 13
+(Formular-Ziel). DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still
+kaputt". Ein neuer Posten ist daraus entstanden; sein Ursprung steht am Eintrag. EIN WEITERES
+ERGEBNIS DIESER HEBUNG STEHT ALS ERGÄNZUNG AN EINEM BESTEHENDEN POSTEN und nicht als eigene
+Zeile: Punkt (6) an "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE". Was keinen offenen Punkt
+ergibt, liegt in docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 13 gehoben
+(2026-09-29) …".
+- IM BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE —
+  DER LEAD IST VERLOREN, UND NIEMAND SIEHT ES (Trigger: das erste fremde Nutzerkonto, das ein
+  Formular-Ziel einträgt — spätestens vor echtem Ad-Traffic):
+  DER BEFUND: Das Formular-Ziel (Phase 13, Scheiben 13-1 und 13-1c) schickt die Felder im
+  Modus `no-cors` an die eingetragene Adresse und gilt als "erreicht", wenn der Aufruf mit Typ
+  `opaque` auflöst (Setzung P13-21 der Phase 13); dann navigiert es zur Danke-Seite. Eine
+  gelöschte oder falsch abgeschriebene Adresse ist dort am Ausgang des Aufrufs NICHT von einer
+  gültigen zu unterscheiden: Bei Make antwortet eine unbekannte Kennung mit 410, und im Modus
+  `no-cors` meldet die Konsole dennoch OK (GEMESSEN, Browser, 2026-09-28,
+  docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (ac); der Typ der Antwort ist
+  dort NICHT ausgegeben, dass er `opaque` war, folgt aus der Fetch-Spezifikation und ist nicht
+  gelesen). Ein ausgeschaltetes Szenario verliert dagegen nichts — die Anfrage liegt in der
+  Queue (ebenda, Befund (z)).
+  WAS STILL KAPUTTGEHT: Der Besucher sieht die Danke-Seite, der Lead kommt nie an, und weder
+  Besucher noch Betreiber erfahren es. Das ist die Fehlerklasse, die Entscheidung P12.5-47 der
+  Phase 12.5 verworfen hat ("mit Danke-Seite wirkte es funktionsfähig, während Leads
+  verschwinden").
+  WARUM ES KEINE GEPLANTE ABHILFE GIBT: Die Scheibe 13-1b — ein Testknopf im Editor im Modus
+  `cors`, in dem die 410 wirft (ebenda, Befund (ad)) — war genau dafür geschnitten (Setzung
+  P13-18 der Phase 13) und ist mit Entscheidung P13-65 der Phase 13 (OWNER 2026-09-28)
+  ENTFALLEN, weil das geplante Relay die Antwort des Empfängers serverseitig liest.
+  DIE GRENZE: Für den RELAY-WEG entfällt dieser Posten, sobald das Relay die Antwort des
+  Empfängers liest (Roadmap-Zeile 13.6). Für den DATENSPARMODUS — den browser-direkten Weg,
+  der nach Entscheidung P13-65 bestehen bleibt — bleibt er bestehen.
+  GRENZEN DER MESSUNG: ein Browser (Chrome 153), ein Empfänger (Make, Zone eu2), nur die 410.
+  Wie andere Empfänger eine unbekannte oder gelöschte Adresse beantworten, ist ungemessen.
+  HERKUNFT: Arbeit P13-12 der Phase 13, erste Schwäche ("Die Zustellung ist vom Browser aus
+  nicht bestätigbar — bei falscher Adresse erscheint die Danke-Seite trotzdem"), dazu der
+  Grund der Setzung P13-18 derselben Phase.
+  PROVENIENZ: Befund und Einordnung CC, Teil 1 des Phasenendes 13 (2026-09-29); Trigger und
+  Grenze ARCHITEKT 2026-09-29, übermittelt im Auftrag des Teils 2. Der Stub in CLAUDE.md,
+  "## Offene Punkte", Block "AUS DEM PHASENENDE 13 GEHOBEN (2026-09-29)", trägt Titel und
   Trigger im SELBEN Zug.

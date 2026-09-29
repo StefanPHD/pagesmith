@@ -128,6 +128,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 13.5 — Medien
+- [ ] Phase 13.6 — Formular-Relay (Lead-Relay)
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
 - [ ] Phase 15 — Public-Launch-Restarbeit (Tier 0)
 - [ ] Phase 16 — Analytics-Vertiefung (Uniques, Traffic-Health-Metriken)
@@ -183,8 +184,9 @@ in docs/claude-md-herleitung.md.
 - BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE (ZWEI TRIGGER: (1) vor dem öffentlichen
   Launch — wie der COOKIE-DOKU-SCHNIPSEL darüber eine PRODUKTPFLICHT, kein Nice-to-have;
   (2) TRIGGER FÜR DIE KLÄRUNG: sobald echter Traffic eine Zuordnung zu einer echten Person
-  erzeugt. Der Eintrag trägt seit dem 2026-09-19 einen PUNKT (4) aus der Phase 11.6 und seit
-  dem 2026-09-24 einen PUNKT (5), Warnungen in den Oberflächen der Netzwerke)
+  erzeugt. Der Eintrag trägt seit dem 2026-09-19 einen PUNKT (4) aus der Phase 11.6, seit
+  dem 2026-09-24 einen PUNKT (5), Warnungen in den Oberflächen der Netzwerke, und seit dem
+  2026-09-29 einen PUNKT (6) aus der Phase 13, die öffentliche Adresse eines Formular-Ziels)
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real — EINGETRETEN mit dem Abschluss der
   Phase 11.5 am 2026-09-16, nachgezogen am 2026-09-25)
@@ -381,6 +383,12 @@ WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE".
   STEHT, REIST MIT (Trigger: vor echtem Ad-Traffic, spätestens der erste fremde Nutzer)
 - VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP (Trigger:
   bevor das erste fremde Nutzerkonto Zugang bekommt)
+
+**AUS DEM PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN.** Ein zweites Ergebnis hat KEINE
+eigene Zeile: Es steht als PUNKT (6) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE".
+- IM BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE —
+  DER LEAD IST VERLOREN, UND NIEMAND SIEHT ES (Trigger: das erste fremde Nutzerkonto, das ein
+  Formular-Ziel einträgt — spätestens vor echtem Ad-Traffic)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

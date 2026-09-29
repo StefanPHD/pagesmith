@@ -27,6 +27,7 @@ ARCHITEKTEN-SETZUNG (revidierbar). Eine Setzung trägt je Grund und Grenze.
 - Zuschnitt Scheibe 13-1c
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
+- Vollzogen — was hier stand und wohin es gegangen ist
 
 ## Aufklärung zur Phase 13 vom 2026-09-28
 
@@ -223,12 +224,16 @@ REIST MIT").
 docs/formular-empfaenger-befunde.md.** Sie beantwortet die offene Frage des Ablageorts aus
 Arbeit P13-11 (Weg 8, "Keine neue Datei ohne Owner-Entscheidung"). Die Datei trägt Kopf,
 vorläufigen Fragenkatalog und je Empfänger einen Abschnitt; in CLAUDE.md, "## Aktive
-Dokumente", steht ein Eintrag. Die Liste "WOHIN EIN NEUER SATZ GEHÖRT" ist NICHT angefasst —
-dafür folgt ein eigener Änderungsantrag.
+Dokumente", steht ein Eintrag. Die Liste "WOHIN EIN NEUER SATZ GEHÖRT" führt den
+Formular-Empfänger seit dem Änderungsantrag vom 2026-09-28 als Teil von Weg 5 (Commit
+`2aa724b`, docs/arbeitsweise.md und CLAUDE.md).
 
 **Entscheidung P13-65 — RICHTUNG: PAGESMITH ÖFFNET SICH FÜR EIN BACKEND-RELAY (LEAD-RELAY).**
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-28, übermittelt im Auftrag der Doku-Runde vom
 2026-09-29. BINDEND — FÜR DIE RICHTUNG, NICHT FÜR EINE REGEL.
+GEHOBEN AM 2026-09-29 (Phasenende 13): Richtung, Fahrplan-Entwurf, "NICHT ENTSCHIEDEN" und
+Einordnung stehen verdichtet an der Roadmap-Zeile 13.6 (Formular-Relay); der Volltext hier
+bleibt.
 DIE RICHTUNG: Formulardaten laufen flüchtig durch unseren Server und werden an den Empfänger
 weitergereicht. Ziel sind native Anbindungen per Klick (Brevo, Mailchimp, KlickTipp …) mit
 echter Erfolgs- und Fehlerrückmeldung, ohne dass der Nutzer Make oder Zapier braucht.
@@ -1350,3 +1355,127 @@ AUSSCHLIESST** (ARCHITEKT, 2026-09-28, aus der Bau-Sitzung der Scheibe 13-1c).
   möglichst unberührt lassen.
 - TRIGGER (beobachtet): die nächste Scheibe, die einen Live-Fingerabdruck über eine Seite mit im
   Editor geänderten Aktionen braucht.
+
+## Vollzogen — was hier stand und wohin es gegangen ist
+
+**DIE HEBUNG DES PHASENENDES 13, 2026-09-29.** Anlass: Phasenende nach Entscheidung P13-65
+(Phase 13 schliesst mit den Scheiben 13-1 und 13-1c). Die Zuordnung ist der Vorschlag aus Teil 1
+des Phasenendes (CC, 2026-09-29), vom Architekten geprüft; dazu die OWNER-ENTSCHEIDUNGEN E1 bis
+E5 vom 2026-09-29 — E1 Archivname docs/claude-history/phase-13-formular-ziel.md und Titel der
+Roadmap-Zeile 13 mit dem Kern "Formular-Ziel" · E2 die Relay-Phase trägt die Nummer 13.6 · E3
+Reihenfolge 13.6 -> 13.5 -> 12 · E4 (ARCHITEKT, vom Owner delegiert) Anpassungen an den
+Fan-Out-Zielen aus dem Relay als eigene, späte Scheibe in 13.6, mit Grenze · E5 Hebungs-Kandidat
+P13-63 als additive Ergänzung einer Dauerregel. Dieser Abschnitt ist das REGISTER; an den
+Einträgen oben steht kein Einzelzeiger (Ausnahme: der Zeiger an Entscheidung P13-65). Titel-Zitate
+ohne Überschriften-Marke. Die sechs Vermerke (P13-1, -22, -33, -35, -50, -60) werden nicht
+zugeordnet; sie bleiben im Archiv. Aus Vermerk P13-60, Punkt (5), ist der Satz über die doppelt
+geführte Checkbox-Gruppe als eigener Posten gegangen (BL).
+
+**DIE ZIELE UND IHRE FUNDSTELLEN:**
+- **BL** — docs/claude-history/backlog-polish.md, neuer Abschnitt am Dateiende "Aus Phase 13
+  gehoben (2026-09-29) — sieben Vorrats-Einträge, eine Schwäche und ein Anzeige-Befund der
+  Standdatei".
+- **OP** — docs/offene-punkte.md, neuer Block "AUS DEM PHASENENDE 13 GEHOBEN (2026-09-29) — EIN
+  POSTEN" am Dateiende, Stub in CLAUDE.md, "## Offene Punkte", im selben Zug.
+- **OPE** — docs/offene-punkte.md, Ergänzung an einem bestehenden Posten; der Stub, der seine
+  Punkte aufzählt, im selben Zug nachgezogen.
+- **DR** — Dauerregel "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN DOKUMENT,
+  NIE AN EINER GESPEICHERTEN DATEI": docs/immer-beachten.md (Kern, rein angefügt) und
+  docs/immer-beachten-herleitung.md (Volltext, datierte Ergänzung vom 2026-09-29). Der Titel ist
+  unverändert; ihr Verzeichnis-Eintrag in der Herleitung trägt nur den Titel und bleibt deshalb
+  stehen.
+- **RM13.6** — docs/roadmap.md, Zeile "Phase 13.6 — Formular-Relay (Lead-Relay)" (neu), Stub in
+  CLAUDE.md im selben Zug.
+- **ERL** — gestrichen mit Beleg; der Eintrag steht oben unverändert, der Beleg hier.
+- **ARCH** — NICHT GEHOBEN, bleibt im Archiv; Sammelvermerk unten.
+
+**JE EINTRAG — NUMMER MIT GATTUNG → ZIEL, FUNDSTELLE BZW. BELEG:**
+- Vorrat P13-14 → BL, mit der Messfrage nach dem Preis eines eingehenden Rumpfes im
+  Hobby-Tarif; Trigger: Zuschnitt des Relay-Endpunkts in 13.6.
+- Vorrat P13-37 → BL, als kurze Zeile: DUBLETTE der Posten "ROHES NUL-BYTE IN mappings.ts" und
+  "DER KOMMENTAR AN `mappingsEqual` NENNT DEN FALSCHEN SEPARATOR"; neu ist nur `i/-text` und dass
+  13-1 und 13-1c das NUL erhalten haben.
+- Vorrat P13-38 → BL.
+- Vorrat P13-39 → BL; der still brechende Teil steht schon im offenen Punkt
+  "isAppHost-PLATZHALTER" (Ergänzung vom 2026-09-28), der auf diese Nummer zeigt.
+- Vorrat P13-40 → BL, mit der Messfrage nach der Grenze; Trigger: Zuschnitt des
+  Datensparmodus. NICHT OP: Das Formular bleibt stehen (Entscheidung P13-17), der Verlust ist
+  für den Besucher sichtbar.
+- Vorrat P13-61 → BL, samt der Doppelantwort `formTargetCheck` gegen `deriveFormFieldNames`
+  (src/lib/form-target.ts).
+- Vorrat P13-62 → BL, mit seinem Trigger (beobachtet); Kandidat (c) steht zusätzlich als
+  Herkunfts-Auflage in der DR.
+- Hebungs-Kandidat P13-63 → DR, als additive Ergänzung (E5): zweites Instrument, die Grenze für
+  beide Instrumente, die Herkunfts-Auflage mit Bedingung des Entfallens (Vorrat P13-62, Kandidat
+  (a)), Gleichheit per sha256 und Einheit jeder Längenangabe. Beleg: Vermerk P13-60, Punkt (4).
+- Arbeit P13-12, erste Schwäche (Zustellung nicht bestätigbar) → OP, Posten "IM
+  BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE — DER
+  LEAD IST VERLOREN, UND NIEMAND SIEHT ES".
+- Arbeit P13-12, zweite Schwäche (Werbeblocker) → BL.
+- Arbeit P13-12, dritte Schwäche (Spam) → OPE, Punkt (6) am Posten "BETREIBER-DOKUMENTATION
+  FEHLT — DREI PUNKTE".
+- Arbeit P13-12, vierte Schwäche (Einbahnstrasse und Neu-Veröffentlichen) → ERL als DUBLETTE.
+  Beleg: Den Gegenstand tragen die Dauerregel "WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE
+  EINBAHNSTRASSE — NACHLEGEN GEHT, HERUNTERNEHMEN NICHT" (docs/immer-beachten.md) und der
+  offene Punkt "NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST"; der Eintrag
+  zitiert beide selbst.
+- Arbeit P13-11 → ERL. Beleg: Lesung und Messung Make ausgeführt — Commits `81f025b` (Lesung,
+  neue Befund-Datei) und `e306626` (Messung); Ergebnisse in docs/formular-empfaenger-befunde.md,
+  Abschnitt "Make", samt dem dort offen geführten Widerspruch (z) gegen (i).
+- Arbeit P13-64 → ERL. Beleg: Katalog K8 bis K14 in `98b5522`; Lesungen Brevo `aa35fb8`,
+  systeme.io `953a9af`, Mailchimp `6c3190a`, KlickTipp `13bf89e`; Ergebnisse in
+  docs/formular-empfaenger-befunde.md, je Abschnitt.
+- Arbeit P13-13 → ERL. Beleg: Vermerk P13-35, Punkt (8); Bau-Commit `434dc86`.
+- Arbeit P13-34 → ERL. Beleg: Bau-Commit `a1f009c`; Vermerk P13-60, Punkte (3) und (7).
+- Arbeit P13-36 → ERL, ENTFALLEN. Beleg: Entscheidung P13-65, "FOLGEN FÜR PHASE 13"; am Code
+  (CC, 2026-09-29) ergab die Achse `mode: "cors"|Testknopf|testFormTarget|formTargetTest` über
+  src/ ohne Testdateien einen einzigen Treffer, einen Kommentar der Phase 11 in
+  src/app/projects/actions.ts ohne Bezug — von 13-1b ist nichts gebaut. Die Lücke, die 13-1b
+  schliessen sollte, führt der Posten aus OP.
+- Ohne Nummer, aus Vermerk P13-60, Punkt (5) (doppelt geführte Checkbox-Gruppe im Panel) → BL,
+  Trigger: Zuschnitt des UI-Redesigns.
+- Entscheidung P13-65 → RM13.6: Richtung, Fahrplan-Entwurf, "NICHT ENTSCHIEDEN", Einordnung,
+  dazu der Satz, dass P13-2 und P13-7 unverändert in Kraft sind. Der Volltext bleibt oben, mit
+  einem Zeiger auf die Zeile.
+- Setzung P13-9 → RM13.6, als ANGRENZEND ("Webhooks auf Performance-Events"), zusammen mit der
+  Lesart (b) der Phase 11.6, die bis zum 2026-09-29 an der Zeile 13 stand. Der Wortlaut bleibt
+  oben.
+- Entscheidungen P13-2, -3, -4, -7, -15, -16, -17, -23, -24, -41, -42 → ARCH.
+- Setzungen P13-5, -6, -8, -10, -18, -19, -20, -21, -25, -26, -27, -28, -29, -30, -31, -32 →
+  ARCH.
+- Setzungen P13-43, -44, -45, -46, -47, -48, -49, -51, -52, -53, -54, -55, -56, -57, -58, -59 →
+  ARCH.
+
+**DIE BILANZ: 63 = BL 9 · OP 1 · OPE 1 · DR 1 · RM13.6 2 · ERL 6 · ARCH 43.** Gezählt sind die 59
+nummerierten Einträge ausser den Vermerken, Arbeit P13-12 in ihren vier Schwächen, dazu der
+Posten ohne Nummer. BL 9 = sieben Vorrats-Einträge, die zweite Schwäche von P13-12, der Posten
+ohne Nummer; ERL 6 = fünf Arbeiten und die vierte Schwäche von P13-12. Die Invarianten I1 bis
+I8, I10 und J1 bis J9 zählen nicht mit; sie stehen im Sammelvermerk.
+
+**SAMMELVERMERK — NICHT GEHOBEN: die 43 Entscheidungen und Setzungen der Klasse ARCH und die
+Invarianten I1 bis I8, I10 (Scheibe 13-1) und J1 bis J9 (Scheibe 13-1c).** GRUND: Sie
+beschreiben, WIE der Code dieser Phase gebaut ist — der browser-direkte Datenweg und seine
+Datenklasse (P13-2, P13-7), das Formular-Ziel als Mapping-Typ (P13-25), Versandform, Signal,
+Zeitlimit und Meldung (P13-19, -21, -26, -27, -32), die Wertregeln und Ausschlüsse (P13-20,
+-29, -31), die Benennung der Felder (P13-43 bis -49, -51 bis -59). Sie gelten, solange der Code
+steht; gestrichen zu nennen wären sie falsch. Am Ort der Handlung stehen sie als Kommentare und
+Wächter (src/lib/form-target.ts und src/lib/form-target.test.ts, `buildWiringScript` und
+`generateFunctional` in src/lib/generate.ts, `publishProject` in src/app/projects/actions.ts,
+`FormTargetActions` in src/components/ActionPanel.tsx, `CodeImporter` in
+src/components/CodeImporter.tsx); auffindbar ist das Archiv über seinen Eintrag unter
+"## Detail-Archiv" in CLAUDE.md.
+ENTSCHEIDUNGEN P13-2 UND P13-7 SIND DURCH DIESE HEBUNG NICHT GEÄNDERT; sie gelten unverändert,
+bis der Owner die Datenklassen-Regel neu fasst (Entscheidung P13-65; Roadmap-Zeile 13.6).
+DER TESTKNOPF: Soweit die Setzungen P13-18, P13-21 und P13-30 den Testknopf 13-1b nennen, ist
+er mit Entscheidung P13-65 entfallen. Der GRUND aus Setzung P13-18 — eine falsche Adresse fängt
+das Signal aus Setzung P13-21 nicht — besteht fort und steht im Posten aus OP.
+DIE GEGENPROBE AUS SETZUNG P13-10 (Brevo und systeme.io als Gegenprobe für
+ESP-Formular-Endpunkte) galt dem browser-direkten Weg.
+DER BEZUG AUS SETZUNG P13-29 (jeder Pfad eines gehosteten Hosts liefert dieselbe Seite) steht
+zusätzlich als Bezugssatz an der Roadmap-Zeile 17; die Setzung selbst bleibt ARCH.
+
+**AUSSERHALB DER BILANZ, IM SELBEN COMMIT:** (a) Sachkorrektur an Entscheidung P13-15, letzter
+Satz: ersetzt durch den Stand (Änderungsantrag vollzogen, `2aa724b`). (b) Zeiger an Entscheidung
+P13-65 auf die Roadmap-Zeile 13.6. (c) E3 als Nachtrag an den Roadmap-Zeilen 12 und 13.5, die
+die bisherige Reihenfolge führen; die Sätze vom 2026-09-28 bleiben als Stand stehen. (d) Die
+Abschnittsliste oben um diesen Abschnitt ergänzt.

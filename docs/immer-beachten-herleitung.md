@@ -2904,6 +2904,47 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   sichtbar war und dass die Zwischenspeicher-Erfahrung wiederkehrend ist, sind
   OWNER-ANGABEN desselben Tages — CC kann beides nicht prüfen. DIE URSACHE DES VERSAGENS
   IST UNGEMESSEN.
+  ERGÄNZT 2026-09-29 — EIN ZWEITES INSTRUMENT, SEINE GRENZE UND EINE HERKUNFTS-AUFLAGE
+  (Phasenende 13, gehoben aus Hebungs-Kandidat P13-63 der Phase 13; OWNER-ENTSCHEIDUNG
+  2026-09-29: additive Ergänzung dieser Regel, kein Ersatz). Der Text darüber bleibt wörtlich,
+  der Titel ebenso; "WAS TRÄGT" gilt unverändert.
+  DAS ZWEITE INSTRUMENT: `fetch(location.href, {cache: 'no-store'})` in der Konsole der
+  Live-Seite, sha256 über die GANZE Antwort, jede Messung doppelt, mit Positivkontrolle —
+  eine geänderte Seite muss abweichen. Es misst den ausgelieferten Text insgesamt, nicht je
+  Script, und sagt damit nicht, WELCHER Block abweicht.
+  DER BELEG: Vermerk P13-60, Punkt (4), der Phase 13 (GEMESSEN, OWNER, LIVE, 2026-09-28): eine
+  Seite ohne Formular-Ziel in drei Zuständen — vor dem Push, nach dem Push, nach
+  Neu-Veröffentlichen — je 17170 JavaScript-Zeichen und derselbe sha256, jede Messung doppelt
+  und je gleich. POSITIVKONTROLLE desselben Live-Tests: eine Seite, an der ein Feldname
+  umbenannt und neu veröffentlicht wurde, wich ab (16556 gegen 16552 Zeichen, anderer sha256).
+  DIE GRENZE, AUSDRÜCKLICH UND FÜR BEIDE INSTRUMENTE: Für keines ist gemessen, dass es jeden
+  Zwischenspeicher umgeht — weder für das geladene Dokument noch für einen Abruf mit
+  `no-store`; ob dieser an Plattform- und CDN-Zwischenspeichern vorbeiführt, ist weder gelesen
+  noch gemessen. Ein Vergleich beider Instrumente am SELBEN Zustand fehlt. Die Bedingung des
+  Entfallens oben ("nachweislich keinen Zwischenspeicher") erfüllt das zweite Instrument
+  damit NICHT.
+  DIE HERKUNFTS-AUFLAGE: Vor jedem Vergleich stammen die Mappings aus DERSELBEN Herkunft —
+  Editor neu laden, dann veröffentlichen. GRUND (GEMESSEN DURCH NACHBAU, CC, 2026-09-28;
+  Vorrat P13-62 der Phase 13): Der Datenblock `pagesmith-mappings` trägt die Schlüssel in der
+  Reihenfolge der übergebenen Objekte — aus der Datenbank geladen `type, config, elementId`,
+  im Editor gebaut `elementId, type, config`. Drei verschiedene sha256 einer Seite gleicher
+  Länge (23616 Zeichen) entstanden allein daraus. SIE ENTFÄLLT, sobald Vorrat P13-62,
+  Kandidat (a) — die Normalisierung an EINER Stelle beim Erzeugen —, gebaut ist; bis dahin
+  gehört sie in jede Live-Anleitung über ausgelieferten Text.
+  GLEICHHEIT UND EINHEIT: Gleichheit entscheidet der sha256, nicht die Länge — gleiche Länge
+  bei verschiedenem Inhalt ist genau der Fall aus Vorrat P13-62. Jede Längenangabe nennt ihre
+  EINHEIT, Bytes oder JavaScript-Zeichen: Die Regel oben verlangt die Byte-Länge, der Beleg
+  dieser Ergänzung nennt JavaScript-Zeichen (Vermerk P13-60, Punkt (4)) — zwei Grössen, die
+  nicht gleichgesetzt werden.
+  ANLASS: Scheibe 13-1 hat die Byte-Gleichheit eines Projekts ohne Formular-Ziel über
+  `document.scripts` gemessen (Vermerk P13-35, Punkt (6), der Phase 13), Scheibe 13-1c mit dem
+  zweiten Instrument. Ob das geladene Dokument aus einem Zwischenspeicher gespeist sein kann,
+  ist UNGEMESSEN — in 13-1 waren alle drei Zustände gleich, was zu beiden Lesarten passt.
+  PROVENIENZ: der Kandidat ARCHITEKT 2026-09-28; die Hebung als additive Ergänzung OWNER
+  2026-09-29; Grenze und Einheiten-Auflage aus Teil 1 des Phasenendes 13 (CC, 2026-09-29),
+  übernommen im Auftrag des Teils 2.
+  DIE BEDINGUNG DES ENTFALLENS DIESER ERGÄNZUNG: Das zweite Instrument und die Grenze entfallen
+  mit der Regel; die Herkunfts-Auflage schon vorher, wie oben.
 - EIN ESCAPE, DAS IM QUELLTEXT STEHEN SOLL, WIRD AUF DEM SCHREIBWEG IN SEIN ZEICHEN
   VERWANDELT — UND DER DIFF SIEHT UNAUFFÄLLIG AUS (Phase 11.13, gehoben 2026-09-18 aus
   Hebungs-Kandidat (2)): Wer ein Unicode-Escape hinschreibt, bekommt auf diesem Schreibweg

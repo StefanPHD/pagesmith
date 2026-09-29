@@ -2462,6 +2462,10 @@ liegen beide hier und finden einander.
       ist 13 -> 13.5 -> 12 (OWNER-ENTSCHEIDUNG 2026-09-28). Der Satz "DIESE PHASE FOLGT NACH DER
       PHASE 12.5" oben bleibt als Stand vom 2026-09-25 stehen. Die Schatten-Korrektur ist gebaut
       (Bau-Commit `5f1f4bf`, Scheibe 1 der Phase 12.5).
+      NACHGETRAGEN 2026-09-29 (Phasenende 13) — DIE REIHENFOLGE IST JETZT 13.6 -> 13.5 -> 12
+      (OWNER-ENTSCHEIDUNG 2026-09-29): Zwischen 13 und 13.5 tritt die Zeile 13.6
+      (Formular-Relay). Der Satz "13 -> 13.5 -> 12" darüber bleibt als Stand vom 2026-09-28
+      stehen.
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks: Pagesmith wird KEIN Versender
       (Owner-Entscheidung) — stattdessen Webhooks auf Performance-Events, der
       Kunde behält seinen bestehenden ESP.
@@ -2597,6 +2601,90 @@ liegen beide hier und finden einander.
       PROVENIENZ: je Satz wie angegeben. Die Entscheidungen P12.5-1 bis P12.5-6 sind hier
       verdichtet übernommen, nicht zeichengleich; ihr Wortlaut mit Fundstellen steht im Archiv
       der Phase 12.5.
+      NACHGETRAGEN 2026-09-29 (Phasenende 13) — DIE REIHENFOLGE IST JETZT 13.6 -> 13.5 -> 12
+      (OWNER-ENTSCHEIDUNG 2026-09-29): Vor diese Phase tritt die Zeile 13.6 (Formular-Relay).
+      Der Satz "REIHENFOLGE DES BAUS" oben bleibt als Stand vom 2026-09-28 stehen. Eine Grenze
+      der Zeile 13.6 kann eine weitere Phase direkt nach 13.6 und vor diese setzen (dort,
+      "ANPASSUNGEN AN DEN FAN-OUT-ZIELEN").
+- [ ] Phase 13.6 — Formular-Relay (Lead-Relay): Formulardaten laufen flüchtig durch unseren
+      Server und werden an den Empfänger weitergereicht — native Anbindungen per Klick (Brevo,
+      Mailchimp, KlickTipp …) mit echter Erfolgs- und Fehlerrückmeldung, ohne dass der Nutzer
+      Make oder Zapier braucht. ANGELEGT am 2026-09-29 beim Phasenende 13; Nummer und
+      Reihenfolge OWNER-ENTSCHEIDUNG 2026-09-29. Die RICHTUNG ist Entscheidung P13-65 der Phase
+      13 (OWNER 2026-09-28) — BINDEND FÜR DIE RICHTUNG, NICHT FÜR EINE REGEL. Ihr Wortlaut steht
+      im Archiv der Phase 13; hier ist sie verdichtet übernommen, nicht zeichengleich.
+      REIHENFOLGE DES BAUS: diese Phase -> 13.5 -> 12 (OWNER-ENTSCHEIDUNG 2026-09-29).
+      GRUND (OWNER): Positionierung als Performance-Marketing-Werkzeug, nicht als
+      datenschutzgetriebenes Nischenprodukt · der browser-direkte Weg kann die Antwort eines
+      Anbieters nicht lesen — ein abgelehnter Kontakt sähe aus wie Erfolg
+      (docs/formular-empfaenger-befunde.md, Abschnitt "Mailchimp", EINORDNUNG und Befunde (c),
+      (d), (f); für eine gelöschte Adresse bei Make der offene Punkt "IM BROWSER-DIREKTEN WEG
+      ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE …").
+      UNVERÄNDERT IN KRAFT, BIS DER OWNER SIE NEU FASST: die Datenklassen-Regel — die Festlegung
+      vom 2026-08-15 und die Auflage vom 2026-08-19 (docs/offene-punkte.md, "DATENKLASSEN-GRENZE
+      VOR DER ERSTEN PII-SCHEIBE") —, Entscheidung P13-2 der Phase 13 samt ihrem "VERWORFEN: (a)
+      die Weiterleitung über unseren Server" und Entscheidung P13-7 der Phase 13 samt ihrem
+      Gegenstück "nie an `/api/e` … nie in unsere Datenbank, nie in unsere Logs". Diese Zeile
+      hebt keine davon auf; sie nennt die Richtung, in der ihre Neufassung gesucht wird.
+      FOLGERUNG (CC, 2026-09-29), KEINE ENTSCHEIDUNG: Solange P13-7 gilt, verletzte jeder
+      Relay-Weg, der Formularinhalte an unseren Server schickt, ihr Gegenstück; vor der
+      Neufassung entsteht deshalb kein Relay-Code.
+      NICHT ENTSCHIEDEN: die Neufassung der Datenklassen-Regel — sie fällt nach der Aufklärung
+      dieser Phase · ob der Nutzer zwischen Relay und browser-direktem Weg wählt, und ob das
+      eine Preisstaffel wird. Der browser-direkte Weg aus Phase 13 bleibt als DATENSPARMODUS
+      bestehen (Entscheidung P13-65).
+      FAHRPLAN-ENTWURF (ARCHITEKT, 2026-09-28; NICHT ENTSCHIEDEN): (1) Aufklärung — welche
+      personenbezogenen Daten heute verarbeitet werden, Stand von Schlüssel-Verwahrung und
+      Rate-Limiting, ausgelöste offene Punkte, Plattform-Grenzen (Vercel-Tarif, Laufzeit) ·
+      (2) Owner-Entscheidungen — neue Datenklassen-Regel, Datensparmodus als Wahl, erster
+      Anbieter nach Markt, Anwalt und AVV · (3) Schutz zuerst · (4) Relay an Webhook-Adressen mit
+      echter Rückmeldung · (5) erster nativer Anbieter per Klick · (6) Lead-Ereignis mit
+      gehashter E-Mail · (7) später: Speicherung.
+      ARCHITEKTEN-EINORDNUNG (ARCHITEKT, 2026-09-28; REVIDIERBAR, KEINE ENTSCHEIDUNG): zwei
+      getrennte Schritte — Transit ohne Speicherung und ohne Logging des Inhalts; Speicherung
+      (Lead-Postfach, Export, Rückmeldung "Lead wurde Kunde") als eigene, spätere
+      Owner-Entscheidung · die Hauptarbeit ist Sicherheit: Rate-Limiting und Bot-Schutz des
+      neuen Endpunkts, SSRF-Schutz bei kundeneigenen Adressen, sichere Verwahrung der
+      Kunden-API-Schlüssel. Dadurch rücken nach vorn: "DATENKLASSEN-GRENZE VOR DER ERSTEN
+      PII-SCHEIBE", "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT", "DER
+      PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT" (Trigger (i)), "DIE
+      GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026" (alle docs/offene-punkte.md) und
+      "PER-TENANT-RATE-LIMITING /api/e + /api/capi" (Security-Manifest Tier 1) · HYPOTHESE,
+      UNGEPRÜFT: Die serverseitige Übergabe an Meta überträgt schon heute IP-Adresse und
+      Browserkennung der Besucher — dann ist ein AVV unabhängig vom Relay nötig; das prüft die
+      Aufklärung · "Pagesmith wird kein Versender" bleibt — das Relay leitet weiter, es
+      versendet nicht · vor dem ersten zahlenden Kunden eine einmalige anwaltliche Prüfung und
+      eine AVV-Vorlage (Architekten-Empfehlung, keine juristische Aussage).
+      ANPASSUNGEN AN DEN FAN-OUT-ZIELEN (ARCHITEKT 2026-09-29, vom Owner delegiert): Was aus dem
+      Relay an den Zielen folgt — etwa ein Lead-Ereignis mit gehashter E-Mail als Match-Feld —,
+      ist eine EIGENE, SPÄTE Scheibe dieser Phase. GRUND: Es hängt an derselben Neufassung der
+      Datenklassen-Regel; Entscheidung P13-7 verbietet heute Formularinhalte an ein Ziel.
+      GRENZE: Zeigt die Aufklärung dieser Phase, dass die Anpassungen alle Adapter-Nutzlasten
+      oder den Ingest-Pfad /api/e berühren, werden sie als eigene Phase direkt nach 13.6
+      geschnitten, vor 13.5. Entschieden wird am Ende jener Aufklärung.
+      PRÜFLISTE FÜR DIE AUFKLÄRUNG (Phasenende 13, 2026-09-29) — was ein Relay-Weg berührt:
+      · die GRENZE der Setzung P13-6 der Phase 13, "Die Neubewertung kippt, sobald ein Weg über
+        unseren Server gewählt wird" (docs/offene-punkte.md, "DER PRIMÄRSCHLÜSSEL (project_id,
+        target) AUF project_secrets BLEIBT", Ergänzung vom 2026-09-28);
+      · Invariante I1 der Scheibe 13-1 — Formularinhalte gehen AUSSCHLIESSLICH an die
+        eingetragene Adresse, nie an `/api/e`, nie an ein Tracking-Ziel, nie in unsere Datenbank
+        oder unsere Logs; Wächter F1 (src/lib/form-target.test.ts);
+      · Setzung P13-49 der Phase 13 — die gespeicherte Namensliste enthält nur Namen, nie Werte;
+      · die ÜBERSCHNEIDUNG MIT PHASE 14 (Per-Tenant-Rate-Limiting auf /api/e + /api/capi):
+        Schritt (3) "Schutz zuerst" trägt das Rate-Limiting des neuen Endpunkts. Ob es hierher
+        gehört, nach Phase 14 oder in beide, ist eine Frage der Aufklärung, keine Entscheidung.
+      ANGRENZEND, DIE MITNAHME PRÜFT DER ZUSCHNITT: "Webhooks auf Performance-Events" aus dem
+      Grundtext der Zeile 13 — ein anderer Gegenstand als das Formular-Ziel (Setzung P13-9 der
+      Phase 13) · die Lesart (b) der Phase 11.6 — ein SERVER-seitiger Empfänger mit
+      KUNDENEIGENEM Endpunkt, samt SSRF-Schutz, Instanz-Achse und dynamischem Nutzlast-Mapping;
+      ihr Grund steht an der Roadmap-Zeile 11.6. Beide standen bis zum 2026-09-29 an der Zeile
+      13 und sind dort NICHT gebaut.
+      WAS DIESE PHASE VORFINDET: das Archiv der Phase 13 — Formular-Ziel mit Danke-Seite,
+      automatische Benennung der Felder, die bindenden Entscheidungen und Invarianten — und die
+      Befunde über Formular-Empfänger in docs/formular-empfaenger-befunde.md (Make gemessen;
+      Brevo, systeme.io, Mailchimp und KlickTipp gelesen, ungemessen).
+      PROVENIENZ: je Satz wie angegeben; Nummer und Reihenfolge OWNER 2026-09-29, Prüfliste und
+      Zeile ARCHITEKT 2026-09-29.
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in
@@ -2617,6 +2705,13 @@ liegen beide hier und finden einander.
       Funnel-Architektur"): additive pages-Tabelle, funnel_step als neuer
       Aktionstyp im bestehenden, type-diskriminierten Mapping-Modell — kein
       Modellumbau. Setzt Phase 16 voraus.
+      BEZUG, NACHGETRAGEN 2026-09-29 (Phasenende 13, aus Setzung P13-29 der Phase 13): Jeder
+      Pfad eines gehosteten Hosts liefert dieselbe Seite — auch relative Unterseiten wie
+      /impressum. `proxy` (src/proxy.ts) schreibt auf dem Serving-Host jeden Pfad ausser
+      `/api/e` und `/api/capi` auf `/app-serve` um, und die Serve-Route
+      (src/app/app-serve/route.ts) liest den Pfad nicht (GELESEN AM CODE, Vermerk P13-33, Punkt
+      (G5), der Phase 13). Die Folge für Kundenseiten — ein Link auf eine eigene Unterseite zeigt
+      dieselbe Seite noch einmal — ist ABGELEITET, nicht gemessen.
 - [ ] Phase 18 — MCP-Server (verschoben von der ursprünglichen
       Phase-10-Position; umgedrehtes Sicherheitsmodell, Bedrohungsmodell und
       Scope: future-roadmap.md, "Phase 18 — AI-Native: Pagesmith MCP-Server"):

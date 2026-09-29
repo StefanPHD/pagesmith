@@ -32,6 +32,7 @@ beantworten.
 - Aufklärung A2 zur Phase 13.6 vom 2026-09-29
 - Owner-Angaben zur Phase 13.6 vom 2026-09-29
 - Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
+- Zuschnitt Scheibe 13.6-1
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
 
@@ -565,6 +566,67 @@ CHIFFRIERT NACH DEM OAUTH-MUSTER, EINER JE ANBIETER UND PROJEKT.**
   `project_secrets_target_valid` (Dauerregel "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
   CONSTRAINT-ERWEITERUNG MIT …").
 
+## Zuschnitt Scheibe 13.6-1
+
+**GEGENSTAND:** "Rückfall ohne Skript und eigene Hosts" — die erste Bau-Scheibe der Phase 13.6
+(Setzungen P13.6-3 und P13.6-14). Sie schliesst B-2 (Vorrat P13.6-7 der Phase 13.6) und B-1
+(Vorrat P13.6-6 der Phase 13.6). Zugeschnitten am 2026-09-29; der Plan folgt in einer eigenen
+Runde.
+
+**ORT, DEKLARIERT (CC, 2026-09-29):** Der Auftrag nannte "unter 'Noch nicht geschnittene
+Arbeit'". Die Hausform der Zuschnitte der Phase 13 ist ein eigener Abschnitt direkt davor
+(Zuschnitt Scheibe 13-1c, Commit `ed13b93`); ihr ist gefolgt.
+
+### Messung zur Scheibe 13.6-1
+
+**Vermerk P13.6-31 — DER NATIVE RÜCKFALL EINES FORMULARS MIT ZIEL OHNE JAVASCRIPT** (GEMESSEN,
+OWNER, live, 2026-09-29; Chrome mit ausgeschaltetem JavaScript, Browserversion nicht angegeben;
+gehostete Testseite mit Formular-Ziel).
+- Nach dem Abschicken steht in der Adresszeile
+  `https://testseite-formular-voll-z-vyz7eh.publayer.net/?name=Stefan&email=test%40example.com&nachricht=Keine&interesse=kurs&interesse=beratung`.
+- Es bleibt dieselbe Seite; keine Danke-Seite. Im Make-Verlauf kein Eintrag.
+- FOLGE: Vorrat P13.6-7 der Phase 13.6 (B-2) ist in seiner Prämisse gemessen — die Feldwerte
+  stehen im Query, der Lead ist verloren.
+- NICHT GEMESSEN: wie oft ein Besucher schneller abschickt, als das Skript lädt.
+
+### Architekten-Setzungen zur Scheibe 13.6-1
+
+PROVENIENZ aller drei: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag der
+Zuschnitt-Runde der Scheibe 13.6-1. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf.
+
+**Setzung P13.6-32 — B-2: EIN FORMULAR MIT ZIEL TRÄGT IM AUSGELIEFERTEN TEXT DIE EINGETRAGENE
+ADRESSE ALS `action`, DAZU `method="post"` UND `enctype="application/x-www-form-urlencoded"`.**
+- Gesetzt beim Erzeugen; dieselbe Form wie der Versand im Skript (Setzung P13-19 der Phase 13).
+- FOLGE: Der native Rückfall geht allein an die eingetragene Adresse; der Lead kommt an.
+- PREIS: Der Besucher sieht im Rückfall die Antwortseite des Empfängers statt der Danke-Seite.
+- VERWORFEN: `method="post"` allein. GRUND: Der Rumpf landete dann in unserer Serve-Route (Vorrat
+  P13-14 der Phase 13), der Lead ginge verloren.
+- Damit ist von den zwei Kandidaten aus Setzung P13.6-3 der zweite gewählt.
+
+**Setzung P13.6-33 — DIE ANGEBOTSREGEL: TRÄGT EIN ABSENDE-ELEMENT `formaction` ODER
+`formmethod`, BEKOMMT DAS FORMULAR KEIN ZIEL.**
+- Das gilt auch für einen Bild-Knopf (`<input type="image">`).
+- Ein bestehendes Ziel an einem solchen Formular sperrt Veröffentlichen und Export.
+- GRUND: Beide Attribute heben die Zusage aus Setzung P13.6-32 auf.
+- `formenctype`, `formtarget` und `formnovalidate` heben sie nach der Angabe des Auftrags nicht
+  auf und sperren nicht.
+- NIMMT AUF: Vorrat P13-61 der Phase 13 (docs/claude-history/backlog-polish.md, Abschnitt "Aus
+  Phase 13 gehoben (2026-09-29) …": der Bild-Knopf) samt der Doppelantwort `formTargetCheck`
+  gegen `deriveFormFieldNames` (src/lib/form-target.ts).
+
+**Setzung P13.6-34 — B-1: `*.vercel.app` GEHÖRT ZU DEN EIGENEN HOSTS; BEIM VERÖFFENTLICHEN
+VERWEIGERT DER SERVER ZUSÄTZLICH EINE ZIELADRESSE AUF DER CUSTOM-DOMAIN IRGENDEINES PROJEKTS.**
+- `*.vercel.app` kommt in die Eigen-Liste (`ownFormTargetDomains`, src/lib/form-target.ts).
+- Die Prüfung auf Custom-Domains läuft beim Veröffentlichen serverseitig.
+- Der Export behält die clientseitige Prüfung; er hat keinen Server.
+
+### Grenzen der Scheibe 13.6-1
+
+- Bereits veröffentlichte Seiten und Exporte ändern sich erst durch Neu-Veröffentlichen bzw.
+  Neu-Export (Dauerregel "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY").
+- Seiten ohne Formular-Ziel bleiben byte-gleich.
+- Kein Relay-Code.
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13.6-5 — AUFKLÄRUNG A2: SICHERHEITS-INFRASTRUKTUR, DATENBANK, GEHEIMNISSE**
@@ -614,6 +676,7 @@ der Phase 13, unter einer Bedingung.
   Vorrat P13-39 der Phase 13 (die doppelte Lesung der Hosting-Domäne). Neu hier: die Lesung
   gegen P13-7 und die Custom-Domains.
 - GESETZT ALS ERSTE BAU-SCHEIBE: Setzung P13.6-3.
+- ZUGESCHNITTEN am 2026-09-29: Abschnitt "Zuschnitt Scheibe 13.6-1" (Setzung P13.6-34).
 
 **Vorrat P13.6-7 — B-2: DER NATIVE RÜCKFALL EINES FORMULARS MIT ZIEL SCHICKT AN DIE EIGENE
 SEITENADRESSE — BEI GET STEHEN DIE FELDWERTE IM QUERY UND REISEN VON DORT WEITER**
@@ -638,6 +701,8 @@ der Phase 13, unter einer Bedingung.
   — WAS IM QUERY STEHT, REIST MIT" (docs/offene-punkte.md, Ergänzung vom 2026-09-29);
   Nachtrag an der Roadmap-Zeile 13 vom 2026-09-29.
 - GESETZT ALS ERSTE BAU-SCHEIBE: Setzung P13.6-3.
+- GEMESSEN 2026-09-29: Vermerk P13.6-31. ZUGESCHNITTEN am 2026-09-29: Abschnitt "Zuschnitt
+  Scheibe 13.6-1" (Setzungen P13.6-32 und P13.6-33).
 
 **Vorrat P13.6-8 — DREI KOMMENTARE IN src/ NENNEN "DIE STANDDATEI" OHNE PHASE ODER "I1 BIS I10",
 OBWOHL I9 ENTFALLEN IST** (GELESEN AM CODE, CC, 2026-09-29). NUR GEMELDET, NICHT ANGEFASST.

@@ -557,6 +557,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
   13.6-3"): Die Region ist umgestellt (Vermerk P13.6-53), der erste Relay-Zuschnitt steht
   (Abschnitt "Zuschnitt Scheibe 13.6-3"). Die weitere Reihenfolge der Stufe 1 trägt Setzung
   P13.6-56.
+- FORTGESCHRIEBEN 2026-09-29 (Abschluss der Scheibe 13.6-3): 13.6-3 ist abgeschlossen (Vermerk
+  P13.6-60). ALS NÄCHSTES STEHT 13.6-4 AN — der Anschluss im Seitenskript und der Schalter für
+  den Datensparmodus (Setzung P13.6-56).
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -1235,29 +1238,18 @@ Tracking-Eingaben"). LIVE-TEST BESTANDEN.
 
 ## Zuschnitt Scheibe 13.6-3
 
-**GEGENSTAND:** "Relay-Endpunkt" — die dritte Bau-Scheibe der Phase 13.6 und die erste der
-Stufe 1 (Setzung P13.6-56). Ein öffentlicher Relay-Endpunkt auf dem Serving-Host:
-- Er bestimmt das Projekt aus dem Host der Anfrage (Setzung P13.6-57).
-- Er liest aus der VERÖFFENTLICHTEN Fassung das Formular-Ziel zur Formular-Kennung der Anfrage.
-- Er prüft den Host der Zieladresse gegen eine feste Host-Liste; in Stufe 1 steht dort nur Make
-  (Owner-Entscheidung P13.6-55).
-- Er leitet die Felder weiter und meldet genau zwei Zustände (Setzung P13.6-21).
-Zugeschnitten am 2026-09-29; der Plan folgt in einer eigenen Runde.
-
-### Bindend für die Scheibe 13.6-3
-
-- Owner-Entscheidungen P13.6-16 (Transit ja — nie gespeichert, nie geloggt, nie an `/api/e`,
-  nie an ein Tracking-Ziel), P13.6-17, P13.6-18, P13.6-54 und P13.6-55.
-- Setzungen P13.6-20 bis P13.6-25 (zu P13.6-20 die an Setzung P13.6-57 gemeldete Kollision) und
-  die Bauregeln R1 bis R4 (Setzungen P13.6-48 bis P13.6-51).
-- Setzungen P13.6-56 und P13.6-57.
-
-### Ausser Scope der Scheibe 13.6-3
-
-- der Anschluss im Seitenskript (13.6-4) und der Schalter für den Datensparmodus (13.6-4);
-- die Ratenbegrenzung (13.6-5);
-- Zapier (eigene Runde nach Lesung und Live-Test);
-- jedes Tracking-Ereignis vom Server.
+**ABGESCHLOSSEN AM 2026-09-29 — Bau-Commit `aa05235`, Live-Test bestanden; Abschluss-Vermerk
+P13.6-60.**
+- GEGENSTAND: "Relay-Endpunkt" — die dritte Bau-Scheibe der Phase 13.6 und die erste der Stufe 1
+  (Setzung P13.6-56). Ein öffentlicher Relay-Endpunkt auf dem Serving-Host:
+  · Er bestimmt das Projekt aus dem Host der Anfrage (Setzung P13.6-57).
+  · Er liest aus der VERÖFFENTLICHTEN Fassung das Formular-Ziel zur Formular-Kennung der Anfrage.
+  · Er prüft den Host der Zieladresse gegen eine feste Host-Liste; in Stufe 1 steht dort nur Make
+    (Owner-Entscheidung P13.6-55).
+  · Er leitet die Felder weiter und meldet genau zwei Zustände (Setzung P13.6-21).
+- Der Zuschnitt ist verdichtet: Hier stehen die Setzungen und Grenzen, die über die Scheibe
+  hinaus binden, dazu die Vermerke der Scheibe.
+- Was gestrichen ist und wo sein Inhalt steht: Vermerk P13.6-60, Punkt (9).
 
 ### Grenzen der Scheibe 13.6-3
 
@@ -1371,6 +1363,123 @@ REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
 - Q12 — Der Regions-Befund steht in docs/plattform-befunde.md, Vercel, Teil (u).
 - Q13 — 405 bei nicht exportierten Methoden, das Verhalten von Node-`fetch` bei `redirect` und
   das Cookie bei same-origin sind ABGELEITET (Vermerk P13.6-58, Punkte (3), (6), (7)).
+
+### Abschluss der Scheibe 13.6-3
+
+**Vermerk P13.6-60 — ABSCHLUSS DER SCHEIBE 13.6-3 (RELAY-ENDPUNKT). Bau-Commit `aa05235`**
+("feat(relay): Formular-Relay-Endpunkt /api/f — Stufe 1, nur Make eu2, noch ohne Aufrufer").
+LIVE-TEST BESTANDEN.
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (6): GEMESSEN, OWNER, live, 2026-09-29, Chrome (Version nicht
+    angegeben), Vercel-Logs (Detailansicht), übermittelt im Auftrag der Abschluss-Runde. Die
+    Schritt-Bezeichnungen sind die der Owner-Fassung der Anleitung. Request-ID, Deployment-ID und
+    Tracking-Schlüssel stehen bewusst nicht in dieser Datei; die Make-Adresse nur verkürzt.
+
+(1) V1/L0 — TESTSEITE MIT FORMULAR-ZIEL:
+    · vor dem Push: 18816 Bytes, sha256
+      `71ccff7b92af0df4d050329bbb59ae25e7d8a5555b4def5f87d5d5ded37503bd`;
+    · nach dem Deploy, OHNE Neu-Veröffentlichen: identisch; je zweimal gleich gemessen.
+    · nach dem Deploy: normales Abschicken des Formulars → Danke-Seite, Eingang bei Make
+      (browser-direkt, unverändert).
+
+(2) V2 — die Formular-Kennung: `ps-i215n8`.
+
+(3) V3 — VOR DEM PUSH: `POST /api/f?f=ps-i215n8` → 405, kein Eingang bei Make.
+    · EINORDNUNG (CC, GELESEN AM CODE): Vor dem Bau-Commit lief ein unbekannter Pfad auf dem
+      Serving-Host in die Serve-Route, die nur `GET` kennt (`proxy`, src/proxy.ts). Damit ist die
+      in Vermerk P13.6-1, Punkt (5), als ABGELEITET geführte 405 für einen neuen Pfad gemessen.
+      Die 405 für eine nicht exportierte Methode an `/api/f` NACH dem Bau (Vermerk P13.6-58,
+      Punkt (7)) ist damit NICHT gemessen; sie bleibt ABGELEITET.
+
+(4) L1 — NACH DEM DEPLOY, derselbe Aufruf mit `probe=relay-l1`:
+    · Antwort 204; genau ein Eingang bei Make mit `probe` `relay-l1`.
+    · Detailansicht `POST /api/f`: Search Params `f=ps-i215n8` · Middleware ohne ausgehende
+      Anfrage · Function Invocation mit drei ausgehenden Anfragen (GET, GET, POST), das POST an
+      `hook.eu2.make.com/icdb…` · kein Rumpf-Feld · keine Log-Meldung · KEINE Referer-Zeile ·
+      Ausführung 492 ms · empfangen in `fra1`.
+    · ZUORDNUNG DER ZWEI GET, ABGELEITET (CC, am Code), NICHT GEMESSEN: die zwei Abfragen der
+      Relay-Suche (`domains`, dann `projects`; `lookupRelayProject`,
+      src/lib/relay/resolve-relay.ts). Ihr Ziel-Host ist nicht gemeldet.
+    · "Middleware ohne ausgehende Anfrage" deckt sich mit dem Code: Auf dem Serving-Host lässt
+      `proxy` den Pfad durch, ohne `updateSession` (Gegenstück: docs/plattform-befunde.md,
+      Vercel, Teil (s), App-Host mit Sitzungs-Cookie).
+    · "Keine Log-Meldung" deckt sich mit dem Code: Der Erfolgsweg schreibt keine Zeile (Test R-OK).
+    · SETZUNG P13.6-48 (R1) LIVE BESTÄTIGT, mit Grenze: Der Aufruf setzte
+      `referrerPolicy: "no-referrer"`; die Sonde vom selben Tag ohne diese Angabe zeigte eine
+      Referer-Zeile (docs/plattform-befunde.md, Vercel, Teil (r)). GRENZE: Die Sonde war eine
+      andere Anfrage (`/api/e` aus der App); eine Kontrollanfrage an `/api/f` OHNE
+      `no-referrer` ist nicht gemessen.
+
+(5) L2 — erwartet "unbekannte Kennung": 502, kein Eingang bei Make; Log-Meldung
+    `[relay] not delivered: bad-id` statt der erwarteten `unknown-id`.
+    · URSACHE NICHT GEPRÜFT. Vermutung des Owners: "f=" stand doppelt in der Adresse, weil die
+      Anleitung lautete "mit f=ps-zzz999 statt deiner Kennung".
+    · ABGLEICH (CC, gemessen mit Node, 2026-09-29): `ps-zzz999` besteht `PS_ID_RE`
+      (src/lib/detect.ts); `new URL("…/api/f?f=f=ps-zzz999").searchParams.get("f")` ergibt
+      `"f=ps-zzz999"`, und das besteht `PS_ID_RE` nicht. Die Vermutung ist damit mit dem Code
+      verträglich — was eingegeben wurde, ist nicht erhoben.
+    · Der Weg `unknown-id` ist durch L3 live belegt.
+
+(6) L3 und L4:
+    · L3 — MANDANTENTRENNUNG: auf dem Host eines ANDEREN Projekts mit der Kennung `ps-i215n8` →
+      502, kein Eingang bei Make, Log-Meldung `[relay] not delivered: unknown-id`.
+    · L4 — KILL-SWITCH: Projekt per SQL gesperrt (`projects.blocked_at`) → die Seite zeigt die
+      Sperrseite ("Diese Seite wurde aufgrund von Richtlinienverstößen deaktiviert." — der Satz
+      steht wörtlich in `renderBlockedPage`, src/lib/hosting/blocked-page.ts), der Relay-Aufruf →
+      502, kein Eingang bei Make. Entsperrt → die Seite ist wieder da.
+    · NICHT GEMELDET: der Relay-Aufruf nach dem Entsperren; ein Mitläufer mit 204 im Lauf von L2
+      und L3.
+
+(7) BAU (CC, 2026-09-29, am Stand vor dem Commit `aa05235`):
+    · Gates: `tsc --noEmit` exit 0; `eslint` 0 Fehler, 1 Warnung in
+      src/lib/tracking/consent.test.ts (von der Scheibe nicht berührt); `vitest run` 101 Dateien,
+      2675 Tests (vorher 99 Dateien, 2554 Tests); `next build` exit 0, Route `/api/f` gelistet.
+    · Mutationen, volle Suite, Vorhersage je vor dem Lauf, ALLE GETROFFEN: M1 (Host-Liste
+      umgangen) 10 rot · M2a (Rumpf im Nicht-2xx-Zweig geloggt) 6 · M2b (`err.message` statt
+      `errorName`) 3 · M3 (beide Kill-Switch-Zweige entfallen) 6 · M4a (projektfremde Suche als
+      Rückfall) 1, R-TENANT-1 an der ersten Zusicherung, eine fremde Zustellung · M4b (`eq("id")`
+      entfällt) 2, R-TENANT-1 und -2 je an der POSITIVEN Zusicherung, die vorab benannte Kaskade
+      über `maybeSingle` · M5 (`redirect: "follow"`) 6 · M6 (Timer der Weiterleitung entfällt) 1,
+      per Test-Zeitlimit · M7 (ohne Cookie die erste Adresse) 1, R-AB4c.
+    · M2a, VORHERSAGE VOR DEM LAUF NACHGEZOGEN: von 1 auf 6, weil R-NON2XX die Logzeile wörtlich
+      prüft.
+    · Byte-Kontrolle der sieben neuen Dateien am committeten Objekt: CR 0, CRLF 0, NUL 0.
+
+(8) ABWEICHUNGEN VOM PLAN, IM BAU DEKLARIERT:
+    · `allowedRelayEndpoint` (src/lib/relay/hosts.ts) liefert die geprüfte Adresse (`href`) oder
+      null, statt eines Wahrheitswerts.
+    · `lookupRelayProject` ist exportiert (für R-PARITY); `RelayTarget` liefert die Konfiguration,
+      nicht die Adresse.
+    · Q8, Ergänzung: Eine Antwort vom Typ `opaqueredirect` (Status 0) zählt als zugestellt, weil
+      das Verhalten von Node-`fetch` bei `"manual"` ABGELEITET ist.
+    · Kommentar in src/proxy.ts: drei Zeilen angefügt, keine geändert.
+    · An src/proxy.test.ts liefen ein Heredoc und `sed -i` (Ganz-Datei-Schreiber); volle
+      Byte-Kontrolle ohne Befund.
+    · Tests über den Plan hinaus: R-ROUTE, R-SOURCE, R-SIZE-Positivkontrolle, R-REDIR mit
+      `opaqueredirect`, R-DBERR (mehrdeutig, keine Liste, leeres HTML).
+
+(9) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN — Anweisungen, die mit der Scheibe
+    abgelaufen sind:
+    · aus dem GEGENSTAND der Satz "Zugeschnitten am 2026-09-29; der Plan folgt in einer eigenen
+      Runde."; der Gegenstand selbst steht im Abschluss-Kopf des Zuschnitts;
+    · der Abschnitt "Bindend für die Scheibe 13.6-3" — eine Liste von Zeigern auf
+      Owner-Entscheidungen P13.6-16, -17, -18, -54, -55 und Setzungen P13.6-20 bis -25, -48 bis
+      -51, -56, -57; die Entscheidungen selbst stehen unverändert an ihrem Ort;
+    · der Abschnitt "Ausser Scope der Scheibe 13.6-3" — Anschluss und Schalter (13.6-4),
+      Ratenbegrenzung (13.6-5) und Zapier stehen in Setzung P13.6-56; "jedes Tracking-Ereignis
+      vom Server" regeln Setzungen P13.6-4 und P13.6-24.
+    STEHEN GEBLIEBEN: die drei Grenzen der Scheibe, darunter "ohne Ratenbegrenzung bis 13.6-5";
+    Vermerk P13.6-58 und Setzung P13.6-59 samt Grenzen; Setzungen P13.6-56 und P13.6-57 an ihrem
+    Ort unter den Architekten-Setzungen der Phase.
+
+(10) GRENZEN, als Grenzen benannt:
+    · NUR IM TEST BELEGT, nicht live: die Host-Liste und ihre Ränder, falsche Medientypen, der
+      App-Host, die A/B-Wahl, die Zeitlimits, die Grössengrenze, eine echte Umleitung von Make.
+    · ABGELEITET, weder im Test noch live: 405 für eine nicht exportierte Methode an `/api/f`,
+      das Verhalten von Node-`fetch` bei `redirect: "manual"`, das Varianten-Cookie bei
+      same-origin.
+    · nur Chrome, eine Make-Zone (eu2), eine Testseite.
+    · Der Endpunkt ist öffentlich und ohne Ratenbegrenzung bis 13.6-5 (Grenzen der Scheibe).
 
 ## Plattform-Schritte der Phase 13.6
 

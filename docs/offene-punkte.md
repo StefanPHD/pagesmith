@@ -420,6 +420,30 @@ aufeinander; sie liegen alle hier und finden einander.
   Triggers. Die Beschreibung des Datenwegs: Entscheidung P13-2 der Phase 13. Der Bezug im
   vorletzten Absatz ist eine ABLEITUNG. Der Stub in CLAUDE.md trägt das Eintreten im SELBEN
   Zug.
+  ERGÄNZT AM 2026-09-29 (Phase 13.6) — NEUFASSUNG FÜR FORMULARINHALTE IM RELAY-WEG. Der Text
+  darüber bleibt ZEICHEN FÜR ZEICHEN stehen und wird von diesem Block NICHT ersetzt; Titel und
+  Trigger sind unverändert.
+  - DIE NEUFASSUNG (OWNER-ENTSCHEIDUNG 2026-09-29): Im RELAY dürfen Formularinhalte unseren
+    Server durchlaufen (Transit). Sie werden nie gespeichert (keine Datenbank), nie geloggt
+    (keine eigene Logzeile mit Inhalt), gehen nie an /api/e und nie an ein Tracking-Ziel.
+    Speicherung — etwa ein Lead-Postfach — ist damit NICHT erlaubt; sie kommt als eigener
+    späterer Schritt mit eigener Owner-Entscheidung.
+  - WAS UNVERÄNDERT GILT: Im browser-direkten Weg (Datensparmodus) die Ergänzung vom 2026-09-28
+    darüber samt Entscheidungen P13-2 und P13-7 der Phase 13. Für TRACKING-MERKMALE die Auflage
+    vom 2026-08-19. Ob eine gehashte E-Mail als Match-Feld an Tracking-Ziele gehen darf, ist
+    NICHT entschieden.
+  - WAS FÜR FORMULARINHALTE IM RELAY AN DIE STELLE DER BEGRÜNDUNG TRITT: Die Auflage "eine
+    KLARTEXT-Angabe darf den eigenen Server NIE erreichen" ruht im Text vom 2026-08-15 auf dem
+    Satz "Der Leck-Pfad ist NICHT die Datenbank, sondern das LOG". Für Formularinhalte im
+    Relay tritt an ihre Stelle, beides Pflicht: (1) eine Bauform, in der der Relay-Code den
+    Rumpf nur zum Weiterleiten liest und nur Status und eigenes Vokabular loggt, gesichert
+    durch einen Wächter-Test; (2) eine Lesung, was Vercel protokolliert (Rümpfe, Query, IP),
+    VOR dem ersten Relay-Code.
+  - DER SATZ "NICHT-SPEICHERN IST NICHT NICHT-VERARBEITEN" GILT HIER VERSCHÄRFT: Im Relay
+    verarbeitet unser SERVER die Inhalte, nicht nur unser Skript im Browser.
+  - VOLLTEXT, PROVENIENZ UND DIE ZUGEHÖRIGEN SETZUNGEN: Owner-Entscheidung P13.6-16 der Phase
+    13.6 (docs/aktiver-stand.md, Standdatei der Phase 13.6); die Freischaltung für fremde
+    Nutzer erst mit Kunden-AVV: Owner-Entscheidung P13.6-18 der Phase 13.6.
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
   (__Host-ps_v) stellt Pagesmith dem Kunden heute KEINEN fertigen

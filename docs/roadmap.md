@@ -2702,6 +2702,25 @@ liegen beide hier und finden einander.
       Brevo, systeme.io, Mailchimp und KlickTipp gelesen, ungemessen).
       PROVENIENZ: je Satz wie angegeben; Nummer und Reihenfolge OWNER 2026-09-29, Prüfliste und
       Zeile ARCHITEKT 2026-09-29.
+      NACHGETRAGEN 2026-09-29 — DIE NEUFASSUNG FÜR DEN RELAY-WEG IST ERFOLGT. Der Satz
+      "UNVERÄNDERT IN KRAFT, BIS DER OWNER SIE NEU FASST" darüber bleibt stehen und beschreibt
+      den Stand bis zu diesem Tag.
+      · NEUGEFASST FÜR DEN RELAY-WEG (OWNER 2026-09-29): Formularinhalte dürfen unseren Server
+        im Transit durchlaufen — nie gespeichert, nie geloggt, nie an `/api/e`, nie an ein
+        Tracking-Ziel; eine Speicherung (Lead-Postfach) ist eine eigene spätere Entscheidung.
+        Für "nie geloggt" gelten zwei Bedingungen: eine Bauform mit Wächter-Test und eine
+        Lesung, was Vercel protokolliert, VOR dem ersten Relay-Code. Owner-Entscheidung
+        P13.6-16 der Phase 13.6.
+      · FÜR DEN DATENSPARMODUS gelten Entscheidungen P13-2 und P13-7 der Phase 13 WEITER,
+        unverändert.
+      · STUFE 1 (OWNER 2026-09-29, Wortlaut "Relay-Basis"; Auslegung ARCHITEKT, zur Korrektur
+        offen): ohne Kunden-Schlüssel, Zustellung nur an bekannte Webhook-Dienste über eine
+        feste Host-Liste; beliebige https-Adressen bleiben im Datensparmodus.
+        Owner-Entscheidung P13.6-17 der Phase 13.6.
+      · AUFLAGE DIESER ZEILE — DER AVV-RIEGEL (OWNER 2026-09-29): Das Relay wird für fremde
+        Nutzer erst freigeschaltet, wenn ein Kunden-AVV steht; bis dahin baut und testet der
+        Owner selbst. Owner-Entscheidung P13.6-18 der Phase 13.6.
+      Fundort: Standdatei der Phase 13.6 (docs/aktiver-stand.md).
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in

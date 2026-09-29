@@ -9,6 +9,8 @@ Fahrplan-Entwurf, Einordnung und Prüfliste stehen dort und werden hier NICHT ab
 UNVERÄNDERT IN KRAFT, bis der Owner die Datenklassen-Regel neu fasst: Entscheidungen P13-2 und
 P13-7 der Phase 13 (Archiv docs/claude-history/phase-13-formular-ziel.md). Diese Datei ändert
 keine von beiden.
+NACHGETRAGEN 2026-09-29: Für den RELAY-WEG ist die Datenklassen-Regel neu gefasst
+(Owner-Entscheidung P13.6-16); für den Datensparmodus gelten P13-2 und P13-7 weiter.
 
 **NUMMERN:** eine durchlaufende Reihe `P13.6-n` über alle Gattungen, Gattung vorn (Vermerk
 P13.6-1, Owner-Angabe P13.6-2, Setzung P13.6-3 …). Nummern sind stabil und werden nie neu
@@ -27,6 +29,7 @@ beantworten.
 ## Abschnitte der Standdatei 13.6
 
 - Aufklärung A1 zur Phase 13.6 vom 2026-09-29
+- Aufklärung A2 zur Phase 13.6 vom 2026-09-29
 - Owner-Angaben zur Phase 13.6 vom 2026-09-29
 - Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 - Noch nicht geschnittene Arbeit
@@ -204,6 +207,131 @@ nicht anders gekennzeichnet. KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
     `ownFormTargetDomains` die Menge hinter `isAppHost` samt `*.vercel.app` nicht liest. Neu an
     B-1 sind die Lesung gegen P13-7 und der Teil über Custom-Domains (Vorrat P13.6-6).
 
+## Aufklärung A2 zur Phase 13.6 vom 2026-09-29
+
+**Vermerk P13.6-19 — Aufklärung A2 der Phase 13.6: Sicherheits-Infrastruktur, Datenbank,
+Geheimnisse (KEIN BAU, daher kein Bau-Commit: die Aufklärung war read-only und hat keine Zeile
+Code und keine Datei im Repo erzeugt; CC, 2026-09-29, HEAD `6f8ef1a`).** Jede Angabe ist
+GELESEN AM CODE am Stand `6f8ef1a`, soweit nicht anders gekennzeichnet. KEIN BEFUND DIESES
+VERMERKS IST LIVE GEMESSEN. Geladen waren docs/db-stand.md und docs/db-regeln.md vollständig,
+aus docs/plattform-befunde.md die Abschnitte Supabase und Vercel vollständig. Die Supabase-Doku
+selbst ist in A2 NICHT gelesen worden; jede Anbieter-Angabe unten stammt aus den datierten
+Läufen jener Datei und gilt für einen Bau als UNGEPRÜFT (docs/db-regeln.md, vierte Regel).
+
+(1) RATENBEGRENZUNG UND BOT-SCHUTZ.
+    · Die EINZIGE Ratenbegrenzung: `countRecentAttempts` (src/lib/domains/audit.ts) zählt
+      `audit_logs` je `user_id` und `action` im Fenster von 1 Stunde; genutzt in
+      src/lib/domains/register.ts (`RATE_LIMIT_PER_HOUR = 5`, action `domain_add_attempt`),
+      fail-closed bei DB-Fehler. Die Zählgrundlage ist der angemeldete Nutzer.
+    · `handleIngest` (`/api/e`, `/api/capi`) trägt KEINE Begrenzung (GEMESSEN AM REPO: Suche
+      `rate.?limit|audit_logs|RATE_LIMIT` ausserhalb der Tests trifft nur src/lib/domains).
+    · KEIN Bot-Schutz (GEMESSEN AM REPO: `honeypot|captcha|turnstile|recaptcha|hcaptcha`
+      0 Treffer ausserhalb der Tests).
+
+(2) DIE VERÖFFENTLICHTE FASSUNG. `publishProject` (src/app/projects/actions.ts) schreibt
+    `projects.published_content` = `{ html, mappings, settings, publishedAt }`, bei Variante B
+    zusätzlich `variantB: { html, mappings }`. Die formTarget-Konfiguration (`endpoint`,
+    `thanksUrl`, `fieldNames`) ist dort als JSON lesbar, getrennt vom HTML und je Variante.
+    · `formTargetProblem` und `formTargetNamesProblem` laufen in `publishProject` über
+      `alleMappings` (A und B), im Editor als Export-Riegel und im `ActionPanel`.
+    · `saveProject` schreibt `mappings` UNGEPRÜFT — kein `formTargetProblem` im Speicherpfad.
+    · Der Export (`handleExportDownload`, src/components/CodeImporter.tsx) baut die Datei aus
+      dem Editor-Zustand und ruft keinen Server; für einen Export gibt es KEINE serverseitige
+      Fassung.
+
+(3) ZUORDNUNG UND KILL-SWITCH.
+    · Der Ingest ordnet über `getCapiConfigByTrackingKey` (src/lib/capi/token.ts) zu:
+      `projects` über `tracking_key`.
+    · KANDIDAT (ABGELEITET) für ein Relay: trackingKey plus die Formular-Kennung
+      (`data-pagesmith-id`, die `buildWiringScript` schon liest) als Schlüssel in
+      `published_content.mappings`. Bei A/B ist der Mapping-Satz offen: der Varianten-Cookie
+      existiert nur auf gehosteten Seiten und wird nur bei aktivem Test gelesen
+      (`parseVariantCookie`).
+    · `blocked_at`: die Serve-Route (`resolvePublished`, src/lib/hosting/resolve.ts) prüft
+      `domains.blocked_at` UND `projects.blocked_at`; der Ingest prüft nur
+      `projects.blocked_at` (im Resolver), mit eigenem Zweig vor Persist und Forward.
+    · SPANNUNG, ABGELEITET: Die 204-für-alles-Antwort des Ingest verbirgt den Zustand eines
+      Schlüssels (Dauerregel "INGEST-204-CONTAINMENT"); ein Relay, das dem Besucher einen
+      Fehler zeigt, gibt zwangsläufig Zustand preis. Setzung P13.6-21 regelt sie
+      (revidierbar).
+
+(4) SERVERSEITIGE AUFRUFE (SSRF-ACHSE).
+    · Zehn Server-Aufrufe: fünf Adapter, zwei OAuth (src/lib/oauth/google-token.ts,
+      google-refresh.ts), drei in src/lib/vercel/client.ts. ALLE HOSTS SIND KONSTANTEN; kein
+      Servercode ruft eine vom Client gelieferte Adresse auf.
+    · KEIN `fetch` setzt `redirect:` (GEMESSEN AM REPO, 0 Treffer); es gilt der Standard der
+      Fetch-Spezifikation (Weiterleitungen folgen) — ABGELEITET aus der Spezifikation, nicht
+      gelesen, nicht gemessen.
+    · KEINE Prüfung auf private Adressbereiche, Loopback oder Metadaten-Dienste (GEMESSEN AM
+      REPO: `169.254|isPrivate|192.168|::ffff|dns.lookup` 0 Treffer). `isLoopbackOrEmpty`
+      (src/lib/capi/ingest.ts) prüft allein die Besucher-IP.
+    · `formTargetProblem` schützt heute nur einen Aufruf im BROWSER.
+    · Die Meta-Pixel-ID steht unkodiert im Graph-Pfad — das trägt bereits
+      docs/claude-history/backlog-polish.md, Eintrag "DER ERSTE ADAPTER SETZT DIE KENNUNG OHNE
+      KODIERUNG IN DEN PFAD"; hier nur der Zeiger.
+
+(5) project_secrets — AUS docs/db-stand.md; DAS IST EIN DOKUMENT UND KEINE HEUTIGE MESSUNG.
+    Messdaten je Angabe:
+    · Spalten: `project_id` (nullbar), `target`, `secret`, `created_at`, `updated_at`,
+      `secret_enc`, `id`, `secret_version`, `test_event_code`, `test_mode_expires_at` —
+      GEMESSEN 2026-08-26 (erste sieben), 2026-09-05/09 (`secret_version`), 2026-09-09
+      (die zwei Testspalten).
+    · Primärschlüssel `id`; Eindeutigkeit über `project_secrets_project_id_target_key`,
+      UNIQUE NULLS NOT DISTINCT (project_id, target) — GEMESSEN 2026-08-26.
+    · CHECK `project_secrets_target_valid` mit fünf Werten (meta, pinterest, tiktok, linkedin,
+      google) — LIVE ABGELESEN 2026-08-27; `project_secrets_secret_genau_eines` — GEMESSEN
+      2026-08-26; `project_secrets_test_mode_je_ziel` — LIVE ABGELESEN 2026-09-10.
+    · RLS aktiv, NULL Policies — zuletzt abgelesen 2026-09-09; volle DML-Grants für anon,
+      authenticated, service_role — GEMESSEN 2026-08-05.
+
+(6) DIE CHIFFRE (src/lib/secrets/cipher.ts). AES-256-GCM aus node:crypto; Form
+    `v1.<kennung>.<nonce>.<etikett>.<chiffrat>`, der Kopf als mitauthentisierte Zusatzdaten;
+    Schlüssel aus `SECRET_ENC_KEYS` (je `kennung:base64`, 32 Bytes), aktiv nach
+    `SECRET_ENC_ACTIVE_KEY_ID`.
+    · Chiffriert schreiben die OAuth-Rückkehr (src/app/api/oauth/google/callback/route.ts) und
+      src/lib/oauth/token-refresh.ts nach `secret_enc`.
+    · Eingefügte Zugangsdaten schreibt `setCapiToken` IM KLARTEXT nach `secret`, über den
+      Admin-Client nach dem Ownership-Gate.
+    · Gelesen wird über service_role (Resolver in src/lib/capi/token.ts, token-refresh.ts,
+      actions.ts).
+
+(7) ZEITLIMITS JE AUFRUF: Adapter 3 000 ms · OAuth 8 000 ms · Vercel 8 000 ms · Persist-Insert
+    3 000 ms · Formular-Ziel im Browser 10 000 ms (`FORM_TARGET_TIMEOUT_MS`). `after()` trägt
+    nur Persist und vorsorgliche Erneuerung (`scheduleAfter`); die Forwards werden in der
+    Anfrage erwartet.
+
+(8) GELESENE VERCEL-BEFUNDE (docs/plattform-befunde.md, Vercel, Teil (d), GELESEN 2026-09-02):
+    maximale Laufzeit Hobby 300 s, Pro 300 s Standard und 800 s maximal · Concurrency
+    "Auto-scales up to 30,000 (Hobby and Pro)" · Hobby: 1 Mio. Aufrufe, 4 CPU-Stunden; bei
+    Überschreitung Wartezeit bis zu 30 Tage · Laufzeit-Logs 1 Stunde (Hobby), 1 Tag (Pro).
+    OB VERCEL RÜMPFE, QUERY ODER IP PROTOKOLLIERT: NICHT GELESEN. Zu Firewall oder
+    Ratenbegrenzung der Plattform: nichts gelesen ("Attack Challenge Mode" nur als Titel
+    eines nicht geöffneten Changelog-Eintrags, Vercel, Teil (e)).
+
+(9) DIE LOG-HELFER SIND KEIN FILTER FÜR PERSONENBEZOGENE DATEN.
+    · `errorName` (src/lib/errors.ts) gibt nur `err.name` aus; getestet (errors.test.ts).
+    · `redactOpaque` (src/lib/redact.ts) ersetzt Folgen ab 20 Zeichen aus `[A-Za-z0-9_-]`;
+      getestet (redact.test.ts).
+    · `sanitizeProviderText` (`forwardToPinterest`) dasselbe Muster (`PINTEREST_OPAQUE_MIN` =
+      20), dazu Kappung auf 200 Zeichen — damit ist Vorrat P13.6-10 beantwortet.
+    · Eine E-Mail-Adresse, eine Telefonnummer, ein Name, eine IP oder ein User-Agent
+      überstehen beide Schwärzungen (ABGELEITET aus dem Muster). Getragen hat bisher allein
+      die BAUFORM: den Anbieter-Rumpf gar nicht lesen (wie `forwardToGoogle`) und nur Status
+      und eigenes Vokabular loggen.
+
+(10) AVV — FUNDSTELLEN, KEINE RECHTLICHE BEWERTUNG.
+    · CLAUDE.md, Tier 0, "SUBPROZESSOR-DPAs + Kunden-DPA … BINDET-AN: öffentlicher Launch mit
+      echten Kundendaten"; Vollfassung in docs/claude-history/security-manifest-full.md (RISIKO
+      DSGVO Art. 28; AVV-Generator ein Post-Launch-Feature).
+    · docs/offene-punkte.md, "DATENKLASSEN-GRENZE …", Festlegung vom 2026-08-15: die
+      Rechtsgrundlage liegt beim Kunden, die Pflicht wird "VERTRAGLICH zugewiesen und bindet
+      damit an den bestehenden Tier-0-Blocker".
+    · Roadmap-Zeile 13.6, Fahrplan (2) "Anwalt und AVV" und die Hypothese zu IP und
+      Browserkennung — Vermerk P13.6-1 belegt am Code, dass beide heute im Klartext an fünf
+      Ziele gehen.
+    · Roadmap-Zeile 15: "Subprozessor-/Kunden-DPA ist KEIN Bau-Auftrag, sondern ein
+      juristisches Dokument".
+
 ## Owner-Angaben zur Phase 13.6 vom 2026-09-29
 
 **Owner-Angabe P13.6-2 — EIN UPGRADE DES VERCEL-TARIFS AUF PRO IST, WENN NÖTIG, FREIGEGEBEN.**
@@ -255,6 +383,53 @@ Vercel-Befunde, Reihenfolge". BINDEND.
   Vorschau mit meint, sagt ihr Wortlaut nicht ausdrücklich; der Zuschnitt fragt es ab.
 - EBENFALLS ABGELEITET: Die Entscheidung gilt dem Editor, nicht der Umgebung — auch die lokale
   Vorschau (`next dev`) baut den Beacon heute und schickt ihn an den lokalen Server.
+
+**Owner-Entscheidung P13.6-16 — NEUFASSUNG DER DATENKLASSEN-REGEL FÜR FORMULARINHALTE IM RELAY:
+TRANSIT JA — NIE GESPEICHERT, NIE GELOGGT, NIE AN `/api/e`, NIE AN EIN TRACKING-ZIEL.**
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-29, übermittelt im Auftrag der Runde "Neufassung der
+Datenklassen-Regel, Aufklärung A2, Setzungen". BINDEND.
+- DIE REGEL: Im Relay dürfen Formularinhalte unseren Server durchlaufen (Transit). Sie werden
+  nie gespeichert (keine Datenbank), nie geloggt (keine eigene Logzeile mit Inhalt), gehen nie
+  an `/api/e` und nie an ein Tracking-Ziel.
+- SPEICHERUNG — etwa ein Lead-Postfach — IST DAMIT NICHT ERLAUBT; sie kommt als eigener
+  späterer Schritt mit eigener Owner-Entscheidung.
+- NICHT ENTSCHIEDEN: ob eine gehashte E-Mail als Match-Feld an Tracking-Ziele gehen darf. Das
+  fällt mit der Fan-Out-Scheibe (Roadmap-Zeile 13.6, Block "ANPASSUNGEN AN DEN
+  FAN-OUT-ZIELEN"; im Archiv der Phase 13 als E4 geführt).
+- IM BROWSER-DIREKTEN WEG (DATENSPARMODUS) gelten Entscheidungen P13-2 und P13-7 der Phase 13
+  unverändert.
+- GRENZE — WAS AN DIE STELLE DER BISHERIGEN BEGRÜNDUNG TRITT: Die Auflage "eine
+  KLARTEXT-Angabe darf den eigenen Server NIE erreichen" (docs/offene-punkte.md,
+  "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE": im Text vom 2026-08-15 samt der Begründung
+  "Der Leck-Pfad ist NICHT die Datenbank, sondern das LOG", präzisiert am 2026-08-19 für
+  E-Mail und Telefon) wird für FORMULARINHALTE IM RELAY ersetzt durch zwei Bedingungen:
+  (1) eine Bauform, in der der Relay-Code den Rumpf nur zum Weiterleiten liest und nur Status
+      und eigenes Vokabular loggt, gesichert durch einen Wächter-Test;
+  (2) eine Lesung, was Vercel protokolliert (Rümpfe, Query, IP), VOR dem ersten Relay-Code
+      (Arbeit P13.6-26 der Phase 13.6).
+  Für TRACKING-MERKMALE gilt die Auflage unverändert.
+- ABWEICHUNG VOM AUFTRAG, GEMELDET (CC): Der Auftrag nannte die Auflage "vom 2026-08-19,
+  begründet mit dem Log". Im Bestand steht die Log-Begründung im Text vom 2026-08-15; der
+  2026-08-19 präzisiert die Auflage für E-Mail und Telefon. Beide Daten stehen deshalb oben.
+- BEZUG: Die Ergänzung am offenen Punkt "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"
+  (docs/offene-punkte.md, 2026-09-29) und der Nachtrag an der Roadmap-Zeile 13.6 vom 2026-09-29
+  zeigen hierher.
+
+**Owner-Entscheidung P13.6-17 — STUFE 1 DES RELAYS: DIE RELAY-BASIS OHNE KUNDEN-SCHLÜSSEL.**
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-29 (Wortlaut "Relay-Basis"), dieselbe Runde. BINDEND.
+- AUSLEGUNG DES ARCHITEKTEN, AUSDRÜCKLICH ZUR KORREKTUR OFFEN: Zustellung nur an bekannte
+  Webhook-Dienste über eine feste Host-Liste (etwa Make, Zapier); beliebige https-Adressen
+  bleiben im Datensparmodus. 1-Klick-Anbindungen nativer Anbieter folgen später.
+- BEZUG (CC, GELESEN AM BESTAND): docs/formular-empfaenger-befunde.md trägt einen Abschnitt
+  "Make" mit Lesung und Messung vom 2026-09-28; einen Abschnitt "Zapier" trägt sie nicht. Die
+  Host-Liste ist deshalb eine eigene Arbeit (Arbeit P13.6-27 der Phase 13.6).
+
+**Owner-Entscheidung P13.6-18 — DAS RELAY WIRD FÜR FREMDE NUTZER ERST FREIGESCHALTET, WENN EIN
+KUNDEN-AVV STEHT.**
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-29, dieselbe Runde. BINDEND.
+- Der Owner baut und testet vorher selbst; vor dem ersten fremden Nutzer steht der AVV.
+- BEZUG: Tier-0-Item "SUBPROZESSOR-DPAs + Kunden-DPA" (CLAUDE.md, "## Security Manifest &
+  Launch Blocker"); die Fundstellen stehen in Vermerk P13.6-19, Punkt (10).
 
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 
@@ -325,6 +500,70 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
   AUSSERHALB DES REPOS"), als Adresse der Produktions-App NICHT gemessen · der Preview-Scope —
   dieselbe Adresse (Exporte aus Vorschau-Deployments beaconen dann an den Produktions-Ingest)
   gegen leer lassen (kein Beacon, Warnung auf der Konsole, `getCapiProxyUrl` fail-loud).
+- FORTGESCHRIEBEN 2026-09-29 (ARCHITEKT, Runde "Neufassung der Datenklassen-Regel, Aufklärung
+  A2, Setzungen"; der Text darüber bleibt stehen): DIE REIHENFOLGE IST
+  Scheibe 1 (B-1/B-2) → Scheibe 2 (die Vorschau sendet nie) → Korrektur von
+  `NEXT_PUBLIC_APP_URL` → Lesung, was Vercel protokolliert (Arbeit P13.6-26) → erster
+  Relay-Zuschnitt. GRUND für die Lesung vor dem Zuschnitt: sie ist Bedingung (2) der
+  Owner-Entscheidung P13.6-16.
+
+PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
+der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
+
+**Setzung P13.6-20 — DAS RELAY GILT NUR FÜR VERÖFFENTLICHTE, GEHOSTETE SEITEN; DIE ZIELADRESSE
+KOMMT AUSSCHLIESSLICH AUS `published_content`.**
+- Bestimmt über trackingKey und Formular-Kennung — nie aus der Anfrage, nie aus dem Entwurf.
+  Exporte bleiben browser-direkt.
+- GRUND: Für Exporte gibt es keine geprüfte Serverfassung, und der Entwurf (`saveProject`) ist
+  ungeprüft; `published_content` ist der beim Veröffentlichen geprüfte Stand (Vermerk
+  P13.6-19, Punkt (2)).
+- GRENZE: Welcher Mapping-Satz bei A/B gilt, klärt der Zuschnitt. Dazu Vorrat P13.6-30:
+  `published_content.mappings` ist der Stand des Clients.
+
+**Setzung P13.6-21 — DEM BESUCHER WERDEN GENAU ZWEI ZUSTÄNDE GEMELDET: "ZUGESTELLT" UND "NICHT
+ZUGESTELLT".**
+- "zugestellt": der Empfänger antwortet mit Erfolg. "nicht zugestellt": alles andere —
+  unbekannt, gesperrt, abgelehnt, Zeitlimit.
+- GRUND: Sperre und unbekannter Schlüssel bleiben ununterscheidbar, im Sinne der Dauerregel
+  "INGEST-204-CONTAINMENT" (Vermerk P13.6-19, Punkt (3)).
+- GRENZE: Was als "Erfolg" eines Empfängers gilt, legt der Zuschnitt je Empfänger fest.
+
+**Setzung P13.6-22 — DER SERVER WIEDERHOLT NIE; DAS FORMULAR BLEIBT STEHEN; DAS SERVER-ZEITLIMIT
+LIEGT UNTER `FORM_TARGET_TIMEOUT_MS`.**
+- GRUND: Eine Wiederholung setzte eine Ablage voraus, die Owner-Entscheidung P13.6-16
+  ausschliesst; bei "nicht zugestellt" bleibt das Formular stehen (Entscheidung P13-17 der
+  Phase 13). Liegt das Server-Zeitlimit über dem Browser-Limit (10 000 ms, Vermerk P13.6-19,
+  Punkt (7)), meldet der Browser "nicht zugestellt", während der Server noch zustellt, und ein
+  zweiter Versuch erzeugt einen doppelten Lead.
+- GRENZE: Der Wert des Server-Zeitlimits ist nicht gesetzt; er fällt im Zuschnitt.
+
+**Setzung P13.6-23 — DER SCHUTZ DES RELAY-ENDPUNKTS GEHÖRT IN 13.6, VOR DEN ERSTEN FREMDEN
+NUTZER.**
+- Ratenbegrenzung JE PROJEKT (nicht je IP — das hiesse, IPs abzulegen; Festlegung vom
+  2026-08-15 in docs/offene-punkte.md, "DATENKLASSEN-GRENZE …") · Host-Liste statt offener
+  Adresse · ein eigener fail-closed-Zweig für den Kill-Switch (Dauerregel "KILL-SWITCH ALS
+  EXPLIZITER, FAIL-CLOSED ZWEIG"). Phase 14 bleibt für `/api/e`.
+- GRUND: Heute gibt es keine Ratenbegrenzung ohne angemeldeten Nutzer und keinen Bot-Schutz
+  (Vermerk P13.6-19, Punkt (1)); ein offener Endpunkt mit Kunden-Adressen ohne Schutz wäre die
+  SSRF-Achse aus Punkt (4).
+- GRENZE: Wie je Projekt gezählt wird (Datenbank, Plattform, anderes), ist nicht entschieden;
+  eine Plattform-Firewall ist nicht gelesen (Punkt (8)).
+
+**Setzung P13.6-24 — EINWILLIGUNG: DER TRANSIT AN DEN BETREIBER BRAUCHT KEINE; EIN DARAUS
+ABGELEITETES TRACKING-EREIGNIS TRÄGT DAS URTEIL AUS DEM BROWSER.**
+- GRUND: Setzung P13-8 der Phase 13 (das Abschicken an die eigene Adresse des Betreibers ist
+  kein Tracking) und Setzung P13.6-4 (nie ein fehlendes Einwilligungsfeld).
+- GRENZE: Wie das Urteil aus dem Browser zum Relay-Aufruf kommt, entscheidet der Zuschnitt.
+
+**Setzung P13.6-25 — KUNDEN-SCHLÜSSEL LIEGEN, WENN SIE MIT EINER SPÄTEREN STUFE KOMMEN, NUR
+CHIFFRIERT NACH DEM OAUTH-MUSTER, EINER JE ANBIETER UND PROJEKT.**
+- GRUND: Das OAuth-Muster chiffriert nach `secret_enc` (Vermerk P13.6-19, Punkt (6)); einer je
+  Anbieter und Projekt hält die Eindeutigkeit (project_id, target) (offener Punkt "DER
+  PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT", Trigger (i)).
+- GRENZE: Vorher ist der offene Punkt "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT"
+  zu lösen. Ein neuer Anbieter-Zielwert verlangt eine Migration am CHECK
+  `project_secrets_target_valid` (Dauerregel "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
+  CONSTRAINT-ERWEITERUNG MIT …").
 
 ## Noch nicht geschnittene Arbeit
 
@@ -340,6 +579,18 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
   sie nicht geladen.
 - Laufzeit, Timeouts und Concurrency eines Relay-Aufrufs, der auf eine Anbieter-Antwort wartet.
 - AVV.
+- DURCHGEFÜHRT 2026-09-29: Vermerk P13.6-19 der Phase 13.6 (read-only).
+
+**Arbeit P13.6-26 — LESUNG: WAS VERCEL PROTOKOLLIERT (RÜMPFE, QUERY, IP)** (ARCHITEKT
+2026-09-29). VORBEDINGUNG des ersten Relay-Codes — Bedingung (2) der Owner-Entscheidung
+P13.6-16. Heute nicht gelesen (Vermerk P13.6-19, Punkt (8)). Die Methode ist die der Dauerregel
+"ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN …"; der Befund geht nach
+docs/plattform-befunde.md, Vercel-Abschnitt.
+
+**Arbeit P13.6-27 — DIE HOST-LISTE DER WEBHOOK-DIENSTE (RECHERCHE)** (ARCHITEKT 2026-09-29).
+Grundlage der Stufe 1 (Owner-Entscheidung P13.6-17). BEZUG: docs/formular-empfaenger-befunde.md
+— Make ist dort gelesen und gemessen, Zapier nicht. Neue Befunde gehen in jene Datei (Dauerregel
+"EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE DOKUMENTATION ABSCHNITTSWEISE GELESEN …").
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -418,6 +669,10 @@ OBWOHL I9 ENTFALLEN IST** (GELESEN AM CODE, CC, 2026-09-29). NUR GEMELDET, NICHT
 diesen Helfer loggt, ist GELESEN am Aufruf; sein Rumpf ist nicht gelesen. Ob er ein
 zurückgespiegeltes Besucher-Merkmal schwärzt, ist offen.
 - KEIN TRIGGER GESETZT.
+- BEANTWORTET 2026-09-29 (Vermerk P13.6-19 der Phase 13.6, Punkt (9)): Der Rumpf ist gelesen —
+  dasselbe Muster wie `redactOpaque` (Folgen ab 20 Zeichen aus `[A-Za-z0-9_-]`), dazu Kappung
+  auf 200 Zeichen. Ein zurückgespiegeltes Besucher-Merkmal wie IP oder User-Agent überstünde
+  es (ABGELEITET aus dem Muster).
 
 **Vorrat P13.6-11 — DREI FRAGEN, DIE AM CODE NICHT ENTSCHEIDBAR SIND** (CC, 2026-09-29).
 - Der Wert von `NEXT_PUBLIC_APP_URL` in Produktion — und damit, ob exportierte Beacons durch
@@ -529,4 +784,43 @@ MIT DIREKTEM DATENBANKZUGANG** (2026-09-29).
   Code, nicht das, was im Deployment bereitliegt.
 - HEUTE KEINE HANDLUNG. KANDIDATEN FÜR SPÄTER, NICHT ENTSCHIEDEN: entfernen · oder bewusst
   lassen, falls die Integration sie verwaltet.
+- KEIN TRIGGER GESETZT.
+
+**Vorrat P13.6-28 — DER KOPFKOMMENTAR VON `cipher.ts` BEHAUPTET, SIE HABE IM PRODUKTIVCODE
+KEINEN AUFRUFER; ES GIBT FÜNF** (GELESEN AM CODE, CC, 2026-09-29, Stand `6f8ef1a`). NUR
+GEMELDET, NICHT ANGEFASST.
+- Der Kopf von src/lib/secrets/cipher.ts sagt "SIE HAT IM PRODUKTIVCODE HEUTE KEINEN
+  AUFRUFER — nur ihre Tests rufen sie".
+- Aufrufe (GEMESSEN AM REPO, Suche `encryptSecret(|decryptSecret(` ausserhalb der Tests):
+  `encryptSecret` in src/app/api/oauth/google/callback/route.ts und
+  src/lib/oauth/token-refresh.ts; `decryptSecret` in src/lib/capi/token.ts,
+  src/lib/oauth/token-refresh.ts und src/app/projects/actions.ts.
+- BEZUG: Dauerregel "EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT — UND ER VERMEHRT
+  SICH".
+- KEIN TRIGGER GESETZT.
+
+**Vorrat P13.6-29 — DER INGEST PRÜFT `domains.blocked_at` NICHT, DIE SERVE-ROUTE SCHON**
+(GELESEN AM CODE, CC, 2026-09-29, Stand `6f8ef1a`).
+- `resolvePublished` (src/lib/hosting/resolve.ts) prüft `domains.blocked_at` und
+  `projects.blocked_at`; `getCapiConfigByTrackingKey` (src/lib/capi/token.ts) liest allein
+  `projects.blocked_at`.
+- DIE SERVE-HÄLFTE STEHT SCHON IM BESTAND — HIER NUR DER ZEIGER: CLAUDE.md, Tier 0,
+  "KILL-SWITCH" ("domains.blocked_at additiv vorbereitet + im Serve-Check schon mitgeprüft,
+  operativ noch nicht gesetzt"), und die Vollfassung in
+  docs/claude-history/security-manifest-full.md ("Sie wird heute von KEINEM Code-Pfad
+  geschrieben; operativ ist sie nicht in Gebrauch"). NEU ist allein die Ingest-Hälfte: Wird
+  `domains.blocked_at` einmal gesetzt, liefert die Serve-Route 451, der Ingest nimmt Beacons
+  derselben Seite weiter an (ABGELEITET).
+- BEZUG: Setzung P13.6-23 (ein eigener fail-closed-Zweig im Relay).
+- KEIN TRIGGER GESETZT.
+
+**Vorrat P13.6-30 — `published_content.mappings` IST DER STAND DES CLIENTS; DER SERVER KANN NICHT
+PRÜFEN, OB ER ZUM AUSGELIEFERTEN HTML PASST** (GELESEN AM CODE, CC, 2026-09-29, Stand
+`6f8ef1a`).
+- `publishProject` (src/app/projects/actions.ts) nimmt `functionalHtml` und `snapshot.mappings`
+  vom Client entgegen und legt beide ab; das HTML entsteht im Client (`generateFunctional`).
+- Der Server parst kein HTML (Dauerregel "KEIN SERVER-SEITIGES HTML-PARSING") und kann den
+  Datenblock im HTML deshalb nicht gegen `mappings` halten (ABGELEITET).
+- BEZUG: Setzung P13.6-20 — ein Relay, das die Adresse aus `published_content.mappings` liest,
+  vertraut darauf, dass beide übereinstimmen.
 - KEIN TRIGGER GESETZT.

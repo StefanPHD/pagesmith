@@ -34,6 +34,7 @@ beantworten.
 - Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 - Zuschnitt Scheibe 13.6-1
 - Zuschnitt Scheibe 13.6-2
+- Zuschnitt Scheibe 13.6-3
 - Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
@@ -431,6 +432,9 @@ PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-29 (Wortlaut "Relay-Basis"), dieselbe Run
 - BEZUG (CC, GELESEN AM BESTAND): docs/formular-empfaenger-befunde.md trägt einen Abschnitt
   "Make" mit Lesung und Messung vom 2026-09-28; einen Abschnitt "Zapier" trägt sie nicht. Die
   Host-Liste ist deshalb eine eigene Arbeit (Arbeit P13.6-27 der Phase 13.6).
+- BESTÄTIGT UND PRÄZISIERT 2026-09-29: Owner-Entscheidungen P13.6-54 (Betriebsart) und P13.6-55
+  (Dienste der Stufe 1: Make und Zapier) der Phase 13.6. Die Auslegung darüber bleibt als Stand
+  vor jener Runde stehen.
 
 **Owner-Entscheidung P13.6-18 — DAS RELAY WIRD FÜR FREMDE NUTZER ERST FREIGESCHALTET, WENN EIN
 KUNDEN-AVV STEHT.**
@@ -438,6 +442,32 @@ PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-29, dieselbe Runde. BINDEND.
 - Der Owner baut und testet vorher selbst; vor dem ersten fremden Nutzer steht der AVV.
 - BEZUG: Tier-0-Item "SUBPROZESSOR-DPAs + Kunden-DPA" (CLAUDE.md, "## Security Manifest &
   Launch Blocker"); die Fundstellen stehen in Vermerk P13.6-19, Punkt (10).
+
+PROVENIENZ von P13.6-54 und P13.6-55: OWNER-ENTSCHEIDUNG 2026-09-29, übermittelt im Auftrag der
+Runde "Region festhalten, Owner-Entscheidungen Relay, Zuschnitt 13.6-3". BINDEND.
+
+**Owner-Entscheidung P13.6-54 — BETRIEBSART: FÜR BEKANNTE WEBHOOK-DIENSTE IST DAS RELAY DER
+STANDARD; DER DATENSPARMODUS IST JE ZIEL EIN SCHALTER.**
+- Liegt die Zieladresse eines Formular-Ziels bei einem bekannten Webhook-Dienst der Host-Liste,
+  gilt das Relay als Standard. Der Betreiber kann je Ziel den Datensparmodus (browser-direkt)
+  einschalten.
+- Zieladressen ausserhalb der Host-Liste bleiben browser-direkt.
+- IM DATENSPARMODUS gelten Entscheidungen P13-2 und P13-7 der Phase 13 unverändert
+  (Owner-Entscheidung P13.6-16).
+- BEZUG, AM WORTLAUT GELESEN (CC, 2026-09-29), NICHT AUFGELÖST: Die Entscheidung nennt Exporte
+  nicht. Setzung P13.6-20 beschränkt das Relay auf veröffentlichte, gehostete Seiten; ein
+  Formular-Ziel in einem Export bliebe danach browser-direkt, auch bei einer Adresse der
+  Host-Liste. Ob "Standard" so gemeint ist, sagt der Wortlaut nicht.
+
+**Owner-Entscheidung P13.6-55 — DIENSTE DER STUFE 1: MAKE UND ZAPIER. EIN DIENST KOMMT ERST IN
+DIE HOST-LISTE, WENN SEINE WEBHOOK-ADRESSEN GELESEN UND EINMAL LIVE GETESTET SIND.**
+- Für Zapier steht beides aus (docs/formular-empfaenger-befunde.md trägt keinen Abschnitt
+  "Zapier"; Arbeit P13.6-27).
+- FOLGE, AM BESTAND GELESEN (CC, 2026-09-29): Für Make ist die Adresse erst für EINE Zone
+  gemessen — `hook.eu2.make.com` (docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund
+  (s)). Welchen Host die Adressen der Zonen eu1, us1 und us2 tragen, steht auf keiner gelesenen
+  Seite (ebenda, Befund (g); Messkandidat M8 teilweise offen). Nach dieser Entscheidung trägt die
+  Host-Liste für Make deshalb heute allein `hook.eu2.make.com`.
 
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 
@@ -519,6 +549,10 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
   Korrektur von `NEXT_PUBLIC_APP_URL` (Vermerk P13.6-47) und die Lesung (Arbeit P13.6-26) sind
   erledigt. DIE REIHENFOLGE IST JETZT: Region umstellen (Setzung P13.6-52) → erster
   Relay-Zuschnitt.
+- FORTGESCHRIEBEN 2026-09-29 (Runde "Region festhalten, Owner-Entscheidungen Relay, Zuschnitt
+  13.6-3"): Die Region ist umgestellt (Vermerk P13.6-53), der erste Relay-Zuschnitt steht
+  (Abschnitt "Zuschnitt Scheibe 13.6-3"). Die weitere Reihenfolge der Stufe 1 trägt Setzung
+  P13.6-56.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -626,6 +660,40 @@ UMGESTELLT, ALS EIGENER PLATTFORM-SCHRITT VOR DEM ERSTEN RELAY-ZUSCHNITT.**
   jedem Datenbank-Zugriff (`handleIngest`, src/lib/capi/ingest.ts); die 145 ms enthalten keinen
   Datenbank-Umlauf. Ein Vergleich nach dem Umstellen braucht dieselbe Anfrageform, und für die
   Wirkung auf Datenbank-Umläufe braucht es eine Anfrage, die die Datenbank erreicht.
+- UMGESETZT 2026-09-29, ohne Code-Commit (Plattform-Schritt): Vermerk P13.6-53 der Phase 13.6.
+  Die GRENZE darüber ist damit beantwortet — der Hobby-Tarif lässt die Wahl der Region zu. Der
+  VORHER-WERT von 145 ms ist nicht der Vergleichswert jenes Vermerks; dort sind vorher und
+  nachher mit derselben Anfrageform gemessen, die die Datenbank erreicht.
+
+PROVENIENZ von P13.6-56 und P13.6-57: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag der
+Runde "Region festhalten, Owner-Entscheidungen Relay, Zuschnitt 13.6-3". REVIDIERBAR; ein
+Owner-Widerspruch hebt jede auf.
+
+**Setzung P13.6-56 — DER SCHNITT DER STUFE 1: 13.6-3 RELAY-ENDPUNKT · 13.6-4 ANSCHLUSS IM
+SEITENSKRIPT UND SCHALTER · 13.6-5 RATENBEGRENZUNG · ZAPIER ALS EIGENE KLEINE RUNDE.**
+- 13.6-3: der Relay-Endpunkt auf dem Server, zunächst nur Make, OHNE Aufrufer in ausgelieferten
+  Seiten.
+- 13.6-4: der Anschluss im Seitenskript und der Schalter für den Datensparmodus
+  (Owner-Entscheidung P13.6-54).
+- 13.6-5: die Ratenbegrenzung je Projekt, vor dem ersten fremden Nutzer (Setzung P13.6-23).
+- Zapier: nach Lesung und Live-Test (Owner-Entscheidung P13.6-55) als eigene kleine Runde.
+- GRUND: Der heikelste Teil — Schutz, Weiterleitung, Logfreiheit — wird geprüft, bevor ein
+  Besucher ihn erreicht.
+- GRENZE: Zwischen 13.6-3 und 13.6-5 ist der Endpunkt öffentlich erreichbar, ohne
+  Ratenbegrenzung. Er leitet dann nur an Adressen weiter, die in einer veröffentlichten Fassung
+  stehen und auf der Host-Liste liegen; jeder kann solche Adressen ohnehin direkt aufrufen
+  (ABGELEITET, CC). Heute gibt es keinen fremden Nutzer (CLAUDE.md, "## Modus").
+
+**Setzung P13.6-57 — DAS RELAY BESTIMMT DAS PROJEKT AUS DEM HOST DER ANFRAGE, NICHT AUS EINEM
+SCHLÜSSEL IM RUMPF.**
+- Wie die Auslieferung: Label oder Custom-Domain des Hosts.
+- GRUND: Damit gilt das Relay per Bauart nur für gehostete Seiten (Setzung P13.6-20), und kein
+  Aufrufer kann ein fremdes Projekt adressieren.
+- GRENZE: Ob der vorhandene Resolver unverändert wiederverwendbar ist, klärt der Plan.
+- KOLLISION, GEMELDET, NICHT AUFGELÖST (CC, 2026-09-29): Setzung P13.6-20 sagt im ersten Punkt
+  "Bestimmt über trackingKey und Formular-Kennung", und Vermerk P13.6-19, Punkt (3), führt
+  trackingKey plus Formular-Kennung als KANDIDATEN. Diese Setzung ersetzt den trackingKey durch
+  den Host. Welche Fassung gilt, entscheidet der Architekt; P13.6-20 ist hier nicht geändert.
 
 ## Zuschnitt Scheibe 13.6-1
 
@@ -1155,6 +1223,38 @@ Tracking-Eingaben"). LIVE-TEST BESTANDEN.
     (Status); Punkt (7) am offenen Punkt "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE"
     (docs/offene-punkte.md) samt Stub-Zeile in CLAUDE.md.
 
+## Zuschnitt Scheibe 13.6-3
+
+**GEGENSTAND:** "Relay-Endpunkt" — die dritte Bau-Scheibe der Phase 13.6 und die erste der
+Stufe 1 (Setzung P13.6-56). Ein öffentlicher Relay-Endpunkt auf dem Serving-Host:
+- Er bestimmt das Projekt aus dem Host der Anfrage (Setzung P13.6-57).
+- Er liest aus der VERÖFFENTLICHTEN Fassung das Formular-Ziel zur Formular-Kennung der Anfrage.
+- Er prüft den Host der Zieladresse gegen eine feste Host-Liste; in Stufe 1 steht dort nur Make
+  (Owner-Entscheidung P13.6-55).
+- Er leitet die Felder weiter und meldet genau zwei Zustände (Setzung P13.6-21).
+Zugeschnitten am 2026-09-29; der Plan folgt in einer eigenen Runde.
+
+### Bindend für die Scheibe 13.6-3
+
+- Owner-Entscheidungen P13.6-16 (Transit ja — nie gespeichert, nie geloggt, nie an `/api/e`,
+  nie an ein Tracking-Ziel), P13.6-17, P13.6-18, P13.6-54 und P13.6-55.
+- Setzungen P13.6-20 bis P13.6-25 (zu P13.6-20 die an Setzung P13.6-57 gemeldete Kollision) und
+  die Bauregeln R1 bis R4 (Setzungen P13.6-48 bis P13.6-51).
+- Setzungen P13.6-56 und P13.6-57.
+
+### Ausser Scope der Scheibe 13.6-3
+
+- der Anschluss im Seitenskript (13.6-4) und der Schalter für den Datensparmodus (13.6-4);
+- die Ratenbegrenzung (13.6-5);
+- Zapier (eigene Runde nach Lesung und Live-Test);
+- jedes Tracking-Ereignis vom Server.
+
+### Grenzen der Scheibe 13.6-3
+
+- Ohne Aufrufer in ausgelieferten Seiten erreicht der Endpunkt kein Besucher über unseren Code;
+  er ist trotzdem öffentlich erreichbar (Setzung P13.6-56, GRENZE).
+- Kein ausgelieferter Text ändert sich in dieser Scheibe.
+
 ## Plattform-Schritte der Phase 13.6
 
 **Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).
@@ -1194,6 +1294,47 @@ Vercel und ein Redeploy; im Repo ändert sich keine Zeile. Er schliesst Vorrat P
     Sperre ändert das nicht: `vercel.app` steht dort seit Bau-Commit `9fae014` fest in der Liste
     (Setzung P13.6-36, F4).
 
+**Vermerk P13.6-53 — DIE FUNKTIONSREGION IST AUF FRANKFURT (`fra1`) UMGESTELLT** (2026-09-29).
+KEIN CODE-COMMIT: Der Schritt ist ein reiner Plattform-Schritt — eine Einstellung im
+Vercel-Projekt und ein Redeploy; im Repo ändert sich keine Zeile. Er setzt Setzung P13.6-52 um.
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (3): GEMESSEN, OWNER, live, 2026-09-29, Vercel-Dashboard "Logs",
+    übermittelt im Auftrag der Runde "Region festhalten, Owner-Entscheidungen Relay, Zuschnitt
+    13.6-3".
+
+(1) DIE MESSANFRAGE: aus der Konsole der App, dreimal `POST /api/e` mit einem NICHT
+    EXISTIERENDEN Tracking-Schlüssel; Antwort je 204.
+    ABGLEICH MIT DEM CODE (CC, GELESEN AM CODE am Stand `33ff5cc`): `handleIngest`
+    (src/lib/capi/ingest.ts) ruft `getCapiConfigByTrackingKey` (src/lib/capi/token.ts); der
+    Resolver macht GENAU EINE Abfrage (`projects` über `tracking_key`), findet keine Zeile und
+    liefert null; `handleIngest` antwortet dann mit 204, VOR Persist und Forward. Die Angabe
+    "ein Datenbank-Umlauf, kein Persist, kein Forward" trägt damit für den Funktions-Code.
+    NICHT darin enthalten: Auf dem App-Host läuft vorher `updateSession`
+    (src/lib/supabase/middleware.ts); mit Sitzungs-Cookie macht die Middleware eine Anfrage an
+    den Supabase-Host (docs/plattform-befunde.md, Vercel, Teil (s)). Ob sie in die gemeldete
+    Ausführungszeit fällt, ist nicht erhoben.
+
+(2) VORHER UND NACHHER:
+    · Vorher: je "Routed to Washington, D.C., USA (iad1)"; Ausführung 315 / 131 / 780 ms.
+    · Umstellung auf Frankfurt (`fra1`) in den Projekt-Einstellungen, Redeploy, Status "Ready".
+    · Nachher: keine "Routed"-Zeile mehr, "Received in Frankfurt, Germany (fra1)"; Ausführung
+      45 / 69 / 557 ms.
+    · GERECHNET (CC), NICHT GEMESSEN: Median vorher 315 ms, nachher 69 ms (je n = 3).
+
+(3) REGRESSION: Die App und eine gehostete Seite laden normal; die Anmeldung bleibt bestehen.
+
+(4) BELEGT DAMIT AUCH: Der Hobby-Tarif lässt die Wahl der Region zu — die GRENZE an Setzung
+    P13.6-52 ist beantwortet.
+
+(5) UNGEKLÄRT, NICHT UNTERSUCHT: Die dritte Anfrage war in beiden Läufen langsam (780 bzw.
+    557 ms). Kein Verhalten hängt daran.
+
+(6) GRENZEN: drei Anfragen je Lauf, eine Anfrageform (Abweisung eines unbekannten Schlüssels),
+    Dashboard-Angaben; keine Aussage über den Weg mit Persist und Forward oder über die
+    Serve-Route. Ob Daten europäischer Besucher damit nur in der EU verarbeitet werden, ist nicht
+    gemessen — Empfang und Ausführung liegen in `fra1`, über die Plattform im Übrigen sagt die
+    Messung nichts.
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13.6-5 — AUFKLÄRUNG A2: SICHERHEITS-INFRASTRUKTUR, DATENBANK, GEHEIMNISSE**
@@ -1225,6 +1366,9 @@ docs/plattform-befunde.md, Vercel-Abschnitt.
 Grundlage der Stufe 1 (Owner-Entscheidung P13.6-17). BEZUG: docs/formular-empfaenger-befunde.md
 — Make ist dort gelesen und gemessen, Zapier nicht. Neue Befunde gehen in jene Datei (Dauerregel
 "EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE DOKUMENTATION ABSCHNITTSWEISE GELESEN …").
+- BEZUG 2026-09-29: Owner-Entscheidung P13.6-55 der Phase 13.6 legt die Dienste der Stufe 1
+  fest (Make und Zapier) und die Bedingung für die Aufnahme (gelesen und einmal live getestet).
+  Offen bleiben Zapier ganz und für Make die Hosts der Zonen ausser eu2.
 
 ## Vorrat (gemeldet, nicht gebaut)
 

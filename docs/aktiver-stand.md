@@ -627,6 +627,63 @@ VERWEIGERT DER SERVER ZUSÄTZLICH EINE ZIELADRESSE AUF DER CUSTOM-DOMAIN IRGENDE
 - Seiten ohne Formular-Ziel bleiben byte-gleich.
 - Kein Relay-Code.
 
+### Planrunde der Scheibe 13.6-1
+
+**ZWEI NUMMERN STATT EINER, DEKLARIERT (CC, 2026-09-29):** Der Auftrag nannte einen Vermerk mit
+einer Nummer. Die Messungen (CC) und die Entscheidungen (Architekt) gehören zu zwei Klassen, die
+diese Datei getrennt führt (Kopf, "ZWEI KLASSEN VON FESTLEGUNGEN"); sie stehen deshalb unter
+P13.6-35 und P13.6-36.
+
+**Vermerk P13.6-35 — DREI MESSUNGEN DER PLANRUNDE** (GEMESSEN, CC, 2026-09-29, HEAD `a154665`;
+Planrunde der Scheibe 13.6-1).
+- M-a — Google Chrome 154.0.0.0 (User-Agent, über Playwright), Seite `about:blank`, Formular per
+  `innerHTML`: `form.elements` trägt keinen Bild-Knopf (`<input type="image">`), weder im
+  Formular noch ausserhalb über `form=`; Ergebnis `INPUT:text:a,BUTTON:submit:b`. Für beide
+  Bild-Knöpfe gilt `el.form === form`. Die Prämisse von Vorrat P13-61 der Phase 13 ist damit
+  gemessen.
+- M-b — jsdom 29.1.1 (Node), dieselbe Probe: dasselbe Ergebnis. Die Unit-Tests sehen dieselbe
+  Lücke wie der Browser.
+- M-c — Node und Chrome 154: `new URL("https://a.publayer.net./x").hostname` ergibt
+  `"a.publayer.net."`; der Punkt am Ende bleibt stehen.
+  BEFUND (ABGELEITET, am Code): `isOwnHost` (src/lib/form-target.ts) vergleicht mit
+  `h === d || h.endsWith("." + d)`; eine Zieladresse mit Punkt am Ende umging damit die
+  Eigen-Prüfung. Ob Vercel eine solche Anfrage an unser Deployment leitet, ist UNGEMESSEN.
+- GRENZE: je ein Browser, eine jsdom-Fassung; die Proben standen in keiner Datei des Repos.
+
+**Setzung P13.6-36 — DIE ENTSCHEIDUNGEN ZU DEN FRAGEN F1 BIS F8 DER PLANRUNDE.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Bau-Auftrag der Scheibe 13.6-1.
+REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
+- F1, F2 — `formaction`, `formmethod` und `formenctype` an einem Absende-Element sperren, JEDER
+  mit JEDEM Wert; `formtarget` und `formnovalidate` sperren nicht. GRUND für `formenctype`:
+  `text/plain` kommt bei Make als EIN ungeparstes Feld an (docs/formular-empfaenger-befunde.md,
+  Abschnitt "Make", Befund (v)). Damit ist die Angabe zu `formenctype` in Setzung P13.6-33
+  ersetzt; der Satz dort bleibt als Stand vor der Planrunde stehen.
+- F3 — `target` bleibt unangetastet; `accept-charset="UTF-8"` wird zusätzlich gesetzt.
+- F4 — `*.vercel.app` wird vollständig gesperrt.
+- F5 — `isOwnHost` normalisiert den Host (Kleinschreibung, Punkt am Ende entfernt), im Client wie
+  im Server.
+- F6 — Invariante I7 der Phase 13 regelt die Einbettung in Script-Rohtext und bleibt. Die
+  Adresse steht zusätzlich im `action`-Attribut, maskiert durch den Serialisierer; Wächter ist
+  Test F7b.
+- F7 — Der Admin-Client in `publishProject` ist freigegeben (Kandidat A der Planrunde) unter
+  diesen Bedingungen: er entsteht erst nach dem Eigentums-Gate und nur, wenn mindestens ein
+  Formular-Ziel besteht (beide Varianten); die Hosts werden normalisiert und danach streng
+  geprüft (nur `[a-z0-9.-]`, nicht leer), ein anderer Host bricht ab, BEVOR eine Abfrage läuft;
+  die Abfrage liest nur `custom_host`, mit `.in(…)` und `.limit(1)`; `{data, error}` getrennt
+  ausgewertet, ein Fehler bricht ab und gilt nie als "erlaubt"; alles vor dem Schreiben des
+  Labels.
+- F8 — Die drei Kommentare aus Vorrat P13.6-8 der Phase 13.6 werden in dieser Scheibe
+  berichtigt; die Messungen stehen in Vermerk P13.6-35.
+- GRENZEN, BENANNT:
+  - Im Rückfall ohne Skript sieht der Besucher die Antwort des Empfängers; das Formular bleibt
+    nicht stehen. Invariante I3 und Entscheidung P13-17 der Phase 13 galten nie dem Rückfall.
+  - Ein eigenes `onsubmit`-Skript des Betreibers, das `form.action` liest, sendet künftig an die
+    eingetragene Adresse statt an die eigene Seite.
+  - Die Sperre für Attribute an Absende-Elementen wirkt nur im Client; der Server parst kein
+    HTML.
+  - Der Export prüft Custom-Domains nicht.
+  - Der native Versand eines Exports folgt dem Zeichensatz aus `accept-charset`.
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13.6-5 — AUFKLÄRUNG A2: SICHERHEITS-INFRASTRUKTUR, DATENBANK, GEHEIMNISSE**

@@ -845,6 +845,9 @@ NICHT; DIE OBERFLÄCHE WIRD NICHT ABGESCHALTET.**
   an.
 - Nicht abgeschaltet werden: Weiterleitungen, Textersetzungen und der Einwilligungs-Dialog, wie
   gestaltet.
+  ERSETZT 2026-09-29 (ARCHITEKT, Setzung P13.6-43 der Phase 13.6, Punkt (1)): "Weiterleitungen
+  und Textersetzungen bleiben in der Vorschau bedienbar"; der Dialog erscheint dort in keinem
+  Rahmen.
 - ABWEICHUNG, GEMELDET (CC): Der Einwilligungs-Dialog erscheint heute in der Vorschau NICHT.
   Leiste oder Modal, Wiederherstellung, Widerruf und Setzer entstehen allein in
   `injectPageViewEmitter` beim Veröffentlichen; `generateFunctional` hängt nur das Gate ein
@@ -859,6 +862,8 @@ NICHT; DIE OBERFLÄCHE WIRD NICHT ABGESCHALTET.**
   nicht. Das Memo `functionalHtml` fragt `hasOwnBlocks` nicht; solche Bausteine laufen in der
   Vorschau und senden an das Projekt, aus dem sie exportiert wurden. Veröffentlichen und Export
   sind in diesem Zustand gesperrt, die Vorschau nicht.
+  ENTSCHIEDEN 2026-09-29 (ARCHITEKT): nicht Teil der Scheibe; geführt als Vorrat P13.6-44 der
+  Phase 13.6.
 
 **Setzung P13.6-40 — BINDUNG: VERÖFFENTLICHTE SEITEN UND EXPORTE BLEIBEN BYTE-GLEICH; DER SCHUTZ
 BEKOMMT EINEN WÄCHTER-TEST.**
@@ -882,7 +887,90 @@ BEKOMMT EINEN WÄCHTER-TEST.**
 - Tracking ist im Editor nicht mehr zu prüfen; geprüft wird an der veröffentlichten Seite
   (Grund der Owner-Entscheidung P13.6-13).
 
+### Planrunde der Scheibe 13.6-2
+
+**Vermerk P13.6-42 — BEFUNDE DER GATES G1 BIS G7 DER PLANRUNDE** (CC, 2026-09-29, HEAD
+`f5d91f3`; Planrunde der Scheibe 13.6-2). GELESEN AM CODE, soweit nicht anders gekennzeichnet;
+KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
+(1) DIE EINZIGE SENDE-EINHEIT DER VORSCHAU ist die Meta-Laufzeit (`buildMetaRuntime`,
+    src/lib/tracking/meta.ts), die `buildWiringScript` (src/lib/generate.ts) in jedem Modus baut.
+    Aufgerufen wird die Vorschau im Memo `functionalHtml` (src/components/CodeImporter.tsx) mit
+    `metaPixelId`, `trackingKey`, `capiProxyUrl` (`getCapiProxyUrl`) und `consentTargets`. Vier
+    Teile:
+    · der Lader in `__psMetaInit` (Skript `https://connect.facebook.net/en_US/fbevents.js`);
+    · `fbq("init")` und `fbq("track"/"trackCustom")`;
+    · der Beacon (`buildCapiBeaconStatement`, `navigator.sendBeacon` an die Proxy-Adresse);
+    · die Bestätigung (`buildPixelConfirmStatement`, `sendBeacon`, sonst `fetch` mit
+      `keepalive`).
+    Lader und `fbq` hängen allein an der Pixel-ID, Beacon und Bestätigung an Schlüssel und
+    Proxy-Adresse.
+(2) DER AUSLÖSER ist allein der Linksklick auf ein Element mit Track-Aktion (click-Listener in
+    `buildWiringScript`). `auxclick` hängt nur im Export. Der submit-Listener hängt auch in der
+    Vorschau; der Rahmen trägt aber kein `allow-forms`, dort entsteht deshalb kein `submit` —
+    ABGELEITET aus der HTML-Spezifikation, nicht gemessen. Beim Laden sendet die Laufzeit nichts.
+    Ohne Hook des Betreibers liefert `__psConsent` `true` (`buildConsentRuntime`,
+    src/lib/tracking/consent.ts); die Vorschau fragt also niemanden.
+(3) NICHT IN DER VORSCHAU: der Custom-Pixel (`generateFunctional` setzt `customPixelCode`
+    ausserhalb von "export" leer; Wächter T13 in src/lib/tracking/custom-pixel.test.ts); das
+    Formular-Ziel (Laufzeit nur in "export", Setzung P13-30 der Phase 13); der Seitenaufruf
+    (`buildPageViewScript` entsteht allein in `injectPageViewEmitter`, einziger
+    Produktiv-Aufrufer `publishProject`); Browser-Tags weiterer Ziele gibt es nicht. Der
+    Editier-Rahmen ruft `generateFunctional` im Modus "edit" ohne Optionen (`editPreviewHtml`)
+    und trägt damit keine Laufzeit.
+(4) DER DIALOG erscheint in keinem Rahmen des Editors: seine Blöcke entstehen allein in
+    `injectPageViewEmitter`; `generateFunctional` hängt nur das Gate ein (`CONSENT_SCRIPT_ID`,
+    `buildConsentRuntimes`). Derselbe Befund: Archiv der Phase 11.13, Nachtrag vom 2026-09-17.
+(5) DER RAHMEN UND DER RIEGEL UNTERBINDEN KEINEN SENDEWEG. Der Vorschau-Rahmen trägt
+    `sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"` (Ursprung `null`,
+    kein `allow-forms`). Der Riegel `withPreviewStorageShim` (src/lib/preview-storage-shim.ts)
+    ersetzt nur `document.cookie`, `localStorage` und `sessionStorage`; `sendBeacon`, `fetch`
+    und das Laden von Skripten berührt er nicht (Entscheidung P11.12-1 der Phase 11.12: keine
+    Sicherheitsschicht). Die App setzt keine Content-Security-Policy (GEMESSEN AM REPO: Suche
+    `Content-Security-Policy` über src/ und next.config.*, 0 Treffer). ABGELEITET, NICHT
+    GEMESSEN: `fbevents.js` lädt im Rahmen. NICHT ENTSCHEIDBAR: ob Meta Ereignisse aus einem
+    `null`-Ursprung annimmt; ob der Browser den Beacon an `http://localhost:3000` von einer
+    öffentlichen Seite zulässt.
+(6) WEITERLEITUNG UND TEXTERSETZUNG hängen an Datenblock und Wiring, die in der Vorschau immer
+    entstehen, nicht an der Meta-Laufzeit, dem Custom-Baustein oder dem Gate.
+(7) SKRIPTE IM IMPORTIERTEN HTML laufen in beiden Rahmen: der `DOMParser`-Rundlauf behält sie.
+    Dazu gehören alte Pagesmith-Bausteine aus einem früheren Export — das Memo `functionalHtml`
+    fragt `hasOwnBlocks` nicht (ABGELEITET, nicht gemessen); s. Vorrat P13.6-44.
+(8) BESTEHENDE TESTS, die die Scheibe berührt: T6 (src/lib/generate.test.ts) erwartet `fbq` in
+    der Vorschau und wird beabsichtigt rot; die Vorschau-Hälfte von K3
+    (src/components/CodeImporter.test.tsx) ebenso; der auxclick-Test "SCOPING: auxclick in
+    PREVIEW feuert NICHT" und die Vorschau-Hälfte von K4 würden hohl. Die vier
+    Differenz-Nachweise W1′, W2′, T1 und T9 laufen im Modus "export" und bleiben unberührt.
+
+**Setzung P13.6-43 — DIE ENTSCHEIDUNGEN DER PLANRUNDE 13.6-2.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Bau-Auftrag der Scheibe 13.6-2.
+REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
+(1) DER STOPP DER PLANRUNDE IST AUFGEHOBEN. Die Stopp-Bedingung "keine Gestalt erhält den Dialog"
+    griff dem Wortlaut nach, weil der Dialog in der Vorschau gar nicht erscheint. Die geschützte
+    Invariante (iii) des Zuschnitts lautet: "Weiterleitungen und Textersetzungen bleiben in der
+    Vorschau bedienbar." Die Prämisse zum Dialog war falsch; der Ausschluss einer
+    Dialog-Vorschau aus der Phase 11.13 bleibt.
+(2) GESTALT (a), GATUNG IN DER ENGINE: Die Meta-Laufzeit entsteht nur im Modus "export"; die
+    Track-Anweisung ist in "preview" leer und erzeugt keine Warnung. GRUND: dieselbe Form wie
+    Entscheidung P11.6-6 (d) der Phase 11.6 und Setzung P13-30 der Phase 13; ein strenger
+    Wächter an Text und Verhalten ist möglich; src/lib/tracking/meta.ts bleibt unberührt.
+    VERWORFEN: Gestalt (b), Bausteine bleiben mit leeren Sendestellen — der Eingriff läge in
+    meta.ts mit ihren Byte-Zusagen, und ein Wächter am Text wäre nicht streng.
+(3) DIE SPANNUNG ZU ENTSCHEIDUNG P11.12-2 DER PHASE 11.12 (keine Modus-Verzweigung in der
+    Engine für den Riegel) trägt der Wächter-Test (W-P1 am Text, W-P2 am Verhalten), nicht die
+    Bauart.
+(4) DER EDITOR ÜBERGIBT DER VORSCHAU weder Pixel-ID noch Tracking-Schlüssel noch Beacon-Adresse.
+    Über `consentTargets` entscheidet der Bau mit Beleg am Code. FOLGE, VORHERGESAGT: Bei den
+    Mutationen "Beacon zurück" und "Lader und `fbq` zurück" bleibt der Wächter am Editor (W-E2E)
+    grün; das ist keine Lücke — W-P1 und W-P2 tragen sie.
+(5) ALTE PAGESMITH-BAUSTEINE IM IMPORTIERTEN HTML: nicht Teil der Scheibe, Vorrat P13.6-44.
+(6) KEIN NEUER OBERFLÄCHENTEXT in der Vorschau. Der Satz für die Betreiber-Dokumentation folgt
+    mit dem Abschluss-Vermerk.
+(7) Ob `fbevents.js` im Rahmen lädt und bei Meta ankommt, klärt der Live-Test (Vorher-Schritt).
+(8) Ob `.env.local` auf die Produktions-Datenbank zeigt: keine Handlung — dort liegen nur eigene
+    Testdaten des Owners.
+
 ## Noch nicht geschnittene Arbeit
+
 
 **Arbeit P13.6-5 — AUFKLÄRUNG A2: SICHERHEITS-INFRASTRUKTUR, DATENBANK, GEHEIMNISSE**
 (ARCHITEKT 2026-09-29; die Fragen aus dem A1-Bericht, CC, 2026-09-29). Zu beantworten:
@@ -1151,4 +1239,19 @@ PRÜFEN, OB ER ZUM AUSGELIEFERTEN HTML PASST** (GELESEN AM CODE, CC, 2026-09-29,
   Datenblock im HTML deshalb nicht gegen `mappings` halten (ABGELEITET).
 - BEZUG: Setzung P13.6-20 — ein Relay, das die Adresse aus `published_content.mappings` liest,
   vertraut darauf, dass beide übereinstimmen.
+- KEIN TRIGGER GESETZT.
+
+**Vorrat P13.6-44 — ALTE PAGESMITH-BAUSTEINE IM IMPORTIERTEN HTML SENDEN AUS DER VORSCHAU**
+(CC, 2026-09-29, HEAD `f5d91f3`; ABGELEITET am Code, NICHT gemessen). Aufgenommen nach
+Setzung P13.6-43, Punkt (5).
+- Befund: Bausteine aus einem früheren Export (Klasse "eigen" der Phase 11.11) stehen im HTML des
+  Betreibers. Der `DOMParser`-Rundlauf behält sie, und das Memo `functionalHtml`
+  (src/components/CodeImporter.tsx) fragt `hasOwnBlocks` nicht; sie laufen in der Vorschau und
+  senden an das Projekt, aus dem exportiert wurde.
+- Was heute schützt: Die Import-Bereinigung zeigt sie an; Veröffentlichen und Export sind in
+  diesem Zustand gesperrt.
+- OFFEN: das Bearbeitungsfenster — solange sie im Code stehen, kann ein Klick in der Vorschau
+  senden. Ob das auch im Editier-Rahmen gilt, ist nicht geprüft.
+- GRENZE: Setzung P13.6-39 (Skripte im HTML des Betreibers erfasst Owner-Entscheidung P13.6-13
+  nicht).
 - KEIN TRIGGER GESETZT.

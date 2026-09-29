@@ -36,7 +36,9 @@ const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 // ID-Format (endgueltige Owner-Entscheidung): IMMER selbst generiert,
 // "ps-" + 6 Zeichen aus [a-z0-9]. User-id="..."-Attribute werden NIE
 // wiederverwendet (nicht eindeutig, vom User aenderbar) – unsere ID ist isoliert.
-const PS_ID_RE = /^ps-[a-z0-9]{6}$/;
+// Exportiert seit Scheibe 13.6-3 der Phase 13.6: Das Formular-Relay (src/lib/relay/relay.ts)
+// prueft die Kennung einer Anfrage mit DIESER Regel, bevor eine Abfrage laeuft.
+export const PS_ID_RE = /^ps-[a-z0-9]{6}$/;
 const PS_ID_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
 const PS_ID_LEN = 6;
 

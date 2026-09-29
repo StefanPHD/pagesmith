@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { resolveEffectiveHost, isAppHost } from "@/lib/hosting/host";
+import { RELAY_PATH } from "@/lib/relay/path";
 
 export async function proxy(request: NextRequest) {
   // HOST-VERZWEIGUNG ZUERST — INVERSION (Phase 7c-1): nicht mehr "ist Serving-Host?",
@@ -22,8 +23,11 @@ export async function proxy(request: NextRequest) {
   // erreichen — weiterhin OHNE Auth-Gate/updateSession, OHNE App-Cookies. EXAKTER
   // Match, NICHT startsWith("/api"). Durch die Inversion faellt dieser Passthrough
   // jetzt AUCH fuer Custom-Domains an -> First-Party-Ingest same-origin/adblocker-fest.
+  // SEIT SCHEIBE 13.6-3 (Phase 13.6) ein DRITTER Pfad, ebenfalls exakt: das Formular-Relay
+  // (RELAY_PATH, src/lib/relay/path.ts). Es gilt nur fuer gehostete Seiten und steht deshalb
+  // NICHT in isPublicRoute des App-Hosts.
   const path = request.nextUrl.pathname;
-  if (path === "/api/e" || path === "/api/capi") {
+  if (path === "/api/e" || path === "/api/capi" || path === RELAY_PATH) {
     return NextResponse.next();
   }
   const url = request.nextUrl.clone();

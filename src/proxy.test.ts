@@ -9,6 +9,7 @@ const { updateSession } = vi.hoisted(() => ({
 vi.mock("@/lib/supabase/middleware", () => ({ updateSession }));
 
 import { proxy } from "./proxy";
+import { RELAY_PATH } from "@/lib/relay/path";
 
 function requestFor(url: string, host: string): NextRequest {
   return new NextRequest(new URL(url), { headers: { host } });
@@ -146,5 +147,52 @@ describe("proxy — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
     );
     expect(rewritePath(res)).toBe("/app-serve");
     expect(updateSession).not.toHaveBeenCalled();
+  });
+});
+
+describe("proxy — Formular-Relay (Phase 13.6, Scheibe 13.6-3)", () => {
+  // Die Erwartung "/api/f" stammt aus der Entscheidung (Setzung P13.6-59 der Phase 13.6,
+  // Plan: Pfad /api/f), nicht aus dem Code.
+  it("RELAY_PATH ist /api/f", () => {
+    expect(RELAY_PATH).toBe("/api/f");
+  });
+
+  it("Serving-Host + /api/f -> DURCHGELASSEN (kein Rewrite, kein Auth-Gate)", async () => {
+    const res = await proxy(
+      requestFor("http://meinprojekt.publayer.net/api/f?f=ps-abc123", "meinprojekt.publayer.net")
+    );
+    expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it("Custom-Host + /api/f -> DURCHGELASSEN", async () => {
+    const res = await proxy(requestFor("http://test-custom.local/api/f", "test-custom.local"));
+    expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it.each(["/api/fx", "/api/f/x", "/api/form"])(
+    "CHIRURGISCH: %s -> KEIN Passthrough, Rewrite auf /app-serve",
+    async (p) => {
+      const res = await proxy(
+        requestFor(`http://meinprojekt.publayer.net${p}`, "meinprojekt.publayer.net")
+      );
+      expect(rewritePath(res)).toBe("/app-serve");
+    }
+  );
+
+  it("/api/e und /api/capi bleiben durchgelassen (das Relay aendert den Passthrough nicht)", async () => {
+    for (const p of ["/api/e", "/api/capi"]) {
+      const res = await proxy(
+        requestFor(`http://meinprojekt.publayer.net${p}`, "meinprojekt.publayer.net")
+      );
+      expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+    }
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it("App-Host + /api/f -> Auth-Gate (updateSession), NICHT der Passthrough", async () => {
+    await proxy(requestFor("http://localhost:3000/api/f", "localhost:3000"));
+    expect(updateSession).toHaveBeenCalledTimes(1);
   });
 });

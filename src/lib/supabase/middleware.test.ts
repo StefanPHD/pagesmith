@@ -58,6 +58,15 @@ describe("updateSession — Auth-Gate mit /api/capi-Ausnahme", () => {
     expect(redirectTarget(res)).toBeNull();
   });
 
+  it("anonym + /api/f (Formular-Relay, Scheibe 13.6-3) -> Redirect auf /login: auf dem App-Host NICHT oeffentlich", async () => {
+    // Das Relay gilt nur fuer gehostete Seiten (Setzungen P13.6-20 und P13.6-57 der Phase
+    // 13.6); eine gemeinsame Liste mit dem Serving-Passthrough oeffnete es hier (Vermerk
+    // P13.6-58, G1).
+    mockUser(null);
+    const res = await updateSession(requestFor("/api/f"));
+    expect(redirectTarget(res)).toBe("/login");
+  });
+
   it("anonym + geschuetzte Seite (/) -> Redirect auf /login (Gate unveraendert)", async () => {
     mockUser(null);
     const res = await updateSession(requestFor("/"));

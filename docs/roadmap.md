@@ -2509,6 +2509,11 @@ liegen beide hier und finden einander.
       Der Browser schickt die Felder direkt an eine Adresse, die der Nutzer im Tool einträgt;
       unser Server sieht keinen Klartext, und es gibt keine Ablage bei Pagesmith. Wortlaut
       und Verworfenes: Standdatei der Phase 13, Entscheidung P13-2.
+      NACHGETRAGEN 2026-09-29 — NEUAUSRICHTUNG ZUM LEAD-RELAY (OWNER 2026-09-28): Beschlossen
+      ist die RICHTUNG, Formulardaten flüchtig über unseren Server an den Empfänger zu reichen —
+      NICHT die Neufassung der Datenklassen-Regel; bis dahin gelten sie und Entscheidung P13-2
+      unverändert. Phase 13 schliesst mit den Scheiben 13-1 und 13-1c, der Testknopf (13-1b)
+      und die Zapier-Messung entfallen; Wortlaut: Entscheidung P13-65 der Phase 13.
 - [ ] Phase 13.5 — Medien: Bilder, SVG, Video und Hintergrundbilder im importierten
       Kunden-HTML erkennen und ändern. ANGELEGT am 2026-09-28 beim Phasenende 12.5; Nummer
       und Reihenfolge OWNER-ENTSCHEIDUNG 2026-09-28. Die Medien waren bis dahin der

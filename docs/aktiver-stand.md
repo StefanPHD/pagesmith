@@ -179,9 +179,9 @@ beantworten. KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
 
 ## Owner-Entscheidungen zur Phase 13 vom 2026-09-28
 
-PROVENIENZ aller fünf: OWNER-ENTSCHEIDUNG 2026-09-28 — P13-2 bis P13-4 übermittelt im Auftrag
+PROVENIENZ der ersten fünf: OWNER-ENTSCHEIDUNG 2026-09-28 — P13-2 bis P13-4 übermittelt im Auftrag
 der Doku-Runde desselben Tages, P13-7 im Auftrag der Korrektur-Runde desselben Tages, P13-15 im
-Auftrag der Anbieter-Lesung Make desselben Tages. BINDEND.
+Auftrag der Anbieter-Lesung Make desselben Tages. BINDEND. P13-65 trägt ihre eigene Provenienz.
 
 **Entscheidung P13-2 — DER DATENWEG DER FORMULARE IST BROWSER-DIREKT.** Der Browser schickt die
 Formularfelder DIREKT an eine Adresse, die der Nutzer im Tool einträgt — eine generische
@@ -225,6 +225,102 @@ Arbeit P13-11 (Weg 8, "Keine neue Datei ohne Owner-Entscheidung"). Die Datei tr�
 vorläufigen Fragenkatalog und je Empfänger einen Abschnitt; in CLAUDE.md, "## Aktive
 Dokumente", steht ein Eintrag. Die Liste "WOHIN EIN NEUER SATZ GEHÖRT" ist NICHT angefasst —
 dafür folgt ein eigener Änderungsantrag.
+
+**Entscheidung P13-65 — RICHTUNG: PAGESMITH ÖFFNET SICH FÜR EIN BACKEND-RELAY (LEAD-RELAY).**
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-28, übermittelt im Auftrag der Doku-Runde vom
+2026-09-29. BINDEND — FÜR DIE RICHTUNG, NICHT FÜR EINE REGEL.
+DIE RICHTUNG: Formulardaten laufen flüchtig durch unseren Server und werden an den Empfänger
+weitergereicht. Ziel sind native Anbindungen per Klick (Brevo, Mailchimp, KlickTipp …) mit
+echter Erfolgs- und Fehlerrückmeldung, ohne dass der Nutzer Make oder Zapier braucht.
+GRUND (OWNER):
+- Positionierung als Performance-Marketing-Werkzeug, nicht als datenschutzgetriebenes
+  Nischenprodukt.
+- Der browser-direkte Weg kann die Antwort eines Anbieters nicht lesen — ein abgelehnter
+  Kontakt sähe aus wie Erfolg. BEZUG: die Befunde der Anbieter-Lesung (Arbeit P13-64),
+  insbesondere docs/formular-empfaenger-befunde.md, Abschnitt "Mailchimp", EINORDNUNG und
+  Befunde (c), (d), (f) — `opaque` bei einem stillen Verlust.
+
+NICHT ENTSCHIEDEN — UND BIS DAHIN UNVERÄNDERT IN KRAFT:
+- Die Neufassung der Datenklassen-Regel: die Festlegung vom 2026-08-15 und die Auflage vom
+  2026-08-19 (docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE") sowie
+  Entscheidungen P13-2 und P13-7. Sie fällt nach der Aufklärung der Relay-Phase.
+- DAS HEISST WÖRTLICH: P13-2 gilt samt ihrem "VERWORFEN: (a) die Weiterleitung über unseren
+  Server"; P13-7 gilt samt ihrem Gegenstück "nie an `/api/e` … nie in unsere Datenbank, nie in
+  unsere Logs". Diese Entscheidung hebt keine von beiden auf; sie setzt die Richtung, in der
+  ihre Neufassung gesucht wird.
+- FOLGERUNG (CC, 2026-09-29), KEINE ENTSCHEIDUNG: Solange P13-7 gilt, verletzte jeder
+  Relay-Weg, der Formularinhalte an unseren Server schickt, ihr Gegenstück. Vor der Neufassung
+  entsteht deshalb kein Relay-Code.
+- Ob der Nutzer zwischen Relay und browser-direktem Weg wählt, und ob das eine Preisstaffel
+  wird.
+
+FOLGEN FÜR PHASE 13 (ENTSCHIEDEN):
+- Phase 13 wird mit den Scheiben 13-1 und 13-1c abgeschlossen.
+- 13-1b (der Testknopf, Arbeit P13-36) und die Zapier-Messung ENTFALLEN. GRUND: Das Relay liest
+  die Antwort serverseitig; die CORS-Frage entfällt. Die Zapier-Messung steht in keiner der drei
+  Dateien dieser Runde als eigener Posten (gesucht: `Zapier` über docs/aktiver-stand.md,
+  docs/formular-empfaenger-befunde.md, docs/roadmap.md) — sie ist hier allein nach der
+  OWNER-ANGABE als entfallen vermerkt.
+- Der browser-direkte Weg aus 13-1 bleibt als DATENSPARMODUS bestehen.
+- BERÜHRT, HIER NICHT ANGEFASST (CC, 2026-09-29; die Sichtung liegt beim Phasenende):
+  - Setzung P13-18 (Schnitt 13-1 und 13-1b) — 13-1b entfällt.
+  - Setzung P13-21 — ihr Satz über den Testknopf im Modus `cors` hat keinen Gegenstand mehr.
+  - Setzung P13-30 — "Geprüft wird über den Testknopf (13-1b)".
+  - Setzung P13-6, GRENZE ("kippt, sobald ein Weg über unseren Server gewählt wird") — die
+    Richtung ist gewählt, ein Weg nicht gebaut; der offene Punkt selbst ist nicht angefasst.
+  - Arbeit P13-12, erste Schwäche (Zustellung vom Browser aus nicht bestätigbar) — sie bleibt
+    für den Datensparmodus bestehen.
+
+ARCHITEKTEN-EINORDNUNG (ARCHITEKT, 2026-09-28; REVIDIERBAR, KEINE ENTSCHEIDUNG):
+- ZWEI GETRENNTE SCHRITTE: (1) Transit ohne Speicherung und ohne Logging des Inhalts;
+  (2) Speicherung (Lead-Postfach, Export, Rückmeldung "Lead wurde Kunde") als eigene, spätere
+  Owner-Entscheidung.
+- DIE HAUPTARBEIT IST SICHERHEIT, NICHT BÜROKRATIE: Rate-Limiting und Bot-Schutz des neuen
+  Endpunkts, SSRF-Schutz bei kundeneigenen Adressen, sichere Verwahrung der
+  Kunden-API-Schlüssel. Dadurch rücken nach vorn (je Titel, Fundstelle am 2026-09-29 geprüft,
+  KEINER davon hier geändert):
+  - "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" — docs/offene-punkte.md.
+  - "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT" — docs/offene-punkte.md.
+  - "PER-TENANT-RATE-LIMITING /api/e + /api/capi" — Security-Manifest Tier 1 (CLAUDE.md und
+    docs/claude-history/security-manifest-full.md).
+  - "DER PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT", Trigger (i) —
+    mehrere Empfänger desselben Typs je Projekt — docs/offene-punkte.md.
+  - "DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026" — docs/offene-punkte.md.
+- HYPOTHESE, UNGEPRÜFT: Die serverseitige Übergabe an Meta überträgt schon heute IP-Adresse und
+  Browserkennung der Besucher — dann verarbeitet Pagesmith bereits personenbezogene Daten, und
+  ein AVV ist unabhängig vom Relay nötig. Prüft die Aufklärung.
+  BEZUG, KEINE PRÜFUNG (CC, 2026-09-29, GELESEN): Für die IP steht die Durchleitung bereits
+  dokumentiert — docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE",
+  Präzisierung vom 2026-08-19, Beleg (b) (GEMESSEN an der Versionsgeschichte: an ein Ziel seit
+  2026-07-03, an alle vier seit 2026-08-19) und "Sie beantwortet NICHT, ob eine IP
+  personenbezogen ist — sie IST es". Am heutigen Code ist das NICHT nachgeprüft; der
+  User-Agent und die AVV-Folge sind es ebenso wenig.
+- TRACKING: Mit dem Relay kann der Server das Lead-Ereignis mit der gehashten E-Mail derselben
+  Absendung anreichern (bessere Zuordnung bei Meta, Google und den übrigen Zielen). Gehasht wird
+  weiterhin, nur am Server; Klartext wird nie gespeichert oder geloggt; die Einwilligung ist
+  vorgeschaltet wie heute. HEUTE GILT DAGEGEN die Auflage vom 2026-08-19 ("im Browser gehasht
+  … der eigene Server sieht KEINEN Klartext") — unverändert, bis zur Neufassung.
+- UNVERÄNDERT: "Pagesmith wird kein Versender" (Roadmap-Zeile 13) — das Relay leitet weiter, es
+  versendet nicht. Der Punkt "DIE SEITENADRESSE REIST SAMT QUERY AN UNSEREN SERVER UND AN DREI
+  ZIELE — WAS IM QUERY STEHT, REIST MIT" (docs/offene-punkte.md) ist unabhängig davon vor
+  echtem Traffic zu beheben.
+- RECHT: vor dem ersten zahlenden Kunden eine einmalige anwaltliche Prüfung und eine
+  AVV-Vorlage — Architekten-Empfehlung, keine juristische Aussage.
+
+FAHRPLAN-ENTWURF DER RELAY-PHASE (ARCHITEKT, 2026-09-28; NICHT ENTSCHIEDEN):
+1. Aufklärung — welche personenbezogenen Daten heute verarbeitet werden, Stand von
+   Schlüssel-Verwahrung und Rate-Limiting, ausgelöste offene Punkte, Plattform-Grenzen
+   (Vercel-Tarif, Laufzeit).
+2. Owner-Entscheidungen — neue Datenklassen-Regel, Datensparmodus als Wahl, erster Anbieter
+   nach Markt, Anwalt und AVV.
+3. Schutz zuerst.
+4. Relay an Webhook-Adressen mit echter Rückmeldung.
+5. Erster nativer Anbieter per Klick.
+6. Lead-Ereignis mit gehashter E-Mail.
+7. Später: Speicherung.
+
+NÄCHSTE SCHRITTE: das Phasenende 13 in einer neuen Sitzung; danach die Aufklärung der
+Relay-Phase. Ihre Phasennummer ist Owner-Entscheidung beim Phasenende.
 
 ## Architekten-Setzungen zur Phase 13 vom 2026-09-28
 
@@ -1121,7 +1217,11 @@ zur Erzeugungszeit, Herkunft erweitert: Setzungen P13-43, P13-44). BELEG DER ERL
 gestrichener Volltext: Vermerk P13-60, Punkte (3) und (7).
 
 **Arbeit P13-36 — SCHEIBE 13-1b: DER TESTKNOPF IM EDITOR** (Setzungen P13-18 und P13-21;
-ARCHITEKTEN-SETZUNG 2026-09-28).
+ARCHITEKTEN-SETZUNG 2026-09-28) — ENTFALLEN (Entscheidung P13-65, OWNER 2026-09-28).
+- BELEG: Entscheidung P13-65, "FOLGEN FÜR PHASE 13". GRUND: Das geplante Relay liest die Antwort
+  serverseitig; die CORS-Frage entfällt. Nichts davon ist gebaut.
+- Der Text darunter bleibt als Zeitdokument stehen. Der Satz "13-1b ist die NÄCHSTE ARBEIT" gilt
+  NICHT mehr; die nächste Arbeit ist das Phasenende 13.
 - Er leistet, was die Laufzeit nicht kann: eine falsche Adresse erkennen. Im Modus `no-cors`
   ist eine 410 unsichtbar (docs/formular-empfaenger-befunde.md, Abschnitt "Make", Befund (ac)).
 - Der Testknopf läuft im Modus `cors` (Setzung P13-21); dort wirft die 410 (ebenda, Befund

@@ -706,6 +706,12 @@ und die Einstellungen eines Blockers sind nicht erfasst.
 - ERWEITERT, WEITER TEILWEISE: M5 → (ac), (ad) — die 410 im Browser; M10 → (ae) — ein Blocker.
 - UNVERÄNDERT OFFEN: M6, M7, M12; M4 und M8 wie zuvor.
 
+**ZU DEN ABSCHNITTEN BREVO, SYSTEME.IO, MAILCHIMP UND KLICKTIPP (NACHGETRAGEN 2026-09-29):** Ihre
+EINORDNUNGEN beziehen sich auf den BROWSER-DIREKTEN Weg aus Scheibe 13-1 (Entscheidung P13-2 der
+Phase 13); mit dem geplanten Relay werden die Befunde Material für native Anbindungen
+(Entscheidung P13-65 der Phase 13, OWNER 2026-09-28 — eine Richtung, keine Regel). Kein Befund
+ist dadurch geändert.
+
 ## Brevo
 
 ### Anbieter-Lesung vom 2026-09-28 (CC, Phase 13, Arbeit P13-64)

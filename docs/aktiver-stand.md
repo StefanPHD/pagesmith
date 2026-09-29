@@ -33,6 +33,7 @@ beantworten.
 - Owner-Angaben zur Phase 13.6 vom 2026-09-29
 - Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 - Zuschnitt Scheibe 13.6-1
+- Zuschnitt Scheibe 13.6-2
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
 
@@ -382,6 +383,8 @@ Vercel-Befunde, Reihenfolge". BINDEND.
   (docs/claude-history/phase-4-mapping-codegen-export.md). Den Custom-Baustein nimmt Entscheidung
   P11.6-6 (d) der Phase 11.6 bereits aus der Vorschau heraus. Ob die Entscheidung das `fbq` der
   Vorschau mit meint, sagt ihr Wortlaut nicht ausdrücklich; der Zuschnitt fragt es ab.
+  BEANTWORTET 2026-09-29 (ARCHITEKT): Setzung P13.6-38 der Phase 13.6 — `fbq` und der Lader sind
+  mitgemeint.
 - EBENFALLS ABGELEITET: Die Entscheidung gilt dem Editor, nicht der Umgebung — auch die lokale
   Vorschau (`next dev`) baut den Beacon heute und schickt ihn an den lokalen Server.
 
@@ -794,6 +797,90 @@ Hosts gesperrt"). LIVE-TEST BESTANDEN.
     zum Neu-Veröffentlichen und zur Byte-Gleichheit, Vermerk P13.6-35 (Code-Kommentare in
     src/lib/form-target.ts zeigen darauf) und Setzung P13.6-36 samt Grenzen. An P13.6-33 steht je
     ein Auflösungs-Satz: `formenctype` ist durch P13.6-36 ersetzt, P13-61 ist erledigt.
+
+## Zuschnitt Scheibe 13.6-2
+
+**GEGENSTAND:** "Die Vorschau sendet nie" — die zweite Bau-Scheibe der Phase 13.6. Sie setzt
+Owner-Entscheidung P13.6-13 um, in der Reihenfolge der Setzung P13.6-14. Zugeschnitten am
+2026-09-29; der Plan folgt in einer eigenen Runde.
+
+### Architekten-Setzungen zur Scheibe 13.6-2
+
+PROVENIENZ aller vier: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag der
+Zuschnitt-Runde der Scheibe 13.6-2. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf. Die
+Abgleiche mit dem Code sind CC, GELESEN AM CODE am Stand `9f57f24`, nicht live gemessen.
+
+**Setzung P13.6-38 — REICHWEITE: "NIE" UMFASST JEDEN SENDEWEG, DEN PAGESMITH IN DIE VORSCHAU
+EINBAUT.**
+- Gemeint sind: Server-Beacon und Pixel-Bestätigung an `/api/e`, der Meta-Pixel (Lader
+  `fbevents.js` und `fbq`), der Seitenaufruf, der Custom-Pixel der Phase 11.6 und
+  Browser-Tags weiterer Ziele.
+- GRUND: Der Grund der Owner-Entscheidung P13.6-13 — Klicks beim Gestalten landeten als
+  Conversions in Messung und Gebotsoptimierung — trifft jeden dieser Wege gleich.
+- Damit ist die an P13.6-13 offene Reichweitenfrage beantwortet. FOLGE (CC, ABGELEITET): Die
+  "akzeptierte Marketer-eigene-Vorschau-Verschmutzung" der Phase 4
+  (docs/claude-history/phase-4-mapping-codegen-export.md) ist damit aufgehoben; das Archiv bleibt
+  unverändert.
+- ABGLEICH MIT DEM CODE (CC), damit die Reichweite nicht für mehr gelesen wird, als sie heute
+  trifft:
+  · In die Vorschau (`generateFunctional` im Modus "preview", gerufen im Memo `functionalHtml`,
+    src/components/CodeImporter.tsx) baut Pagesmith heute genau EINE Sende-Einheit: die
+    Meta-Laufzeit (`buildMetaRuntime`, src/lib/tracking/meta.ts) — Lader, `fbq`, Beacon und
+    Bestätigung, ausgelöst durch den Klick auf ein Element mit Track-Aktion.
+  · Der Seitenaufruf kommt NICHT in die Vorschau: `buildPageViewScript` entsteht allein in
+    `injectPageViewEmitter`, und dessen einziger Produktiv-Aufrufer ist `publishProject`.
+  · Der Custom-Pixel kommt NICHT in die Vorschau: Entscheidung P11.6-6 (d) der Phase 11.6, gebaut
+    in `generateFunctional`, Wächter T13 in src/lib/tracking/custom-pixel.test.ts.
+  · Browser-Tags weiterer Ziele gibt es nicht; pinterest, tiktok, linkedin und google erreicht
+    die Vorschau nur über den Beacon und den Fan-Out im Ingest (Vermerk P13.6-1, Punkte (2) und
+    (10)).
+  · Das Formular-Ziel sendet in der Vorschau nicht; seine Laufzeit entsteht nur im Modus
+    "export" (Setzung P13-30 der Phase 13).
+  Die Setzung gilt trotzdem in voller Breite: Sie bindet auch jeden Weg, der später in die
+  Vorschau käme.
+
+**Setzung P13.6-39 — GRENZE: SKRIPTE IM IMPORTIERTEN HTML DES BETREIBERS ERFASST DIE ENTSCHEIDUNG
+NICHT; DIE OBERFLÄCHE WIRD NICHT ABGESCHALTET.**
+- Wir fassen fremden Code nicht an; die Import-Bereinigung der Phase 11.11 zeigt solche Skripte
+  an.
+- Nicht abgeschaltet werden: Weiterleitungen, Textersetzungen und der Einwilligungs-Dialog, wie
+  gestaltet.
+- ABWEICHUNG, GEMELDET (CC): Der Einwilligungs-Dialog erscheint heute in der Vorschau NICHT.
+  Leiste oder Modal, Wiederherstellung, Widerruf und Setzer entstehen allein in
+  `injectPageViewEmitter` beim Veröffentlichen; `generateFunctional` hängt nur das Gate ein
+  (`CONSENT_SCRIPT_ID`, `buildConsentRuntimes`). Derselbe Befund steht als Nachtrag vom
+  2026-09-17 im Archiv der Phase 11.13 ("Weder der Editier- noch der Vorschau-Rahmen zeigt den
+  Einwilligungs-Dialog"), und eine Vorschau des Dialogs im Editor war dort ausgeschlossen. Am
+  Dialog hat diese Scheibe nichts zu erhalten; was sie in der Vorschau erhält, sind
+  Weiterleitungen und Textersetzungen.
+- GEMELDET, NICHT ENTSCHIEDEN (CC, ABGELEITET): Pagesmith-Bausteine aus einem FRÜHEREN Export,
+  die im importierten HTML stehen (Klasse "eigen" der Phase 11.11), sind von uns erzeugte
+  Sendewege, stehen aber im HTML des Betreibers. Nach dieser Grenze erfasst die Entscheidung sie
+  nicht. Das Memo `functionalHtml` fragt `hasOwnBlocks` nicht; solche Bausteine laufen in der
+  Vorschau und senden an das Projekt, aus dem sie exportiert wurden. Veröffentlichen und Export
+  sind in diesem Zustand gesperrt, die Vorschau nicht.
+
+**Setzung P13.6-40 — BINDUNG: VERÖFFENTLICHTE SEITEN UND EXPORTE BLEIBEN BYTE-GLEICH; DER SCHUTZ
+BEKOMMT EINEN WÄCHTER-TEST.**
+- Nachweis gegen einen Vorher-Wert, erhoben vor der ersten Code-Änderung.
+- Wächter nach der Dauerregel "NUR EIN TEST IST EIN WÄCHTER — EIN KOMMENTAR ODER EIN NEBENEFFEKT
+  IST KEINER": Heute besteht der Schutz nur als Nebeneffekt der falschen `NEXT_PUBLIC_APP_URL`
+  (Vorrat P13.6-12 der Phase 13.6).
+- ABGLEICH MIT DEM CODE (CC): Auch dieser Nebeneffekt deckt nur Beacon und Bestätigung. Lader und
+  `fbq` hängen allein an der Pixel-ID (`buildMetaRuntime`); wo eine gesetzt ist, sind sie in der
+  Vorschau heute gebaut und werden beim Track-Klick gerufen. Ob `fbevents.js` im Rahmen lädt und
+  bei Meta etwas ankommt, ist NICHT gemessen.
+
+**Setzung P13.6-41 — FOLGE: ERST NACH DIESER SCHEIBE WIRD `NEXT_PUBLIC_APP_URL` KORRIGIERT.**
+- Bestätigt die Reihenfolge der Setzung P13.6-14; dort steht der Grund.
+
+### Grenzen der Scheibe 13.6-2
+
+- Veröffentlichte Seiten und Exporte ändern sich nicht (Setzung P13.6-40).
+- Die Entscheidung gilt dem Editor, nicht der Umgebung — auch die lokale Vorschau (`next dev`)
+  ist gemeint (Owner-Entscheidung P13.6-13, "EBENFALLS ABGELEITET").
+- Tracking ist im Editor nicht mehr zu prüfen; geprüft wird an der veröffentlichten Seite
+  (Grund der Owner-Entscheidung P13.6-13).
 
 ## Noch nicht geschnittene Arbeit
 

@@ -375,3 +375,43 @@ zurückgespiegeltes Besucher-Merkmal schwärzt, ist offen.
 - Ob Vercel Rümpfe, Query oder IP in seinen Logs ablegt.
 - Ob `auth.getUser()` in `updateSession` ohne Sitzungs-Cookie einen Netzruf kostet.
 - KEIN TRIGGER GESETZT.
+
+**Vorrat P13.6-12 — `NEXT_PUBLIC_APP_URL` IST IN PRODUCTION `http://localhost:3000` — DIE BEACONS
+EXPORTIERTER SEITEN ERREICHEN UNSEREN SERVER NIE** (2026-09-29).
+- BEFUND, GEMESSEN (OWNER, live, 2026-09-29): Eine aus der Produktions-App exportierte Seite
+  trägt `navigator.sendBeacon("http://localhost:3000/api/e", …)`.
+- URSACHE, OWNER-ANGABE (2026-09-29): Die lokale `.env.local` wurde als Ganzes in Vercel
+  importiert; Production trägt deshalb `NEXT_PUBLIC_APP_URL=http://localhost:3000`.
+- FOLGE, ABGELEITET (nicht gemessen): Die Beacons exportierter Seiten erreichen unseren Server
+  nie — keine Server-Ereignisse, kein Forward, keine Bestätigungszeile. Das Browser-Pixel
+  feuert weiter; deshalb fällt es nicht auf. Bereits exportierte Dateien behalten die Adresse
+  (Dauerregel "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY"). Heute kein fremder
+  Nutzer, kein Schaden ausser an den eigenen Exporten des Owners.
+- BEZUG: Vermerk P13.6-1, Punkt (6) (exportierte Seiten beaconen absolut an
+  `NEXT_PUBLIC_APP_URL`, über `getCapiProxyUrl`); Vorrat P13.6-6 (B-1: `ownFormTargetDomains`
+  liest den Host dieses Werts). Die Messung beantwortet für den EXPORT die erste Frage von
+  Vorrat P13.6-11.
+- AUS DER AUFKLÄRUNG DERSELBEN RUNDE (CC, 2026-09-29, HEAD `9df051a`; GELESEN AM CODE bzw.
+  GEMESSEN AM REPO), damit die Korrektur nicht ohne sie geschnitten wird:
+  (a) Der Wert hat genau ZWEI Leser: `getCapiProxyUrl` (src/lib/capi/proxy.ts) und
+      `ownFormTargetDomains` (src/lib/form-target.ts). `getCapiProxyUrl` speist den EXPORT
+      (`buildExportDocument`) UND die FUNKTIONALE VORSCHAU des Editors (`generateFunctional`
+      mit Modus "preview" in src/components/CodeImporter.tsx); die Vorschau baut den Beacon
+      samt Bestätigung (`buildMetaRuntime`). OAuth-Rückkehr (`GOOGLE_OAUTH_REDIRECT_URI`),
+      Cookies und `isAppHost` hängen NICHT daran.
+  (b) ABGELEITET: Nach der Korrektur schickt jeder Track-Klick in der funktionalen Vorschau der
+      Produktions-App einen echten Beacon an `/api/e` — Zeilen in `events` und ein Forward an
+      jedes konfigurierte Ziel. Was der Beacon der Vorschau heute an `http://localhost:3000`
+      bewirkt, ist am Code NICHT ENTSCHEIDBAR (Browser-Regeln für lokale Adressen; ein
+      laufender lokaler Server). BEZUG: docs/claude-history/backlog-polish.md, Eintrag
+      "P11.6-3 — DIE VORSCHAU FEUERT ECHTE EREIGNISSE …".
+  (c) GEMESSEN AM REPO, NUR NAMEN (`cut -d= -f1`): `.env.local` trägt u. a.
+      `META_TEST_EVENT_CODE`, `GOOGLE_OAUTH_REDIRECT_URI`, `SECRET_ENC_KEYS`,
+      `SECRET_ENC_ACTIVE_KEY_ID` und `NEXT_PUBLIC_HOSTING_DOMAIN` (lokaler Wert `lvh.me:3000`).
+      Ob Vercel Production diese Werte seit dem Import trägt, ist am Repo NICHT ENTSCHEIDBAR;
+      das prüft der Owner im Dashboard. Betroffen wären der offene Punkt "DER CODE TRÄGT EINEN
+      DEPLOYMENT-WEITEN TESTMODUS-HEBEL …" und die OAuth-Rückkehr (offener Punkt "DIE ZWEI
+      REGISTRIERTEN WEITERLEITUNGS-ADRESSEN LIEGEN AUSSERHALB DES REPOS").
+- STATUS: Die Korrektur in Vercel ist AUSGESETZT, bis die Leser des Werts und die übrigen
+  Namen aus (c) geklärt sind (Auftrag der Runde vom 2026-09-29).
+- KEIN TRIGGER GESETZT.

@@ -34,6 +34,7 @@ beantworten.
 - Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 - Zuschnitt Scheibe 13.6-1
 - Zuschnitt Scheibe 13.6-2
+- Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
 
@@ -1100,6 +1101,45 @@ Tracking-Eingaben"). LIVE-TEST BESTANDEN.
     (Status); Punkt (7) am offenen Punkt "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE"
     (docs/offene-punkte.md) samt Stub-Zeile in CLAUDE.md.
 
+## Plattform-Schritte der Phase 13.6
+
+**Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).
+KEIN CODE-COMMIT: Der Schritt ist ein reiner Plattform-Schritt — eine Umgebungsvariable in
+Vercel und ein Redeploy; im Repo ändert sich keine Zeile. Er schliesst Vorrat P13.6-12 der Phase
+13.6 und folgt der Reihenfolge aus Setzung P13.6-14.
+
+(1) DER SCHRITT — OWNER-ANGABE, 2026-09-29:
+    · `NEXT_PUBLIC_APP_URL` in Vercel auf die Adresse der Produktions-App gesetzt:
+      `https://pagesmith-delta.vercel.app` (abgelesen an der Adresszeile des Owners).
+    · Redeploy ohne Build-Cache, Status "Ready" (Dauerregel "NEXT_PUBLIC_-REDEPLOY-PFLICHT").
+    · NICHT ANGEGEBEN: welche Umgebungen (Production, Preview, Development) die Variable nun
+      trägt. Die an Setzung P13.6-14 offene Frage nach dem Preview-Scope ist damit nicht
+      beantwortet.
+
+(2) GEMESSEN, OWNER, live, 2026-09-29:
+    · Ein neuer Export trägt `navigator.sendBeacon("https://pagesmith-delta.vercel.app/api/e", …)`.
+    · Die lokal geöffnete Exportdatei sendet beim Track-Klick an
+      `https://pagesmith-delta.vercel.app/api/e`, Status 204, `event` "Lead", `eventID`
+      `4b44778e-a793-41d2-a151-1f986b41e073`; dazu eine Bestätigung mit derselben `eventID` und
+      `obs` "__ps_browser".
+    · Supabase-SQL-Editor, Abfrage auf `events` nach dieser `event_id`: zwei Zeilen,
+      `event_type` "Lead", einmal `source` "browser", einmal `source` "server".
+    · Tracking-Schlüssel steht bewusst nicht in dieser Datei.
+
+(3) GRENZEN:
+    · Der Ursprung war eine lokale Datei (`file://`), kein fremder Host.
+    · Die 204 belegt nichts über den Kill-Switch oder die Gültigkeit des Schlüssels (Dauerregel
+      "INGEST-204-CONTAINMENT"); belegt hat die Annahme erst die `events`-Zeile `server`.
+    · Ein Forward an ein Ziel ist nicht gemessen.
+    · Früher exportierte Dateien tragen weiter `http://localhost:3000/api/e` und sind nur durch
+      einen Neu-Export zu heilen (Dauerregel "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM
+      DEPLOY").
+
+(4) ABGELEITET, NICHT GEMESSEN: `ownFormTargetDomains` (src/lib/form-target.ts) liest den Host
+    von `NEXT_PUBLIC_APP_URL` und führt nach dem Redeploy `pagesmith-delta.vercel.app`. Die
+    Sperre ändert das nicht: `vercel.app` steht dort seit Bau-Commit `9fae014` fest in der Liste
+    (Setzung P13.6-36, F4).
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13.6-5 — AUFKLÄRUNG A2: SICHERHEITS-INFRASTRUKTUR, DATENBANK, GEHEIMNISSE**
@@ -1317,6 +1357,9 @@ EXPORTIERTER SEITEN ERREICHEN UNSEREN SERVER NIE** (2026-09-29).
   Memo `functionalHtml` der Vorschau keine Beacon-Adresse mehr, und die Vorschau baut keinen
   Beacon. `getCapiProxyUrl` speist nur noch den Export; die Korrektur schaltet in der Vorschau
   nichts mehr ein.
+- ERLEDIGT 2026-09-29, ohne Code-Commit (Plattform-Schritt): `NEXT_PUBLIC_APP_URL` trägt die
+  Adresse der Produktions-App; ein neuer Export sendet an den Produktions-Ingest, gemessen bis in
+  `events` (Vermerk P13.6-47 der Phase 13.6). Früher exportierte Dateien behalten `localhost`.
 
 **Vorrat P13.6-15 — IM DEPLOYMENT LIEGEN GEHEIMNISSE, DIE DER CODE NICHT LIEST — DARUNTER SOLCHE
 MIT DIREKTEM DATENBANKZUGANG** (2026-09-29).

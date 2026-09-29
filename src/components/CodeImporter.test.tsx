@@ -6217,6 +6217,69 @@ describe("CodeImporter — Formular-Ziel (Phase 13, Scheibe 13-1)", () => {
     expect(await screen.findByText(/^Export gesperrt: Ein Formular mit Ziel erfüllt die Bedingungen nicht mehr/)).toBeTruthy();
     expect(clipboard).not.toHaveBeenCalled();
   });
+
+  // PHASE 13.6, SCHEIBE 13.6-1 (Setzungen P13.6-32, P13.6-33 und P13.6-36 der Phase 13.6).
+  it("A4-CI: ein Absende-Knopf mit formenctype -> kein Ziel angeboten, der Grund wird genannt; gespeichertes Ziel sperrt den Export", async () => {
+    // Rot, wenn die Angebotsregel Panel oder Export-Riegel nicht erreicht.
+    const felder = '<input type="email" name="email"><button type="submit" formenctype="text/plain">Klartext</button>';
+    await oeffneFormular(DOC("", felder));
+    expect(screen.getByText("Für dieses Formular ist kein Ziel möglich:")).toBeTruthy();
+    expect(screen.getByText(/Ein Absende-Knopf hat eigene Angaben zum Absenden/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Formular-Ziel/ })).toBeNull();
+    cleanup();
+    const clipboard = vi.fn(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboard },
+      configurable: true,
+    });
+    render(
+      <CodeImporter
+        initialCode={DOC("", felder)}
+        initialMappings={[
+          {
+            elementId: "ps-ffffff",
+            type: "formTarget",
+            config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/", fieldNames: ["email"] },
+          },
+        ]}
+      />
+    );
+    await screen.findAllByText("Absenden");
+    fireEvent.click(screen.getByRole("button", { name: "In Zwischenablage kopieren" }));
+    expect(await screen.findByText(/^Export gesperrt: Ein Formular mit Ziel erfüllt die Bedingungen nicht mehr/)).toBeTruthy();
+    expect(clipboard).not.toHaveBeenCalled();
+  });
+
+  it("B2-CI: der Export traegt am Formular mit Ziel Adresse und Versandform; der Quelltext im Editor nicht", async () => {
+    // Rot, wenn der Export-Weg die Attribute nicht schreibt oder der Quelltext sie aufnimmt.
+    const clipboard = vi.fn<(text: string) => Promise<undefined>>(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboard },
+      configurable: true,
+    });
+    render(
+      <CodeImporter
+        initialCode={DOC()}
+        initialMappings={[
+          {
+            elementId: "ps-ffffff",
+            type: "formTarget",
+            config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/", fieldNames: ["email"] },
+          },
+        ]}
+      />
+    );
+    await screen.findByText("Absenden");
+    fireEvent.click(screen.getByRole("button", { name: "In Zwischenablage kopieren" }));
+    await waitFor(() => expect(clipboard).toHaveBeenCalledTimes(1));
+    const exportText = clipboard.mock.calls[0][0];
+    expect(exportText).toContain(
+      `action="${ENDPOINT}" method="post" enctype="application/x-www-form-urlencoded" accept-charset="UTF-8"`
+    );
+    const quelltext = (document.querySelector("textarea") as HTMLTextAreaElement).value;
+    expect(quelltext).toContain('action="#unten"');
+    expect(quelltext).not.toContain('method="post"');
+  });
 });
 
 describe("CodeImporter — Absende-Buttons ohne eigene Aktionen (Phase 12.5, Scheibe 1c)", () => {

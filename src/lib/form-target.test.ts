@@ -9,6 +9,7 @@ import {
   deriveFormFieldNames,
   formTargetCheck,
   formTargetDocumentProblem,
+  formTargetEndpointHost,
   formTargetNameDrift,
   formTargetNamesMessage,
   formTargetNamesProblem,
@@ -21,7 +22,8 @@ import { annotateAndDetect } from "./detect";
 
 // ===========================================================================
 // FORMULAR-ZIEL (Phase 13, Scheibe 13-1). Die Tests F1–F13 und K1/K3 aus dem Plan der
-// Scheibe; der Massstab sind die Invarianten I1–I10 im Zuschnitt 13-1 der Standdatei.
+// Scheibe; der Massstab sind die Invarianten I1–I8 und I10 (I9 ist gestrichen) im Zuschnitt
+// Scheibe 13-1 der Phase 13 (Archiv docs/claude-history/phase-13-formular-ziel.md).
 // Was jsdom NICHT zeigen kann (echtes Netz, Werbeblocker, Sichtbarkeit der Meldung,
 // Navigation), steht in der Live-Anleitung.
 // ===========================================================================
@@ -482,25 +484,49 @@ const B1 = [
 // D1 — der Tabelleneintrag, hinter dem Track-Eintrag (Reihenfolge der Mappings).
 const D1 = `,{"elementId":"ps-cccccc","type":"formTarget","config":{"endpoint":"${ENDPOINT}","thanksUrl":"${THANKS}"}}`;
 
+// DER NATIVE RUECKFALL (Phase 13.6, Scheibe 13.6-1; Setzungen P13.6-32 und P13.6-36 der Phase
+// 13.6). GETIPPT aus den Setzungen, nicht aus dem Code: Am <form> mit Ziel wird die action des
+// Betreibers durch die eingetragene Adresse ERSETZT (X1), und method, enctype und
+// accept-charset kommen hinzu (A1) — setAttribute haengt ein neues Attribut hinten an. Eine
+// Ersetzung ist KEINE isolierbare Einsetzung; die Zusage lautet deshalb (Dauerregel "WO EINE
+// BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD …", Vorbedingung): Nachher = Vorher, in dem X1 genau
+// einmal ersetzt und A1 genau einmal eingesetzt ist, plus R1, B1, D1.
+const X1_VORHER = ' action="#unten"';
+const X1_NACHHER = ` action="${ENDPOINT}"`;
+const A1 = ' method="post" enctype="application/x-www-form-urlencoded" accept-charset="UTF-8"';
+
+// Die Ruecknahme der Scheibe 13.6-1 an einem Nachher-Text: A1 raus, X1 zurueck. Zaehlt vorher,
+// dass jedes genau einmal vorkommt — sonst waere die Ruecknahme mehrdeutig.
+function ohneRueckfall(nachher: string): string {
+  expect(count(nachher, A1)).toBe(1);
+  expect(count(nachher, X1_NACHHER)).toBe(1);
+  expect(count(nachher, X1_VORHER)).toBe(0);
+  return nachher.split(A1).join("").split(X1_NACHHER).join(X1_VORHER);
+}
+
 describe("F6b (I5) — Differenz-Nachweis MIT Ziel", () => {
-  it("F6b: Nachher = Vorher plus GENAU R1, B1, D1", () => {
+  it("F6b′: Nachher = Vorher plus GENAU R1, B1, D1 — und am <form> genau die Ersetzung X1 und die Einsetzung A1", () => {
     // (1) Vorher-Wert: dieselbe Seite, dieselben Optionen, OHNE das Ziel.
     const vorher = exportDoc([track("ps-cccccc", "Lead")]);
+    expect(count(vorher, X1_VORHER)).toBe(1);
     // (2) Nachher-Wert: an derselben Form, mit demselben Treiber.
     const nachher = exportDoc([track("ps-cccccc", "Lead"), target("ps-cccccc")]);
     // R1 ist der Baustein aus buildFormTargetRuntime — NICHT abgetippt: sein INHALT ist
     // durch F1–F4, K3 und F10 verhaltensgeprueft; dieser Nachweis prueft die STELLE.
     const R1 = buildFormTargetRuntime("de");
-    // (3) je genau einmal.
+    // (3) je genau einmal — R1, B1, D1 hier, X1 und A1 in ohneRueckfall.
     expect(count(nachher, R1)).toBe(1);
     expect(count(nachher, B1)).toBe(1);
     expect(count(nachher, D1)).toBe(1);
-    // (4) entfernen -> zeichengleich zum Vorher-Wert.
-    const rest = nachher.split(R1).join("").split(B1).join("").split(D1).join("");
+    // (4) entfernen bzw. zuruecknehmen -> zeichengleich zum Vorher-Wert.
+    const ohneBaustein = nachher.split(R1).join("").split(B1).join("").split(D1).join("");
+    const rest = ohneRueckfall(ohneBaustein);
     expect(bytes(rest)).toBe(bytes(vorher));
     expect(sha(rest)).toBe(sha(vorher));
-    // (5) POSITIVKONTROLLE: ohne die Entfernung besteht ein Unterschied.
+    // (5) POSITIVKONTROLLEN: ohne die Entfernung besteht ein Unterschied — und ohne die
+    // Ruecknahme von X1 und A1 ebenfalls.
     expect(sha(nachher)).not.toBe(sha(vorher));
+    expect(sha(ohneBaustein)).not.toBe(sha(vorher));
   });
 });
 
@@ -520,7 +546,37 @@ describe("F7 (I7) — feindliche Nutzlast in Zieladresse und Danke-Seite", () =>
     expect(zahl(parsed)).toBe(zahl(new DOMParser().parseFromString(ohne, "text/html")));
     const table = JSON.parse(parsed.getElementById("pagesmith-mappings")!.textContent ?? "[]");
     expect(table[1].config).toEqual({ endpoint: boeseA, thanksUrl: boeseB });
-    expect(out).not.toContain("</script><script>window.__boese");
+    // DIE ZEICHENPRUEFUNG GILT DEM SCRIPT-ROHTEXT (verengt in der Scheibe 13.6-1): Seit dort
+    // steht die Adresse zusaetzlich im action-Attribut des <form> — ein gequoteter
+    // Attributwert, in dem "</script>" kein Tag ist (Dauerregel "JEDER BETREIBER-WERT, DER IN
+    // SCRIPT-ROHTEXT GEHT …": das Escape traegt nur im Script-Rohtext). Die Scripts stehen
+    // hinter dem <form>, am Ende des body; geprueft wird der Text ab dem Datenblock. Die
+    // Attribut-Seite prueft F7b.
+    const abDatenblock = out.slice(out.indexOf('<script type="application/json" id="pagesmith-mappings">'));
+    expect(abDatenblock.length).toBeGreaterThan(0);
+    expect(abDatenblock).not.toContain("</script><script>window.__boese");
+  });
+
+  it("F7b (Scheibe 13.6-1): eine feindliche Adresse im action-Attribut bricht nicht aus — der Serialisierer maskiert", () => {
+    // Rot, wenn die Adresse roh in den Text geschrieben wird statt ueber setAttribute.
+    const boese = 'https://x.example/"><script>window.__boese=2</script><x-boese a="';
+    const ohne = exportDoc([track("ps-cccccc", "Lead")]);
+    const out = exportDoc([track("ps-cccccc", "Lead"), target("ps-cccccc", boese)]);
+    const parsed = new DOMParser().parseFromString(out, "text/html");
+    const vorher = new DOMParser().parseFromString(ohne, "text/html");
+    // Kein zusaetzliches Element: gleich viele Scripts, kein fremdes Element.
+    expect(parsed.querySelectorAll("script").length).toBe(vorher.querySelectorAll("script").length);
+    expect(parsed.querySelector("x-boese")).toBeNull();
+    // Der Attributwert kommt zeichengleich zurueck.
+    const form = parsed.querySelector('[data-pagesmith-id="ps-cccccc"]')!;
+    expect(form.getAttribute("action")).toBe(boese);
+    // POSITIVKONTROLLE: Die Sonde traegt wirklich ein Anfuehrungszeichen, und es steht
+    // maskiert im Text.
+    expect(boese).toContain('"');
+    // Nur das Anfuehrungszeichen wird hier festgeschrieben: ob "<" und ">" im Attribut
+    // ebenfalls maskiert werden, unterscheidet sich zwischen Serialisierern (jsdom 29 tut es
+    // nicht, gemessen in der Planrunde) und ist fuer den Ausbruch unerheblich.
+    expect(out).toContain('action="https://x.example/&quot;');
   });
 });
 
@@ -655,10 +711,57 @@ describe("formTargetProblem — die Werte", () => {
   });
 
   it("ownFormTargetDomains liest Hosting-Domaene und App-Host aus der Umgebung", () => {
+    // SEIT 13.6-1 steht "vercel.app" fest in der Liste (Setzungen P13.6-34 und P13.6-36, F4);
+    // die Erwartung ist aus der Setzung geschrieben.
     vi.stubEnv("NEXT_PUBLIC_HOSTING_DOMAIN", " .Publayer.net/ ");
     vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://App.Pagesmith.io/");
-    expect(ownFormTargetDomains()).toEqual(["lvh.me", "publayer.net", "app.pagesmith.io"]);
+    expect(ownFormTargetDomains()).toEqual(["lvh.me", "vercel.app", "publayer.net", "app.pagesmith.io"]);
     vi.unstubAllEnvs();
+  });
+
+  // V1 (Scheibe 13.6-1, F4): ueber die ECHTE Liste aus ownFormTargetDomains, nicht ueber OWN
+  // oben — sonst faende die Mutation "vercel.app fehlt" (M4) keinen Gegner.
+  it.each([
+    ["Vorschau-Adresse", "https://pagesmith-abc123-team.vercel.app/hook", "endpoint"],
+    ["vercel.app selbst", "https://vercel.app/x", "endpoint"],
+    ["Namensvetter ist KEIN eigener Host", "https://notvercel.app/x", null],
+  ])("V1: %s", (_name, endpoint, soll) => {
+    vi.stubEnv("NEXT_PUBLIC_HOSTING_DOMAIN", "publayer.net");
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "");
+    expect(formTargetProblem({ endpoint, thanksUrl: THANKS }, ownFormTargetDomains())).toBe(soll);
+    vi.unstubAllEnvs();
+  });
+
+  // P4 (Client, Scheibe 13.6-1, F5): isOwnHost normalisiert — Punkt am Ende und
+  // Grossschreibung, an der Adresse wie am Listeneintrag. Der Punkt am Ende ist gemessen
+  // (Vermerk P13.6-35 der Phase 13.6): new URL laesst ihn stehen.
+  it.each([
+    ["Punkt am Ende", "https://kunde.publayer.net./x", OWN, "endpoint"],
+    ["Punkt am Ende an der Hosting-Domaene selbst", "https://publayer.net./x", OWN, "endpoint"],
+    ["Grossbuchstaben und Punkt am Ende", "https://KUNDE.Publayer.NET./x", OWN, "endpoint"],
+    ["Listeneintrag mit Grossbuchstaben und Punkt", "https://kunde.publayer.net/x", ["Publayer.NET."], "endpoint"],
+    ["Positivkontrolle: fremder Host mit Punkt am Ende", "https://hook.eu2.make.com./x", OWN, null],
+  ])("P4 (Client): %s", (_name, endpoint, own, soll) => {
+    expect(formTargetProblem({ endpoint, thanksUrl: THANKS }, own)).toBe(soll);
+  });
+});
+
+// ===========================================================================
+// formTargetEndpointHost (Scheibe 13.6-1, F7) — der Host fuer die Pruefung in publishProject.
+// Die Erwartung ist aus der Setzung geschrieben: normalisiert, dann nur [a-z0-9.-], nicht leer.
+// ===========================================================================
+describe("formTargetEndpointHost — normalisiert, dann streng", () => {
+  it.each([
+    ["Grossbuchstaben und Punkt am Ende", "https://Hook.EU2.make.com./x", "hook.eu2.make.com"],
+    ["Leerraum am Rand", "  https://kunde.example/x ", "kunde.example"],
+    ["Punycode", "https://xn--mnchen-3ya.de/x", "xn--mnchen-3ya.de"],
+    ["IPv4", "https://203.0.113.7/x", "203.0.113.7"],
+    ["IPv6 in Klammern", "https://[2001:db8::1]/x", null],
+    ["Unterstrich", "https://a_b.example/x", null],
+    ["unparsbar", "https://", null],
+    ["kein String", 7, null],
+  ])("%s", (_name, endpoint, soll) => {
+    expect(formTargetEndpointHost(endpoint)).toBe(soll);
   });
 });
 
@@ -744,6 +847,30 @@ describe("F13/K1 — formTargetCheck", () => {
     });
   });
 
+  // DIE ANGEBOTSREGEL DER SCHEIBE 13.6-1 (Setzungen P13.6-33 und P13.6-36, F1/F2): formaction,
+  // formmethod und formenctype an einem Absende-Element, JEDES mit JEDEM Wert — auch am
+  // Bild-Knopf und ausserhalb ueber form=. formtarget und formnovalidate nicht. Erwartung aus
+  // der Setzung. Ein Element, das schon "foreign-action" oder "dialog" traegt, bleibt dort
+  // (Zeilen "formaction absolut" und "formmethod=dialog" oben, unveraendert).
+  it.each([
+    ["A1: formaction relativ", form("", '<input name="a"><button formaction="/senden">S</button>'), ["submitter-override"]],
+    ["A1: formaction leer", form("", '<input name="a"><button formaction="">S</button>'), ["submitter-override"]],
+    ["A1: formaction an input type=submit", form("", '<input name="a"><input type="submit" formaction="#x">'), ["submitter-override"]],
+    ["A2: Bild-Knopf mit formaction relativ", form("", '<input name="a"><input type="image" src="x.png" formaction="/x">'), ["submitter-override"]],
+    ["A2: Bild-Knopf ausserhalb ueber form= mit formmethod", form("", '<input name="a">', '<input type="image" src="x.png" form="ps-f" formmethod="get">'), ["submitter-override"]],
+    ["A2: Bild-Knopf mit absolutem formaction (Vorrat P13-61)", form("", '<input name="a"><input type="image" src="x.png" formaction="https://x.example/">'), ["foreign-action"]],
+    ["A2: Bild-Knopf mit formmethod=dialog", form("", '<input name="a"><input type="image" src="x.png" formmethod="dialog">'), ["dialog"]],
+    ["A3: formmethod get", form("", '<input name="a"><button formmethod="get">S</button>'), ["submitter-override"]],
+    ["A3: formmethod post (jeder Wert)", form("", '<input name="a"><button formmethod="post">S</button>'), ["submitter-override"]],
+    ["A3: formenctype urlencoded (jeder Wert)", form("", '<input name="a"><button formenctype="application/x-www-form-urlencoded">S</button>'), ["submitter-override"]],
+    ["A3: formenctype text/plain", form("", '<input name="a"><button formenctype="text/plain">S</button>'), ["submitter-override"]],
+    ["A3: formtarget sperrt nicht", form("", '<input name="a"><button formtarget="_blank">S</button>'), []],
+    ["A3: formnovalidate sperrt nicht", form("", '<input name="a"><button formnovalidate>S</button>'), []],
+    ["A3: formaction an type=button zaehlt nicht", form("", '<input name="a"><button type="button" formaction="/x" formenctype="text/plain">S</button>'), []],
+  ])("%s", (_name, html, soll) => {
+    expect(kinds(html)).toEqual(soll);
+  });
+
   it("kein <form> oder unbekannte ID -> null", () => {
     const html = `<!DOCTYPE html><html><body><div data-pagesmith-id="ps-cccccc"></div></body></html>`;
     expect(formTargetCheck(html, "ps-cccccc")).toBeNull();
@@ -780,6 +907,14 @@ describe("formTargetDocumentProblem — die Riegel vor Veroeffentlichen und Expo
     const html = PAGE.replace('<input type="text" name="name">', '<input type="radio">');
     expect(formTargetDocumentProblem(html, [target("ps-cccccc")], OWN, "de")).toBe("ineligible");
   });
+  it("A4 (Scheibe 13.6-1): ein Absende-Knopf mit formenctype oder formaction sperrt Veroeffentlichen und Export (ineligible)", () => {
+    // Rot, wenn die Angebotsregel den Riegel nicht erreicht.
+    for (const attr of ['formenctype="text/plain"', 'formaction="/x"']) {
+      const html = PAGE.replace('name="go" value="ja"', `name="go" value="ja" ${attr}`);
+      expect(html).not.toBe(PAGE);
+      expect(formTargetDocumentProblem(html, [target("ps-cccccc")], OWN, "de")).toBe("ineligible");
+    }
+  });
   it("unbekannte Sprache bei einem Ziel -> language", () => {
     expect(formTargetDocumentProblem(PAGE, [target("ps-cccccc")], OWN, "unknown")).toBe("language");
   });
@@ -790,7 +925,8 @@ describe("formTargetDocumentProblem — die Riegel vor Veroeffentlichen und Expo
 
 // ===========================================================================
 // SCHEIBE 13-1c — AUTOMATISCHE BENENNUNG DER FORMULARFELDER. Der Massstab sind die
-// Invarianten J1–J9 und die Setzungen P13-43 bis P13-59 im Zuschnitt 13-1c der Standdatei.
+// Invarianten J1–J9 und die Setzungen P13-43 bis P13-59 im Zuschnitt Scheibe 13-1c der
+// Phase 13 (Archiv docs/claude-history/phase-13-formular-ziel.md).
 // Die ERWARTETEN Namen sind aus den Setzungen geschrieben, nicht aus dem Code abgelesen.
 // ===========================================================================
 
@@ -968,10 +1104,11 @@ describe("13-1c — J2: ohne Formular-Ziel keine Namen", () => {
 // Namens-Einsetzungen — die fuenf Schritte der Dauerregel "WO EINE BYTE-GLEICHHEIT BEWUSST
 // AUFGEGEBEN WIRD …". Die Seite traegt nur die Quellen id und Platzhalter (keine Beschriftung).
 describe("13-1c — N-Diff: Nachher = Vorher plus R1, B1, D1 und genau die Namen", () => {
-  it("N-Diff: zwei Namens-Einsetzungen, danach zeichengleich", () => {
+  it("N-Diff′: zwei Namens-Einsetzungen, die Ersetzung X1 und die Einsetzung A1 (Scheibe 13.6-1), danach zeichengleich", () => {
     const SEITE = `<!DOCTYPE html><html><body><form data-pagesmith-id="ps-cccccc" action="#unten"><input type="email" name="email"><input type="text" id="vorname"><input placeholder="Deine Stadt"><button data-pagesmith-id="ps-dddddd" type="submit" name="go" value="ja">Absenden</button></form></body></html>`;
     // (1) Vorher-Wert: dieselbe Seite und Optionen, OHNE das Ziel.
     const vorher = exportOf(SEITE, [track("ps-cccccc", "Lead")]);
+    expect(count(vorher, X1_VORHER)).toBe(1);
     // (2) Nachher-Wert: an derselben Form, mit demselben Treiber.
     const nachher = exportOf(SEITE, [
       track("ps-cccccc", "Lead"),
@@ -979,16 +1116,21 @@ describe("13-1c — N-Diff: Nachher = Vorher plus R1, B1, D1 und genau die Namen
     ]);
     const R1 = buildFormTargetRuntime("de");
     const EINSETZUNGEN = [' name="vorname"', ' name="deine_stadt"'];
-    // (3) je genau einmal — erwartet: R1, B1, D1 je 1, die zwei Namen je 1.
+    // (3) je genau einmal — erwartet: R1, B1, D1 je 1, die zwei Namen je 1; X1 und A1 je 1
+    // (in ohneRueckfall).
     for (const teil of [R1, B1, D1, ...EINSETZUNGEN]) expect(count(nachher, teil)).toBe(1);
-    // (4) entfernen -> zeichengleich zum Vorher-Wert.
-    let rest = nachher;
-    for (const teil of [R1, B1, D1, ...EINSETZUNGEN]) rest = rest.split(teil).join("");
+    // (4) entfernen bzw. zuruecknehmen -> zeichengleich zum Vorher-Wert.
+    let ohneEinsetzungen = nachher;
+    for (const teil of [R1, B1, D1, ...EINSETZUNGEN])
+      ohneEinsetzungen = ohneEinsetzungen.split(teil).join("");
+    const rest = ohneRueckfall(ohneEinsetzungen);
     expect(bytes(rest)).toBe(bytes(vorher));
     expect(sha(rest)).toBe(sha(vorher));
-    // (5) POSITIVKONTROLLE: ohne die Namens-Entfernung besteht ein Unterschied.
-    const ohneNamen = nachher.split(R1).join("").split(B1).join("").split(D1).join("");
+    // (5) POSITIVKONTROLLEN: ohne die Namens-Entfernung besteht ein Unterschied — und ohne die
+    // Ruecknahme von X1 und A1 ebenfalls.
+    const ohneNamen = ohneRueckfall(nachher.split(R1).join("").split(B1).join("").split(D1).join(""));
     expect(sha(ohneNamen)).not.toBe(sha(vorher));
+    expect(sha(ohneEinsetzungen)).not.toBe(sha(vorher));
   });
 });
 
@@ -1120,5 +1262,141 @@ describe("13-1c — J7: Abweichung und Meldung", () => {
     expect(mappingsEqual(a, [target("ps-cccccc")])).toBe(true);
     expect(mappingsEqual(a, [target("ps-cccccc", ENDPOINT, THANKS, ["email"])])).toBe(false);
     expect(mappingsEqual(a, [target("ps-cccccc", ENDPOINT, THANKS, null)])).toBe(false);
+  });
+});
+
+// ===========================================================================
+// PHASE 13.6, SCHEIBE 13.6-1 — B-2: DER NATIVE RUECKFALL. Massstab: Setzungen P13.6-32 und
+// P13.6-36 im Zuschnitt Scheibe 13.6-1 der Phase 13.6. Die ERWARTETEN Attribute sind aus den
+// Setzungen geschrieben: action = eingetragene Adresse, method="post",
+// enctype="application/x-www-form-urlencoded", accept-charset="UTF-8"; target unangetastet.
+// Ob der Browser dann wirklich an die Adresse schickt, ist eine LIVE-Achse (jsdom schickt
+// nichts ab).
+// ===========================================================================
+
+function formAttrs(output: string, id = "ps-cccccc"): Record<string, string | null> {
+  const f = formOf(output, id);
+  return {
+    action: f.getAttribute("action"),
+    method: f.getAttribute("method"),
+    enctype: f.getAttribute("enctype"),
+    "accept-charset": f.getAttribute("accept-charset"),
+    target: f.getAttribute("target"),
+  };
+}
+
+const RUECKFALL = {
+  action: ENDPOINT,
+  method: "post",
+  enctype: "application/x-www-form-urlencoded",
+  "accept-charset": "UTF-8",
+};
+
+describe("13.6-1 — B-2: das Formular mit Ziel traegt die Adresse und die Versandform", () => {
+  it("B2a: action, method, enctype und accept-charset stehen am <form> mit Ziel", () => {
+    // Rot ohne das Setzen (M1: action, M2: method).
+    expect(formAttrs(exportDoc([target("ps-cccccc")]))).toEqual({ ...RUECKFALL, target: null });
+  });
+
+  it("B2b: vorhandene Werte des Betreibers werden ersetzt, target bleibt", () => {
+    // Rot, wenn nur fehlende Attribute gesetzt werden oder target angefasst wird.
+    const html = formDoc(
+      '<input name="a">',
+      "",
+      'action="/senden" method="get" enctype="text/plain" accept-charset="ISO-8859-1" target="_blank"'
+    );
+    // Vorbedingung: die Werte des Betreibers stehen wirklich in der Sonde.
+    expect(formAttrs(html)).toEqual({
+      action: "/senden",
+      method: "get",
+      enctype: "text/plain",
+      "accept-charset": "ISO-8859-1",
+      target: "_blank",
+    });
+    expect(formAttrs(exportOf(html, [target("ps-cccccc", ENDPOINT, THANKS, ["a"])]))).toEqual({
+      ...RUECKFALL,
+      target: "_blank",
+    });
+  });
+
+  it("B2c: Vorschau und Edit schreiben die Attribute nicht, auch mit Ziel (Positivkontrolle: Export)", () => {
+    // Rot, wenn die Modus-Sperre fehlt.
+    const m = [target("ps-cccccc")];
+    for (const mode of ["preview", "edit"] as const) {
+      expect(formAttrs(exportOf(PAGE, m, mode))).toEqual({
+        action: "#unten",
+        method: null,
+        enctype: null,
+        "accept-charset": null,
+        target: null,
+      });
+    }
+    expect(formAttrs(exportOf(PAGE, m, "export"))).toEqual({ ...RUECKFALL, target: null });
+  });
+
+  it("B2d: die Laufzeit liest die Attribute nicht — mit Skript schickt der Versand weiter per fetch, nie nativ", () => {
+    // Rot, wenn das Setzen den Skript-Pfad veraendert (preventDefault, ein fetch an die
+    // Adresse aus dem Datenblock).
+    mount(exportDoc([target("ps-cccccc")]));
+    fill();
+    const ev = submit();
+    expect(ev.defaultPrevented).toBe(true);
+    expect(fetchCalls).toHaveLength(1);
+    expect(fetchCalls[0].url).toBe(ENDPOINT);
+  });
+});
+
+// B2-J — OHNE ZIEL BLEIBT ALLES BYTE-GLEICH. Die vier Differenz-Nachweise W1', W2', T1, T9
+// sehen diese Stelle NICHT: ihre Sonden tragen kein <form>-Element (gezaehlt in der Planrunde
+// der Scheibe 13.6-1: jedes "<form" dort steht in einem abgeschriebenen Kommentar). Diese
+// beiden Tests sind die Waechter (Mutation M-I5').
+describe("13.6-1 — B2-J: Formulare und Projekte OHNE Ziel bleiben unberuehrt", () => {
+  it("B2-J1: ein Formular OHNE Ziel neben einem MIT Ziel behaelt seine Attribute (Positivkontrolle: das mit Ziel traegt sie)", () => {
+    const out = exportDoc([target("ps-cccccc"), track("ps-eeeeee", "Contact")]);
+    expect(formAttrs(out, "ps-eeeeee")).toEqual({
+      action: "#zwei",
+      method: null,
+      enctype: null,
+      "accept-charset": null,
+      target: null,
+    });
+    expect(formAttrs(out)).toEqual({ ...RUECKFALL, target: null });
+  });
+
+  // DER VORHER-WERT IST EINE KONSTANTE, erhoben VOR dem ersten Eingriff der Scheibe 13.6-1:
+  // generateFunctional im Modus "export" an Commit 5b1ddc7 (Sonde ausserhalb des Repos, CC,
+  // 2026-09-29) — 16574 Bytes, sha256 unten. Er wird NIE neu berechnet: Wird dieser Test rot,
+  // ist der CODE falsch, nicht die Konstante.
+  const B2J2_HTML = `<!DOCTYPE html><html><head></head><body><form data-pagesmith-id="ps-aaaaaa" action="#kontakt" method="get" enctype="text/plain"><input type="email" name="email"><input id="vorname"><button type="submit" data-pagesmith-id="ps-bbbbbb">Senden</button></form><form data-pagesmith-id="ps-cccccc"><input name="q"></form><a href="https://alt.example/" data-pagesmith-id="ps-dddddd">Link</a></body></html>`;
+  const B2J2_MAPPINGS: Mapping[] = [
+    { elementId: "ps-aaaaaa", type: "track", config: { event: "Lead" } },
+    { elementId: "ps-cccccc", type: "track", config: { event: "Search" } },
+    { elementId: "ps-dddddd", type: "redirect", config: { url: "https://neu.example/", openInNewTab: false } },
+  ];
+  const B2J2_OPTIONS = {
+    metaPixelId: "123456789012345",
+    trackingKey: "tk-public-123",
+    capiProxyUrl: "https://app.pagesmith.io/api/e",
+    formTargetLanguage: "de" as const,
+  };
+  const B2J2_BYTES = 16574;
+  const B2J2_SHA = "6eeede3eef1459c50a7c6815cf4861a97b2c2897ddb4e311b89625ad304e5598";
+
+  it("B2-J2: ein Projekt ohne jedes Ziel, mit zwei Formularen, ist byte-gleich zum Vorher-Wert", () => {
+    const out = generateFunctional(B2J2_HTML, B2J2_MAPPINGS, "export", B2J2_OPTIONS);
+    expect(bytes(out)).toBe(B2J2_BYTES);
+    expect(sha(out)).toBe(B2J2_SHA);
+  });
+
+  it("B2-J2 (Positivkontrolle): dieselbe Sonde MIT Ziel weicht ab — die Sonde traegt den Gegenstand", () => {
+    // Ohne sie waere B2-J2 auch dann gruen, wenn die Sonde kein Formular erreichte.
+    const out = generateFunctional(
+      B2J2_HTML,
+      [...B2J2_MAPPINGS, target("ps-aaaaaa", ENDPOINT, THANKS, ["email", "vorname"])],
+      "export",
+      B2J2_OPTIONS
+    );
+    expect(sha(out)).not.toBe(B2J2_SHA);
+    expect(formAttrs(out, "ps-aaaaaa")).toEqual({ ...RUECKFALL, target: null });
   });
 });

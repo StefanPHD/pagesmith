@@ -4,17 +4,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const { createClient } = vi.hoisted(() => ({ createClient: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createClient }));
 vi.mock("server-only", () => ({}));
-// Admin-Client existiert im Modul (setCapiToken), wird hier NICHT gebraucht — mocken,
-// damit der Import nicht den echten service_role-Pfad laedt. Spy beweist zugleich:
-// publishProject fasst service_role NIE an (Write laeuft ueber den authenticated-Client).
+// Admin-Client existiert im Modul (setCapiToken) — mocken, damit der Import nicht den echten
+// service_role-Pfad laedt. Der Spy beweist zugleich: OHNE Formular-Ziel fasst publishProject
+// service_role NIE an (Write laeuft ueber den authenticated-Client). SEIT DER SCHEIBE 13.6-1
+// liest es MIT Formular-Ziel genau einmal domains.custom_host ueber ihn (Block "P — die
+// Custom-Domain-Pruefung" unten; makeAdmin).
 const { createAdminClient } = vi.hoisted(() => ({ createAdminClient: vi.fn() }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
 import { publishProject } from "./actions";
 import {
+  FORM_TARGET_DOMAIN_CHECK_FAILED_MESSAGE,
+  FORM_TARGET_HOST_UNCHECKABLE_MESSAGE,
   FORM_TARGET_INVALID_MESSAGE,
   FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE,
   FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE,
+  FORM_TARGET_OWN_DOMAIN_MESSAGE,
 } from "@/lib/form-target";
 
 /**
@@ -81,6 +86,41 @@ function makeClient(opts: {
   };
   createClient.mockResolvedValue(client);
   return { client, rec };
+}
+
+/**
+ * Der Admin-Client der Custom-Domain-Pruefung (Scheibe 13.6-1): from().select().in().limit(),
+ * am Ende awaited. Zeichnet Tabelle, Spalten und die in()-Argumente auf.
+ */
+function makeAdmin(result: { data: unknown; error: unknown } = { data: [], error: null }) {
+  const rec = {
+    tables: [] as string[],
+    selects: [] as string[],
+    inCalls: [] as { column: string; values: string[] }[],
+    limits: [] as number[],
+  };
+  const b: Record<string, unknown> = {};
+  b.select = vi.fn((cols: string) => {
+    rec.selects.push(cols);
+    return b;
+  });
+  b.in = vi.fn((column: string, values: string[]) => {
+    rec.inCalls.push({ column, values });
+    return b;
+  });
+  b.limit = vi.fn((n: number) => {
+    rec.limits.push(n);
+    return b;
+  });
+  b.then = (onF: (v: unknown) => unknown) => onF(result);
+  const admin = {
+    from: vi.fn((table: string) => {
+      rec.tables.push(table);
+      return b;
+    }),
+  };
+  createAdminClient.mockReturnValue(admin);
+  return rec;
 }
 
 const snapshot = { html: "<h1 data-pagesmith-id='ps-1'>x</h1>", mappings: [], settings: {} };
@@ -1838,6 +1878,11 @@ describe("F8 — das Tor des Formular-Ziels in publishProject", () => {
       user: { id: "user-1" },
       ownRow: { data: { id: "proj-1", name: "P", settings: {}, html_b: null }, error: null },
     });
+  // SEIT 13.6-1 fragt ein Veroeffentlichen MIT Ziel die Custom-Domains ab; ohne Treffer
+  // (Vorgabe) geht es weiter wie vorher.
+  beforeEach(() => {
+    makeAdmin();
+  });
 
   it("F8 (Positivkontrolle): ein taugliches Ziel wird veroeffentlicht", async () => {
     const { rec } = own();
@@ -1849,6 +1894,9 @@ describe("F8 — das Tor des Formular-Ziels in publishProject", () => {
   it.each([
     ["Zieladresse http", ziel("http://hook.example/x")],
     ["Zieladresse auf dem eigenen Serving-Host", ziel("https://kunde.lvh.me/x")],
+    // Scheibe 13.6-1 (Setzungen P13.6-34 und P13.6-36, F4 und F5).
+    ["Zieladresse auf *.vercel.app", ziel("https://pagesmith-abc123-team.vercel.app/hook")],
+    ["Zieladresse auf dem Serving-Host mit Punkt am Ende", ziel("https://kunde.lvh.me./x")],
     ["Danke-Seite leer", ziel(ENDPOINT, "")],
     ["Danke-Seite relativ", ziel(ENDPOINT, "/danke")],
     ["unbekannte Form", { elementId: "ps-f", type: "formTarget" as const, config: { endpoint: 7 } }],
@@ -1944,5 +1992,87 @@ describe("F8 — das Tor des Formular-Ziels in publishProject", () => {
       mappings: [{ elementId: "ps-f", type: "formTarget", config: { endpoint: "http://x.example", thanksUrl: THANKS } }],
     });
     expect(res).toEqual({ ok: false, error: FORM_TARGET_INVALID_MESSAGE });
+  });
+
+  // =========================================================================
+  // P — DIE CUSTOM-DOMAIN-PRUEFUNG (Phase 13.6, Scheibe 13.6-1; Setzungen P13.6-34 und
+  // P13.6-36, F7). Erwartung aus der Setzung: Admin-Client erst nach dem Gate und nur mit
+  // Ziel; Hosts normalisiert und streng geprueft, bevor eine Abfrage laeuft; nur custom_host,
+  // in() und limit(1); Fehler bricht ab; alles vor dem Schreiben des Labels.
+  // =========================================================================
+  it("P1: ein Host, der als custom_host existiert, bricht ab — nichts geschrieben; die Abfrage liest nur custom_host", async () => {
+    // Rot ohne die Pruefung.
+    const adm = makeAdmin({ data: [{ custom_host: "landing.kunde.de" }], error: null });
+    const { rec } = own();
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+      ...snapshot,
+      mappings: [ziel("https://landing.kunde.de/hook")],
+    });
+    expect(res).toEqual({ ok: false, error: FORM_TARGET_OWN_DOMAIN_MESSAGE });
+    expect(rec.inserts).toHaveLength(0);
+    expect(rec.updatePatch).toBeNull();
+    expect(adm.tables).toEqual(["domains"]);
+    expect(adm.selects).toEqual(["custom_host"]);
+    expect(adm.inCalls).toEqual([{ column: "custom_host", values: ["landing.kunde.de"] }]);
+    expect(adm.limits).toEqual([1]);
+  });
+
+  it("P2: ein Fehler der Abfrage bricht ab — er gilt nie als 'erlaubt'", async () => {
+    // Rot, wenn error nicht ausgewertet wird (dann ginge es mit data=null weiter).
+    makeAdmin({ data: null, error: { message: "boom" } });
+    const { rec } = own();
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", { ...snapshot, mappings: [ziel()] });
+    expect(res).toEqual({ ok: false, error: FORM_TARGET_DOMAIN_CHECK_FAILED_MESSAGE });
+    expect(rec.inserts).toHaveLength(0);
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("P3 (IDOR): fremdes Projekt mit Ziel -> der Admin-Client wird NIE instanziiert", async () => {
+    // Rot, wenn die Pruefung vor das Ownership-Gate rutscht.
+    makeClient({ user: { id: "user-1" }, ownRow: { data: null, error: null } });
+    const res = await publishProject("proj-fremd", "<h1>LIVE</h1>", { ...snapshot, mappings: [ziel()] });
+    expect(res.ok).toBe(false);
+    expect(createAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("P3b: ohne Formular-Ziel wird der Admin-Client NIE instanziiert (Positivkontrolle: mit Ziel genau einmal)", async () => {
+    own();
+    expect((await publishProject("proj-1", "<h1>LIVE</h1>", snapshot)).ok).toBe(true);
+    expect(createAdminClient).not.toHaveBeenCalled();
+    own();
+    expect((await publishProject("proj-1", "<h1>LIVE</h1>", { ...snapshot, mappings: [ziel()] })).ok).toBe(true);
+    expect(createAdminClient).toHaveBeenCalledTimes(1);
+  });
+
+  it("P4 (Server): Hosts beider Varianten gehen normalisiert in EINE Abfrage — klein, ohne Punkt am Ende, jeder einmal", async () => {
+    // Rot ohne die Normalisierung (M6) oder wenn Variante B fehlt.
+    const adm = makeAdmin();
+    makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {}, html_b: "<h1>B</h1>" }, error: null },
+    });
+    const res = await publishProject(
+      "proj-1",
+      "<h1>LIVE</h1>",
+      { ...snapshot, mappings: [ziel("https://Landing.KUNDE.de./hook"), ziel("https://landing.kunde.de/zwei")] },
+      { functionalHtml: "<h1>B</h1>", html: "<h1>B</h1>", mappings: [ziel("https://b.example./x")] }
+    );
+    expect(res.ok).toBe(true);
+    expect(adm.inCalls).toEqual([{ column: "custom_host", values: ["landing.kunde.de", "b.example"] }]);
+  });
+
+  it("P5: ein Host mit unzulaessigem Zeichen bricht ab, BEVOR eine Abfrage laeuft", async () => {
+    // Rot ohne die strenge Pruefung (M5): dann liefe die Abfrage mit dem Host.
+    const adm = makeAdmin();
+    const { rec } = own();
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", {
+      ...snapshot,
+      mappings: [ziel("https://a_b.example/hook")],
+    });
+    expect(res).toEqual({ ok: false, error: FORM_TARGET_HOST_UNCHECKABLE_MESSAGE });
+    expect(createAdminClient).not.toHaveBeenCalled();
+    expect(adm.inCalls).toEqual([]);
+    expect(rec.inserts).toHaveLength(0);
+    expect(rec.updatePatch).toBeNull();
   });
 });

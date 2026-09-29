@@ -44,9 +44,13 @@ import {
 } from "@/lib/hosting/host";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import {
+  FORM_TARGET_DOMAIN_CHECK_FAILED_MESSAGE,
+  FORM_TARGET_HOST_UNCHECKABLE_MESSAGE,
   FORM_TARGET_INVALID_MESSAGE,
   FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE,
   FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE,
+  FORM_TARGET_OWN_DOMAIN_MESSAGE,
+  formTargetEndpointHost,
   formTargetNamesProblem,
   formTargetProblem,
   ownFormTargetDomains,
@@ -1476,10 +1480,17 @@ async function insertDomainLabel(
  *
  * IDOR-Muster wie setCapiToken: Session-Check + Ownership-Gate ZWINGEND ueber den
  * authenticated-SSR-Client (RLS greift). Beide Writes (projects.published_content und
- * domains) laufen ueber DENSELBEN authenticated-Client — anders als setCapiToken KEIN
+ * domains) laufen ueber DENSELBEN authenticated-Client — anders als setCapiToken OHNE
  * service_role, weil domains owner-scoped lesbar ist (keine write-only-Sperre, kein
  * RETURNING-Konflikt). Ein Nicht-Owner scheitert am Gate, bevor irgendetwas geschrieben
  * wird.
+ * SEIT DER SCHEIBE 13.6-1 GIBT ES GENAU EINEN service_role-ZUGRIFF, UND ER LIEST NUR
+ * (Setzungen P13.6-34 und P13.6-36 der Phase 13.6, F7): die Pruefung, ob eine Zieladresse
+ * eines Formular-Ziels auf der Custom-Domain IRGENDEINES Projekts liegt. RLS zeigte dem
+ * authenticated-Client nur die eigenen Domains. Der Admin-Client entsteht erst NACH dem
+ * Ownership-Gate und nur, wenn mindestens ein Formular-Ziel besteht; ohne Formular-Ziel wird
+ * er nie instanziiert (Waechter in publish.test.ts: "Scheibe 7a", P3b; vor dem Gate: P3).
+ * Geschrieben wird weiterhin ausschliesslich ueber den authenticated-Client.
  *
  * published_content = { html: functionalHtml, mappings, settings, publishedAt }
  * — plus, NUR wenn das Projekt eine Variante B traegt, den additiven Geschwister-Key
@@ -1769,6 +1780,40 @@ export async function publishProject(
       return { ok: false, error: FORM_TARGET_NAMES_UNCONFIRMED_MESSAGE };
     if (consentLanguage === "unknown")
       return { ok: false, error: FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE };
+
+    // KEINE ZIELADRESSE AUF DER CUSTOM-DOMAIN IRGENDEINES PROJEKTS (Phase 13.6, Scheibe
+    // 13.6-1; Setzungen P13.6-34 und P13.6-36, F7). Eine solche Adresse ist cross-origin:
+    // Der no-cors-Aufruf loeste mit "opaque" auf, galte als "erreicht", der Besucher saehe
+    // die Danke-Seite — und die Formularinhalte laegen bei unserem Deployment statt beim
+    // Empfaenger (Entscheidung P13-7 der Phase 13). Der Client kennt die Custom-Domains
+    // fremder Projekte nicht; die Pruefung steht deshalb NUR hier. Der Export hat keinen
+    // Server und prueft sie nicht (benannte Grenze).
+    // REIHENFOLGE, und sie traegt: (1) die Hosts aus den bereits geprueften Werten ableiten
+    // und STRENG pruefen — ein Host ausserhalb von [a-z0-9.-] bricht ab, BEVOR eine Abfrage
+    // laeuft; (2) erst dann der Admin-Client. Alle billigen Pruefungen stehen davor.
+    // WARUM service_role: RLS auf domains ist an den Eigentuemer gebunden (0006), der
+    // authenticated-Client saehe nur die EIGENEN Custom-Domains. Die Abfrage liest nur
+    // custom_host, nie project_id oder label; die Meldung nennt kein Projekt.
+    // Ein Fehler der Abfrage bricht ab — er gilt NIE als "erlaubt".
+    const hosts = new Set<string>();
+    for (const m of formTargets) {
+      const host = formTargetEndpointHost(
+        (m.config as { endpoint?: unknown }).endpoint
+      );
+      if (host === null)
+        return { ok: false, error: FORM_TARGET_HOST_UNCHECKABLE_MESSAGE };
+      hosts.add(host);
+    }
+    const admin = createAdminClient();
+    const { data: servedHosts, error: servedError } = await admin
+      .from("domains")
+      .select("custom_host")
+      .in("custom_host", Array.from(hosts))
+      .limit(1);
+    if (servedError)
+      return { ok: false, error: FORM_TARGET_DOMAIN_CHECK_FAILED_MESSAGE };
+    if ((servedHosts ?? []).length > 0)
+      return { ok: false, error: FORM_TARGET_OWN_DOMAIN_MESSAGE };
   }
 
   // ===== EIGENE BAUSTEINE AUS EINEM FRUEHEREN EXPORT: NICHTS DOPPELTES GEHT LIVE ====

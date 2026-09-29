@@ -16,9 +16,15 @@
 // die der Editor anzeigt und die Erzeugung (generateFunctional) schreibt; dazu die am Ziel
 // bestaetigte Liste und ihr Riegel.
 //
-// DIE REGELN, AUF DENEN DAS STEHT, stehen in der Standdatei der Phase 13 (Zuschnitt
-// Scheibe 13-1): Invarianten I1 bis I10, Setzungen P13-25 bis P13-32; fuer 13-1c der
+// DIE REGELN, AUF DENEN DAS STEHT, stehen im Archiv der Phase 13
+// (docs/claude-history/phase-13-formular-ziel.md), Zuschnitt Scheibe 13-1: Invarianten I1
+// bis I8 und I10 (I9 ist gestrichen), Setzungen P13-25 bis P13-32; fuer 13-1c ebenda der
 // Zuschnitt Scheibe 13-1c: Invarianten J1 bis J9, Setzungen P13-43 bis P13-59.
+// SEIT DER SCHEIBE 13.6-1 (Phase 13.6, Zuschnitt Scheibe 13.6-1 der Standdatei jener Phase;
+// Setzungen P13.6-32 bis P13.6-34 und P13.6-36): die eigenen Hosts schliessen *.vercel.app
+// ein, isOwnHost normalisiert den Host, Absende-Elemente mit formaction, formmethod oder
+// formenctype schliessen ein Ziel aus, und formTargetEndpointHost liefert publishProject den
+// Host fuer die Pruefung auf Custom-Domains.
 
 import { isValidRedirectUrl, type Mapping } from "./mappings";
 import { embedInScript } from "./script-embed";
@@ -57,6 +63,17 @@ export type FormTargetProblem = "shape" | "endpoint" | "thanks";
  * FALLBACK_SUFFIX in lib/hosting/host.ts; jene Datei ist eine Kern-Datei und bleibt in
  * dieser Scheibe unberuehrt, deshalb steht die Lesung hier ein zweites Mal.
  *
+ * "vercel.app" (Scheibe 13.6-1, Setzungen P13.6-34 und P13.6-36, F4): JEDE Adresse unter
+ * *.vercel.app ist gesperrt. Die Frage hier ist "erreicht die Adresse unser Deployment?",
+ * nicht "welcher Zweig?" — deshalb NICHT isAppHost aus lib/hosting/host.ts: ein
+ * vercel.app-Host erreicht das Deployment auch dann, wenn er dort einmal herausfaellt. Die
+ * Adresse der Produktions-App ist nicht aus der Umgebung ableitbar (NEXT_PUBLIC_APP_URL
+ * trug in Production zeitweise "localhost", Vorrat P13.6-12 der Phase 13.6), die
+ * Vorschau-Adressen wechseln je Deployment. DER PREIS: auch ein eigener Endpunkt eines
+ * Kunden unter vercel.app wird abgelehnt.
+ * Die Custom-Domains der Projekte stehen NICHT hier: Sie liegen in der Datenbank, und nur
+ * publishProject fragt sie ab (formTargetEndpointHost).
+ *
  * WARUM NICHT ERLAUBT: Ein no-cors-Aufruf auf denselben Ursprung loest mit Typ "basic" auf
  * und gilt damit als NIE erreicht — jeder erneute Versuch erzeugte einen weiteren Eingang.
  * Auf dem Serving-Host kommt dazu, dass `proxy` jeden Pfad auf die Serve-Route
@@ -66,7 +83,7 @@ export type FormTargetProblem = "shape" | "endpoint" | "thanks";
  * AUFRUFZEIT gerufen, damit ein Test die Umgebung setzen kann.
  */
 export function ownFormTargetDomains(): string[] {
-  const domains = ["lvh.me"];
+  const domains = ["lvh.me", "vercel.app"];
   const hosting = (process.env.NEXT_PUBLIC_HOSTING_DOMAIN ?? "")
     .trim()
     .replace(/^\.+/, "")
@@ -86,9 +103,50 @@ export function ownFormTargetDomains(): string[] {
   return domains;
 }
 
+/**
+ * Die Normalform eines Hosts fuer jeden Vergleich mit eigenen Hosts (Scheibe 13.6-1,
+ * Setzung P13.6-36, F5): Kleinschreibung, Punkte am Ende entfernt. Der Punkt am Ende ist
+ * GEMESSEN: new URL("https://a.publayer.net./x").hostname liefert "a.publayer.net." (Node und
+ * Chrome 154, Vermerk P13.6-35 der Phase 13.6) — ohne diese Zeile umging eine solche Adresse
+ * den endsWith-Vergleich. Gilt im Client (isOwnHost) wie im Server (formTargetEndpointHost).
+ */
+export function normalizeFormTargetHost(hostname: string): string {
+  return hostname.toLowerCase().replace(/\.+$/, "");
+}
+
 function isOwnHost(hostname: string, ownDomains: readonly string[]): boolean {
-  const h = hostname.toLowerCase();
-  return ownDomains.some((d) => d !== "" && (h === d || h.endsWith("." + d)));
+  const h = normalizeFormTargetHost(hostname);
+  return ownDomains.some((raw) => {
+    const d = normalizeFormTargetHost(raw);
+    return d !== "" && (h === d || h.endsWith("." + d));
+  });
+}
+
+// Die strenge Form eines Hosts, bevor er in eine Datenbank-Abfrage geht (Setzung P13.6-36,
+// F7): nur Kleinbuchstaben, Ziffern, Punkt und Bindestrich, nicht leer. Punycode einer
+// IDN-Domain besteht, eine IPv6-Adresse in Klammern und ein Unterstrich nicht.
+const STRICT_HOST_RE = /^[a-z0-9.-]+$/;
+
+/**
+ * Der Host einer Zieladresse fuer die Pruefung auf Custom-Domains in publishProject
+ * (Scheibe 13.6-1, Setzungen P13.6-34 und P13.6-36, F7). Rein, ohne Datenbank.
+ * - null: die Adresse ist nicht zu parsen, oder ihr normalisierter Host hat eine andere Form
+ *   als STRICT_HOST_RE. Der Aufrufer BRICHT dann AB, bevor eine Abfrage laeuft — ein Host,
+ *   den wir nicht streng kennen, geht nicht in einen Filter, und er gilt nie als erlaubt.
+ * - sonst: der normalisierte Host (normalizeFormTargetHost), in derselben Form, in der
+ *   domains.custom_host abgelegt wird (klein, ohne Punkt am Ende; lib/domains/normalize.ts).
+ * Gerufen erst NACH formTargetProblem: endpoint ist dann eine https-Adresse.
+ */
+export function formTargetEndpointHost(endpoint: unknown): string | null {
+  if (typeof endpoint !== "string") return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(endpoint.trim());
+  } catch {
+    return null;
+  }
+  const host = normalizeFormTargetHost(parsed.hostname);
+  return STRICT_HOST_RE.test(host) ? host : null;
 }
 
 /**
@@ -137,6 +195,14 @@ export function formTargetProblem(
  *   BENENNBAR und kein Ausschluss mehr (deriveFormFieldNames).
  * - "blank-name": ein `name` nur aus Leerraum (Setzung P13-53). Er wird NICHT ueberschrieben
  *   (J3), und gesendet kaeme er als Leerzeichen-Name an.
+ * - "submitter-override" (Scheibe 13.6-1, Setzungen P13.6-33 und P13.6-36, F1/F2): ein
+ *   Absende-Element — auch ein Bild-Knopf, auch ausserhalb des Formulars ueber form= — traegt
+ *   formaction, formmethod oder formenctype, JEDES mit JEDEM Wert. Beim nativen Rueckfall
+ *   gehen sie action, method und enctype des Formulars vor und heben die Zusage auf, die
+ *   generateFunctional mit diesen drei Attributen gibt (Setzung P13.6-32). formtarget und
+ *   formnovalidate sperren NICHT. Faellt ein Element schon unter "foreign-action" (absolutes
+ *   formaction) oder "dialog" (formmethod="dialog"), bleibt es bei jener Art: ein Grund je
+ *   Element, und die Urteile aus 13-1 bleiben zeichengleich.
  * `fields` nennt die Felder erkennbar: Typ, dazu id oder Platzhalter.
  */
 export type FormTargetBlock =
@@ -144,7 +210,8 @@ export type FormTargetBlock =
   | { kind: "file-field" }
   | { kind: "dialog" }
   | { kind: "unnamed-radio"; fields: string[] }
-  | { kind: "blank-name"; fields: string[] };
+  | { kind: "blank-name"; fields: string[] }
+  | { kind: "submitter-override" };
 
 /**
  * Das Urteil ueber ein Formular. `blocks` leer = ein Ziel ist erlaubt. `inlineScript` ist
@@ -302,17 +369,29 @@ export type FormFieldNames = {
  *   entscheidet das Skript der Seite.
  * - Die Liste traegt nur NAMEN, nie Werte (J8).
  */
-export function deriveFormFieldNames(form: HTMLFormElement): FormFieldNames {
-  // BILD-ABSENDEKNOEPFE stehen NICHT in form.elements (HTML-Spezifikation: "listed elements,
-  // excluding image buttons") — als Absender senden sie trotzdem "<name>.x"/"<name>.y"
-  // (Setzung P13-55). Sie werden ueber ihr form-Eigentum dazugeholt und in
-  // Dokument-Reihenfolge einsortiert.
+/**
+ * DIE ELEMENTE EINES FORMULARS — EINE ANTWORT FUER BEIDE FRAGEN (Scheibe 13.6-1; nimmt Vorrat
+ * P13-61 der Phase 13 auf): `form.elements` plus die Bild-Absendeknoepfe, in
+ * Dokument-Reihenfolge. Bild-Knoepfe stehen NICHT in form.elements (HTML-Spezifikation:
+ * "listed elements, excluding image buttons"; GEMESSEN in Chrome 154 und jsdom 29.1.1,
+ * Vermerk P13.6-35 der Phase 13.6) — als Absender senden sie trotzdem "<name>.x"/"<name>.y"
+ * (Setzung P13-55), und ihr formaction/formmethod/formenctype wirkt beim Abschicken. Sie
+ * werden ueber ihr form-Eigentum dazugeholt, also auch ausserhalb des Formulars per form=.
+ * Bis 13.6-1 gab die Datei hier zwei Antworten: formTargetCheck las nur form.elements.
+ */
+function formControlsWithImages(form: HTMLFormElement): Element[] {
   const images = Array.from(form.ownerDocument.querySelectorAll("input")).filter(
     (el) => el.type === "image" && el.form === form
   );
-  const all = [...Array.from(form.elements), ...images].sort((a, b) =>
+  return [...Array.from(form.elements), ...images].sort((a, b) =>
     a === b ? 0 : a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
   );
+}
+
+export function deriveFormFieldNames(form: HTMLFormElement): FormFieldNames {
+  // BILD-ABSENDEKNOEPFE eingeschlossen — formControlsWithImages (die Menge, die hier bis
+  // 13.6-1 inline stand).
+  const all = formControlsWithImages(form);
   const reserved = new Set<string>();
   for (const el of all) {
     const name = el.getAttribute("name");
@@ -403,6 +482,10 @@ function isAbsoluteAddress(raw: string | null): boolean {
   }
 }
 
+// Die Attribute an einem Absende-Element, die ein Ziel ausschliessen (Setzungen P13.6-33 und
+// P13.6-36). formtarget und formnovalidate stehen bewusst NICHT hier.
+const SUBMITTER_OVERRIDES = ["formaction", "formmethod", "formenctype"] as const;
+
 function isSubmitControl(el: Element): boolean {
   if (el.tagName !== "BUTTON" && el.tagName !== "INPUT") return false;
   const type = (el as HTMLButtonElement | HTMLInputElement).type;
@@ -431,7 +514,8 @@ function describeField(el: Element): string {
  * eingesetzter ID.
  *
  * Die Felder kommen aus `form.elements` — also auch Felder AUSSERHALB des Formulars, die
- * per form=-Attribut dazugehoeren. Genau diese Menge nimmt FormData mit.
+ * per form=-Attribut dazugehoeren. Genau diese Menge nimmt FormData mit. Seit 13.6-1 kommen
+ * die Bild-Absendeknoepfe dazu (formControlsWithImages), dieselbe Menge wie bei den Namen.
  */
 export function formTargetCheck(html: string, elementId: string): FormTargetCheck | null {
   if (!html || typeof DOMParser === "undefined") return null;
@@ -446,23 +530,37 @@ export function formTargetCheck(html: string, elementId: string): FormTargetChec
     }
     if (!form) return null;
 
-    const controls = Array.from(form.elements);
+    // SEIT 13.6-1 MIT BILD-KNOEPFEN (formControlsWithImages): Ein Bild-Knopf mit absolutem
+    // formaction oder formmethod="dialog" sperrt jetzt wie jeder andere Absende-Knopf.
+    const controls = formControlsWithImages(form);
+    const submitters = controls.filter(isSubmitControl);
     const blocks: FormTargetBlock[] = [];
 
+    const isForeignSubmitter = (el: Element) => isAbsoluteAddress(el.getAttribute("formaction"));
     const foreign =
-      isAbsoluteAddress(form.getAttribute("action")) ||
-      controls.some((el) => isSubmitControl(el) && isAbsoluteAddress(el.getAttribute("formaction")));
+      isAbsoluteAddress(form.getAttribute("action")) || submitters.some(isForeignSubmitter);
     if (foreign) blocks.push({ kind: "foreign-action" });
 
     if (controls.some((el) => el.tagName === "INPUT" && (el as HTMLInputElement).type === "file"))
       blocks.push({ kind: "file-field" });
 
     const isDialog = (raw: string | null) => (raw ?? "").trim().toLowerCase() === "dialog";
-    if (
-      isDialog(form.getAttribute("method")) ||
-      controls.some((el) => isSubmitControl(el) && isDialog(el.getAttribute("formmethod")))
-    )
+    const isDialogSubmitter = (el: Element) => isDialog(el.getAttribute("formmethod"));
+    if (isDialog(form.getAttribute("method")) || submitters.some(isDialogSubmitter))
       blocks.push({ kind: "dialog" });
+
+    // DIE ANGEBOTSREGEL DER SCHEIBE 13.6-1 (Setzungen P13.6-33 und P13.6-36): jedes der drei
+    // Attribute mit JEDEM Wert — auch ein leeres formaction fuehrt beim nativen Abschicken auf
+    // die eigene Seite. Ein Element, das schon oben einen Grund hat, zaehlt hier nicht mit.
+    if (
+      submitters.some(
+        (el) =>
+          !isForeignSubmitter(el) &&
+          !isDialogSubmitter(el) &&
+          SUBMITTER_OVERRIDES.some((attr) => el.hasAttribute(attr))
+      )
+    )
+      blocks.push({ kind: "submitter-override" });
 
     // DIE NAMEN (Scheibe 13-1c): DIESELBE Funktion wie in generateFunctional (J5).
     const names = deriveFormFieldNames(form);
@@ -575,7 +673,34 @@ export const FORM_TARGET_LANGUAGE_UNKNOWN_MESSAGE =
 
 /** Nur im Client: ein Formular mit Ziel erfuellt die Bedingungen nicht mehr. */
 export const FORM_TARGET_INELIGIBLE_MESSAGE =
-  "Ein Formular mit Ziel erfüllt die Bedingungen nicht mehr (eigene Zieladresse, Datei-Feld, method=\"dialog\", ein Auswahlknopf ohne Namen oder ein Name nur aus Leerzeichen). Bitte das Formular auswählen und den Hinweis dort lesen. Es wurde nichts veröffentlicht.";
+  "Ein Formular mit Ziel erfüllt die Bedingungen nicht mehr (eigene Zieladresse, Datei-Feld, method=\"dialog\", ein Absende-Knopf mit formaction, formmethod oder formenctype, ein Auswahlknopf ohne Namen oder ein Name nur aus Leerzeichen). Bitte das Formular auswählen und den Hinweis dort lesen. Es wurde nichts veröffentlicht.";
+
+/**
+ * Abbruch in publishProject (Scheibe 13.6-1, Setzungen P13.6-34 und P13.6-36, F7): Die
+ * Zieladresse liegt auf der Custom-Domain eines Projekts — gleich welchen. Die Meldung nennt
+ * weder Projekt noch Eigentuemer; sie sagt nur, dass Pagesmith diese Domain ausliefert. Das
+ * ist von aussen ohnehin sichtbar, und dasselbe Bit meldet schon das Hinzufuegen einer
+ * Custom-Domain ("bereits anderswo verknuepft", lib/domains/register.ts).
+ */
+export const FORM_TARGET_OWN_DOMAIN_MESSAGE =
+  "Die Zieladresse eines Formular-Ziels liegt auf einer Domain, die über Pagesmith ausgeliefert wird. Formularinhalte dürfen nicht an Pagesmith selbst gehen — bitte die Adresse deines Empfängers eintragen (z. B. Make). Es wurde nichts veröffentlicht.";
+
+/**
+ * Abbruch in publishProject, BEVOR eine Abfrage laeuft: Der Host der Zieladresse hat nicht
+ * die strenge Form (formTargetEndpointHost). EIGENE Meldung statt FORM_TARGET_INVALID_MESSAGE:
+ * Jene nennt https und "nicht auf Pagesmith selbst" als Bedingungen — beides ist hier
+ * erfuellt, sie behauptete eine falsche Ursache. Das Panel im Editor prueft diese Form nicht;
+ * ohne eigene Meldung saehe der Betreiber dort ein taugliches Ziel und hier keinen Grund.
+ */
+export const FORM_TARGET_HOST_UNCHECKABLE_MESSAGE =
+  "Die Zieladresse eines Formular-Ziels hat einen Hostnamen, den Pagesmith nicht prüfen kann (erlaubt sind Buchstaben a–z, Ziffern, Punkt und Bindestrich). Bitte die Adresse prüfen. Es wurde nichts veröffentlicht.";
+
+/**
+ * Abbruch in publishProject, wenn die Pruefung auf Custom-Domains selbst scheitert. Ein Fehler
+ * gilt nie als "erlaubt" (fail-closed, Setzung P13.6-36, F7).
+ */
+export const FORM_TARGET_DOMAIN_CHECK_FAILED_MESSAGE =
+  "Die Zieladresse eines Formular-Ziels konnte gerade nicht geprüft werden. Bitte gleich noch einmal veröffentlichen. Es wurde nichts veröffentlicht.";
 
 /**
  * Abbruch in publishProject, wenn ein Formular-Ziel keine brauchbare Liste der Feldnamen

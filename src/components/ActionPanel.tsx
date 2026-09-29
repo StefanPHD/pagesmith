@@ -685,6 +685,9 @@ function formTargetBlockText(block: FormTargetBlock): string {
       return `Diese Auswahlknöpfe (Radio) haben keinen Namen (name-Attribut): ${block.fields.join(", ")}. Ein Name bestimmt, welche Knöpfe sich gegenseitig ausschließen — Pagesmith vergibt ihn deshalb nicht selbst.`;
     case "blank-name":
       return `Diese Felder haben einen Namen nur aus Leerzeichen: ${block.fields.join(", ")}. Pagesmith überschreibt vorhandene Namen nicht.`;
+    // Scheibe 13.6-1 (Setzungen P13.6-33 und P13.6-36 der Phase 13.6).
+    case "submitter-override":
+      return "Ein Absende-Knopf hat eigene Angaben zum Absenden (formaction, formmethod oder formenctype). Ohne Skript schickte er die Felder dorthin statt an deine Zieladresse.";
   }
 }
 

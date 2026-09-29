@@ -554,6 +554,28 @@ export function generateFunctional(
     // gaebe der Erzeugung sonst einen anderen Label-Text als dem Editor.
     // Die Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN
     // FREMDEN KNOTEN AN" nimmt die Schreibvorgaenge dieser Funktion zur Erzeugungszeit aus.
+    //
+    // DER NATIVE RUECKFALL (Phase 13.6, Scheibe 13.6-1; Setzungen P13.6-32 und P13.6-36 der
+    // Phase 13.6). Laeuft unser Skript nicht (JavaScript aus, Skript noch nicht geladen,
+    // form.submit() eines fremden Skripts), schickt der Browser das Formular selbst ab. Ohne
+    // diese vier Attribute ging es an die eigene Seitenadresse, bei GET mit den Feldwerten
+    // im Query (GEMESSEN, Vermerk P13.6-31 der Phase 13.6). Mit ihnen geht es allein an die
+    // eingetragene Adresse, in derselben Form wie der Versand im Skript (Setzung P13-19 der
+    // Phase 13: application/x-www-form-urlencoded; das Skript kodiert immer UTF-8, deshalb
+    // accept-charset). Vorhandene Werte des Betreibers werden ERSETZT; target bleibt
+    // unangetastet — der Lead kommt auch dann an, nur die Antwort oeffnet sich anderswo.
+    // DER PREIS: Im Rueckfall sieht der Besucher die Antwortseite des Empfaengers, nicht die
+    // Danke-Seite. Mit Skript aendert sich nichts: preventDefault im submit-Listener ersetzt
+    // das native Abschicken wie bisher; die Laufzeit liest diese Attribute nicht.
+    // setAttribute ist hier die richtige Senke: Der Serialisierer maskiert das
+    // Anfuehrungszeichen im Attributwert (Waechter F7b) — embedInScript waere in einem
+    // Attribut falsch (Dauerregel "JEDER BETREIBER-WERT, DER IN SCRIPT-ROHTEXT GEHT …").
+    // Der Wert ist der ROHE endpoint, derselbe wie im Datenblock: beide URL-Parser schneiden
+    // Leerraum am Rand ab, eine eigene Bereinigung waere ein zweiter Rechenweg.
+    // NUR HIER, im Modus export und nur an einem <form> mit Formular-Ziel: Ein Projekt ohne
+    // Ziel und ein Formular ohne Ziel bleiben byte-gleich (Waechter B2-J1, B2-J2 in
+    // form-target.test.ts — die vier Differenz-Nachweise W1', W2', T1, T9 tragen kein <form>
+    // und sehen diese Stelle nicht). Vorschau und Edit: kein Rahmen traegt allow-forms.
     if (mode === "export") {
       for (const m of mappings) {
         if (m.type !== "formTarget" || !present.has(m.elementId)) continue;
@@ -564,6 +586,10 @@ export function generateFunctional(
         for (const a of deriveFormFieldNames(form as HTMLFormElement).assignments) {
           a.element.setAttribute("name", a.name);
         }
+        form.setAttribute("action", m.config.endpoint);
+        form.setAttribute("method", "post");
+        form.setAttribute("enctype", "application/x-www-form-urlencoded");
+        form.setAttribute("accept-charset", "UTF-8");
       }
     }
 

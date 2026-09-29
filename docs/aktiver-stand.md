@@ -568,14 +568,13 @@ CHIFFRIERT NACH DEM OAUTH-MUSTER, EINER JE ANBIETER UND PROJEKT.**
 
 ## Zuschnitt Scheibe 13.6-1
 
-**GEGENSTAND:** "Rückfall ohne Skript und eigene Hosts" — die erste Bau-Scheibe der Phase 13.6
-(Setzungen P13.6-3 und P13.6-14). Sie schliesst B-2 (Vorrat P13.6-7 der Phase 13.6) und B-1
-(Vorrat P13.6-6 der Phase 13.6). Zugeschnitten am 2026-09-29; der Plan folgt in einer eigenen
-Runde.
-
-**ORT, DEKLARIERT (CC, 2026-09-29):** Der Auftrag nannte "unter 'Noch nicht geschnittene
-Arbeit'". Die Hausform der Zuschnitte der Phase 13 ist ein eigener Abschnitt direkt davor
-(Zuschnitt Scheibe 13-1c, Commit `ed13b93`); ihr ist gefolgt.
+**ABGESCHLOSSEN AM 2026-09-29 — Bau-Commit `9fae014`, Live-Test bestanden; Abschluss-Vermerk
+P13.6-37.**
+- GEGENSTAND: "Rückfall ohne Skript und eigene Hosts", die erste Bau-Scheibe der Phase 13.6
+  (Setzungen P13.6-3 und P13.6-14). Sie schliesst B-2 (Vorrat P13.6-7) und B-1 (Vorrat P13.6-6).
+- Der Zuschnitt ist verdichtet: Hier stehen nur noch die Setzungen und Grenzen, die über die
+  Scheibe hinaus binden, dazu die Vermerke der Scheibe.
+- Was gestrichen ist und wo sein Inhalt steht: Vermerk P13.6-37, Punkt (9).
 
 ### Messung zur Scheibe 13.6-1
 
@@ -610,9 +609,11 @@ ADRESSE ALS `action`, DAZU `method="post"` UND `enctype="application/x-www-form-
 - GRUND: Beide Attribute heben die Zusage aus Setzung P13.6-32 auf.
 - `formenctype`, `formtarget` und `formnovalidate` heben sie nach der Angabe des Auftrags nicht
   auf und sperren nicht.
+  ERSETZT für `formenctype`: Setzung P13.6-36, F1/F2 — `formenctype` sperrt mit jedem Wert.
 - NIMMT AUF: Vorrat P13-61 der Phase 13 (docs/claude-history/backlog-polish.md, Abschnitt "Aus
   Phase 13 gehoben (2026-09-29) …": der Bild-Knopf) samt der Doppelantwort `formTargetCheck`
   gegen `deriveFormFieldNames` (src/lib/form-target.ts).
+  ERLEDIGT durch Bau-Commit `9fae014`: Vermerk P13.6-37, Punkt (8).
 
 **Setzung P13.6-34 — B-1: `*.vercel.app` GEHÖRT ZU DEN EIGENEN HOSTS; BEIM VERÖFFENTLICHEN
 VERWEIGERT DER SERVER ZUSÄTZLICH EINE ZIELADRESSE AUF DER CUSTOM-DOMAIN IRGENDEINES PROJEKTS.**
@@ -625,14 +626,8 @@ VERWEIGERT DER SERVER ZUSÄTZLICH EINE ZIELADRESSE AUF DER CUSTOM-DOMAIN IRGENDE
 - Bereits veröffentlichte Seiten und Exporte ändern sich erst durch Neu-Veröffentlichen bzw.
   Neu-Export (Dauerregel "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY").
 - Seiten ohne Formular-Ziel bleiben byte-gleich.
-- Kein Relay-Code.
 
 ### Planrunde der Scheibe 13.6-1
-
-**ZWEI NUMMERN STATT EINER, DEKLARIERT (CC, 2026-09-29):** Der Auftrag nannte einen Vermerk mit
-einer Nummer. Die Messungen (CC) und die Entscheidungen (Architekt) gehören zu zwei Klassen, die
-diese Datei getrennt führt (Kopf, "ZWEI KLASSEN VON FESTLEGUNGEN"); sie stehen deshalb unter
-P13.6-35 und P13.6-36.
 
 **Vermerk P13.6-35 — DREI MESSUNGEN DER PLANRUNDE** (GEMESSEN, CC, 2026-09-29, HEAD `a154665`;
 Planrunde der Scheibe 13.6-1).
@@ -684,6 +679,122 @@ REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
   - Der Export prüft Custom-Domains nicht.
   - Der native Versand eines Exports folgt dem Zeichensatz aus `accept-charset`.
 
+### Abschluss der Scheibe 13.6-1
+
+**Vermerk P13.6-37 — ABSCHLUSS DER SCHEIBE 13.6-1 (RÜCKFALL OHNE SKRIPT UND EIGENE HOSTS).
+Bau-Commit `9fae014`** ("feat(form-target): Rückfall ohne Skript geht an die Zieladresse, eigene
+Hosts gesperrt"). LIVE-TEST BESTANDEN.
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (3): GEMESSEN, OWNER, live, 2026-09-29, Chrome (Version nicht
+    angegeben). Die Rückmeldung nennt je Messung Bytes und sha256, jeweils zweimal gleich; das
+    Instrument nennt sie nicht.
+
+(1) L0/L1 — SEITE OHNE FORMULAR-ZIEL:
+    · vor dem Push: 30493 Bytes, sha256
+      `40c83cb36a543162717af8a01143246ed139d2cbfa7373f7888c39ca848f37e5`;
+    · nach Deploy und Neu-Veröffentlichen: identisch.
+    Seiten ohne Formular-Ziel sind damit live byte-gleich.
+
+(2) TESTSEITE MIT FORMULAR-ZIEL:
+    · vor dem Push: 23637 Bytes, sha256
+      `803e469523b17bb46a69e427743d691194c36be1b80a7d11b488accd247834f2`;
+    · nach dem Neu-Veröffentlichen: 23786 Bytes, sha256
+      `7e5ff9b8790e54dc0359a5d3ab60c3ade7bd3e817043d104aa2f44c0aa2e639f`.
+    · GERECHNET (ARCHITEKT), NICHT GEMESSEN: Die Differenz von 149 Bytes entspricht genau den vier
+      Attributen — `action` 68, `method` 14, `enctype` 44, `accept-charset` 23.
+    · NACHGEZÄHLT (CC, 2026-09-29): 23786 − 23637 = 149 = 68 + 14 + 44 + 23. ` method="post"` = 14,
+      ` enctype="application/x-www-form-urlencoded"` = 44, ` accept-charset="UTF-8"` = 23 Bytes,
+      am Wortlaut gezählt. ` action=""` ohne Adresse = 10 Bytes; die 68 setzen eine Adresse von
+      58 Bytes voraus, und die Adresse steht nicht im Bestand — dieser Teil ist NICHT nachgezählt.
+
+(3) DIE SCHRITTE:
+    · L2 — mit JavaScript, vor dem Neu-Veröffentlichen: Danke-Seite, Eingang bei Make mit
+      korrekten Daten.
+    · L3 — nach dem Neu-Veröffentlichen: `action` = die eingetragene Make-Adresse (hier nur als
+      `hook.eu2.make.com/icdb…`), `method` = `post`, `enctype` =
+      `application/x-www-form-urlencoded`, `accept-charset` = `UTF-8`.
+    · L4 — ohne JavaScript: Die Adresszeile zeigt die Make-Adresse, keine Feldwerte im Query der
+      eigenen Seite; Bildschirm schwarz mit "Accepted" statt Danke-Seite; Make-Eintrag mit
+      `name`, `email`, `nachricht` und `interesse` als Liste mit beiden Werten (`kurs`,
+      `beratung`). Gegenstück zu Vermerk P13.6-31.
+    · L5 — mit JavaScript nach dem Neu-Veröffentlichen: Danke-Seite, ein Eingang bei Make.
+    · L6 — `formenctype` am Absende-Knopf: Meldung "Ein Absende-Knopf hat eigene Angaben zum
+      Absenden …", Veröffentlichen und Export gesperrt. Zieladresse
+      `https://irgendwas.vercel.app/x`: "Bitte eine https-Adresse eingeben, die nicht auf
+      Pagesmith zeigt", Übernehmen nicht möglich; das bestehende gültige Ziel blieb,
+      Veröffentlichen ging.
+    · L7 — der Export trägt im `<form>`-Tag `action`, `method`, `enctype`, `accept-charset`.
+
+(4) BAU (CC, 2026-09-29, am Stand vor dem Commit `9fae014`; die Gates danach erneut):
+    · Vorher-Wert für B2-J2, erhoben an `5b1ddc7` vor der ersten Code-Änderung (Sonde ausserhalb
+      des Repos, `generateFunctional` im Modus "export"): 16574 Bytes, sha256
+      `6eeede3eef1459c50a7c6815cf4861a97b2c2897ddb4e311b89625ad304e5598`. Der Test trägt ihn als
+      Konstante und ist grün.
+    · Gates: `tsc --noEmit` exit 0; `eslint` 0 Fehler, 1 Warnung in
+      src/lib/tracking/consent.test.ts (von der Scheibe nicht berührt); `vitest run` 99 Dateien,
+      2546 Tests (vorher 2497); `next build` exit 0.
+    · Mutationen, volle Suite, Vorhersage je exakt getroffen: M1 (`action` nicht gesetzt) 9 rot ·
+      M2 (`method` nicht gesetzt) 8 · M3 (`formaction` nicht erkannt) 5 · M4 (`vercel.app` fehlt)
+      4 · M5 (strenge Host-Prüfung entfällt) 3 · M6 (Punkt am Ende bleibt) 7 · M-I5′ (Attribute an
+      jedes Formular) 4 — dabei W1′, W2′, T1, T9 grün, wie vorhergesagt.
+
+(5) ABWEICHUNGEN VOM PLAN, IM BAU DEKLARIERT:
+    · F7 wurde unerwartet rot: Die Zeichenprüfung traf den gequoteten `action`-Wert, kein
+      Ausbruch (drei Scripts wie ohne Ziel). F7 prüft seither den Text ab dem Datenblock; die
+      Attribut-Seite bewacht F7b.
+    · Ein Host ausserhalb von `[a-z0-9.-]` bekommt eine eigene Meldung
+      (`FORM_TARGET_HOST_UNCHECKABLE_MESSAGE`), nicht die bestehende Form-Meldung — jene nennte
+      eine falsche Ursache.
+    · Die Abfrage auf Custom-Domains steht hinter ALLEN billigen Prüfungen (Wert, Namensliste,
+      Sprache).
+    · Ein Absende-Element mit absolutem `formaction` bleibt bei "foreign-action", eines mit
+      `formmethod="dialog"` bei "dialog"; die Urteile aus 13-1 bleiben zeichengleich.
+    · Zusätzliche Tests ausserhalb des Plans: B2d, P3b, A4-CI, B2-CI.
+
+(6) WÄCHTER, je Festlegung (Tests in src/lib/form-target.test.ts, "PT"
+    src/app/projects/publish.test.ts, "CI" src/components/CodeImporter.test.tsx):
+    · Setzung P13.6-32 und F3 (die vier Attribute, `target` bleibt, nur "export"): B2a, B2b, B2c,
+      B2d, F6b′, N-Diff′, F7b, B2-CI (CI).
+    · Seiten ohne Formular-Ziel byte-gleich: B2-J1, B2-J2 samt Positivkontrolle. W1′, W2′, T1 und
+      T9 tragen KEIN `<form>`-Element und sehen diese Stelle nicht (M-I5′).
+    · Setzung P13.6-33 mit F1/F2: A1, A2, A3, A4; A4-CI (CI).
+    · Setzung P13.6-34 mit F4: V1, die Umgebungsliste; F8-Zeile "*.vercel.app" (PT).
+    · F5: P4 (Client); F8-Zeile "Punkt am Ende", P4 (Server) (PT).
+    · F7: P1, P2, P3, P3b, P5 (PT); `formTargetEndpointHost` (acht Fälle).
+
+(7) GRENZEN, als Grenzen benannt:
+    · NICHT live geprüft, nur im Test: die Sperre einer Custom-Domain als Zieladresse und die
+      strenge Host-Prüfung beim Veröffentlichen (P1, P5).
+    · Nicht gemessen: wie oft ein Besucher abschickt, bevor das Skript geladen ist; ob Vercel eine
+      Adresse mit Punkt am Ende an uns leitet; Firefox und Safari; ein anderer Empfänger als Make
+      eu2.
+    · Die Meldung zur vercel.app-Sperre sagt "zeigt auf Pagesmith" auch für fremde
+      vercel.app-Adressen — der benannte Preis von F4 (Setzung P13.6-36), kein eigener Posten.
+
+(8) ERLEDIGT durch `9fae014`:
+    · Vorrat P13.6-6 (B-1), P13.6-7 (B-2) und P13.6-8 (die drei Kommentare) — je mit Zeile am
+      Eintrag.
+    · Vorrat P13-61 der Phase 13 (docs/claude-history/backlog-polish.md): Der gemeinsame Helfer
+      `formControlsWithImages` (src/lib/form-target.ts) ersetzt die Doppelantwort; ein Bild-Knopf
+      zählt in `formTargetCheck` (Tests A2). DAS BACKLOG IST HIER NICHT GEÄNDERT; das Phasenende
+      trägt es nach.
+
+(9) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN — Anweisungen, die mit der Scheibe
+    abgelaufen sind:
+    · der Satz "Zugeschnitten am 2026-09-29; der Plan folgt in einer eigenen Runde." aus dem
+      GEGENSTAND; der Gegenstand selbst steht im Abschluss-Kopf des Zuschnitts;
+    · der Absatz "ORT, DEKLARIERT (CC, 2026-09-29)": Der Zuschnitt steht als eigener Abschnitt
+      nach der Hausform der Phase 13 (Commit `ed13b93`) statt unter "Noch nicht geschnittene
+      Arbeit", wie der Auftrag der Zuschnitt-Runde es nannte;
+    · aus "Grenzen der Scheibe 13.6-1" die Zeile "Kein Relay-Code.";
+    · der Absatz "ZWEI NUMMERN STATT EINER, DEKLARIERT (CC, 2026-09-29)" vor Vermerk P13.6-35:
+      Messungen (CC) und Entscheidungen (Architekt) stehen als zwei Klassen unter P13.6-35 und
+      P13.6-36, obwohl der Auftrag eine Nummer nannte.
+    STEHEN GEBLIEBEN: Vermerk P13.6-31, Setzungen P13.6-32, P13.6-33 und P13.6-34, die Grenzen
+    zum Neu-Veröffentlichen und zur Byte-Gleichheit, Vermerk P13.6-35 (Code-Kommentare in
+    src/lib/form-target.ts zeigen darauf) und Setzung P13.6-36 samt Grenzen. An P13.6-33 steht je
+    ein Auflösungs-Satz: `formenctype` ist durch P13.6-36 ersetzt, P13-61 ist erledigt.
+
 ## Noch nicht geschnittene Arbeit
 
 **Arbeit P13.6-5 — AUFKLÄRUNG A2: SICHERHEITS-INFRASTRUKTUR, DATENBANK, GEHEIMNISSE**
@@ -734,6 +845,9 @@ der Phase 13, unter einer Bedingung.
   gegen P13-7 und die Custom-Domains.
 - GESETZT ALS ERSTE BAU-SCHEIBE: Setzung P13.6-3.
 - ZUGESCHNITTEN am 2026-09-29: Abschnitt "Zuschnitt Scheibe 13.6-1" (Setzung P13.6-34).
+- ERLEDIGT 2026-09-29, Bau-Commit `9fae014`: `*.vercel.app` in der Eigen-Liste, Prüfung auf
+  Custom-Domains in `publishProject`. Die Custom-Domain-Sperre ist nur im Test belegt, nicht live
+  (Vermerk P13.6-37, Punkt (7)).
 
 **Vorrat P13.6-7 — B-2: DER NATIVE RÜCKFALL EINES FORMULARS MIT ZIEL SCHICKT AN DIE EIGENE
 SEITENADRESSE — BEI GET STEHEN DIE FELDWERTE IM QUERY UND REISEN VON DORT WEITER**
@@ -760,6 +874,9 @@ der Phase 13, unter einer Bedingung.
 - GESETZT ALS ERSTE BAU-SCHEIBE: Setzung P13.6-3.
 - GEMESSEN 2026-09-29: Vermerk P13.6-31. ZUGESCHNITTEN am 2026-09-29: Abschnitt "Zuschnitt
   Scheibe 13.6-1" (Setzungen P13.6-32 und P13.6-33).
+- ERLEDIGT 2026-09-29, Bau-Commit `9fae014`: Der Rückfall ohne JavaScript geht an die
+  eingetragene Adresse, live gemessen (Vermerk P13.6-37, Punkt (3), L4). Neu veröffentlicht werden
+  muss jede Seite mit Formular-Ziel; bis dahin gilt der Befund für sie weiter.
 
 **Vorrat P13.6-8 — DREI KOMMENTARE IN src/ NENNEN "DIE STANDDATEI" OHNE PHASE ODER "I1 BIS I10",
 OBWOHL I9 ENTFALLEN IST** (GELESEN AM CODE, CC, 2026-09-29). NUR GEMELDET, NICHT ANGEFASST.
@@ -776,6 +893,8 @@ OBWOHL I9 ENTFALLEN IST** (GELESEN AM CODE, CC, 2026-09-29). NUR GEMELDET, NICHT
 - BEZUG: Der Kopf des Archivs der Phase 13 führt dieselben drei Stellen als "GEMELDET, NICHT
   ANGEFASST" und löst sie über Phase bzw. Scheibe auf jenes Archiv auf.
 - KEIN TRIGGER GESETZT.
+- ERLEDIGT 2026-09-29, Bau-Commit `9fae014` (Setzung P13.6-36, F8): alle drei Kommentare nennen
+  "I1 bis I8 und I10" bzw. J1–J9 mit Phase 13 und Archivpfad.
 
 **Vorrat P13.6-9 — ZWEI LISTEN DESSELBEN GEGENSTANDS: DIE DURCHGELASSENEN API-PFADE**
 (GELESEN AM CODE, CC, 2026-09-29).

@@ -894,33 +894,25 @@ export default function CodeImporter({
       previewMode === "functional"
         ? // RIEGEL NUR HIER, nicht in generateFunctional (Entscheidung P11.12-2).
           // Wertgleich: gleiche Eingabe -> gleicher String -> KEIN zusaetzlicher
-          // srcDoc-Reload. Die Dep-Liste bleibt unangetastet.
+          // srcDoc-Reload.
+          //
+          // DIE VORSCHAU SENDET NIE (Phase 13.6, Scheibe 13.6-2; Owner-Entscheidung
+          // P13.6-13, Setzung P13.6-43 Punkt (4) der Phase 13.6): Sie bekommt KEINE
+          // Tracking-Eingaben — weder Pixel-ID noch Tracking-Schluessel noch
+          // Beacon-Adresse. Die Engine baut die Meta-Laufzeit ohnehin nur im Modus
+          // "export"; ohne Eingaben gibt es hier auch nichts, was sie bauen koennte.
+          // consentTargets ENTFAELLT EBENSO: generateFunctional reicht sie allein an
+          // buildMetaRuntime weiter, und die entsteht in "preview" nicht. Kein
+          // nicht-sendender Teil der Vorschau liest sie.
+          // DIE DEP-LISTE IST DESHALB KUERZER: Einstellungen und Tracking-Schluessel
+          // erreichen die Vorschau nicht mehr, ein Wechsel dort rechnet sie nicht neu.
+          // Waechter: W-E2E in CodeImporter.test.tsx (die Vorschau traegt keinen
+          // Sendeweg, Positivkontrolle am Export desselben Renders).
           withPreviewStorageShim(
-            generateFunctional(debouncedCode, mappings, "preview", {
-              metaPixelId: getPixelId(settings, "meta"),
-              // AUS DEM ZUSTAND, NICHT AUS settings — s. den Kommentar am
-              // trackingKey-State.
-              //
-              // DIE DEP UNTEN IST VORSORGE UND HAT HEUTE KEINEN WAECHTER — GEMESSEN,
-              // NICHT ANGENOMMEN (Mutationsprobe M4, 2026-09-07): Wird trackingKey aus
-              // der Dep-Liste entfernt, bleibt der GESAMTE Bestand gruen. Der Grund ist
-              // eine Verdeckung: settings steht in derselben Liste und bekommt an JEDEM
-              // der vier Saat-Punkte eine NEUE Objekt-Referenz — das Memo rechnet also
-              // ohnehin neu, und die fehlende Dep wird nie sichtbar. Auch der Wechsel
-              // in die Vorschau selbst aendert previewMode und rechnet neu.
-              // SIE BLEIBT TROTZDEM STEHEN: Sie ist richtig, und sie wird TRAGEND, sobald
-              // jemand settings memoisiert oder aus der Liste nimmt. Wer sie streicht,
-              // weil "kein Test sie deckt", nimmt die Vorsorge genau vor diesem Umbau weg.
-              // DER EINZIGE MELDER IST DIE LINT-REGEL, und die laeuft als WARNUNG — der
-              // Lint-Befehl dieses Projekts kennt keine Obergrenze fuer Warnungen, es
-              // wird also KEIN Gate rot.
-              trackingKey,
-              capiProxyUrl: getCapiProxyUrl(),
-              consentTargets,
-            })
+            generateFunctional(debouncedCode, mappings, "preview")
           )
         : "",
-    [previewMode, debouncedCode, mappings, settings, trackingKey, consentTargets]
+    [previewMode, debouncedCode, mappings]
   );
 
   // Edit-iframe-HTML: bei aktivem Text-Override zeigt AUCH der Editieren-Modus den
@@ -2191,12 +2183,13 @@ export default function CodeImporter({
 
   // Export: erzeugt das funktionale Dokument FRISCH im Handler (nicht aus dem
   // functionalHtml-Memo, das nur im Vorschau-Modus belegt ist) -> Export geht auch
-  // aus dem Edit-Modus. Quelle ist debouncedCode mit mode:"export": GENAU dieselben
-  // Eingaben wie die funktionale Vorschau (die generateFunctional(debouncedCode,
-  // mappings, "preview") baut), nur der mode kippt. debouncedCode (nicht das rohe
-  // code) ist kritisch: es traegt garantiert die ps-id-Anker, auf die die Mappings
-  // zeigen — roher code koennte im Tipp-Fenster davon abweichen und das Wiring ins
-  // Leere laufen lassen. Generiert wird aus dem sauberen Klartext (keine
+  // aus dem Edit-Modus. Quelle ist debouncedCode mit mode:"export": dieselben
+  // (html, mappings) wie die funktionale Vorschau (die generateFunctional(debouncedCode,
+  // mappings, "preview") baut). Die Tracking-Optionen bekommt SEIT DER SCHEIBE 13.6-2
+  // allein dieser Weg — die Vorschau sendet nie (s. das Memo functionalHtml).
+  // debouncedCode (nicht das rohe code) ist kritisch: es traegt garantiert die
+  // ps-id-Anker, auf die die Mappings zeigen — roher code koennte im Tipp-Fenster
+  // davon abweichen und das Wiring ins Leere laufen lassen. Generiert wird aus dem sauberen Klartext (keine
   // Preview-Injektionen), daher idempotent.
   // Baut das funktionale Dokument; NUR der capiProxyUrl-Wert divergiert zwischen den
   // beiden Auslieferwegen (Phase 7b), sonst identische Engine/Eingaben:

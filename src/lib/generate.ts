@@ -104,6 +104,8 @@ export type GenerateMode = "export" | "preview" | "edit";
 // (__psMetaFire) statt des 1a-console.log-Stubs. Ohne Pixel-ID kein Meta-Snippet
 // und der Track-Zweig ist ein console.warn-no-op (metaTrackStatement). Die gesamte
 // Meta-Logik lebt in tracking/meta.ts (Naht fuer Plattform #2).
+// SEIT PHASE 13.6, SCHEIBE 13.6-2 NUR IM MODUS "export": Die Vorschau bekommt keine
+// Meta-Runtime, und ihr Track-Zweig ist leer — die Vorschau sendet nie.
 //
 // WICHTIG: Darf keinen literalen "</script>"-String enthalten (Serialisierung).
 function buildWiringScript(
@@ -134,22 +136,36 @@ function buildWiringScript(
   // __psMetaFire hineingesplicet, also sendete ein Projekt ohne Meta-Pixel NICHTS —
   // keine Conversion, kein Server-Ereignis, keine Statistik.
   //
-  // JETZT WIRD IMMER GERUFEN, und buildMetaRuntime entscheidet SELBST, ob etwas
-  // entsteht: ein Pixel ODER ein Beacon-Rumpf. Ohne beides liefert sie "" — eine
-  // Seite ohne jede Tracking-Konfiguration bleibt damit exakt wie zuvor, inklusive
-  // der Zahl der Einwilligungs-Fragestellen.
+  // JETZT WIRD IM MODUS "export" IMMER GERUFEN, und buildMetaRuntime entscheidet
+  // SELBST, ob etwas entsteht: ein Pixel ODER ein Beacon-Rumpf. Ohne beides liefert sie
+  // "" — eine Seite ohne jede Tracking-Konfiguration bleibt damit exakt wie zuvor,
+  // inklusive der Zahl der Einwilligungs-Fragestellen.
   // trackingKey/proxyUrl entscheiden weiterhin IN buildMetaRuntime ueber den
   // konkreten Beacon-Zweig (still / fail-loud / feuern).
-  const metaRuntime = buildMetaRuntime(
-    metaPixelId,
-    capiTrackingKey,
-    capiProxyUrl,
-    consentTargets
-  );
+  //
+  // DIE VORSCHAU SENDET NIE (Phase 13.6, Scheibe 13.6-2; Owner-Entscheidung P13.6-13 und
+  // Setzung P13.6-43 der Phase 13.6). Die Meta-Laufzeit — Lader, fbq, Beacon, Bestaetigung
+  // — ist die einzige Sende-Einheit, die diese Engine in die Vorschau bauen koennte; sie
+  // entsteht deshalb NUR im Modus "export", dieselbe Form wie die Gatung des Custom-Pixels
+  // (P11.6-6, Teil (d)) und des Formular-Ziels (P13-30) weiter unten. GRUND: Klicks beim
+  // Gestalten liefen sonst als Conversions in Messung und Gebotsoptimierung der Kampagnen
+  // des Betreibers. Im Modus "edit" kommen ohnehin keine Tracking-Eingaben an; dort ist
+  // das Ergebnis wie zuvor "".
+  // DIE ZEILE HAT KEINEN SCHUTZ AUS DER BAUART (anders als der Riegel, Entscheidung
+  // P11.12-2): Waechter sind W-P1 (Text) und W-P2 (Verhalten) in generate.test.ts; W-B1
+  // und W-B2 dort halten Export und Veroeffentlichung byte-gleich.
+  const metaRuntime =
+    mode === "export"
+      ? buildMetaRuntime(metaPixelId, capiTrackingKey, capiProxyUrl, consentTargets)
+      : "";
   // ZWEI FRAGEN, ZWEI ARGUMENTE: ob __psMetaFire existiert (dann darf es gerufen
   // werden), und ob ein Pixel gesetzt ist (dann entfaellt die Warnung). Seit dieser
   // Scheibe fallen die beiden NICHT mehr zusammen — genau das ist ihr Zweck.
-  const trackStmt = metaTrackStatement(metaRuntime !== "", hasPixel);
+  // IN DER VORSCHAU IST DIE ANWEISUNG LEER (Scheibe 13.6-2): Die Warnung "Meta-Pixel nicht
+  // konfiguriert" waere dort eine falsche Aussage — die Vorschau bekommt die Pixel-ID gar
+  // nicht. Im Modus "edit" bleibt sie, wie sie war; dort haengt kein Klick-Handler.
+  const trackStmt =
+    mode === "preview" ? "" : metaTrackStatement(metaRuntime !== "", hasPixel);
   // CUSTOM-PIXEL (Scheibe 11.6a). Der Baustein steht VOR dem Meta-Block und ist von ihm
   // vollstaendig unabhaengig: Er entsteht auch ohne Pixel-ID und ohne Tracking-Schluessel
   // (Invariante I4 der Scheibe), und er liegt NICHT in __psMetaFire — also auch nicht
@@ -444,10 +460,11 @@ export function submitFormOf(
  *   greifen nahtlos.
  * - Tabelle je Modus: "preview" alle Laufzeit-Typen; "export" alle ausser text
  *   (redirect + track; Text wird im Export NICHT verdrahtet, sondern direkt in den
- *   DOM gebacken — siehe unten). 1b-Hinweis: der track-Zweig feuert echtes fbq, wenn
- *   options.metaPixelId gesetzt ist (Base-Pixel lazy + consent-gegated injiziert),
- *   sonst console.warn-no-op. "edit" nur text (Redirect/Track waeren im Editieren-
- *   iframe nutzlos; das Edit-iframe bleibt damit pixel-frei).
+ *   DOM gebacken — siehe unten). 1b-Hinweis: der track-Zweig feuert im Modus "export"
+ *   echtes fbq, wenn options.metaPixelId gesetzt ist (Base-Pixel lazy + consent-gegated
+ *   injiziert), sonst console.warn-no-op. In "preview" ist er LEER — die Vorschau sendet
+ *   nie (Phase 13.6, Scheibe 13.6-2). "edit" nur text (Redirect/Track waeren im
+ *   Editieren-iframe nutzlos; das Edit-iframe bleibt damit pixel-frei).
  * - TEXT-Bake (nur "export"): pro praesentem type:"text"-Mapping wird das Element
  *   per ps-id gefunden und sein textContent auf config.content gesetzt — VOR der
  *   Serialisierung, auf DEMSELBEN geparsten DOM. Ergebnis: das <h1> enthaelt im
@@ -493,8 +510,9 @@ export function generateFunctional(
   mappings: Mapping[],
   mode: GenerateMode = "export",
   // options.metaPixelId (Scheibe 1b): projektweite Meta-Pixel-ID aus den
-  // Projekt-Einstellungen. Gesetzt -> Track-Zweig feuert echtes fbq + Base-Pixel
-  // wird (lazy, consent-gegated) injiziert. Leer/absent -> kein Meta-Snippet,
+  // Projekt-Einstellungen. Gesetzt (und Modus "export") -> Track-Zweig feuert echtes
+  // fbq + Base-Pixel wird (lazy, consent-gegated) injiziert; in "preview" wirkt sie
+  // nicht (Scheibe 13.6-2). Leer/absent -> kein Meta-Snippet,
   // Track-Aktion ist ein no-op. Der Aufrufer extrahiert sie via getMetaPixelId.
   // options.trackingKey + options.capiProxyUrl (Scheibe 2b-ii): oeffentlicher
   // CAPI-trackingKey (aus settings) + absolute Proxy-URL (env-abgeleitet, vom
@@ -670,9 +688,10 @@ export function generateFunctional(
     // DER GRUND IST WIRKUNG, NICHT KONSISTENZ: Der Basis-Code eines Netzwerks setzt beim
     // Laden Cookies und schickt einen Seitenaufruf, und der Vorschau-Rahmen baut sich bei
     // jeder Tipp-Pause neu auf — es entstuenden Ereignisse aus der ARBEIT des Betreibers.
-    // DASS DER BESTAND IN DER VORSCHAU SEHR WOHL ECHTES fbq FEUERT, IST BEKANNT UND
-    // BEWUSST (docs/claude-history/phase-4-mapping-codegen-export.md: "akzeptierte
-    // Marketer-eigene-Vorschau-Verschmutzung"); der Custom-Baustein folgt dem NICHT.
+    // Bis zur Phase 13.6 feuerte der Bestand in der Vorschau sehr wohl echtes fbq
+    // ("akzeptierte Marketer-eigene-Vorschau-Verschmutzung",
+    // docs/claude-history/phase-4-mapping-codegen-export.md). SEIT DER SCHEIBE 13.6-2 GILT
+    // DIE GATUNG FUER DIE META-LAUFZEIT EBENSO (buildWiringScript): Die Vorschau sendet nie.
     // DER PREIS: Der Betreiber kann seinen Custom-Pixel im Editor nicht pruefen.
     const customPixelCode =
       mode === "export" ? (options?.customPixelCode ?? "") : "";

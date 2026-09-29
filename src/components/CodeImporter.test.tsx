@@ -3813,19 +3813,14 @@ describe("CodeImporter — der Beacon-Schluessel stammt aus der Spalte, nicht au
     }
   }
 
-  // Das VORSCHAU-Dokument. Es ist ein EIGENER Messpunkt und keine Verdopplung des
-  // Exports: Die Vorschau laeuft ueber ein MEMO, der Export ueber eine gewoehnliche
-  // Funktion — es sind ZWEI Konsumenten, und ein Test auf nur einem liesse offen, ob
-  // der andere dieselbe Quelle benutzt.
-  //
-  // WAS DIESER MESSPUNKT NICHT DECKT, und der Satz gehoert hierher, damit ihm niemand
-  // mehr zuschreibt, als er traegt: die MEMO-ABHAENGIGKEIT. GEMESSEN (Mutationsproben
-  // M4 und M4b, 2026-09-07): Wird trackingKey aus der Dep-Liste entfernt, bleibt der
-  // GESAMTE Bestand gruen — settings steht in derselben Liste und wechselt an jedem
-  // Saat-Punkt die Referenz, das Memo rechnet also ohnehin neu. Wird dagegen der
-  // VORSCHAU-KONSUMENT auf den Blob zurueckgedreht, faellt GENAU die Zusicherung in
-  // K3, die diesen Messpunkt benutzt. Er ist der Waechter des zweiten KONSUMENTEN,
-  // nicht der Dep-Liste.
+  // Das VORSCHAU-Dokument. Bis zur Scheibe 13.6-2 der Phase 13.6 war es der zweite
+  // KONSUMENT des Schluessels (Memo neben der gewoehnlichen Export-Funktion), und K3 hielt
+  // dort den Schluessel des neuen Projekts fest.
+  // SEIT DER SCHEIBE 13.6-2 KONSUMIERT DIE VORSCHAU DEN SCHLUESSEL NICHT MEHR: Sie sendet
+  // nie und bekommt weder Pixel-ID noch Schluessel noch Beacon-Adresse (Owner-Entscheidung
+  // P13.6-13, Setzung P13.6-43 der Phase 13.6). Der Schluessel hat damit EINEN Konsumenten,
+  // den Export. Dieser Messpunkt dient jetzt W-E2E: Er zeigt, dass die Vorschau keinen
+  // Sendeweg traegt.
   async function vorschauDoc(): Promise<string> {
     fireEvent.click(screen.getByRole("button", { name: "Vorschau" }));
     const frame = await screen.findByTitle("functional-preview");
@@ -3933,10 +3928,8 @@ describe("CodeImporter — der Beacon-Schluessel stammt aus der Spalte, nicht au
     const nachher = await exportDoc();
     expect(nachher).toContain('"tk-von-B"');
     expect(nachher).not.toContain("tk-von-A");
-
-    const vorschau = await vorschauDoc();
-    expect(vorschau).toContain('"tk-von-B"');
-    expect(vorschau).not.toContain("tk-von-A");
+    // DIE VORSCHAU-HAELFTE IST MIT DER SCHEIBE 13.6-2 ENTFALLEN: Die Vorschau traegt keinen
+    // Schluessel mehr — weder den alten noch den neuen. Das haelt W-E2E fest.
   });
 
   // LAUF 5 — SAAT-PUNKT 2.
@@ -3960,9 +3953,91 @@ describe("CodeImporter — der Beacon-Schluessel stammt aus der Spalte, nicht au
     fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
     fireEvent.click(screen.getByRole("button", { name: "+ Neues Projekt" }));
 
-    // Der leere Kontext hat kein HTML mehr -> gemessen wird an der VORSCHAU, die
-    // auch fuer leeren Code ein (leeres) Dokument erzeugt.
-    expect(await vorschauDoc()).not.toContain("tk-von-A");
+    // DER MESSPUNKT IST SEIT DER SCHEIBE 13.6-2 DER EXPORT, NICHT MEHR DIE VORSCHAU: Die
+    // Vorschau traegt keinen Schluessel mehr, eine Abwesenheit dort waere trivial wahr
+    // (Dauerregel "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL", (1)).
+    // Der leere Kontext hat kein HTML; ohne Code und ohne Track-Aktion entstuende auch im
+    // Export kein Beacon, und die Zusicherung waere ebenso trivial. Deshalb wird im NEUEN
+    // Kontext Code eingefuegt und ueber die Oberflaeche eine Track-Aktion angelegt.
+    fireEvent.change(screen.getByPlaceholderText(/Füge hier deinen HTML-Code/), {
+      target: { value: K_HTML },
+    });
+    fireEvent.click(await screen.findByText("Kaufen"));
+    fireEvent.click(await screen.findByText(/Tracking-Event/));
+    fireEvent.change(await screen.findByRole("combobox"), {
+      target: { value: "Lead" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+    await screen.findByTitle("Verknüpft: track");
+
+    const nachher = await exportDoc();
+    // VORBEDINGUNG MIT BEWEISKRAFT: Das Dokument traegt die Track-Aktion — der Erzeuger
+    // ist zu Ende gelaufen, und ein stehengebliebener Schluessel stuende im Beacon.
+    expect(nachher).toContain('"event":"Lead"');
+    expect(nachher).not.toContain("tk-von-A");
+  });
+
+  // W-E2E (Phase 13.6, Scheibe 13.6-2) — DIE VORSCHAU IM EDITOR TRAEGT KEINEN SENDEWEG.
+  it("W-E2E: die Vorschau traegt weder Beacon noch Pixel noch Custom-Baustein; der Export desselben Renders schon", async () => {
+    // WODURCH ROT: Das Memo der Vorschau erzeugt wieder im Modus "export" (Mutation M5),
+    // oder ein Sendeweg kommt ausserhalb der Engine in die Vorschau.
+    // WAS ER NICHT FAENGT, UND DAS IST VORHERGESAGT (Setzung P13.6-43, Punkt (4)): Baut die
+    // Engine Beacon oder Lader in "preview" zurueck (M1, M2), bleibt er gruen — das Memo
+    // uebergibt ihr gar keine Tracking-Eingaben. Das tragen W-P1 und W-P2 in
+    // src/lib/generate.test.ts.
+    // DIE NADELN SIND GETIPPT, aus der Entscheidung und aus der Vorlage dieses Laufs.
+    const NADELN = [
+      "navigator.sendBeacon(",
+      "fetch(",
+      "keepalive",
+      "fbevents.js",
+      "connect.facebook.net",
+      "fbq(",
+      "__psMetaFire",
+      "__psConfirm",
+      "__psCustomRun",
+      "__psCustomFire",
+      "987654321098765",
+      "tk-e2e-sonde",
+      "https://app.pagesmith.io/api/e",
+      "window.__e2eBase",
+    ];
+    render(
+      <CodeImporter
+        initialProjectId="p-e2e"
+        initialCode={K_HTML}
+        initialMappings={[
+          {
+            elementId: "ps-aaaaaa",
+            type: "track" as const,
+            config: { event: "Lead", code: "window.__e2eLine = 1;" },
+          },
+        ]}
+        initialSettings={{
+          pixels: { meta: { pixelId: "987654321098765" } },
+          customPixel: { code: "<script>window.__e2eBase = 1;</script>" },
+        }}
+        initialTrackingKey="tk-e2e-sonde"
+      />,
+    );
+    await screen.findByText("Kaufen");
+    // POSITIVKONTROLLE ZUERST, JE NADEL: der Export DESSELBEN Renders traegt sie.
+    const exp = await exportDoc();
+    for (const n of NADELN) expect(exp, n).toContain(n);
+    // DER MODUS, GETIPPT (Mutation M5, Setzung P13.6-43 der Phase 13.6): Ohne diese
+    // Zusicherung bliebe ein Wechsel der Vorschau auf den Modus "export" gruen, solange die
+    // Vorlage keine Ereigniszeile traegt — das Memo uebergibt keine Tracking-Eingaben, es
+    // entstuende kein Sendeweg, aber das Containment der Vorschau fiele weg.
+    // POSITIVKONTROLLE: der Export desselben Renders traegt den Export-Modus.
+    expect(exp).toContain('var MODE = "export"');
+
+    const vorschau = await vorschauDoc();
+    expect(vorschau).toContain('var MODE = "preview"');
+    // VORBEDINGUNG MIT BEWEISKRAFT: Die Vorschau ist erzeugt — sie traegt Datenblock und
+    // Track-Aktion. Ohne sie waere die Abwesenheit unten auch fuer ein leeres srcdoc wahr.
+    expect(vorschau).toContain('id="pagesmith-mappings"');
+    expect(vorschau).toContain('"event":"Lead"');
+    for (const n of NADELN) expect(vorschau, n).not.toContain(n);
   });
 
   // LAUF 6 — SAAT-PUNKT 4.

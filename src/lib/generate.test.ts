@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createHash } from "node:crypto";
 import {
   editPreviewHtml,
   editVariantMarker,
   generateFunctional,
   submitFormOf,
 } from "./generate";
+import { injectPageViewEmitter } from "./analytics/pageview-emitter";
+import { CONSENT_KEY_BY_TARGET } from "./tracking/consent-targets";
 import { nonEmptyHtml } from "./hosting/variant";
 import { annotateAndDetect } from "./detect";
 import type { Mapping } from "./mappings";
@@ -385,18 +388,27 @@ describe("auxclick-Tracking (Mittelklick)", () => {
     expect(fbqCalls(fbq, "track")).toHaveLength(2);
   });
 
-  it("SCOPING: auxclick in PREVIEW feuert NICHT (Listener ist export-only)", () => {
-    const fbq = stubFbq();
+  it("SCOPING: auxclick-Listener nur im EXPORT — 0 Registrierungen in PREVIEW, 1 in EXPORT", () => {
+    // SEIT DER SCHEIBE 13.6-2 WIRD DIE REGISTRIERUNG GEZAEHLT, nicht ein fbq-Aufruf: Die
+    // Vorschau baut keine Meta-Laufzeit mehr, "kein Track bei auxclick" waere dort trivial
+    // wahr (Dauerregel "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL", (1)).
+    // Dieselbe Bauform wie S10.
+    const spy = vi.spyOn(Document.prototype, "addEventListener");
+    const auxRegs = () => spy.mock.calls.filter((c) => c[0] === "auxclick").length;
     mountAndWire(
-      generateFunctional(
-        MAPPED_LINK,
-        [track("ps-aaaaaa", "Lead")],
-        "preview",
-        { metaPixelId: PIXEL }
-      )
+      generateFunctional(MAPPED_LINK, [track("ps-aaaaaa", "Lead")], "preview", {
+        metaPixelId: PIXEL,
+      })
     );
-    aux('[data-pagesmith-id="ps-aaaaaa"]', 1);
-    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+    expect(auxRegs()).toBe(0);
+    // POSITIVKONTROLLE: derselbe Aufruf im Export registriert genau einen.
+    mountAndWire(
+      generateFunctional(MAPPED_LINK, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    expect(auxRegs()).toBe(1);
+    spy.mockRestore();
   });
 });
 
@@ -1877,25 +1889,28 @@ describe("Schatten-Korrektur (Phase 12.5, Scheibe 1)", () => {
     expect(openSpy).not.toHaveBeenCalled();
   });
 
-  it("T6: VORSCHAU — ein <h2> MIT text-Mapping verdeckt den Track des <a> nicht; Containment bleibt", () => {
+  it("T6: VORSCHAU — ein <h2> MIT text-Mapping verdeckt die Weiterleitung des <a> nicht", () => {
     // DER EINZIGE TEST, DER DIESE FEHLERKLASSE FAENGT (Mutation M3): In der Vorschau
     // steht das text-Mapping in der Tabelle. Zaehlte jeder Tabelleneintrag als Aktion,
-    // hielte die Suche am <h2> an und der Track fiele aus. Im Export steht text nicht
-    // in der Tabelle — dort ist die Klasse unsichtbar.
-    const fbq = stubFbq();
+    // hielte die Suche am <h2> an und die Aktion des <a> fiele aus. Im Export steht text
+    // nicht in der Tabelle — dort ist die Klasse unsichtbar.
+    // SEIT DER SCHEIBE 13.6-2 AN EINER WEITERLEITUNG STATT AN EINEM TRACK: Die Vorschau
+    // sendet nie, ihr Track-Zweig ist leer und damit kein Messpunkt mehr. Die Weiterleitung
+    // ist die Klick-Aktion, die in der Vorschau bedienbar bleibt (Invariante (iii) der
+    // Scheibe). Faellt sie aus, greift das Containment — defaultPrevented bliebe wahr,
+    // window.open aber ungerufen.
     mountAndWire(
       generateFunctional(
         SCHATTEN_LINK,
-        [text("ps-bbbbbb", "Neu"), track("ps-aaaaaa", "Lead")],
-        "preview",
-        { metaPixelId: PIXEL }
+        [text("ps-bbbbbb", "Neu"), redirect("ps-aaaaaa", "https://neu.example/")],
+        "preview"
       )
     );
     const ev = click("h2");
-    expect(fbqCalls(fbq, "track")).toHaveLength(1);
-    // Containment: der Rahmen navigiert nicht (<a href> ohne Weiterleitung).
+    expect(openSpy).toHaveBeenCalledWith("https://neu.example/", "_blank");
     expect(ev.defaultPrevented).toBe(true);
-    expect(openSpy).not.toHaveBeenCalled();
+    // Die Vorschau framet nie ueber location.href.
+    expect(hrefValue).toBe("");
   });
 
   it("T7: Mittelklick auf das <h2> -> Track genau einmal, Navigation unangetastet", () => {
@@ -2432,5 +2447,222 @@ describe("Absende-Buttons ohne eigene Aktionen (Phase 12.5, Scheibe 1c)", () => 
     expect(
       submitFormOf(zDoc('<form><button data-pagesmith-id="ps-zzzzzz">X</button></form>'), "ps-zzzzzz")
     ).toEqual({ formId: null });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// DIE VORSCHAU SENDET NIE (Phase 13.6, Scheibe 13.6-2; Owner-Entscheidung P13.6-13,
+// Setzungen P13.6-38 bis P13.6-40 und P13.6-43 der Phase 13.6, Archiv bzw. Standdatei
+// dieser Phase). Eine Vorlage mit VOLLEM Tracking: Meta-Pixel, Tracking-Schluessel,
+// drei Einwilligungs-Schluessel, Track mit Wert, Track mit Ereigniszeile, Weiterleitung,
+// Textersetzung, Custom-Pixel, Formular-Ziel.
+// ---------------------------------------------------------------------------
+
+// ---FIXTURE-BEGIN---
+const WB_HTML = `<!DOCTYPE html><html><head><title>WB</title></head><body><h1 data-pagesmith-id="ps-hhhhhh">Alt</h1><a href="https://alt.example/" data-pagesmith-id="ps-aaaaaa">Kaufen</a><button data-pagesmith-id="ps-bbbbbb">Lead</button><form data-pagesmith-id="ps-cccccc"><input type="email" name="email"><button type="submit">Senden</button></form></body></html>`;
+const WB_MAPPINGS: Mapping[] = [
+  { elementId: "ps-hhhhhh", type: "text", config: { content: "Neu" } },
+  { elementId: "ps-aaaaaa", type: "redirect", config: { url: "https://neu.example/", openInNewTab: false } },
+  { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase", value: 49, currency: "EUR" } },
+  { elementId: "ps-bbbbbb", type: "track", config: { event: "Lead", code: "window.__wbLine = 1;" } },
+  { elementId: "ps-cccccc", type: "formTarget", config: { endpoint: "https://hook.eu2.make.com/wb-sonde", thanksUrl: "https://danke.example/" } },
+  { elementId: "ps-cccccc", type: "track", config: { event: "Contact" } },
+];
+const WB_OPTIONS = {
+  metaPixelId: "123456789012345",
+  trackingKey: "tk-wb-sonde",
+  consentTargets: [CONSENT_KEY_BY_TARGET.meta, CONSENT_KEY_BY_TARGET.pinterest, CONSENT_KEY_BY_TARGET.tiktok],
+  customPixelCode: "<script>window.__wbBase = 1;</script>",
+  formTargetLanguage: "de" as const,
+};
+const WB_EXPORT_PROXY = "https://app.pagesmith.io/api/e";
+const WB_PUBLISH_PROXY = "/api/e";
+// ---FIXTURE-END---
+
+const wbSha = (s: string) => createHash("sha256").update(s, "utf8").digest("hex");
+const wbBytes = (s: string) => Buffer.byteLength(s, "utf8");
+
+function wbExport(): string {
+  return generateFunctional(WB_HTML, WB_MAPPINGS, "export", {
+    ...WB_OPTIONS,
+    capiProxyUrl: WB_EXPORT_PROXY,
+  });
+}
+
+// Der Veroeffentlichungs-Text: dieselbe Engine mit relativer Adresse, danach die
+// Einfuegung des Servers MIT Einwilligungs-Dialog (Leiste) — der Dialog steht allein in
+// dieser zweiten Stufe.
+function wbPublished(): string {
+  return injectPageViewEmitter(
+    generateFunctional(WB_HTML, WB_MAPPINGS, "export", {
+      ...WB_OPTIONS,
+      capiProxyUrl: WB_PUBLISH_PROXY,
+    }),
+    WB_OPTIONS.trackingKey,
+    "bar",
+    { appearance: { theme: "auto" }, text: "standard", language: "de" }
+  );
+}
+
+function wbPreview(): string {
+  return generateFunctional(WB_HTML, WB_MAPPINGS, "preview", {
+    ...WB_OPTIONS,
+    capiProxyUrl: WB_EXPORT_PROXY,
+  });
+}
+
+describe("13.6-2 — W-B: Export und Veroeffentlichung bleiben byte-gleich", () => {
+  // DIE VORHER-WERTE SIND KONSTANTEN, erhoben VOR dem ersten Eingriff der Scheibe 13.6-2 an
+  // Commit 038a6d2 (Sonde ausserhalb des Repos mit jsdom 29.1.1, CC, 2026-09-29). Sie werden
+  // NIE neu berechnet: Wird einer dieser Tests rot, ist der CODE falsch, nicht die Konstante.
+  const WB1 = {
+    bytes: 24078,
+    sha: "4917c6eb06523dc666b75d608288d28fc4ca723607ccc4dab8dc89ac4c575f5e",
+  };
+  const WB2 = {
+    bytes: 37865,
+    sha: "33139d44144abc659d94ddece86ee5e873e7df5a4c6ce6bcf66e395ff913c79b",
+  };
+
+  it("W-B1: der Export ist byte-gleich zum Vorher-Wert", () => {
+    const out = wbExport();
+    expect(wbBytes(out)).toBe(WB1.bytes);
+    expect(wbSha(out)).toBe(WB1.sha);
+  });
+
+  it("W-B2: der Veroeffentlichungs-Text samt Dialog ist byte-gleich zum Vorher-Wert", () => {
+    const out = wbPublished();
+    expect(wbBytes(out)).toBe(WB2.bytes);
+    expect(wbSha(out)).toBe(WB2.sha);
+  });
+
+  it("W-B (Positivkontrolle): die Vorschau derselben Vorlage weicht ab, und die Vorlage traegt den Gegenstand", () => {
+    // Ohne sie waeren W-B1/W-B2 auch gruen, wenn die Vorlage gar kein Tracking erreichte.
+    expect(wbSha(wbPreview())).not.toBe(WB1.sha);
+    const exp = wbExport();
+    expect(exp).toContain("navigator.sendBeacon(");
+    expect(exp).toContain("fbevents.js");
+    expect(exp).toContain("__psCustomRun");
+    expect(exp).toContain("__psFormTargetSend");
+    expect(wbPublished()).toContain("pagesmithConsentRevoke");
+  });
+});
+
+describe("13.6-2 — W-P: die Vorschau traegt keinen Sendeweg", () => {
+  // DIE NADELN SIND GETIPPT, NICHT IMPORTIERT — aus der Entscheidung (Setzung P13.6-38 der
+  // Phase 13.6: Lader, fbq, Beacon, Bestaetigung, Custom-Pixel, Formular-Ziel) und aus der
+  // Vorlage oben, NIE aus dem Code. Eine importierte Konstante machte eine Umbenennung
+  // unsichtbar, statt sie zu fangen.
+  // ERSTE LISTE: was der Export derselben Vorlage NACHWEISLICH traegt — jede Nadel hat
+  // dort ihre eigene Positivkontrolle.
+  const IM_EXPORT = [
+    "navigator.sendBeacon(",
+    "fetch(",
+    "keepalive",
+    "fbevents.js",
+    "connect.facebook.net",
+    "fbq(",
+    "__psMetaFire",
+    "__psConfirm",
+    "__psCustomRun",
+    "__psCustomFire",
+    "__psFormTargetSend",
+    "123456789012345",
+    "tk-wb-sonde",
+    "https://app.pagesmith.io/api/e",
+    "window.__wbBase",
+  ];
+  // ZWEITE LISTE: Sendewege, die wir heute NIRGENDS erzeugen. Sie haben keine
+  // Positivkontrolle und sind deshalb nur ein Zusatz: Sie machen den Waechter strenger,
+  // tragen ihn aber nicht.
+  const NIE_ERZEUGT = ["XMLHttpRequest", "new Image"];
+
+  it("W-P1: die Vorschau-Ausgabe traegt keine Nadel", () => {
+    // WODURCH ROT: Ein Sendeweg aus Setzung P13.6-38 steht wieder im Vorschau-Text —
+    // Beacon (M1), Lader oder fbq (M2), Custom-Baustein (M4).
+    // SEINE GRENZE, AN IHM SELBST: Er sieht ZEICHEN, nicht Bedeutung (Dauerregel "EIN
+    // WAECHTER UEBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG"). Ein Sendeweg unter einem
+    // Namen, der hier nicht steht, oder aus Teilen zusammengesetzt, geht an ihm vorbei —
+    // dafuer gibt es W-P2. Er irrt in die STRENGE Richtung: Taucht eine Nadel kuenftig
+    // harmlos im Vorschau-Text auf, wird er rot, und das ist zu pruefen, nicht zu
+    // entschaerfen.
+    // WAS ER BEWUSST NICHT PRUEFT: Die Ereigniszeile des Betreibers ("window.__wbLine = 1;")
+    // und die Adresse des Formular-Ziels reisen in der Vorschau als DATEN im JSON-Block
+    // (die Vorschau-Tabelle traegt alle Aktionstypen); ausgefuehrt werden sie nicht — das
+    // belegt W-P2.
+    const vorschau = wbPreview();
+    for (const n of [...IM_EXPORT, ...NIE_ERZEUGT]) {
+      expect(vorschau, n).not.toContain(n);
+    }
+    // POSITIVKONTROLLE JE NADEL: derselbe Aufruf im Export traegt sie.
+    const exp = wbExport();
+    for (const n of IM_EXPORT) {
+      expect(exp, n).toContain(n);
+    }
+  });
+
+  // Das Verhalten: die Vorschau AUSFUEHREN, klicken, abschicken. Kein fbq-Stub — bleibt
+  // der Lader aus, entsteht auch kein connect.facebook.net-Script, und window.fbq bleibt
+  // undefiniert; das ist der schaerfere Beweis (dieselbe Bauform wie firedWithConsent).
+  function fuehreAus(output: string) {
+    // HYGIENE: der Bootstrap setzt window.fbq selbst, unstubAllGlobals raeumt ihn nicht.
+    delete (globalThis as unknown as { fbq?: unknown }).fbq;
+    delete (globalThis as unknown as { _fbq?: unknown })._fbq;
+    delete (globalThis as unknown as { __wbLine?: unknown }).__wbLine;
+    delete (globalThis as unknown as { __wbBase?: unknown }).__wbBase;
+    const beacon = stubBeacon();
+    const fetchSpy = vi.fn(() => Promise.resolve(new Response(null)));
+    vi.stubGlobal("fetch", fetchSpy);
+    mountAndWire(output);
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    click('[data-pagesmith-id="ps-bbbbbb"]');
+    submit('[data-pagesmith-id="ps-cccccc"]');
+    const ergebnis = {
+      beacon: beacon.mock.calls.length,
+      fetch: fetchSpy.mock.calls.length,
+      lader: mountedDoc.querySelectorAll('script[src*="connect.facebook.net"]').length,
+      fbq: typeof (globalThis as unknown as { fbq?: unknown }).fbq,
+      zeile: (globalThis as unknown as { __wbLine?: unknown }).__wbLine,
+    };
+    delete (globalThis as unknown as { fbq?: unknown }).fbq;
+    delete (globalThis as unknown as { _fbq?: unknown })._fbq;
+    delete (globalThis as unknown as { __wbLine?: unknown }).__wbLine;
+    delete (globalThis as unknown as { __wbBase?: unknown }).__wbBase;
+    return ergebnis;
+  }
+
+  it("W-P2: Track-Klick, Klick mit Ereigniszeile und Abschicken in der Vorschau senden nichts", () => {
+    // WODURCH ROT: Beacon oder Bestaetigung (M1), Lader oder fbq (M2) entstehen wieder in
+    // der Vorschau und werden beim Klick gerufen; die Ereigniszeile laeuft (M4).
+    const r = fuehreAus(wbPreview());
+    expect(r.beacon).toBe(0);
+    expect(r.fetch).toBe(0);
+    expect(r.lader).toBe(0);
+    expect(r.fbq).toBe("undefined");
+    expect(r.zeile).toBeUndefined();
+    // DER HANDLER LAEUFT ZU ENDE — "blockiert" und "abgestuerzt" saehen an den
+    // Abwesenheiten oben identisch aus (Dauerregel "EINE ABWESENHEITS-BEHAUPTUNG …", (3)).
+    // Die Weiterleitung steht HINTER dem Track-Zweig desselben Klicks.
+    expect(openSpy).toHaveBeenCalledWith("https://neu.example/", "_blank");
+  });
+
+  it("W-P2 (Positivkontrolle): derselbe Ablauf im Export sendet, laedt und fuehrt die Zeile aus", () => {
+    // Ohne sie waere W-P2 auch gruen, wenn das Instrument nichts saehe.
+    const r = fuehreAus(wbExport());
+    expect(r.beacon).toBeGreaterThan(0);
+    expect(r.lader).toBeGreaterThan(0);
+    expect(r.fbq).toBe("function");
+    expect(r.zeile).toBe(1);
+  });
+
+  it("W-P3: mit vollen Tracking-Eingaben bleiben Weiterleitung und Textersetzung in der Vorschau bedienbar", () => {
+    // WODURCH ROT: Die Gatung reisst Datenblock oder Wiring der Vorschau mit
+    // (Invariante (iii) der Scheibe 13.6-2).
+    mountAndWire(wbPreview());
+    expect(mountedDoc.querySelector('[data-pagesmith-id="ps-hhhhhh"]')?.textContent).toBe("Neu");
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(ev.defaultPrevented).toBe(true);
+    expect(openSpy).toHaveBeenCalledWith("https://neu.example/", "_blank");
+    expect(hrefValue).toBe("");
   });
 });

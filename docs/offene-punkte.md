@@ -3384,6 +3384,18 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   **ABGRENZUNG:** `PINTEREST_TEST_MODE` gehört nicht hierher — der Code liest ihn seit Commit
   `3d42501` nicht mehr.
   **KEINE EMPFEHLUNG**, ob der Hebel entfernt, sichtbar gemacht oder belassen wird.
+  ERGÄNZT 2026-09-29 (Phase 13.6). Titel, Trigger und der Text darüber sind unverändert.
+  - WIE ER NACH VERCEL KAM, OWNER-ANGABE 2026-09-29: über den Import der lokalen `.env.local`
+    als Ganzes nach Vercel; entfernt "vor einigen Wochen". Das deckt sich mit "WER IHN SETZT"
+    oben (seit dem 2026-09-11 gelöscht, OWNER-ANGABE) und mit "am 2026-09-09 trugen beide
+    Quellen denselben Wert" — gesetzt war er also mit Wert.
+  - AM 2026-09-29 steht keiner der beiden Namen in der Namensliste aus dem Vercel-Dashboard
+    (OWNER-ANGABE, aus dem Dashboard kopiert; Vorrat P13.6-12 der Phase 13.6, Standdatei der
+    Phase 13.6).
+  - UNBEKANNT: in welcher Umgebung er gesetzt war und seit wann; ob `TIKTOK_TEST_EVENT_CODE`
+    ebenfalls über den Import kam — die lokale `.env.local` trägt diesen Namen heute nicht
+    (GEMESSEN am Repo, nur Namen, CC, 2026-09-29).
+  - Betroffen waren nur eigene Daten des Owners — es gab keinen fremden Kunden.
 
 - DIE IDOR-WÄCHTER SIND NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY DEFAULT, UND
   NICHTS WIRD DAVON ROT (Trigger: die nächste Runde, die eine Server-Action anlegt):

@@ -640,6 +640,8 @@ NUTZER.**
   SSRF-Achse aus Punkt (4).
 - GRENZE: Wie je Projekt gezählt wird (Datenbank, Plattform, anderes), ist nicht entschieden;
   eine Plattform-Firewall ist nicht gelesen (Punkt (8)).
+  ENTSCHIEDEN 2026-09-30 (ARCHITEKT): gezählt wird in der Datenbank, eine Zeile je Projekt —
+  Setzung P13.6-75, E1. Die Firewall: ebenda, E9.
 
 **Setzung P13.6-24 — EINWILLIGUNG: DER TRANSIT AN DEN BETREIBER BRAUCHT KEINE; EIN DARAUS
 ABGELEITETES TRACKING-EREIGNIS TRÄGT DAS URTEIL AUS DEM BROWSER.**
@@ -1913,6 +1915,8 @@ bestätigt jede einzeln oder meldet einen Konflikt.
 
 ALLE OFFEN; keine ist vorweg beantwortet. Die Planrunde legt je Frage Befund und Kandidaten vor,
 die Wahl trifft der Architekt bzw. der Owner.
+ENTSCHIEDEN 2026-09-30: Setzung P13.6-75 der Phase 13.6 (E1 bis E12). Dort steht, was offen
+bleibt. Der Satz darüber beschreibt den Stand vor der Planrunde.
 - B1 — Die Ist-Kette von `/api/f` vom Eingang bis zur Antwort, und wo die Begrenzung in diese
   Kette gehört.
 - B2 — Die Zählgrundlage ohne angemeldeten Nutzer: was vom einzigen bestehenden Muster
@@ -1950,6 +1954,84 @@ die Wahl trifft der Architekt bzw. der Owner.
 - Bis zum Bau dieser Scheibe bleibt der Endpunkt öffentlich und ohne Ratenbegrenzung (Grenzen
   der Scheiben 13.6-3 und 13.6-4). Heute gibt es keinen fremden Nutzer (CLAUDE.md, "## Modus";
   Owner-Entscheidung P13.6-18).
+
+### Planrunde der Scheibe 13.6-5
+
+**Setzung P13.6-75 — DIE ENTSCHEIDUNGEN DER PLANRUNDE 13.6-5 (E1 BIS E12).**
+PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-09-30, übermittelt im Auftrag der Runde "Vermerk der
+Planrunde + Anbieter-Lesung" der Scheibe 13.6-5. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf.
+Formulierung CC; wo "(CC)" steht, ist die Angabe von CC am Bestand bzw. am Code geprüft
+(2026-09-30, HEAD `f3385ad`), GELESEN AM CODE, nicht live gemessen.
+- KEIN BAU-COMMIT: Dies ist die Planrunde; es entsteht keine Zeile Code und keine Migration. Der
+  Bau folgt in einer eigenen Runde.
+- ABWEICHUNG, GEMELDET (CC): Der Auftrag nannte den Eintrag "Vermerk". Er trägt
+  Architekten-Entscheidungen und steht deshalb in der Gattung "Setzung" (Kopf dieser Datei, "ZWEI
+  KLASSEN VON FESTLEGUNGEN"), wie Setzung P13.6-59 der Planrunde 13.6-3.
+- GRENZE DES EINTRAGS (CC): Der Befund-Bericht der Planrunde zu B1 bis B12 steht NICHT in dieser
+  Datei. Hier steht nur, was die Entscheidungen selbst tragen.
+- E1 — MECHANISMUS (b′): eine Zeile je Projekt, atomar erhöht per RPC
+  (`insert … on conflict do update … returning`).
+  AUFLAGE: Das Fenster läuft nur vorwärts. Eine Anfrage aus einem älteren Fenster erhöht den
+  laufenden Zähler; sie setzt den Fensterbeginn nie zurück.
+  GRUND DER AUFLAGE, ABGELEITET (ARCHITEKT), am Bestand NICHT belegt: `now()` ist die
+  Startzeit der Transaktion. Schreibt eine Anfrage aus Fenster T nach einer aus Fenster T+1 fest,
+  setzte der Entwurf den Fensterbeginn auf T zurück.
+- E2 — STELLE: unmittelbar vor der Weiterleitung, nach allen Prüfungen. Gezählt wird nur, was
+  weitergeleitet würde — der dritte Kandidat aus B7 (im Auftrag "V3"; die Bezeichnung steht nicht
+  im Bestand). Die Projekt-Kennung kommt additiv ins ok-Ergebnis der Relay-Suche
+  (src/lib/relay/resolve-relay.ts).
+  (CC) Die Stelle ist heute `return forward(endpoint, body);` in `relay`
+  (src/lib/relay/relay.ts), hinter "host-not-listed". Kein ok-Ergebnis in resolve-relay.ts trägt
+  heute eine Projekt-Kennung (`lookupRelayProject`: `published`, `abTestActive`;
+  `resolveRelayTarget`: `config`).
+- E3 — SCHWELLE: 120 Anfragen je 60 s je Projekt, festes Fenster, keine Stundendecke.
+  SCHÄTZUNG, kein Verkehr gemessen. Die Konstante liegt in src/lib/relay/ und wird durch einen
+  Test festgenagelt.
+- E4 — FEHLERFALL DES ZÄHLERS: fail-open. Die Anfrage wird weitergeleitet; eine eigene Logzeile
+  im geschlossenen Vokabular meldet den Ausfall.
+  GRUND: Realistische Einzelausfälle des Zählers sind Bau- oder Rechtefehler, keine Flut. Eine
+  kaputte Schutzschicht darf keinen Lead kosten — ein falscher Treffer kostet einen Lead.
+  (CC) Das einzige bestehende Zählmuster, `countRecentAttempts` (src/lib/domains/audit.ts), ist
+  fail-closed (Vermerk P13.6-19, Punkt (1)); E4 weicht davon bewusst ab. Eine bindende
+  Entscheidung, die fail-closed verlangt, trägt der Bestand nicht; der fail-closed-Zweig aus
+  Setzung P13.6-23 gilt dem Kill-Switch (I5 der Setzung P13.6-74).
+- E5 — BEGRENZT: `notDelivered("rate-limited")`, dieselbe 502 wie jedes "nicht zugestellt" (I1 der
+  Setzung P13.6-74). Die Logzeile trägt keine Projekt-Kennung; eine je Anfrage. Das Vokabular aus
+  Setzung P13.6-59, Q4 (`RelayFailReason`, src/lib/relay/relay.ts) bleibt geschlossen bis auf die
+  neuen Einträge.
+- E6 — ZEITLIMIT DES ZÄHLERS: 1 000 ms. Der Test R-TIME-REL (src/lib/relay/relay.test.ts) rechnet
+  künftig mit drei Umläufen.
+  (CC) Heute rechnet er `2 * RELAY_LOOKUP_TIMEOUT_MS + RELAY_FORWARD_TIMEOUT_MS` gegen
+  `FORM_TARGET_TIMEOUT_MS`. GERECHNET, NICHT GEMESSEN: 2 × 1 500 + 1 000 + 5 000 = 9 000 ms, unter
+  10 000 ms — Setzung P13.6-22 bleibt erfüllt.
+- E7 — KEIN TOPF JE IP IM SPEICHER der Funktion. GRUND: Je Instanz ist er unzuverlässig
+  (ABGELEITET, ARCHITEKT); eine Begrenzung je IP gehört, wenn überhaupt, auf die Plattform.
+  BEZUG: Setzung P13.6-23 ("je Projekt, nicht je IP").
+- E8 — DER AUSSPERR-HEBEL (B6) IST BEWUSST HINGENOMMEN.
+  GRUND: Die Make-Adresse steht im ausgelieferten `action`-Attribut (Setzung P13.6-32; Setzung
+  P13.6-59, Q9) — ein Angreifer kann Make ohne uns fluten. Der Hauptnutzen der Begrenzung ist
+  ein anderer: Sie hält die bis zu 5 s langen Weiterleitungen (`RELAY_FORWARD_TIMEOUT_MS`) eines
+  Projekts aus der geteilten Funktions-Kapazität. Das Kontingent des Betreibers bei Make schützt
+  sie nur für Verkehr über das Relay.
+  GRENZE: Die Sperre trifft ein Projekt und dauert höchstens bis zum Ende des Fensters.
+- E9 — PLATTFORM-FIREWALL: in Teil B dieser Runde gelesen, NICHT Teil des Baus 13.6-5.
+- E10 — MANIFEST: Das Tier-1-Item "PER-TENANT-RATE-LIMITING" (CLAUDE.md, "## Security Manifest &
+  Launch Blocker") bekommt `/api/f` beim Abschluss-Vermerk der Scheibe ergänzt — beide Fassungen
+  im selben Commit (CLAUDE.md und docs/claude-history/security-manifest-full.md).
+- E11 — PROBE: Eine Probe unter supabase/checks/ für Tabelle und RPC (RLS, Grants, EXECUTE) ist
+  freigegeben.
+- E12 — TABELLE: relay-eigen, `relay_rate_counters`.
+- OFFEN, ENTSCHEIDET DER OWNER NACH TEIL B: der `search_path` der neuen RPC — die Projektregel
+  (docs/db-regeln.md, "DB-FUNKTIONEN + SEARCH_PATH") gegen die Empfehlung des Anbieters (offener
+  Punkt "DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB").
+- NICHT UNTER E1 BIS E12, GEMELDET (CC): B11 fragt zusätzlich nach INVOKER oder DEFINER, nach
+  einem Index und nach dem Aufräumen alter Zeilen; B12 nach der Abgrenzung zu Phase 14 und nach
+  einem offenen Punkt mit Datei-Trigger. Keine der zwölf Entscheidungen nennt sie.
+- ABGLEICH MIT DEN INVARIANTEN DER SETZUNG P13.6-74 (CC, am Wortlaut): Keine Entscheidung ändert
+  den ausgelieferten Text (I7); die Zählgrundlage ist das Projekt, keine IP und kein User-Agent
+  (I3); der Zähler trägt keinen Formularinhalt (I2); die Antwort bei Begrenzung ist die 502 des
+  Bestands (I1). Einen Widerspruch zu einer bindenden Entscheidung dieser Datei hat CC nicht
+  gefunden.
 
 ## Plattform-Schritte der Phase 13.6
 

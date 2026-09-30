@@ -2762,6 +2762,33 @@ WAHL DER GESTALT TRIFFT DER PLAN JENER SCHEIBE.
 - ERLEDIGT 2026-09-30: gebaut (Bau-Commit `29d0d22`), Live-Test bestanden (nur Chrome) —
   Abschluss-Vermerk P13.6-89 der Phase 13.6. Die Sätze darüber beschreiben den Stand davor.
 
+**Arbeit P13.6-91 — AUFKLÄRUNG "ADRESSE VERBERGEN": WAS ES KOSTET, DIE EMPFÄNGER-ADRESSE IM
+RELAY-WEG AUS DEM AUSGELIEFERTEN TEXT ZU NEHMEN** (OWNER-AUFTRAG 2026-09-30). KEINE
+BAU-ENTSCHEIDUNG. Die Aufklärung selbst ist read-only (Auftrag); was sie ergibt, trägt eine
+spätere Runde hier ein.
+- ANLASS: Zapier nennt die Adresse ein Geheimnis — "Treat it as a password or any other
+  secret!" (docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befund (c)); ein
+  Schutzmittel für Catch Hook beschreibt dort keine gelesene Seite (ebenda).
+- WO SIE HEUTE STEHT: im `action`-Attribut eines Formulars mit Ziel, auch im Relay-Weg
+  (Setzungen P13.6-32 und P13.6-64).
+  ERGÄNZT (CC, GELESEN AM CODE, HEAD `6f00872`): ebenso im Datenblock des Skripts, AUCH IM
+  RELAY-WEG. `generateFunctional` (src/lib/generate.ts) entfernt aus der Konfiguration nur
+  `fieldNames`, `dataSaver` und einen Schlüssel `relay` aus der Datenbank; `endpoint` bleibt. Die
+  Laufzeit-Wache in `__psFormTargetSend` (Text aus `buildFormTargetRuntime`,
+  src/lib/form-target.ts) liest `cfg.endpoint` VOR dem Relay-Zweig. Live verträglich damit:
+  Vermerk P13.6-70, Punkt (7) — die Datensparmodus-Seite ist die Relay-Seite ohne die zwei
+  Einsetzungen. ABWEICHUNG, GEMELDET: Befund (c) nennt den Datenblock nur für den
+  Datensparmodus, der Auftrag nur das `action`-Attribut.
+- DIE FOLGE, DIE DER AUFTRAG NENNT: Setzung P13.6-75, E8 — "ein Angreifer kann Make ohne uns
+  fluten"; der Aussperr-Hebel ist deshalb bewusst hingenommen.
+- GEGENPOSITION: Setzung P13-6 der Phase 13 ("DIE EINGETRAGENE ADRESSE IST KEIN GEHEIMNIS …";
+  ihre GRENZE: "Die Neubewertung kippt, sobald ein Weg über unseren Server gewählt wird") und
+  der Rückfall ohne Skript aus der Scheibe 13.6-1 (Setzung P13.6-32; live: Vermerk P13.6-37,
+  Punkt (3), L4).
+- REICHWEITE HEUTE (CC, GELESEN AM CODE): Zapier steht nicht in `RELAY_HOSTS`
+  (src/lib/relay/hosts.ts; Owner-Entscheidung P13.6-90). Jede Zapier-Adresse geht bis zur
+  Aufnahme browser-direkt, gleich was hier entschieden wird.
+
 ## Vorrat (gemeldet, nicht gebaut)
 
 **Vorrat P13.6-6 — B-1: DIE EIGEN-LISTE DER FORMULAR-ZIELE KENNT KEINE CUSTOM-DOMAINS UND KEIN
@@ -3196,3 +3223,44 @@ GEMESSEN.
   `pageshow` (ABGELEITET).
 - TRIGGER: die nächste Arbeit an der Prüfung der Danke-Adresse, oder der erste Support-Fall
   "Knopf tot ohne Zurück".
+
+PROVENIENZ von P13.6-92 und P13.6-93: OWNER-AUFTRAG 2026-09-30, Runde "Adresse verbergen" (Teil
+A). Die Befunde stehen in docs/formular-empfaenger-befunde.md, Abschnitt "Zapier" (GELESEN
+2026-09-30, keine Messung); wo "(CC)" steht, hat CC die Angabe am Bestand bzw. am Code geprüft
+(HEAD `6f00872`).
+
+**Vorrat P13.6-92 — ZAPIER ANTWORTET NACH DEM AUSSCHALTEN ODER LÖSCHEN EINES ZAPS BIS ZU
+MEHREREN STUNDEN WEITER MIT ERFOLG; DAS RELAY MELDET DANN "ZUGESTELLT".**
+- BEFUND (GELESEN, Befund (f)): "there is a system update delay of up to several hours before
+  the 404 response takes effect, during which the URL will continue to return a 200 response."
+  Die Doku widerspricht sich an dieser Stelle (ebenda: "We always return a success message for
+  all webhooks …"). Ob eine Anfrage im Zeitfenster später verarbeitet wird, steht auf keiner
+  gelesenen Seite (ebenda).
+- FOLGE (CC, ABGELEITET am Code): `forward` (src/lib/relay/relay.ts) wertet allein den Status;
+  2xx ergibt "zugestellt" (204), der Antwort-Rumpf wird verworfen. Der Besucher sähe die
+  Danke-Seite.
+- HEUTE OHNE WIRKUNG IM RELAY (CC): Zapier steht nicht in `RELAY_HOSTS` (Owner-Entscheidung
+  P13.6-90). Im browser-direkten Weg gilt "erreicht" bei einer `opaque`-Antwort ohne Blick auf
+  den Status (Setzung P13-21 der Phase 13); dort wäre auch die spätere 404 "erreicht"
+  (ABGELEITET).
+- "KEIN CODE-HEBEL" — ANGABE DES AUFTRAGS. Am Bestand (CC): Ob Zapiers Antwort-Rumpf im
+  Zeitfenster anders aussieht als bei einem laufenden Zap, steht auf keiner gelesenen Seite
+  (Befunde (e), (f)). Die Angabe ist damit weder belegt noch widerlegt.
+- ZIEL BEIM PHASENENDE: Betreiber-Dokumentation (offener Punkt "BETREIBER-DOKUMENTATION FEHLT —
+  DREI PUNKTE"). MESSUNG: Messkandidat ZM4 im gebündelten Zapier-Monat (Owner-Entscheidung
+  P13.6-90).
+
+**Vorrat P13.6-93 — ZAPIER SPEICHERT NUR IN DEN USA, OHNE EU-OPTION.**
+- BEFUND (GELESEN, Befund (l)): "Zapier hosts data in AWS servers located in the United States
+  …" — "Is there an option to have my data stored only within the EU? Zapier does not support
+  this option." Dazu Befund (k) (Aufbewahrung der Formularwerte im Konto des Betreibers) und
+  Befund (m) (der DPA gilt zwischen Zapier und dem Betreiber; unseren Kunden-AVV ersetzt er
+  nicht — FOLGERUNG ebenda).
+- EINORDNUNG (ANGABE DES AUFTRAGS): eine Entscheidung des Betreibers, nach der Haltung "Wir sind
+  Werkzeug, nicht Aufsicht" (docs/arbeitsweise.md, 4b, "Haltung"). (CC) Die Haltung ist dort am
+  Beispiel der Einwilligung gefasst; ihre Anwendung auf den Datenstandort ist die Angabe des
+  Auftrags.
+- (CC) Die Transit-Zusage (Owner-Entscheidung P13.6-16) gilt unserem Server; über den Empfänger
+  sagt sie nichts (Befund (k), FOLGERUNG).
+- ZIEL BEIM PHASENENDE: Betreiber-Dokumentation und die AVV-Arbeit (Owner-Entscheidung
+  P13.6-18).

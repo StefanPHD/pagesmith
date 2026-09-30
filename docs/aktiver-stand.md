@@ -596,6 +596,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
   "Zurück-Cache" (Arbeit P13.6-72) → Zapier. ALLE DREI VOR DEM ERSTEN FREMDEN NUTZER. Die
   Einschiebung der Scheibe "Zurück-Cache" ändert die Folge aus Setzung P13.6-56; deren Text
   bleibt als Stand vor dieser Runde stehen.
+- NACHGETRAGEN 2026-09-30 (Abschluss der Scheibe 13.6-5; CC, keine neue Setzung): 13.6-5 ist
+  abgeschlossen (Vermerk P13.6-81). Nach der Reihenfolge darüber steht die Scheibe
+  "Zurück-Cache" (Arbeit P13.6-72) als Nächstes an.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -1853,29 +1856,23 @@ PROVENIENZ: ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde der Scheibe 1
 
 ## Zuschnitt Scheibe 13.6-5
 
-**GEGENSTAND:** "Ratenbegrenzung am Relay" — die fünfte Bau-Scheibe der Phase 13.6 und die
-dritte der Stufe 1 (Setzung P13.6-56).
-- Das Relay (`POST /api/f`, `handleRelay`, src/lib/relay/relay.ts) bekommt eine Begrenzung JE
-  PROJEKT (Setzung P13.6-23).
+**ABGESCHLOSSEN AM 2026-09-30 — Bau-Commit `fd1e089`, Live-Test bestanden; Abschluss-Vermerk
+P13.6-81.**
+- GEGENSTAND: "Ratenbegrenzung am Relay" — die fünfte Bau-Scheibe der Phase 13.6 und die
+  dritte der Stufe 1 (Setzung P13.6-56). Das Relay (`POST /api/f`, `handleRelay`,
+  src/lib/relay/relay.ts) bekommt eine Begrenzung JE PROJEKT (Setzung P13.6-23).
 - ZWECK: Missbrauchsabwehr, nicht Durchsatzsteuerung. Die Schwelle wird auf Missbrauch
   kalibriert, nicht auf Erfolg — sonst fallen echte Leads weg (dieselbe Kalibrierung wie das
   Tier-1-Item "PER-TENANT-RATE-LIMITING" in CLAUDE.md, "## Security Manifest & Launch
   Blocker").
-- RUNDENFORM wie bei 13.6-1 bis 13.6-4: Planrunde → Bau → Live-Test → Abschluss-Vermerk.
-Zugeschnitten am 2026-09-30; der Plan folgt in einer eigenen Runde.
 - ANBIETER-LESUNG DER SCHEIBE, 2026-09-30 (CC): docs/plattform-befunde.md, Supabase-Abschnitt,
   Teile (av) bis (bc) (Funktionsrechte, `search_path`, `rpc()` des JS-Clients, `INSERT … ON
   CONFLICT`, `date_bin`, `now()`), und Vercel-Abschnitt, Teile (v) bis (aa) (Firewall: Rate
-  Limiting, Attack Mode, Preise). Doku-Aussagen, keine Messung.
-
-### Bindend für die Scheibe 13.6-5
-
-- Setzung P13.6-23 (Richtung "je Projekt, nicht je IP"; ihre GRENZE: wie gezählt wird —
-  Datenbank, Plattform, anderes — ist nicht entschieden, eine Plattform-Firewall nicht gelesen).
-- Setzung P13.6-56 (Schnitt der Stufe 1) und die Reihenfolge an Setzung P13.6-14 (13.6-5 →
-  Scheibe "Zurück-Cache" → Zapier, alle drei vor dem ersten fremden Nutzer).
-- Owner-Entscheidung P13.6-18 (das Relay für fremde Nutzer erst mit Kunden-AVV) bleibt
-  unberührt.
+  Limiting, Attack Mode, Preise). Doku-Aussagen, keine Messung. Dazu die Postgres-Lesung zum
+  `search_path` an Owner-Entscheidung P13.6-76.
+- Der Zuschnitt ist verdichtet: Hier stehen die Setzungen, Entscheidungen und Grenzen, die über
+  die Scheibe hinaus binden, dazu die Vermerke der Scheibe.
+- Was gestrichen ist und wo sein Inhalt steht: Vermerk P13.6-81, Punkt (10).
 
 ### Architekten-Setzung zur Scheibe 13.6-5
 
@@ -1915,49 +1912,28 @@ bestätigt jede einzeln oder meldet einen Konflikt.
 - I8 — Eine neue Tabelle bekommt RLS ausdrücklich. FUNDSTELLE: Dauerregel "GRANTS SCHÜTZEN
   NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT".
 
-### Offene Fragen der Scheibe 13.6-5
+### Offene Frage der Scheibe 13.6-5
 
-ALLE OFFEN; keine ist vorweg beantwortet. Die Planrunde legt je Frage Befund und Kandidaten vor,
-die Wahl trifft der Architekt bzw. der Owner.
-ENTSCHIEDEN 2026-09-30: Setzung P13.6-75 der Phase 13.6 (E1 bis E12). Dort steht, was offen
-bleibt. Der Satz darüber beschreibt den Stand vor der Planrunde.
-- B1 — Die Ist-Kette von `/api/f` vom Eingang bis zur Antwort, und wo die Begrenzung in diese
-  Kette gehört.
-- B2 — Die Zählgrundlage ohne angemeldeten Nutzer: was vom einzigen bestehenden Muster
-  (`countRecentAttempts`, src/lib/domains/audit.ts, zählt `audit_logs` je `user_id`) übertragbar
-  ist, und was ein Zähler tragen darf, ohne I2 oder I3 zu brechen.
-- B3 — Die Mechanismus-Kandidaten, je mit Datenbank-Umläufen auf dem Anfragepfad, Atomarität und
-  Aufräumbedarf.
-- B4 — Eine Begrenzung auf Plattform-Ebene vor unserer Funktion, auf unserem Tarif.
-- B5 — Was eine Begrenzung in der Funktion schützt und was nicht: Kontingent des Betreibers beim
-  Empfänger · Dauer unserer Funktion · Zahl unserer Funktionsaufrufe · die Tarifgrenzen, die für
-  alle Kundenseiten zugleich gelten.
-- B6 — Der Aussperr-Hebel: Wer den Zähler eines Projekts ausschöpft, sperrt dessen echte Leads.
-- B7 — Was zählt: jede Anfrage an ein Projekt · nur mit gültiger Kennung · nur tatsächlich
-  weitergeleitete.
-- B8 — Schwelle und Fenster, und wo der Wert liegt.
-- B9 — Der Fehlerfall des Zählers: fail-open oder fail-closed.
-- B10 — Die Antwort bei Begrenzung (I1) und wie "begrenzt" im Betrieb von "nicht zugestellt" zu
-  unterscheiden ist.
-- B11 — Falls eine Migration nötig ist: Grants, `search_path`, INVOKER oder DEFINER, RLS, Index,
-  Aufräumen alter Zeilen, additiv oder nicht.
-- B12 — Die Abgrenzung zu Phase 14: was für `/api/e` wiederverwendbar wäre, ohne dass diese
-  Scheibe `/api/e` anfasst; und ob die Scheibe einen offenen Punkt auslöst, dessen Trigger die
-  nächste Arbeit an einer bestimmten Datei ist.
-
-### Ausser Scope der Scheibe 13.6-5
-
-- `/api/e` und `/api/capi` — Phase 14 (Tier-1-Item "PER-TENANT-RATE-LIMITING").
-- die Scheibe "Zurück-Cache" (Arbeit P13.6-72).
-- Zapier und jede Änderung an der Host-Liste (Owner-Entscheidung P13.6-55, Arbeit P13.6-27).
-- eine Anzeige des Relay-Status für den Betreiber.
-- jede Änderung am ausgelieferten Text (I7).
+- B12 — UNBEANTWORTET; sie steht an keiner anderen Stelle dieser Datei und bleibt deshalb hier
+  (Vermerk P13.6-81, Punkt (10)): Die Abgrenzung zu Phase 14 — was für `/api/e`
+  wiederverwendbar wäre, ohne dass diese Scheibe `/api/e` anfasst; und ob die Scheibe einen
+  offenen Punkt auslöst, dessen Trigger die nächste Arbeit an einer bestimmten Datei ist.
+  BEKANNT SEIT DER SCHEIBE (CC, GELESEN AM CODE): `countRelayHit` (src/lib/relay/rate-limit.ts)
+  und die RPC sind relay-eigen (Tabelle `relay_rate_counters`, Setzung P13.6-75, E12); eine
+  Wiederverwendung für `/api/e` ist nicht vorbereitet. Ausgelöst hat die Scheibe den offenen
+  Punkt "DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT" (erledigt am
+  2026-09-30, Commit `cc8fc98`).
 
 ### Grenzen der Scheibe 13.6-5
 
-- Bis zum Bau dieser Scheibe bleibt der Endpunkt öffentlich und ohne Ratenbegrenzung (Grenzen
-  der Scheiben 13.6-3 und 13.6-4). Heute gibt es keinen fremden Nutzer (CLAUDE.md, "## Modus";
-  Owner-Entscheidung P13.6-18).
+- Die Begrenzung gilt allein `/api/f`; `/api/e` und `/api/capi` bleiben unbegrenzt (Phase 14,
+  Tier-1-Item "PER-TENANT-RATE-LIMITING").
+- Der Zähler-Ausfall ist fail-open (Setzung P13.6-75, E4); belegt nur im Test, nicht live.
+- Zwei gleichzeitige Anfragen desselben Projekts sind nicht gemessen.
+- 120 je 60 s ist eine SCHÄTZUNG ohne echten Verkehr (E3).
+- Die Plattform-Ebene (Vorrat P13.6-78 bis P13.6-80) ist nicht gebaut; das Aufruf-Kontingent
+  aller Kundenseiten schützt die Scheibe nicht (der Zähler läuft in der Funktion).
+- Heute gibt es keinen fremden Nutzer (CLAUDE.md, "## Modus"; Owner-Entscheidung P13.6-18).
 
 ### Planrunde der Scheibe 13.6-5
 
@@ -2023,8 +1999,12 @@ Formulierung CC; wo "(CC)" steht, ist die Angabe von CC am Bestand bzw. am Code 
 - E10 — MANIFEST: Das Tier-1-Item "PER-TENANT-RATE-LIMITING" (CLAUDE.md, "## Security Manifest &
   Launch Blocker") bekommt `/api/f` beim Abschluss-Vermerk der Scheibe ergänzt — beide Fassungen
   im selben Commit (CLAUDE.md und docs/claude-history/security-manifest-full.md).
+  ERLEDIGT 2026-09-30 im Commit des Abschluss-Vermerks P13.6-81; der Status des Items ist
+  unverändert.
 - E11 — PROBE: Eine Probe unter supabase/checks/ für Tabelle und RPC (RLS, Grants, EXECUTE) ist
   freigegeben.
+  ERLEDIGT 2026-09-30: supabase/checks/relay-rate-counters.sql, gefahren (Vermerk P13.6-81,
+  Punkt (2)).
 - E12 — TABELLE: relay-eigen, `relay_rate_counters`.
 - OFFEN, ENTSCHEIDET DER OWNER NACH TEIL B: der `search_path` der neuen RPC — die Projektregel
   (docs/db-regeln.md, "DB-FUNKTIONEN + SEARCH_PATH") gegen die Empfehlung des Anbieters (offener
@@ -2087,6 +2067,151 @@ stammt die Angabe von CC.
   einen Index für eine Spalte in WHERE/Matching; das ist hier der Primärschlüssel selbst.
 - KEIN AUFRÄUMEN: eine Zeile je Projekt, gelöscht per Kaskade mit dem Projekt. Die Zeilenzahl
   ist durch die Zahl der Projekte begrenzt (ABGELEITET, CC).
+
+**Setzung P13.6-82 — DIE TABELLE `relay_rate_counters` TRÄGT GENAU DREI SPALTEN: `project_id`,
+`window_start`, `hits`.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-30, übermittelt im Bau-Auftrag der Scheibe 13.6-5;
+hier festgehalten in der Abschluss-Runde, weil sie bis dahin nur im Auftrag stand. REVIDIERBAR;
+ein Owner-Widerspruch hebt sie auf.
+- GRUND: Setzung P13.6-74, I2 (kein Formularinhalt im Zähler) und I3 (keine IP, kein
+  User-Agent, keine fremde Identität als Zählgrundlage) — eine weitere Spalte wäre der Ort, an
+  dem eine davon hineingeriete.
+- SIE IST DIE QUELLE DER ERWARTUNG des Wächters W-MIG-COLS (src/lib/relay/rate-limit.test.ts);
+  der Bau-Bericht meldete, dass die Spaltennamen bis dahin in keiner Datei des Bestands standen
+  (Vermerk P13.6-81, Punkt (8)).
+
+### Abschluss der Scheibe 13.6-5
+
+**Vermerk P13.6-81 — ABSCHLUSS DER SCHEIBE 13.6-5 (RATENBEGRENZUNG AM RELAY). Bau-Commit
+`fd1e089`** ("feat(relay): Ratenbegrenzung je Projekt am Formular-Relay (Scheibe 13.6-5)").
+LIVE-TEST BESTANDEN.
+Doku-Commits der Scheibe: `f3385ad` (Zuschnitt) · `9a2d75f` (Planrunde, E1–E12) · `99b5ba8`
+(Anbieter-Lesung) · `f9aff31` (`search_path` `''`, Setzungen P13.6-76/-77, Vorrat P13.6-78 bis
+-80) · `cc8fc98` (docs/db-stand.md nach 0030) · dieser Commit (Abschluss).
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (5): GEMESSEN, OWNER, live, 2026-09-30, Chrome (Version nicht
+    angegeben), übermittelt im Auftrag der Abschluss-Runde. Request-ID, Deployment-ID, Projekt-
+    Kennung und Tracking-Schlüssel stehen bewusst nicht in dieser Datei; die Make-Adresse nicht.
+
+(1) MIGRATION 0030 — applied_at 2026-09-30 10:23:41.087615+00, eingespielt VOR dem Push. Die
+    Einordnung in docs/db-stand.md (Commit `cc8fc98`) zieht daraus die Reihenfolge Migration vor
+    Deploy.
+
+(2) PROBE supabase/checks/relay-rate-counters.sql (SQL-Editor, Owner): (1) bis (10) wie erwartet.
+    Im Wortlaut gemeldet: PostgreSQL 17.6 · `service_role` delete = true · `relay_rate_hit`
+    proconfig `search_path=""` · Mitläufer `get_event_counts` `search_path=public`. Der Kopf der
+    Probe trägt den Lauf seit dem Bau-Commit.
+
+(3) S0 UND S1 — DEPLOYMENT UND BYTE-GLEICHHEIT (Setzung P13.6-74, I7):
+    · S0: Deployment `fd1e089` "Ready".
+    · S1: Testseite `projekt-n-sy5bjj.publayer.net`, `fetch` mit `no-store` und sha256, je
+      zweimal: vor der Migration und nach dem Deploy je 19876 Bytes, sha256
+      `0621dc802fb60c02d1278ecb032ce1af25f75882f530f757b3da7b3fb3cd77b5`. Nicht neu
+      veröffentlicht. Gegenprobe an einer anderen Seite: 30493 Bytes, sha256 `40c83cb3…37e5`
+      (abweichend).
+    · GEMESSEN AM BESTAND (CC): Beide Werte der Testseite gleichen L5 in Vermerk P13.6-70,
+      Punkt (5); die Gegenprobe gleicht der "SEITE OHNE FORMULAR-ZIEL" (Vermerk P13.6-70,
+      Punkt (1)). Der ausgelieferte Text hat sich nicht geändert.
+
+(4) S2 — REGRESSION, NORMALER VERSAND: Danke-Seite, Eingang bei Make; Zähler `hits` = 1,
+    `window_start` 2026-09-30 10:36:00+00. Vercel-Detail `POST /api/f`: 204, `fra1`, Function
+    760 ms, "External APIs" mit 4 Einträgen (GET, GET, POST, POST), keine `[relay]`-Zeile.
+    · DIE ZAHL DER AUSGEHENDEN ANFRAGEN IST DAMIT GEMESSEN, nicht mehr abgeleitet (Bau-Bericht:
+      "erwartet vier … ABGELEITET"). Die ZUORDNUNG — zwei Abfragen der Relay-Suche, die RPC,
+      die Weiterleitung an Make — bleibt ABGELEITET am Code; die Ziel-Hosts sind nicht gemeldet.
+    · Gegenüber Vermerk P13.6-60, Punkt (4) (drei ausgehende Anfragen: GET, GET, POST) ist das
+      eine hinzugekommene POST.
+
+(5) S3 BIS S5 — DIE GRENZE UND DAS FENSTER:
+    · S3: Zähler per SQL auf `window_start` = `now()` + 1 Stunde, `hits` = 120. Versand: die
+      Meldung "Wir konnten den Empfang deiner Angaben nicht sicherstellen. Bitte sende das
+      Formular noch einmal." (der deutsche Text in `NOTICE_TEXTS`, src/lib/form-target.ts —
+      derselbe wie in Vermerk P13.6-70, Punkt (4)), kein Eingang bei Make, Vercel-Log
+      `[relay] not delivered: rate-limited` ohne Projekt-Kennung. Setzung P13.6-75, E5 live
+      belegt.
+    · S4: danach `hits` = 121, ein weiterer Versand `hits` = 122; `window_start` beide Male
+      unverändert 2026-09-30 11:40:37.689752+00; die Meldung bleibt. Ein ÄLTERES Fenster erhöht
+      den laufenden Zähler und setzt den Fensterbeginn nicht zurück — Setzung P13.6-75, E1,
+      LIVE BELEGT.
+    · S5: Zeile gelöscht; Versand: Danke-Seite, Eingang bei Make, `hits` = 1, `window_start`
+      2026-09-30 10:46:00+00.
+
+(6) BAU (CC, 2026-09-30, am Stand vor dem Commit `fd1e089`):
+    · Gates: `tsc --noEmit` exit 0; `eslint` 0 Fehler, 1 Warnung in
+      src/lib/tracking/consent.test.ts (von der Scheibe nicht berührt); `vitest run` 102 Dateien,
+      2738 Tests (vorher 101 Dateien, 2709 Tests); `next build` exit 0, Route `/api/f` gelistet.
+      Unmittelbar vor dem Commit erneut gefahren, dasselbe Ergebnis.
+    · Mutationen gegen src/lib/relay (nur relay.test.ts und rate-limit.test.ts erreichen die
+      mutierten Module, GEMESSEN per Suche), Vorhersage je vor dem Lauf, Rücknahme per sha256
+      belegt: M1 (Zähler-Aufruf entfällt) 9 rot · M2 (Zählung vor den Ziel-Prüfungen) 3 · M3
+      (`>=` statt `>`) 1 · M4a/b/c (fail-closed bei zurückgegebenem Fehler / Wurf / Zeitlimit)
+      2 / 1 / 1 · M5 (Projekt-Kennung in der Logzeile) 1 · M7 (Monotonie entfernt) 1 · M8
+      (`public` aus dem EXECUTE-Entzug) 1 · M9 (`search_path` `''` → `public`) 1 — alle wie
+      vorhergesagt.
+    · M6 (Zeitlimit entfällt ganz): vorhergesagt 1, rot 2 — R-RL-OK zusätzlich, beide am
+      fehlenden Abbruch-Signal; dieselbe Klasse. M6 bewegte zwei Achsen und ist geteilt worden:
+      M6a (nur das Rennen entfällt) 1 rot, über das Test-Zeitlimit · M6b (nur der Abbruch
+      entfällt) 2 rot, am Signal — beide wie vorab angesagt.
+    · Byte-Kontrolle der vier neuen Dateien am committeten Objekt: CR 0, CRLF 0, NUL 0.
+      src/lib/relay/resolve-relay.ts lief über einen Ganz-Datei-Schreiber; volle Byte-Kontrolle
+      und Suche nach zerstörten Zeichen ohne Befund.
+
+(7) ABWEICHUNGEN VOM PLAN, IM BAU DEKLARIERT:
+    · Der Befund-Bericht der Planrunde steht nicht im Bestand (Setzung P13.6-75, "GRENZE DES
+      EINTRAGS"); M1 bis M6 und die Kennungen R-RL-* sind im Bau definiert.
+    · Die Fensterlänge geht als Argument `p_window_seconds` an die RPC; die einzige Quelle ist
+      `RELAY_RATE_WINDOW_SECONDS` (src/lib/relay/rate-limit.ts).
+    · Die Zeile bei Zähler-Ausfall lautet `[relay] fail-open: rate-counter-failed`; scheitert
+      danach die Weiterleitung, entstehen zwei Zeilen (Test "R-RL-FAIL (Grenze)").
+    · Das Zeitlimit wirkt zweifach (Abbruch-Signal und Rennen gegen den Timer); eine Rückgabe
+      ohne ganze Zahl gilt als Ausfall.
+    · Migration: `set lock_timeout = '3s'`, keine Klammer `begin`/`commit`, die übrigen
+      Vorgabe-Rechte von `service_role` nicht entzogen.
+    · R-SRC erwartet seither genau eine Schreibung (den Zähler); R-SOURCE läuft über das
+      Verzeichnis.
+
+(8) DIE SPALTENLISTE STAND BIS ZU DIESER RUNDE NUR IM BAU-AUFTRAG; sie ist jetzt Setzung
+    P13.6-82.
+
+(9) GRENZEN, als Grenzen benannt:
+    · fail-open (Setzung P13.6-75, E4) ist nur im Test belegt, nicht live.
+    · Zwei gleichzeitige Anfragen sind nicht gemessen.
+    · nur Chrome, eine Testseite, eine Make-Zone (eu2).
+    · 120 je 60 s ist eine SCHÄTZUNG ohne echten Verkehr (E3).
+    · Die Plattform-Ebene (Vorrat P13.6-78 bis P13.6-80) ist nicht gebaut.
+    · Ein zweiter Versand im SELBEN Fenster ohne Eingriff (`hits` 2 aus 1) ist nicht gemeldet.
+    · "4 ausgehende Anfragen" ist gemessen; ihre Zuordnung nicht (Punkt (4)).
+
+(10) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN — Anweisungen und Fragen, die mit der
+    Scheibe abgelaufen sind:
+    · aus dem GEGENSTAND der Satz "Zugeschnitten am 2026-09-30; der Plan folgt in einer eigenen
+      Runde." und die Zeile "RUNDENFORM wie bei 13.6-1 bis 13.6-4: Planrunde → Bau → Live-Test
+      → Abschluss-Vermerk.";
+    · der Abschnitt "Bindend für die Scheibe 13.6-5" — Zeiger auf Setzungen P13.6-23, P13.6-56,
+      die Reihenfolge an P13.6-14 und Owner-Entscheidung P13.6-18; alle stehen unverändert an
+      ihrem Ort, die GRENZE an P13.6-23 trägt dort ihren Auflösungs-Satz;
+    · aus "Offene Fragen der Scheibe 13.6-5" die Fragen B1 bis B11, je entschieden in Setzung
+      P13.6-75: B1 und B7 → E2 (Stelle, gezählt wird nur Weitergeleitetes) · B2 → E1 und
+      Setzung P13.6-74, I3 · B3 → E1 · B4 → E9 und Vorrat P13.6-78 bis -80 · B5 und B6 → E8 ·
+      B8 → E3 · B9 → E4 · B10 → E5 · B11 → Setzung P13.6-77, Owner-Entscheidung P13.6-76 und
+      die Rechte in der Migration 0030; dazu der Kopfsatz "ALLE OFFEN …" samt Auflösungs-Satz.
+      Die Überschrift heisst seither "Offene Frage der Scheibe 13.6-5";
+    · der Abschnitt "Ausser Scope der Scheibe 13.6-5" — `/api/e`/`/api/capi` stehen an Phase 14
+      und im Tier-1-Item, die Scheibe "Zurück-Cache" an Arbeit P13.6-72, Zapier und die
+      Host-Liste an Owner-Entscheidung P13.6-55 und Arbeit P13.6-27, die Anzeige des
+      Relay-Status unter "Ausser Scope der Scheibe 13.6-4", der ausgelieferte Text an Setzung
+      P13.6-74, I7;
+    · aus "Grenzen der Scheibe 13.6-5" der Satz "Bis zum Bau dieser Scheibe bleibt der Endpunkt
+      öffentlich und ohne Ratenbegrenzung …" — mit dem Bau abgelaufen; die Grenzen stehen jetzt
+      dort neu.
+    STEHEN GEBLIEBEN: Setzungen P13.6-74, P13.6-75 (mit Auflösungs-Sätzen an E10 und E11),
+    Owner-Entscheidung P13.6-76, Setzungen P13.6-77 und P13.6-82, Vorrat P13.6-78 bis P13.6-80,
+    B12 (unbeantwortet, an keiner anderen Stelle) und die Grenzen der Scheibe.
+
+(11) NACHGEZOGEN IN DIESEM COMMIT: das Tier-1-Item "PER-TENANT-RATE-LIMITING" in CLAUDE.md und
+    docs/claude-history/security-manifest-full.md (Setzung P13.6-75, E10; Status unverändert);
+    eine Zeile an Setzung P13.6-14. Die Roadmap-Zeile 13.6 führt die Scheibe nicht als
+    ausstehend und ist nicht geändert.
 
 ## Plattform-Schritte der Phase 13.6
 

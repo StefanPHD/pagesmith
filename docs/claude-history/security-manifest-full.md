@@ -110,6 +110,9 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   aggressiv = echte Conversions fallen weg = der Produktwert (First-Party-Resilienz)
   wird selbst zerstört.
   BINDET-AN: bevor echter Ad-Traffic auf gehostete Seiten trifft.
+  ZUSATZ 2026-09-30 — DER STATUS BLEIBT, BINDET-AN BLEIBT: /api/f (Formular-Relay) ist seit
+  der Scheibe 13.6-5 je Projekt begrenzt (120 je 60 s, SCHÄTZUNG; Zähler-Ausfall fail-open) —
+  Vermerk P13.6-81 der Phase 13.6. /api/e und /api/capi bleiben OHNE Begrenzung.
 - LOGIN-BRUTE-FORCE:
   RISIKO: unbegrenzte Login-Versuche -> Credential-Stuffing/Brute-Force auf Owner-
   Accounts.

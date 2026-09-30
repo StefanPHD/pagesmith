@@ -641,6 +641,9 @@ einen setzen will, setzt ihn in BEIDEN Fassungen im selben Commit.
 - PER-TENANT-RATE-LIMITING /api/e + /api/capi: Limit pro trackingKey/Projekt, auf ABUSE
   kalibriert (nicht auf Erfolg — sonst fallen echte Conversions weg). BINDET-AN: vor
   echtem Ad-Traffic auf gehostete Seiten.
+  ZUSATZ 2026-09-30 — DER STATUS BLEIBT, BINDET-AN BLEIBT: /api/f (Formular-Relay) ist seit
+  der Scheibe 13.6-5 je Projekt begrenzt (120 je 60 s, SCHÄTZUNG; Zähler-Ausfall fail-open) —
+  Vermerk P13.6-81 der Phase 13.6. /api/e und /api/capi bleiben OHNE Begrenzung.
 - LOGIN-BRUTE-FORCE: Rate-Limit auf IP + E-Mail (zuerst Supabase-Built-in prüfen).
   BINDET-AN: sobald Accounts echte Assets (Tokens/Domains) haben.
 - SAFE-BROWSING: Redirect-ZIEL-URLs gegen Safe Browsing prüfen + publayer.net-Flag

@@ -35,6 +35,7 @@ beantworten.
 - Zuschnitt Scheibe 13.6-1
 - Zuschnitt Scheibe 13.6-2
 - Zuschnitt Scheibe 13.6-3
+- Zuschnitt Scheibe 13.6-4
 - Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
@@ -1480,6 +1481,85 @@ LIVE-TEST BESTANDEN.
       same-origin.
     · nur Chrome, eine Make-Zone (eu2), eine Testseite.
     · Der Endpunkt ist öffentlich und ohne Ratenbegrenzung bis 13.6-5 (Grenzen der Scheibe).
+
+## Zuschnitt Scheibe 13.6-4
+
+**GEGENSTAND:** "Anschluss im Seitenskript und Datensparmodus" — die vierte Bau-Scheibe der
+Phase 13.6 und die zweite der Stufe 1 (Setzung P13.6-56).
+- Das Seitenskript einer GEHOSTETEN Seite schickt ein Formular mit Ziel an das Relay
+  (`POST /api/f?f=<Kennung>`), wenn die Zieladresse auf der Host-Liste steht und das Ziel nicht
+  im Datensparmodus ist.
+- "Zugestellt" (204) → Danke-Seite und Track wie heute bei "erreicht". Alles andere → das
+  Formular bleibt mit der Meldung stehen (Entscheidung P13-17 der Phase 13).
+- Im Editor bekommt jedes Formular-Ziel einen Schalter für den Datensparmodus.
+Zugeschnitten am 2026-09-30; der Plan folgt in einer eigenen Runde.
+
+### Bindend für die Scheibe 13.6-4
+
+- Owner-Entscheidungen P13.6-16 (Transit), P13.6-54 (Relay als Standard für bekannte Dienste,
+  Datensparmodus per Schalter) und P13.6-55 (Host-Liste).
+- Setzungen P13.6-20 (nur gehostete Seiten), P13.6-48 bis P13.6-51 (R1 bis R4) und P13.6-59,
+  Q11 (Exporte bleiben browser-direkt).
+- AM BESTAND ERGÄNZT (CC, 2026-09-30), weil die Scheibe sie berührt: Setzung P13.6-21 (dem
+  Besucher genau zwei Zustände), Setzung P13.6-22 (das Server-Zeitlimit liegt unter
+  `FORM_TARGET_TIMEOUT_MS`) und Owner-Entscheidung P13.6-18 (das Relay für fremde Nutzer erst
+  mit Kunden-AVV).
+
+### Architekten-Setzungen zur Scheibe 13.6-4
+
+PROVENIENZ aller vier: ARCHITEKTEN-SETZUNG 2026-09-30, übermittelt im Auftrag der
+Zuschnitt-Runde der Scheibe 13.6-4. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf. Wo
+"(CC)" steht, ist die Formulierung bzw. die Ableitung von CC, nicht vom Architekten.
+
+**Setzung P13.6-61 — BESTANDSZIELE: EIN FORMULAR-ZIEL OHNE ANGABE ZUM DATENSPARMODUS GEHT BEIM
+NÄCHSTEN VERÖFFENTLICHEN AUF DAS RELAY ÜBER, SOFERN SEINE ADRESSE AUF DER HOST-LISTE STEHT.**
+- GRUND: Das folgt aus Owner-Entscheidung P13.6-54 — für bekannte Webhook-Dienste ist das Relay
+  der Standard.
+- GRENZE: Bereits veröffentlichte Seiten ändern sich erst durch Neu-Veröffentlichen (Dauerregel
+  "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY").
+- ZUR REICHWEITE, GELESEN AM CODE (CC, Stand `3a06ea9`): Die Host-Liste trägt heute allein
+  `hook.eu2.make.com` (`RELAY_HOSTS`, src/lib/relay/hosts.ts). Ein Ziel einer anderen Make-Zone
+  oder eines anderen Dienstes bleibt browser-direkt (Owner-Entscheidung P13.6-54, zweiter
+  Punkt).
+
+**Setzung P13.6-62 — DAS RELAY VERWEIGERT EIN ZIEL IM DATENSPARMODUS.** Ergänzung an
+src/lib/relay/relay.ts aus der Scheibe 13.6-3.
+- GRUND: Sonst liefen Formularinhalte über unseren Server, obwohl der Betreiber genau das
+  ausgeschlossen hat. Der Schalter gilt damit auch serverseitig.
+- GRENZE, ABGELEITET (CC): Das Relay liest den Schalter aus der VERÖFFENTLICHTEN Fassung
+  (Setzung P13.6-20). Ein Schalter, der gespeichert, aber nicht veröffentlicht ist, wirkt weder
+  im Seitenskript noch im Relay; bis zum Neu-Veröffentlichen schickt die Seite weiter, wie sie
+  veröffentlicht wurde.
+
+**Setzung P13.6-63 — ZIEL, NICHT ZUSAGE: SEITEN, DEREN FORMULAR-ZIELE ALLE DIREKT SCHICKEN,
+BLEIBEN BYTE-GLEICH ZU HEUTE.**
+- GRUND (CC): Relay-Code gehört nur in den Text einer Seite, die ihn braucht (Dauerregel "WAS
+  EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE …"); jede übrige Seite bleibt
+  dann mit einem Byte-Nachweis prüfbar.
+- GRENZE: Ob das erreichbar ist, klärt der Plan; weicht er ab, begründet er es.
+
+**Setzung P13.6-64 — DER RÜCKFALL OHNE SKRIPT BLEIBT UNVERÄNDERT** (`action` = eingetragene
+Adresse samt Versandform, Setzung P13.6-32 der Scheibe 13.6-1).
+- GRUND (CC): Ohne Skript gibt es keinen Relay-Aufruf; der Rückfall bringt den Lead an die
+  eingetragene Adresse (Vermerk P13.6-37, Punkt (3), L4).
+- GRENZE, ABGELEITET (CC): Auch ein Relay-Ziel schickt im Rückfall ohne Skript browser-direkt an
+  den Empfänger, weil die Adresse im `action`-Attribut des ausgelieferten Textes steht. Der
+  Schalter steuert allein den Weg MIT Skript.
+
+### Ausser Scope der Scheibe 13.6-4
+
+- die Ratenbegrenzung (13.6-5);
+- Zapier (eigene Runde nach Lesung und Live-Test);
+- jedes Tracking-Ereignis vom Server;
+- eine Anzeige des Relay-Status für den Betreiber.
+
+### Grenzen der Scheibe 13.6-4
+
+- Bereits veröffentlichte Seiten ändern sich erst durch Neu-Veröffentlichen (Setzung P13.6-61).
+- Exporte bleiben browser-direkt, auch mit einer Adresse der Host-Liste (Setzung P13.6-59, Q11).
+- ABGELEITET (CC): Ab dieser Scheibe erreichen Besucher den Endpunkt über unseren Code; er bleibt
+  ohne Ratenbegrenzung bis 13.6-5 (Grenzen der Scheibe 13.6-3). Heute gibt es keinen fremden
+  Nutzer (CLAUDE.md, "## Modus"; Owner-Entscheidung P13.6-18).
 
 ## Plattform-Schritte der Phase 13.6
 

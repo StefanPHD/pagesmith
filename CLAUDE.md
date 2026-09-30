@@ -214,8 +214,6 @@ in docs/claude-md-herleitung.md.
 - DER PAGEVIEW-TOKEN IST ALS CUSTOM-EVENT EINTIPPBAR (Trigger: vor echtem Ad-Traffic)
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
   nicht-additive Migration)
-- DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
-  Arbeit an db-stand.sql oder am DB-Doku-Stand)
 - DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026 (Trigger: das Anlegen einer NEUEN
   Tabelle in public ab dem 30.10.2026 — insbesondere der Geheimnis-Speicher der
   Autorisierungsschicht, falls er danach entsteht)

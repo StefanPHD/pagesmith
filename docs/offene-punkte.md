@@ -1654,15 +1654,24 @@ aufeinander; sie liegen alle hier und finden einander.
     gehoben (2026-09-25) …".
   · Die Streichung ist ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-25 (Phasenende 11.7). Der
     gestrichene Volltext steht unter Commit `3e080b2`.
-- DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
-  Arbeit an db-stand.sql oder am DB-Doku-Stand): CLAUDE.md hält im Abschnitt "## Aktueller
-  DB-/Analytics-Stand" fest, jener Titel-Zeiger brauche die Regeltitel weiterhin an einem
-  auffindbaren Ort, und ein Pfad-Zeiger auf CLAUDE.md existiere nicht mehr. Ob der Zeiger
-  heute noch trägt, hat niemand geprüft. Die Datei existiert (GEMESSEN am 2026-08-24, nur
-  Existenz).
-  WAS NICHT DAZUGEHÖRT: die Datei jetzt zu öffnen oder den Zeiger zu beurteilen. Beides
-  gehört in die Runde, die der Trigger auslöst — diese Zeile hält nur fest, dass die
-  Prüfung aussteht.
+- DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT — GESTRICHEN AM 2026-09-30,
+  DER GEGENSTAND IST ERLEDIGT. Der Punkt hielt fest, dass niemand geprüft hatte, ob der
+  Titel-Zeiger in db-stand.sql nach dem Umzug der drei DB-Regeln noch trägt.
+  BELEG DER ERLEDIGUNG (GEMESSEN AM REPO, CC, 2026-09-30, HEAD `fd1e089`):
+  · Der Trigger ist eingetreten: die Fortschreibung von docs/db-stand.md nach der Migration
+    0030 (Scheibe 13.6-5 der Phase 13.6) ist Arbeit am DB-Doku-Stand.
+  · Der Zeiger: PROBE 8 in supabase/checks/db-stand.sql, "(s. "DB-FUNKTIONEN +
+    SEARCH_PATH")" — er begründet, dass rls_auto_enable mit search_path=pg_catalog nicht
+    auf public "korrigiert" werden darf.
+  · Er trägt: Die Suche nach dem Titel trifft in docs/db-regeln.md genau eine Regel dieses
+    Titels; CLAUDE.md, "## Aktueller DB-/Analytics-Stand", nennt ihn unter den drei nach
+    docs/db-regeln.md gezogenen Titeln. Der dortige Absatz "GEMESSENER IST-ZUSTAND, der
+    NICHT "korrigiert" werden darf" sagt weiterhin, was der Zeiger behauptet; die Neufassung
+    vom 2026-09-30 lässt bestehende Funktionen ausdrücklich unverändert.
+  · Nebenbei geprüft, nicht Gegenstand: der zweite Titel-Zeiger derselben Datei ("(s.
+    "APPEND-ONLY-TABELLEN …") steht als Regeltitel in docs/immer-beachten.md.
+  · Die Stub-Zeile in CLAUDE.md, "## Offene Punkte", ist im selben Zug gestrichen.
+  · Der gestrichene Volltext steht unter Commit `fd1e089`.
 - DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026 (Trigger: das Anlegen einer NEUEN
   Tabelle in public ab dem 30.10.2026 — insbesondere der Geheimnis-Speicher der
   Autorisierungsschicht, falls er danach entsteht): Der Anbieter kündigt an, dass neu

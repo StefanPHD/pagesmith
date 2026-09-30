@@ -124,6 +124,18 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   1fb9b90: eine Datei angelegt, keine geändert). "MIGRATION VOR CODE-DEPLOY" bindet an
   diesem Tag nichts; die Regel greift erst bei der Scheibe, die pinterest in
   TARGETS_WITH_TEST_MODE aufnimmt.
+  NACHGEZOGEN AM 2026-09-30: DER HEUTIGE STAND IST 0001-0030. 0030
+  (0030_relay_rate_counters.sql, Phase 13.6, Scheibe 13.6-5) steht im Protokoll mit
+  applied_at 2026-09-30 10:23:41.087615+00 — GEMESSEN am 2026-09-30 (SQL-Editor, Owner,
+  Abfrage (2) aus supabase/checks/relay-rate-counters.sql).
+  DIE GRENZE IST DIESELBE KLASSE WIE BEI 0026 BIS 0028: Abgelesen ist der VOLLZUG DIESER
+  EINEN Migration, nicht die arithmetische Lückenlosigkeit — die Abfrage filtert auf
+  version = '0030'. Für 0029 gilt weiterhin die WIRKUNGS-Messung vom 2026-09-10, für
+  0001-0025 die volle Probe vom 2026-08-26.
+  DIE APPLIED_AT-REGEL IST MIT 0030 ERNEUT BESTÄTIGT (gefüllt).
+  REIHENFOLGE AUS ZWEI ZEITSTEMPELN: 0030 lief um 10:23:41 UTC; der erste Versand über den
+  neuen Code trägt im Zähler window_start 2026-09-30 10:36:00+00 (Live-Test der Scheibe,
+  Owner). MIGRATION VOR CODE-DEPLOY ist damit für diese Scheibe nachvollziehbar.
   · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
     nicht nur an der Dateisortierung abgelesen. GEMESSEN am 2026-08-05: 21 Zeilen,
     Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020 und 0021 — bei 0021 mit
@@ -151,10 +163,21 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   schema_migrations, project_secrets. Bei ALLEN ist RLS aktiv. (Die frühere Zahl "sechs" ist
   seit 0021 überholt und wird ERSETZT, nicht ergänzt — dieselbe Behandlung wie zuvor die
   überholte "fünf".)
+  NACHGETRAGEN AM 2026-09-30 — DIE ZAHL SIEBEN IST SEIT 0030 NICHT MEHR RICHTIG, UND SIE IST
+  NICHT NACHGEMESSEN: Die ACHTE Tabelle relay_rate_counters ist einzeln gemessen (RLS aktiv,
+  GEMESSEN am 2026-09-30, SQL-Editor, Owner, Abfrage (5) aus
+  supabase/checks/relay-rate-counters.sql); eine Zählung aller Tabellen in public hat
+  dabei nicht stattgefunden. Wer die Gesamtzahl braucht, fährt die Tabellen-Probe aus
+  supabase/checks/db-stand.sql.
 - POLICIES: ZEHN. projects 4 (select/insert/update/delete); domains 3 (select/insert/update —
   KEINE DELETE); project_tokens 2 (insert/update — KEINE SELECT, das write-only-Gate auf den
   CAPI-Token); events 1 (events_select_own, SELECT); audit_logs 0; schema_migrations 0;
   project_secrets 0.
+  relay_rate_counters 0 — GEMESSEN am 2026-09-30 (SQL-Editor, Owner, Abfrage (6) aus
+  supabase/checks/relay-rate-counters.sql). DIESELBE DENKFIGUR WIE BEI project_secrets: unter
+  aktiver RLS ohne Policy ist die Tabelle für anon und authenticated verschlossen, einziger
+  Schreiber ist die RPC relay_rate_hit über service_role. DIE GESAMTZAHL ZEHN IST NICHT
+  NACHGEMESSEN; dass sie gleich bleibt, ist eine ABLEITUNG aus dieser einen Null.
   BEI project_secrets IST DIE LEERE POLICY-LISTE DIE TRAGENDE KONTROLLE — der Satz gehört
   zwingend dazu, sonst liest jemand die Null als Lücke und "repariert" sie: unter aktiver RLS
   ohne JEDE Policy ist die Tabelle für anon und authenticated VOLLSTÄNDIG verschlossen, nur
@@ -198,6 +221,14 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   public-Tabellen, inkl. project_tokens, schema_migrations UND project_secrets. Die
   Tenant-Isolation und das write-only-Gate tragen damit AUSSCHLIESSLICH über RLS
   (s. docs/immer-beachten.md, "GRANTS SCHÜTZEN NICHTS").
+  DIE ACHTE TABELLE WEICHT DAVON AB, UND DAS IST ABSICHT (Migration 0030): relay_rate_counters
+  — anon und authenticated OHNE select, insert, update, delete; service_role MIT select,
+  insert, update UND delete (delete ist Vorgabe, nicht entzogen). GEMESSEN am 2026-09-30
+  (SQL-Editor, Owner, Abfrage (7) aus supabase/checks/relay-rate-counters.sql, über
+  has_table_privilege — das Instrument zählt auch geerbte Rechte und ist damit ein anderes
+  als role_table_grants vom 2026-08-05). Im Wortlaut übermittelt ist allein "service_role
+  delete = true"; die übrigen Werte sind als "wie erwartet" gegen die ERWARTUNG der Probe
+  gemeldet. Die RLS bleibt auch hier die tragende Schicht.
 - TABELLE public.events: id uuid PK (gen_random_uuid()); project_id uuid FK -> projects
   ON DELETE CASCADE; event_type text; event_id text; source text (KEIN Default); created_at
   timestamptz (now()) — diese SECHS NOT NULL. DAZU: variant text NULLABLE (0017).
@@ -442,9 +473,36 @@ END)
   Reichweite ist genau die der Probe: alle Objekte im Schema public, ohne Filter auf
   Tabellen, unter Ausschluss der system-erzeugten Constraint-Trigger. Über andere Schemata
   sagt sie NICHTS.
+- TABELLE public.relay_rate_counters (0030, Phase 13.6, Scheibe 13.6-5 — der Zähler der
+  Ratenbegrenzung am Formular-Relay, EINE Zeile je Projekt). GEMESSEN am 2026-09-30
+  (SQL-Editor, Owner, supabase/checks/relay-rate-counters.sql, Abfragen (3) bis (6) und
+  (10)); gemeldet als "wie erwartet" gegen die ERWARTUNG der Probe — die Einzelwerte sind
+  NICHT im Wortlaut übermittelt, der Satz darunter ist die Erwartung der Probe:
+  SPALTEN, GENAU DREI, in dieser Reihenfolge: project_id uuid NOT NULL · window_start
+  timestamptz NOT NULL · hits integer NOT NULL; keine mit Default. KEINE IP, KEIN
+  User-Agent, KEIN Host, KEIN Formularinhalt.
+  CONSTRAINTS, GENAU DREI: Primärschlüssel auf (project_id) · Fremdschlüssel auf
+  projects(id) ON DELETE CASCADE · relay_rate_counters_hits_positive CHECK (hits >= 1).
+  RLS aktiv, NULL Policies (s. POLICIES). INDEX: allein relay_rate_counters_pkey.
+  KEIN updated_at, KEIN Row-Trigger; kein Aufräumen — eine Zeile je Projekt, gelöscht per
+  Kaskade.
+  DIE WIRKUNG IST LIVE GEMESSEN, nicht nur der Katalog (2026-09-30, Owner, Live-Test der
+  Scheibe; die Zeile des Testprojekts, im SQL-Editor abgelesen): erster Versand hits = 1,
+  window_start 2026-09-30 10:36:00+00 (volle Minute, UTC) · nach einem per SQL in die
+  Zukunft gesetzten Fensterbeginn (window_start = now() + 1 Stunde, hits = 120) zwei
+  Versände mit hits 121 und 122, window_start beide Male unverändert 2026-09-30
+  11:40:37.689752+00 — ein ÄLTERES Fenster erhöht den laufenden Zähler und setzt den
+  Fensterbeginn NICHT zurück · nach dem Löschen der Zeile neu hits = 1, window_start
+  2026-09-30 10:46:00+00. Die von Hand gesetzten Werte sind mit dem Löschen der Zeile
+  verschwunden; die Zeile danach entstand über den normalen Weg.
+  NICHT GEMESSEN: zwei gleichzeitige Aufrufe; ein Aufruf aus demselben Fenster ohne Eingriff
+  (hits 2 aus 1).
 - PRIMÄRSCHLÜSSEL, DIE NICHT "id" HEISSEN (Footgun, real aufgetreten): domains -> label;
   project_tokens -> project_id; schema_migrations -> version. Vor der Nutzung eines
   Feldnamens die Migration nachsehen.
+  NACHGETRAGEN AM 2026-09-30: relay_rate_counters -> project_id (0030). Gemeldet als "wie
+  erwartet" gegen Abfrage (4) aus supabase/checks/relay-rate-counters.sql (SQL-Editor,
+  Owner); die Definition ist nicht im Wortlaut übermittelt.
   ALLE DREI SIND AM 2026-08-26 NACHGEMESSEN UND BESTÄTIGT (SQL-Editor, Owner, Probe 3 aus
   supabase/checks/db-stand.sql; pg_get_constraintdef): domains_pkey PRIMARY KEY (label),
   project_tokens_pkey PRIMARY KEY (project_id), schema_migrations_pkey PRIMARY KEY
@@ -499,6 +557,10 @@ END)
     (getCapiConfigByTrackingKey).
     WER EINEN DRITTEN EINTRAG SIEHT, hat deshalb keinen automatischen Befund, sondern eine
     FRAGE: Lässt sich sein Zugriff nennen? Wenn nein, ist es einer.
+  relay_rate_counters: GENAU EIN Index, relay_rate_counters_pkey auf (project_id) — er trägt
+    den Konflikt-Arbiter der RPC und jeden Zugriff (Setzung P13.6-77 der Phase 13.6).
+    Gemeldet als "wie erwartet" gegen Abfrage (10) aus supabase/checks/relay-rate-counters.sql
+    (SQL-Editor, Owner, 2026-09-30); indexdef nicht im Wortlaut übermittelt.
 - FUNKTIONEN in public: FÜNF (2026-08-05 erneut gemessen: unverändert) — gemessen, nicht
   nachgetragen.
   get_event_counts(p_project_id) -> TABLE(event_type, count), gefiltert auf source='server'
@@ -517,6 +579,17 @@ END)
   rls_auto_enable() — Event-Trigger-Funktion, SECURITY DEFINER, volatile,
     search_path=pg_catalog. NICHT public — das ist korrekt und beabsichtigt, s.
     docs/db-regeln.md, "DB-FUNKTIONEN + SEARCH_PATH".
+  NACHGETRAGEN AM 2026-09-30 — EINE SECHSTE FUNKTION SEIT 0030; DIE ZAHL FÜNF OBEN IST NICHT
+    NACHGEMESSEN (die Abfrage filtert auf zwei Namen, s. unten):
+  relay_rate_hit(p_project_id uuid, p_window_seconds integer) -> integer (0030) — SECURITY
+    INVOKER, volatile, proconfig search_path="" — die ERSTE Funktion nach der Fassung der
+    Regel vom 2026-09-30 (docs/db-regeln.md, "DB-FUNKTIONEN + SEARCH_PATH"). EXECUTE: anon
+    NEIN, authenticated NEIN, service_role JA, PUBLIC ohne eigenes EXECUTE. GEMESSEN am
+    2026-09-30 (SQL-Editor, Owner, Abfragen (8) und (9) aus
+    supabase/checks/relay-rate-counters.sql); im Wortlaut übermittelt ist
+    search_path="", der Rest als "wie erwartet". MITLÄUFER DERSELBEN ABFRAGE:
+    get_event_counts trägt search_path=public — die Angabe oben bleibt damit bestätigt.
+    DIE DARSTELLUNG search_path="" FÜR DEN LEEREN PFAD IST DAMIT GEMESSEN.
 - EVENT-TRIGGER: SIEBEN (2026-08-05 erneut gemessen: unverändert). ensure_rls
   (ddl_command_end -> rls_auto_enable, evtowner postgres,
   aktiviert) plus SECHS Supabase-Plattform-Trigger (issue_graphql_placeholder,

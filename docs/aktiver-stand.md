@@ -37,6 +37,7 @@ beantworten.
 - Zuschnitt Scheibe 13.6-3
 - Zuschnitt Scheibe 13.6-4
 - Zuschnitt Scheibe 13.6-5
+- Zuschnitt Scheibe Zurück-Cache
 - Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
@@ -502,6 +503,9 @@ ABSENDBAR. EIN ERNEUTES ABSENDEN WIRD ZUGESTELLT, ABER NICHT NOCH EINMAL GETRACK
     Mit dem Beobachteten in L1 (Vermerk P13.6-70, Punkt (3)) verträglich.
   · NICHT GEMESSEN: ob L1 tatsächlich ein bfcache-Fall war, und warum der zweite Versuch noch
     ging.
+  · GEMESSEN 2026-09-30 (OWNER, nur Chrome): Vermerk P13.6-85 der Phase 13.6 — tot genau in den
+    Runden mit Wiederherstellung aus dem Zurück-Cache, auf dem Relay-Weg und im Datensparmodus.
+    Warum in L1 der zweite Versuch ging, bleibt ungemessen (ebenda, Punkt (7)).
 - UMSETZUNG: Arbeit P13.6-72 der Phase 13.6.
 
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
@@ -1570,6 +1574,9 @@ BLEIBEN BYTE-GLEICH ZU HEUTE.**
   EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE …"); jede übrige Seite bleibt
   dann mit einem Byte-Nachweis prüfbar.
 - GRENZE: Ob das erreichbar ist, klärt der Plan; weicht er ab, begründet er es.
+- EINGESCHRÄNKT 2026-09-30 (ARCHITEKT, Setzung P13.6-86 der Phase 13.6): Für Seiten MIT
+  Formular-Ziel ist das Ziel aufgegeben; Seiten OHNE Formular-Ziel bleiben byte-gleich. Der Titel
+  beschreibt den Stand davor.
 
 **Setzung P13.6-64 — DER RÜCKFALL OHNE SKRIPT BLEIBT UNVERÄNDERT** (`action` = eingetragene
 Adresse samt Versandform, Setzung P13.6-32 der Scheibe 13.6-1).
@@ -2213,6 +2220,124 @@ Doku-Commits der Scheibe: `f3385ad` (Zuschnitt) · `9a2d75f` (Planrunde, E1–E1
     eine Zeile an Setzung P13.6-14. Die Roadmap-Zeile 13.6 führt die Scheibe nicht als
     ausstehend und ist nicht geändert.
 
+## Zuschnitt Scheibe Zurück-Cache
+
+**ZUGESCHNITTEN AM 2026-09-30 (ARCHITEKT); der Plan folgt in einer eigenen Runde.**
+- GEGENSTAND: Arbeit P13.6-72 der Phase 13.6 — nach der Rückkehr aus dem Zurück-Cache ist das
+  Formular wieder absendbar (Owner-Entscheidung P13.6-71). Reihenfolge: Setzung P13.6-14.
+- BENENNUNG, DEKLARIERT (CC): Der Bestand führt die Scheibe ohne Nummer (Scheibe "Zurück-Cache",
+  Setzung P13.6-14 und Arbeit P13.6-72); die Überschrift übernimmt diesen Namen und vergibt keine
+  Nummer.
+
+### Messung zur Scheibe Zurück-Cache
+
+**Vermerk P13.6-85 — DER TOTE KNOPF NACH "ZURÜCK" IST GEMESSEN: TOT GENAU IN DEN RUNDEN MIT
+WIEDERHERSTELLUNG AUS DEM ZURÜCK-CACHE, AUF BEIDEN GEHOSTETEN WEGEN (NUR CHROME).** KEIN
+BAU-COMMIT: Messrunde; im Repo ändert sich keine Zeile Code.
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (6): GEMESSEN, OWNER, live, 2026-09-30, Chrome 154.0.8037.58
+    (Stable, 64-Bit), übermittelt im Auftrag der Runde "Scheibe Zurück-Cache — Messvermerk,
+    Zuschnitt, Plan". Testseite `projekt-n-sy5bjj.publayer.net`, A/B aus, Formular ohne
+    Track-Aktion. Danke-Seite neu `https://meta-test-5nlm3e.publayer.net/`, neu veröffentlicht,
+    der Editor vorher neu geladen. Gefahren ist die Messanleitung in Arbeit P13.6-72.
+
+(1) M1 — DevTools "Test back/forward cache": "Successfully served from back/forward cache."
+
+(2) POSITIVKONTROLLE des Diskriminators `__probe`: gesetzt `'P1'`, nach F5 `undefined`.
+
+(3) RUNDE 1 (Relay): Absenden → Danke-Seite, Make +1. Zurück: auf der Konsole "pageshow
+    persisted=true" und die Chrome-Meldung "Navigation to https://projekt-n-sy5bjj.publayer.net/
+    was restored from back/forward cache". Klick: nichts sichtbar, Make +0. Felder gefüllt.
+    · ANOMALIE: `window.__probe` nach der Rückkehr `undefined`, vor dem Absenden `'P1'` — im
+      Widerspruch zu den beiden anderen Anzeigen. URSACHE UNGEKLÄRT; Kandidat (ABGELEITET): die
+      Konsole las in einem anderen Kontext.
+
+(4) RUNDE 2 (Relay): nach F5 Absenden → Danke-Seite, Make +1. Zurück: "Navigated to
+    https://projekt-n-sy5bjj.publayer.net/", keine pageshow-Zeile, `__probe` `undefined` — frisch
+    geladen. Felder weiter gefüllt. Klick → Danke-Seite, Make +1.
+
+(5) RUNDE C (Datensparmodus an, veröffentlicht): Absenden → Danke-Seite, Make +1. Zurück:
+    `__probe` `'P1'`. Klick blockiert, Make +0. Danach Datensparmodus aus, neu veröffentlicht.
+    NICHT GEMELDET: Chrome-Meldung und pageshow-Zeile dieser Runde.
+
+(6) VORHER-WERT FÜR DEN BAU (Datensparmodus aus), zweimal identisch: 19882 Bytes, sha256
+    `02705566721fce17c9afd95584147cfcb9b67196e7007b484e9c22c0759dde43`, Kopf `cache-control:
+    public, max-age=0, must-revalidate`.
+    · GRENZE (CC): Ob der Editor vor diesem letzten Veröffentlichen neu geladen wurde, ist nicht
+      angegeben. Die Herkunfts-Auflage der Dauerregel "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT
+      MISST IM GELADENEN DOKUMENT …" (Schlüssel-Reihenfolge des Datenblocks, Vermerk P13.6-70,
+      Punkt (7)) ist für diesen Wert damit offen.
+    · Der Kopf deckt sich mit der Messung vom 2026-07-27 (Archiv der Phase 9, "CACHING-GATE");
+      nachgemessen ist er seither erst hier (GEMESSEN AM BESTAND, CC).
+
+(7) ERGEBNIS:
+    · Tot genau in den Runden mit Wiederherstellung aus dem Zurück-Cache: Runde 1 (Relay) und
+      Runde C (Datensparmodus). Lebendig in Runde 2 (frisch geladen).
+    · Der ABGELEITETE Befund der Owner-Entscheidung P13.6-71 ist damit GEMESSEN — nur Chrome.
+    · GRENZE (CC): Für den Datensparmodus gibt es keine Runde ohne Wiederherstellung; "genau" ist
+      dort nur einseitig belegt. Firefox, Safari und der Export sind nicht gemessen.
+    · ZUR FRAGE AUS ARBEIT P13.6-72, warum in L1 der zweite Versuch noch ging (CC): Runde 2 zeigt,
+      dass derselbe Ablauf mit einem frischen Laden zurückkehren kann. Warum Chrome dort nicht
+      aus dem Cache wiederherstellte, ist nicht gemessen; L1 ist damit verträglich, nicht erklärt.
+    · Die Felder tragen nach der Rückkehr ihre Werte — nach der Wiederherstellung (Runde 1) wie
+      nach frischem Laden (Runde 2), nur Chrome.
+
+(8) FOLGE FÜR DAS INSTRUMENT (ARCHITEKT): Diskriminator für spätere Live-Tests sind die
+    Chrome-Meldung und die pageshow-Zeile, nicht `__probe` allein.
+    · GRENZE (CC, ABGELEITET): Die pageshow-Zeile stammt aus einem Listener, den der Owner in der
+      Konsole setzt; ein frisches Laden verwirft ihn. Ihr FEHLEN trennt deshalb "frisch geladen"
+      nicht von "Listener fehlte". Tragend ist ihre ANWESENHEIT samt Wert — und die
+      Chrome-Meldung.
+
+### Architekten-Setzung zur Scheibe Zurück-Cache
+
+PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-09-30, übermittelt im Auftrag der Runde "Scheibe
+Zurück-Cache — Messvermerk, Zuschnitt, Plan". REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
+Wo "(CC)" steht, stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD `2fdd8ba`).
+
+**Setzung P13.6-86 — GESTALT K2: EIN `pageshow`-LISTENER LÖST BEI `persisted` DIE SPERRE DES
+FORMULAR-ZIELS; `submittedForms` BLEIBT UNBERÜHRT.**
+- Owner-Entscheidung P13.6-71 wörtlich; Setzung P13-26 der Phase 13 bleibt.
+- VERWORFEN K1 (die Sperre bei Erfolg vor der Navigation lösen): Zwischen Antwort und
+  Seitenwechsel öffnete sich ein Fenster, in dem ein zweiter Klick erneut sendet; heute schützt
+  die Sperre auch dort (Phase 13, Live-Schritt L6 "Doppelklick: genau ein Eingang").
+- VERWORFEN K3 (Ausschluss vom Zurück-Cache über Köpfe der Serve-Route): trifft jede gehostete
+  Seite, liegt auf einer anderen Schicht und erreicht Exporte nie.
+- REICHWEITE: alle drei Wege — Relay, browser-direkt, Export. GRUND: Der Fehler ist auf beiden
+  gehosteten Wegen gemessen (Vermerk P13.6-85).
+- DAS ZIEL AUS SETZUNG P13.6-63 ("Direkt-Seiten byte-gleich") WIRD FÜR SEITEN MIT FORMULAR-ZIEL
+  BEWUSST AUFGEGEBEN. Seiten OHNE Formular-Ziel bleiben byte-gleich.
+- INVARIANTEN:
+  (1) `submittedForms` wird durch die Wiederherstellung nie geleert.
+  (2) Die Sperre wird nur bei `persisted` gelöst, nie beim ersten `pageshow` einer frisch
+      geladenen Seite.
+  (3) Kein neuer globaler Name.
+  (4) Kein fremder Knoten wird berührt (Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST
+      ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN …"); ihre Ausnahme-Liste wird beim Abschluss um den
+      Listener am `window` ergänzt, alt/neu.
+  (5) Der ausgelieferte Text ändert sich nur als isolierbare Einsetzung, mit Differenz-Nachweis.
+  (6) Seiten ohne Formular-Ziel bleiben byte-gleich.
+  (7) Relay, die zwei Antworten, die Ratenbegrenzung, `/api/e` und die Serve-Route bleiben
+      unberührt.
+  (8) Kein Cookie, kein Storage.
+- AUSSER SCOPE: Cache-Köpfe (K3) · ein neuer Seitenaufruf nach der Wiederherstellung · Firefox
+  und Safari live (die Lösung nutzt ein Standard-Ereignis; live gemessen ist nur Chrome).
+- GRENZE, LIVE: Dass kein zweiter Track entsteht, ist live nicht zu zeigen — das Testformular
+  trägt keine Track-Aktion. Belegt wird es im Test, mit Mutation.
+- GRENZE (CC, ABGELEITET aus der Dauerregel "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM
+  DEPLOY"): Bereits veröffentlichte Seiten und Exporte ändern sich erst durch Neu-Veröffentlichen
+  bzw. Neu-Export; bis dahin bleibt der Knopf dort nach einer Wiederherstellung tot.
+- KOLLISIONEN, GEMELDET (CC). Mit einer Owner-Entscheidung dieser Datei hat CC keine gefunden;
+  beide Stellen sind Architekten-Setzungen:
+  · Setzung P13.6-63 — dort steht der Auflösungs-Satz.
+  · Setzung P13.6-67, dritter Punkt: "J9 gilt … für Seiten mit Relay-Ziel mit der Einsetzung R2
+    als einziger Änderung." Diese Scheibe bringt eine zweite Einsetzung, auf allen drei Wegen. J9
+    selbst (Archiv der Phase 13) bestimmt sich über I1 bis I8 und I10 ("Die Laufzeit aus 13-1 und
+    ihre Invarianten bleiben unverändert — das sind I1 bis I8 und I10"). NICHT AUFGELÖST;
+    P13.6-67 ist hier nicht geändert.
+  · Zu Invariante (4): Die Ergänzung der Ausnahme-Liste weitet eine Dauerregel aus; nach dem
+    Kopf von docs/immer-beachten.md verlangt das zuerst docs/immer-beachten-herleitung.md.
+
 ## Plattform-Schritte der Phase 13.6
 
 **Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).
@@ -2371,6 +2496,10 @@ WAHL DER GESTALT TRIFFT DER PLAN JENER SCHEIBE.
 - NEBENWIRKUNG, ABGELEITET: Nach einer Wiederherstellung aus dem Zurück-Cache feuert auch kein
   neuer Seitenaufruf (`if (window.__ps_pv) return;` im Emitter).
 - VOR DEM ERSTEN FREMDEN NUTZER (Setzung P13.6-14).
+- GEMESSEN UND ZUGESCHNITTEN 2026-09-30: die Messung in Vermerk P13.6-85, die Gestalt K2 in
+  Setzung P13.6-86 (Abschnitt "Zuschnitt Scheibe Zurück-Cache"). Die MESSANLEITUNG darüber ist
+  gefahren; welcher Diskriminator für spätere Live-Tests gilt, steht in Vermerk P13.6-85,
+  Punkt (8).
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -2789,3 +2918,20 @@ BEANTWORTET IST.**
 - WARUM NICHT JETZT: Eine Änderung an einer Aussage von CLAUDE.md verlangt zuerst das Laden von
   docs/claude-md-herleitung.md (Kopf von CLAUDE.md).
 - TRIGGER: die nächste Runde, die ohnehin eine Aussage in CLAUDE.md ändert.
+
+**Vorrat P13.6-87 — EINE DANKE-ADRESSE OHNE SEITENWECHSEL LÄSST DIE SPERRE DES FORMULAR-ZIELS OHNE
+JEDES "ZURÜCK" STEHEN; DER KNOPF IST DANN TOT** (CC, Aufklärung zur Scheibe "Zurück-Cache" vom
+2026-09-30, Q4; aufgenommen im Auftrag des Architekten vom selben Tag). ABGELEITET, NICHT
+GEMESSEN.
+- GELESEN AM CODE (Stand `2fdd8ba`): Bei Erfolg navigiert `__psFormTargetSend` über
+  `window.location.href = cfg.thanksUrl`, ohne die Sperre zu lösen (Text aus
+  `buildFormTargetRuntime`, src/lib/form-target.ts; Befund an Owner-Entscheidung P13.6-71).
+  `formTargetProblem` verlangt für die Danke-Seite allein eine absolute http(s)-Adresse
+  (`isValidRedirectUrl`); eine Adresse auf der eigenen Seite ist zulässig.
+- ABGELEITET AUS DER HTML-SPEZIFIKATION, NICHT GELESEN: Unterscheidet sich die Danke-Adresse von
+  der Seitenadresse nur im Fragment, oder lädt ihre Antwort kein neues Dokument, bleibt die Seite
+  stehen — mit gesetzter Sperre. Jeder weitere Klick endet stumm.
+- Die Gestalt K2 (Setzung P13.6-86) erfasst diesen Weg nicht: Ohne Seitenwechsel gibt es kein
+  `pageshow` (ABGELEITET).
+- TRIGGER: die nächste Arbeit an der Prüfung der Danke-Adresse, oder der erste Support-Fall
+  "Knopf tot ohne Zurück".

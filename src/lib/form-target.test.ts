@@ -77,8 +77,34 @@ let fetchCalls: { url: string; init: RequestInit & { body?: unknown } }[];
 let pending: { resolve: (v: unknown) => void; reject: (e: unknown) => void }[];
 let beacon: ReturnType<typeof vi.fn>;
 let fbq: ReturnType<typeof vi.fn>;
+// DAS AUFRAEUMEN DER pageshow-HANDLER (Scheibe "Zurueck-Cache", Setzung P13.6-88 (f) der Phase
+// 13.6): mount wertet unsere Scripts per window.eval im GEMEINSAMEN Test-Window aus, und seit der
+// Scheibe haengt der Baustein des Formular-Ziels einen pageshow-Listener an window. Ohne den
+// Spion sammelten sie sich ueber die Tests hinweg an. Jeder registrierte Handler wird hier
+// umhuellt und gezaehlt, nach dem Test entfernt; afterEach sichert zu, dass danach keiner mehr
+// feuert.
+let pageshowHandlers: EventListener[];
+let pageshowCalls: number;
 
 beforeEach(() => {
+  pageshowHandlers = [];
+  pageshowCalls = 0;
+  const realAdd = window.addEventListener.bind(window);
+  vi.spyOn(window, "addEventListener").mockImplementation(((
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) => {
+    if (type === "pageshow" && typeof listener === "function") {
+      const wrapped: EventListener = (e) => {
+        pageshowCalls++;
+        listener(e);
+      };
+      pageshowHandlers.push(wrapped);
+      return realAdd(type, wrapped, options);
+    }
+    return realAdd(type, listener, options);
+  }) as typeof window.addEventListener);
   vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
   hrefValue = "";
   vi.stubGlobal("location", {
@@ -109,6 +135,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  for (const h of pageshowHandlers) window.removeEventListener("pageshow", h);
+  const vorher = pageshowCalls;
+  window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }));
+  // Zusicherung (f): nach dem Test feuert kein pageshow-Handler mehr.
+  expect(pageshowCalls).toBe(vorher);
   vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -1448,9 +1479,16 @@ describe("13.6-4 — die Vorher-Werte in dieser Testumgebung", () => {
     const v9 = rtOut(RT_BASE);
     const v10a = rtOut([...RT_BASE, rtTarget("ps-rraaaa", RT_FOREIGN, RT_NAMES)]);
     const v10b = rtOut([...RT_BASE, rtTarget("ps-rraaaa", RT_MAKE, RT_NAMES)]);
+    // OHNE Formular-Ziel: reine Byte-Gleichheit (Invariante (6) der Setzung P13.6-86).
     expect([bytes(v9), sha(v9)]).toEqual([RT_V9.bytes, RT_V9.sha]);
-    expect([bytes(v10a), sha(v10a)]).toEqual([RT_V10A.bytes, RT_V10A.sha]);
-    expect([bytes(v10b), sha(v10b)]).toEqual([RT_V10B.bytes, RT_V10B.sha]);
+    // MIT Formular-Ziel seit der Scheibe "Zurueck-Cache": Vorher-Wert plus GENAU K2.
+    const v10aRest = ohneK2(v10a);
+    const v10bRest = ohneK2(v10b);
+    expect([bytes(v10aRest), sha(v10aRest)]).toEqual([RT_V10A.bytes, RT_V10A.sha]);
+    expect([bytes(v10bRest), sha(v10bRest)]).toEqual([RT_V10B.bytes, RT_V10B.sha]);
+    // Positivkontrolle: ohne die Entfernung weichen beide ab.
+    expect(sha(v10a)).not.toBe(RT_V10A.sha);
+    expect(sha(v10b)).not.toBe(RT_V10B.sha);
   });
 });
 
@@ -1513,6 +1551,22 @@ const R2 = [
 ].join("\n");
 // DIE MARKE IM DATENBLOCK (Setzung P13.6-66, Q2): hinten an der Konfiguration des Relay-Ziels.
 const D2 = ',"relay":true';
+// DIE EINSETZUNG DER SCHEIBE "ZURUECK-CACHE" — GETIPPT aus der Entscheidung (Setzungen P13.6-86
+// und P13.6-88 der Phase 13.6: pageshow-Listener am window, nur bei persisted === true, Sperre
+// fuer alle Formulare leeren, kein Kommentar im ausgelieferten Text), NICHT aus dem Code. Sie
+// steht im Baustein jedes Formular-Ziels, auf allen drei Wegen. Derselbe Wortlaut steht eigens
+// als WB_K2 in generate.test.ts.
+const K2 = [
+  "",
+  '  window.addEventListener("pageshow", function (e) {',
+  "    if (e && e.persisted === true) __psFormTargetBusy.length = 0;",
+  "  });",
+].join("\n");
+// "neu = alt + genau n-mal K2": zaehlt, entfernt und gibt den Rest zurueck.
+function ohneK2(out: string, n = 1): string {
+  expect(count(out, K2)).toBe(n);
+  return out.split(K2).join("");
+}
 
 describe("13.6-4 — RT-1 bis RT-4: der Relay-Weg im Seitenskript", () => {
   it("RT-1: zugestellt (204) -> Danke-Seite und genau ein Track, keine Meldung", async () => {
@@ -1695,31 +1749,176 @@ describe("13.6-4 — RT-9 bis RT-11: die Byte-Nachweise", () => {
     }
   });
 
-  it("RT-10a (ii-a): eine Adresse ausserhalb der Liste, mit Merkmal -> der Vorher-Wert", () => {
+  // SEIT DER SCHEIBE "ZURUECK-CACHE" (Setzungen P13.6-86 und P13.6-88 der Phase 13.6): Der
+  // Vorher-Wert plus GENAU K2 — der Pin haelt weiter, dass sonst kein Zeichen dazukommt.
+  it("RT-10a (ii-a): eine Adresse ausserhalb der Liste, mit Merkmal -> der Vorher-Wert plus K2", () => {
     const out = rtOut([...RT_BASE, rtTarget("ps-rraaaa", RT_FOREIGN, RT_NAMES)], { hosted: true });
-    expect([bytes(out), sha(out)]).toEqual([RT_V10A.bytes, RT_V10A.sha]);
+    const rest = ohneK2(out);
+    expect([bytes(rest), sha(rest)]).toEqual([RT_V10A.bytes, RT_V10A.sha]);
+    expect(sha(out)).not.toBe(RT_V10A.sha);
   });
 
-  it("RT-10b (ii-b): Make im Datensparmodus, mit Merkmal -> der Vorher-Wert desselben Ziels ohne das Feld", () => {
+  it("RT-10b (ii-b): Make im Datensparmodus, mit Merkmal -> der Vorher-Wert desselben Ziels ohne das Feld, plus K2", () => {
     // Rot, wenn dataSaver in den Datenblock gelangt oder der Relay-Weg entsteht (M2).
     const out = rtOut(rtMakeDs(), { hosted: true });
-    expect([bytes(out), sha(out)]).toEqual([RT_V10B.bytes, RT_V10B.sha]);
+    const rest = ohneK2(out);
+    expect([bytes(rest), sha(rest)]).toEqual([RT_V10B.bytes, RT_V10B.sha]);
+    expect(sha(out)).not.toBe(RT_V10B.sha);
   });
 
   it("RT-10 (Positivkontrolle): dasselbe Make-Ziel OHNE Datensparmodus weicht ab", () => {
     expect(sha(rtOut(rtMake(), { hosted: true }))).not.toBe(RT_V10B.sha);
   });
 
-  it("RT-11: Differenz-Nachweis — Relay-Seite = Vorher + GENAU R2 und D2", () => {
+  it("RT-11: Differenz-Nachweis — Relay-Seite = Vorher + GENAU R2, D2 und K2", () => {
     // Die fuenf Schritte der Dauerregel "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD …":
     // (1) Vorher-Wert RT_V10B (Konstante), (2) Nachher mit demselben Treiber, (3) jede
     // Einsetzung genau einmal, (4) entfernt = Vorher in Bytes und sha256, (5) Positivkontrolle.
+    // SEIT DER SCHEIBE "ZURUECK-CACHE": dazu GENAU K2 (Setzung P13.6-67, Nachtrag (c)).
     const nachher = rtOut(rtMake(), { hosted: true });
     expect(count(nachher, R2)).toBe(1);
     expect(count(nachher, D2)).toBe(1);
-    const zurueck = nachher.split(R2).join("").split(D2).join("");
+    const zurueck = ohneK2(nachher).split(R2).join("").split(D2).join("");
     expect([bytes(zurueck), sha(zurueck)]).toEqual([RT_V10B.bytes, RT_V10B.sha]);
     expect(sha(nachher)).not.toBe(RT_V10B.sha);
+  });
+});
+
+// ===========================================================================
+// SCHEIBE "ZURUECK-CACHE" (Phase 13.6; Owner-Entscheidung P13.6-71, Setzungen P13.6-86 und
+// P13.6-88 der Phase 13.6). ZC-1 bis ZC-8. Die Wiederherstellung aus dem Zurueck-Cache ist ein
+// pageshow mit persisted === true (jsdom 29.1.1 liefert PageTransitionEvent, gemessen in der
+// Planrunde); ein frisches Laden ist ein pageshow mit persisted === false.
+// Die Fixture ist die der RT-Tests: ps-rraaaa traegt ein Formular-Ziel UND eine Track-Aktion
+// ("Contact") — nur so ist "kein zweiter Track" pruefbar.
+// ===========================================================================
+function pageshow(persisted?: boolean): void {
+  window.dispatchEvent(
+    persisted === undefined
+      ? new Event("pageshow")
+      : new PageTransitionEvent("pageshow", { persisted })
+  );
+}
+const ZC_BUTTON = '[data-pagesmith-id="ps-rraaaa"] button';
+
+describe("Zurueck-Cache — ZC-1 bis ZC-3: nach der Wiederherstellung wieder absendbar, kein zweiter Track", () => {
+  // Je Weg: Erfolg -> gesperrt (der gemessene Befund, Vermerk P13.6-85) -> Wiederherstellung ->
+  // der zweite Versand geht hinaus und fuehrt zur Danke-Seite, der Track bleibt EINER.
+  const WEGE: [string, () => string, string, ReturnType<typeof rtResponse>, RequestMode][] = [
+    ["ZC-1 (Relay)", () => rtOut(rtMake(), { hosted: true }), RT_RELAY_URL, rtResponse(204), "same-origin"],
+    ["ZC-2 (Datensparmodus, browser-direkt)", () => rtOut(rtMakeDs(), { hosted: true }), RT_MAKE, rtResponse(0, "opaque"), "no-cors"],
+    ["ZC-3 (Export)", () => rtOut(rtMake()), RT_MAKE, rtResponse(0, "opaque"), "no-cors"],
+  ];
+  it.each(WEGE)("%s", async (_n, build, url, ok, mode) => {
+    // Rot, wenn die Einsetzung fehlt (M1), nicht auf diesem Weg steht (M4) oder submittedForms
+    // mitleert (M3, Invariante (1)).
+    mount(build());
+    expect(pageshowHandlers).toHaveLength(1);
+    fill();
+    submit(RT_FORM_A);
+    pending[0].resolve(ok);
+    await flush();
+    expect(hrefValue).toBe(RT_THANKS);
+    expect(fbqTracks().map((c) => c[1])).toEqual(["Contact"]);
+    hrefValue = "";
+    // Vorbedingung: ohne Wiederherstellung bleibt der Klick stumm (der Befund vor der Scheibe).
+    expect(submit(RT_FORM_A).defaultPrevented).toBe(true);
+    expect(fetchCalls).toHaveLength(1);
+    pageshow(true);
+    expect(submit(RT_FORM_A).defaultPrevented).toBe(true);
+    expect(fetchCalls.map((c) => [c.url, c.init.mode])).toEqual([
+      [url, mode],
+      [url, mode],
+    ]);
+    pending[1].resolve(ok);
+    await flush();
+    expect(hrefValue).toBe(RT_THANKS);
+    // Invariante (1): zugestellt, aber NICHT noch einmal getrackt.
+    expect(fbqTracks().map((c) => c[1])).toEqual(["Contact"]);
+  });
+});
+
+describe("Zurueck-Cache — ZC-4 und ZC-5: Invariante (2), nur bei persisted", () => {
+  it("ZC-4: nach einem Erfolg loest ein pageshow ohne persisted die Sperre NICHT; mit persisted schon", async () => {
+    // Rot, wenn die persisted-Pruefung fehlt (M2).
+    mount(rtOut(rtMake(), { hosted: true }));
+    fill();
+    submit(RT_FORM_A);
+    pending[0].resolve(rtResponse(204));
+    await flush();
+    pageshow(false);
+    pageshow();
+    submit(RT_FORM_A);
+    expect(fetchCalls).toHaveLength(1);
+    // Positivkontrolle im selben Test: die Einsetzung ist da und wirkt bei persisted.
+    pageshow(true);
+    submit(RT_FORM_A);
+    expect(fetchCalls).toHaveLength(2);
+  });
+
+  it("ZC-5: ein Versand, der VOR dem ersten pageshow beginnt, behaelt seine Sperre (F4 gilt weiter)", () => {
+    // Rot, wenn die persisted-Pruefung fehlt (M2): dann gaebe das erste pageshow einer frisch
+    // geladenen Seite die Sperre eines laufenden Versands frei, und ein zweiter Klick sendete.
+    mount(rtOut(rtMake(), { hosted: true }));
+    fill();
+    submit(RT_FORM_A);
+    pageshow(false);
+    pageshow();
+    const zweiter = submit(RT_FORM_A);
+    expect(zweiter.defaultPrevented).toBe(true);
+    expect(fetchCalls).toHaveLength(1);
+    // Positivkontrolle: bei persisted wird auch diese Sperre frei (Setzung P13.6-88 (a)).
+    pageshow(true);
+    submit(RT_FORM_A);
+    expect(fetchCalls).toHaveLength(2);
+  });
+});
+
+describe("Zurueck-Cache — ZC-6 bis ZC-8: Invarianten (3), (4), (6)", () => {
+  it("ZC-6 (Invariante 3): der Baustein mit Einsetzung legt keinen neuen globalen Namen an", () => {
+    // Rot, wenn die Einsetzung einen Namen an window haengt. Verglichen wird dieselbe Seite ohne
+    // und mit Formular-Ziel, direkt nacheinander.
+    mount(rtOut(RT_BASE));
+    const ohne = new Set(Object.getOwnPropertyNames(window));
+    mount(rtOut(rtMake()));
+    const neu = Object.getOwnPropertyNames(window).filter((n) => !ohne.has(n));
+    expect(neu).toEqual([]);
+    // Positivkontrolle: das Instrument sieht einen neuen globalen Namen.
+    window.eval("var __zcSonde = 1;");
+    expect(Object.getOwnPropertyNames(window).filter((n) => !ohne.has(n))).toEqual(["__zcSonde"]);
+    delete (window as unknown as { __zcSonde?: unknown }).__zcSonde;
+  });
+
+  it("ZC-7 (Invariante 4): Wiederherstellung und zweiter Versand aendern keinen fremden Knoten und nicht den Fokus", async () => {
+    mount(rtOut(rtMake(), { hosted: true }));
+    fill();
+    const knopf = doc.querySelector(ZC_BUTTON) as HTMLButtonElement;
+    knopf.focus();
+    const vorher = doc.body.innerHTML;
+    const fokus = doc.activeElement;
+    submit(RT_FORM_A);
+    pending[0].resolve(rtResponse(204));
+    await flush();
+    pageshow(true);
+    submit(RT_FORM_A);
+    pending[1].resolve(rtResponse(204));
+    await flush();
+    expect(fetchCalls).toHaveLength(2);
+    expect(doc.body.innerHTML).toBe(vorher);
+    expect(doc.activeElement).toBe(fokus);
+  });
+
+  it("ZC-8 (Invariante 6): ohne Formular-Ziel und in Vorschau und Edit steht kein pageshow im Text", () => {
+    // Rot, wenn die Einsetzung auch ohne Formular-Ziel entsteht (M5).
+    expect(count(rtOut(RT_BASE), "pageshow")).toBe(0);
+    expect(count(rtOut(RT_BASE, { hosted: true }), "pageshow")).toBe(0);
+    for (const mode of ["preview", "edit"] as const) {
+      expect(count(rtOut(rtMake(), { hosted: true }, mode), "pageshow")).toBe(0);
+    }
+    // Positivkontrolle: mit Formular-Ziel genau einmal, auf jedem Weg.
+    expect(count(rtOut(rtMake()), "pageshow")).toBe(1);
+    expect(count(rtOut(rtMake(), { hosted: true }), "pageshow")).toBe(1);
+    expect(count(rtOut(rtMakeDs(), { hosted: true }), "pageshow")).toBe(1);
   });
 });
 

@@ -799,6 +799,32 @@ const NOTICE_CSS =
   "button:focus-visible{outline:2px solid #ffffff;outline-offset:2px;}";
 
 /**
+ * DIE EINSETZUNG DER SCHEIBE "ZURUECK-CACHE" (Phase 13.6; Owner-Entscheidung P13.6-71, Setzungen
+ * P13.6-86 und P13.6-88 der Phase 13.6). Steht im Baustein hinter den zwei Variablen, VOR
+ * __psFormTargetShow, und haengt nicht an withRelay.
+ * - Stellt der Browser die Seite aus dem Zurueck-Cache wieder her (pageshow mit persisted ===
+ *   true), wird die Sperre __psFormTargetBusy fuer ALLE Formulare geleert: Nach einem Erfolg
+ *   loest sie sonst niemand, und jeder Klick nach "Zurueck" endete stumm (Vermerk P13.6-85:
+ *   gemessen in Chrome, Relay und Datensparmodus).
+ * - NUR bei persisted === true. Das erste pageshow einer frisch geladenen Seite (persisted
+ *   false) loest nichts — sonst gaebe ein Versand, der vor dem ersten pageshow beginnt, seine
+ *   Sperre frei (Invariante (2) der Setzung P13.6-86).
+ * - submittedForms bleibt unberuehrt: Ein erneutes Absenden wird zugestellt, aber nicht noch
+ *   einmal getrackt (Setzung P13-26 der Phase 13, Invariante (1)).
+ * - Kein neuer globaler Name: der Listener greift ueber die Closure der IIFE auf die Sperre zu.
+ *   Kein Cookie, kein Storage, kein fremder Knoten — nur ein Listener am window.
+ * - GRENZE (Setzung P13.6-88, a): Ist bei der Wiederherstellung ein Versand noch offen, gibt
+ *   die Einsetzung auch dessen Sperre frei; ein zweiter Lead ist dann moeglich. Hingenommen.
+ * - KEIN KOMMENTAR IN DER ZEICHENKETTE (Setzung P13.6-88, b): Was ausgeliefert ist, bekommt man
+ *   nicht zurueck, und Interna gehoeren nicht auf Kundenseiten. Die Erklaerung steht hier.
+ * Reines ASCII, kein `<`, kein Backslash, kein einfaches Anfuehrungszeichen.
+ */
+const PAGESHOW_RESET = `
+  window.addEventListener("pageshow", function (e) {
+    if (e && e.persisted === true) __psFormTargetBusy.length = 0;
+  });`;
+
+/**
  * DIE EINSETZUNG R2 — DER RELAY-WEG (Phase 13.6, Scheibe 13.6-4). Steht in __psFormTargetSend
  * hinter dem Timer; nur fuer eine Konfiguration mit der Marke "relay": true, sonst laeuft der
  * Versand an ihr vorbei wie bisher.
@@ -920,6 +946,10 @@ function relayBranch(): string {
  * Rumpf an unser Relay (RELAY_PATH, same-origin) statt an die Adresse. Wache, Rumpf, Timer,
  * Sperre, Meldung und onReached bleiben dieselben. Die Marke setzt allein generateFunctional,
  * und nur bei einer Veroeffentlichung (options.hosted).
+ *
+ * ZURUECK-CACHE (Phase 13.6, Scheibe "Zurueck-Cache"; Setzungen P13.6-86 und P13.6-88 der Phase
+ * 13.6): Der Baustein traegt die Einsetzung PAGESHOW_RESET (darunter), auf ALLEN drei Wegen —
+ * Relay, browser-direkt, Export. Sie haengt nicht an withRelay.
  */
 export function buildFormTargetRuntime(language: ConsentLanguage, withRelay: boolean): string {
   const texts = NOTICE_TEXTS[language];
@@ -927,7 +957,7 @@ export function buildFormTargetRuntime(language: ConsentLanguage, withRelay: boo
   // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): Versand an die eingetragene Adresse,
   // "erreicht" nur bei einer opaque-Antwort, sonst eigene Meldung.
   var __psFormTargetBusy = [];
-  var __psFormTargetBox = null;
+  var __psFormTargetBox = null;${PAGESHOW_RESET}
   function __psFormTargetShow(on) {
     if (!__psFormTargetBox) {
       if (!on) return;

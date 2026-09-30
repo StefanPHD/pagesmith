@@ -2565,6 +2565,15 @@ const WB_R2 = [
   "    }",
 ].join("\n");
 const WB_D2 = ',"relay":true';
+// DIE EINSETZUNG DER SCHEIBE "ZURUECK-CACHE" — GETIPPT aus der Entscheidung (Setzungen P13.6-86
+// und P13.6-88 der Phase 13.6), derselbe Wortlaut wie K2 in form-target.test.ts. Die Vorlage
+// traegt ein Formular-Ziel; Export und Veroeffentlichung tragen die Einsetzung also je einmal.
+const WB_K2 = [
+  "",
+  '  window.addEventListener("pageshow", function (e) {',
+  "    if (e && e.persisted === true) __psFormTargetBusy.length = 0;",
+  "  });",
+].join("\n");
 
 function wbPreview(): string {
   return generateFunctional(WB_HTML, WB_MAPPINGS, "preview", {
@@ -2586,10 +2595,17 @@ describe("13.6-2 — W-B: Export und Veroeffentlichung bleiben byte-gleich", () 
     sha: "33139d44144abc659d94ddece86ee5e873e7df5a4c6ce6bcf66e395ff913c79b",
   };
 
-  it("W-B1: der Export ist byte-gleich zum Vorher-Wert", () => {
+  // SEIT DER SCHEIBE "ZURUECK-CACHE" (Setzungen P13.6-86 und P13.6-88 der Phase 13.6) tragen
+  // W-B1 und W-B2 den Vorher-Wert plus GENAU WB_K2: Die Vorlage hat ein Formular-Ziel. Die
+  // Konstanten WB1 und WB2 sind unveraendert und werden nicht neu berechnet.
+  it("W-B1: der Export ist der Vorher-Wert plus GENAU WB_K2", () => {
     const out = wbExport();
-    expect(wbBytes(out)).toBe(WB1.bytes);
-    expect(wbSha(out)).toBe(WB1.sha);
+    expect(out.split(WB_K2).length - 1).toBe(1);
+    const zurueck = out.split(WB_K2).join("");
+    expect(wbBytes(zurueck)).toBe(WB1.bytes);
+    expect(wbSha(zurueck)).toBe(WB1.sha);
+    // Positivkontrolle: ohne die Entfernung besteht ein Unterschied.
+    expect(wbSha(out)).not.toBe(WB1.sha);
   });
 
   // SEIT DER SCHEIBE 13.6-4 EIN PIN OHNE MERKMAL (Phase 13.6; Vermerk P13.6-65, Punkt (2), und
@@ -2597,20 +2613,25 @@ describe("13.6-2 — W-B: Export und Veroeffentlichung bleiben byte-gleich", () 
   // Veroeffentlichungs-Pfad setzt das Merkmal, und die Vorlage traegt ein Ziel auf der
   // Host-Liste — W-B2 bildet ihn deshalb NICHT mehr ab. Er haelt nur noch fest, dass die Engine
   // ohne Merkmal byte-gleich bleibt. Den Veroeffentlichungs-Weg haelt W-B2R darunter.
-  it("W-B2: der Text samt Dialog OHNE Merkmal ist byte-gleich zum Vorher-Wert", () => {
+  it("W-B2: der Text samt Dialog OHNE Merkmal ist der Vorher-Wert plus GENAU WB_K2", () => {
     const out = wbPublished();
-    expect(wbBytes(out)).toBe(WB2.bytes);
-    expect(wbSha(out)).toBe(WB2.sha);
+    expect(out.split(WB_K2).length - 1).toBe(1);
+    const zurueck = out.split(WB_K2).join("");
+    expect(wbBytes(zurueck)).toBe(WB2.bytes);
+    expect(wbSha(zurueck)).toBe(WB2.sha);
+    expect(wbSha(out)).not.toBe(WB2.sha);
   });
 
-  it("W-B2R: der Veroeffentlichungs-Text MIT Merkmal ist der Vorher-Wert plus GENAU R2 und D2", () => {
+  it("W-B2R: der Veroeffentlichungs-Text MIT Merkmal ist der Vorher-Wert plus GENAU R2, D2 und WB_K2", () => {
     // Die fuenf Schritte der Dauerregel "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD …";
     // Vorher-Wert ist WB2, am Commit 69cb057 durch W-B2 bestaetigt. R2 und D2 sind GETIPPT aus
-    // dem Plan (Setzung P13.6-67 der Phase 13.6), nicht aus dem Code.
+    // dem Plan (Setzung P13.6-67 der Phase 13.6), nicht aus dem Code; WB_K2 ebenso (Setzungen
+    // P13.6-86 und P13.6-88).
     const out = wbPublishedHosted();
     expect(out.split(WB_R2).length - 1).toBe(1);
     expect(out.split(WB_D2).length - 1).toBe(1);
-    const zurueck = out.split(WB_R2).join("").split(WB_D2).join("");
+    expect(out.split(WB_K2).length - 1).toBe(1);
+    const zurueck = out.split(WB_K2).join("").split(WB_R2).join("").split(WB_D2).join("");
     expect(wbBytes(zurueck)).toBe(WB2.bytes);
     expect(wbSha(zurueck)).toBe(WB2.sha);
     // Positivkontrolle: ohne die Entfernung besteht ein Unterschied.

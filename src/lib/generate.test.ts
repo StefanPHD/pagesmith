@@ -2504,6 +2504,68 @@ function wbPublished(): string {
   );
 }
 
+// Der Veroeffentlichungs-Text, wie ihn der Editor seit der Scheibe 13.6-4 erzeugt: MIT dem
+// Merkmal hosted (buildDocumentFor in CodeImporter.tsx).
+function wbPublishedHosted(): string {
+  return injectPageViewEmitter(
+    generateFunctional(WB_HTML, WB_MAPPINGS, "export", {
+      ...WB_OPTIONS,
+      capiProxyUrl: WB_PUBLISH_PROXY,
+      hosted: true,
+    }),
+    WB_OPTIONS.trackingKey,
+    "bar",
+    { appearance: { theme: "auto" }, text: "standard", language: "de" }
+  );
+}
+
+// DIE EINSETZUNG R2 UND DIE MARKE D2 (Phase 13.6, Scheibe 13.6-4) — GETIPPT, derselbe Wortlaut
+// wie R2 und D2 in form-target.test.ts.
+const WB_R2 = [
+  "",
+  "    // RELAY-WEG (Phase 13.6, Scheibe 13.6-4): zugestellt nur bei Status 204.",
+  "    if (cfg.relay === true) {",
+  "      var rq;",
+  "      try {",
+  '        rq = fetch("/api/f" + "?f=" + encodeURIComponent(f.getAttribute("data-pagesmith-id") || ""), {',
+  '          method: "POST",',
+  '          mode: "same-origin",',
+  '          credentials: "same-origin",',
+  '          redirect: "error",',
+  '          referrerPolicy: "no-referrer",',
+  "          keepalive: true,",
+  "          body: body",
+  "        });",
+  "      } catch (err) {",
+  "        settled = true;",
+  "        clearTimeout(timer);",
+  "        fail();",
+  "        return;",
+  "      }",
+  "      rq.then(",
+  "        function (r) {",
+  "          settled = true;",
+  "          clearTimeout(timer);",
+  "          if (r && r.status === 204) {",
+  "            try {",
+  "              onReached();",
+  "            } catch (err) {}",
+  "            window.location.href = cfg.thanksUrl;",
+  "          } else {",
+  "            fail();",
+  "          }",
+  "        },",
+  "        function () {",
+  "          settled = true;",
+  "          clearTimeout(timer);",
+  "          fail();",
+  "        }",
+  "      );",
+  "      return;",
+  "    }",
+].join("\n");
+const WB_D2 = ',"relay":true';
+
 function wbPreview(): string {
   return generateFunctional(WB_HTML, WB_MAPPINGS, "preview", {
     ...WB_OPTIONS,
@@ -2530,10 +2592,29 @@ describe("13.6-2 — W-B: Export und Veroeffentlichung bleiben byte-gleich", () 
     expect(wbSha(out)).toBe(WB1.sha);
   });
 
-  it("W-B2: der Veroeffentlichungs-Text samt Dialog ist byte-gleich zum Vorher-Wert", () => {
+  // SEIT DER SCHEIBE 13.6-4 EIN PIN OHNE MERKMAL (Phase 13.6; Vermerk P13.6-65, Punkt (2), und
+  // Setzung P13.6-66): wbPublished ruft die Engine OHNE options.hosted. Der echte
+  // Veroeffentlichungs-Pfad setzt das Merkmal, und die Vorlage traegt ein Ziel auf der
+  // Host-Liste — W-B2 bildet ihn deshalb NICHT mehr ab. Er haelt nur noch fest, dass die Engine
+  // ohne Merkmal byte-gleich bleibt. Den Veroeffentlichungs-Weg haelt W-B2R darunter.
+  it("W-B2: der Text samt Dialog OHNE Merkmal ist byte-gleich zum Vorher-Wert", () => {
     const out = wbPublished();
     expect(wbBytes(out)).toBe(WB2.bytes);
     expect(wbSha(out)).toBe(WB2.sha);
+  });
+
+  it("W-B2R: der Veroeffentlichungs-Text MIT Merkmal ist der Vorher-Wert plus GENAU R2 und D2", () => {
+    // Die fuenf Schritte der Dauerregel "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD …";
+    // Vorher-Wert ist WB2, am Commit 69cb057 durch W-B2 bestaetigt. R2 und D2 sind GETIPPT aus
+    // dem Plan (Setzung P13.6-67 der Phase 13.6), nicht aus dem Code.
+    const out = wbPublishedHosted();
+    expect(out.split(WB_R2).length - 1).toBe(1);
+    expect(out.split(WB_D2).length - 1).toBe(1);
+    const zurueck = out.split(WB_R2).join("").split(WB_D2).join("");
+    expect(wbBytes(zurueck)).toBe(WB2.bytes);
+    expect(wbSha(zurueck)).toBe(WB2.sha);
+    // Positivkontrolle: ohne die Entfernung besteht ein Unterschied.
+    expect(wbSha(out)).not.toBe(WB2.sha);
   });
 
   it("W-B (Positivkontrolle): die Vorschau derselben Vorlage weicht ab, und die Vorlage traegt den Gegenstand", () => {

@@ -27,6 +27,7 @@
 // Host fuer die Pruefung auf Custom-Domains.
 
 import { isValidRedirectUrl, type Mapping } from "./mappings";
+import { RELAY_PATH } from "./relay/path";
 import { embedInScript } from "./script-embed";
 import type { ConsentLanguage, ConsentLanguageRead } from "./settings";
 
@@ -162,8 +163,13 @@ export function formTargetProblem(
   ownDomains: readonly string[]
 ): FormTargetProblem | null {
   if (!config || typeof config !== "object") return "shape";
-  const { endpoint, thanksUrl } = config as Record<string, unknown>;
+  const { endpoint, thanksUrl, dataSaver } = config as Record<string, unknown>;
   if (typeof endpoint !== "string" || typeof thanksUrl !== "string") return "shape";
+  // DER DATENSPARMODUS (Phase 13.6, Scheibe 13.6-4; Setzung P13.6-66, Q2): fehlend oder true.
+  // Jeder andere Wert — auch false — ist ein Wert, den der Code nicht kennt, und bricht laut
+  // ab (Dauerregel "EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB"). Im Relay wird daraus
+  // "invalid-target", also nie eine Weiterleitung.
+  if (dataSaver !== undefined && dataSaver !== true) return "shape";
   let parsed: URL;
   try {
     parsed = new URL(endpoint.trim());
@@ -793,6 +799,71 @@ const NOTICE_CSS =
   "button:focus-visible{outline:2px solid #ffffff;outline-offset:2px;}";
 
 /**
+ * DIE EINSETZUNG R2 — DER RELAY-WEG (Phase 13.6, Scheibe 13.6-4). Steht in __psFormTargetSend
+ * hinter dem Timer; nur fuer eine Konfiguration mit der Marke "relay": true, sonst laeuft der
+ * Versand an ihr vorbei wie bisher.
+ * - Adresse: RELAY_PATH relativ, also same-origin auf dem Host der Seite; die Kennung des
+ *   Formulars in der Query (?f=), die Formularwerte NUR im Rumpf (Setzung P13.6-49, R2).
+ * - Derselbe Rumpf wie der direkte Weg (Setzung P13-19 der Phase 13).
+ * - mode "same-origin" und redirect "error": Nie ein fremder Ursprung, nie einer Umleitung
+ *   folgen — eine Umleitung ist ein Fehlschlag.
+ * - credentials "same-origin": Das Varianten-Cookie geht mit; das Relay waehlt damit den
+ *   Mapping-Satz (Setzung P13.6-59, Q2).
+ * - referrerPolicy "no-referrer" (Setzung P13.6-48, R1): Der Referer stuende mit voller
+ *   Seitenadresse samt Query im Plattform-Log. GRENZE: nur in Chrome geprueft (Setzung
+ *   P13.6-66, Q7).
+ * - keepalive wie der direkte Weg: Verlaesst der Besucher die Seite, kommt der Lead trotzdem an.
+ * - "ZUGESTELLT" NUR BEI STATUS 204 (Setzungen P13.6-21, P13.6-59 Q3, P13.6-67). Jeder andere
+ *   Status (502, 405, auch 200), ein Wurf, eine Ablehnung: Meldung, keine Navigation, kein
+ *   Track. Der Timer ist derselbe (Setzung P13-32): ein spaetes 204 navigiert noch.
+ * Der Text enthaelt kein `<`; RELAY_PATH ist eine Repo-Konstante und geht trotzdem ueber
+ * embedInScript (Konvention am Ort der Handlung).
+ */
+function relayBranch(): string {
+  return `
+    // RELAY-WEG (Phase 13.6, Scheibe 13.6-4): zugestellt nur bei Status 204.
+    if (cfg.relay === true) {
+      var rq;
+      try {
+        rq = fetch(${embedInScript(RELAY_PATH)} + "?f=" + encodeURIComponent(f.getAttribute("data-pagesmith-id") || ""), {
+          method: "POST",
+          mode: "same-origin",
+          credentials: "same-origin",
+          redirect: "error",
+          referrerPolicy: "no-referrer",
+          keepalive: true,
+          body: body
+        });
+      } catch (err) {
+        settled = true;
+        clearTimeout(timer);
+        fail();
+        return;
+      }
+      rq.then(
+        function (r) {
+          settled = true;
+          clearTimeout(timer);
+          if (r && r.status === 204) {
+            try {
+              onReached();
+            } catch (err) {}
+            window.location.href = cfg.thanksUrl;
+          } else {
+            fail();
+          }
+        },
+        function () {
+          settled = true;
+          clearTimeout(timer);
+          fail();
+        }
+      );
+      return;
+    }`;
+}
+
+/**
  * Der Baustein des Formular-Ziels — wird in die IIFE von buildWiringScript gesplicet,
  * NUR wenn die gefilterte Tabelle ein Formular-Ziel traegt und der Modus "export" ist
  * (Setzung P13-30, Invariante I5). Er definiert zwei lokale Funktionen:
@@ -840,8 +911,17 @@ const NOTICE_CSS =
  * Der Text enthaelt kein `<` (er steht in einem <script>, das keinen literalen
  * "</script>" tragen darf); die Betreiber-Werte (Adresse, Danke-Seite) stehen NICHT hier,
  * sondern im Datenblock, der ueber embedInScript kodiert wird (Setzung P13-28).
+ *
+ * withRelay (Phase 13.6, Scheibe 13.6-4; Setzungen P13.6-63, P13.6-66 und P13.6-67 der Phase
+ * 13.6) — KEIN Vorgabewert, damit der Compiler jeden Aufrufer fragt. Bei false ist der Text
+ * ZEICHENGLEICH zu dem vor der Scheibe (Setzung P13.6-63: Seiten, deren Ziele alle direkt
+ * schicken, bleiben byte-gleich). Bei true kommt GENAU EINE Einsetzung hinzu (R2, RELAY_BRANCH
+ * darunter), hinter dem Timer: Traegt die Konfiguration die Marke "relay": true, geht der
+ * Rumpf an unser Relay (RELAY_PATH, same-origin) statt an die Adresse. Wache, Rumpf, Timer,
+ * Sperre, Meldung und onReached bleiben dieselben. Die Marke setzt allein generateFunctional,
+ * und nur bei einer Veroeffentlichung (options.hosted).
  */
-export function buildFormTargetRuntime(language: ConsentLanguage): string {
+export function buildFormTargetRuntime(language: ConsentLanguage, withRelay: boolean): string {
   const texts = NOTICE_TEXTS[language];
   return `
   // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): Versand an die eingetragene Adresse,
@@ -924,7 +1004,7 @@ export function buildFormTargetRuntime(language: ConsentLanguage): string {
     }
     var timer = setTimeout(function () {
       if (!settled) fail();
-    }, ${FORM_TARGET_TIMEOUT_MS});
+    }, ${FORM_TARGET_TIMEOUT_MS});${withRelay ? relayBranch() : ""}
     var req;
     try {
       req = fetch(cfg.endpoint, {

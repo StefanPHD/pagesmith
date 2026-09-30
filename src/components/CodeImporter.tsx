@@ -2213,12 +2213,19 @@ export default function CodeImporter({
   const customPixelDelivered =
     customPixelRead.kind === "ok" ? customPixelRead.code : "";
 
+  // hosted (Phase 13.6, Scheibe 13.6-4): das AUSDRUECKLICHE Merkmal des Veroeffentlichungs-
+  // Pfads — true NUR bei handlePublish, false beim Export. KEIN Vorgabewert, damit der Compiler
+  // jeden Aufrufer fragt. Mit true legt die Engine ein Formular-Ziel auf das Relay, wenn seine
+  // Adresse auf der Host-Liste steht und der Datensparmodus aus ist; ein Export traegt nie
+  // Relay-Code (Setzung P13.6-59, Q11 der Phase 13.6; Waechter CI-E1).
   function buildDocumentFor(
     html: string,
     docMappings: Mapping[],
-    capiProxyUrl: string
+    capiProxyUrl: string,
+    hosted: boolean
   ): string {
     return generateFunctional(html, docMappings, "export", {
+      hosted,
       metaPixelId: getPixelId(settings, "meta"),
       // AUS DEM ZUSTAND, NICHT AUS settings — s. den Kommentar am trackingKey-State.
       // Hier braucht es KEINE Dep-Liste: dies ist eine gewoehnliche Funktion und
@@ -2242,7 +2249,7 @@ export default function CodeImporter({
   }
 
   function buildFunctionalDocument(capiProxyUrl: string): string {
-    return buildDocumentFor(debouncedCode, mappings, capiProxyUrl);
+    return buildDocumentFor(debouncedCode, mappings, capiProxyUrl, false);
   }
 
   function buildExportDocument(): string {
@@ -2392,14 +2399,15 @@ export default function CodeImporter({
       () =>
         publishProject(
           projectId,
-          buildDocumentFor(pairA.html, pairA.mappings, "/api/e"),
+          buildDocumentFor(pairA.html, pairA.mappings, "/api/e", true),
           { html: pairA.html, mappings: pairA.mappings, settings },
           hasVariantB
             ? {
                 functionalHtml: buildDocumentFor(
                   pairB.html,
                   pairB.mappings,
-                  "/api/e"
+                  "/api/e",
+                  true
                 ),
                 // DER QUELLTEXT VON B, seit Scheibe 11.11d Pflicht (P11.11-20):
                 // symmetrisch zu snapshot.html bei A, damit der Server-Riegel BEIDE

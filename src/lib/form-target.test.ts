@@ -513,7 +513,7 @@ describe("F6b (I5) — Differenz-Nachweis MIT Ziel", () => {
     const nachher = exportDoc([track("ps-cccccc", "Lead"), target("ps-cccccc")]);
     // R1 ist der Baustein aus buildFormTargetRuntime — NICHT abgetippt: sein INHALT ist
     // durch F1–F4, K3 und F10 verhaltensgeprueft; dieser Nachweis prueft die STELLE.
-    const R1 = buildFormTargetRuntime("de");
+    const R1 = buildFormTargetRuntime("de", false);
     // (3) je genau einmal — R1, B1, D1 hier, X1 und A1 in ohneRueckfall.
     expect(count(nachher, R1)).toBe(1);
     expect(count(nachher, B1)).toBe(1);
@@ -1114,7 +1114,7 @@ describe("13-1c — N-Diff: Nachher = Vorher plus R1, B1, D1 und genau die Namen
       track("ps-cccccc", "Lead"),
       target("ps-cccccc", ENDPOINT, THANKS, ["deine_stadt", "email", "go", "vorname"]),
     ]);
-    const R1 = buildFormTargetRuntime("de");
+    const R1 = buildFormTargetRuntime("de", false);
     const EINSETZUNGEN = [' name="vorname"', ' name="deine_stadt"'];
     // (3) je genau einmal — erwartet: R1, B1, D1 je 1, die zwei Namen je 1; X1 und A1 je 1
     // (in ohneRueckfall).
@@ -1398,5 +1398,348 @@ describe("13.6-1 — B2-J: Formulare und Projekte OHNE Ziel bleiben unberuehrt",
     );
     expect(sha(out)).not.toBe(B2J2_SHA);
     expect(formAttrs(out, "ps-aaaaaa")).toEqual({ ...RUECKFALL, target: null });
+  });
+});
+
+// ===========================================================================
+// 13.6-4 — DER RELAY-WEG IM SEITENSKRIPT UND DER DATENSPARMODUS (Phase 13.6, Scheibe 13.6-4;
+// Standdatei jener Phase: Setzungen P13.6-61 bis P13.6-64, P13.6-66 und P13.6-67). Die Tests
+// RT-1 bis RT-13 aus der Planrunde.
+// ===========================================================================
+
+// ---RT-FIXTURE-BEGIN---
+const RT_PAGE = `<!DOCTYPE html><html><head><title>RT</title></head><body><form data-pagesmith-id="ps-rraaaa" action="#a"><input type="email" name="email"><input type="text" name="name"><button type="submit" name="go" value="ja">Senden</button></form><form data-pagesmith-id="ps-rrbbbb" action="#b"><input type="text" name="x"><button type="submit" name="los" value="1">Los</button></form><a href="#" data-pagesmith-id="ps-rrcccc">Mehr</a></body></html>`;
+const RT_MAKE = "https://hook.eu2.make.com/rtsondeabcdefghijklmnopqrstuv";
+const RT_FOREIGN = "https://hooks.example.org/rt-ziel";
+const RT_THANKS = "https://danke.example/rt";
+const RT_BASE: Mapping[] = [
+  { elementId: "ps-rraaaa", type: "track", config: { event: "Contact" } },
+  { elementId: "ps-rrbbbb", type: "track", config: { event: "Lead" } },
+  { elementId: "ps-rrcccc", type: "track", config: { event: "ViewContent" } },
+];
+const rtTarget = (elementId: string, endpoint: string, fieldNames: string[]): Mapping => ({
+  elementId,
+  type: "formTarget",
+  config: { endpoint, thanksUrl: RT_THANKS, fieldNames },
+});
+const RT_OPTIONS = {
+  metaPixelId: "123456789012345",
+  trackingKey: "tk-rt-sonde",
+  capiProxyUrl: "/api/e",
+  formTargetLanguage: "de" as const,
+};
+// ---RT-FIXTURE-END---
+
+// DIE VORHER-WERTE SIND KONSTANTEN, erhoben VOR dem ersten Eingriff der Scheibe 13.6-4 am
+// Commit 69cb057 (Sonde ausserhalb des Repos, jiti mit jsdom 29.1.1, CC, 2026-09-30; der
+// Fixture-Block oben ist zeichengleich der Sonde, sha256 des Blocks 4e7b4350…). Sie werden NIE
+// neu berechnet: Wird einer dieser Tests rot, ist der CODE falsch, nicht die Konstante.
+const RT_V9 = { bytes: 16483, sha: "077868a02ba8b82d49b2e750766952d94aa914a315385a186d157a5debb5aeec" };
+const RT_V10A = { bytes: 21528, sha: "7ec78e7f8c541d4c3143cacfb00b6fe74cf317ccd7e39b8afc66493d48914469" };
+const RT_V10B = { bytes: 21572, sha: "ff5290f2aa73bef1a1197be466f42a8eb8c5c356a75f6e9f0ae787e3f216027a" };
+const RT_NAMES = ["email", "go", "name"];
+
+function rtOut(mappings: Mapping[], extra: Record<string, unknown> = {}, mode: "export" | "preview" | "edit" = "export"): string {
+  return generateFunctional(RT_PAGE, mappings, mode, { ...RT_OPTIONS, ...extra });
+}
+
+describe("13.6-4 — die Vorher-Werte in dieser Testumgebung", () => {
+  it("RT-V: ohne Merkmal liefert der Erzeuger genau die Vorher-Werte der Sonde", () => {
+    const v9 = rtOut(RT_BASE);
+    const v10a = rtOut([...RT_BASE, rtTarget("ps-rraaaa", RT_FOREIGN, RT_NAMES)]);
+    const v10b = rtOut([...RT_BASE, rtTarget("ps-rraaaa", RT_MAKE, RT_NAMES)]);
+    expect([bytes(v9), sha(v9)]).toEqual([RT_V9.bytes, RT_V9.sha]);
+    expect([bytes(v10a), sha(v10a)]).toEqual([RT_V10A.bytes, RT_V10A.sha]);
+    expect([bytes(v10b), sha(v10b)]).toEqual([RT_V10B.bytes, RT_V10B.sha]);
+  });
+});
+
+const RT_FORM_A = '[data-pagesmith-id="ps-rraaaa"]';
+const RT_FORM_B = '[data-pagesmith-id="ps-rrbbbb"]';
+const RT_RELAY_URL = "/api/f?f=ps-rraaaa";
+const rtMake = () => [...RT_BASE, rtTarget("ps-rraaaa", RT_MAKE, RT_NAMES)];
+function rtMakeDs(): Mapping[] {
+  return [
+    ...RT_BASE,
+    { elementId: "ps-rraaaa", type: "formTarget", config: { endpoint: RT_MAKE, thanksUrl: RT_THANKS, fieldNames: RT_NAMES, dataSaver: true } },
+  ];
+}
+const rtResponse = (status: number, type = "basic") => ({ status, type });
+
+// DIE EINSETZUNG R2 — GETIPPT aus dem Plan (Vermerk P13.6-65, Punkt (9), und Setzung P13.6-67
+// der Phase 13.6), NICHT aus dem Code. Sie steht hinter dem Timer von __psFormTargetSend.
+const R2 = [
+  "",
+  "    // RELAY-WEG (Phase 13.6, Scheibe 13.6-4): zugestellt nur bei Status 204.",
+  "    if (cfg.relay === true) {",
+  "      var rq;",
+  "      try {",
+  '        rq = fetch("/api/f" + "?f=" + encodeURIComponent(f.getAttribute("data-pagesmith-id") || ""), {',
+  '          method: "POST",',
+  '          mode: "same-origin",',
+  '          credentials: "same-origin",',
+  '          redirect: "error",',
+  '          referrerPolicy: "no-referrer",',
+  "          keepalive: true,",
+  "          body: body",
+  "        });",
+  "      } catch (err) {",
+  "        settled = true;",
+  "        clearTimeout(timer);",
+  "        fail();",
+  "        return;",
+  "      }",
+  "      rq.then(",
+  "        function (r) {",
+  "          settled = true;",
+  "          clearTimeout(timer);",
+  "          if (r && r.status === 204) {",
+  "            try {",
+  "              onReached();",
+  "            } catch (err) {}",
+  "            window.location.href = cfg.thanksUrl;",
+  "          } else {",
+  "            fail();",
+  "          }",
+  "        },",
+  "        function () {",
+  "          settled = true;",
+  "          clearTimeout(timer);",
+  "          fail();",
+  "        }",
+  "      );",
+  "      return;",
+  "    }",
+].join("\n");
+// DIE MARKE IM DATENBLOCK (Setzung P13.6-66, Q2): hinten an der Konfiguration des Relay-Ziels.
+const D2 = ',"relay":true';
+
+describe("13.6-4 — RT-1 bis RT-4: der Relay-Weg im Seitenskript", () => {
+  it("RT-1: zugestellt (204) -> Danke-Seite und genau ein Track, keine Meldung", async () => {
+    // Rot, wenn 204 nicht navigiert, der Track fehlt oder der Aufruf an die Zieladresse geht.
+    mount(rtOut(rtMake(), { hosted: true }));
+    fill();
+    expect(submit(RT_FORM_A).defaultPrevented).toBe(true);
+    expect(fetchCalls.map((c) => c.url)).toEqual([RT_RELAY_URL]);
+    pending[0].resolve(rtResponse(204));
+    await flush();
+    expect(hrefValue).toBe(RT_THANKS);
+    expect(fbqTracks().map((c) => c[1])).toEqual(["Contact"]);
+    expect(noticeOn()).toBe(false);
+  });
+
+  it("RT-2: die Optionen des Aufrufs sind genau die der Entscheidung; Werte nur im Rumpf", () => {
+    // Rot, wenn referrerPolicy fehlt (M5), eine Option abweicht oder ein Wert in die Adresse
+    // gelangt (R2).
+    mount(rtOut(rtMake(), { hosted: true }));
+    fill();
+    submit(RT_FORM_A);
+    expect(fetchCalls).toHaveLength(1);
+    const { url, init } = fetchCalls[0];
+    const { body, ...rest } = init;
+    expect(rest).toEqual({
+      method: "POST",
+      mode: "same-origin",
+      credentials: "same-origin",
+      redirect: "error",
+      referrerPolicy: "no-referrer",
+      keepalive: true,
+    });
+    expect(body).toBeInstanceOf(URLSearchParams);
+    expect(String(body)).toContain(KOEDER);
+    expect(url).not.toContain(KOEDER);
+    expect(url).toBe(RT_RELAY_URL);
+  });
+
+  it.each([
+    ["502 (das Relay: nicht zugestellt)", rtResponse(502)],
+    ["405 (keine Route)", rtResponse(405)],
+    ["200 (kein 204)", rtResponse(200)],
+    ["opaque (Typ statt Status)", rtResponse(0, "opaque")],
+  ])("RT-3: %s -> keine Navigation, Meldung, kein Track; ein zweiter Versuch sendet erneut", async (_n, res) => {
+    // Rot, wenn etwas anderes als Status 204 als zugestellt gilt (M4).
+    mount(rtOut(rtMake(), { hosted: true }));
+    fill();
+    submit(RT_FORM_A);
+    pending[0].resolve(res);
+    await flush();
+    expect(hrefValue).toBe("");
+    expect(noticeOn()).toBe(true);
+    expect(fbqTracks()).toHaveLength(0);
+    submit(RT_FORM_A);
+    expect(fetchCalls).toHaveLength(2);
+  });
+
+  it("RT-3: Ablehnung (Netzfehler oder Umleitung bei redirect error) -> Meldung, kein Track", async () => {
+    mount(rtOut(rtMake(), { hosted: true }));
+    fill();
+    submit(RT_FORM_A);
+    pending[0].reject(new TypeError("Failed to fetch"));
+    await flush();
+    expect(hrefValue).toBe("");
+    expect(noticeOn()).toBe(true);
+    expect(fbqTracks()).toHaveLength(0);
+  });
+
+  it("RT-4: Zeitlimit -> Meldung und Sperre frei; ein spaetes 204 navigiert noch, genau ein Track", async () => {
+    // Rot, wenn der Relay-Weg den Timer nicht teilt oder ein spaetes 204 verwirft.
+    mount(rtOut(rtMake(), { hosted: true }));
+    fill();
+    submit(RT_FORM_A);
+    await vi.advanceTimersByTimeAsync(FORM_TARGET_TIMEOUT_MS);
+    expect(noticeOn()).toBe(true);
+    expect(fbqTracks()).toHaveLength(0);
+    pending[0].resolve(rtResponse(204));
+    await flush();
+    expect(hrefValue).toBe(RT_THANKS);
+    expect(fbqTracks().map((c) => c[1])).toEqual(["Contact"]);
+  });
+});
+
+describe("13.6-4 — RT-5 bis RT-8, RT-12, RT-13: wann der Relay-Weg entsteht", () => {
+  const noRelay = (out: string) => {
+    expect(out).not.toContain("/api/f");
+    expect(out).not.toContain('"relay"');
+    expect(out).not.toContain("RELAY-WEG");
+  };
+
+  it("RT-5: Datensparmodus -> direkter Versand wie heute (no-cors an die Adresse)", () => {
+    // Rot, wenn die Engine dataSaver nicht prueft (M2).
+    const out = rtOut(rtMakeDs(), { hosted: true });
+    noRelay(out);
+    expect(out).not.toContain("dataSaver");
+    mount(out);
+    fill();
+    submit(RT_FORM_A);
+    expect(fetchCalls.map((c) => [c.url, c.init.mode])).toEqual([[RT_MAKE, "no-cors"]]);
+  });
+
+  it("RT-6: eine Adresse ausserhalb der Host-Liste -> direkter Versand", () => {
+    const out = rtOut([...RT_BASE, rtTarget("ps-rraaaa", RT_FOREIGN, RT_NAMES)], { hosted: true });
+    noRelay(out);
+    mount(out);
+    fill();
+    submit(RT_FORM_A);
+    expect(fetchCalls.map((c) => [c.url, c.init.mode])).toEqual([[RT_FOREIGN, "no-cors"]]);
+  });
+
+  it("RT-7: ein Export (ohne Merkmal, auch hosted false) mit einer Adresse der Liste -> direkter Versand", () => {
+    // Rot, wenn die Engine das Merkmal nicht fragt (M1b).
+    for (const extra of [{}, { hosted: false }]) {
+      const out = rtOut(rtMake(), extra);
+      noRelay(out);
+    }
+    mount(rtOut(rtMake()));
+    fill();
+    submit(RT_FORM_A);
+    expect(fetchCalls.map((c) => [c.url, c.init.mode])).toEqual([[RT_MAKE, "no-cors"]]);
+  });
+
+  it("RT-7b: ein Schluessel relay aus der Datenbank reist nie mit; die Marke setzt allein die Engine", () => {
+    const stray = (extra: Record<string, unknown>): Mapping[] => [
+      ...RT_BASE,
+      {
+        elementId: "ps-rraaaa",
+        type: "formTarget",
+        config: { endpoint: RT_MAKE, thanksUrl: RT_THANKS, ...extra } as Mapping["config"] & { endpoint: string; thanksUrl: string },
+      } as Mapping,
+    ];
+    noRelay(rtOut(stray({ relay: true })));
+    noRelay(rtOut(stray({ relay: true, dataSaver: true }), { hosted: true }));
+    // Positivkontrolle: mit Merkmal und ohne Datensparmodus entsteht die Marke genau einmal.
+    const out = rtOut(stray({ relay: "x" }), { hosted: true });
+    expect(count(out, D2)).toBe(1);
+  });
+
+  it("RT-8: gemischte Seite — das Relay-Ziel geht an /api/f, das andere direkt", () => {
+    const out = rtOut(
+      [...rtMake(), rtTarget("ps-rrbbbb", RT_FOREIGN, ["los", "x"])],
+      { hosted: true }
+    );
+    mount(out);
+    fill();
+    submit(RT_FORM_A);
+    submit(RT_FORM_B);
+    expect(fetchCalls.map((c) => [c.url, c.init.mode])).toEqual([
+      [RT_RELAY_URL, "same-origin"],
+      [RT_FOREIGN, "no-cors"],
+    ]);
+  });
+
+  it("RT-12: Vorschau und Edit tragen auch mit Merkmal weder Relay-Weg noch Marke", () => {
+    for (const mode of ["preview", "edit"] as const) noRelay(rtOut(rtMake(), { hosted: true }, mode));
+    // Positivkontrolle am Export mit Merkmal.
+    expect(rtOut(rtMake(), { hosted: true })).toContain("/api/f");
+  });
+
+  it("RT-13: die Laufzeit-Wache gilt auch im Relay-Weg — kaputte Danke-Seite, kein Aufruf", () => {
+    const m: Mapping[] = [
+      ...RT_BASE,
+      { elementId: "ps-rraaaa", type: "formTarget", config: { endpoint: RT_MAKE, thanksUrl: "ftp://x.example/" } },
+    ];
+    const out = rtOut(m, { hosted: true });
+    expect(count(out, D2)).toBe(1);
+    mount(out);
+    fill();
+    submit(RT_FORM_A);
+    expect(fetchCalls).toHaveLength(0);
+    expect(noticeOn()).toBe(true);
+  });
+});
+
+describe("13.6-4 — RT-9 bis RT-11: die Byte-Nachweise", () => {
+  it("RT-9 (i): ohne Formular-Ziel ist der Text mit und ohne Merkmal der Vorher-Wert", () => {
+    for (const extra of [{ hosted: true }, { hosted: false }, {}]) {
+      const out = rtOut(RT_BASE, extra);
+      expect([bytes(out), sha(out)]).toEqual([RT_V9.bytes, RT_V9.sha]);
+    }
+  });
+
+  it("RT-10a (ii-a): eine Adresse ausserhalb der Liste, mit Merkmal -> der Vorher-Wert", () => {
+    const out = rtOut([...RT_BASE, rtTarget("ps-rraaaa", RT_FOREIGN, RT_NAMES)], { hosted: true });
+    expect([bytes(out), sha(out)]).toEqual([RT_V10A.bytes, RT_V10A.sha]);
+  });
+
+  it("RT-10b (ii-b): Make im Datensparmodus, mit Merkmal -> der Vorher-Wert desselben Ziels ohne das Feld", () => {
+    // Rot, wenn dataSaver in den Datenblock gelangt oder der Relay-Weg entsteht (M2).
+    const out = rtOut(rtMakeDs(), { hosted: true });
+    expect([bytes(out), sha(out)]).toEqual([RT_V10B.bytes, RT_V10B.sha]);
+  });
+
+  it("RT-10 (Positivkontrolle): dasselbe Make-Ziel OHNE Datensparmodus weicht ab", () => {
+    expect(sha(rtOut(rtMake(), { hosted: true }))).not.toBe(RT_V10B.sha);
+  });
+
+  it("RT-11: Differenz-Nachweis — Relay-Seite = Vorher + GENAU R2 und D2", () => {
+    // Die fuenf Schritte der Dauerregel "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD …":
+    // (1) Vorher-Wert RT_V10B (Konstante), (2) Nachher mit demselben Treiber, (3) jede
+    // Einsetzung genau einmal, (4) entfernt = Vorher in Bytes und sha256, (5) Positivkontrolle.
+    const nachher = rtOut(rtMake(), { hosted: true });
+    expect(count(nachher, R2)).toBe(1);
+    expect(count(nachher, D2)).toBe(1);
+    const zurueck = nachher.split(R2).join("").split(D2).join("");
+    expect([bytes(zurueck), sha(zurueck)]).toEqual([RT_V10B.bytes, RT_V10B.sha]);
+    expect(sha(nachher)).not.toBe(RT_V10B.sha);
+  });
+});
+
+describe("13.6-4 — formTargetProblem-DS und F12-DS", () => {
+  const base = { endpoint: RT_MAKE, thanksUrl: RT_THANKS };
+
+  it("formTargetProblem-DS: fehlend und true gehen; jeder andere Wert ist shape", () => {
+    expect(formTargetProblem(base, ownFormTargetDomains())).toBeNull();
+    expect(formTargetProblem({ ...base, dataSaver: true }, ownFormTargetDomains())).toBeNull();
+    for (const v of [false, "ja", 1, null, {}]) {
+      expect(formTargetProblem({ ...base, dataSaver: v }, ownFormTargetDomains())).toBe("shape");
+    }
+  });
+
+  it("F12-DS: ein reiner Wechsel des Datensparmodus ist dirty; gleich gegen gleich nicht", () => {
+    // Rot, wenn configEqual den Term nicht traegt (M6).
+    const aus: Mapping = { elementId: "ps-rraaaa", type: "formTarget", config: { ...base } };
+    const an: Mapping = { elementId: "ps-rraaaa", type: "formTarget", config: { ...base, dataSaver: true } };
+    expect(mappingsEqual([aus], [an])).toBe(false);
+    expect(mappingsEqual([an], [aus])).toBe(false);
+    expect(mappingsEqual([an], [{ ...an, config: { ...base, dataSaver: true } }])).toBe(true);
   });
 });

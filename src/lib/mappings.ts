@@ -57,10 +57,17 @@ export type TrackConfig = {
 // 13-1 sie nicht tragen — eine fehlende Liste heisst NICHT "passt" (Setzung P13-48), das
 // urteilt formTargetNamesProblem (lib/form-target.ts). Sie geht NICHT in den ausgelieferten
 // Text (Setzung P13-58, generateFunctional).
+// dataSaver (Phase 13.6, Scheibe 13.6-4; Setzungen P13.6-61 und P13.6-66, Q2, der Phase 13.6):
+// der DATENSPARMODUS. FEHLT er, gilt der Relay-Standard, sofern die Adresse auf der Host-Liste
+// steht (Owner-Entscheidung P13.6-54); true heisst browser-direkt. Es gibt KEIN false: Beim
+// Ausschalten wird der Schluessel entfernt — so kann "fehlt" gegen "false" nie faelschlich
+// dirty sein. Jeden anderen Wert weist formTargetProblem als "shape" ab. Er geht NICHT in den
+// ausgelieferten Text (generateFunctional entfernt ihn wie fieldNames).
 export type FormTargetConfig = {
   endpoint: string;
   thanksUrl: string;
   fieldNames?: string[];
+  dataSaver?: true;
 };
 
 // type ist der Diskriminator. Erster Aktionstyp war "Redirect bei Klick"
@@ -192,7 +199,10 @@ function configEqual(a: Mapping, b: Mapping): boolean {
     return (
       a.config.endpoint === b.config.endpoint &&
       a.config.thanksUrl === b.config.thanksUrl &&
-      sameOptionalList(a.config.fieldNames, b.config.fieldNames)
+      sameOptionalList(a.config.fieldNames, b.config.fieldNames) &&
+      // Scheibe 13.6-4: DER DATENSPARMODUS GEHOERT DAZU — sonst waere ein reiner Wechsel des
+      // Schalters nicht dirty und ginge beim Speichern still verloren (Waechter F12-DS).
+      a.config.dataSaver === b.config.dataSaver
     );
   }
   return false;

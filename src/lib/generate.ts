@@ -7,7 +7,7 @@
 // jeden Klick per data-pagesmith-id einem Element zu (siehe buildWiringScript).
 // Bisher haben wir nur die ABSICHT erfasst; hier feuert der Button wirklich.
 
-import type { Mapping } from "./mappings";
+import type { FormTargetConfig, Mapping } from "./mappings";
 import { buildMetaRuntime, metaTrackStatement } from "./tracking/meta";
 import { buildConsentRuntimes, CONSENT_SCRIPT_ID } from "./tracking/consent";
 import {
@@ -15,10 +15,19 @@ import {
   customTrackStatement,
 } from "./tracking/custom-pixel";
 import { buildFormTargetRuntime, deriveFormFieldNames } from "./form-target";
+import { allowedRelayEndpoint } from "./relay/hosts";
 import { embedInScript } from "./script-embed";
 import type { ConsentLanguage } from "./settings";
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
+
+// Ein Formular-Ziel, WIE ES IM DATENBLOCK STEHT (Phase 13.6, Scheibe 13.6-4): ohne fieldNames
+// und dataSaver, und an einem Relay-Ziel mit der Marke relay: true. Nur hier gebildet.
+type DeliveredFormTarget = {
+  elementId: string;
+  type: "formTarget";
+  config: FormTargetConfig & { relay?: true };
+};
 
 // id des injizierten JSON-Datenblocks; das Wiring-Script liest die Tabelle per
 // getElementById genau hier aus.
@@ -125,7 +134,10 @@ function buildWiringScript(
   // wenn KEIN Formular-Ziel verdrahtet wird. Die Entscheidung "gibt es eines, und sind wir
   // im Modus export" faellt beim einzigen Aufrufer (generateFunctional); ohne Vorgabewert,
   // damit der Compiler fragt (dieselbe Bauform wie bei customCode).
-  formTargetLanguage: ConsentLanguage | null
+  formTargetLanguage: ConsentLanguage | null,
+  // RELAY-WEG (Phase 13.6, Scheibe 13.6-4): ob mindestens ein verdrahtetes Formular-Ziel die
+  // Marke "relay": true traegt. Entschieden beim einzigen Aufrufer; ohne Vorgabewert.
+  formTargetRelay: boolean
 ): string {
   const hasPixel = metaPixelId !== "";
   // PHASE 11, ACHTE SCHEIBE — DIE VORBEDINGUNG IST GEFALLEN.
@@ -192,7 +204,9 @@ function buildWiringScript(
   // Der Baustein (Versand, Zeitlimit, Sperre, Meldung) steht in lib/form-target.ts; die
   // Einsetzung in den submit-Listener steht HIER, weil sie die Track-Anweisung braucht.
   const formTargetRuntime =
-    formTargetLanguage === null ? "" : buildFormTargetRuntime(formTargetLanguage);
+    formTargetLanguage === null
+      ? ""
+      : buildFormTargetRuntime(formTargetLanguage, formTargetRelay);
   // DIE EINSETZUNG IN DEN SUBMIT-LISTENER. Sie steht VOR der Sperre submittedForms: stuende
   // sie dahinter, verhinderte die Sperre den erneuten Versuch nach einem Fehlschlag.
   // preventDefault ZUERST und IMMER — auch wenn gerade gesendet wird: sonst schickte ein
@@ -544,6 +558,12 @@ export function generateFunctional(
     // "unknown", und den faengt das Tor in publishProject bzw. der Export-Riegel, bevor ein
     // so erzeugter Text irgendwo hingeht.
     formTargetLanguage?: ConsentLanguage;
+    // options.hosted (Phase 13.6, Scheibe 13.6-4): das AUSDRUECKLICHE Merkmal "dieser Text wird
+    // von unserer Auslieferung auf einem Serving-Host ausgeliefert". Gesetzt allein vom
+    // Veroeffentlichungs-Pfad (buildDocumentFor in CodeImporter.tsx); FEHLT es, gilt es als
+    // false — ein Export traegt nie Relay-Code (Setzung P13.6-59, Q11). Nicht aus einer
+    // anderen Eingabe erschlossen (etwa einer relativen capiProxyUrl).
+    hosted?: boolean;
   }
 ): string {
   if (!html || !html.trim()) return "";
@@ -668,6 +688,17 @@ export function generateFunctional(
     // (Spread) — ein Mapping aus der Datenbank kommt mit der Schluessel-Reihenfolge von
     // jsonb an, und ein Formular mit Ziel, dessen Felder alle benannt sind, bleibt so
     // zeichengleich zu seiner Ausgabe unter 13-1 (Waechter F6b, F6c, F7).
+    //
+    // DER RELAY-WEG (Phase 13.6, Scheibe 13.6-4; Setzungen P13.6-61 bis P13.6-63 und P13.6-66
+    // der Phase 13.6). DIE ENTSCHEIDUNG JE ZIEL FAELLT HIER UND NUR HIER: Ein Formular-Ziel geht
+    // ueber das Relay, wenn der Text veroeffentlicht wird (options.hosted), der Modus "export"
+    // ist, der Datensparmodus NICHT an ist und die Adresse auf der Host-Liste steht
+    // (allowedRelayEndpoint — dieselbe Pruefung, die das Relay selbst faellt). Ein solches Ziel
+    // bekommt HINTEN die Marke "relay": true; sie ist ein KONTRAKT im ausgelieferten Text
+    // (Setzung P13.6-66, Q2): nachlegen geht, herunternehmen nicht.
+    // dataSaver GEHT NIE HINAUS, wie fieldNames: Ein Ziel, das direkt schickt, bleibt so
+    // zeichengleich zu seiner Ausgabe vor der Scheibe (Setzung P13.6-63; Waechter RT-10).
+    const hosted = options?.hosted === true;
     const table = mappings
       .filter((m) => {
         if (!present.has(m.elementId)) return false;
@@ -675,10 +706,28 @@ export function generateFunctional(
         if (mode === "edit") return m.type === "text";
         return true; // preview
       })
-      .map((m): Mapping => {
-        if (m.type !== "formTarget" || m.config.fieldNames === undefined) return m;
-        const config = { ...m.config };
+      .map((m): Mapping | DeliveredFormTarget => {
+        if (m.type !== "formTarget") return m;
+        const relay =
+          hosted &&
+          mode === "export" &&
+          m.config.dataSaver !== true &&
+          allowedRelayEndpoint(m.config.endpoint) !== null;
+        // Die Marke kommt NUR von hier: Ein Schluessel "relay" in einem Mapping aus der
+        // Datenbank (Stand des Clients) wird entfernt — sonst truege auch ein Export den
+        // Relay-Code (Waechter RT-7b).
+        if (
+          m.config.fieldNames === undefined &&
+          m.config.dataSaver === undefined &&
+          !("relay" in m.config) &&
+          !relay
+        )
+          return m;
+        const config: DeliveredFormTarget["config"] = { ...m.config };
         delete config.fieldNames;
+        delete config.dataSaver;
+        delete config.relay;
+        if (relay) config.relay = true;
         return { ...m, config };
       });
 
@@ -718,6 +767,11 @@ export function generateFunctional(
       mode === "export" && table.some((m) => m.type === "formTarget")
         ? (options?.formTargetLanguage ?? "de")
         : null;
+    // DIE EINSETZUNG R2 NUR, WENN EIN ZIEL SIE BRAUCHT (Setzung P13.6-63): Ohne Relay-Ziel ist
+    // der Baustein zeichengleich zu dem vor der Scheibe 13.6-4.
+    const formTargetRelay = table.some(
+      (m) => m.type === "formTarget" && (m.config as { relay?: unknown }).relay === true
+    );
 
     const injectScripts =
       mode !== "export" || table.length > 0 || customPixelCode !== "";
@@ -742,7 +796,8 @@ export function generateFunctional(
         options?.consentTargets ?? [],
         customPixelCode,
         customHasEventLine,
-        formTargetLanguage
+        formTargetLanguage,
+        formTargetRelay
       );
 
       // GETEILTES CONSENT-GATE (Phase 11, zweite Scheibe): der Block wird erzeugt,

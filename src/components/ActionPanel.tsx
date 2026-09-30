@@ -23,6 +23,7 @@ import {
   type FormTargetBlock,
   type FormTargetCheck,
 } from "@/lib/form-target";
+import { allowedRelayEndpoint } from "@/lib/relay/hosts";
 import { META_STANDARD_EVENTS, META_VALUE_EVENTS } from "@/lib/tracking/meta";
 
 // Sentinel im Event-Dropdown fuer "Custom…": schaltet auf ein freies Textfeld
@@ -664,8 +665,25 @@ function InactiveTrack({
 }
 
 // FORMULAR-ZIEL (Phase 13, Scheibe 13-1): die Saetze im Panel.
+// SEIT DER SCHEIBE 13.6-4 (Phase 13.6): Erklaertext und die Saetze zum Datensparmodus im
+// Wortlaut der Owner-Entscheidung P13.6-68 der Phase 13.6; das Redesign darf sie neu fassen.
 const FORM_TARGET_EXPLAIN =
-  "Beim Abschicken gehen die Felder direkt an deine Zieladresse (z. B. Make oder Zapier). Nur wenn die Adresse erreicht wurde, geht es weiter auf die Danke-Seite; sonst bleibt das Formular stehen und zeigt eine Meldung.";
+  "Beim Absenden gehen die Eingaben an deine Zieladresse – bei unterstützten Diensten über Pagesmith mit Zustellprüfung, sonst direkt vom Browser – und der Besucher landet auf deiner Danke-Seite.";
+const DATA_SAVER_LABEL =
+  "Datensparmodus: direkt vom Browser senden, ohne Pagesmith-Server";
+const DATA_SAVER_HELP =
+  "Aus (empfohlen): Pagesmith leitet die Eingaben weiter und prüft, ob sie ankommen. Scheitert das, sieht der Besucher eine Meldung statt der Danke-Seite. An: Der Browser sendet direkt; ob die Eingaben ankommen, prüft dann niemand.";
+const DATA_SAVER_UNLISTED_NOTE =
+  "Diese Adresse beliefert der Browser direkt. Die Zustellprüfung über Pagesmith gibt es derzeit für Make-Webhooks der Region EU2.";
+const DELIVERY_RELAY = "Zustellung: über Pagesmith, mit Prüfung";
+const DELIVERY_DATA_SAVER = "Zustellung: direkt vom Browser (Datensparmodus)";
+const DELIVERY_DIRECT = "Zustellung: direkt vom Browser";
+
+// Der Datensparmodus in der Konfiguration (Phase 13.6, Scheibe 13.6-4; Setzung P13.6-66, Q2):
+// an = dataSaver: true, aus = der Schluessel FEHLT (es gibt kein false).
+function withDataSaver(config: FormTargetConfig, on: boolean): FormTargetConfig {
+  return on ? { ...config, dataSaver: true } : config;
+}
 // Korrektur K2 des Bau-Auftrags / Setzung P13-31: ein Hinweis, KEIN Ausschluss.
 const FORM_TARGET_INLINE_NOTE =
   "Das Formular hat ein eigenes Skript (onsubmit). Pagesmith übernimmt das Absenden. Prüfe nach dem Veröffentlichen, dass genau ein Eingang ankommt.";
@@ -760,6 +778,11 @@ function FormTargetActions({
   const [isEditing, setIsEditing] = useState(false);
   const [endpoint, setEndpoint] = useState(targetMapping?.config.endpoint ?? "");
   const [thanksUrl, setThanksUrl] = useState(targetMapping?.config.thanksUrl ?? "");
+  // DER DATENSPARMODUS (Phase 13.6, Scheibe 13.6-4; Setzung P13.6-66, Q3): Der Schalter steht
+  // nur in der Eingabe und nur bei einer Adresse der Host-Liste. Ist er verborgen, bleibt der
+  // Wert, wie er ist, und reist beim Speichern mit.
+  const [dataSaver, setDataSaver] = useState(targetMapping?.config.dataSaver === true);
+  const endpointListed = allowedRelayEndpoint(endpoint.trim()) !== null;
 
   const blocks = check?.blocks ?? [];
   const problem = formTargetProblem(
@@ -788,24 +811,36 @@ function FormTargetActions({
     return fieldNames === undefined ? config : { ...config, fieldNames };
   }
 
+  // BEIDE SPEICHERWEGE FUEHREN DEN DATENSPARMODUS MIT (Vermerk P13.6-65, Punkt (5), der Phase
+  // 13.6): Die Konfiguration wird hier neu gebaut und ersetzt die alte als Ganzes; ohne
+  // withDataSaver stellte ein Speichern oder ein "Neue Feldnamen bestätigen" einen
+  // eingeschalteten Datensparmodus still auf das Relay zurueck (Waechter CI-S2).
   function handleSubmit() {
     if (problem !== null) return;
-    onSave(withNames({ endpoint: endpoint.trim(), thanksUrl: thanksUrl.trim() }));
+    onSave(
+      withDataSaver(withNames({ endpoint: endpoint.trim(), thanksUrl: thanksUrl.trim() }), dataSaver)
+    );
     setIsEditing(false);
   }
 
   function handleConfirmNames() {
     if (!targetMapping || !check) return;
-    onSave({
-      endpoint: targetMapping.config.endpoint,
-      thanksUrl: targetMapping.config.thanksUrl,
-      fieldNames: check.fieldNames,
-    });
+    onSave(
+      withDataSaver(
+        {
+          endpoint: targetMapping.config.endpoint,
+          thanksUrl: targetMapping.config.thanksUrl,
+          fieldNames: check.fieldNames,
+        },
+        targetMapping.config.dataSaver === true
+      )
+    );
   }
 
   function handleCancel() {
     setEndpoint(targetMapping?.config.endpoint ?? "");
     setThanksUrl(targetMapping?.config.thanksUrl ?? "");
+    setDataSaver(targetMapping?.config.dataSaver === true);
     setIsEditing(false);
   }
 
@@ -864,6 +899,23 @@ function FormTargetActions({
             </span>
           )}
         </label>
+        {endpointListed ? (
+          <div className="flex flex-col gap-1">
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={dataSaver}
+                onChange={(e) => setDataSaver(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              {DATA_SAVER_LABEL}
+            </label>
+            <p className="text-xs text-gray-500">{DATA_SAVER_HELP}</p>
+          </div>
+        ) : (
+          endpoint.trim() !== "" &&
+          !endpointError && <p className="text-xs text-gray-500">{DATA_SAVER_UNLISTED_NOTE}</p>
+        )}
         {check && <FieldNamesList fields={check.fields} />}
         {inlineNote}
         <div className="flex gap-2">
@@ -899,6 +951,13 @@ function FormTargetActions({
           </p>
           <p className="mt-1 break-all text-xs text-gray-600">
             Danke-Seite: {targetMapping.config.thanksUrl}
+          </p>
+          <p className="mt-1 text-xs text-gray-600">
+            {allowedRelayEndpoint(targetMapping.config.endpoint) === null
+              ? DELIVERY_DIRECT
+              : targetMapping.config.dataSaver === true
+                ? DELIVERY_DATA_SAVER
+                : DELIVERY_RELAY}
           </p>
           {blocks.length > 0 && (
             <div className="mt-2 text-xs text-red-600">

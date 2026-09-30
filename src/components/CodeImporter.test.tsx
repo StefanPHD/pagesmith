@@ -6355,6 +6355,126 @@ describe("CodeImporter — Formular-Ziel (Phase 13, Scheibe 13-1)", () => {
     expect(quelltext).toContain('action="#unten"');
     expect(quelltext).not.toContain('method="post"');
   });
+
+  // PHASE 13.6, SCHEIBE 13.6-4 (Setzungen P13.6-61 bis P13.6-67, Owner-Entscheidung P13.6-68
+  // der Phase 13.6). Die Texte sind GETIPPT aus der Owner-Entscheidung, nicht aus ActionPanel.tsx.
+  const DS_LABEL = "Datensparmodus: direkt vom Browser senden, ohne Pagesmith-Server";
+  const DS_UNLISTED =
+    "Diese Adresse beliefert der Browser direkt. Die Zustellprüfung über Pagesmith gibt es derzeit für Make-Webhooks der Region EU2.";
+  const Z_RELAY = "Zustellung: über Pagesmith, mit Prüfung";
+  const Z_DS = "Zustellung: direkt vom Browser (Datensparmodus)";
+  const Z_DIRECT = "Zustellung: direkt vom Browser";
+  const RELAY_MARK = '"relay":true';
+  const ZIEL_EMAIL = (extra: Record<string, unknown> = {}): Mapping =>
+    ({
+      elementId: "ps-ffffff",
+      type: "formTarget",
+      config: { endpoint: ENDPOINT, thanksUrl: "https://d.example/", fieldNames: ["email"], ...extra },
+    }) as Mapping;
+
+  it("CI-P1 + CI-E1: Veroeffentlichen traegt den Relay-Weg, der Export desselben Projekts nicht", async () => {
+    // Rot, wenn der Export das Merkmal setzt (M1) oder das Veroeffentlichen es nicht setzt.
+    const clipboard = vi.fn<(text: string) => Promise<undefined>>(async () => undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: clipboard },
+      configurable: true,
+    });
+    render(<CodeImporter initialProjectId="proj-1" initialCode={DOC()} initialMappings={[ZIEL_EMAIL()]} />);
+    await screen.findByText("Absenden");
+    fireEvent.click(screen.getByRole("button", { name: "In Zwischenablage kopieren" }));
+    await waitFor(() => expect(clipboard).toHaveBeenCalledTimes(1));
+    const exportText = clipboard.mock.calls[0][0];
+    expect(exportText).toContain("__psFormTargetSend");
+    expect(exportText).not.toContain("/api/f");
+    expect(exportText).not.toContain(RELAY_MARK);
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^(Veröffentlichen|Erneut veröffentlichen)$/ }));
+    await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+    const functionalHtml = (publishProject.mock.calls[0] as unknown[])[1] as string;
+    expect(functionalHtml).toContain('"/api/f"');
+    expect(functionalHtml).toContain(RELAY_MARK);
+  });
+
+  it("CI-S1: den Datensparmodus einschalten und uebernehmen macht das Projekt dirty und speichert dataSaver", async () => {
+    // Rot, wenn configEqual den Schalter uebersieht (M6) oder der Schalter nicht gespeichert wird.
+    // DER CODE STEHT IN DER SERIALISIERUNGS-NORMALFORM (ohne das Leerzeichen vor ">", das DOC()
+    // traegt): "Ziel übernehmen" serialisiert den Code neu, und ein Code, der dabei anders
+    // herauskommt, machte das Projekt schon ohne jeden Schalter dirty — die Dirty-Haelfte waere
+    // dann hohl (gefunden bei M6 der Scheibe 13.6-4; Vorrat der Phase 13.6).
+    const normalDoc = DOC().replace('action="#unten" >', 'action="#unten">');
+    expect(normalDoc).not.toBe(DOC());
+    render(<CodeImporter initialProjectId="proj-1" initialCode={normalDoc} initialMappings={[ZIEL_EMAIL()]} />);
+    fireEvent.click(await screen.findByText("Absenden"));
+    fireEvent.click(screen.getByRole("button", { name: "Formular auswählen" }));
+    // Vorbedingung: das Projekt ist sauber, und die Anzeige nennt das Relay.
+    expect(screen.queryByText("Ungespeicherte Änderungen")).toBeNull();
+    expect(screen.getByText(Z_RELAY)).toBeTruthy();
+    // VERANKERUNG: "Ziel übernehmen" OHNE Wechsel des Schalters -> NICHT dirty. Erst damit
+    // trennt die Dirty-Zusicherung darunter den Schalter von der blossen Uebernahme.
+    fireEvent.click(screen.getByRole("button", { name: "Ziel bearbeiten" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ziel übernehmen" }));
+    expect(await screen.findByText(Z_RELAY)).toBeTruthy();
+    expect(screen.queryByText("Ungespeicherte Änderungen")).toBeNull();
+    // MIT Wechsel -> dirty.
+    fireEvent.click(screen.getByRole("button", { name: "Ziel bearbeiten" }));
+    const schalter = screen.getByLabelText(DS_LABEL) as HTMLInputElement;
+    expect(schalter.checked).toBe(false);
+    fireEvent.click(schalter);
+    fireEvent.click(screen.getByRole("button", { name: "Ziel übernehmen" }));
+    expect(await screen.findByText(Z_DS)).toBeTruthy();
+    expect(screen.getByText("Ungespeicherte Änderungen")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await waitFor(() => expect(saveProject).toHaveBeenCalledTimes(1));
+    const saved = (saveProject.mock.calls[0] as unknown[])[2] as Mapping[];
+    expect(saved.find((m) => m.type === "formTarget")?.config).toEqual({
+      endpoint: ENDPOINT,
+      thanksUrl: "https://d.example/",
+      fieldNames: ["email"],
+      dataSaver: true,
+    });
+  });
+
+  it("CI-S2: 'Neue Feldnamen bestätigen' und 'Ziel bearbeiten' behalten den Datensparmodus", async () => {
+    // Rot, wenn handleConfirmNames (M7) oder handleSubmit den Datensparmodus verliert.
+    render(
+      <CodeImporter
+        initialCode={DOC("", '<input type="email" name="email"><input type="text" name="vorname">')}
+        initialMappings={[ZIEL_EMAIL({ dataSaver: true })]}
+      />
+    );
+    fireEvent.click(await screen.findByText("Absenden"));
+    fireEvent.click(screen.getByRole("button", { name: "Formular auswählen" }));
+    expect(screen.getByText(Z_DS)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Neue Feldnamen bestätigen" }));
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Neue Feldnamen bestätigen" })).toBeNull());
+    expect(screen.getByText(Z_DS)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Ziel bearbeiten" }));
+    expect((screen.getByLabelText(DS_LABEL) as HTMLInputElement).checked).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "Ziel übernehmen" }));
+    expect(await screen.findByText(Z_DS)).toBeTruthy();
+    expect(screen.queryByText(Z_RELAY)).toBeNull();
+  });
+
+  it("CI-S3: eine Adresse ausserhalb der Liste -> kein Schalter, die Infozeile; Positivkontrolle mit Make", async () => {
+    // Rot, wenn der Schalter bei jeder Adresse erscheint oder die Infozeile fehlt.
+    render(
+      <CodeImporter
+        initialCode={DOC()}
+        initialMappings={[
+          { elementId: "ps-ffffff", type: "formTarget", config: { endpoint: "https://hooks.example.org/x", thanksUrl: "https://d.example/", fieldNames: ["email"] } },
+        ]}
+      />
+    );
+    fireEvent.click(await screen.findByText("Absenden"));
+    fireEvent.click(screen.getByRole("button", { name: "Formular auswählen" }));
+    expect(screen.getByText(Z_DIRECT)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Ziel bearbeiten" }));
+    expect(screen.queryByLabelText(DS_LABEL)).toBeNull();
+    expect(screen.getByText(DS_UNLISTED)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Zieladresse"), { target: { value: ENDPOINT } });
+    expect(screen.getByLabelText(DS_LABEL)).toBeTruthy();
+    expect(screen.queryByText(DS_UNLISTED)).toBeNull();
+  });
 });
 
 describe("CodeImporter — Absende-Buttons ohne eigene Aktionen (Phase 12.5, Scheibe 1c)", () => {

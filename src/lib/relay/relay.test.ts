@@ -518,6 +518,45 @@ describe("R-NON2XX, R-THROW — der Empfaenger", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// R-DS — DER DATENSPARMODUS GILT AUCH IM RELAY (Phase 13.6, Scheibe 13.6-4; Setzung P13.6-62
+// der Phase 13.6). Gelesen aus der VEROEFFENTLICHTEN Fassung.
+// ---------------------------------------------------------------------------
+describe("R-DS1 bis R-DS3 — das Relay verweigert ein Ziel im Datensparmodus", () => {
+  function ftDs(dataSaver: unknown) {
+    const m = ft(ID, EP_A);
+    return { ...m, config: { ...m.config, dataSaver } };
+  }
+
+  it("R-DS1: dataSaver true -> 502, KEIN fetch, genau die Logzeile data-saver", async () => {
+    // Rot, wenn der Zweig fehlt (M3): dann 204 und eine Weiterleitung an EP_A.
+    addProject({ id: "p-a", label: LABEL_A, mappings: [ftDs(true)] });
+    await expectNotDelivered(await handleRelay(req()));
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(logLines()).toEqual(["[relay] not delivered: data-saver"]);
+  });
+
+  it.each([false, "ja", 1, null])(
+    "R-DS2: ein unbekannter Wert (%s) -> 502 als invalid-target, kein fetch",
+    async (value) => {
+      // Rot, wenn formTargetProblem den Wert durchlaesst.
+      addProject({ id: "p-a", label: LABEL_A, mappings: [ftDs(value)] });
+      await expectNotDelivered(await handleRelay(req()));
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(logLines()).toEqual(["[relay] not delivered: invalid-target"]);
+    }
+  );
+
+  it("R-DS3 (Positivkontrolle): ohne dataSaver wird dasselbe Ziel zugestellt", async () => {
+    // Ohne sie waeren R-DS1 und R-DS2 auch gruen, wenn das Ziel aus einem anderen Grund
+    // abgewiesen wuerde.
+    addProject({ id: "p-a", label: LABEL_A, mappings: [ft(ID, EP_A)] });
+    const res = await handleRelay(req());
+    expect(res.status).toBe(204);
+    expect(fetchedUrls()).toEqual([EP_A]);
+  });
+});
+
 describe("R-CT, R-SIZE — die Form der Anfrage", () => {
   it.each([["application/json"], ["text/plain"], ["multipart/form-data; boundary=x"], [null]])(
     "R-CT: Content-Type %s -> 502, keine Abfrage",

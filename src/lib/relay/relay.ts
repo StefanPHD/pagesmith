@@ -44,6 +44,7 @@ type RelayFailReason =
   | "body-too-large"
   | "body-read-failed"
   | "invalid-target"
+  | "data-saver"
   | "host-not-listed"
   | "upstream-status"
   | "upstream-error"
@@ -170,6 +171,12 @@ async function relay(request: Request): Promise<Response> {
   // Clients, Vorrat P13.6-30) — dann die Host-Liste.
   if (formTargetProblem(target.config, ownFormTargetDomains()) !== null)
     return notDelivered("invalid-target");
+  // DER DATENSPARMODUS GILT AUCH HIER (Phase 13.6, Scheibe 13.6-4; Setzung P13.6-62): Hat der
+  // Betreiber das Ziel auf browser-direkt gestellt, laeuft KEIN Formularinhalt ueber unseren
+  // Server — auch nicht, wenn jemand den Endpunkt von Hand ruft. Gelesen aus der
+  // veroeffentlichten Fassung; ein unbekannter Wert ist oben schon "invalid-target".
+  if ((target.config as { dataSaver?: unknown }).dataSaver === true)
+    return notDelivered("data-saver");
   const endpoint = allowedRelayEndpoint((target.config as { endpoint?: unknown }).endpoint);
   if (!endpoint) return notDelivered("host-not-listed");
 

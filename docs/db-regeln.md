@@ -23,18 +23,52 @@ kennt; ein Zustand ohne die Regeln sagt nicht, was man mit ihm tun darf.
 Satz gekürzt, kein Kommentar ergänzt, die Reihenfolge ist die des Ursprungs. Der Umzug ist
 per Prüfsumme über alle drei Blöcke nachgewiesen. **Wer hier etwas ändert, ändert eine
 Regel, die vorher jede Session gelesen wurde** — das ist kein Redaktionsvorgang.
+**GEÄNDERT AM 2026-09-30 — DIE ZUSAGE "ZEICHENGLEICH" GILT SEITHER NUR NOCH FÜR DEN ZWEITEN
+UND DRITTEN BLOCK.** Der erste, "DB-FUNKTIONEN + SEARCH_PATH", ist per Owner-Entscheidung
+P13.6-76 der Phase 13.6 neu gefasst; sein Titel ist unverändert. Der Stand davor steht
+zeichengleich unter Commit `99b5ba8`.
 
 ## Die drei Regeln
 
-- DB-FUNKTIONEN + SEARCH_PATH (Advisor-Regel, präzisiert nach Messung 2026-07-28): Jede neue
-  DB-Funktion bekommt eine FIXIERTE search_path-Klausel (sonst flaggt der Supabase-Advisor
-  "Function Search Path Mutable"). WELCHER Wert, hängt vom SICHERHEITSMODUS ab:
-  - SECURITY INVOKER (Normalfall): `set search_path = public`. Body zusätzlich voll
-    qualifizieren (public.tabelle).
-  - SECURITY DEFINER: `set search_path = pg_catalog` — der MINIMALE Pfad, NICHT public. Grund:
-    eine DEFINER-Funktion läuft mit Owner-Rechten; löst sie unqualifizierte Namen über public
-    auf, kann ein dort angelegtes Objekt die Auflösung kapern. Alles ausserhalb von pg_catalog
-    im Body voll qualifizieren.
+- DB-FUNKTIONEN + SEARCH_PATH (Advisor-Regel, präzisiert nach Messung 2026-07-28; NEU GEFASST
+  2026-09-30 per OWNER-ENTSCHEIDUNG, Owner-Entscheidung P13.6-76 der Phase 13.6): Jede
+  DB-Funktion trägt eine FIXIERTE search_path-Klausel (sonst flaggt der Supabase-Advisor
+  "Function Search Path Mutable"). WELCHER Wert, hängt daran, ob die Funktion NEU ist oder
+  BESTEHT:
+  - NEUE FUNKTIONEN, SECURITY INVOKER WIE DEFINER: `set search_path = ''`, und der Rumpf ist
+    VOLL QUALIFIZIERT — jedes Objekt ausserhalb von pg_catalog mit seinem Schema
+    (public.tabelle, public.funktion(…)).
+    GRUND (OWNER): der ausdrückliche Härtungs-Standard des Anbieters; künftige, strengere
+    Prüfungen treffen neue Funktionen nicht. KEIN WARN-ZWANG, und das gehört dazu: Der
+    heutige Lint 0011 akzeptiert auch public und pg_catalog — er feuert allein bei FEHLENDEM
+    Pfad (docs/plattform-befunde.md, Supabase, Teil (aw); GELESEN am Quelltext des Lints,
+    Zweig main, nicht an der Fassung unseres Projekts).
+    ZU DEFINER: '' ist nicht schwächer als pg_catalog. GELESEN 2026-09-30,
+    postgresql.org/docs/17/runtime-config-client.html, Abschnitt search_path: "If pg_catalog
+    is not in the path then it will be searched before searching any of the path items." Der
+    Grund der Fassung für DEFINER — kein public, damit kein dort angelegtes Objekt die
+    Auflösung kapert — gilt für '' unverändert: der Pfad nennt kein Schema, in das jemand
+    schreiben könnte. EINE GRENZE, DIE FÜR BEIDE WERTE GLEICH GILT: Das temporäre Schema wird
+    für Relationen und Typen ZUERST durchsucht, wenn es nicht im Pfad steht (ebenda); die
+    Postgres-Doku empfiehlt für DEFINER pg_temp als LETZTEN Eintrag
+    (postgresql.org/docs/17/sql-createfunction.html, "Writing SECURITY DEFINER Functions
+    Safely", GELESEN 2026-09-30). Der Pfad gilt nur für Namen OHNE Schema (erster Satz des
+    gelesenen Abschnitts) — ein voll qualifizierter Rumpf nimmt der Auflösung über den Pfad
+    damit jede Relation (ABGELEITET aus diesem Satz, nicht gemessen).
+  - BESTEHENDE FUNKTIONEN BLEIBEN UNVERÄNDERT — die INVOKER-Funktionen mit
+    `set search_path = public`, rls_auto_enable (DEFINER) mit `set search_path = pg_catalog`.
+    GRUND: Unter '' wird jede nicht qualifizierte Referenz im Rumpf unauflösbar. Eine
+    Umstellung ist nur als EIGENE, JE FUNKTION geprüfte Scheibe zulässig, NIE beiläufig.
+    Die Fassung, unter der sie entstanden sind und die für sie weiter gilt:
+    · SECURITY INVOKER: `set search_path = public`. Body zusätzlich voll qualifizieren
+      (public.tabelle).
+    · SECURITY DEFINER: `set search_path = pg_catalog` — der MINIMALE Pfad, NICHT public.
+      Grund: eine DEFINER-Funktion läuft mit Owner-Rechten; löst sie unqualifizierte Namen
+      über public auf, kann ein dort angelegtes Objekt die Auflösung kapern. Alles ausserhalb
+      von pg_catalog im Body voll qualifizieren.
+  ENTFÄLLT BZW. WIRD NEU GEFASST, wenn der Anbieter seine Empfehlung ändert (Doku-Seite
+  "Database Functions" oder Lint 0011) — dann wird die Frage dem Owner erneut vorgelegt, nicht
+  still angeglichen.
   GEMESSENER IST-ZUSTAND, der NICHT "korrigiert" werden darf (2026-07-28): rls_auto_enable —
   die EINZIGE SECURITY-DEFINER-Funktion im System — trägt search_path=pg_catalog. Das ist
   korrekt. Die frühere Fassung dieser Regel sagte pauschal "gilt für SECURITY INVOKER wie
@@ -94,7 +128,8 @@ Abschnitt darüber sagt zu, seine **drei** Blöcke seien zeichengleich aus CLAUD
 übernommen. Diese Regel stammt nicht von dort — sie ist am 2026-08-13 neu geschrieben
 worden. Stünde sie unter jener Überschrift, wäre die Herkunftszusage falsch, und zwar
 still: Niemand hätte einen Anlass, sie nachzuprüfen. Die drei Blöcke oben bleiben
-unberührt und per Prüfsumme belegt.
+unberührt und per Prüfsumme belegt. (Seit dem 2026-09-30 gilt das für den zweiten und
+dritten; der erste ist neu gefasst, s. "HERKUNFT UND UNVERSEHRTHEIT".)
 
 - WER DB-CODE ANFASST, LEGT DIE GELESENE ANBIETER-DOKU ALS PROVENIENZ VOR (neu
   2026-08-13; AUSLÖSER: derselbe wie der Pflicht-Stopp — Migration, Schema, Policy/RLS,

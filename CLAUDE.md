@@ -219,8 +219,6 @@ in docs/claude-md-herleitung.md.
 - DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026 (Trigger: das Anlegen einer NEUEN
   Tabelle in public ab dem 30.10.2026 — insbesondere der Geheimnis-Speicher der
   Autorisierungsschicht, falls er danach entsteht)
-- DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB (Trigger: die
-  nächste neue DB-Funktion oder RPC)
 - DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT (Trigger: bevor der erste FREMDE
   Kunde ein Zugangsdatum ablegt)
 - EINE ZEILE OHNE PROJEKT LIEGT AUSSERHALB JEDER KASKADE (Trigger: die erste Zeile mit

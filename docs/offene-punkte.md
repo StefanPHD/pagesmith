@@ -1707,49 +1707,24 @@ aufeinander; sie liegen alle hier und finden einander.
   "Supabase (Postgres · Auth · RLS · Vault · Backups)", Teil (z) — dort steht er als
   EINZEILER mit Verweis hierher, damit der Befund nicht in zwei Fassungen lebt. Die
   wörtlichen Zitate stehen HIER und nur hier.
-- DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB (Trigger: die
-  nächste neue DB-Funktion oder RPC): Beide Seiten verlangen einen FIXIERTEN Pfad. Sie
-  empfehlen verschiedene WERTE, und dieser Eintrag legt beide vor, ohne zu entscheiden.
-  PROJEKTSEITE — docs/db-regeln.md, Regel "DB-FUNKTIONEN + SEARCH_PATH": SECURITY INVOKER
-  bekommt `set search_path = public` und einen voll qualifizierten Rumpf; SECURITY DEFINER
-  bekommt `set search_path = pg_catalog`, ausdrücklich NICHT public, weil eine
-  DEFINER-Funktion mit Owner-Rechten läuft und ein in public angelegtes Objekt die
-  Namensauflösung kapern könnte. PROVENIENZ: präzisiert nach EIGENER MESSUNG am
-  2026-07-28; dieselbe Regel führt rls_auto_enable mit search_path=pg_catalog als
-  gemessenen Ist-Zustand und verbietet ausdrücklich, ihn zu "korrigieren".
-  ANBIETERSEITE — GELESEN am 2026-08-25 an zwei Stellen: supabase.com/docs/guides/database/functions,
-  Abschnitt "Suggestions › Security definer vs invoker" ("It is best practice to use
-  `security invoker` (which is also the default). If you ever use `security definer`, you
-  must set the `search_path`." · "If you use an empty search path (`search_path = ''`), you
-  must explicitly state the schema for every relation in the function body"), und
-  supabase.com/docs/guides/database/database-advisors, Lint 0011_function_search_path_mutable
-  ("We recommend pinning functions' `search_path` to an empty string, `search_path = ''`,
-  which forces all references within the function's body to be fully qualified").
-  DIE ABGRENZUNG, DIE DEN WIDERSPRUCH AUF SEINE ECHTE GRÖSSE BRINGT — ohne sie liest sich
-  der Eintrag als Regelbruch, und das ist er nicht: Einig sind sich beide Seiten darin,
-  DASS der Pfad fixiert gehört; der Advisor-Lint ist mit public, mit pg_catalog und mit
-  dem leeren Pfad gleichermassen erfüllt, denn er beanstandet einen MUTABLEN Pfad. Nicht
-  einig sind sie sich im empfohlenen WERT.
-  ZU pg_catalog SCHWEIGT DER ANBIETER — NICHT-TREFFER MIT BENANNTER REICHWEITE: Auf den
-  beiden oben genannten Seiten kommt pg_catalog nicht vor. Es ist damit NICHT belegt, dass
-  der Anbieter den Projektwert für schlechter hält; belegt ist nur, dass er ihn nicht
-  nennt. Der Unterschied ist der zwischen "abgesucht und verworfen" und "nicht erwähnt".
-  WAS HIER NICHT GESCHIEHT, UND ZWAR AUS EINEM BENANNTEN GRUND: docs/db-regeln.md wird
-  NICHT angefasst. Jene Regel ruht auf einer Messung an DIESER Datenbank, und ihre vierte
-  Regel verbietet die stille Angleichung an eine Anbieter-Doku ausdrücklich ("WIDERSPRICHT
-  EIN DOKU-BEFUND EINER DER DREI REGELN OBEN, WIRD DIE REGEL NICHT GEÄNDERT ... Der
-  Widerspruch wird VORGELEGT (beide Seiten, Datum, Fundstelle), der Owner entscheidet").
-  Dieser Eintrag IST diese Vorlage.
-  WAS NICHT DAZUGEHÖRT: die Frage zu beantworten, welcher Wert der bessere ist. Sie
-  verlangt eine Abwägung zwischen einem gemessenen Ist-Zustand und einer Anbieter-
-  Empfehlung, und diese Abwägung trifft der Owner — bei der nächsten Funktion, nicht hier.
-  PROVENIENZ: die Projektseite GEMESSEN am 2026-07-28 (übernommen aus docs/db-regeln.md,
-  nicht neu erhoben); die Anbieterseite GELESEN am 2026-08-25 an den zwei genannten Seiten.
-  KEINE Messung an dieser Datenbank in dieser Runde.
-  WO DER LAUF STEHT, AUS DEM DIESER PUNKT STAMMT: docs/plattform-befunde.md, Abschnitt
-  "Supabase (Postgres · Auth · RLS · Vault · Backups)", Teil (z) — dort steht er als
-  EINZEILER mit Verweis hierher, damit der Befund nicht in zwei Fassungen lebt. Die
-  wörtlichen Zitate beider Seiten stehen HIER und nur hier.
+- DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB — GESTRICHEN AM
+  2026-09-30, DER GEGENSTAND IST ERLEDIGT. Der Punkt legte die Projektregel (INVOKER
+  `public`, DEFINER `pg_catalog`, präzisiert nach eigener Messung am 2026-07-28) und die
+  Anbieter-Empfehlung (`search_path = ''`, GELESEN 2026-08-25) nebeneinander und liess die
+  Wahl des WERTES ausdrücklich dem Owner, "bei der nächsten Funktion".
+  BELEG DER ERLEDIGUNG:
+  · Der Trigger ("die nächste neue DB-Funktion oder RPC") ist mit der Scheibe 13.6-5 der
+    Phase 13.6 eingetreten (die RPC des Relay-Zählers, Setzung P13.6-75 der Phase 13.6).
+  · Der Owner hat entschieden: Owner-Entscheidung P13.6-76 der Phase 13.6 (2026-09-30) —
+    neue Funktionen `set search_path = ''` und voll qualifizierter Rumpf; bestehende
+    Funktionen bleiben unverändert.
+  · docs/db-regeln.md, Regel "DB-FUNKTIONEN + SEARCH_PATH", ist im selben Commit neu gefasst;
+    ihr Titel ist unverändert. Dort steht auch, dass der heutige Lint 0011 den Wert nicht
+    erzwingt (docs/plattform-befunde.md, Supabase, Teil (aw)).
+  · Die Stub-Zeile in CLAUDE.md, "## Offene Punkte", ist im selben Zug gestrichen. Der
+    Einzeiler in docs/plattform-befunde.md, Supabase, Teil (z), und die Berührung in Teil (aw)
+    zeigen weiter hierher und landen an diesem Eintrag.
+  · Der gestrichene Volltext steht unter Commit `99b5ba8`.
 - DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT (Trigger: bevor der erste FREMDE
   Kunde ein Zugangsdatum ablegt): Mit der Entscheidung, im Anwendungscode zu chiffrieren
   und den Schlüssel in der Vercel-Umgebung zu halten (docs/roadmap.md, Eintrag 11.8, Block

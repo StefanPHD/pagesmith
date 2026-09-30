@@ -2031,14 +2031,62 @@ Formulierung CC; wo "(CC)" steht, ist die Angabe von CC am Bestand bzw. am Code 
   Punkt "DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB").
   DIE LESUNG DAZU (2026-09-30): docs/plattform-befunde.md, Supabase, Teil (aw). Die Frage ist
   weiter offen.
+  ENTSCHIEDEN 2026-09-30 (OWNER): Owner-Entscheidung P13.6-76 der Phase 13.6. Die zwei Sätze
+  darüber beschreiben den Stand davor.
 - NICHT UNTER E1 BIS E12, GEMELDET (CC): B11 fragt zusätzlich nach INVOKER oder DEFINER, nach
   einem Index und nach dem Aufräumen alter Zeilen; B12 nach der Abgrenzung zu Phase 14 und nach
   einem offenen Punkt mit Datei-Trigger. Keine der zwölf Entscheidungen nennt sie.
+  FÜR B11 ENTSCHIEDEN 2026-09-30 (ARCHITEKT): Setzung P13.6-77 der Phase 13.6. B12 bleibt
+  unbeantwortet.
 - ABGLEICH MIT DEN INVARIANTEN DER SETZUNG P13.6-74 (CC, am Wortlaut): Keine Entscheidung ändert
   den ausgelieferten Text (I7); die Zählgrundlage ist das Projekt, keine IP und kein User-Agent
   (I3); der Zähler trägt keinen Formularinhalt (I2); die Antwort bei Begrenzung ist die 502 des
   Bestands (I1). Einen Widerspruch zu einer bindenden Entscheidung dieser Datei hat CC nicht
   gefunden.
+
+**Owner-Entscheidung P13.6-76 — `search_path`: NEUE DB-FUNKTIONEN BEKOMMEN `set search_path = ''`
+UND EINEN VOLL QUALIFIZIERTEN RUMPF; BESTEHENDE BLEIBEN UNVERÄNDERT.**
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-30, übermittelt im Bau-Auftrag der Scheibe 13.6-5.
+BINDEND. Sie gilt über die Scheibe hinaus für jede neue DB-Funktion.
+- GRUND DES OWNERS: der ausdrückliche Härtungs-Standard des Anbieters; künftige, strengere
+  Prüfungen treffen neue Funktionen nicht.
+- BEFUND DAZU, DAMIT NIEMAND EINEN WARN-ZWANG ALS GRUND LIEST: Der heutige Lint 0011 akzeptiert
+  auch `public` — er feuert allein, wenn KEIN `search_path` gesetzt ist (docs/plattform-befunde.md,
+  Supabase, Teil (aw); GELESEN am Quelltext des Lints, Zweig `main`, nicht an der Fassung
+  unseres Projekts). Die Entscheidung folgt einer Empfehlung, keiner Bedingung.
+- DEFINER, GEPRÜFT VOR DEM ANPASSEN DER REGEL (CC, 2026-09-30): Der Grund der bisherigen
+  DEFINER-Fassung (`pg_catalog`, "NICHT public", weil ein in public angelegtes Objekt die
+  Auflösung kapern könnte) spricht nicht gegen `''`. GELESEN 2026-09-30,
+  postgresql.org/docs/17/runtime-config-client.html, Abschnitt `search_path`: "If pg_catalog is
+  not in the path then it will be searched before searching any of the path items." Beide
+  Werte lassen das temporäre Schema für Relationen und Typen zuerst durchsuchen (ebenda); die
+  Postgres-Doku empfiehlt für DEFINER `pg_temp` als letzten Eintrag
+  (postgresql.org/docs/17/sql-createfunction.html, "Writing SECURITY DEFINER Functions Safely",
+  GELESEN 2026-09-30). Das trifft `pg_catalog` und `''` gleich. Die Regel ist deshalb auch für
+  neue DEFINER-Funktionen angepasst. Diese Lesung steht nicht in docs/plattform-befunde.md: der
+  Commit war auf vier Dateien begrenzt; sie steht hier und in der Regel.
+- UMGESETZT IM SELBEN COMMIT: Regel "DB-FUNKTIONEN + SEARCH_PATH" in docs/db-regeln.md neu
+  gefasst (Titel unverändert; die Zusage "zeichengleich" im Kopf jener Datei ist dort
+  eingeschränkt); offener Punkt "DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER
+  PROJEKTREGEL AB" gestrichen samt Stub-Zeile in CLAUDE.md.
+- GRENZE: Bestehende Funktionen (`get_event_counts`, `get_adblock_loss`, `get_variant_counts`,
+  `set_updated_at` mit `public`; `rls_auto_enable` mit `pg_catalog`, docs/db-stand.md,
+  FUNKTIONEN) sind nicht angefasst. Eine Umstellung ist nur als eigene, je Funktion geprüfte
+  Scheibe zulässig.
+
+**Setzung P13.6-77 — B11: DIE RPC IST SECURITY INVOKER; KEIN ZUSATZ-INDEX; KEIN AUFRÄUMEN.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-30, übermittelt im Bau-Auftrag der Scheibe 13.6-5.
+REVIDIERBAR; ein Owner-Widerspruch hebt sie auf. Die Gründe formuliert CC; wo "(CC)" steht,
+stammt die Angabe von CC.
+- SECURITY INVOKER. GRUND (CC): Der einzige Aufrufer ist der Admin-Client; `service_role` trägt
+  `bypassrls` (docs/plattform-befunde.md, Supabase, Teil (n)). Stünde EXECUTE doch einmal einer
+  anderen Rolle offen, hielte die RLS der Tabelle ohne Policy die Schreibung auf (ebenda, Teil
+  (ax), FOLGERUNG) — als DEFINER wäre das der Aussperr-Hebel ohne Relay.
+- KEIN ZUSATZ-INDEX: Der Primärschlüssel auf `project_id` trägt den Konflikt-Arbiter des
+  Upserts und jeden Zugriff. GRUND: Auflage "PROAKTIVE INDIZES" (CLAUDE.md, Block A) verlangt
+  einen Index für eine Spalte in WHERE/Matching; das ist hier der Primärschlüssel selbst.
+- KEIN AUFRÄUMEN: eine Zeile je Projekt, gelöscht per Kaskade mit dem Projekt. Die Zeilenzahl
+  ist durch die Zahl der Projekte begrenzt (ABGELEITET, CC).
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -2520,3 +2568,44 @@ NEU; STEHT ER NICHT IN NORMALFORM, WIRD DAS PROJEKT DIRTY, AUCH OHNE INHALTLICHE
   seiner Dirty-Hälfte hohl. An der Wurzel behoben im Bau-Commit `3b631a2`: CI-S1 nutzt den Code in
   der Serialisierungs-Normalform und verankert zuerst "Übernehmen ohne Wechsel ist nicht dirty".
 - KEINE HANDLUNG JETZT. KEIN TRIGGER GESETZT.
+
+PROVENIENZ von P13.6-78 bis P13.6-80: ARCHITEKT 2026-09-30, übermittelt im Bau-Auftrag der
+Scheibe 13.6-5. Die Befunde stehen in docs/plattform-befunde.md, Vercel-Abschnitt, Teile (v)
+bis (aa) (GELESEN 2026-09-30, keine Messung); wo "(CC)" steht, hat CC die Angabe am Bestand
+geprüft.
+
+**Vorrat P13.6-78 — EINE RATENREGEL DER VERCEL-FIREWALL JE IP, VOR DER FUNKTION.**
+- BEFUND (Vercel, Teil (w)): Auf Hobby gibt es genau EINE Ratenregel je Projekt, gezählt nach IP
+  oder JA4, festes Fenster von 10 s bis 10 min. Alle Serving-Hosts laufen durch dasselbe
+  Vercel-Projekt; eine Regel ohne Bedingung auf den Hostnamen zählte je IP über alle
+  Kundenseiten gemeinsam (FOLGERUNG, ebenda).
+- EINORDNUNG DES ARCHITEKTEN: der einzige Schutz des Aufruf-Kontingents aller Kundenseiten.
+  AM BESTAND NUR ZUM TEIL GETRAGEN (CC): Der Zähler der Scheibe 13.6-5 läuft in der Funktion
+  und verhindert ihren Aufruf nicht (ABGELEITET). Ob eine mit 429 abgewiesene Anfrage eine
+  Funktion auslöst oder als Edge Request zählt, steht auf keiner gelesenen Seite (Teil (x),
+  Teil (aa), Punkt 1); für "Deny" folgt aus "does not reach your application", dass keine
+  Funktion läuft (FOLGERUNG, Teil (x)). Attack Mode wehrt ebenfalls vor der Funktion ab (Teil
+  (z); Vorrat P13.6-80) — "einziger" gilt deshalb für den Dauerbetrieb, nicht für den Notfall.
+- OFFEN: der Einsatz überhaupt; die Pfade (`/api/f`, `/api/e`); das Verhältnis zum Grund von
+  Setzung P13.6-23 ("nicht je IP — das hiesse, IPs abzulegen"): Die Zählung je IP läge beim
+  Anbieter, nicht in unserer Datenbank (Teil (w), GRENZE); ob das die Festlegung vom 2026-08-15
+  berührt, ist eine Auslegung und nicht entschieden.
+- TRIGGER: vor dem ersten fremden Nutzer bzw. der Zuschnitt der Phase 14 — was früher eintritt.
+
+**Vorrat P13.6-79 — `@vercel/firewall` (`checkRateLimit`) ALS ZÄHLWEG: FÜR DIE SCHEIBE 13.6-5
+VERWORFEN.**
+- GRÜNDE (ARCHITEKT): Die Konfiguration läge ausserhalb des Repos (eine Dashboard-Regel mit
+  "Rate limit ID", Teil (y)); ob ein eigener `rateLimitKey` auf Hobby zulässig ist, ist
+  ungelesen (Teil (y), Teil (aa), Punkt 2); die EINE Regel des Tarifs gehört der IP-Abwehr
+  (Vorrat P13.6-78).
+- BEZUG: Setzung P13.6-75, E1 (Zeile je Projekt in der Datenbank) bleibt der Zählweg.
+- KEIN TRIGGER GESETZT.
+
+**Vorrat P13.6-80 — "ATTACK MODE" ALS NOTFALL-HEBEL BEI EINER FLUT.**
+- BEFUND (Vercel, Teil (z)): auf allen Tarifen frei; abgewiesene Anfragen zählen nicht gegen die
+  Nutzungsgrenzen; eine API-Route ist nur innerhalb einer gültigen Challenge-Sitzung erreichbar.
+  GELESEN, NICHT GEMESSEN.
+- ABGELEITET, NICHT GEMESSEN: Der Relay-Aufruf einer geladenen Seite geht durch, weil der
+  Besucher die Challenge beim Laden der Seite löst; ein `POST` ohne geladene Seite scheitert. Ob
+  ein `keepalive`-Aufruf die Sitzung trägt, ist ungelesen und ungemessen (ebenda).
+- KEIN TRIGGER GESETZT.

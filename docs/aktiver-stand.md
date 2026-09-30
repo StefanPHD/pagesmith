@@ -478,6 +478,9 @@ DIE HOST-LISTE, WENN SEINE WEBHOOK-ADRESSEN GELESEN UND EINMAL LIVE GETESTET SIN
 - FORTGESCHRIEBEN 2026-09-30: Für Zapier ist die Lesung erledigt (docs/formular-empfaenger-befunde.md,
   Abschnitt "Zapier"); der Live-Test und damit die Aufnahme folgen gebündelt vor dem Launch —
   Owner-Entscheidung P13.6-90 der Phase 13.6. Der erste Punkt darüber beschreibt den Stand davor.
+- FORTGESCHRIEBEN 2026-09-30 (Runde "Adresse verbergen: entschieden"): Die Bündelung ist
+  revidiert — Owner-Entscheidung P13.6-97 der Phase 13.6 (Zapier jetzt). Die Bedingung dieser
+  Entscheidung (gelesen UND einmal live getestet) gilt unverändert.
 
 PROVENIENZ von P13.6-71: OWNER-ENTSCHEIDUNG 2026-09-30, übermittelt im Auftrag der
 Abschluss-Runde der Scheibe 13.6-4. BINDEND. (Die Überschrift dieses Abschnitts nennt das
@@ -541,6 +544,49 @@ ABNAHME-TESTPROTOKOLL.**
 - DIE LESUNG: docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befunde (a) bis (p),
   Katalog-Abgleich und Messkandidaten ZM1 bis ZM7. Die Messkandidaten fallen in den gebündelten
   Monat.
+- REVIDIERT 2026-09-30: Owner-Entscheidung P13.6-97 der Phase 13.6 — Zapier wird jetzt in Phase
+  13.6 gebaut, der Zapier-Monat wird jetzt gebucht. Der Text darüber beschreibt den Stand davor.
+
+PROVENIENZ von P13.6-94 und P13.6-97: OWNER-ENTSCHEIDUNG 2026-09-30, übermittelt im Auftrag der
+Runde "Adresse verbergen: entschieden + Scheibe Zapier ins Relay" (Teil A). BINDEND. (Die
+Überschrift dieses Abschnitts nennt das Anlagedatum der Datei; die Einträge tragen ihr eigenes.)
+
+**Owner-Entscheidung P13.6-94 — V4: DIE EMPFÄNGER-ADRESSE BLEIBT IM AUSGELIEFERTEN TEXT
+(`action`-ATTRIBUT UND DATENBLOCK); NICHTS WIRD GEBAUT.**
+- ENTSCHEIDET Arbeit P13.6-91 der Phase 13.6 (Aufklärung "Adresse verbergen"); Kandidaten und
+  Befunde stehen dort.
+- GRÜNDE, WIE ÜBERMITTELT:
+  · KOSTEN: V1+/V2+ verlangt `action` UND Datenblock, eine neu gefasste Laufzeit-Wache, eine
+    dritte Antwortform bzw. einen Marker-Kontrakt und sechs ungemessene Browser-Verhalten.
+    (CC, am Bestand: die sechs sind die MESSKANDIDATEN an Arbeit P13.6-91.)
+  · NUTZEN GERING (ARCHITEKT, ABGELEITET am Code): Das Relay leitet den Rumpf unverändert weiter;
+    ein öffentliches Formular erlaubt Müll-Leads auch über das Relay, gebremst nur durch die
+    Ratenbegrenzung (120 je 60 s, Setzung P13.6-75, E3). Verbergen verhindert Spam im CRM nicht;
+    es nähme allein den Umweg an Ratenbegrenzung und Kill-Switch vorbei und fremde
+    Datenformate.
+    (CC, am Code geprüft: `forward` in src/lib/relay/relay.ts reicht den Rumpf als Bytes weiter;
+    einen Bot-Schutz gibt es nicht (Vermerk P13.6-19, Punkt (1)); das Relay nimmt allein
+    `application/x-www-form-urlencoded` bis 64 KiB an (`isFormContentType`,
+    `RELAY_MAX_BODY_BYTES`), ein direkter Aufrufer kann Zapier auch JSON oder XML schicken
+    (Zapier, Befund (d)).)
+  · "Deine Webhooks bleiben privat" wäre für Datensparmodus, Export, alte Seiten und gegenüber
+    uns und Vercel falsch (Arbeit P13.6-91, Q7).
+- FOLGE: Setzung P13-6 der Phase 13 ("die eingetragene Adresse ist kein Geheimnis") und Setzung
+  P13.6-75, E8 (der Aussperr-Hebel bleibt hingenommen) stehen unverändert. Zapiers Rat "Treat it
+  as a password" (Befund (c)) befolgt das Produkt bewusst nicht; die Betreiber-Seite trägt Vorrat
+  P13.6-95.
+
+**Owner-Entscheidung P13.6-97 — ZAPIER WIRD JETZT IN PHASE 13.6 GEBAUT; DER OWNER BUCHT EINEN
+ZAPIER-MONAT ZUM LIVE-TEST, UND DIE MESSKANDIDATEN ZM1 BIS ZM7 LAUFEN IM SELBEN MONAT.**
+- REVIDIERT Owner-Entscheidung P13.6-90 (Live-Test und Aufnahme gebündelt vor dem Launch).
+- GRUND DES OWNERS: abschliessen statt heben; die Plattform kennenlernen.
+- (CC, am Wortlaut von Owner-Entscheidung P13.6-55 gelesen, ABGELEITET, NICHT ENTSCHIEDEN): Ein
+  Dienst kommt "erst in die Host-Liste, wenn seine Webhook-Adressen gelesen und einmal live
+  getestet sind". Der Live-Test der Adresse selbst gehört damit VOR den Push, der
+  `hooks.zapier.com` in `RELAY_HOSTS` aufnimmt; die Reihenfolge legt der Plan fest.
+- OFFEN, VON DER ENTSCHEIDUNG NICHT GENANNT (CC): Owner-Entscheidung P13.6-90 bündelte den Monat
+  zusätzlich mit dem Abnahme-Testprotokoll (offener Punkt "VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN
+  ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP"). Ob diese Bündelung entfällt, sagt P13.6-97 nicht.
 
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 
@@ -643,6 +689,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - NACHGETRAGEN 2026-09-30 (Runde "Zapier — Anbieter-Lesung"; CC, keine neue Setzung): Die
   Zapier-Lesung ist erledigt; Live-Test und Aufnahme folgen gebündelt vor dem Launch —
   Owner-Entscheidung P13.6-90.
+- NACHGETRAGEN 2026-09-30 (Runde "Adresse verbergen: entschieden"; CC, keine neue Setzung):
+  Owner-Entscheidung P13.6-97 revidiert P13.6-90 — als Nächstes steht die Scheibe "Zapier ins
+  Relay" an, mit Live-Test im gebuchten Zapier-Monat.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -2711,6 +2760,8 @@ Grundlage der Stufe 1 (Owner-Entscheidung P13.6-17). BEZUG: docs/formular-empfae
   Befunde (a) bis (p), Katalog-Abgleich, Messkandidaten ZM1 bis ZM7. Live-Test und Aufnahme in die
   Host-Liste gebündelt vor dem Launch — Owner-Entscheidung P13.6-90 der Phase 13.6. Offen bleiben
   damit der Zapier-Live-Test und für Make die Hosts der Zonen ausser eu2.
+- REVIDIERT 2026-09-30: Live-Test und Aufnahme jetzt — Owner-Entscheidung P13.6-97 der Phase
+  13.6. Der Satz über "gebündelt vor dem Launch" darüber beschreibt den Stand davor.
 
 **Arbeit P13.6-72 — SCHEIBE "ZURÜCK-CACHE": DAS FORMULAR IST NACH DER RÜCKKEHR WIEDER
 ABSENDBAR** (ARCHITEKT 2026-09-30, übermittelt im Auftrag der Abschluss-Runde der Scheibe
@@ -2788,6 +2839,73 @@ spätere Runde hier ein.
 - REICHWEITE HEUTE (CC, GELESEN AM CODE): Zapier steht nicht in `RELAY_HOSTS`
   (src/lib/relay/hosts.ts; Owner-Entscheidung P13.6-90). Jede Zapier-Adresse geht bis zur
   Aufnahme browser-direkt, gleich was hier entschieden wird.
+- ERGEBNIS DER AUFKLÄRUNG (CC, 2026-09-30, read-only, Code-Stand `6f00872`; verdichtet aus dem
+  Bericht jener Runde, nachgetragen in der Runde "Adresse verbergen: entschieden"). GELESEN AM
+  CODE, soweit nicht anders gekennzeichnet; NICHTS DAVON IST LIVE GEMESSEN.
+  (Q1) WO DIE ADRESSE STEHT. Auf allen drei Wegen — Relay, Datensparmodus bzw. Adresse ausserhalb
+       der Liste, Export — im `action`-Attribut (`generateFunctional`, Block "DER NATIVE
+       RUECKFALL") UND im Datenblock (`config.endpoint`; `generateFunctional` entfernt nur
+       `fieldNames`, `dataSaver`, `relay`). Die Laufzeit liest sie im Relay-Weg allein in der
+       Wache von `__psFormTargetSend` (`https://`, anderer Ursprung), VOR dem Relay-Zweig;
+       `relayBranch` selbst nutzt sie nicht. Im direkten Weg ist sie die Aufrufadresse. Das Relay
+       braucht sie aus der Seite nicht: es liest sie aus `published_content`
+       (`resolveRelayTarget`). Ausserhalb des ausgelieferten Textes: `published_content` und
+       Vercels "Outgoing Requests" (Vermerk P13.6-60, Punkt (4)).
+  (Q2) RÜCKFALL MIT `action` AUF `/api/f?f=<Kennung>`. Das Relay verlangt `POST`,
+       `application/x-www-form-urlencoded` (Parameter nach `;` ignoriert, `isFormContentType`),
+       `f` nach `PS_ID_RE`, höchstens 64 KiB; es antwortet 204 bzw. 502 ohne Rumpf, begrenzt,
+       gesperrt und unbekannt einheitlich 502 (`delivered`, `notDelivered`). NICHT ENTSCHEIDBAR
+       AM CODE: was der Browser beim nativen Versand sendet (Methode, Content-Type, Zeichensatz,
+       ob die Query einer POST-`action` erhalten bleibt, ob das Cookie mitgeht) und was er bei
+       einer 204 bzw. leeren 502 als Navigation zeigt.
+  (Q3) "ZWEI ANTWORTEN". Wortlaut: Setzung P13.6-21, P13.6-59 Q3, P13.6-74 I1 ("Kein dritter
+       Status" — als Invariante der Scheibe 13.6-5). Der GRUND (Ununterscheidbarkeit der
+       Fehlschläge) ist vom Client unabhängig und hielte auch einen 303 auf `thanksUrl` bei
+       Erfolg, wenn alle Fehlschläge gleich antworten; der Wortlaut kollidiert. HARTE GRENZE:
+       `relayBranch` setzt `redirect: "error"` und wertet nur Status 204 — eine bestehende Seite,
+       deren Aufruf das Relay für nativ hielte und mit 3xx beantwortete, zeigte die Meldung trotz
+       Zustellung. Der Normalfall muss "fetch" bleiben. Unterscheidungs-Kandidaten: K-a ein Marker
+       in der Query der neuen `action` (entscheidbar, aber Kontrakt) · K-b Fetch-Metadata-Köpfe
+       bzw. `Accept` (Browser, nicht gelesen) · K-c ein eigener Kopf im Relay-Aufruf (verworfen:
+       alte Seiten senden ihn nicht).
+  (Q4) R1 (Setzung P13.6-48). Umgesetzt als `referrerPolicy: "no-referrer"` in `relayBranch`.
+       Die Serve-Route setzt `Referrer-Policy: strict-origin-when-cross-origin`
+       (`SECURITY_HEADERS`, src/app/app-serve/route.ts); am Formular setzt der Erzeuger keinen
+       Referrer (`noreferrer` nur an `<a>`). Nicht entscheidbar: der Referer eines nativen
+       Versands, ein eigenes `<meta name="referrer">` des Betreibers. Kandidaten: R-a
+       `rel="noreferrer"` am Formular (Browser-Wirkung ungelesen) · R-b ein Meta-Element beim
+       Erzeugen (wirkt auf jede Anfrage der Seite) · R-c der Kopf der Serve-Route (trifft jede
+       gehostete Seite, per Deploy umkehrbar) · R-d hinnehmen.
+  (Q5) Angebotsregel (P13.6-33/-36) bleibt nötig; `formtarget` bzw. `target` öffneten die
+       Relay-Antwort anderswo. A/B: das Cookie setzt die Serve-Route per `Set-Cookie`, ob der
+       native POST es trägt, ist nicht entscheidbar; ohne Cookie gilt P13.6-59 Q2. Custom-Domains
+       trägt nur eine RELATIVE `action` (`proxy` lässt `RELAY_PATH` auf jedem Nicht-App-Host
+       durch). Kill-Switch und Ratenbegrenzung griffen im nativen Weg erst mit `action` → Relay.
+       Im nativen Weg gibt es weder "erreicht" noch einen Track (P13.6-4, P13.6-24).
+  (Q6) Eine neue `action` ist eine ERSETZUNG, keine Einsetzung. Kandidat der Zusage: je
+       Relay-Formular genau ein ` action="<A>"` durch ` action="<R>"` ersetzt, sonst kein Zeichen
+       — Nachweis durch Rück-Ersetzung gegen den Vorher-Wert; Spannung: A in der Kodierung des
+       Serialisierers stammte aus dem Ist-Wert. Die Streichung im Datenblock wäre eine
+       Einsetzung mit vertauschten Rollen. Getroffene Pins: W-B2R (src/lib/generate.test.ts),
+       RT-11 und bei geänderter Wache RT-13 (src/lib/form-target.test.ts).
+  (Q7) Bestehende Seiten tragen die Adresse bis zum Neu-Veröffentlichen; wirklich verborgen
+       wäre nur eine NEUE Adresse (Zapier: praktisch ein neuer Zap, Befund (b)). "Deine Webhooks
+       bleiben privat" wäre falsch für Datensparmodus, Export, Adressen ausserhalb der Liste,
+       alte Seiten und gegenüber uns und Vercel.
+  (Q8) KANDIDATEN: V1 `action` → Relay mit Marker, nativ 303 auf die Danke-Seite (dritte
+       Antwortform; Adresse bleibt im Datenblock) · V1+/V2+ dazu `endpoint` aus dem Datenblock
+       und eine gegatete, neu gefasste Laufzeit-Wache (erst hier ist die Adresse heraus) · V2
+       `action` → Relay, nativ die heutige Antwort (Anzeige nicht entscheidbar) · V3 ohne
+       `action`-Rückfall (V3a: B-2 kehrt zurück, Vermerk P13.6-31; V3b: Rumpf an die
+       Serve-Route, Vorrat P13-14) · V4 Status quo plus Betreiber-Dokumentation · V5 für
+       "geheime" Dienste kein Datensparmodus (gegen Owner-Entscheidung P13.6-54) · V6 V1+/V2+
+       nur für Zapier, zusammen mit seiner Aufnahme.
+  MESSKANDIDATEN (keiner gemessen): die Browser-Form des nativen POSTs an eine relative
+  `action` mit Query · die Anzeige bei 204 bzw. leerer 502 als Navigation · 303 nach POST · das
+  Cookie beim nativen POST · der Referer beim nativen Versand · die Wirkung von
+  `rel="noreferrer"` am Formular.
+- ERLEDIGT 2026-09-30: entschieden durch Owner-Entscheidung P13.6-94 der Phase 13.6 (V4 —
+  nichts wird gebaut). Die Punkte darüber beschreiben den Stand vor der Entscheidung.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -3249,6 +3367,10 @@ MEHREREN STUNDEN WEITER MIT ERFOLG; DAS RELAY MELDET DANN "ZUGESTELLT".**
 - ZIEL BEIM PHASENENDE: Betreiber-Dokumentation (offener Punkt "BETREIBER-DOKUMENTATION FEHLT —
   DREI PUNKTE"). MESSUNG: Messkandidat ZM4 im gebündelten Zapier-Monat (Owner-Entscheidung
   P13.6-90).
+- NACHGETRAGEN 2026-09-30: Mit Owner-Entscheidung P13.6-97 wird der Posten im Relay wirksam,
+  sobald `hooks.zapier.com` in `RELAY_HOSTS` steht und eine Seite neu veröffentlicht ist; ZM4
+  läuft im jetzt gebuchten Monat. "HEUTE OHNE WIRKUNG IM RELAY" darüber beschreibt den Stand
+  davor.
 
 **Vorrat P13.6-93 — ZAPIER SPEICHERT NUR IN DEN USA, OHNE EU-OPTION.**
 - BEFUND (GELESEN, Befund (l)): "Zapier hosts data in AWS servers located in the United States
@@ -3264,3 +3386,32 @@ MEHREREN STUNDEN WEITER MIT ERFOLG; DAS RELAY MELDET DANN "ZUGESTELLT".**
   sagt sie nichts (Befund (k), FOLGERUNG).
 - ZIEL BEIM PHASENENDE: Betreiber-Dokumentation und die AVV-Arbeit (Owner-Entscheidung
   P13.6-18).
+
+PROVENIENZ von P13.6-95 und P13.6-96: OWNER-AUFTRAG 2026-09-30, Runde "Adresse verbergen:
+entschieden + Scheibe Zapier ins Relay" (Teil A). Wo "(CC)" steht, hat CC die Angabe am Bestand
+bzw. am Code geprüft (HEAD `5fadcff`).
+
+**Vorrat P13.6-95 — DIE EMPFÄNGER-ADRESSE STEHT ÖFFENTLICH IN DER SEITE; DER BETREIBER MUSS DAS
+WISSEN.**
+- INHALT FÜR DIE BETREIBER-DOKUMENTATION: Die Adresse steht im ausgelieferten Text (Arbeit
+  P13.6-91, Q1). Wer sie ersetzen will, braucht eine NEUE Adresse — bei Zapier praktisch einen
+  neuen Zap (Zapier, Befund (b): die Adresse ändert sich nur bei Übergabe des Zaps) — und muss
+  neu veröffentlichen (Dauerregel "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY").
+  Zapier rät, die Adresse wie ein Passwort zu behandeln (Befund (c)); unser Produkt tut das
+  bewusst nicht (Owner-Entscheidung P13.6-94).
+- ZIEL BEIM PHASENENDE: Betreiber-Dokumentation (offener Punkt "BETREIBER-DOKUMENTATION FEHLT —
+  DREI PUNKTE").
+
+**Vorrat P13.6-96 — SPAM-SCHUTZ FÜR FORMULARE (ETWA EIN UNSICHTBARES KÖDERFELD).**
+- Eigenes Thema; soll jeden Empfänger schützen. Heute gibt es keinen Bot-Schutz (Vermerk
+  P13.6-19, Punkt (1)); über das Relay bremst allein die Ratenbegrenzung (Setzung P13.6-75, E3).
+- EIN KÖDERFELD ÄNDERT DEN AUSGELIEFERTEN TEXT (Dauerregel "WAS EINMAL IM AUSGELIEFERTEN TEXT
+  STEHT, IST EINE EINBAHNSTRASSE …").
+  ABWEICHUNG VOM AUFTRAG, GEMELDET (CC, ABGELEITET): Der Auftrag sagt "jede Gestalt ändert den
+  ausgelieferten Text". Eine Prüfung allein im Relay änderte ihn nicht — sie erfasste aber nur den
+  Relay-Weg, nicht Datensparmodus, Export und den Rückfall ohne Skript.
+- (CC, GELESEN AM CODE, ABGELEITET): Das Relay reicht den Rumpf ungeparst weiter (`forward`,
+  src/lib/relay/relay.ts), im direkten Weg geht er ohnehin unverändert an den Empfänger. Ein
+  Köderfeld reiste deshalb als eigenes Feld bis zum Empfänger, solange nichts es entfernt; es
+  entfernen hiesse, den Rumpf im Relay zu parsen.
+- TRIGGER: vor dem ersten fremden Nutzer, oder der erste gemeldete Spam-Fall.

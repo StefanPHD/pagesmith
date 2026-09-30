@@ -1697,6 +1697,9 @@ Neufassung.
   Formular, eine Meldung erscheint, ein erneuter Versuch ist möglich".
 - J9 gilt für Seiten ohne Relay-Ziel unverändert, für Seiten mit Relay-Ziel mit der Einsetzung
   R2 als einziger Änderung.
+  NACHGETRAGEN 2026-09-30 (ARCHITEKT, Setzung P13.6-88 der Phase 13.6, (c)): Seit der Scheibe
+  "Zurück-Cache" trägt die Laufzeit eine zweite Einsetzung, den `pageshow`-Listener aus Setzung
+  P13.6-86 — auf allen drei Wegen. Der Satz darüber beschreibt den Stand davor.
 - Im Datensparmodus und für Adressen ausserhalb der Host-Liste gelten I1, I3, J9 und P13-21
   unverändert.
 
@@ -2337,6 +2340,45 @@ FORMULAR-ZIELS; `submittedForms` BLEIBT UNBERÜHRT.**
     P13.6-67 ist hier nicht geändert.
   · Zu Invariante (4): Die Ergänzung der Ausnahme-Liste weitet eine Dauerregel aus; nach dem
     Kopf von docs/immer-beachten.md verlangt das zuerst docs/immer-beachten-herleitung.md.
+
+### Planrunde der Scheibe Zurück-Cache
+
+**Setzung P13.6-88 — DIE ENTSCHEIDUNGEN DER PLANRUNDE ZURÜCK-CACHE (a BIS f).**
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-30, übermittelt im Bau-Auftrag der Scheibe
+"Zurück-Cache". REVIDIERBAR; ein Owner-Widerspruch hebt jede auf. Der Plan, auf den sie
+antwortet (P1 bis P7), steht im Bericht der Planrunde, nicht in dieser Datei. Wo "(CC)" steht,
+stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD `d1bc52b`).
+- (a) EIN BEI DER RÜCKKEHR NOCH OFFENER VERSAND — KANDIDAT A: Die Sperre wird bei `persisted`
+  für alle Formulare geleert, auch wenn ein Versand noch offen ist. Ein Versand, der beim
+  Verlassen der Seite noch lief, kann nach der Wiederherstellung zu einem zweiten Lead führen.
+  GRUND: Das Ergebnis ist ein Duplikat, kein Verlust — Owner-Entscheidung P13.6-71 ("ein
+  korrigierter Lead wiegt mehr als ein vermiedenes Duplikat"); dieselbe Doppelung besteht heute
+  schon nach dem Zeitlimit; die Kandidaten B und C brächten mehr ausgelieferten Code für einen
+  Fall, dessen Häufigkeit ungemessen ist.
+  (CC) Die Doppelung nach dem Zeitlimit tragen im Test K3a (nach dem Limit schickt ein zweiter
+  Klick erneut) zusammen mit K3b bzw. RT-4 (ein spätes "opaque" bzw. 204 navigiert noch)
+  (src/lib/form-target.test.ts); Setzung P13.6-22 benennt dieselbe Doppelung am Server-Zeitlimit.
+  GRENZE DER SCHEIBE: Ob der Browser eine Seite mit laufendem Aufruf überhaupt aus dem Cache
+  wiederherstellt und ob dessen Promise danach noch aufgelöst wird, ist NICHT ENTSCHEIDBAR am
+  Code und nicht gemessen.
+- (b) DIE EINSETZUNG TRÄGT KEINEN KOMMENTAR IM AUSGELIEFERTEN TEXT. GRUND: Einbahnstrasse
+  (Dauerregel "WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE …"); kein Hinweis
+  auf Interna auf Kundenseiten. Die Erklärung steht als Quelltext-Kommentar ausserhalb der
+  Zeichenkette. Die Sperre wird für alle Formulare geleert (`.length = 0`).
+- (c) AN SETZUNG P13.6-67, DRITTER PUNKT, steht der Auflösungs-Satz: Die Laufzeit trägt seit
+  dieser Scheibe eine zweite Einsetzung (Setzung P13.6-86).
+- (d) V0 VOR DEM PUSH IST PFLICHT-SCHRITT DER LIVE-ANLEITUNG: Editor neu laden, veröffentlichen,
+  Bytes, sha256 und `cache-control` zweimal messen. GRUND (CC): Die Herkunft des Vorher-Werts aus
+  Vermerk P13.6-85, Punkt (6), ist offen (Schlüssel-Reihenfolge des Datenblocks); Hebungs-Kandidat
+  P13.6-73.
+- (e) DIE ERGÄNZUNG DER AUSNAHME-LISTE der Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES
+  FASST ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN …" um den `pageshow`-Listener am `window` ist
+  ARCHITEKTEN-ENTSCHEIDUNG. Vollzug beim Abschluss, nach Laden von
+  docs/immer-beachten-herleitung.md; die Passage alt/neu steht im Bericht jener Runde.
+- (f) DAS HARNESS RÄUMT PER SPION AUF: Die `pageshow`-Handler, die ein Test registriert, werden
+  danach entfernt; dazu die Zusicherung, dass nach jedem Test kein `pageshow`-Handler übrig ist.
+  GRUND (CC): `mount` wertet die Skripte per `window.eval` im gemeinsamen Test-Window aus;
+  Listener sammelten sich sonst über Tests hinweg an.
 
 ## Plattform-Schritte der Phase 13.6
 

@@ -2692,6 +2692,18 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   Knöpfen, die der Baustein selbst erzeugt (`makeButton`, `makeWay`) und die Leiste bzw.
   Modal in den eigenen Schattenbaum hängen (`attachShadow` in src/lib/tracking/consent-bar.ts
   und src/lib/tracking/consent-modal.ts; GELESEN am Code, CC, 2026-09-25).
+  ERGÄNZT 2026-09-30 — EIN ZWEITER LISTENER IN DIESER ABGRENZUNG (ARCHITEKTEN-ENTSCHEIDUNG
+  2026-09-30, Phase 13.6, Scheibe "Zurück-Cache"; Setzung P13.6-88, (e), revidiert; Vermerk
+  P13.6-89, Punkt (9), der Phase 13.6). Der Text darüber bleibt wörtlich. Die Laufzeit des
+  Formular-Ziels (`buildFormTargetRuntime`, src/lib/form-target.ts, seit Bau-Commit `29d0d22`)
+  hängt einen `pageshow`-Listener an `window`. Er ist kein Wiring-Listener, ändert keine der
+  fünf Achsen und leert bei `persisted` allein die eigene Sperre `__psFormTargetBusy`; er steht
+  deshalb, wie der `DOMContentLoaded`-Listener des Laders, NICHT in der Liste. GRUND: Die Liste
+  führt, was wie ein Eingriff aussieht; mit ihm stünden dort zwei gleichartige Listener nach
+  verschiedenen Kriterien. GEMESSEN (CC, 2026-09-30, HEAD `29d0d22`): dieselbe Achse
+  `(document|window)\.addEventListener\(` über src/lib/generate.ts, src/lib/tracking/,
+  src/lib/analytics/ und src/lib/form-target.ts ohne Tests — fünf Treffer, die vier von oben
+  (Positivkontrolle) und dieser.
   ERGÄNZT 2026-09-28 — ZWEI EINGRIFFE DES FORMULAR-ZIELS IN DER AUFZÄHLUNG (OWNER-ENTSCHEIDUNG
   2026-09-28, Phase 13, Scheibe 13-1; Vorschlag aus der Planrunde; Entscheidung P13-24 der
   Phase 13): Ein Formular, das der Betreiber im Tool mit einem Ziel versieht, schickt nicht

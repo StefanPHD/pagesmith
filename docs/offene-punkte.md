@@ -4257,6 +4257,23 @@ aufgenommen nach Entscheidung P13-3 (OWNER 2026-09-28). Der datierte Block träg
   2026-09-28 (Setzung, revidierbar); der Befund GEMESSEN (CC, 2026-09-28). Der Stub in
   CLAUDE.md, "## Offene Punkte", Block "IN PHASE 13 AUFGENOMMEN (2026-09-28)", trägt Titel und
   Trigger im SELBEN Zug.
+  ERGÄNZT AM 2026-09-30 (Abschluss der Scheibe "Zurück-Cache" der Phase 13.6, Vermerk P13.6-89
+  der Phase 13.6) — EINE ZURÜCK-RUNDE IN SAFARI UND FIREFOX GEHÖRT INS PROTOKOLL. Der Text
+  darüber bleibt wörtlich; Titel, Trigger und Stub bleiben.
+  · DER ANLASS: Die Scheibe macht ein Formular mit Ziel nach der Rückkehr aus dem Zurück-Cache
+    wieder absendbar. Live gemessen ist das allein in Chrome 154 (ebenda, Punkte (4), (5) und
+    (8)).
+  · DIE RUNDE: Absenden → Danke-Seite → Zurück → erneut absenden. Erwartet: wieder die
+    Danke-Seite und ein zweiter Eingang beim Empfänger.
+  · WO: Safari auf dem Mac, Safari auf dem iPhone, Firefox — je im RELAY-WEG und im
+    DATENSPARMODUS.
+  · DER DISKRIMINATOR, OHNE DEN DIE RUNDE NICHTS BELEGT: die Anzeige des Browsers, dass die
+    Seite aus dem Zurück-Cache wiederhergestellt wurde, dazu ein in der Konsole gesetzter
+    `pageshow`-Listener, der `persisted` = true ausgibt. Fehlt beides, kann die Seite frisch
+    geladen sein, und dann wäre der Knopf auch ohne die Scheibe lebendig. Tragend ist die
+    ANWESENHEIT der Anzeigen (Vermerk P13.6-85 der Phase 13.6, Punkt (8)).
+  · NICHT GEMESSEN: ob Safari und Firefox eine solche Seite überhaupt aus dem Zurück-Cache
+    wiederherstellen und wie sie das anzeigen.
 
 **AUS DEM PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN.** Aus der Standdatei der Phase 13
 (Formular-Ziel). DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still

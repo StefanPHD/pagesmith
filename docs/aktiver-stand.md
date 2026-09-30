@@ -507,6 +507,9 @@ ABSENDBAR. EIN ERNEUTES ABSENDEN WIRD ZUGESTELLT, ABER NICHT NOCH EINMAL GETRACK
     Runden mit Wiederherstellung aus dem Zurück-Cache, auf dem Relay-Weg und im Datensparmodus.
     Warum in L1 der zweite Versuch ging, bleibt ungemessen (ebenda, Punkt (7)).
 - UMSETZUNG: Arbeit P13.6-72 der Phase 13.6.
+  UMGESETZT 2026-09-30: Bau-Commit `29d0d22`, Live-Test bestanden (nur Chrome) — Vermerk
+  P13.6-89 der Phase 13.6. "Nicht noch einmal getrackt" ist allein im Test belegt (ebenda,
+  Punkt (8)).
 
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 
@@ -603,6 +606,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - NACHGETRAGEN 2026-09-30 (Abschluss der Scheibe 13.6-5; CC, keine neue Setzung): 13.6-5 ist
   abgeschlossen (Vermerk P13.6-81). Nach der Reihenfolge darüber steht die Scheibe
   "Zurück-Cache" (Arbeit P13.6-72) als Nächstes an.
+- NACHGETRAGEN 2026-09-30 (Abschluss der Scheibe "Zurück-Cache"; CC, keine neue Setzung): Die
+  Scheibe "Zurück-Cache" ist abgeschlossen (Vermerk P13.6-89). Nach der Reihenfolge darüber
+  steht Zapier als Nächstes an.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -2225,12 +2231,16 @@ Doku-Commits der Scheibe: `f3385ad` (Zuschnitt) · `9a2d75f` (Planrunde, E1–E1
 
 ## Zuschnitt Scheibe Zurück-Cache
 
-**ZUGESCHNITTEN AM 2026-09-30 (ARCHITEKT); der Plan folgt in einer eigenen Runde.**
+**ABGESCHLOSSEN AM 2026-09-30 — Bau-Commit `29d0d22`, Live-Test bestanden (nur Chrome);
+Abschluss-Vermerk P13.6-89.**
 - GEGENSTAND: Arbeit P13.6-72 der Phase 13.6 — nach der Rückkehr aus dem Zurück-Cache ist das
   Formular wieder absendbar (Owner-Entscheidung P13.6-71). Reihenfolge: Setzung P13.6-14.
 - BENENNUNG, DEKLARIERT (CC): Der Bestand führt die Scheibe ohne Nummer (Scheibe "Zurück-Cache",
   Setzung P13.6-14 und Arbeit P13.6-72); die Überschrift übernimmt diesen Namen und vergibt keine
   Nummer.
+- Der Zuschnitt ist verdichtet: Hier stehen die Setzungen, Entscheidungen und Grenzen, die über
+  die Scheibe hinaus binden, dazu die Vermerke der Scheibe.
+- Was gestrichen ist und wo sein Inhalt steht: Vermerk P13.6-89, Punkt (10).
 
 ### Messung zur Scheibe Zurück-Cache
 
@@ -2272,6 +2282,11 @@ BAU-COMMIT: Messrunde; im Repo ändert sich keine Zeile Code.
       Punkt (7)) ist für diesen Wert damit offen.
     · Der Kopf deckt sich mit der Messung vom 2026-07-27 (Archiv der Phase 9, "CACHING-GATE");
       nachgemessen ist er seither erst hier (GEMESSEN AM BESTAND, CC).
+    · ERSETZT 2026-09-30 (Abschluss der Scheibe, Setzung P13.6-88, (d)): Als Vorher-Wert des
+      Differenz-Nachweises gilt V0 aus Vermerk P13.6-89, Punkt (1) — 19882 Bytes, sha256
+      `e6ae154fb4af32427b3d78a15e9171c5b14115fe26b56c4a467dadefe3c1972f`, erhoben nach Neuladen
+      des Editors. Der Wert darüber bleibt als Messung stehen; zu seiner Herkunft ebenda,
+      Punkt (5).
 
 (7) ERGEBNIS:
     · Tot genau in den Runden mit Wiederherstellung aus dem Zurück-Cache: Runde 1 (Relay) und
@@ -2318,6 +2333,11 @@ FORMULAR-ZIELS; `submittedForms` BLEIBT UNBERÜHRT.**
   (4) Kein fremder Knoten wird berührt (Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST
       ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN …"); ihre Ausnahme-Liste wird beim Abschluss um den
       Listener am `window` ergänzt, alt/neu.
+      NACHGETRAGEN 2026-09-30 (Abschluss, CC): Die Ergänzung ist NICHT vollzogen, sondern
+      vorgelegt — die Herleitung trägt eine Abgrenzung, die gegen die Listen-Form spricht
+      (Vermerk P13.6-89, Punkt (9)). Der erste Satz der Invariante ist im Bau belegt (ZC-7).
+      ENTSCHIEDEN 2026-09-30 (ARCHITEKT): Kandidat (B) — der Listener steht in der Abgrenzung der
+      Herleitung, nicht in der Liste; Nachtrag an Setzung P13.6-88, (e).
   (5) Der ausgelieferte Text ändert sich nur als isolierbare Einsetzung, mit Differenz-Nachweis.
   (6) Seiten ohne Formular-Ziel bleiben byte-gleich.
   (7) Relay, die zwei Antworten, die Ratenbegrenzung, `/api/e` und die Serve-Route bleiben
@@ -2338,8 +2358,11 @@ FORMULAR-ZIELS; `submittedForms` BLEIBT UNBERÜHRT.**
     selbst (Archiv der Phase 13) bestimmt sich über I1 bis I8 und I10 ("Die Laufzeit aus 13-1 und
     ihre Invarianten bleiben unverändert — das sind I1 bis I8 und I10"). NICHT AUFGELÖST;
     P13.6-67 ist hier nicht geändert.
+    AUFGELÖST 2026-09-30 durch Setzung P13.6-88, (c): Der Auflösungs-Satz steht an P13.6-67.
   · Zu Invariante (4): Die Ergänzung der Ausnahme-Liste weitet eine Dauerregel aus; nach dem
     Kopf von docs/immer-beachten.md verlangt das zuerst docs/immer-beachten-herleitung.md.
+    NACHGETRAGEN 2026-09-30: Die Herleitung ist geladen; der Befund steht in Vermerk P13.6-89,
+    Punkt (9).
 
 ### Planrunde der Scheibe Zurück-Cache
 
@@ -2371,14 +2394,170 @@ stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD `d1bc52b`).
   Bytes, sha256 und `cache-control` zweimal messen. GRUND (CC): Die Herkunft des Vorher-Werts aus
   Vermerk P13.6-85, Punkt (6), ist offen (Schlüssel-Reihenfolge des Datenblocks); Hebungs-Kandidat
   P13.6-73.
+  ERLEDIGT 2026-09-30: V0 gemessen, Vermerk P13.6-89, Punkt (1).
 - (e) DIE ERGÄNZUNG DER AUSNAHME-LISTE der Dauerregel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES
   FASST ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN …" um den `pageshow`-Listener am `window` ist
   ARCHITEKTEN-ENTSCHEIDUNG. Vollzug beim Abschluss, nach Laden von
   docs/immer-beachten-herleitung.md; die Passage alt/neu steht im Bericht jener Runde.
+  NACHGETRAGEN 2026-09-30 (Abschluss, CC): NICHT VOLLZOGEN, VORGELEGT — Vermerk P13.6-89,
+  Punkt (9).
+  REVIDIERT 2026-09-30 (ARCHITEKT) ZU KANDIDAT (B): Der `pageshow`-Listener steht in der
+  Abgrenzung der Herleitung neben dem `DOMContentLoaded`-Listener des Custom-Pixel-Laders — kein
+  Wiring-Listener, am `window`, ändert keine der fünf Achsen, leert allein die eigene Sperre. Die
+  Liste im Kern bleibt unverändert. GRUND: Präzedenz der Herleitung; die Liste führt, was wie ein
+  Eingriff aussieht, und bekäme sonst zwei gleichartige Listener nach verschiedenen Kriterien.
+  Vollzogen in docs/immer-beachten-herleitung.md (Ergänzung vom 2026-09-30 an jener Regel);
+  Vermerk P13.6-89, Punkt (9).
 - (f) DAS HARNESS RÄUMT PER SPION AUF: Die `pageshow`-Handler, die ein Test registriert, werden
   danach entfernt; dazu die Zusicherung, dass nach jedem Test kein `pageshow`-Handler übrig ist.
   GRUND (CC): `mount` wertet die Skripte per `window.eval` im gemeinsamen Test-Window aus;
   Listener sammelten sich sonst über Tests hinweg an.
+  GEBAUT in `29d0d22` (src/lib/form-target.test.ts); seine Wirkung zeigt die Mutation M-f in
+  Vermerk P13.6-89, Punkt (7).
+
+### Abschluss der Scheibe Zurück-Cache
+
+**Vermerk P13.6-89 — ABSCHLUSS DER SCHEIBE "ZURÜCK-CACHE" (DER KNOPF NACH "ZURÜCK"). Bau-Commit
+`29d0d22`** ("fix(form-target): Formular nach Rueckkehr aus dem Zurueck-Cache wieder absendbar").
+LIVE-TEST BESTANDEN, nur Chrome.
+Doku-Commits der Scheibe: `d1bc52b` (Messung, Zuschnitt K2, Vorrat) · `be6d2a6` (Planrunde,
+Setzungen a–f) · dieser Commit (Abschluss).
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (6): GEMESSEN, OWNER, live, 2026-09-30, Chrome 154.0.8037.58,
+    übermittelt im Auftrag der Abschluss-Runde. Testseite `projekt-n-sy5bjj.publayer.net` wie in
+    Vermerk P13.6-85. Instrument: der Konsolen-Block aus dem Bau-Bericht (`fetch` mit
+    `no-store`, sha256 über die Rohbytes, die Einsetzung gezählt und entfernt, Vergleich gegen
+    den Vorher-Wert, Positivkontrolle, Prüfung Text = Rohbytes); der Block steht nicht in dieser
+    Datei. Die Einsetzung ist dieselbe Zeichenfolge wie die Konstante `K2` in
+    src/lib/form-target.test.ts, 125 Bytes.
+
+(1) V0 — VORHER-WERT, ALTER CODE (Pflicht-Schritt aus Setzung P13.6-88, (d)): Editor neu geladen,
+    veröffentlicht, zweimal identisch: 19882 Bytes, sha256
+    `e6ae154fb4af32427b3d78a15e9171c5b14115fe26b56c4a467dadefe3c1972f`, `cache-control: public,
+    max-age=0, must-revalidate`.
+    · V0 ERSETZT den Vorher-Wert aus Vermerk P13.6-85, Punkt (6) (`02705566…de43`): gleiche
+      Länge, anderer sha256. URSACHE ABGELEITET, nicht gemessen: die Schlüssel-Reihenfolge des
+      Datenblocks (Herkunfts-Auflage der Dauerregel "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT
+      MISST IM GELADENEN DOKUMENT …").
+    · Gegenprobe an einer Seite ohne Formular-Ziel: 30493 Bytes, sha256 `40c83cb3…37e5` —
+      dieselben Werte wie in Vermerk P13.6-81, Punkt (3) (GEMESSEN AM BESTAND, CC).
+    · Selbsttest des Blocks mit V0 als Vorher-Wert, gegen V0: `ohneGleichVorher` true,
+      `positivkontrolle` false — am unveränderten Text schlägt die Kontrolle erwartungsgemäss
+      nicht an.
+
+(2) L0 — nach dem Deploy `29d0d22` ("Ready"), nicht neu veröffentlicht: identisch mit V0. Der
+    Deploy allein ändert den ausgelieferten Text nicht (Dauerregel "EIN AUSGELIEFERTES ARTEFAKT
+    ALTERT NICHT MIT DEM DEPLOY").
+
+(3) L1 — DER DIFFERENZ-NACHWEIS (Invariante (5) der Setzung P13.6-86; Dauerregel "WO EINE
+    BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD …", alle fünf Schritte): Editor neu geladen,
+    veröffentlicht, zweimal identisch.
+    · Einsetzung 125 Bytes, genau 1-mal.
+    · Neu 20007 Bytes, sha256
+      `e283fa67a19f336a03290ca7e1132e0b292bbc27975bc6cd5196c3c03cf91500`.
+    · Ohne die Einsetzung 19882 Bytes, sha256 = V0 (`ohneGleichVorher` true);
+      `positivkontrolle` true; `textGleichRoh` true.
+    · Die Seite ohne Formular-Ziel, ebenfalls neu veröffentlicht: unverändert 30493 Bytes,
+      `40c83cb3…37e5` — Invariante (6).
+
+(4) L2 — RELAY: Absenden → Danke-Seite → Zurück. Auf der Konsole "pageshow persisted=true" und
+    die Chrome-Meldung "Navigation to https://projekt-n-sy5bjj.publayer.net/ was restored from
+    back/forward cache" — der Diskriminator aus Vermerk P13.6-85, Punkt (8). Klick → Danke-Seite;
+    beide Leads bei Make. Vorher, im selben Ablauf: Klick stumm, Make +0 (ebenda, Punkt (3)).
+
+(5) L3 — DATENSPARMODUS an, veröffentlicht:
+    · Einsetzung 1-mal; neu 18961 Bytes, sha256 `4df59bd6…2827`; ohne die Einsetzung 18836
+      Bytes, sha256 `72a8d93d…54ec` (beide sha256 gekürzt übermittelt). 18961 − 18836 = 125,
+      die Länge der Einsetzung (gerechnet, CC). Einen Vorher-Wert für diesen Zustand gibt es
+      nicht.
+    · Nach "Zurück" beide Anzeigen wie in (4); Klick → Danke-Seite, Eingang bei Make.
+    · ZURÜCKGESCHALTET — Editor neu geladen, Datensparmodus aus, veröffentlicht, OHNE erneutes
+      Neuladen: 20007 Bytes, sha256
+      `0538d070939aa654cbc21e4d169eace0c0c69b887c8e43e1abdcd9057e0c199b`; ohne die Einsetzung
+      sha256 `02705566…de43` — zeichengleich mit dem Wert aus Vermerk P13.6-85, Punkt (6)
+      (GEMESSEN AM BESTAND, CC).
+    · ANGABE DES AUFTRAGS (ARCHITEKT), AM BESTAND NICHT PRÜFBAR: Das sei "exakt der Stand nach
+      Runde C der Messung, der mit derselben Abfolge entstand" — reproduziert, im Einklang mit
+      der Herkunfts-Auflage, keine neue Regel. Vermerk P13.6-85 trägt die Abfolge jener Runde
+      nicht (Punkt (6), GRENZE: ob der Editor vorher neu geladen wurde, "ist nicht angegeben").
+
+(6) L4 — Editor neu geladen, veröffentlicht: Einsetzung 125 Bytes, 1-mal; neu 20007 Bytes,
+    sha256 = L1; ohne 19882 Bytes, sha256 = V0; `ohneGleichVorher` true, `positivkontrolle` true,
+    `textGleichRoh` true, `cache-control` wie V0. KEINE ABWEICHUNG. Derselbe Code ergab damit je
+    nach Herkunft der Mappings zwei sha256 derselben Länge (L3, zurückgeschaltet, gegen L4); nach
+    Neuladen ist L1 reproduziert.
+
+(7) BAU (CC, 2026-09-30, am Stand vor dem Commit `29d0d22`):
+    · Gates: `tsc --noEmit` exit 0; `eslint` 0 Fehler, die eine bekannte Warnung in
+      src/lib/tracking/consent.test.ts; `vitest run` 102 Dateien, 2746 Tests (vorher 2738);
+      `next build` exit 0.
+    · Geändert: src/lib/form-target.ts (die Einsetzung `PAGESHOW_RESET` in
+      `buildFormTargetRuntime`), src/lib/form-target.test.ts (ZC-1 bis ZC-8, Harness-Spion aus
+      Setzung P13.6-88, (f), nachgezogene Pins), src/lib/generate.test.ts (W-B1, W-B2, W-B2R).
+      src/lib/generate.ts ist unverändert (sha256 `bf6a58cb…` vor und nach den Mutationen).
+    · Mutationen, Vorhersage je vor dem Lauf gegen den aktuellen Bestand, Rücknahme per sha256
+      belegt: M1 (Einsetzung entfällt) 14 rot · M2 (`persisted`-Prüfung entfernt) 9 — ZC-4 und
+      ZC-5 (Invariante (2)) · M3 (`submittedForms` mitgeleert) 10 — ZC-1 bis ZC-3 am zweiten
+      Track · M4 (Einsetzung nur im Relay-Weg) 8 · M5 (Einsetzung ungegatet im Wiring-Skript,
+      src/lib/generate.ts nur für die Mutation) 8 — alle wie vorhergesagt. In M1 bis M3 sind je
+      sieben Byte-Pins der Seiten mit Ziel enthalten, als Kaskade vorab angesagt.
+    · M-f (nicht verlangt; das Aufräumen des Harness entfernt): vorhergesagt die Tests, die eine
+      Seite mit Ziel mounten; rot wurden alle 182 der Datei. Ursache (GELESEN AM EIGENEN CODE):
+      die modulweite Zählung `pageshowCalls` der Hülle — dieselbe Fehlerklasse, eine Kaskade
+      (Lektion (g) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE").
+
+(8) GRENZEN, als Grenzen benannt:
+    · Nur Chrome 154. Safari und Firefox sind nicht gemessen (Setzung P13.6-86, AUSSER SCOPE);
+      die Zurück-Runde dort steht am offenen Punkt "VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN
+      ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP" (docs/offene-punkte.md).
+    · Der Export ist nicht live gemessen, nur im Test (ZC-3).
+    · "Kein zweiter Track" ist allein im Test belegt (ZC-1 bis ZC-3, M3): Das Testformular trägt
+      keine Track-Aktion (Setzung P13.6-86, GRENZE, LIVE).
+    · Der Randfall der Setzung P13.6-88, (a) (im Plan P2) ist hingenommen: Ein bei der Rückkehr
+      noch offener Versand kann einen zweiten Lead erzeugen; ob Chrome eine solche Seite
+      überhaupt wiederherstellt, ist ungemessen.
+    · src/lib/generate.test.ts lässt einen `pageshow`-Listener auf dem gemeinsamen Test-Window
+      stehen; der Harness-Spion gilt nur in src/lib/form-target.test.ts. Heute harmlos (CC,
+      Bau-Bericht).
+    · Bereits veröffentlichte Seiten und Exporte ändern sich erst durch Neu-Veröffentlichen bzw.
+      Neu-Export (Setzung P13.6-86, GRENZE).
+    · Eine Danke-Adresse ohne Seitenwechsel erfasst die Scheibe nicht (Vorrat P13.6-87).
+
+(9) DIE DAUERREGEL — Setzung P13.6-88, (e): ZUERST VORGELEGT, DANN ENTSCHIEDEN — KANDIDAT (B)
+    (ARCHITEKT, 2026-09-30; der Nachtrag an (e) trägt Grund und Wortlaut). Vollzogen in
+    docs/immer-beachten-herleitung.md als datierte Ergänzung der Abgrenzung an der Regel; der
+    Kern docs/immer-beachten.md und der Verzeichnis-Eintrag sind unverändert (der wörtliche
+    Anfang der Regel ändert sich nicht). Der Befund, der zur Vorlage führte:
+    · GELADEN: docs/immer-beachten-herleitung.md vollständig (CC, 2026-09-30).
+    · WAS DAGEGEN SPRICHT (GELESEN AM BESTAND): An der Regel "KEIN BAUSTEIN DES AUSGELIEFERTEN
+      TEXTES FASST ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN …" trägt die Herleitung eine ABGRENZUNG,
+      "damit die Aufzählung nicht für vollständig gehalten wird": Der `DOMContentLoaded`-Listener
+      des Custom-Pixel-Laders an `document` "ist kein Wiring-Listener, ändert keine der fünf
+      Achsen und steht deshalb nicht in dieser Liste."
+    · DER VERGLEICH (CC, ABGELEITET): Der `pageshow`-Listener ist kein Wiring-Listener an
+      `document`, hängt an `window` und ändert keine der fünf Achsen — er leert allein die eigene
+      Sperre. In der Liste stünden damit zwei gleichartige Listener nach zwei Kriterien.
+    · ZUR WAHL STANDEN: (A) die Liste wie in (e) ergänzen und die Abgrenzung zum
+      `DOMContentLoaded`-Listener im selben Zug mitziehen · (B) den `pageshow`-Listener in jene
+      Abgrenzung der Herleitung aufnehmen, die Liste im Kern unverändert. ENTSCHIEDEN: (B).
+
+(10) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN: im Kopf der Satz "ZUGESCHNITTEN AM
+    2026-09-30 (ARCHITEKT); der Plan folgt in einer eigenen Runde." — mit dem Abschluss
+    abgelaufen, ersetzt durch die Abschluss-Zeile. Sonst ist nichts abgelaufen: Die übrigen
+    Anweisungen des Zuschnitts sind Teile bindender Setzungen und tragen jetzt einen Nachtrag
+    statt einer Streichung.
+    STEHEN GEBLIEBEN: Vermerk P13.6-85 (Punkt (6) mit dem Nachtrag "ERSETZT"), Setzung P13.6-86
+    (Nachträge an Invariante (4) und an zwei Kollisionen), Setzung P13.6-88 (Nachträge an (d),
+    (e) und (f)); an ihren Orten Owner-Entscheidung P13.6-71, Arbeit P13.6-72 und Vorrat
+    P13.6-87.
+
+(11) NACHGEZOGEN IN DIESEM COMMIT: Owner-Entscheidung P13.6-71 (umgesetzt), Setzung P13.6-14
+    (als Nächstes Zapier), Arbeit P13.6-72 (erledigt); docs/offene-punkte.md, "VOR DEM ERSTEN
+    FREMDEN NUTZER FEHLT EIN ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP" (die Zurück-Runde; Titel,
+    Trigger und Stub in CLAUDE.md unverändert); docs/immer-beachten-herleitung.md, die
+    Abgrenzung an der Regel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN
+    FREMDEN KNOTEN AN …" (Punkt (9)). Die Roadmap-Zeile 13.6 führt die Scheibe nicht als
+    ausstehend und ist nicht geändert.
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -2542,6 +2721,8 @@ WAHL DER GESTALT TRIFFT DER PLAN JENER SCHEIBE.
   Setzung P13.6-86 (Abschnitt "Zuschnitt Scheibe Zurück-Cache"). Die MESSANLEITUNG darüber ist
   gefahren; welcher Diskriminator für spätere Live-Tests gilt, steht in Vermerk P13.6-85,
   Punkt (8).
+- ERLEDIGT 2026-09-30: gebaut (Bau-Commit `29d0d22`), Live-Test bestanden (nur Chrome) —
+  Abschluss-Vermerk P13.6-89 der Phase 13.6. Die Sätze darüber beschreiben den Stand davor.
 
 ## Vorrat (gemeldet, nicht gebaut)
 

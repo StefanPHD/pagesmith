@@ -475,6 +475,9 @@ DIE HOST-LISTE, WENN SEINE WEBHOOK-ADRESSEN GELESEN UND EINMAL LIVE GETESTET SIN
   (s)). Welchen Host die Adressen der Zonen eu1, us1 und us2 tragen, steht auf keiner gelesenen
   Seite (ebenda, Befund (g); Messkandidat M8 teilweise offen). Nach dieser Entscheidung trägt die
   Host-Liste für Make deshalb heute allein `hook.eu2.make.com`.
+- FORTGESCHRIEBEN 2026-09-30: Für Zapier ist die Lesung erledigt (docs/formular-empfaenger-befunde.md,
+  Abschnitt "Zapier"); der Live-Test und damit die Aufnahme folgen gebündelt vor dem Launch —
+  Owner-Entscheidung P13.6-90 der Phase 13.6. Der erste Punkt darüber beschreibt den Stand davor.
 
 PROVENIENZ von P13.6-71: OWNER-ENTSCHEIDUNG 2026-09-30, übermittelt im Auftrag der
 Abschluss-Runde der Scheibe 13.6-4. BINDEND. (Die Überschrift dieses Abschnitts nennt das
@@ -510,6 +513,34 @@ ABSENDBAR. EIN ERNEUTES ABSENDEN WIRD ZUGESTELLT, ABER NICHT NOCH EINMAL GETRACK
   UMGESETZT 2026-09-30: Bau-Commit `29d0d22`, Live-Test bestanden (nur Chrome) — Vermerk
   P13.6-89 der Phase 13.6. "Nicht noch einmal getrackt" ist allein im Test belegt (ebenda,
   Punkt (8)).
+
+PROVENIENZ von P13.6-90: OWNER-ENTSCHEIDUNG 2026-09-30, übermittelt im Auftrag der Runde "Zapier —
+Anbieter-Lesung (Crawl-Bauform)". BINDEND. (Die Überschrift dieses Abschnitts nennt das
+Anlagedatum der Datei; der Eintrag trägt sein eigenes.)
+
+**Owner-Entscheidung P13.6-90 — ZAPIER: DIE ANBIETER-LESUNG JETZT; LIVE-TEST UND AUFNAHME IN DIE
+HOST-LISTE GEBÜNDELT VOR DEM LAUNCH, IN EINEM BEZAHLTEN ZAPIER-MONAT ZUSAMMEN MIT DEM
+ABNAHME-TESTPROTOKOLL.**
+- Bis dahin steht Zapier NICHT in der Host-Liste (`RELAY_HOSTS`, src/lib/relay/hosts.ts):
+  Owner-Entscheidung P13.6-55 verlangt Lesung UND Live-Test.
+- Der browser-direkte Weg (Datensparmodus bzw. eine Adresse ausserhalb der Host-Liste) ist davon
+  unberührt.
+- BEZUG, NUR ZITIERT: offener Punkt "VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN
+  ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP" (docs/offene-punkte.md).
+- DER BELEG ZUR PREMIUM-FRAGE — OWNER-ANGABE 2026-09-30, Screenshot des Zap-Editors im
+  Free-Konto (nicht im Repo): Das eingebaute Werkzeug "Webhooks" trägt das Etikett "Premium".
+  Dass der Auslöser "Catch Hook" zu diesem Werkzeug gehört, war ABGELEITET (Architekt); die
+  Lesung BESTÄTIGT es, gelesen, nicht gemessen — docs/formular-empfaenger-befunde.md, Abschnitt
+  "Zapier", Befund (a).
+- ABWEICHUNG VOM AUFTRAG, GEMELDET (CC): Der Auftrag nennt eine "als UNGEPRÜFT geführte
+  Architekten-Erinnerung zur Premium-Frage". Der Bestand trägt keine (GEMESSEN AM REPO,
+  2026-09-30, am Stand `2c32483`: `git grep -i premium -- docs` liefert sechs Treffer, fünf zu
+  KlickTipp — vier im Abschnitt "KlickTipp" der Befund-Datei, einer im Archiv der Phase 13 — und
+  einen in docs/ziel-befunde/tiktok.md; keiner zu Zapier. Die KlickTipp-Treffer sind zugleich die
+  Positivkontrolle der Suche). Der Satz ist deshalb nicht übernommen.
+- DIE LESUNG: docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befunde (a) bis (p),
+  Katalog-Abgleich und Messkandidaten ZM1 bis ZM7. Die Messkandidaten fallen in den gebündelten
+  Monat.
 
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 
@@ -609,6 +640,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - NACHGETRAGEN 2026-09-30 (Abschluss der Scheibe "Zurück-Cache"; CC, keine neue Setzung): Die
   Scheibe "Zurück-Cache" ist abgeschlossen (Vermerk P13.6-89). Nach der Reihenfolge darüber
   steht Zapier als Nächstes an.
+- NACHGETRAGEN 2026-09-30 (Runde "Zapier — Anbieter-Lesung"; CC, keine neue Setzung): Die
+  Zapier-Lesung ist erledigt; Live-Test und Aufnahme folgen gebündelt vor dem Launch —
+  Owner-Entscheidung P13.6-90.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -2673,6 +2707,10 @@ Grundlage der Stufe 1 (Owner-Entscheidung P13.6-17). BEZUG: docs/formular-empfae
 - BEZUG 2026-09-29: Owner-Entscheidung P13.6-55 der Phase 13.6 legt die Dienste der Stufe 1
   fest (Make und Zapier) und die Bedingung für die Aufnahme (gelesen und einmal live getestet).
   Offen bleiben Zapier ganz und für Make die Hosts der Zonen ausser eu2.
+- ZAPIER GELESEN 2026-09-30 (CC): docs/formular-empfaenger-befunde.md, Abschnitt "Zapier",
+  Befunde (a) bis (p), Katalog-Abgleich, Messkandidaten ZM1 bis ZM7. Live-Test und Aufnahme in die
+  Host-Liste gebündelt vor dem Launch — Owner-Entscheidung P13.6-90 der Phase 13.6. Offen bleiben
+  damit der Zapier-Live-Test und für Make die Hosts der Zonen ausser eu2.
 
 **Arbeit P13.6-72 — SCHEIBE "ZURÜCK-CACHE": DAS FORMULAR IST NACH DER RÜCKKEHR WIEDER
 ABSENDBAR** (ARCHITEKT 2026-09-30, übermittelt im Auftrag der Abschluss-Runde der Scheibe

@@ -1604,3 +1604,447 @@ RAW-Formular einen Schlüssel mit Austragungs-Recht trägt, ist offen (KT3).
 DER UMWEG ÜBER MAKE TRÄGT NACH DER DOKU ((f)): "Add or Update Contact" und "Tag Contact" — aber
 nur ab einem Premium-Tarif mit API-Zugang, und die Verbindung braucht Benutzername und Passwort
 des KlickTipp-Kontos in Make.
+
+## Zapier
+
+### Anbieter-Lesung vom 2026-09-30 (CC, Phase 13.6, Arbeit P13.6-27)
+
+**INSTRUMENT:** Playwright-MCP. Text je Seite über `textContent` des Artikelkörpers (Hilfe:
+Element mit Klasse `article`; zapier.com: `main`) nach Entfernen von `script`, `style`,
+`noscript`, `svg`, `template`. `textContent`, weil es auch die nicht gezeigten Teile trägt —
+den nicht vorausgewählten Reiter und zugeklappte Elemente. Positivkontrolle je Seite: der
+Seitentitel steht im gelesenen Text. Das Datum je Hilfeseite ist das `time`-Element neben
+"Updated". Auszüge unter `.playwright-mcp/zapier-*.json` (in `.gitignore`, nicht im Repo).
+**KEINE ANGABE DIESER LESUNG IST GEMESSEN.** Keine Eingabe, keine Anmeldung, kein Download, kein
+Aufruf einer Webhook-Adresse. JEDE DOKU-AUSSAGE UNTEN ERSETZT DIE MESSUNG NICHT — der Live-Test
+vor einer Aufnahme in die Host-Liste bleibt Pflicht (Owner-Entscheidung P13.6-55 der Phase 13.6).
+**KEIN TESTKONTO MIT WEBHOOKS:** "Webhooks by Zapier" steht im Free-Konto nicht zur Verfügung
+((a)); der Owner hat ein Free-Konto (OWNER-ANGABE 2026-09-30, Screenshot des Zap-Editors, nicht
+im Repo).
+
+**MASSSTAB — WAS DAS RELAY SENDET UND WIE ES WERTET** (GELESEN AM CODE, CC, 2026-09-30, Stand
+`2c32483`; nur Bezug, keine Entscheidung). `forward` (src/lib/relay/relay.ts): genau ein `POST`,
+Kopfzeile allein `Content-Type: application/x-www-form-urlencoded`, der Rumpf als unveränderte
+Bytes des Browser-Rumpfs (`URLSearchParams(new FormData(…))` in `buildFormTargetRuntime`,
+src/lib/form-target.ts), `redirect: "manual"`, Zeitlimit `RELAY_FORWARD_TIMEOUT_MS` (5 000 ms),
+kein Kopf des Besuchers; Antwort-Rumpf verworfen; 2xx UND 3xx (und `opaqueredirect`) =
+"zugestellt", alles andere "nicht zugestellt". Eingehender Rumpf höchstens
+`RELAY_MAX_BODY_BYTES` (64 KiB). `allowedRelayEndpoint` (src/lib/relay/hosts.ts): nur `https:`,
+ohne Nutzerangaben und Port, Host normalisiert und EXAKT in `RELAY_HOSTS`; DER PFAD WIRD NICHT
+GEPRÜFT. Der Datensparmodus schickt browser-direkt mit `mode: "no-cors"`, `keepalive: true`
+(`buildFormTargetRuntime`).
+
+**GELESENER UMFANG — VOLL** (Lesedatum je Seite 2026-09-30; in Klammern das `time`-Element):
+- Das Verzeichnis des Abschnitts "Webhooks" der Hilfe,
+  https://help.zapier.com/hc/en-us/sections/38070734814733-Webhooks — zehn Artikel; geöffnet
+  sind die sechs folgenden, die übrigen vier stehen unter "GESEHEN, NICHT GEÖFFNET".
+- https://help.zapier.com/hc/en-us/articles/8496288690317-Trigger-Zap-workflows-from-webhooks —
+  "Trigger Zap workflows from webhooks" (2026-05-29); die Adresse
+  …/8496288690317-Trigger-Zaps-from-webhooks leitet hierher um
+- https://help.zapier.com/hc/en-us/articles/8496083355661-How-to-get-started-with-Webhooks-by-Zapier
+  — "How to get started with Webhooks by Zapier" (2026-08-10)
+- https://help.zapier.com/hc/en-us/articles/29972220283789-Webhooks-by-Zapier-rate-limits —
+  "Webhooks by Zapier rate limits" (2026-05-29)
+- https://help.zapier.com/hc/en-us/articles/8496291737485-Troubleshoot-webhooks-in-Zapier —
+  "Troubleshoot webhooks in Zapier" (2026-05-29)
+- https://help.zapier.com/hc/en-us/articles/8496215655437-Zap-is-not-receiving-webhooks — "Zap
+  is not receiving webhooks" (2026-05-29; drei zugeklappte Unterabschnitte, über `textContent`
+  erfasst)
+- https://help.zapier.com/hc/en-us/articles/39349960317581-Unexpected-multiple-runs-for-a-single-webhook
+  — "Unexpected multiple runs for a single webhook" (2026-05-29)
+- https://help.zapier.com/hc/en-us/articles/24290475355277-Maximize-efficiency-with-updated-webhook-behaviour
+  — "Maximize efficiency with updated webhook behaviour" (2026-05-29; Abschnitt "Product
+  updates: February 2024"); verlinkt auf der App-Seite unter "Common issues"
+- https://help.zapier.com/hc/en-us/articles/37982571569421-What-is-a-premium-app — "What is a
+  premium app?" (2026-05-29)
+- https://help.zapier.com/hc/en-us/articles/32337438839565-What-s-included-in-Zapier-s-Free-plan
+  — "What's included in Zapier's Free plan?" (2026-08-21)
+- https://zapier.com/apps/webhook/integrations — "Webhooks by Zapier Integrations | Connect Your
+  Apps with Zapier" (ohne Datum; Filterknöpfe "Triggers/Actions", kein `role=tab`; vier
+  zugeklappte Elemente, über `textContent` erfasst)
+- https://help.zapier.com/hc/en-us/articles/37454233721869-How-to-troubleshoot-held-Zap-or-step-runs
+  — "How to troubleshoot held Zap or step runs" (2026-05-29); geöffnet nach der Prüfung der
+  Ausschlussliste (K4.4)
+- https://help.zapier.com/hc/en-us/articles/8496291148685-View-and-manage-your-Zap-history — "View
+  and manage your Zap history" (2026-06-15); geöffnet nach der Prüfung der Ausschlussliste (K6.1)
+- https://zapier.com/legal/data-retention-deletion — "Data Retention/Deletion/Export" (die Seite
+  selbst: "last updated: April 17, 2026"; elf Tabellen, Text)
+- https://help.zapier.com/hc/en-us/articles/8496327478413-Customize-data-retention-in-Zapier —
+  "Customize data retention in Zapier" (2026-05-29)
+- https://zapier.com/legal/data-privacy — "Data Privacy Overview | Zapier" (ohne Datum; 26
+  zugeklappte FAQ-Elemente, über `textContent` erfasst)
+- NUTZERBEITRÄGE, voll gelesen, weil ihr Titel eine offene Frage trägt (Z5 bzw. Z8):
+  https://community.zapier.com/code-webhooks-52/zap-stopped-working-do-webhooks-requires-premium-access-15275
+  (2022-04-20) ·
+  https://community.zapier.com/code-webhooks-52/how-do-i-configure-cors-headers-for-webhooks-triggers-6837
+  (2020-12-02) ·
+  https://community.zapier.com/code-webhooks-52/webhooks-and-squarespace-cors-error-23833
+  (2023-05-12)
+
+**GELESENER UMFANG — GEZIELT** (Suche über den Seitentext, Achse und Positivkontrolle):
+- https://zapier.com/legal/data-processing-addendum — "Data Processing Addendum | Zapier"
+  ("Last Updated: August 27, 2026 Effective: August 27, 2026"). Achse `last updated|effective|
+  United States|Standard Contractual|delet|retention|Customer Personal Data|Sub-?processor|log`;
+  46 Treffer, die ersten 40 im Wortlaut gelesen; Positivkontrolle "Zapier" 109-mal. Die übrigen
+  Klauseln sind NICHT gelesen; eine rechtliche Bewertung ist das nicht.
+- https://zapier.com/legal/subprocessors — "Subprocessors | Zapier" ("Posted Date: September 5,
+  2026 Effective Date: September 19, 2026"). Achse `Amazon|AWS|hosting|United States|European|
+  Ireland|Germany|last updated|effective`; die ersten Zeilen jeder der vier Tabellen gelesen.
+  Positivkontrolle "Zapier" 34-mal.
+- https://zapier.com/pricing — "Plans & Pricing | Zapier". Achse `premium app|webhook|data
+  retention|EU|region|free plan|trial`; 15 Treffer im Wortlaut; dazu die Tabellenzeilen
+  "Connections via webhooks", "Unlimited premium apps", "Custom data retention" zellenweise
+  (Symbole, s. unten). Reiter "Platform" (ausgewählt), "Agents", "Chatbots" — nur "Platform"
+  betrifft Zap-Workflows; die zwei anderen sind nach Titel andere Produkte, ihr Text lag in der
+  Suche mit vor (je ein Treffer "Free", kein Treffer zu Webhooks).
+- Websuchen (2026-09-30): `help.zapier.com premium apps Webhooks by Zapier free plan` ·
+  `Zapier data retention how long does Zapier store Zap run data task history` ·
+  `"hooks.zapier.com" CORS "Access-Control-Allow-Origin" catch hook browser` ·
+  `help.zapier.com what happens when I reach my task limit held Zap runs` — nur zum Finden von
+  Seiten; die Zusammenfassungen der Suchmaschine sind KEINE Lesung und stehen hier nicht.
+
+**REITER, TABELLEN, SYMBOLE, BILDER:**
+- REITER: "Trigger Zap workflows from webhooks" trägt "Catch Hook trigger" (ausgewählt) und
+  "Catch Hook Raw trigger" (NICHT vorausgewählt); beide Reiterinhalte sind über `textContent`
+  gelesen. "View and manage your Zap history": "Zap history page" (ausgewählt) und "Zap editor";
+  beide gelesen. Die Preisseite: s. oben.
+- SYMBOL-TABELLEN — DIE TRAGENDE AUSSAGE STEHT IN SYMBOLEN: Der Kasten "Available on plans:" auf
+  "Trigger Zap workflows from webhooks" und "How to get started with Webhooks by Zapier" nennt
+  im TEXT alle vier Tarife (Free, Professional, Team, Enterprise); erst die Bilder unterscheiden
+  sie: bei Free ein Bild mit `alt="A grey X"` und der Klasse `ineligible-plan`, bei den übrigen
+  `alt="A green checkmark"`; der Kasten trägt die Klasse `plan-free-ineligible`. Als reiner Text
+  gelesen hiesse der Kasten "auf Free verfügbar" — das Gegenteil. "Customize data retention in
+  Zapier": grauer X bei Free, Professional, Team, grüner Haken allein bei Enterprise. Die
+  Vergleichstabelle der Preisseite trägt je Zelle ein Symbol ohne Text; ihre Kennungen sind
+  `zinnia-icons--formDash` und `zinnia-icons--formCheck` — die Zuordnung "Dash = nicht
+  enthalten, Check = enthalten" ist FOLGERUNG aus dem Namen.
+- BILDER SIND NICHT GELESEN (ausser den `alt`-Texten der Tarif-Kästen) — u. a. fünf auf
+  "Trigger Zap workflows from webhooks", sieben auf "How to get started …".
+
+**GESEHEN, NICHT GEÖFFNET** (je mit Grund):
+- Aus dem Abschnitt "Webhooks": "Trigger Zap workflows from polling webhooks" (…/8496274719757)
+  — Zapier ruft dort selbst ab; "Send webhooks in Zap workflows" (…/8496326446989), "Zap isn't
+  sending webhooks" (…/8496231814157), "Webhooks: How to fix SSL certificate failures in Zap
+  workflows" (…/8496231874445) — Zapier als ABSENDER, nicht als Empfänger.
+- "Ways to make API requests in Zapier" (…/44391646192397), "Send API requests in Zap workflows"
+  (…/44391650357005) — Aktionen.
+- "Can't access or use Zapier with other apps" (…/8496216020877) und die Seite zur statischen IP
+  (…/15406083674509) — AUSGEHENDE Adressen von Zapier.
+- "Rate limits and throttling in Zapier" bzw. "Zap limits" (…/8496181445261) — allgemeine
+  Grenzen; die für Webhooks stehen auf der gelesenen Seite "Webhooks by Zapier rate limits".
+- "Replay Zap runs" (…/8496241726989), "Delay After Queue" (…/8496288754829) — Verarbeitung nach
+  der Annahme.
+- "Get started with your free Zapier trial" (…/8496197192461), "Apps tags in Zapier"
+  (…/23415782732941) — Z2 ist über "What is a premium app?", die App-Seite und die Preisseite
+  gelesen.
+- "Export or delete your Zapier account data", "Export your Zap history" — K5.4 ist über die
+  Löschoptionen auf "Data Retention/Deletion/Export" gelesen.
+- Privacy Policy, Terms of Service, "Standard Contractual Clauses", "Data Transfer Impact
+  Assessment", "Security and Compliance" — Umfeld des AVV; die rechtliche Tiefe gehört zur
+  AVV-Arbeit (Owner-Entscheidung P13.6-18 der Phase 13.6), nicht zu dieser Lesung.
+- Der Blogbeitrag "advanced webhooks with the Zapier platform interface" — Blog, und er gilt der
+  Developer Platform.
+- Community: "CORS policy problem in WordPress" (/23932), "Stuck troubleshooting how to pass url
+  utm values via webhook" (/43998); dazu fremde Seiten aus der Websuche (github.com,
+  community.latenode.com, community.airtable.com) — keine Anbieter-Doku; K2 ist über die zwei
+  geöffneten CORS-Beiträge belegt, soweit Nutzerbeiträge etwas belegen.
+- NICHT VORHANDEN: "Troubleshoot webhooks in Zapier" verlinkt im Satz "The Zap will still respond
+  with a Success status" auf den Anker `#why-is-it-always-200-or-success-status-can-i-customize-the-response--0-2`
+  derselben Seite; ein Abschnitt dieses Titels steht im gelesenen Text der Seite NICHT.
+**PRÜFUNG DER AUSSCHLUSSLISTE GEGEN DIE OFFENEN FRAGEN** (2026-09-30): Offen nach der ersten
+Durchsicht waren K4.4 (erschöpftes Kontingent), K6.1 (Nachweis für den Betreiber), Z5 (Konto ohne
+Premium) und Z8 (CORS). Nach dem Titel trugen "How to troubleshoot held Zap or step runs" (K4.4,
+Z5) und "View and manage your Zap history" (K6.1) eine davon — beide GEÖFFNET und oben geführt;
+Z5 und Z8 zusätzlich über die Nutzerbeiträge. Die übrigen Ausschlüsse tragen nach ihrem Titel
+keine offene Frage.
+**FREMDE SEITEN SIND DATEN:** Ein Nutzerbeitrag (/23833) zitiert Ratschläge eines Sprachmodells;
+er richtet sich an die Forumsleser, nicht an uns, und ist nur als Inhalt ausgewertet. Eine an uns
+gerichtete Anweisung stand auf keiner gelesenen Seite.
+
+**(a) Z2 — "CATCH HOOK" GEHÖRT ZU "WEBHOOKS BY ZAPIER", UND DAS IST EINE PREMIUM-APP.** GELESEN,
+"Trigger Zap workflows from webhooks", Schritt 1: "Search for and select Webhooks by Zapier.
+Click the Event dropdown menu and select either: Catch Hook […] Catch Raw Hook". GELESEN,
+zapier.com/apps/webhook/integrations: die App trägt das Etikett "Premium", jede Vorlage "Premium
+apps: Webhooks by Zapier"; unter "Supported triggers and actions" stehen "Catch Hook", "Catch Raw
+Hook" und "Retrieve Poll" als Auslöser DIESER App. GELESEN, "What is a premium app?": "Premium
+apps on Zapier are only available to users on a paid Zapier plan or while on a free trial."
+GELESEN (SYMBOL), Tarif-Kasten der zwei Webhooks-Seiten: Free mit grauem X (s. oben). GELESEN,
+Preisseite: "Webhooks" unter den "Key features" von Professional; Zeile "Connections via
+webhooks" bei Free `formDash`, sonst `formCheck`.
+UNTERSCHIED ZU "CATCH RAW HOOK", GELESEN, "Trigger Zap workflows …": Catch Hook — "The request
+body will be parsed"; Catch Raw Hook — "The request body will be unparsed (max 2MB) and also
+include headers", dazu der Stille-Modus (s. (e)).
+FOLGE: Die ABGELEITETE Zuordnung des Architekten (Catch Hook gehört zum Werkzeug "Webhooks" mit
+dem Etikett "Premium") ist durch die Doku BESTÄTIGT, gelesen, nicht gemessen.
+
+**(b) Z1, K3.1 — FORM UND HOST DER ADRESSE.** GELESEN, "How to get started …": "When you create
+a new Zap with a webhook enabled trigger, we will generate a brand new URL for your use, sort of
+like this one: https://hooks.zapier.com/hooks/catch/1234567/f8f22dgg/". GELESEN, "Trigger Zap
+workflows …": Beispiele `https://hooks.zapier.com/hooks/catch/123456/zbB61`; "the URL contains
+the owner's Zapier ID"; "You can see the user ID in the URL of the webhook, after /catch/".
+GELESEN, "Zap is not receiving webhooks": Beispiel
+`https://hooks.zapier.com/hooks/catch/123456/abcde?field_name=…`.
+EIN ZWEITER HOST, GELESEN, auf drei Seiten: die curl-Beispiele auf "How to get started …" und
+"Zap is not receiving webhooks" rufen `https://zapier.com/hooks/catch/n/Lx2RH/`; die
+zusammengefasste Adresse für mehrere Zaps lautet `https://zapier.com/hooks/catch/123456/zbB61,kzXC4,2Ajjn`
+("Requests sent to this URL will trigger all three webhook URLs at once"; "Trigger Zap workflows
+…").
+EINE DRITTE FORM, GELESEN, "Webhooks by Zapier rate limits": "legacy webhook routes (without a
+Zapier user ID in the URL)" — die Form steht dort nicht.
+WANN SICH DIE ADRESSE ÄNDERT, GELESEN, "Trigger Zap workflows …": "The URL only changes if the Zap
+is transferred to another user"; "How to get started …": "The Catch Hook URL is linked to the Zap
+and will not change."
+REGION: Eine Region in der Adresse oder je Konto steht auf KEINER gelesenen Seite; nach (l)
+speichert Zapier in den USA ohne EU-Option — FOLGERUNG, NICHT GELESEN: keine Adresse je Region.
+Reichweite: die voll gelesenen Seiten.
+FOLGE FÜRS RELAY (FOLGERUNG): Die Adresse, die der Editor zeigt, trägt nach allen gelesenen
+Beispielen `hooks.zapier.com`; EIN EXAKTER HOST GENÜGT dafür. `zapier.com` gehört NICHT in
+`RELAY_HOSTS`: `allowedRelayEndpoint` prüft keinen Pfad, und der Host trüge jede Seite von
+zapier.com. Eine Adresse der Form `zapier.com/hooks/catch/…` bliebe damit browser-direkt
+(Owner-Entscheidung P13.6-54, zweiter Punkt). ERSETZT DIE MESSUNG NICHT — der Host ist an einer
+echten Adresse abzulesen (ZM1).
+
+**(c) K3.2, K3.3 — ZAPIER NENNT DIE ADRESSE EIN GEHEIMNIS.** GELESEN, "How to get started …",
+Hinweis unter der Beispiel-Adresse: "The URL is secured by obscurity. It is almost impossible to
+guess the combination of the number and code in the URL. But if you make the URL public (e.g. in
+front-end JavaScript) anyone who finds it will be able to spam it and trigger your Zap. Treat it
+as a password or any other secret!"
+SCHUTZMITTEL: Für Catch Hook ist auf KEINER gelesenen Seite eines beschrieben. "Zap is not
+receiving webhooks" sagt "If using authentication, Webhooks by Zapier only supports basic
+authentication" — im Zusammenhang der Sicherheitsvorgaben der ABSENDENDEN App; ob das für den
+Empfang gilt, sagt die Seite nicht. Reichweite: die voll gelesenen Seiten.
+BEZUG, KEINE ENTSCHEIDUNG: Setzung P13-6 der Phase 13 ("DIE EINGETRAGENE ADRESSE IST KEIN
+GEHEIMNIS") steht dieser Anbieter-Aussage entgegen — bei Make stand auf keiner gelesenen Seite
+etwas dergleichen (Abschnitt "Make", Befund (h)). Nach Setzung P13.6-32 steht die Adresse eines
+Formular-Ziels im `action`-Attribut des ausgelieferten Textes, auch im Relay-Weg (Setzung
+P13.6-64); im Datensparmodus zusätzlich im Datenblock des Skripts.
+
+**(d) Z3, K1.1–K1.3, K1.5 — WAS CATCH HOOK ANNIMMT.** GELESEN, "Trigger Zap workflows …": Catch
+Hook "Select for GET, PUT or POST API endpoints. The request body will be parsed."; App-Seite:
+"Triggers when a POST, PUT, or GET request is made to a Zapier URL." GELESEN, "How to get started
+…": drei Formate — "Form-encoded first_name=Alex&last_name=Riley&age=27", JSON, XML; "Zapier
+handles all of them just fine!"; verschachteltes JSON und XML wird rekursiv zerlegt, abschaltbar
+mit der Kopfzeile `X-Recurse-Parse: false`, verschachtelte Schlüssel mit doppeltem Unterstrich
+verbunden. GELESEN, "Troubleshoot webhooks in Zapier": "Zapier can accept payloads that are valid
+XML, JSON, or URL-Encoded format only." "Zap is not receiving webhooks": "Payload data must be in
+XML, JSON, or form-encoded formats."
+LEERE UND UNGÜLTIGE RÜMPFE, GELESEN: "if a completely empty webhook request is sent to your Zap,
+it will be ignored" ("How to get started …"); "If the Zap receives an invalid payload, it may be
+ignored and the Zap may fail to trigger. […] The Zap will still respond with a Success status."
+("Troubleshoot …").
+ARRAYS, GELESEN, "Trigger Zap workflows …" und "Unexpected multiple runs …": ein JSON-Array auf
+oberster Ebene startet den Zap je Objekt einmal.
+MEHRFACH VORKOMMENDE NAMEN IM SELBEN form-urlencoded-RUMPF (Checkbox-Gruppen): STEHT AUF KEINER
+GELESENEN SEITE. `multipart/form-data` und `text/plain` sind NICHT GENANNT. Reichweite: die voll
+gelesenen Seiten.
+FOLGE FÜRS RELAY (FOLGERUNG): Das Relay sendet `POST` mit `application/x-www-form-urlencoded` —
+nach der Doku eine angenommene Form. Ein Rumpf aus `URLSearchParams(new FormData(…))` trägt die
+Namen der Textfelder auch mit leerem Wert und ist damit bei einem Formular mit Textfeld nicht
+"completely empty". Eine Erfolgsantwort
+belegt nach dem Satz über ungültige Rümpfe NICHT, dass der Zap auslöst. ERSETZT DIE MESSUNG NICHT
+(ZM2, ZM3).
+
+**(e) Z4, K2.4, K2.5 — DIE ANTWORT BEI ERFOLG.** GELESEN, "Trigger Zap workflows …": "Zapier will
+send a 200 response"; "Although it's not possible to customize this response, you can remove it
+completely by using silent mode using the Catch Raw Hook trigger." — der Stille-Modus steht dort
+im Reiter "Catch Hook Raw trigger" ("Add silent/ to your URL if your application needs an empty
+response"). GELESEN, "How to get started …": "The webhook URLs will respond with JSON or XML";
+"add /silent to the end of the URL" — dort OHNE Beschränkung auf Catch Raw Hook; die zwei Seiten
+weichen voneinander ab. GELESEN, "Zap is not receiving webhooks", Beispiel einer Erfolgsantwort
+auf einen Aufruf im Browser: `{"attempt":"an_id_value","id":"another_id_value","request_id":"another_id_value","status":"success"}`.
+ZEITPUNKT: Dass die Antwort vor der Verarbeitung kommt, sagt keine Seite wörtlich. GELESEN, "Webhooks
+by Zapier rate limits": "During periods of high webhook activity, Zapier may return a 200 status
+code but delay webhook processing by several minutes." FOLGERUNG: Die 200 belegt die Annahme,
+nicht die Verarbeitung — wie bei Make (Abschnitt "Make", Befund (d)).
+FOLGE FÜRS RELAY (FOLGERUNG): 200 ist 2xx; `forward` meldet "zugestellt" (204). Der Rumpf wird
+nicht gelesen. ERSETZT DIE MESSUNG NICHT (ZM2).
+
+**(f) Z5, K3.4, K4.3 — ZAP AUS ODER GELÖSCHT: 404, ABER ERST NACH EINER VERZÖGERUNG.** GELESEN,
+"Trigger Zap workflows …", "Webhook response behavior": "if your Zap is turned off or deleted,
+Zapier will return a 404 response for any incoming webhook requests directed at a Zap. However,
+there is a system update delay of up to several hours before the 404 response takes effect,
+during which the URL will continue to return a 200 response. Once the Zap is turned back on, it
+will resume returning a 200 response." GELESEN, "Maximize efficiency with updated webhook
+behaviour" (Produkt-Update Februar 2024): vorher antworteten alle Webhook-Auslöser mit 200; jetzt
+für Catch Hook und Catch Raw Hook 404 bei Zap aus oder gelöscht, "a short delay".
+WIDERSPRUCH IN DER DOKU, OFFEN GEFÜHRT: "How to get started …" (Stand 2026-08-10) sagt weiterhin
+"We always return a success message for all webhooks - regardless of if there is a Zap behind it
+that is live or not. This is a technical limitation […] we cannot adjust this!" — gegen die zwei
+Seiten darüber. Welche gilt, entscheidet erst die Messung (ZM4).
+WAS MIT EINER ANFRAGE IM ZEITFENSTER GESCHIEHT: GELESEN, "How to get started …": "Even if you
+don't unpause your Zap, we still track the payloads we get to make it easier for you to debug";
+"Troubleshoot …": "Webhook triggers will display the three most recent webhooks sent to the URL
+within the past hour." Ob eine solche Anfrage nach dem Einschalten verarbeitet wird, steht auf
+KEINER gelesenen Seite. Reichweite: die voll gelesenen Seiten.
+EINE NIE VERGEBENE ODER FALSCH ABGESCHRIEBENE KENNUNG: Der Status steht auf KEINER gelesenen Seite.
+WEITERGABE DES ZAPS: Die Adresse ändert sich (s. (b)); "Otherwise, the Zap won't trigger" — der
+Status unter der alten Adresse steht dort nicht.
+FOLGE FÜRS RELAY (FOLGERUNG): 404 ergibt "nicht zugestellt" (502) — der Besucher sieht die
+Meldung statt der Danke-Seite. IM ZEITFENSTER NACH DEM AUSSCHALTEN (bis zu "several hours") meldet
+das Relay "zugestellt", obwohl kein Zap läuft; ob der Lead dann verloren ist, ist offen.
+
+**(g) Z5, K4.4 — KONTO OHNE PREMIUM, ERSCHÖPFTES KONTINGENT.** GELESEN, "How to troubleshoot held
+Zap or step runs": ein Lauf wird "held", wenn "the account reached the task limit for its plan or
+used a premium app that is not available in your Zapier plan"; Abhilfe "Upgrade your Zapier
+plan, then replay your held Zap run." GELESEN, "What's included in Zapier's Free plan?": 100
+Tasks im Monat, zwei Schritte je Zap; nach dem 14-Tage-Test "these features will no longer be
+available".
+WELCHEN STATUS DIE ADRESSE IN DIESEN FÄLLEN ANTWORTET, STEHT AUF KEINER GELESENEN SEITE; ebenso
+nicht, wie lange ein gehaltener Lauf aufbewahrt wird. Reichweite: die voll gelesenen Seiten.
+NUTZERBEITRAG, community.zapier.com/…/15275 (2022-04-20): ein Zap mit Webhooks lief drei Tage
+(Test) und hörte dann auf; Antwort eines Partners: "Webhooks have been a Premium Zap requiring a
+paid plan."
+FOLGE FÜRS RELAY (FOLGERUNG): Antwortet die Adresse dann weiter mit 200, meldet das Relay
+"zugestellt", und der Lead liegt als gehaltener Lauf beim Betreiber — Verbleib ungelesen. Das
+fällt in den Test-Monat des gebündelten Live-Tests: an dessen Ende ist er zu messen (ZM5).
+
+**(h) Z5, Z6, K4.1 — RATENLIMITS UND ÜBERLAST.** GELESEN, "Webhooks by Zapier rate limits": "You
+will see a 429 status code if you exceed these limits: 20,000 requests every 5 minutes per user.
+1,000 requests every 5 minutes per Zap in legacy webhook routes (without a Zapier user ID in the
+URL)."; bei hoher Last 200 mit Verzögerung (s. (e)); "Retry delivery on any step that does not
+have a 200 status code from Zapier."
+FOLGE FÜRS RELAY (FOLGERUNG): 429 ergibt "nicht zugestellt"; das Relay wiederholt nie (Setzung
+P13.6-22), der Besucher kann erneut absenden. Die Ratenbegrenzung des Relays (120 je 60 s je
+Projekt, Setzung P13.6-75, E3) liegt, auf 5 Minuten gerechnet, bei 600 je Projekt — unter der
+Grenze je Zapier-Nutzer, sofern ein Projekt allein auf einen Nutzer sendet. GERECHNET, NICHT
+GEMESSEN.
+
+**(i) Z5 — EIN 3xx VON CATCH HOOK: AUF KEINER GELESENEN SEITE.** Die Antwort ist nach (e) nicht
+anpassbar ("not possible to customize this response"); einzige Variante ist der Stille-Modus.
+GELESEN, "Troubleshoot …", "Can I set up redirects?": "Zapier cannot set up 301 or 302 redirects
+to a different URL and deliver/retrieve payloads from the new address. Doing so will result in a
+failure." — nach dem Wortlaut über Weiterleitungen, denen ZAPIER folgen müsste, nicht über eine
+Antwort von Catch Hook. Reichweite: die voll gelesenen Seiten.
+FOLGE FÜRS RELAY (FOLGERUNG): Die Regel "3xx = zugestellt, nie folgen" (Setzung P13.6-59, Q8)
+stützt sich auf Make (Abschnitt "Make", Befund (e)); für Zapier liefert die Doku keinen Fall, in
+dem sie greift. ERSETZT DIE MESSUNG NICHT (ZM4).
+
+**(j) Z6, K1.4 — GRÖSSE.** GELESEN, "Trigger Zap workflows …", "Limitations": "The maximum webhook
+payload size is 10MB for triggers and 2MB for Catch Raw Hook." "Troubleshoot …": "Any payloads
+that exceed this limit with receive a 413 status code."
+FOLGE FÜRS RELAY (FOLGERUNG): Der eingehende Rumpf ist auf 64 KiB begrenzt
+(`RELAY_MAX_BODY_BYTES`); die Grenze von Zapier greift davor nie.
+
+**(k) Z7, K5.1, K5.2, K5.4 — WAS ZAPIER AUFBEWAHRT.** GELESEN, zapier.com/legal/data-retention-deletion,
+Tabelle "Zap Workflows": "Zap Content (content transferred in and out of Zap workflows) — 7 days
+in logs. 29-69 days in your Zapier account. If you subscribe to the Company or Enterprise plan,
+you can set a shorter retention period in your Zapier account. Up to 4 months in backups. Zap
+Content transferred when you test a Zap is stored until you delete the Zap." Ebenso für "Zap
+Runs" (Metadaten), dazu "Zap Runs are also stored in Zapier's non-production database for internal
+Zapier product analytics purposes." GELESEN, "Data Privacy Overview": die Löschung jeweils am
+ersten Montag des Monats erklärt die Spanne 29–69 Tage. GELESEN, "View and manage your Zap
+history": "Zapier can only guarantee a maximum of 60 days of Zap run data in your Zap history";
+dort löschbar. GELESEN, "Customize data retention in Zapier": 7–30 Tage einstellbar; Symbole: nur
+Enterprise (die Rechtsseite nennt "Company or Enterprise"; die zwei Seiten weichen ab).
+WAS VON EINER EINGEHENDEN ANFRAGE GESPEICHERT WIRD (Kopfzeilen, Query, Adresse des Aufrufers):
+Für Catch Hook steht es auf KEINER gelesenen Seite; Catch Raw Hook "includes headers" (s. (a)).
+FOLGERUNG: Die Formularwerte liegen nach der Zustellung als "Zap Content" beim Betreiber-Konto —
+mindestens 29 Tage, in Sicherungen bis zu vier Monate, als Testdaten bis zur Löschung des Zaps.
+Die Transit-Zusage (Owner-Entscheidung P13.6-16) gilt UNSEREM Server; sie sagt über den Empfänger
+nichts.
+
+**(l) Z7, K5.3 — DATENSTANDORT: USA, KEINE EU-OPTION.** GELESEN, "Data Privacy Overview": "Zapier
+hosts data in AWS servers located in the United States, including customers' personal data and
+the data that is processed on behalf of customers." — "Is there an option to have my data stored
+only within the EU? Zapier does not support this option." Übermittlung über das EU-U.S. Data
+Privacy Framework. GELESEN (gezielt), "Subprocessors": "Amazon Web Services (AWS) — Cloud service
+and artificial intelligence provider — USA".
+ZUM VERGLEICH, KEINE BEWERTUNG: Make bietet je Organisation eine EU-Region (Abschnitt "Make",
+Befund (p)).
+
+**(m) Z7 — AVV / DPA.** GELESEN, "Data Privacy Overview": Für "Customer Content" ist der Kunde
+"data controller", Zapier "data processor"; "Zapier can't sign DPAs from other companies"; der
+DPA enthält Standardvertragsklauseln. GELESEN (gezielt), "Data Processing Addendum": "Because
+Zapier's Terms of Service already incorporate Zapier's Data Processing Addendum ("DPA"), you do
+not need to sign a separate copy"; "effective as of August 27, 2026"; Unterauftragsverarbeiter
+über die Liste, Änderung mit "fourteen (14) days' advance written notice"; Übermittlung in die USA
+über das Data Privacy Framework, ersatzweise SCC.
+BEZUG, KEINE ENTSCHEIDUNG, KEINE RECHTLICHE BEWERTUNG: Owner-Entscheidung P13.6-18 der Phase 13.6
+(Kunden-AVV vor dem ersten fremden Nutzer) — dieser DPA ist einer zwischen ZAPIER UND DEM
+BETREIBER; unseren Kunden-AVV ersetzt er nicht (FOLGERUNG).
+
+**(n) Z8, K2.1–K2.3 — AUFRUF AUS DEM BROWSER, DATENSPARMODUS.** GELESEN, "Troubleshoot …", zweimal
+fast gleichlautend: "Request header field Content-Type is not allowed by Access-Control-Allow-Headers
+in preflight response. This happens when trying to send data to the Zapier webhooks from inside a
+web browser and altering the Content-Type header during the process. […] To fix this, do not set
+a custom Content-Type header in the request." Welche CORS-Kopfzeilen die Antwort trägt, ob ein
+`OPTIONS` beantwortet wird und ob Status und Rumpf aus fremdem Ursprung lesbar sind, steht auf
+KEINER gelesenen Seite; `no-cors` kommt nicht vor. Reichweite: die voll gelesenen Seiten und die
+dritte Websuche oben.
+NUTZERBEITRAG, community.zapier.com/…/23833 (2023-05-12): ein `fetch` mit `Content-Type:
+application/json` an `hooks.zapier.com/hooks/catch/…` scheiterte am Preflight mit derselben
+Meldung. NUTZERBEITRAG, …/6837 (2020-12-02): eine Frage nach CORS-Kopfzeilen für Webhooks-Auslöser,
+ohne Antwort zur Sache.
+FOLGERUNG, NICHT GELESEN, NICHT GEMESSEN: Der Datensparmodus sendet einen Rumpf aus
+`URLSearchParams` ohne eigene Kopfzeile — nach der Fetch-Spezifikation (hier nicht gelesen) eine
+einfache Anfrage ohne Preflight, genau die Form, zu der die Doku rät. Ob Catch Hook sie im Modus
+`no-cors` annimmt, ist UNGEKLÄRT (ZM6); die Antwort wäre für das Skript ohnehin `opaque`.
+BEZUG: (c) — im Datensparmodus steht die Adresse im ausgelieferten Text, also genau "in front-end
+JavaScript".
+
+**(o) K6.1, K6.2 — NACHWEIS FÜR DEN BETREIBER.** GELESEN, "Trigger Zap workflows …", Schritt 4:
+"Test trigger" im Reiter "Test"; "Troubleshoot …": die drei jüngsten Anfragen der letzten Stunde.
+GELESEN, "View and manage your Zap history": Liste der Zap-Läufe mit Status, je Schritt "data that
+was received and sent by the step"; bis 60 Tage garantiert. GELESEN, "Zap is not receiving
+webhooks": Aufruf der Adresse im Browser mit Query als Erkennungsaufruf, Antwort wie in (e).
+
+**(p) K4.2, K4.5, K4.6, K7.1 — REST.** K4.2: Eine Warteschlange mit Grösse ist auf KEINER
+gelesenen Seite beschrieben; nur die verzögerte Verarbeitung (e). K4.5: Das Verhalten bei einem
+Ausfall von Zapier steht auf keiner gelesenen Seite; "Retry delivery on any step that does not
+have a 200 status code" (h). K4.6: 200 trotz späteren Verlusts — ungültiger Rumpf (d), Zeitfenster
+nach dem Ausschalten (f), gehaltener Lauf (g, Status ungelesen). K7.1: MESSFRAGE (ZM7). Reichweite:
+die voll gelesenen Seiten.
+
+**ABGLEICH MIT DEM VORLÄUFIGEN FRAGENKATALOG (Z9)** — je Frage: BEANTWORTET (gelesen, ersetzt die
+Messung nicht) · TEILWEISE · UNBEANTWORTET · NICHT ANWENDBAR.
+- K1.1 BEANTWORTET (d) · K1.2 TEILWEISE (d: form-urlencoded, JSON, XML; `multipart/form-data` und
+  `text/plain` nicht genannt) · K1.3 TEILWEISE (d: Verschachtelung, Arrays; mehrfache Namen und
+  Query plus Rumpf nicht genannt) · K1.4 BEANTWORTET (j) · K1.5 TEILWEISE (d: ungültig →
+  ignoriert, trotzdem Erfolg; eine unerwartete Feldmenge wird nach keiner Seite abgewiesen).
+- K2.1 UNBEANTWORTET (n) · K2.2 UNBEANTWORTET (n; nur der gescheiterte Preflight bei JSON) · K2.3
+  UNBEANTWORTET (n) · K2.4 BEANTWORTET (e: 200, JSON oder XML, nicht anpassbar, Stille-Modus) ·
+  K2.5 TEILWEISE (e: 200 bei verzögerter Verarbeitung).
+- K3.1 BEANTWORTET (b) · K3.2 BEANTWORTET (c: ja, "Treat it as a password") · K3.3 UNBEANTWORTET
+  für Catch Hook (c) · K3.4 BEANTWORTET (f, b: Zap aus/gelöscht, Weitergabe; unbekannte Kennung
+  offen).
+- K4.1 BEANTWORTET (h) · K4.2 UNBEANTWORTET (p) · K4.3 TEILWEISE (f: Status ja, Verbleib nein) ·
+  K4.4 TEILWEISE (g: Lauf gehalten; Status nein) · K4.5 UNBEANTWORTET (p) · K4.6 BEANTWORTET (p).
+- K5.1 TEILWEISE (k: Zap Content; Kopfzeilen bei Catch Hook offen) · K5.2 BEANTWORTET (k) · K5.3
+  BEANTWORTET (l: USA, nicht wählbar) · K5.4 BEANTWORTET (k: kürzer nur Enterprise bzw. Company;
+  Löschen im Zap-Verlauf).
+- K6.1 BEANTWORTET (o) · K6.2 BEANTWORTET (o).
+- K7.1 UNBEANTWORTET — MESSFRAGE (ZM7).
+- K8.1 bis K14.3 (Erweiterung für E-Mail-Anbieter) NICHT ANWENDBAR: Zapier ist eine generische
+  Webhook-Adresse, kein ESP-Formular-Endpunkt; jede dieser Fragen setzt einen solchen voraus.
+
+### Messkandidaten Zapier (aus der Lesung vom 2026-09-30)
+
+Keiner gemessen; die Liste entscheidet nicht, welcher gemessen wird. VORAUSSETZUNG FÜR ALLE: ein
+Zapier-Konto mit Webhooks (Test-Monat oder bezahlter Tarif, (a), (g)) — nach Owner-Entscheidung
+P13.6-90 der Phase 13.6 gebündelt vor dem Launch.
+- ZM1 — Host und Form einer echten Catch-Hook-Adresse im Konto ablesen. (Z1, K3.1; zu (b))
+- ZM2 — `POST` mit `application/x-www-form-urlencoded`, wie das Relay ihn sendet (erst curl mit
+  fremdem `Origin`, dann über das Relay einer Testseite): Status, Kopfzeilen, Rumpf, Zeit; kommt
+  der Lauf an, sind die Felder einzeln abgebildet? (Z3, Z4, K1, K2.4, K2.5; zu (d), (e))
+- ZM3 — mehrfach vorkommender Name im selben Rumpf (Checkbox-Gruppe). (K1.3; zu (d))
+- ZM4 — Zap AUS: Status sofort und nach mehreren Stunden; Zap gelöscht; erfundene Kennung auf
+  `hooks.zapier.com`; kommt irgendwo ein 3xx? Verbleib einer Anfrage im Zeitfenster. (Z5, K3.4,
+  K4.3; zu (f), (i))
+- ZM5 — nach dem Ende des Test-Monats bzw. im Free-Konto: Status und Verbleib. (Z5, K4.4; zu (g))
+- ZM6 — CORS-Kopfzeilen der Standardantwort und der 404; derselbe Aufruf im Modus `no-cors` von
+  einer Seite unter publayer.net (Datensparmodus). (Z8, K2.1–K2.3; zu (n))
+- ZM7 — Erfassen gängige Filterlisten `hooks.zapier.com`? Im Browser für einen Blocker. (K7.1;
+  zu (p))
+
+### EINORDNUNG Zapier (Befund, keine Entscheidung)
+
+NACH DER DOKU PASST DIE FORM: Catch Hook nimmt `POST` mit `application/x-www-form-urlencoded` an
+((d)), antwortet bei Annahme mit 200 ((e)) und bei ausgeschaltetem oder gelöschtem Zap mit 404
+((f)); ein 3xx ist nicht beschrieben ((i)); die Adresse liegt nach allen Beispielen auf dem festen
+Host `hooks.zapier.com` ((b)). Keine gelesene Seite beschreibt Weiterleitungen oder Hosts je
+Region.
+DREI BEFUNDE STEHEN DANEBEN: (1) Zapier rät, die Adresse wie ein Passwort zu behandeln ((c)) —
+BEZUG Setzungen P13-6 der Phase 13 und P13.6-32 der Phase 13.6. (2) Im Zeitfenster nach dem
+Ausschalten eines Zaps antwortet die Adresse bis zu mehreren Stunden weiter mit 200 ((f)); die
+Doku widerspricht sich zudem an dieser Stelle. (3) Die Daten liegen in den USA, ohne EU-Option
+((l)); der DPA gilt zwischen Zapier und dem Betreiber ((m)). Webhooks sind eine Premium-App ((a)).

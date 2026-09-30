@@ -1561,6 +1561,117 @@ Adresse samt Versandform, Setzung P13.6-32 der Scheibe 13.6-1).
   ohne Ratenbegrenzung bis 13.6-5 (Grenzen der Scheibe 13.6-3). Heute gibt es keinen fremden
   Nutzer (CLAUDE.md, "## Modus"; Owner-Entscheidung P13.6-18).
 
+### Planrunde der Scheibe 13.6-4
+
+**Vermerk P13.6-65 — BEFUNDE DER GATES G1 BIS G8 DER PLANRUNDE** (CC, 2026-09-30, HEAD
+`2f84d76`; Code-Stand `3a06ea9`). GELESEN AM CODE, soweit nicht anders gekennzeichnet; KEIN
+BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
+(1) G1 — LAUFZEIT. Versand in `__psFormTargetSend` (Text aus `buildFormTargetRuntime`,
+    src/lib/form-target.ts): Laufzeit-Wache, Rumpf `URLSearchParams(new FormData(f, submitter))`,
+    Timer `FORM_TARGET_TIMEOUT_MS`, `fetch(cfg.endpoint, {method: "POST", mode: "no-cors",
+    keepalive: true, body})`. "Erreicht" allein bei `r.type === "opaque"`; dann `onReached`
+    gekapselt und `window.location.href = cfg.thanksUrl`, sonst `fail()` (Sperre frei, Meldung).
+    Der Zweig im submit-Listener ist `formTargetBranch` in `buildWiringScript`
+    (src/lib/generate.ts), vor der Sperre `submittedForms`. Ein Relay-Weg passt als EINE
+    isolierbare Einsetzung (R2) hinter den Timer; Wache, Rumpf, Timer, Sperre, Meldung und
+    `onReached` bleiben. Ohne Relay-Ziel bleibt der Text zeichengleich, wenn
+    `buildFormTargetRuntime` ein Argument `withRelay` bekommt und der Datenblock das neue Feld
+    entfernt wie heute `fieldNames`. Kein bestehender Test wird beabsichtigt rot: Die
+    Engine-Tests übergeben kein Merkmal, und die Editor-Tests mit Formular-Ziel prüfen den
+    Export oder die Riegel, keiner den Veröffentlichungs-Text.
+(2) G1 — W-B2 WIRD EIN HOHLER PIN. W-B2 (src/lib/generate.test.ts) bildet die Veröffentlichung
+    als `generateFunctional` OHNE Merkmal nach, und seine Vorlage trägt ein Ziel auf
+    `hook.eu2.make.com`. Nach der Scheibe bliebe er grün, bildete den Veröffentlichungs-Weg aber
+    nicht mehr ab (Dauerregel "EIN GRÜNER TEST IST KEIN BELEG, DASS DER GRUND SEINER GRÜNHEIT
+    DERSELBE GEBLIEBEN IST").
+(3) G2 — VERÖFFENTLICHEN GEGEN EXPORT. Heute unterscheidet sie allein das Argument
+    `capiProxyUrl` von `buildDocumentFor` (src/components/CodeImporter.tsx): der Export über
+    `buildExportDocument` mit `getCapiProxyUrl()`, das Veröffentlichen mit dem Literal
+    `"/api/e"`. Ein ausdrückliches Merkmal gibt es nicht. Ein neuer Parameter an
+    `buildDocumentFor` braucht weder die Serve-Route noch `publishProject`; das Server-Tor dort
+    ruft `formTargetProblem` und erfasst ein neues Feld über src/lib/form-target.ts.
+(4) G3 — KONFIGURATION. `FormTargetConfig` (src/lib/mappings.ts) trägt `endpoint`,
+    `thanksUrl`, `fieldNames?`; `configEqual` zählt die Felder einzeln auf. `formTargetProblem`
+    ist der Leser an vier Stellen: `publishProject`, `formTargetDocumentProblem` (Riegel),
+    `FormTargetActions` (nur mit den Eingaben), `handleRelay`. Der Datenblock entfernt heute
+    allein `fieldNames`.
+(5) G3 — ZWEI SPEICHERWEGE VERLIEREN EIN NEUES FELD LAUTLOS. In `FormTargetActions`
+    (src/components/ActionPanel.tsx) bauen `withNames`/`handleSubmit` und
+    `handleConfirmNames` die Konfiguration aus `endpoint`, `thanksUrl` und `fieldNames` neu;
+    `handleAssignFormTarget` (src/components/CodeImporter.tsx) ersetzt sie über `upsertMapping`
+    als Ganzes. Ein "Neue Feldnamen bestätigen" stellte einen eingeschalteten Datensparmodus
+    damit still auf Relay zurück.
+(6) G3 — src/lib/mappings.ts trägt ein NUL-Byte (`i/-text`, Vorrat P13-37 der Phase 13); jede
+    Änderung dort braucht die volle Byte-Kontrolle.
+(7) G4 — EDITOR. `allowedRelayEndpoint` (src/lib/relay/hosts.ts) ist im Client importierbar: die
+    Datei trägt kein `server-only` und importiert allein `normalizeFormTargetHost`. Der
+    bisherige Erklärtext `FORM_TARGET_EXPLAIN` ("gehen die Felder direkt an deine Zieladresse")
+    wird mit dem Relay-Standard falsch.
+(8) G5 — RELAY. Die kleinste Ergänzung ist ein Zweig in `relay` (src/lib/relay/relay.ts) hinter
+    der Werte-Prüfung und vor der Host-Liste, mit dem Vokabular-Eintrag "data-saver".
+(9) G6 — DER AUFRUF. Relative Adresse `RELAY_PATH` mit `?f=<Kennung>`, derselbe Rumpf, `mode:
+    "same-origin"`, `credentials: "same-origin"` (Varianten-Cookie), `redirect: "error"`,
+    `referrerPolicy: "no-referrer"`, `keepalive: true`; derselbe Timer. "Zugestellt" allein bei
+    Status 204. Die zwei Abfragen und die Weiterleitung des Servers liegen bei höchstens
+    8 000 ms (Test R-TIME-REL); Upload und Kaltstart sind darin nicht enthalten.
+(10) G7 — Der Track-Pfad (`onReached`, `submittedForms`, `__psMetaFire`) bleibt zeichengleich;
+    nur der Auslöser wechselt von "opaque" auf 204.
+(11) G8 — KOLLISIONEN, IN DER PLANRUNDE GEMELDET: Invariante I1, I3 und J9 der Phase 13 sowie
+    Setzung P13-21 treffen den Relay-Weg in ihrem Wortlaut (Ziel `/api/f` statt der
+    eingetragenen Adresse; "erreicht" bei 204 statt "opaque"). Aufgelöst durch Setzung P13.6-67.
+    Dazu der A/B-Randfall: Bei aktivem Test ohne Cookie und gleicher Adresse in A und B liefert
+    `resolveRelayTarget` (src/lib/relay/resolve-relay.ts) die Konfiguration aus A.
+
+**Setzung P13.6-66 — DIE ENTSCHEIDUNGEN DER PLANRUNDE 13.6-4.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG, übermittelt im Bau-Auftrag der Scheibe 13.6-4 am 2026-09-30.
+ABWEICHUNG, GEMELDET (CC): Der Auftrag datiert die Entscheidungen auf den 2026-09-29; die
+Planrunde lief am 2026-09-30. REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
+- Q1 — (a): Der A/B-Randfall bleibt fail-closed. Trägt bei aktivem Test ohne Cookie A den
+  Datensparmodus und B nicht, verweigert das Relay die Anfrage der Seite B; der Besucher sieht
+  die Meldung.
+- Q2 — `dataSaver?: true` im Datenmodell (kein `false`; beim Ausschalten wird der Schlüssel
+  entfernt). `"relay":true` ist die Marke im ausgelieferten Text. Sie ist ein KONTRAKT:
+  Nachlegen geht, Herunternehmen nicht.
+- Q3 — Der Schalter steht nur in der Eingabe-Ansicht und nur bei einer Adresse der Host-Liste.
+  Ein verborgener gespeicherter Wert bleibt erhalten.
+- Q5 — Der Live-Test misst die Dauer der Anfrage an `/api/f`.
+- Q6 — Die Nachzüge (Betreiber-Dokumentation; der offene Punkt "IM BROWSER-DIREKTEN WEG
+  ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE …") folgen mit dem
+  Abschluss-Vermerk.
+- Q7 — GRENZE: `referrerPolicy` ist nur in Chrome geprüft.
+- Die zwei Speicherwege aus Vermerk P13.6-65, Punkt (5), führen `dataSaver` mit. W-B2 bleibt
+  als Pin OHNE Merkmal stehen und sagt das in seinem Kommentar; W-B2R ist sein Zwilling mit
+  Merkmal.
+
+**Setzung P13.6-67 — NEUFASSUNG FÜR DEN RELAY-WEG: I1, I3, J9 UND P13-21 DER PHASE 13.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG (Q4), übermittelt im Bau-Auftrag der Scheibe 13.6-4 am
+2026-09-30. REVIDIERBAR. Das Archiv der Phase 13 bleibt unverändert; das Phasenende hebt diese
+Neufassung.
+- Für Formular-Ziele im RELAY-WEG gilt statt I1: "Formularinhalte gehen ausschliesslich an die
+  eingetragene Adresse — über das Relay (P13.6-16), nie an /api/e, nie an ein Tracking-Ziel,
+  nie in unsere Datenbank oder Logs".
+- Statt I3 und P13-21: "zur Danke-Seite nur bei Status 204 des Relays; sonst bleibt das
+  Formular, eine Meldung erscheint, ein erneuter Versuch ist möglich".
+- J9 gilt für Seiten ohne Relay-Ziel unverändert, für Seiten mit Relay-Ziel mit der Einsetzung
+  R2 als einziger Änderung.
+- Im Datensparmodus und für Adressen ausserhalb der Host-Liste gelten I1, I3, J9 und P13-21
+  unverändert.
+
+**Owner-Entscheidung P13.6-68 — DIE OBERFLÄCHENTEXTE DER SCHEIBE 13.6-4.**
+PROVENIENZ: OWNER-VORGABE, übermittelt im Bau-Auftrag der Scheibe 13.6-4 am 2026-09-30.
+BINDEND für diese Scheibe; das Redesign darf sie neu fassen.
+- Schalter: "Datensparmodus: direkt vom Browser senden, ohne Pagesmith-Server"
+- Hilfetext: "Aus (empfohlen): Pagesmith leitet die Eingaben weiter und prüft, ob sie ankommen.
+  Scheitert das, sieht der Besucher eine Meldung statt der Danke-Seite. An: Der Browser sendet
+  direkt; ob die Eingaben ankommen, prüft dann niemand."
+- Infozeile bei einer Adresse ausserhalb der Liste: "Diese Adresse beliefert der Browser direkt.
+  Die Zustellprüfung über Pagesmith gibt es derzeit für Make-Webhooks der Region EU2."
+- Anzeige-Zustand: "Zustellung: über Pagesmith, mit Prüfung" · "Zustellung: direkt vom Browser
+  (Datensparmodus)" · "Zustellung: direkt vom Browser"
+- Erklärtext der Kachel (`FORM_TARGET_EXPLAIN`): "Beim Absenden gehen die Eingaben an deine
+  Zieladresse – bei unterstützten Diensten über Pagesmith mit Zustellprüfung, sonst direkt vom
+  Browser – und der Besucher landet auf deiner Danke-Seite."
+
 ## Plattform-Schritte der Phase 13.6
 
 **Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).

@@ -4,6 +4,7 @@ import { PS_ID_RE } from "@/lib/detect";
 import { formTargetProblem, ownFormTargetDomains } from "@/lib/form-target";
 import { errorName } from "@/lib/errors";
 import { allowedRelayEndpoint } from "./hosts";
+import { countRelayHit } from "./rate-limit";
 import { resolveRelayTarget, type RelayLookupFail } from "./resolve-relay";
 
 // DAS FORMULAR-RELAY (Phase 13.6, Scheibe 13.6-3). Eine gehostete Seite schickt die Felder
@@ -23,7 +24,10 @@ import { resolveRelayTarget, type RelayLookupFail } from "./resolve-relay";
 //   Plattform-Log gelangt, ist weder gelesen noch gemessen.
 // - Eine Logzeile je Fehlschlag, nur eigenes Vokabular, dazu hoechstens der Upstream-Status
 //   als Zahl oder der Fehlertyp (errorName) (Setzung P13.6-59, Q4). Nie Rumpf, Adresse, Host,
-//   Kennung oder ein Fremdtext.
+//   Kennung oder ein Fremdtext. Seit der Scheibe 13.6-5 dazu hoechstens eine Zeile
+//   "fail-open", wenn trotz eines ausgefallenen Zaehlers weitergeleitet wird.
+// - Die Ratenbegrenzung je Projekt steht unmittelbar vor der Weiterleitung
+//   (src/lib/relay/rate-limit.ts; Setzung P13.6-75).
 // Die Waechter dafuer stehen in relay.test.ts (R-LOG, R-NOTHROW, R-RESP).
 
 /** Das Zeitlimit der Weiterleitung (Setzung P13.6-59, Q5; SETZUNG, NICHT GEMESSEN). */
@@ -46,6 +50,7 @@ type RelayFailReason =
   | "invalid-target"
   | "data-saver"
   | "host-not-listed"
+  | "rate-limited"
   | "upstream-status"
   | "upstream-error"
   | "unexpected";
@@ -68,6 +73,16 @@ function notDelivered(
   if (detail?.error !== undefined) line += ` ${errorName(detail.error)}`;
   console.warn(line);
   return new Response(null, { status: 502, headers: RESPONSE_HEADERS });
+}
+
+/**
+ * Das Vokabular der Logzeile, wenn trotz eines Ausfalls weitergeleitet wird (Scheibe
+ * 13.6-5; Setzung P13.6-75, E4). Genau ein festes Wort, nie code, message oder details.
+ */
+type RelayFailOpenReason = "rate-counter-failed";
+
+function failOpen(reason: RelayFailOpenReason): void {
+  console.warn(`[relay] fail-open: ${reason}`);
 }
 
 function isFormContentType(value: string | null): boolean {
@@ -179,6 +194,16 @@ async function relay(request: Request): Promise<Response> {
     return notDelivered("data-saver");
   const endpoint = allowedRelayEndpoint((target.config as { endpoint?: unknown }).endpoint);
   if (!endpoint) return notDelivered("host-not-listed");
+
+  // DIE RATENBEGRENZUNG JE PROJEKT (Scheibe 13.6-5; Setzung P13.6-75 der Phase 13.6),
+  // UNMITTELBAR VOR DER WEITERLEITUNG, nach ALLEN Pruefungen (E2): Gezaehlt wird nur, was
+  // weitergeleitet wuerde. Der Kill-Switch bleibt davor ein eigener Zweig (I5).
+  // - Begrenzt: dieselbe 502 wie jedes "nicht zugestellt" (E5; I1); die Logzeile traegt
+  //   keine Projekt-Kennung.
+  // - Zaehler ausgefallen: weiterleiten wie ohne Zaehler, dazu eine eigene Zeile (E4).
+  const rate = await countRelayHit(target.projectId);
+  if (rate === "limited") return notDelivered("rate-limited");
+  if (rate === "failed") failOpen("rate-counter-failed");
 
   return forward(endpoint, body);
 }

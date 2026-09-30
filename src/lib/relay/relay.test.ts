@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 
@@ -22,6 +22,12 @@ import {
   RELAY_MAX_BODY_BYTES,
 } from "./relay";
 import { lookupRelayProject, RELAY_LOOKUP_TIMEOUT_MS } from "./resolve-relay";
+import {
+  RELAY_RATE_LIMIT,
+  RELAY_RATE_RPC,
+  RELAY_RATE_TIMEOUT_MS,
+  RELAY_RATE_WINDOW_SECONDS,
+} from "./rate-limit";
 import { getPublishedHtmlByLabel } from "@/lib/hosting/resolve";
 import { FORM_TARGET_TIMEOUT_MS } from "@/lib/form-target";
 import * as route from "@/app/api/f/route";
@@ -106,12 +112,55 @@ class FakeQuery {
   }
 }
 
+// DER ZAEHLER DER RATENBEGRENZUNG (Scheibe 13.6-5). Er zaehlt WIRKLICH je p_project_id
+// (rpcHits) und kennt die drei Ausfallformen, die supabase-js liefert (docs/plattform-befunde.md,
+// Supabase, Teil (az)): ein zurueckgegebenes error mit status 0, einen Wurf, ein Haengen.
+// "hang" ignoriert den Abbruch absichtlich — so prueft der Test das Zeitlimit selbst, nicht
+// nur die Weitergabe des Signals.
+type RpcFault = "error" | "throw" | "hang" | "bad-data" | null;
+type RpcCall = { fn: string; args: unknown; signal?: AbortSignal };
+let rpcCalls: RpcCall[];
+let rpcFault: RpcFault;
+let rpcHits: Record<string, number>;
+
+class FakeRpc {
+  constructor(private call: RpcCall) {}
+  abortSignal(signal: AbortSignal) {
+    this.call.signal = signal;
+    return this;
+  }
+  private async run(): Promise<QueryResult & { status: number }> {
+    if (rpcFault === "error")
+      return {
+        data: null,
+        error: {
+          message: `FetchError: aborted ${MARK}`,
+          details: `stack ${MARK}`,
+          hint: `Request was aborted ${MARK}`,
+          code: "",
+        },
+        status: 0,
+      };
+    if (rpcFault === "throw") throw new Error(`rpc ${MARK}`);
+    if (rpcFault === "hang") return new Promise(() => {});
+    if (rpcFault === "bad-data") return { data: `x${MARK}`, error: null, status: 200 };
+    const id = String((this.call.args as { p_project_id?: unknown }).p_project_id);
+    rpcHits[id] = (rpcHits[id] ?? 0) + 1;
+    return { data: rpcHits[id], error: null, status: 200 };
+  }
+  then<T>(resolve: (v: QueryResult) => T, reject?: (e: unknown) => T) {
+    return this.run().then(resolve, reject);
+  }
+}
+
 function installAdmin() {
   createAdminClient.mockImplementation(() => ({
     from: (table: Table) => new FakeQuery(table),
-    rpc: () => {
-      writes.push("rpc");
-      return Promise.resolve({ data: null, error: null });
+    rpc: (fn: string, args: unknown) => {
+      writes.push(`rpc ${fn}`);
+      const call: RpcCall = { fn, args };
+      rpcCalls.push(call);
+      return new FakeRpc(call);
     },
   }));
 }
@@ -246,6 +295,9 @@ beforeEach(() => {
   faults = [];
   selects = [];
   writes = [];
+  rpcCalls = [];
+  rpcFault = null;
+  rpcHits = {};
   installAdmin();
   vi.stubEnv("NEXT_PUBLIC_HOSTING_DOMAIN", "publayer.net");
   fetchMock.mockReset();
@@ -333,16 +385,25 @@ describe("R-SRC — die Adresse kommt nur aus published_content", () => {
     expect(fetchedUrls()).toEqual([EP_A]);
   });
 
-  it("R-SRC: die Projektion ist exakt die der Entscheidung; es wird nie geschrieben", async () => {
+  it("R-SRC: die Projektion ist exakt die der Entscheidung; geschrieben wird allein GENAU EIN Zaehler-Aufruf mit erlaubten Argumenten", async () => {
     addProject({ id: "p-a", label: LABEL_A });
-    await handleRelay(req());
+    await handleRelay(req({ query: `&p_project_id=p-evil&endpoint=x`, body: `email=${MARK}` }));
     // Die Erwartung stammt aus der Entscheidung (Setzung P13.6-59, Q1: "dieselbe Projektion"
     // wie resolvePublished), nicht aus dem Code.
     expect(selects).toEqual([
       { table: "domains", cols: "project_id, blocked_at" },
       { table: "projects", cols: "published_content, blocked_at, ab_test_active" },
     ]);
-    expect(writes).toEqual([]);
+    // SEIT DER SCHEIBE 13.6-5 genau EINE Schreibung: der Zaehler (Setzung P13.6-75, E1). Seine
+    // Argumente sind ABSCHLIESSEND die Projekt-Kennung aus der Suche und die Fensterlaenge —
+    // kein Wert aus Query oder Rumpf, keine IP, kein Host (Setzung P13.6-74, I2 und I3).
+    expect(writes).toEqual(["rpc relay_rate_hit"]);
+    expect(rpcCalls).toHaveLength(1);
+    expect(rpcCalls[0].args).toEqual({ p_project_id: "p-a", p_window_seconds: 60 });
+    expect(Object.keys(rpcCalls[0].args as object).sort()).toEqual([
+      "p_project_id",
+      "p_window_seconds",
+    ]);
   });
 });
 
@@ -464,13 +525,15 @@ describe("R-TIME — die Zeitlimits", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("R-TIME-REL: Werte der Entscheidung, und zwei Abfragen plus Weiterleitung bleiben unter dem Limit des Browsers", () => {
+  it("R-TIME-REL: Werte der Entscheidung, und drei Umlaeufe (zwei Abfragen, der Zaehler) plus Weiterleitung bleiben unter dem Limit des Browsers", () => {
     expect(RELAY_LOOKUP_TIMEOUT_MS).toBe(1_500);
+    expect(RELAY_RATE_TIMEOUT_MS).toBe(1_000);
     expect(RELAY_FORWARD_TIMEOUT_MS).toBe(5_000);
-    // Setzung P13.6-22: Das Server-Zeitlimit liegt unter FORM_TARGET_TIMEOUT_MS.
-    expect(2 * RELAY_LOOKUP_TIMEOUT_MS + RELAY_FORWARD_TIMEOUT_MS).toBeLessThan(
-      FORM_TARGET_TIMEOUT_MS
-    );
+    // Setzung P13.6-22: Das Server-Zeitlimit liegt unter FORM_TARGET_TIMEOUT_MS. Seit der
+    // Scheibe 13.6-5 mit dem Zaehler als drittem Umlauf (Setzung P13.6-75, E6).
+    expect(
+      2 * RELAY_LOOKUP_TIMEOUT_MS + RELAY_RATE_TIMEOUT_MS + RELAY_FORWARD_TIMEOUT_MS
+    ).toBeLessThan(FORM_TARGET_TIMEOUT_MS);
   });
 });
 
@@ -731,6 +794,188 @@ describe("R-TENANT — die Kennung eines fremden Projekts wird ueber den eigenen
 });
 
 // ---------------------------------------------------------------------------
+// R-RL — DIE RATENBEGRENZUNG JE PROJEKT (Phase 13.6, Scheibe 13.6-5; Setzung P13.6-75 der
+// Phase 13.6, E1 bis E6). Die Erwartungen stammen aus den Entscheidungen: 120 je 60 s (E3),
+// gezaehlt unmittelbar vor der Weiterleitung (E2), fail-open (E4), dieselbe 502 ohne
+// Projekt-Kennung im Log (E5), 1 000 ms (E6).
+// ---------------------------------------------------------------------------
+
+describe("R-RL — die Ratenbegrenzung je Projekt", () => {
+  // Die Projekt-Kennung traegt den Marker: Steht sie in einer Logzeile, wird R-RL-LIMIT rot.
+  const PID = `proj-${MARK}`;
+  const MARK_BODY = `email=${MARK}%40x.test&name=${MARK}`;
+  const FAIL_OPEN_LINE = "[relay] fail-open: rate-counter-failed";
+
+  it("R-RL-CONST: die Werte der Entscheidung", () => {
+    expect(RELAY_RATE_LIMIT).toBe(120);
+    expect(RELAY_RATE_WINDOW_SECONDS).toBe(60);
+    expect(RELAY_RATE_TIMEOUT_MS).toBe(1_000);
+    expect(RELAY_RATE_RPC).toBe("relay_rate_hit");
+  });
+
+  it("R-RL-OK: unter der Grenze -> 204; genau ein Zaehler-Aufruf, mit Abbruch-Signal, VOR dem fetch", async () => {
+    addProject({ id: PID, label: LABEL_A });
+    let rpcCallsAtFetch = -1;
+    fetchMock.mockImplementation(async () => {
+      rpcCallsAtFetch = rpcCalls.length;
+      return new Response("Accepted", { status: 200 });
+    });
+    const res = await handleRelay(req());
+    expect(res.status).toBe(204);
+    expect(rpcCalls).toHaveLength(1);
+    expect(rpcCalls[0].fn).toBe("relay_rate_hit");
+    expect(rpcCalls[0].args).toEqual({ p_project_id: PID, p_window_seconds: 60 });
+    expect(rpcCalls[0].signal).toBeInstanceOf(AbortSignal);
+    expect(rpcCallsAtFetch).toBe(1);
+    expect(fetchedUrls()).toEqual([EP_A]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("R-RL-EDGE (Positivkontrolle zu R-RL-LIMIT): der 120. Aufruf im Fenster wird zugestellt", async () => {
+    addProject({ id: PID, label: LABEL_A });
+    rpcHits[PID] = 119;
+    const res = await handleRelay(req());
+    expect(res.status).toBe(204);
+    expect(fetchedUrls()).toEqual([EP_A]);
+  });
+
+  it("R-RL-LIMIT: der 121. -> dieselbe 502 ohne Rumpf, KEIN fetch, genau 'rate-limited', keine Projekt-Kennung im Log", async () => {
+    addProject({ id: PID, label: LABEL_A });
+    rpcHits[PID] = 120;
+    const res = await handleRelay(req({ body: MARK_BODY }));
+    await expectNotDelivered(res);
+    expect([...res.headers]).toEqual([["cache-control", "no-store"]]);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(logLines()).toEqual(["[relay] not delivered: rate-limited"]);
+    expect(logText()).not.toContain(MARK);
+  });
+
+  it("R-RL-TENANT: der Zaehler gehoert dem Projekt des Hosts — A begrenzt, B zugestellt", async () => {
+    addProject({ id: "p-a", label: LABEL_A, mappings: [ft(ID, EP_A)] });
+    addProject({ id: "p-b", label: LABEL_B, mappings: [ft(ID, EP_B)] });
+    rpcHits["p-a"] = 120;
+    await expectNotDelivered(await handleRelay(req({ host: HOST_A })));
+    expect((await handleRelay(req({ host: HOST_B }))).status).toBe(204);
+    expect(rpcCalls.map((c) => (c.args as { p_project_id: string }).p_project_id)).toEqual([
+      "p-a",
+      "p-b",
+    ]);
+    expect(fetchedUrls()).toEqual([EP_B]);
+  });
+
+  // E2: Gezaehlt wird nur, was weitergeleitet wuerde. Jede Pruefung davor weist ab, OHNE den
+  // Zaehler zu beruehren — sonst verbrauchte eine falsche Anfrage das Kontingent des Projekts.
+  const refused: { name: string; setup: () => Request }[] = [
+    { name: "falsche Kennung (Format)", setup: () => req({ id: "bad" }) },
+    { name: "falscher Content-Type", setup: () => req({ contentType: "text/plain" }) },
+    {
+      name: "unbekannte Kennung",
+      setup: () => {
+        addProject({ id: "p-a", label: LABEL_A });
+        return req({ id: "ps-zzz999" });
+      },
+    },
+    {
+      name: "gesperrt (Kill-Switch)",
+      setup: () => {
+        addProject({ id: "p-a", label: LABEL_A, blockedProject: "2026-09-30" });
+        return req();
+      },
+    },
+    {
+      name: "ungueltiges Ziel",
+      setup: () => {
+        addProject({
+          id: "p-a",
+          label: LABEL_A,
+          mappings: [{ elementId: ID, type: "formTarget", config: { endpoint: EP_A } }],
+        });
+        return req();
+      },
+    },
+    {
+      name: "Datensparmodus",
+      setup: () => {
+        const m = ft(ID, EP_A);
+        addProject({ id: "p-a", label: LABEL_A, mappings: [{ ...m, config: { ...m.config, dataSaver: true } }] });
+        return req();
+      },
+    },
+    {
+      name: "Host nicht auf der Liste",
+      setup: () => {
+        addProject({ id: "p-a", label: LABEL_A, mappings: [ft(ID, "https://hook.eu1.make.com/x")] });
+        return req();
+      },
+    },
+  ];
+
+  it.each(refused.map((r) => [r.name, r] as const))(
+    "R-RL-ORDER: %s -> 502, der Zaehler wird NICHT aufgerufen",
+    async (_name, r) => {
+      await expectNotDelivered(await handleRelay(r.setup()));
+      expect(rpcCalls).toEqual([]);
+      expect(fetchMock).not.toHaveBeenCalled();
+    }
+  );
+
+  // E4: FAIL-OPEN, JE FORM. Jeder Fall: 204, die Weiterleitung findet statt, GENAU die eine
+  // Zeile im geschlossenen Vokabular — und kein Marker aus Rumpf, Projekt-Kennung oder
+  // Fehlertext darin (Setzung P13.6-50, R3).
+  it.each([
+    ["zurueckgegebener Fehler (status 0)", "error"],
+    ["Wurf", "throw"],
+    ["Rueckgabe ohne ganze Zahl", "bad-data"],
+  ] as const)("R-RL-FAIL: %s -> 204, weitergeleitet, genau die fail-open-Zeile", async (_n, fault) => {
+    addProject({ id: PID, label: LABEL_A });
+    rpcFault = fault;
+    const res = await handleRelay(req({ body: MARK_BODY }));
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe("");
+    expect(fetchedUrls()).toEqual([EP_A]);
+    expect(new TextDecoder().decode((fetchMock.mock.calls[0][1] as RequestInit).body as Uint8Array)).toBe(
+      MARK_BODY
+    );
+    expect(logLines()).toEqual([FAIL_OPEN_LINE]);
+    expect(logText()).not.toContain(MARK);
+  });
+
+  it("R-RL-FAIL: Haengen ueber das Zeitlimit -> nach RELAY_RATE_TIMEOUT_MS, nicht vorher: Abbruch, 204, weitergeleitet, genau die fail-open-Zeile", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    addProject({ id: PID, label: LABEL_A });
+    rpcFault = "hang";
+    let settled = false;
+    const p = handleRelay(req({ body: MARK_BODY })).then((r) => {
+      settled = true;
+      return r;
+    });
+    await vi.advanceTimersByTimeAsync(RELAY_RATE_TIMEOUT_MS - 1);
+    expect(rpcCalls).toHaveLength(1);
+    expect(settled).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(rpcCalls[0].signal?.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    const res = await p;
+    expect(rpcCalls[0].signal?.aborted).toBe(true);
+    expect(res.status).toBe(204);
+    expect(fetchedUrls()).toEqual([EP_A]);
+    expect(logLines()).toEqual([FAIL_OPEN_LINE]);
+    expect(logText()).not.toContain(MARK);
+  });
+
+  it("R-RL-FAIL (Grenze): fail-open und danach eine gescheiterte Weiterleitung -> 502 mit zwei Zeilen", async () => {
+    // Die fail-open-Zeile ist keine Aussage ueber die Zustellung; scheitert die Weiterleitung,
+    // folgt ihre eigene Zeile. Dokumentiert, damit "eine Zeile je Anfrage" nicht fuer mehr
+    // gelesen wird, als gebaut ist.
+    addProject({ id: PID, label: LABEL_A });
+    rpcFault = "error";
+    fetchMock.mockImplementation(async () => new Response("x", { status: 500 }));
+    await expectNotDelivered(await handleRelay(req()));
+    expect(logLines()).toEqual([FAIL_OPEN_LINE, "[relay] not delivered: upstream-status 500"]);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // R-LOG, R-NOTHROW — Logfreiheit und kein Wurf (Setzung P13.6-50, R3)
 // ---------------------------------------------------------------------------
 
@@ -983,15 +1228,27 @@ describe("R-ROUTE — nur POST", () => {
 
 describe("R-SOURCE — das Relay importiert nichts aus dem Ingest oder der Analytik", () => {
   // Ein Waechter ueber Quelltext: Er sieht Zeichen, nicht Bedeutung. Er prueft nur
-  // Import-Zeilen der drei Relay-Dateien und irrt in die strenge Richtung (jede Zeile, die
-  // mit "import" beginnt und einen solchen Pfad nennt, macht ihn rot).
+  // Import-Zeilen und irrt in die strenge Richtung (jede Zeile, die mit "import" beginnt und
+  // einen solchen Pfad nennt, macht ihn rot).
+  // SEIT DER SCHEIBE 13.6-5 UEBER DAS VERZEICHNIS: jede Nicht-Test-Datei in src/lib/relay/,
+  // nicht eine Liste — eine neue Datei (rate-limit.ts) ist damit gedeckt, ohne dass jemand
+  // an diesen Test denkt.
   const FORBIDDEN = /^import[^\n]*["']@\/lib\/(capi|analytics)\//m;
+  const RELAY_FILES = readdirSync(__dirname)
+    .filter((f) => f.endsWith(".ts") && !f.endsWith(".test.ts"))
+    .sort();
 
   it("R-SOURCE Positivkontrolle: das Muster trifft eine solche Zeile", () => {
     expect(FORBIDDEN.test('import { handleIngest } from "@/lib/capi/ingest";')).toBe(true);
   });
 
-  it.each(["relay.ts", "resolve-relay.ts", "hosts.ts", "path.ts"])(
+  it("R-SOURCE Positivkontrolle: die Verzeichnisliste traegt die bekannten Dateien", () => {
+    expect(RELAY_FILES).toEqual(
+      expect.arrayContaining(["hosts.ts", "path.ts", "rate-limit.ts", "relay.ts", "resolve-relay.ts"])
+    );
+  });
+
+  it.each(RELAY_FILES)(
     "R-SOURCE: %s",
     (file) => {
       const text = readFileSync(path.join(__dirname, file), "utf8");

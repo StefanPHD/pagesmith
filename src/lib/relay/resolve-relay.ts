@@ -51,14 +51,26 @@ type PublishedForRelay = {
   variantB?: { html?: unknown; mappings?: unknown } | null;
 } | null;
 
-/** Das Projekt hinter einem Host. abTestActive: derselbe Split wie in der Auslieferung. */
+/**
+ * Das Projekt hinter einem Host. abTestActive: derselbe Split wie in der Auslieferung.
+ * projectId (Scheibe 13.6-5, additiv): die Kennung aus der domains-Zeile, ueber die das
+ * Projekt gelesen wurde — der Schluessel des Zaehlers (src/lib/relay/rate-limit.ts).
+ */
 export type RelayProject =
-  | { kind: "ok"; published: NonNullable<PublishedForRelay>; abTestActive: boolean }
+  | {
+      kind: "ok";
+      projectId: string;
+      published: NonNullable<PublishedForRelay>;
+      abTestActive: boolean;
+    }
   | { kind: "fail"; reason: RelayLookupFail };
 
-/** Das Formular-Ziel zur Kennung. config ist UNGEPRUEFT; der Aufrufer prueft die Werte. */
+/**
+ * Das Formular-Ziel zur Kennung. config ist UNGEPRUEFT; der Aufrufer prueft die Werte.
+ * projectId: s. RelayProject.
+ */
 export type RelayTarget =
-  | { kind: "ok"; config: unknown }
+  | { kind: "ok"; projectId: string; config: unknown }
   | { kind: "fail"; reason: RelayLookupFail };
 
 // Eine Abfrage mit Zeitlimit (Muster persistEvent, src/lib/analytics/persist.ts). Ein
@@ -138,7 +150,7 @@ export async function lookupRelayProject(host: string): Promise<RelayProject> {
     project.ab_test_active === true &&
     deliverableVariantB(published as { html?: string; variantB?: { html?: string } | null }) !==
       null;
-  return { kind: "ok", published, abTestActive };
+  return { kind: "ok", projectId: domain.project_id, published, abTestActive };
 }
 
 type Found =
@@ -165,10 +177,10 @@ function findFormTarget(set: unknown, formId: string): Found {
   return { kind: "one", config: hits[0].config };
 }
 
-function asTarget(found: Found): RelayTarget {
+function asTarget(found: Found, projectId: string): RelayTarget {
   if (found.kind === "fail") return found;
   if (found.kind === "none") return { kind: "fail", reason: "unknown-id" };
-  return { kind: "ok", config: found.config };
+  return { kind: "ok", projectId, config: found.config };
 }
 
 function endpointOf(config: unknown): string | null {
@@ -196,15 +208,15 @@ export async function resolveRelayTarget(
 ): Promise<RelayTarget> {
   const project = await lookupRelayProject(host);
   if (project.kind === "fail") return project;
-  const { published } = project;
+  const { published, projectId } = project;
   const setA = published.mappings;
   const setB = published.variantB?.mappings;
 
-  if (!project.abTestActive) return asTarget(findFormTarget(setA, formId));
+  if (!project.abTestActive) return asTarget(findFormTarget(setA, formId), projectId);
 
   const variant = parseVariantCookie(cookieHeader);
-  if (variant === "a") return asTarget(findFormTarget(setA, formId));
-  if (variant === "b") return asTarget(findFormTarget(setB, formId));
+  if (variant === "a") return asTarget(findFormTarget(setA, formId), projectId);
+  if (variant === "b") return asTarget(findFormTarget(setB, formId), projectId);
 
   const inA = findFormTarget(setA, formId);
   const inB = findFormTarget(setB, formId);
@@ -214,9 +226,9 @@ export async function resolveRelayTarget(
     const a = endpointOf(inA.config);
     const b = endpointOf(inB.config);
     if (a === null || a !== b) return { kind: "fail", reason: "variant-conflict" };
-    return { kind: "ok", config: inA.config };
+    return { kind: "ok", projectId, config: inA.config };
   }
-  if (inA.kind === "one") return { kind: "ok", config: inA.config };
-  if (inB.kind === "one") return { kind: "ok", config: inB.config };
+  if (inA.kind === "one") return { kind: "ok", projectId, config: inA.config };
+  if (inB.kind === "one") return { kind: "ok", projectId, config: inB.config };
   return { kind: "fail", reason: "unknown-id" };
 }

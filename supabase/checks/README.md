@@ -113,3 +113,4 @@ bevor er sie hatte.
 | `project-secrets-target-check.sql` | Welche Zielwerte lässt `project_secrets` heute zu (Constraint im Wortlaut), und ist die zugehörige Migration protokolliert? |
 | `upsert-arbiter-probe.sql` | Genügt PostgREST für ein `upsert` ein UNIQUE-Constraint, oder verlangt es den Primärschlüssel — und kollidieren zwei Zeilen mit `NULL` in einer Konflikt-Spalte? |
 | `bedingte-schreibung-probe.sql` | Was meldet PostgREST bei einer bedingten Schreibung zurück — bei null Treffern, mit `count`, und bei Singular-Anforderung? |
+| `relay-rate-counters.sql` | Steht der Zähler der Relay-Ratenbegrenzung (0030) wie entschieden da — drei Spalten, RLS ohne Policy, Rechte je Rolle, EXECUTE nur für `service_role`, `search_path` leer? |

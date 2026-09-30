@@ -2083,3 +2083,21 @@ ABGLEICH FORMULARFELDER ÜBER UNSEREN PIXEL AN META SENDET, IST OFFEN** (2026-09
   veröffentlichte Seiten und Exporte.
 - TRIGGER: der Zuschnitt der Fan-Out-Scheibe (Roadmap-Zeile 13.6, Block "ANPASSUNGEN AN DEN
   FAN-OUT-ZIELEN"). KEINE HANDLUNG JETZT.
+
+**Vorrat P13.6-69 — "ZIEL ÜBERNEHMEN" IM FORMULAR-ZIEL-PANEL SERIALISIERT DEN CODE DES PROJEKTS
+NEU; STEHT ER NICHT IN NORMALFORM, WIRD DAS PROJEKT DIRTY, AUCH OHNE INHALTLICHE ÄNDERUNG**
+(CC, 2026-09-30). BESTAND VOR DER SCHEIBE 13.6-4; gefunden bei der Mutation M6 jener Scheibe.
+- BEFUND, GEMESSEN IM TEST (Sonde der Bau-Runde 13.6-4, nicht im Repo): Mit einem Code, der ein
+  Leerzeichen vor ">" trägt (`action="#unten" >`), zeigt der Editor nach "Ziel übernehmen" ohne
+  Wechsel eines Werts "Ungespeicherte Änderungen"; der danach gespeicherte Code steht ohne das
+  Leerzeichen.
+- MECHANISMUS, ABGELEITET, NICHT GELESEN: `dirty` (src/components/CodeImporter.tsx) vergleicht
+  `code !== savedCode`; `handleAssignFormTarget` übernimmt das Ergebnis von
+  `anchorMappingTarget` per `setCode`, wenn es vom Code abweicht. Ob die Neu-Serialisierung dort
+  entsteht, ist nicht gelesen; ebenso nicht geprüft, ob andere Übernehmen-Wege (Weiterleitung,
+  Track, Text) denselben Weg nehmen.
+- FOLGE: nur eine falsche Anzeige "ungespeichert"; kein Datenverlust bekannt.
+- WIRKUNG AUF DIE TESTS: Der Test CI-S1 (src/components/CodeImporter.test.tsx) war dadurch in
+  seiner Dirty-Hälfte hohl. An der Wurzel behoben im Bau-Commit `3b631a2`: CI-S1 nutzt den Code in
+  der Serialisierungs-Normalform und verankert zuerst "Übernehmen ohne Wechsel ist nicht dirty".
+- KEINE HANDLUNG JETZT. KEIN TRIGGER GESETZT.

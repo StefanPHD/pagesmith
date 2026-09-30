@@ -36,6 +36,7 @@ beantworten.
 - Zuschnitt Scheibe 13.6-2
 - Zuschnitt Scheibe 13.6-3
 - Zuschnitt Scheibe 13.6-4
+- Zuschnitt Scheibe 13.6-5
 - Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
@@ -1847,6 +1848,108 @@ PROVENIENZ: ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde der Scheibe 1
   AN EINER GESPEICHERTEN DATEI" — ihre Herkunfts-Auflage (Mappings aus derselben Herkunft) ist
   die nächste Nachbarin; ebenso "EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT …", die den
   frühesten Zeitpunkt setzt, während dieser Kandidat den spätesten setzt (Abgrenzung CC).
+
+## Zuschnitt Scheibe 13.6-5
+
+**GEGENSTAND:** "Ratenbegrenzung am Relay" — die fünfte Bau-Scheibe der Phase 13.6 und die
+dritte der Stufe 1 (Setzung P13.6-56).
+- Das Relay (`POST /api/f`, `handleRelay`, src/lib/relay/relay.ts) bekommt eine Begrenzung JE
+  PROJEKT (Setzung P13.6-23).
+- ZWECK: Missbrauchsabwehr, nicht Durchsatzsteuerung. Die Schwelle wird auf Missbrauch
+  kalibriert, nicht auf Erfolg — sonst fallen echte Leads weg (dieselbe Kalibrierung wie das
+  Tier-1-Item "PER-TENANT-RATE-LIMITING" in CLAUDE.md, "## Security Manifest & Launch
+  Blocker").
+- RUNDENFORM wie bei 13.6-1 bis 13.6-4: Planrunde → Bau → Live-Test → Abschluss-Vermerk.
+Zugeschnitten am 2026-09-30; der Plan folgt in einer eigenen Runde.
+
+### Bindend für die Scheibe 13.6-5
+
+- Setzung P13.6-23 (Richtung "je Projekt, nicht je IP"; ihre GRENZE: wie gezählt wird —
+  Datenbank, Plattform, anderes — ist nicht entschieden, eine Plattform-Firewall nicht gelesen).
+- Setzung P13.6-56 (Schnitt der Stufe 1) und die Reihenfolge an Setzung P13.6-14 (13.6-5 →
+  Scheibe "Zurück-Cache" → Zapier, alle drei vor dem ersten fremden Nutzer).
+- Owner-Entscheidung P13.6-18 (das Relay für fremde Nutzer erst mit Kunden-AVV) bleibt
+  unberührt.
+
+### Architekten-Setzung zur Scheibe 13.6-5
+
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-09-30, übermittelt im Auftrag der Zuschnitt-Runde der
+Scheibe 13.6-5. REVIDIERBAR; ein Owner-Widerspruch hebt sie auf. Die Fundstellen hat CC am
+Bestand geprüft (2026-09-30, HEAD `95f49bd`); wo "(CC)" steht, stammt die Angabe von CC.
+
+**Setzung P13.6-74 — DIE GESCHÜTZTEN INVARIANTEN I1 BIS I8 DER SCHEIBE 13.6-5.** Der Plan
+bestätigt jede einzeln oder meldet einen Konflikt.
+- I1 — `/api/f` antwortet auf POST ausschliesslich mit den zwei Antworten des Bestands: 204
+  "zugestellt", 502 "nicht zugestellt", je ohne Rumpf. Kein dritter Status, kein Rumpf, keine
+  für "begrenzt" unterscheidbare Antwort. FUNDSTELLEN: Setzung P13.6-21 (dem Besucher genau zwei
+  ZUSTÄNDE) und Setzung P13.6-59, Q3 (die zwei STATUSWERTE; 405 für andere Methoden
+  hinnehmbar); `delivered` und `notDelivered` in src/lib/relay/relay.ts. (CC: P13.6-21 trägt die
+  Zustände, die Zahlen stehen erst in Q3; die 405 für andere Methoden ist Bestand und keine
+  Antwort des POST-Wegs.)
+- I2 — Formularinhalte sind Transit: nie Datenbank, nie Log, nie `/api/e`, nie Tracking-Ziel —
+  auch nicht im Zähler, auch nicht teilweise. FUNDSTELLEN: Owner-Entscheidung P13.6-16;
+  Setzung P13.6-50 (R3).
+- I3 — Keine IP, kein User-Agent, keine fremde Identität als Zählgrundlage in der Datenbank.
+  FUNDSTELLE: docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE",
+  Festlegung vom 2026-08-15 ("KEINE fremden Nutzer-Identitäten in der eigenen Datenbank … auch
+  nicht als Pseudonym und auch nicht als Hash"), dazu die Präzisierung vom 2026-08-19 (die IP
+  wird "NIEMALS in der Datenbank gespeichert, persistiert oder in ein Log geschrieben");
+  Setzung P13.6-23 zitiert die Festlegung.
+- I4 — Das Projekt kommt allein aus dem Host (Setzung P13.6-57), die Adresse allein aus
+  `published_content` (Setzung P13.6-20); die Host-Liste (`RELAY_HOSTS`,
+  src/lib/relay/hosts.ts; Owner-Entscheidung P13.6-55) bleibt unverändert.
+- I5 — Der Kill-Switch bleibt eigener, fail-closed Zweig vor der Weiterleitung; die Begrenzung
+  ersetzt ihn nicht und hängt nicht von ihm ab. FUNDSTELLEN: Dauerregel "KILL-SWITCH ALS
+  EXPLIZITER, FAIL-CLOSED ZWEIG"; Setzung P13.6-23; die zwei Sperr-Zweige in
+  `lookupRelayProject` (src/lib/relay/resolve-relay.ts).
+- I6 — Setzungen P13.6-48 bis P13.6-51 (R1 bis R4) bleiben unverändert.
+- I7 — Der ausgelieferte Text der Seiten ändert sich nicht. Braucht der Plan das: STOPP.
+  BEZUG (CC): Dauerregeln "WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE …"
+  und "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY".
+- I8 — Eine neue Tabelle bekommt RLS ausdrücklich. FUNDSTELLE: Dauerregel "GRANTS SCHÜTZEN
+  NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT".
+
+### Offene Fragen der Scheibe 13.6-5
+
+ALLE OFFEN; keine ist vorweg beantwortet. Die Planrunde legt je Frage Befund und Kandidaten vor,
+die Wahl trifft der Architekt bzw. der Owner.
+- B1 — Die Ist-Kette von `/api/f` vom Eingang bis zur Antwort, und wo die Begrenzung in diese
+  Kette gehört.
+- B2 — Die Zählgrundlage ohne angemeldeten Nutzer: was vom einzigen bestehenden Muster
+  (`countRecentAttempts`, src/lib/domains/audit.ts, zählt `audit_logs` je `user_id`) übertragbar
+  ist, und was ein Zähler tragen darf, ohne I2 oder I3 zu brechen.
+- B3 — Die Mechanismus-Kandidaten, je mit Datenbank-Umläufen auf dem Anfragepfad, Atomarität und
+  Aufräumbedarf.
+- B4 — Eine Begrenzung auf Plattform-Ebene vor unserer Funktion, auf unserem Tarif.
+- B5 — Was eine Begrenzung in der Funktion schützt und was nicht: Kontingent des Betreibers beim
+  Empfänger · Dauer unserer Funktion · Zahl unserer Funktionsaufrufe · die Tarifgrenzen, die für
+  alle Kundenseiten zugleich gelten.
+- B6 — Der Aussperr-Hebel: Wer den Zähler eines Projekts ausschöpft, sperrt dessen echte Leads.
+- B7 — Was zählt: jede Anfrage an ein Projekt · nur mit gültiger Kennung · nur tatsächlich
+  weitergeleitete.
+- B8 — Schwelle und Fenster, und wo der Wert liegt.
+- B9 — Der Fehlerfall des Zählers: fail-open oder fail-closed.
+- B10 — Die Antwort bei Begrenzung (I1) und wie "begrenzt" im Betrieb von "nicht zugestellt" zu
+  unterscheiden ist.
+- B11 — Falls eine Migration nötig ist: Grants, `search_path`, INVOKER oder DEFINER, RLS, Index,
+  Aufräumen alter Zeilen, additiv oder nicht.
+- B12 — Die Abgrenzung zu Phase 14: was für `/api/e` wiederverwendbar wäre, ohne dass diese
+  Scheibe `/api/e` anfasst; und ob die Scheibe einen offenen Punkt auslöst, dessen Trigger die
+  nächste Arbeit an einer bestimmten Datei ist.
+
+### Ausser Scope der Scheibe 13.6-5
+
+- `/api/e` und `/api/capi` — Phase 14 (Tier-1-Item "PER-TENANT-RATE-LIMITING").
+- die Scheibe "Zurück-Cache" (Arbeit P13.6-72).
+- Zapier und jede Änderung an der Host-Liste (Owner-Entscheidung P13.6-55, Arbeit P13.6-27).
+- eine Anzeige des Relay-Status für den Betreiber.
+- jede Änderung am ausgelieferten Text (I7).
+
+### Grenzen der Scheibe 13.6-5
+
+- Bis zum Bau dieser Scheibe bleibt der Endpunkt öffentlich und ohne Ratenbegrenzung (Grenzen
+  der Scheiben 13.6-3 und 13.6-4). Heute gibt es keinen fremden Nutzer (CLAUDE.md, "## Modus";
+  Owner-Entscheidung P13.6-18).
 
 ## Plattform-Schritte der Phase 13.6
 

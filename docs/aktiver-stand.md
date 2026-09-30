@@ -1863,6 +1863,10 @@ dritte der Stufe 1 (Setzung P13.6-56).
   Blocker").
 - RUNDENFORM wie bei 13.6-1 bis 13.6-4: Planrunde → Bau → Live-Test → Abschluss-Vermerk.
 Zugeschnitten am 2026-09-30; der Plan folgt in einer eigenen Runde.
+- ANBIETER-LESUNG DER SCHEIBE, 2026-09-30 (CC): docs/plattform-befunde.md, Supabase-Abschnitt,
+  Teile (av) bis (bc) (Funktionsrechte, `search_path`, `rpc()` des JS-Clients, `INSERT … ON
+  CONFLICT`, `date_bin`, `now()`), und Vercel-Abschnitt, Teile (v) bis (aa) (Firewall: Rate
+  Limiting, Attack Mode, Preise). Doku-Aussagen, keine Messung.
 
 ### Bindend für die Scheibe 13.6-5
 
@@ -2015,6 +2019,7 @@ Formulierung CC; wo "(CC)" steht, ist die Angabe von CC am Bestand bzw. am Code 
   sie nur für Verkehr über das Relay.
   GRENZE: Die Sperre trifft ein Projekt und dauert höchstens bis zum Ende des Fensters.
 - E9 — PLATTFORM-FIREWALL: in Teil B dieser Runde gelesen, NICHT Teil des Baus 13.6-5.
+  GELESEN 2026-09-30: docs/plattform-befunde.md, Vercel, Teile (v) bis (aa).
 - E10 — MANIFEST: Das Tier-1-Item "PER-TENANT-RATE-LIMITING" (CLAUDE.md, "## Security Manifest &
   Launch Blocker") bekommt `/api/f` beim Abschluss-Vermerk der Scheibe ergänzt — beide Fassungen
   im selben Commit (CLAUDE.md und docs/claude-history/security-manifest-full.md).
@@ -2024,6 +2029,8 @@ Formulierung CC; wo "(CC)" steht, ist die Angabe von CC am Bestand bzw. am Code 
 - OFFEN, ENTSCHEIDET DER OWNER NACH TEIL B: der `search_path` der neuen RPC — die Projektregel
   (docs/db-regeln.md, "DB-FUNKTIONEN + SEARCH_PATH") gegen die Empfehlung des Anbieters (offener
   Punkt "DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB").
+  DIE LESUNG DAZU (2026-09-30): docs/plattform-befunde.md, Supabase, Teil (aw). Die Frage ist
+  weiter offen.
 - NICHT UNTER E1 BIS E12, GEMELDET (CC): B11 fragt zusätzlich nach INVOKER oder DEFINER, nach
   einem Index und nach dem Aufräumen alter Zeilen; B12 nach der Abgrenzung zu Phase 14 und nach
   einem offenen Punkt mit Datei-Trigger. Keine der zwölf Entscheidungen nennt sie.

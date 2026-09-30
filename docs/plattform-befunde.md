@@ -86,6 +86,9 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
   · Vermerk 2026-09-11 (Abkündigung eines Management-API-Endpunkts, Suche im Repo,
     abgelesene Versionsstände) — die Teile (as) und (at)
   · Vermerk 2026-09-29 (Region des Projekts, Owner-Angabe) — der Teil (au)
+  · Abschnitts-Lesung 2026-09-30 der Supabase-, PostgREST- und PostgreSQL-Dokumentation,
+    LAUF 4 (Funktionsrechte, search_path, rpc() des JS-Clients, INSERT … ON CONFLICT,
+    date_bin) — die Teile (av) bis (bc)
 · Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
   · Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-
     Grenzen, Absicherung) — die Teile (a) bis (g)
@@ -96,6 +99,8 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
     bis (t)
   · Messung 2026-09-29 der Funktionsregion vor und nach der Umstellung auf Frankfurt — der
     Teil (u)
+  · Abschnitts-Lesung 2026-09-30 der Vercel-Dokumentation, LAUF 3 (Firewall: Rate Limiting,
+    Attack Mode, Preise) — die Teile (v) bis (aa)
 
 ## DIE HERKUNFT DIESER DATEI
 
@@ -190,19 +195,19 @@ keine Reichweite.
 |---|---|---|---|
 | 1 | /docs/guides/platform/backups | Database Backups | VOLLTEXT |
 | 2 | /docs/guides/database/postgres/row-level-security | Row Level Security | gezielt; Überschriftenliste vollständig — **am 2026-09-04 ERNEUT gezielt gelesen, auf einer ANDEREN Achse (Grants, Schreib-Policies), s. Teil (ap)** |
-| 3 | /docs/guides/database/functions | Database Functions | gezielt + Abschnitt "Suggestions" VOLLTEXT |
-| 4 | /docs/guides/database/database-advisors | Performance and Security Advisors | gezielt; Lint-Liste vollständig (30 Lints) |
-| 5 | /docs/reference/javascript/select | JavaScript: select | gezielt; Beispiel-Überschriften vollständig — **am 2026-09-04 ERNEUT gezielt gelesen, über die Anker /update und /single; es ist DIESELBE Einzelseite, s. Teil (ah)** |
+| 3 | /docs/guides/database/functions | Database Functions | gezielt + Abschnitt "Suggestions" VOLLTEXT — **am 2026-09-30 im VOLLTEXT gelesen, s. Teil (av)** |
+| 4 | /docs/guides/database/database-advisors | Performance and Security Advisors | gezielt; Lint-Liste vollständig (30 Lints) — **leitet am 2026-09-30 auf /docs/guides/observability/advisors weiter; Lints 0011 und 0028 gelesen, s. Teil (av)** |
+| 5 | /docs/reference/javascript/select | JavaScript: select | gezielt; Beispiel-Überschriften vollständig — **am 2026-09-04 ERNEUT gezielt gelesen, über die Anker /update und /single; es ist DIESELBE Einzelseite, s. Teil (ah)** — **am 2026-09-30 ERNEUT gezielt (rpc, abortSignal, retry, throwOnError, Initializing), s. Teil (av)** |
 | 6 | /docs/guides/database/vault | Vault | **VOLLTEXT** |
 | 7 | /docs/guides/database/extensions/pgsodium | pgsodium (pending deprecation): Encryption Features | **VOLLTEXT** |
 | 8 | /docs/guides/api/using-custom-schemas | Using Custom Schemas | **VOLLTEXT** |
 | 9 | /docs/guides/database/secure-data | Securing your data | **VOLLTEXT** |
-| 10 | /docs/guides/api/securing-your-api | Securing your API | **VOLLTEXT** |
+| 10 | /docs/guides/api/securing-your-api | Securing your API | **VOLLTEXT** — **am 2026-09-30 ERNEUT im VOLLTEXT gelesen, s. Teil (av)** |
 | 11 | /docs/guides/troubleshooting/pgrst106-…exposed-schema | PGRST106-Fehler | **VOLLTEXT** |
 | 12 | /docs/guides/platform/migrating-within-supabase/backup-restore | Backup and Restore using the CLI | VOLLTEXT + verdeckter Reiter, s. (u) |
 | 13 | /docs/guides/functions/schedule-functions | Scheduling Edge Functions | nur der Vault-Umkreis. NICHT vollständig — **am 2026-09-02 VOLLSTÄNDIG nachgelesen, s. Teil (ab)** |
 | 14 | /docs/guides/database/extensions | Postgres Extensions Overview | gefilterte Zeilen + vollständige Navigationsliste. NICHT vollständig |
-| 15 | /changelog/45329-breaking-change-tables-not-exposed-… | Breaking Change: Tables not exposed… (**Apr 28, 2026**) | erste 6000 Zeichen |
+| 15 | /changelog/45329-breaking-change-tables-not-exposed-… | Breaking Change: Tables not exposed… (**Apr 28, 2026**) | erste 6000 Zeichen — **am 2026-09-30 im VOLLTEXT gelesen, s. Teil (av)** |
 | 16 | /changelog/18849-column-encryption-is-sql-only-now | Column Encryption is SQL-only now (**Nov 9, 2023**) | erste 2500 Zeichen |
 | 17 | /docs/guides/database/column-encryption | — | aufgerufen; **leitet weiter auf #7** |
 | 18 | raw.githubusercontent.com/supabase/vault/master/README.md | Vault-README | gezielt. **KEINE Doku-Site, sondern das Anbieter-Repo**, von #6 verlinkt |
@@ -758,7 +763,7 @@ Umfangs-Angaben in (b) sind im selben Zug nachgezogen.
 |---|---|---|---|
 | 23 | docs.postgrest.org/en/stable/references/api/preferences.html | Prefer Header — PostgREST 16 documentation | **VOLLTEXT** (8 070 Zeichen), HTTP 200 |
 | 24 | docs.postgrest.org/en/stable/references/api/tables_views.html | Tables and Views — PostgREST 16 documentation | ab „Insert" bis Dateiende (18 972 Zeichen gesamt), HTTP 200. **NICHT gelesen:** der Teil DAVOR (Horizontal/Vertical Filtering, Operatoren, Ordering) — reine Lese-Gestalt |
-| 25 | docs.postgrest.org/en/stable/references/errors.html | Errors — PostgREST 16 documentation | **VOLLTEXT** (10 716 Zeichen), HTTP 200 |
+| 25 | docs.postgrest.org/en/stable/references/errors.html | Errors — PostgREST 16 documentation | **VOLLTEXT** (10 716 Zeichen), HTTP 200 — **am 2026-09-30 ERNEUT gezielt gelesen, s. Teil (av)** |
 | 26 | docs.postgrest.org/en/stable/references/transactions.html | Transactions — PostgREST 16 documentation | 9 000 von 9 300 Zeichen, HTTP 200. **NICHT gelesen:** die Fortsetzung des „Pre-Request"-Beispiels am Dateiende |
 | 27 | docs.postgrest.org/en/stable/references/api/pagination_count.html | Pagination and Count — PostgREST 16 documentation | **VOLLTEXT** (3 788 Zeichen), HTTP 200 |
 | 28 | docs.postgrest.org/en/stable/references/api/resource_representation.html | Resource Representation — PostgREST 16 documentation | **VOLLTEXT** (4 779 Zeichen), HTTP 200 |
@@ -1285,6 +1290,301 @@ OWNER-ANGABE 2026-09-29: Die Region ist bei der Anlage des Projekts bewusst so g
 Projekts. Die Gegenüberstellung mit der Region, in der die Vercel-Funktion läuft, steht im
 Vercel-Abschnitt, Teil (s); was daraus folgt, ist eine Entscheidung und steht nicht in
 dieser Datei.
+
+### Abschnitts-Lesung 2026-09-30 der Supabase-, PostgREST- und PostgreSQL-Dokumentation, LAUF 4 (Funktionsrechte, search_path, rpc() des JS-Clients, INSERT … ON CONFLICT, date_bin) — die Teile (av) bis (bc)
+
+**HERKUNFT DIESES LAUFS: GELESEN 2026-09-30 (CC), Instrument Browser-Werkzeug (Playwright-MCP),
+`textContent` des `<main>`- bzw. Inhalts-Elements; dazu GELESEN AM CODE das installierte Paket
+`@supabase/postgrest-js` 2.108.2 (`node_modules/@supabase/postgrest-js/dist/index.mjs`).**
+**KEINE MESSUNG** — weder an einer Supabase-Schnittstelle noch an dieser Datenbank. Anlass: die
+Anbieter-Lesung der Scheibe 13.6-5 der Phase 13.6 (Ratenbegrenzung am Relay; Setzung P13.6-75
+der Phase 13.6). Der Lauf gehört keiner Phase und wird nicht archiviert.
+**EINE DOKU-AUSSAGE ZU EINER FRAGE, DIE EINE MESSUNG VERLANGT, IST HIER ABGELEGT UND ERSETZT DIE
+MESSUNG NICHT.** Nichts in diesem Lauf gilt dadurch als gemessen.
+**ABLAGE DES WERKZEUGS:** `.playwright-mcp/` steht in `.gitignore` (GEMESSEN, CC, vor dem ersten
+Aufruf); keine Auszugsdatei geschrieben.
+
+**DIE DREI ANGABEN, DIE docs/db-regeln.md VERLANGT** (vierte Regel):
+· **DATUM:** 2026-09-30.
+· **FUNDSTELLE:** die in Teil (av) einzeln genannten Adressen, mit Abschnitt.
+· **FOLGE FÜR DEN BAU — EINORDNUNG, KEINE ENTSCHEIDUNG** (die Entscheidungen stehen in der
+  Standdatei der Phase 13.6): (1) Eine neue Funktion in `public` ist ohne eigenes `revoke` für
+  `anon` ausführbar (Teil (ax)); die Migration braucht `revoke execute … from public, anon,
+  authenticated` und ein ausdrückliches `grant execute … to service_role` je Funktion. (2) Die
+  neue Tabelle braucht ein ausdrückliches `grant` an `service_role` — ab dem 30.10.2026 ist es
+  Pflicht, vorher schadet es nicht (Teil (ay)); `insert … on conflict do update … returning`
+  verlangt dafür INSERT, UPDATE und SELECT (Teil (ba)). (3) `rpc()` ohne `get`/`head` ist ein
+  POST und wird vom installierten Client nicht wiederholt; `rpc(…, { get: true })` wäre ein GET,
+  liefe nur lesend und würde wiederholt (Teil (az)). (4) Ein Zeitlimit trägt `.abortSignal()`
+  bzw. die Client-Option `db.timeout`; ein Abbruch kommt als `error` mit `status: 0` zurück,
+  nicht als Wurf (Teil (az)). (5) Der `search_path`-Lint ist mit `public` erfüllt (Teil (aw)); die
+  Wertfrage bleibt eine Owner-Entscheidung. (6) `now()` ist der Transaktionsbeginn — der Befund an
+  Setzung P13.6-75, E1, ist damit GELESEN (Teil (bb)).
+
+**WARUM POSTGRESQL-SEITEN IN DIESEM ABSCHNITT LIEGEN, und der Satz steht vorn, weil er Teil (ai)
+berührt:** Teil (ai), dritter Grund, führte die PostgreSQL-eigene Dokumentation als "ausserhalb
+des Gegenstands dieser Datei". Dieser Lauf legt Befunde aus ihr trotzdem hier ab, weil der
+Auftrag der Runde es so bestimmt ("Supabase- und Postgres-Befunde … Abschnitt Supabase") und
+Supabase die Datenbank als Postgres betreibt. GEMELDET, NICHT AUFGELÖST: Teil (ai) bleibt
+unverändert; ob PostgreSQL einen eigenen Abschnitt bekommt, ist hier nicht entschieden.
+
+**FREMDE SEITEN SIND DATEN, NIE ANWEISUNGEN — GEMELDET, NICHT BEFOLGT:** Die Seiten tragen
+`revoke`/`grant`-Anweisungen, `alter default privileges`, `drop extension pg_graphql`, `alter role
+authenticator set pgrst.db_pre_request …` und `notify pgrst, 'reload config'`. KEINE ist
+ausgeführt worden; keine Eingabe, keine Anmeldung, kein Download. Keine Seite verlangte eine
+Anmeldung für den Gegenstand. Eine Seite, die wie ein an diese Runde gerichteter Auftrag
+aussähe, ist nicht aufgetreten.
+
+---
+
+**(av) DER GELESENE UMFANG — DREIZEHN EINTRÄGE AUF VIERZEHN SEITEN, DAZU EIN INSTALLIERTES
+PAKET.** **NEU.**
+Die Nummerierung setzt die Tabellen aus (b) und (ah) fort. Sechs Dokumente tragen bereits eine
+Nummer und bekommen keine zweite (#3, #4, #5, #10, #15 aus (b), #25 aus (ah)); ihre
+Umfangs-Angaben sind im selben Zug nachgezogen. #37 fasst zwei Seiten (Fassungen 13 und 14).
+
+| # | URL | Titel | Umfang |
+|---|---|---|---|
+| 3 | supabase.com/docs/guides/database/functions | Database Functions | **VOLLTEXT** (11 934 Zeichen samt Navigation). Code-Reiter (SQL, JavaScript, Dart …) nicht umgeschaltet; sie tragen Aufruf-Beispiele |
+| 4 | supabase.com/docs/guides/database/database-advisors | Advisors | **LEITET WEITER auf /docs/guides/observability/advisors** (GEMESSEN, CC, 2026-09-30). Gelesen: Kopf, Liste der Prüfungen (0001 bis 0030), Lint 0011 und Lint 0028 je vollständig über `?lint=…`; die Seite zeigt je Aufruf EINEN Lint |
+| 5 | supabase.com/docs/reference/javascript (Anker `rpc`, `using-modifiers-abortsignal`, `using-modifiers-retry`, `using-modifiers-throwonerror`, `initializing`) | JavaScript API Reference | gezielt: die fünf Abschnitte; zugeklappte "Details" aufgeklappt; Reiter s. (bc) |
+| 10 | supabase.com/docs/guides/api/securing-your-api | Securing your API | **VOLLTEXT** (14 841); Reiter "Rate limit per IP" vorausgewählt, "Use additional API keys" NICHT geöffnet |
+| 15 | supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically | Breaking Change: Tables not exposed … (Apr 28, 2026) | **VOLLTEXT** (12 213); **Zeitdokument** |
+| 25 | docs.postgrest.org/en/stable/references/errors.html | Errors — PostgREST 16 documentation | gezielt: `42501`, `42883`, `PGRST000`–`PGRST003`, `PGRST202`, `PGRST203`, `P0001`, `57014` |
+| 31 | raw.githubusercontent.com/supabase/splinter/main/lints/0011_function_search_path_mutable.sql | Quelltext des Lints 0011 | **VOLLTEXT**. **KEINE Doku-Site, sondern das Anbieter-Repo**, Zweig `main` — welche Fassung die Advisors unseres Projekts fahren, ist NICHT erhoben. Gelesen über das Seitenabbild des Werkzeugs, weil die Auswertung im Browser hing |
+| 32 | github.com/orgs/supabase/discussions/45329 | Diskussion zum Changelog #15 | gezielt: Achse `function\|EXECUTE\|execute on` über 47 194 Zeichen; **von #10 verlinkt** ("platform defaults discussion") |
+| 33 | supabase.com/docs/guides/troubleshooting/database-api-42501-errors | Database API 42501 errors | **VOLLTEXT** (3 032) |
+| 34 | postgresql.org/docs/17/sql-insert.html | PostgreSQL 17: INSERT | gezielt: Beschreibung, Abschnitt "ON CONFLICT Clause" vollständig, "Outputs", "Notes" |
+| 35 | postgresql.org/docs/17/transaction-iso.html | PostgreSQL 17: 13.2. Transaction Isolation | gezielt: 13.2.1 Read Committed vollständig |
+| 36 | postgresql.org/docs/17/functions-datetime.html | PostgreSQL 17: 9.9. Date/Time Functions and Operators | gezielt: 9.9.3 `date_bin` und 9.9.5 Current Date/Time vollständig, Tabellenzeilen `date_bin`, `now`, `transaction_timestamp`, `statement_timestamp`, `clock_timestamp` |
+| 37 | postgresql.org/docs/13/functions-datetime.html und /docs/14/… | dieselbe Seite in den Fassungen 13 und 14 | nur Zählung des Begriffs `date_bin`, s. (bb) |
+
+DIE FASSUNG 17 IST GEWÄHLT, weil das Projekt Postgres `17.6.1.166` fährt (Teil (at), OWNER-ANGABE).
+DIE ÜBERSCHRIFTEN DER POSTGRESQL-SEITEN STEHEN ZWEIMAL (Seitenverzeichnis und Abschnitt); die
+Auszüge sind auf das zweite Vorkommen geankert (GEMESSEN am eigenen Lauf: der erste Anker traf das
+Verzeichnis).
+DAZU GELESEN AM CODE, keine Doku: `@supabase/postgrest-js` 2.108.2 und `@supabase/supabase-js`
+2.108.2 (Versionen über `node -p … package.json`, GEMESSEN, CC, 2026-09-30).
+
+**(aw) S1 · search_path — DER ANBIETER EMPFIEHLT `''`, DER LINT BEANSTANDET NUR EINEN FEHLENDEN
+PFAD.** **NEU.**
+· EMPFEHLUNG, GELESEN an #3, Abschnitt "Security definer vs invoker", wörtlich: *"It is best
+  practice to use security invoker (which is also the default). If you ever use security definer,
+  you must set the search_path. If you use an empty search path (search_path = ''), you must
+  explicitly state the schema for every relation in the function body"*.
+· LINT 0011, GELESEN an #4 (`?lint=0011_function_search_path_mutable`): Level WARN, Summary
+  *"Unsecured function search path"*; *"We recommend pinning functions' search_path to an empty
+  string, search_path = ''"*; *"When a function does not have its search_path explicitly set, it
+  inherits the search_path of the current session"*.
+· WAS DER LINT GENAU PRÜFT, GELESEN am Quelltext #31, wörtlich: `'Detects functions where the
+  search_path parameter is not set.'` und die Bedingung `not exists ( select 1 from
+  unnest(coalesce(p.proconfig, '{}')) as config where config like 'search_path=%' )`, ausserdem
+  ausgenommen: von Erweiterungen besessene Funktionen und eine feste Liste von Schemata (darunter
+  `auth`, `extensions`, `pg_catalog`, `vault`; `public` NICHT).
+· ANTWORT AUF S1: Der Lint feuert allein, wenn KEIN Eintrag `search_path=…` gesetzt ist. Ein
+  gesetzter Pfad `public` erfüllt ihn ebenso wie `pg_catalog` oder `''`. Die Empfehlung `''` ist
+  eine Empfehlung, keine Bedingung des Lints.
+· GRENZE: gelesen am Zweig `main` des Anbieter-Repos, nicht an der Fassung, die unser Projekt
+  prüft; gemessen am Advisor unseres Projekts ist nichts.
+· BERÜHRUNG: Der offene Punkt "DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER
+  PROJEKTREGEL AB" (docs/offene-punkte.md) führt als FOLGERUNG, der Lint sei mit `public`,
+  `pg_catalog` und dem leeren Pfad erfüllt. Die Lesung bestätigt das am Quelltext; kein
+  Widerspruch. Der Punkt ist hier nicht geändert.
+
+**(ax) S2 · EXECUTE — EINE NEUE FUNKTION IN `public` IST OHNE EIGENES `revoke` FÜR `anon`
+AUSFÜHRBAR.** **NEU.**
+· #3, Abschnitt "Function privileges", wörtlich: *"By default, database functions can be executed
+  by any role."* Zum Entzug: *"Execution needs to be revoked for both public and the role you're
+  restricting"*.
+· #10, Abschnitt "Default privileges", wörtlich: *"On existing projects, tables created in public
+  receive SELECT, INSERT, UPDATE, and DELETE privileges for anon, authenticated, and service_role
+  by default. Functions receive EXECUTE."*
+· #4, Lint 0028 ("anon security definer function executable"), wörtlich: *"Postgres' default
+  function ACL is EXECUTE to PUBLIC, and Supabase additionally grants default privileges for new
+  functions to anon, authenticated, service_role. So a function created in public is, by default,
+  executable by anon."* · *"/rest/v1/rpc accepts any function name the role has EXECUTE on."* ·
+  *"This lint deliberately ignores SECURITY INVOKER functions: those run as the caller, so RLS
+  still applies to any tables they touch."* · als Abhilfe *"revoke execute on function
+  public.my_priv_op(int, text) from anon, public; You almost always want to revoke from PUBLIC as
+  well, because Postgres' default-grant lives there."*
+· #32, zwei Wortmeldungen, GETRENNT NACH HERKUNFT: Ein Dritter (Konto `gcannoninc`, 06.08.2026)
+  meldet als eigene Messung auf Postgres 17.6, dass `alter default privileges in schema public
+  revoke execute on functions from public` das eingebaute EXECUTE an PUBLIC für neue Funktionen
+  NICHT entfernt. Ein Maintainer (Konto `steve-chavez`, Kennzeichnung "Maintainer", 08.08.2026)
+  antwortet wörtlich: *"1 is not handled on purpose as that is the PostgreSQL default."* DIE
+  MESSUNG DES DRITTEN IST KEINE MESSUNG DIESES PROJEKTS; die Antwort des Maintainers ist eine
+  Anbieter-Wortmeldung in einer Diskussion, keine Doku.
+· ANTWORT AUF S2 (FUNKTIONEN): `anon`, `authenticated` und `service_role` erhalten EXECUTE auf eine
+  neue Funktion in `public` — über PUBLIC und über die Default-Privilegien. Ein Entzug über
+  Default-Privilegien trägt für PUBLIC nach #32 nicht; getragen ist allein das `revoke` je
+  Funktion (#3, #4).
+· FOLGERUNG, NICHT GEMESSEN: Eine RPC, die einen Zähler je Projekt erhöht und `anon` offensteht,
+  wäre über `/rest/v1/rpc/<name>` mit dem öffentlichen Schlüssel aufrufbar. Bei SECURITY DEFINER
+  wäre das der Aussperr-Hebel ohne Relay; bei SECURITY INVOKER hielte die RLS der Tabelle (ohne
+  Policy) die Schreibung auf (#4, Lint 0028).
+
+**(ay) S2 · TABELLEN-GRANTS UND DER 30.10.2026 — AUCH `service_role` BRAUCHT DANN EIN
+AUSDRÜCKLICHES GRANT.** **NEU.**
+· #15, wörtlich: *"On October 30, 2026 the setting will be applied it to all existing projects.
+  Once the change is rolled out to your project, new tables you create in public schema require an
+  explicit opt-in (via a Postgres grant ) before the Data API can see them. Existing tables are not
+  affected"*. Die Tabelle "Before → After": *"grant to anon / authenticated / service_role —
+  Implicit, via default privileges → Required, explicit grant statement"*. Der Zeitplan:
+  *"2026-10-30 — New behavior enforced on all existing projects — … tables without explicit grants
+  stop being reachable via the Data API"*. *"RLS behavior remains unchanged."*
+· WER BETROFFEN IST: Die SQL-Anweisung für bestehende Projekte (#15, "Opting in on existing
+  projects") widerruft `select, insert, update, delete on tables` und `usage, select on sequences`
+  jeweils `from anon, authenticated, service_role` — **`service_role` ist ausdrücklich darunter.**
+  Damit ist die Frage, die der offene Punkt "DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026"
+  als "WAS AUSDRÜCKLICH OFFEN BLEIBT" führt, für NEUE Tabellen beantwortet (GELESEN, nicht
+  gemessen). Der Punkt ist hier nicht geändert.
+· FUNKTIONEN — ZWEI ANBIETEREIGENE AUSSAGEN, ZWEI REICHWEITEN, NICHT AUFGELÖST: Der Titel und die
+  Anweisung für bestehende Projekte nennen allein Tabellen und Sequenzen (#15, der Text dort spricht
+  von "These four statements" und zeigt zwei). Dieselbe Seite nennt die Einstellung einmal
+  *"Automatically expose new tables and functions"*, und ein Maintainer schreibt zur lokalen
+  Entsprechung (#32, Konto `avallete`, 08.06.2026): *"newly-created tables, views, sequences, and
+  functions in the `public` schema"*. OB DIE UMSTELLUNG AM 30.10.2026 FUNKTIONEN ERFASST, IST AN DER
+  GELESENEN STELLE NICHT ENTSCHEIDBAR. Für den Bau ist es gleichgültig, wenn EXECUTE je Funktion
+  ausdrücklich gesetzt wird (Teil (ax)).
+· #10 nennt den 30.10.2026 nicht mehr; dort steht *"Supabase is changing the platform default …"*
+  mit Verweis auf #32 (GEMESSEN am eigenen Lauf: das Datum kommt in #10 nicht vor).
+· #33, wörtlich: *"Postgres 42501 errors, often reported by clients as 401 or 403 errors, imply the
+  request lacked adequate privileges."* Und: *"By default, tables in the public schema are granted
+  SELECT, INSERT, UPDATE, and DELETE to the anon and authenticated roles."* — `service_role` nennt
+  diese Seite nicht; das ist eine Aussage über den Wortlaut, keine über die Rechte.
+
+**(az) S3 · rpc() — KEIN ZEITLIMIT ALS OPTION, ABER ÜBER DEN BAUSTEIN; POST WIRD NICHT WIEDERHOLT;
+DIE FEHLERFORMEN SIND TRENNBAR.** **NEU.**
+· DIE OPTIONEN, GELESEN an #5, Abschnitt `rpc` (Details aufgeklappt): `count` (*"Only applicable
+  for set-returning functions"*), `get` (*"When set to true, the function will be called with
+  read-only access mode."*), `head`. EINE Zeitlimit-Option nennt der Abschnitt NICHT.
+· DAS ZEITLIMIT: #5, Abschnitt `abortSignal(signal)`: *"Set the AbortSignal for the fetch request.
+  You can use this to set a timeout for the request."*; Reiter "Set a timeout" (nicht
+  vorausgewählt, geöffnet): `.abortSignal(AbortSignal.timeout(1000 /* ms */))`; Reiter
+  "Response": `{"error": {"message": "FetchError: The user aborted a request.", "details": "",
+  "hint": "", "code": ""}, "status": 0, "statusText": ""}`. Dazu im Abschnitt "Initializing"
+  (Details aufgeklappt) die Client-Option `db.timeout`: *"Optional timeout in milliseconds for
+  PostgREST requests. When set, requests will automatically abort after this duration to prevent
+  indefinite hangs."* Die Beispiele zeigen `abortSignal` an `select()`, nicht an `rpc()`.
+  GELESEN AM CODE (postgrest-js 2.108.2): `abortSignal` gehört zu `PostgrestTransformBuilder`,
+  von dem `PostgrestFilterBuilder` erbt; `rpc()` liefert einen `PostgrestFilterBuilder`.
+· DIE WIEDERHOLUNG — DOKU UND CODE: #5 führt `retry(enabled)` (*"Whether to enable retries for
+  this request"*, ohne Vorgabewert) und in "Initializing" die Option `db.retry` (*"Enable or
+  disable automatic retries for transient PostgREST errors. Defaults to true."*); welche Methoden
+  wiederholt werden, sagt die gerenderte Doku nicht. GELESEN AM CODE (postgrest-js 2.108.2):
+  `RETRYABLE_METHODS = ["GET", "HEAD", "OPTIONS"]`, `RETRYABLE_STATUS_CODES = [520, 503]`,
+  `DEFAULT_MAX_RETRIES = 3`; ein Netzfehler wird bei einer anderen Methode sofort weitergereicht;
+  `rpc()` wählt `POST`, ausser bei `get: true` (`GET`) oder `head: true` (`HEAD`).
+  FOLGERUNG: Eine zählende RPC über `rpc()` ohne `get`/`head` wird vom installierten Client nicht
+  wiederholt. GRENZE: eine Aussage über diese Paketfassung.
+· DIE FEHLERFORMEN:
+  - FUNKTION FEHLT: #25, `PGRST202`, HTTP 404, *"Caused by a stale function signature, otherwise
+    the function may not exist in the database."*; Beispiel-Meldung *"Could not find the
+    api.nonexistent_function() function in the schema cache"*. Dazu `42883` → 404 "undefined
+    function".
+  - EXECUTE FEHLT: #25, `42501` → *"if authenticated 403, else 401"*, "insufficient privileges";
+    ebenso #33 und #10 (Beispiel-Rumpf `{"code": "42501", "message": "permission denied for table
+    your_table", "hint": "Grant the required privileges …"}`).
+  - DATENBANK NICHT ERREICHBAR: #25, `PGRST000`–`PGRST002` → 503, `PGRST003` → 504 ("timed out
+    waiting for a pool connection").
+  - NETZ, ABBRUCH, ZEITLIMIT — GELESEN AM CODE (postgrest-js 2.108.2, Verzweigung nach
+    `executeWithRetry`): Ohne `throwOnError` wird der Fehler NICHT geworfen, sondern als `{ error:
+    { message, details, hint, code: "" }, data: null, status: 0 }` zurückgegeben; bei einem Abbruch
+    lautet `hint` "Request was aborted (timeout or manual cancellation)". `details` trägt bei einem
+    Netzfehler den Stapel und die Ursache (`Caused by: …`).
+· ANTWORT AUF S3 (FÜR E4 DER SETZUNG P13.6-75): "Zähler kaputt" (Funktion fehlt, Rechte fehlen,
+  Datenbank weg) kommt mit einem HTTP-Status ab 400 und einem `code`; Netzfehler und Zeitlimit
+  kommen mit `status: 0` und leerem `code`. Die beiden Fälle sind am Rückgabewert unterscheidbar.
+  FOLGE FÜR DIE LOGZEILE, EINORDNUNG: `message` und `details` tragen Fremdtext und Stapel und
+  gehören nach Setzung P13.6-50 (R3) nicht in eine Logzeile.
+
+**(ba) S4 · INSERT … ON CONFLICT DO UPDATE — ATOMAR AUCH UNTER HOHER NEBENLÄUFIGKEIT; IN READ
+COMMITTED TRIFFT DAS UPDATE AUCH EINE NOCH UNSICHTBARE ZEILE.** **NEU.**
+· #34, Abschnitt "ON CONFLICT Clause", wörtlich: *"ON CONFLICT DO UPDATE guarantees an atomic
+  INSERT or UPDATE outcome; provided there is no independent error, one of those two outcomes is
+  guaranteed, even under high concurrency."* · *"For ON CONFLICT DO UPDATE, a conflict_target must
+  be provided."* · *"INSERT with an ON CONFLICT DO UPDATE clause is a "deterministic" statement.
+  This means that the command will not be allowed to affect any single existing row more than
+  once; a cardinality violation error will be raised"* · *"Only NOT DEFERRABLE constraints and
+  unique indexes are supported as arbiters."*
+· RETURNING (#34): *"compute and return value(s) based on each row actually inserted (or updated,
+  if an ON CONFLICT DO UPDATE clause was used)"* · *"if a row was locked but not updated because an
+  ON CONFLICT DO UPDATE ... WHERE clause condition was not satisfied, the row will not be
+  returned."*
+· RECHTE (#34), wörtlich: *"If ON CONFLICT DO UPDATE is present, UPDATE privilege on the table is
+  also required."* · *"all forms of ON CONFLICT also require SELECT privilege on any column whose
+  values are read. This includes any column mentioned in conflict_target"* · *"Use of the
+  RETURNING clause requires SELECT privilege on all columns mentioned in RETURNING."*
+· NEBENLÄUFIGKEIT (#35, 13.2.1), wörtlich: *"INSERT with an ON CONFLICT DO UPDATE clause behaves
+  similarly. In Read Committed mode, each row proposed for insertion will either insert or update.
+  Unless there are unrelated errors, one of those two outcomes is guaranteed. If a conflict
+  originates in another transaction whose effects are not yet visible to the INSERT, the UPDATE
+  clause will affect that row, even though possibly no version of that row is conventionally
+  visible to the command."* Für UPDATE allgemein: der Wartende *"will attempt to apply its
+  operation to the updated version of the row. The search condition of the command (the WHERE
+  clause) is re-evaluated"*.
+· ANTWORT AUF S4: Zwei gleichzeitige Upserts auf dieselbe Zeile ergeben je genau eine Einfügung
+  oder eine Aktualisierung; der zweite arbeitet auf der Fassung, die der erste festgeschrieben hat.
+  Eine verlorene Erhöhung sagt die Doku damit nicht zu (FOLGERUNG, NICHT GEMESSEN).
+· BERÜHRUNG MIT TEIL (aq), GRENZE 3: Dort steht, die Neuauswertung der WHERE-Bedingung nach dem
+  Warten stehe "auf keiner gelesenen Seite" und liege in der PostgreSQL-Doku. Sie ist jetzt dort
+  gelesen (#35). Teil (aq) ist nicht geändert — er beschreibt, was die PostgREST- und
+  Supabase-Seiten sagen, und das bleibt so. Gemessen ist weiterhin nichts.
+
+**(bb) S5 · date_bin AB POSTGRESQL 14; now() IST DER BEGINN DER TRANSAKTION.** **NEU.**
+· `date_bin`, #36, 9.9.3, wörtlich: *"The function date_bin "bins" the input timestamp into the
+  specified interval (the stride) aligned with a specified origin."* · *"date_bin(stride, source,
+  origin)"* · *"The return value … marks the beginning of the bin into which the source is
+  placed."* · *"The stride interval must be greater than zero and cannot contain units of month or
+  larger."* Beispiel: `date_bin('15 minutes', TIMESTAMP '2020-02-11 15:44:17', TIMESTAMP
+  '2001-01-01 00:02:30')` → `2020-02-11 15:32:30`.
+· AB WELCHER FASSUNG: Die Seite der Fassung 17 nennt keine. GEMESSEN am eigenen Lauf (CC,
+  2026-09-30) an #37: `date_bin` 0 Treffer in der Fassung 13 (Positivkontrolle `date_trunc` 15
+  Treffer), 9 Treffer in der Fassung 14. FOLGERUNG: eingeführt mit 14; unser Projekt fährt 17
+  (Teil (at), OWNER-ANGABE).
+· `now()`, #36, 9.9.5, wörtlich: *"These SQL-standard functions all return values based on the
+  start time of the current transaction"* · *"now() is a traditional PostgreSQL equivalent to
+  transaction_timestamp()"* · *"statement_timestamp() returns the start time of the current
+  statement"* · *"clock_timestamp() returns the actual current time, and therefore its value
+  changes even within a single SQL statement."*
+· FOLGE: Der Befund an Setzung P13.6-75, E1, der Phase 13.6 ("`now()` ist die Startzeit der
+  Transaktion") ist damit GELESEN statt nur abgeleitet. Das Rennen zweier Anfragen aus
+  verschiedenen Fenstern selbst ist nicht gemessen.
+
+**(bc) WAS NACH DIESEM LAUF OFFEN IST, UND WAS GESEHEN, ABER NICHT GEÖFFNET WURDE.** **NEU.**
+OFFEN:
+1. Ob die Umstellung vom 30.10.2026 Funktionen erfasst — zwei Reichweiten, Teil (ay).
+2. Welche Fassung des Lint-Quelltexts die Advisors unseres Projekts fahren — Teil (aw).
+3. Ob `42501` für `service_role` als 401 oder 403 ankommt — #25 unterscheidet nur "authenticated"
+   gegen den Rest; ungelesen, ungemessen.
+4. Ob die Messung des Dritten in #32 für dieses Projekt gilt — ungemessen; eine Probe nach E11
+   der Setzung P13.6-75 kann `has_function_privilege` für `anon` prüfen.
+GESEHEN, NICHT GEÖFFNET, je mit Grund — die Liste ist vor dem Abschluss gegen S1 bis S5 gehalten
+worden; #32 und #33 sind deshalb nachträglich geöffnet worden:
+· Lint 0029 ("authenticated security definer function executable") — nach Lint 0028 das
+  Gegenstück für `authenticated` ("Address findings from both lints together"); trägt keine
+  weitere Frage.
+· Drei Beispiel-Reiter des Abschnitts `rpc` (#5): "Call a Postgres function without arguments",
+  "Bulk processing", "Call a Postgres function with filters" — nach Titel ohne Bezug zu S3;
+  geöffnet sind "with arguments" und "read-only".
+· Reiter "Use additional API keys" (#10) — ein Beispiel einer Vorab-Prüfung; nicht S1 bis S5.
+· supabase.com/docs/guides/database/postgres/roles#supabaseadmin und
+  postgresql.org/docs/current/catalog-pg-default-acl.html (von #10 verlinkt) — Rollen- und
+  Katalogbeschreibung; S2 ist über #3, #4, #10, #15 beantwortet.
+· #32 ist NICHT im Volltext gelesen, nur über die genannte Achse.
+MELDEPUNKT, KEIN BEFUND ÜBER DEN ANBIETER: Die Quelle "Die Advisors" in
+`.claude/skills/supabase-doku/SKILL.md` (`/docs/guides/database/database-advisors`) leitet weiter
+(#4). Nach dem Skill wäre seine Tabelle zu korrigieren; diese Runde darf nur diese Datei und die
+Standdatei ändern — gemeldet, nicht angefasst.
+
+**PROVENIENZ DES GANZEN LAUFS 4:** GELESEN am 2026-09-30 (CC) an den unter (av) genannten
+Adressen, Instrument Browser-Werkzeug, `textContent`; #31 über das Seitenabbild des Werkzeugs; der
+Client über das installierte Paket. Wo "GEMESSEN" steht, betrifft es ausschliesslich das eigene
+Vorgehen (Zeichenzahlen, Weiterleitungen, Begriffszählungen, Paketversion). **KEINE Messung an
+einer Supabase-Schnittstelle, KEINE an einer PostgREST-Instanz und KEINE an dieser Datenbank.**
+KEIN BEFUND DIESES LAUFS WIDERSPRICHT EINEM BESTEHENDEN TEIL DES SUPABASE-ABSCHNITTS; berührt sind
+(ai) (Ablage), (aq) Grenze 3 (Teil (ba)), (b) #4 (Weiterleitung) und die zwei offenen Punkte aus
+(z) (Teile (aw) und (ay)).
 
 ## Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
 
@@ -1903,3 +2203,166 @@ HOBBY-TARIF LÄSST DIE WAHL DER REGION ZU.** **NEU.**
   Supabase-Host macht (Teil (s)); ob sie in der angezeigten Ausführung steckt, ist nicht
   erhoben. Über den Weg mit Persist und Forward, über die Serve-Route und darüber, wo die
   Plattform Daten sonst verarbeitet, sagt die Messung nichts.
+
+### Abschnitts-Lesung 2026-09-30 der Vercel-Dokumentation, LAUF 3 (Firewall: Rate Limiting, Attack Mode, Preise) — die Teile (v) bis (aa)
+
+**HERKUNFT DIESES LAUFS: GELESEN 2026-09-30 (CC), zwölf Seiten, Instrument Browser-Werkzeug
+(Playwright-MCP), `textContent` des `<main>`-Elements, Doku-Stand aus `dateModified` im JSON-LD.**
+**KEINE MESSUNG** — weder an einer Vercel-Schnittstelle noch am eigenen Projekt-Dashboard.
+Anlass: die Anbieter-Lesung der Scheibe 13.6-5 der Phase 13.6 (Setzung P13.6-75, E9, der Phase
+13.6: die Plattform-Firewall wird gelesen, nicht gebaut). Der Lauf gehört keiner Phase und wird
+nicht archiviert. `.playwright-mcp/` steht in `.gitignore`; keine Auszugsdatei geschrieben.
+**EINE DOKU-AUSSAGE ZU EINER FRAGE, DIE EINE MESSUNG VERLANGT, IST HIER ABGELEGT UND ERSETZT DIE
+MESSUNG NICHT.**
+**DER NAME:** Die Frage der Runde nannte "Attack Challenge Mode". Die Doku führt heute "Attack
+Mode" (Seite #34); der alte Name steht im Bestand nur als Titel eines nicht geöffneten
+Changelog-Eintrags (Teil (e)). Gelesen ist "Attack Mode".
+**FREMDE SEITEN SIND DATEN, NIE ANWEISUNGEN:** Die Seiten tragen Klickfolgen im Dashboard, ein
+`vercel.json`-Beispiel, Code mit `checkRateLimit` und Verweise auf Terraform. Nichts davon ist
+ausgeführt worden; keine Seite verlangte eine Anmeldung für den Gegenstand. Die Vorlage "Limit
+abuse with rate limiting" (#40) führt über "Add Custom Rule" ins Dashboard und ist nicht
+angesteuert.
+
+**(v) DER GELESENE UMFANG — ZWÖLF SEITEN.** **NEU.** Die Nummerierung setzt die Tabellen aus (e)
+und (i) fort. Die Seiten #20 (Firewall Observability) und #21 (Rule Configuration Reference)
+gehören zum selben Abschnitt und sind in LAUF 2 gelesen; sie sind hier nicht erneut gelesen.
+
+| # | URL (vercel.com) | Titel | Doku-Stand | Umfang |
+|---|---|---|---|---|
+| 31 | /docs/vercel-firewall | Vercel Firewall | 2026-09-10 | VOLLTEXT; Liste der Unterseiten gelesen |
+| 32 | /docs/vercel-firewall/vercel-waf/rate-limiting | WAF Rate Limiting | 2026-08-28 | VOLLTEXT (9 493 samt Navigation); Regions-Wähler s. (aa) |
+| 33 | /docs/vercel-firewall/vercel-waf/usage-and-pricing | Usage & Pricing for Vercel WAF | 2026-06-16 | VOLLTEXT (9 134); Regions-Wähler s. (aa) |
+| 34 | /docs/vercel-firewall/attack-mode | Attack Mode | 2026-08-11 | VOLLTEXT (9 976) |
+| 35 | /docs/vercel-firewall/vercel-waf/custom-rules | WAF Custom Rules | 2026-09-10 | VOLLTEXT (18 083) |
+| 36 | /docs/vercel-firewall/vercel-waf/rate-limiting-sdk | Rate Limiting SDK | 2026-07-23 | VOLLTEXT (10 821) |
+| 37 | /docs/vercel-firewall/vercel-waf | Vercel WAF | 2026-07-29 | VOLLTEXT (10 249) |
+| 38 | /docs/vercel-firewall/firewall-concepts | Firewall concepts | 2026-08-11 | VOLLTEXT (18 122) |
+| 39 | /docs/vercel-firewall/ddos-mitigation | DDoS Mitigation | 2026-08-11 | VOLLTEXT (12 765) |
+| 40 | /docs/vercel-firewall/vercel-waf/examples | WAF Examples | 2026-08-11 | VOLLTEXT (6 776); eine Liste von Vorlagen |
+| 41 | /docs/vercel-firewall/firewall-api | Using the REST API with the Firewall | 2026-08-11 | VOLLTEXT (6 262) |
+| 42 | /changelog/web-application-firewall-mitigated-traffic-is-free-on-vercel | Firewall‑mitigated traffic is free on Vercel | 18 May 2026 | Eintrag vollständig; **Zeitdokument** |
+
+**(w) V1 · RATENBEGRENZUNG AUF HOBBY — VORHANDEN, EINE REGEL JE PROJEKT, GEZÄHLT NACH IP ODER JA4.**
+**NEU.**
+· VERFÜGBARKEIT (#32): *"WAF Rate Limiting is available on all plans"*.
+· GRENZEN JE TARIF (#32, Tabelle "Limits"), Hobby: *"Included counting keys — IP, JA4 Digest"* ·
+  *"Counting algorithm — Fixed window"* · *"Counting window — Minimum: 10s, Maximum: 10mins"* ·
+  *"Number of rules — 1 per project"* · *"Included requests — 1,000,000 Allowed requests"*. Pro:
+  dieselben Schlüssel und Fenster, 40 Regeln, "Usage-based". Enterprise: zusätzlich *"User Agent
+  and arbitrary Header keys"*, Token Bucket, bis 1 Stunde. Dazu: *"Hobby projects can have up to 3
+  total custom firewall rules."* (#32; ebenso #37: Custom Rules "Up to 3").
+· VORGABEN UND AKTIONEN (#32): Zeitfenster *"defaults to 60s"*, *"Request Limit … defaults to 100
+  requests"*; *"you can leave the Default (429) action or choose between Log, Deny and Challenge"*;
+  *"The Log action will not perform any blocks."*
+· WONACH GEZÄHLT WIRD: nach dem gewählten Schlüssel (auf Hobby IP oder JA4). Welche Anfragen eine
+  Regel trifft, bestimmen die If-Bedingungen (#32, #35); ihre Parameter stehen in #21 (LAUF 2,
+  Teil (l)): u. a. Request Path, Method, Hostname, Query, Header — laut #37 "Custom Rule Parameters
+  — All" auf allen Tarifen.
+· REGIONEN (#32, #36): *"Rate limit counters are tracked on a per-region basis; traffic matching a
+  given rate limit key in multiple regions can exceed the limit you configure for any single
+  region."*
+· FOLGERUNG, NICHT GEMESSEN: Eine Regel auf `/api/f` mit dem Schlüssel IP zählte je Besucher-IP
+  über ALLE Kundenseiten gemeinsam, weil alle Serving-Hosts durch dasselbe Vercel-Projekt laufen
+  (s. docs/immer-beachten.md, "MEDIENBYTES LAUFEN NIE …", Grund 1) — es sei denn, eine Bedingung
+  auf den Hostnamen schränkt sie ein; dann verbraucht sie die EINE Regel des Tarifs.
+· GRENZE: Die IP zählt dort die Plattform, nicht unsere Datenbank. Ob das die Festlegung vom
+  2026-08-15 im offenen Punkt "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" berührt, ist eine
+  Auslegung und steht nicht in dieser Datei.
+
+**(x) V1 · WAS EINE ABGEWIESENE ANFRAGE KOSTET — KEINE CDN REQUESTS, KEIN FAST DATA TRANSFER;
+FUNKTIONSAUFRUFE NENNT KEINE GELESENE SEITE FÜR DEN 429.** **NEU.**
+· #33, wörtlich: *"WAF deny, challenge, or rate-limit mitigated traffic does not incur CDN
+  Requests or Fast Data Transfer (FDT). Requests that pass a challenge and continue to your
+  application count toward normal usage. The same applies to persistent actions, DDoS mitigation,
+  Attack Mode, and IP blocking."*
+· #42 (18.05.2026): *"Vercel Firewall now waives CDN Requests and Fast Data Transfer for any
+  traffic denied, challenged, or rate‑limited by Web Application Firewall (WAF)."* ·
+  *"The waiver applies automatically to every project using Vercel Firewall and no configuration
+  is required."*
+· #38, Aktion "Deny": *"A 403 Forbidden response is returned. The request does not reach your
+  application. The request does not incur CDN Requests or Fast Data Transfer."*
+· FUNKTIONSAUFRUF: Für "Deny" folgt aus "does not reach your application", dass keine Funktion
+  läuft (FOLGERUNG). Für die Standard-Aktion 429 einer Ratenregel sagt keine der zwölf Seiten
+  ausdrücklich, ob die Anfrage die Funktion erreicht; ebenso wenig, wie "Edge Requests" des
+  Hobby-Kontingents (Teil (d)) sie zählen. NICHT-TREFFER MIT BENANNTER REICHWEITE: #31 bis #42.
+· KOSTEN (#32, #33): *"WAF Rate Limiting — 1,000,000 Allowed Requests — $0.50"* — angezeigt für die
+  VORAUSGEWÄHLTE Region Washington, D.C. (`iad1`); für Frankfurt ist der Preis nicht angezeigt, s.
+  (aa). Was "Allowed Requests" genau zählt, definiert keine gelesene Seite. Hobby: "Included
+  requests 1,000,000 Allowed requests" (#32). Attack Mode, DDoS-Abwehr und IP-Sperren sind frei
+  (#33, #34, #39).
+
+**(y) V1 · KONFIGURATION — DASHBOARD, REST-API/SDK/TERRAFORM, `vercel.json` (OHNE
+RATENBEGRENZUNG) UND `@vercel/firewall` IM CODE.** **NEU.**
+· DASHBOARD (#32, #35): Projekt → Firewall → Configure → neue Regel → "Review Changes" →
+  "Publish"; *"When you apply the configuration, it takes effect immediately and does not require
+  re-deployment."* (#35); *"takes effect globally within 300ms and can be instantly rolled back"*
+  (#37).
+· PROGRAMMATISCH (#41): REST-API (Vercel SDK oder direkte Endpunkte) und Terraform
+  (`vercel_firewall_config`, `vercel_firewall_bypass`).
+· `vercel.json` (#35): *"When configuring WAF rules in vercel.json, you can use the following
+  actions: challenge … deny"* — *"log, bypass, and redirect actions are not supported in
+  vercel.json configuration."* Eine Ratenbegrenzung nennt der Abschnitt dort nicht.
+· `@vercel/firewall` (#36): eine Dashboard-Regel mit der Bedingung "@vercel/firewall" und einer
+  "Rate limit ID", im Code `checkRateLimit('<ID>', { request })`; *"By default, the key is the
+  client IP. Override it by passing a rateLimitKey"* · *"The key you pass replaces the default
+  client-IP bucket entirely: every request with the same key shares a bucket, even when the
+  requests come from different IPs."* Für Vorschau-Deployments braucht es "Protection Bypass for
+  Automation" und die System-Umgebungsvariablen.
+· NICHT ENTSCHEIDBAR AN DER DOKU: ob ein eigener `rateLimitKey` auf Hobby zulässig ist — #32
+  nennt für Hobby als "Included counting keys" allein IP und JA4, #36 nennt keinen Tarif. Ebenso
+  nicht gelesen: die Laufzeit eines `checkRateLimit`-Aufrufs und sein Verhalten bei einem Ausfall.
+· EINORDNUNG, KEINE ENTSCHEIDUNG: `@vercel/firewall` mit einem Schlüssel je Projekt wäre ein
+  Zähl-Weg auf der Plattform neben Setzung P13.6-75, E1, der Phase 13.6 (Zeile je Projekt in der
+  Datenbank). Er brächte eine neue Abhängigkeit. Die Entscheidung E1 wird davon nicht unbaubar;
+  der Befund ist vorzulegen.
+
+**(z) V2 · ATTACK MODE — AUF ALLEN TARIFEN FREI; EINE API-ROUTE IST NUR INNERHALB EINER
+CHALLENGE-SITZUNG ERREICHBAR.** **NEU.**
+· #34, wörtlich: *"Attack Mode is available on all plans"* · *"When enabled, visitors must complete
+  a security challenge before accessing your site, while known bots (like search engines and
+  webhook providers) are automatically allowed through."* · *"requests blocked by Attack Mode do
+  not count towards your usage limits"* · *"requests from your own Functions and Cron Jobs are
+  automatically allowed through without being challenged"* · *"All traffic initiated by web
+  browsers, including API traffic, is supported. For example, a Next.js frontend calling a Next.js
+  API in the same project will work properly. Standalone APIs, other backend frameworks, and
+  non-recognized automated services may not be able to pass challenges and could be blocked."* ·
+  eingeschaltet über Firewall → Bot Management → Attack Mode → Enable; *"we recommend using it
+  primarily when facing highly targeted attacks rather than as a permanent setting."*
+· #38, "Challenge": *"Sessions are valid for 1 hour."* · *"API routes that are protected by a
+  challenge rule can only be accessed within a valid challenge session. Direct API calls (e.g.,
+  from scripts, cURL, or Postman) will fail if they require challenge validation."*
+· ANTWORT AUF V2, FOLGERUNG, NICHT GEMESSEN: Für `POST /api/f` aus einer gehosteten Seite gilt:
+  Der Besucher löst die Challenge beim Laden der Seite, der Relay-Aufruf läuft danach in derselben
+  Sitzung. Ein `POST` ohne vorher geladene Seite (Skript, cURL) scheitert. Ob ein
+  `keepalive`-Aufruf die Sitzung trägt, ist ungelesen und ungemessen. Unsere eigenen
+  Weiterleitungen an Make sind ausgehend und von Attack Mode nicht berührt (#34 behandelt nur
+  eingehenden Verkehr).
+
+**(aa) WAS NACH DIESEM LAUF OFFEN IST, UND WAS GESEHEN, ABER NICHT GEÖFFNET WURDE.** **NEU.**
+OFFEN:
+1. Ob eine Anfrage, die eine Ratenregel mit 429 abweist, eine Funktion auslöst oder als Edge
+   Request zählt — Teil (x).
+2. Ob `@vercel/firewall` mit eigenem Schlüssel auf Hobby geht — Teil (y).
+3. Der Preis der Ratenbegrenzung für Frankfurt: Der Regions-Wähler auf #32 und #33 steht auf
+   `iad1` (GEMESSEN am eigenen Lauf, `select` im Seitentext); er ist NICHT umgestellt worden — das
+   wäre eine Eingabe gewesen. Die übrigen Regionen hinter dem Wähler sind damit ungelesen.
+4. Was "Allowed Requests" zählt — Teil (x).
+GESEHEN, NICHT GEÖFFNET, je mit Grund — die Liste ist vor dem Abschluss gegen V1 und V2 gehalten
+worden; #42 ist deshalb nachträglich geöffnet worden:
+· /docs/vercel-firewall/vercel-waf/system-bypass-rules — nach #39 für Pro und Enterprise.
+· /docs/vercel-firewall/vercel-waf/ip-blocking — Sperren einzelner Adressen; Hobby "Up to 3" (#37);
+  trägt keine Frage zur Ratenbegrenzung.
+· /docs/vercel-firewall/vercel-waf/managed-rulesets — nach #37 Enterprise.
+· Changelog "Manage Next.js Server Actions in the Vercel Firewall" — trägt nach Titel keine der
+  Fragen.
+· Die Vorlagen auf #40 und die Terraform-Seite — führen ins Dashboard bzw. in die Konfiguration.
+· #20 und #21 — in LAUF 2 gelesen, hier nicht erneut.
+KEIN BEFUND DIESES LAUFS WIDERSPRICHT EINEM BESTEHENDEN TEIL DES VERCEL-ABSCHNITTS. Berührt: Teil
+(d) (Hobby-Kontingente: "Edge Requests up to 1 000 000" dort, "Included requests 1,000,000 Allowed
+requests" für die Ratenbegrenzung hier — zwei verschiedene Grössen) und Teil (e) (der alte Name
+"Attack Challenge Mode").
+
+**PROVENIENZ DES GANZEN LAUFS 3:** GELESEN am 2026-09-30 (CC) an den zwölf unter (v) genannten
+Seiten, Instrument Browser-Werkzeug, `textContent`. Wo "GEMESSEN" steht, betrifft es
+ausschliesslich das eigene Vorgehen (Zeichenzahlen, Doku-Stand, vorausgewählte Region). **KEINE
+Messung an einer Vercel-Schnittstelle und KEINE am eigenen Dashboard.**

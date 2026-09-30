@@ -2734,3 +2734,58 @@ VERWORFEN.**
   Besucher die Challenge beim Laden der Seite löst; ein `POST` ohne geladene Seite scheitert. Ob
   ein `keepalive`-Aufruf die Sitzung trägt, ist ungelesen und ungemessen (ebenda).
 - KEIN TRIGGER GESETZT.
+
+PROVENIENZ von P13.6-83 und P13.6-84: ARCHITEKT 2026-09-30, Befunde aus dem Abschluss der
+Scheibe 13.6-5, übermittelt im Auftrag der Runde "Scheibe Zurück-Cache — Aufklärung" (Teil A).
+Formulierung CC; wo "(CC)" steht, hat CC die Angabe am Bestand geprüft (2026-09-30, HEAD
+`2c57463`).
+
+**Vorrat P13.6-83 — DIE ERWARTUNGEN IN supabase/checks/db-stand.sql SIND SEIT MIGRATION 0030
+VERALTET; DER NÄCHSTE LAUF MELDET FEHLALARME.**
+- BEFUND (CC, GELESEN AM BESTAND): Drei Proben tragen eine Erwartung, die die Tabelle
+  `relay_rate_counters` und die Funktion `relay_rate_hit` (0030) nicht kennt:
+  · PROBE 4 (Tabellen, RLS-Status, Policy-Anzahl): "SIEBEN Tabellen", Policy-Zahlen für diese
+    sieben, Summe ZEHN. Die achte Zeile erscheint ohne Erwartung. Die Summe bleibt nach der
+    gemessenen Null an `relay_rate_counters` rechnerisch ZEHN (ABGELEITET).
+  · PROBE 6 (Rollen-Grants): "volle DML-Rechte auf ALLE SIEBEN Tabellen" für anon,
+    authenticated und service_role. Für `relay_rate_counters` ist das Gegenteil gemessen — anon
+    und authenticated ohne DML (docs/db-stand.md, Absatz "DIE ACHTE TABELLE WEICHT DAVON AB …").
+  · PROBE 8 (Funktionen in public): "FUENF".
+- ABWEICHUNG VOM AUFTRAG, GEMELDET (CC): Der Auftrag nannte neben Probe 8 "die Zahlen der
+  Tabellen- und Policy-Probe". Tabellen und Policies stehen in EINER Probe (4). Probe 6 nannte
+  der Auftrag nicht; ihre Erwartung ist ebenso überholt.
+- NICHT BETROFFEN (CC, GELESEN AM BESTAND): Proben 1 und 1b nennen bewusst keine Zahl; Proben 2
+  und 7 fragen benannte Tabellen ohne `relay_rate_counters`; Probe 10 hat keine Erwartung; Probe
+  9 (Event-Trigger) berührt 0030 nicht (ABGELEITET). GRENZFALL: Probe 3 fragt schema-weit, und
+  ihre Erwartung nennt die drei Constraints aus 0030 nicht — sie ist aber auch sonst keine
+  vollständige Liste (etwa `domains_pkey` fehlt dort). Ob sie einen Fehlalarm meldet, ist eine
+  Lesart.
+- docs/db-stand.md markiert die Gesamtzahlen als nicht nachgemessen: Nachträge vom 2026-09-30
+  "DIE ZAHL SIEBEN IST SEIT 0030 NICHT MEHR RICHTIG …", "DIE GESAMTZAHL ZEHN IST NICHT
+  NACHGEMESSEN" und "DIE ZAHL FÜNF OBEN IST NICHT NACHGEMESSEN".
+- GEMELDET, NICHT ENTSCHIEDEN (CC): Der Kopf der Probe nennt als WANN "nach JEDER Migration, die
+  Spalten, Constraints oder Policies beruehrt"; 0030 legt eine Tabelle mit drei Constraints an.
+  Gefahren wurde nach 0030 statt dessen supabase/checks/relay-rate-counters.sql (Vermerk
+  P13.6-81, Punkt (2)).
+- TRIGGER: der nächste Lauf von supabase/checks/db-stand.sql — dann die Proben 4, 6 und 8 messen
+  und ihre Erwartungen und docs/db-stand.md im selben Zug nachziehen.
+
+**Vorrat P13.6-84 — CLAUDE.md, "## Aktueller DB-/Analytics-Stand": DER SATZ "WAS DAMIT OFFEN
+IST UND HIER NICHT ENTSCHIEDEN WIRD …" FÜHRT EINE FRAGE ALS OFFEN, DIE SEIT `cc8fc98`
+BEANTWORTET IST.**
+- DER SATZ, WÖRTLICH: "WAS DAMIT OFFEN IST UND HIER NICHT ENTSCHIEDEN WIRD: Der Titel-Zeiger in
+  db-stand.sql braucht die Titel weiterhin an einem auffindbaren Ort; ein Pfad-Zeiger auf diese
+  Datei existiert nicht mehr."
+- DER BELEG (CC, GELESEN AM BESTAND): Commit `cc8fc98` hat den offenen Punkt "DER TITEL-ZEIGER IN
+  supabase/checks/db-stand.sql IST UNGEPRÜFT" samt Stub-Zeile in CLAUDE.md gestrichen; der Beleg
+  steht am Eintrag gleichen Titels in docs/offene-punkte.md ("Er trägt": der Zeiger in PROBE 8
+  trifft in docs/db-regeln.md genau eine Regel dieses Titels).
+- GENAUER (CC): Überholt ist die Einordnung als OFFEN. Die zwei Sachaussagen des Satzes stehen
+  weiter: Der Zeiger braucht den Titel an einem auffindbaren Ort, und db-stand.sql trägt keinen
+  Pfad-Zeiger auf CLAUDE.md (GEMESSEN AM REPO, 2026-09-30: Suche "CLAUDE" in
+  supabase/checks/db-stand.sql, 0 Treffer; Positivkontrolle: der Titel "DB-FUNKTIONEN +
+  SEARCH_PATH" trifft dort einmal). Wer den Satz ändert, nimmt ihn ganz (Dauerregel "WER EINE
+  HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR FALLE").
+- WARUM NICHT JETZT: Eine Änderung an einer Aussage von CLAUDE.md verlangt zuerst das Laden von
+  docs/claude-md-herleitung.md (Kopf von CLAUDE.md).
+- TRIGGER: die nächste Runde, die ohnehin eine Aussage in CLAUDE.md ändert.

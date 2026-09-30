@@ -765,6 +765,26 @@ aufeinander; sie liegen alle hier und finden einander.
   irgendwo ein Fehler steht. Ohne das Modul antwortet Make sofort (ebenda, Befund (aa):
   0,095–0,230 s, GEMESSEN). KEINE EMPFEHLUNG, wie der Satz lautet; das Verhalten mit Modul ist
   ein offener Messkandidat. Der Trigger ist der des Postens.
+  (9) WELCHER WEG ZUSTELLT UND WELCHER DIE ZUSTELLUNG PRÜFT — ERGÄNZT AM 2026-09-30 (Abschluss
+  der Scheibe 13.6-4 der Phase 13.6, Vermerk P13.6-70 der Phase 13.6; Setzung P13.6-66, Q6, der
+  Phase 13.6). Seit Bau-Commit `3b631a2` gilt für veröffentlichte, gehostete Seiten:
+  · Liegt die Zieladresse auf der Host-Liste (heute allein Make, Zone eu2 —
+    `hook.eu2.make.com`, `RELAY_HOSTS` in src/lib/relay/hosts.ts), geht das Formular
+    STANDARDMÄSSIG über das Relay von Pagesmith; die Danke-Seite erscheint nur, wenn der
+    Empfänger annimmt, sonst sieht der Besucher eine Meldung (Owner-Entscheidung P13.6-54,
+    Setzung P13.6-67 der Phase 13.6).
+  · Der DATENSPARMODUS, je Ziel ein Schalter, schickt direkt vom Browser, OHNE
+    Zustellprüfung — für ihn gilt der Posten "IM BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER
+    ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE …" weiter.
+  · Eine Adresse ausserhalb der Host-Liste und JEDER EXPORT schicken immer direkt vom Browser,
+    ebenfalls ohne Zustellprüfung (Setzung P13.6-59, Q11, der Phase 13.6).
+  · Ein geänderter Schalter wirkt erst nach dem Neu-Veröffentlichen (Setzung P13.6-62 der Phase
+    13.6); ohne Skript schickt jede Seite mit Ziel direkt an die Adresse (Setzung P13.6-64
+    derselben Phase).
+  Was still kaputtgeht: Ein Betreiber, der den Datensparmodus einschaltet oder exportiert,
+  verliert die Prüfung, ohne dass eine Seite anders aussieht; einer, der beim Relay die
+  Meldung sieht, hält sie für einen Fehler von Pagesmith. KEINE EMPFEHLUNG, wie der Satz
+  lautet. Der Trigger ist der des Postens.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
   ENTSCHEIDUNG). Grund: Die Achse hat keinen realen Konsumenten; was still kaputtginge, setzt
@@ -4294,3 +4314,16 @@ ergibt, liegt in docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 13 
   Grenze ARCHITEKT 2026-09-29, übermittelt im Auftrag des Teils 2. Der Stub in CLAUDE.md,
   "## Offene Punkte", Block "AUS DEM PHASENENDE 13 GEHOBEN (2026-09-29)", trägt Titel und
   Trigger im SELBEN Zug.
+  ERGÄNZT AM 2026-09-30 (Abschluss der Scheibe 13.6-4 der Phase 13.6, Vermerk P13.6-70 der
+  Phase 13.6) — FÜR RELAY-ZIELE GELÖST, FÜR DEN BROWSER-DIREKTEN WEG NICHT. Der Text darüber
+  bleibt wörtlich; Titel, Trigger und Stub bleiben, weil der Titel den browser-direkten Weg
+  benennt und dieser besteht.
+  · GELÖST: Seit Bau-Commit `3b631a2` zählt auf einer veröffentlichten, gehosteten Seite mit
+    Relay-Ziel allein Status 204 des Relays als zugestellt (Setzung P13.6-67 der Phase 13.6).
+    LIVE BELEGT (GEMESSEN, OWNER, 2026-09-30, Chrome): Eine Make-Adresse mit erfundener
+    Kennung ergab an `/api/f` 502, die Meldung statt der Danke-Seite, keinen Eingang bei Make.
+  · BESTEHT WEITER: im Datensparmodus, für Adressen ausserhalb der Host-Liste (heute allein
+    `hook.eu2.make.com`) und für jeden Export (Setzung P13.6-59, Q11, der Phase 13.6). Die
+    GRENZE oben ("Für den DATENSPARMODUS … bleibt er bestehen") trägt damit weiter und gilt
+    ebenso für die zwei anderen Fälle.
+  · Für den Betreiber: Punkt (9) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE".

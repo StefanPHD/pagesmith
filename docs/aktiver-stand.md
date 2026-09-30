@@ -474,6 +474,35 @@ DIE HOST-LISTE, WENN SEINE WEBHOOK-ADRESSEN GELESEN UND EINMAL LIVE GETESTET SIN
   Seite (ebenda, Befund (g); Messkandidat M8 teilweise offen). Nach dieser Entscheidung trägt die
   Host-Liste für Make deshalb heute allein `hook.eu2.make.com`.
 
+PROVENIENZ von P13.6-71: OWNER-ENTSCHEIDUNG 2026-09-30, übermittelt im Auftrag der
+Abschluss-Runde der Scheibe 13.6-4. BINDEND. (Die Überschrift dieses Abschnitts nennt das
+Anlagedatum der Datei; der Eintrag trägt sein eigenes.)
+
+**Owner-Entscheidung P13.6-71 — NACH DER RÜCKKEHR ZUR FORMULARSEITE IST DAS FORMULAR WIEDER
+ABSENDBAR. EIN ERNEUTES ABSENDEN WIRD ZUGESTELLT, ABER NICHT NOCH EINMAL GETRACKT.**
+- Setzung P13-26 der Phase 13 ("einmal je Formular und Seitenleben") bleibt.
+- GRUND: Ein Besucher, der zurückgeht, will meist etwas korrigieren; ein korrigierter Lead wiegt
+  mehr als ein vermiedenes Duplikat.
+- DER BEFUND, AUF DEN SIE ANTWORTET (GELESEN AM CODE, CC, 2026-09-30, Stand `3b631a2`):
+  · Nach einem erfolgreichen Absenden wird die Sperre `__psFormTargetBusy` nicht gelöst —
+    `free()` läuft allein über `fail()` (`__psFormTargetSend`, Text aus
+    `buildFormTargetRuntime`, src/lib/form-target.ts), im Relay-Weg (Status 204) wie im
+    direkten Weg (`opaque`). BESTAND SEIT `434dc86` (Scheibe 13-1 der Phase 13).
+  · `preventDefault` steht im submit-Listener VOR dem Versand (`formTargetBranch`,
+    src/lib/generate.ts); ein gesperrter Klick endet deshalb stumm — kein nativer Versand,
+    kein fetch, keine Meldung.
+  · Es gibt keinen `pageshow`-Handler (GEMESSEN AM REPO: 0 Treffer für `pageshow`,
+    `persisted`, `pagehide` in src/ ausserhalb der Tests und im Live-Text; Positivkontrolle
+    `keepalive`).
+  · Kein Test legt das Verhalten nach Erfolg fest: F4 (src/lib/form-target.test.ts) gilt der
+    Sperre WÄHREND eines Versands, K3a dem Zeitlimit.
+  · ABGELEITET: Stellt der Browser die Seite beim Zurückgehen aus dem Zurück-Cache (bfcache)
+    wieder her, lebt der Zustand weiter, die Sperre bleibt gesetzt, jeder Klick endet stumm.
+    Mit dem Beobachteten in L1 (Vermerk P13.6-70, Punkt (3)) verträglich.
+  · NICHT GEMESSEN: ob L1 tatsächlich ein bfcache-Fall war, und warum der zweite Versuch noch
+    ging.
+- UMSETZUNG: Arbeit P13.6-72 der Phase 13.6.
+
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 
 PROVENIENZ von P13.6-3 und P13.6-4: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag der
@@ -561,6 +590,11 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - FORTGESCHRIEBEN 2026-09-29 (Abschluss der Scheibe 13.6-3): 13.6-3 ist abgeschlossen (Vermerk
   P13.6-60). ALS NÄCHSTES STEHT 13.6-4 AN — der Anschluss im Seitenskript und der Schalter für
   den Datensparmodus (Setzung P13.6-56).
+- FORTGESCHRIEBEN 2026-09-30 (ARCHITEKT, Abschluss der Scheibe 13.6-4): 13.6-4 ist
+  abgeschlossen (Vermerk P13.6-70). DIE REIHENFOLGE IST JETZT: 13.6-5 Ratenbegrenzung → Scheibe
+  "Zurück-Cache" (Arbeit P13.6-72) → Zapier. ALLE DREI VOR DEM ERSTEN FREMDEN NUTZER. Die
+  Einschiebung der Scheibe "Zurück-Cache" ändert die Folge aus Setzung P13.6-56; deren Text
+  bleibt als Stand vor dieser Runde stehen.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -1484,26 +1518,19 @@ LIVE-TEST BESTANDEN.
 
 ## Zuschnitt Scheibe 13.6-4
 
-**GEGENSTAND:** "Anschluss im Seitenskript und Datensparmodus" — die vierte Bau-Scheibe der
-Phase 13.6 und die zweite der Stufe 1 (Setzung P13.6-56).
-- Das Seitenskript einer GEHOSTETEN Seite schickt ein Formular mit Ziel an das Relay
-  (`POST /api/f?f=<Kennung>`), wenn die Zieladresse auf der Host-Liste steht und das Ziel nicht
-  im Datensparmodus ist.
-- "Zugestellt" (204) → Danke-Seite und Track wie heute bei "erreicht". Alles andere → das
-  Formular bleibt mit der Meldung stehen (Entscheidung P13-17 der Phase 13).
-- Im Editor bekommt jedes Formular-Ziel einen Schalter für den Datensparmodus.
-Zugeschnitten am 2026-09-30; der Plan folgt in einer eigenen Runde.
-
-### Bindend für die Scheibe 13.6-4
-
-- Owner-Entscheidungen P13.6-16 (Transit), P13.6-54 (Relay als Standard für bekannte Dienste,
-  Datensparmodus per Schalter) und P13.6-55 (Host-Liste).
-- Setzungen P13.6-20 (nur gehostete Seiten), P13.6-48 bis P13.6-51 (R1 bis R4) und P13.6-59,
-  Q11 (Exporte bleiben browser-direkt).
-- AM BESTAND ERGÄNZT (CC, 2026-09-30), weil die Scheibe sie berührt: Setzung P13.6-21 (dem
-  Besucher genau zwei Zustände), Setzung P13.6-22 (das Server-Zeitlimit liegt unter
-  `FORM_TARGET_TIMEOUT_MS`) und Owner-Entscheidung P13.6-18 (das Relay für fremde Nutzer erst
-  mit Kunden-AVV).
+**ABGESCHLOSSEN AM 2026-09-30 — Bau-Commit `3b631a2`, Live-Test bestanden; Abschluss-Vermerk
+P13.6-70.**
+- GEGENSTAND: "Anschluss im Seitenskript und Datensparmodus" — die vierte Bau-Scheibe der
+  Phase 13.6 und die zweite der Stufe 1 (Setzung P13.6-56).
+  · Das Seitenskript einer GEHOSTETEN Seite schickt ein Formular mit Ziel an das Relay
+    (`POST /api/f?f=<Kennung>`), wenn die Zieladresse auf der Host-Liste steht und das Ziel
+    nicht im Datensparmodus ist.
+  · "Zugestellt" (204) → Danke-Seite und Track wie bei "erreicht". Alles andere → das Formular
+    bleibt mit der Meldung stehen (Entscheidung P13-17 der Phase 13).
+  · Im Editor bekommt jedes Formular-Ziel einen Schalter für den Datensparmodus.
+- Der Zuschnitt ist verdichtet: Hier stehen die Setzungen und Grenzen, die über die Scheibe
+  hinaus binden, dazu die Vermerke der Scheibe.
+- Was gestrichen ist: Vermerk P13.6-70, Punkt (11).
 
 ### Architekten-Setzungen zur Scheibe 13.6-4
 
@@ -1548,10 +1575,8 @@ Adresse samt Versandform, Setzung P13.6-32 der Scheibe 13.6-1).
 
 ### Ausser Scope der Scheibe 13.6-4
 
-- die Ratenbegrenzung (13.6-5);
-- Zapier (eigene Runde nach Lesung und Live-Test);
-- jedes Tracking-Ereignis vom Server;
-- eine Anzeige des Relay-Status für den Betreiber.
+- eine Anzeige des Relay-Status für den Betreiber — ungebaut; sie steht an keiner anderen
+  Stelle dieser Datei und bleibt deshalb hier stehen (Vermerk P13.6-70, Punkt (11)).
 
 ### Grenzen der Scheibe 13.6-4
 
@@ -1635,9 +1660,14 @@ Planrunde lief am 2026-09-30. REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
 - Q3 — Der Schalter steht nur in der Eingabe-Ansicht und nur bei einer Adresse der Host-Liste.
   Ein verborgener gespeicherter Wert bleibt erhalten.
 - Q5 — Der Live-Test misst die Dauer der Anfrage an `/api/f`.
+  ZUR HÄLFTE ERFÜLLT 2026-09-30: gemeldet ist die Dauer der Funktion im Vercel-Log, nicht die
+  Netzwerk-Dauer der Anfrage (Vermerk P13.6-70, Punkt (3)).
 - Q6 — Die Nachzüge (Betreiber-Dokumentation; der offene Punkt "IM BROWSER-DIREKTEN WEG
   ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE …") folgen mit dem
   Abschluss-Vermerk.
+  ERLEDIGT 2026-09-30: Punkt (9) am offenen Punkt "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE"
+  samt Stub-Zeile in CLAUDE.md; datierte Ergänzung am offenen Punkt "IM BROWSER-DIREKTEN WEG
+  …" (docs/offene-punkte.md), Titel und Stub unverändert.
 - Q7 — GRENZE: `referrerPolicy` ist nur in Chrome geprüft.
 - Die zwei Speicherwege aus Vermerk P13.6-65, Punkt (5), führen `dataSaver` mit. W-B2 bleibt
   als Pin OHNE Merkmal stehen und sagt das in seinem Kommentar; W-B2R ist sein Zwilling mit
@@ -1671,6 +1701,152 @@ BINDEND für diese Scheibe; das Redesign darf sie neu fassen.
 - Erklärtext der Kachel (`FORM_TARGET_EXPLAIN`): "Beim Absenden gehen die Eingaben an deine
   Zieladresse – bei unterstützten Diensten über Pagesmith mit Zustellprüfung, sonst direkt vom
   Browser – und der Besucher landet auf deiner Danke-Seite."
+
+### Abschluss der Scheibe 13.6-4
+
+**Vermerk P13.6-70 — ABSCHLUSS DER SCHEIBE 13.6-4 (ANSCHLUSS IM SEITENSKRIPT UND
+DATENSPARMODUS). Bau-Commit `3b631a2`** ("feat(form-target): Formulare gehosteter Seiten
+schicken über das Relay, Datensparmodus im Editor"); Vorrat-Commit `4e46d96`. LIVE-TEST
+BESTANDEN.
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (6): GEMESSEN, OWNER, live, 2026-09-30, Chrome im
+    Inkognito-Fenster (Version nicht angegeben), übermittelt im Auftrag der Abschluss-Runde.
+    Bytes und sha256 über `fetch(location.href, {cache: 'no-store'})`, je zweimal gleich.
+    Testseite `projekt-n-sy5bjj.publayer.net`, Formular `ps-i215n8`. Die Make-Adresse steht nur
+    verkürzt (`hook.eu2.make.com/icdb…`); Request-ID und Tracking-Schlüssel stehen bewusst
+    nicht in dieser Datei.
+
+(1) V1/R1 — SEITE OHNE FORMULAR-ZIEL: 30493 Bytes, sha256
+    `40c83cb36a543162717af8a01143246ed139d2cbfa7373f7888c39ca848f37e5`, vor dem Push und nach
+    Deploy und Neu-Veröffentlichen identisch. Dieselben Werte wie in Vermerk P13.6-37, Punkt
+    (1), und Vermerk P13.6-45, Punkt (1) (GEMESSEN AM BESTAND, CC).
+
+(2) V2 UND R2 — TESTSEITE, alter Code, ohne Datensparmodus: 18816 Bytes, sha256
+    `4f801fa8776f5e97ac584aa5ad887e457be89f7b362279cfec481d76412757e4`. Vor dem
+    Neu-Veröffentlichen schickte die Seite nach dem Deploy weiter direkt an
+    `hook.eu2.make.com`, keine Anfrage an `/api/f`, Danke-Seite, Eingang bei Make.
+    · GEMESSEN AM BESTAND (CC): Vermerk P13.6-60, Punkt (1), führt für dieselbe Testseite
+      ebenfalls 18816 Bytes, aber sha256 `71ccff7b…`. Gleiche Länge, anderer Hash; die Ursache
+      ist nicht erhoben (Kandidat: Schlüssel-Reihenfolge des Datenblocks, Punkt (7)).
+
+(3) L1 — NACH DEM NEU-VERÖFFENTLICHEN:
+    · zweimal `POST /api/f?f=ps-i215n8` → 204, Danke-Seite, je ein Eingang bei Make;
+    · Vercel "Function Invocation" 663 ms (erster Aufruf) und 187 ms (zweiter); die
+      Netzwerk-Dauer der Anfragen ist NICHT gemeldet (Setzung P13.6-66, Q5);
+    · keine Referer-Zeile bei `/api/f`, wohl bei `/api/e` — Setzung P13.6-48 (R1) damit auch am
+      Aufruf aus dem Seitenskript bestätigt, nur in Chrome (Setzung P13.6-66, Q7);
+    · AB DEM DRITTEN KLICK keine Reaktion, keine Anfrage. Wie der Owner zur Formularseite
+      zurückkam, ist NICHT gemeldet. Befund und Entscheidung: Owner-Entscheidung P13.6-71.
+
+(4) L2 — DER KERNFALL: Zieladresse `https://hook.eu2.make.com/` mit erfundener Kennung →
+    `/api/f` 502; die Meldung "Wir konnten den Empfang deiner Angaben nicht sicherstellen.
+    Bitte sende das Formular noch einmal." (der deutsche Text in `NOTICE_TEXTS`,
+    src/lib/form-target.ts — GELESEN AM CODE, CC); keine Danke-Seite, kein Eingang bei Make.
+    Mit der echten Adresse wieder zugestellt. Damit ist Setzung P13.6-67 live belegt: Eine
+    falsche Make-Adresse zeigt dem Besucher die Meldung statt der Danke-Seite.
+
+(5) DER DATENSPARMODUS:
+    · L3 — an (über "Ziel bearbeiten" → Schalter → "Ziel übernehmen", Editor neu geladen,
+      veröffentlicht): Anzeige "Zustellung: direkt vom Browser (Datensparmodus)"
+      (`DELIVERY_DATA_SAVER`, src/components/ActionPanel.tsx); 18830 Bytes, sha256
+      `c470da07588e7a6693f92dd747cb263cfef8415e4386ebf90ca3bab12cc80db9`; Versand direkt an
+      `hook.eu2.make.com`, kein `/api/f`, Danke-Seite, Eingang bei Make.
+    · L4 — im Datensparmodus aus der Konsole `POST /api/f` → 502, Vercel-Log
+      `[relay] not delivered: data-saver`. Setzung P13.6-62 live belegt.
+    · L5 — aus, neu veröffentlicht: 19876 Bytes, sha256
+      `0621dc802fb60c02d1278ecb032ce1af25f75882f530f757b3da7b3fb3cd77b5`; Versand über
+      `/api/f`, Danke-Seite, Eingang bei Make.
+
+(6) L6 UND R3:
+    · L6 — Adresse ausserhalb der Host-Liste: kein Schalter, die Infozeile im Wortlaut von
+      Owner-Entscheidung P13.6-68.
+    · R3 — der Export der Testseite trägt weder `/api/f` noch "relay" (Setzung P13.6-59, Q11).
+
+(7) DER DIFFERENZ-NACHWEIS LIVE (GEMESSEN, CC, 2026-09-30, Aufklärung zu L3; Sonde und
+    Seitentext ausserhalb des Repos):
+    · Die Live-Seite, per `curl` zweimal geholt (Cache-Busting-Köpfe, unkomprimiert, `fra1`,
+      kein `Set-Cookie`): 19876 Bytes, sha256 gleich L5.
+    · Die Einsetzung R2 aus dem echten `buildFormTargetRuntime` (Differenz der Aufrufe mit und
+      ohne `withRelay`, Zerlegung exakt, für `de` und `en` gleich): 1033 Bytes, im Live-Text
+      genau einmal; die Marke `,"relay":true` (13 Bytes) genau einmal.
+    · Beides entfernt: 18830 Bytes, aber ein anderer sha256 als L3. Positivkontrolle: ohne die
+      Entfernung 1046 Bytes Unterschied.
+    · Derselbe Datenblock in der Schlüssel-Reihenfolge nach Neu-Laden (`type`, `config`
+      {`endpoint`, `thanksUrl`}, `elementId` statt `elementId`, `type`, `config`), neu kodiert
+      über `embedInScript`: 18830 Bytes, sha256 GLEICH L3.
+    · FOLGE: Die Datensparmodus-Seite ist live die Relay-Seite ohne die zwei Einsetzungen.
+      Einziger weiterer Unterschied ist die Schlüssel-Reihenfolge — die Auflage der Dauerregel
+      "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN DOKUMENT …" (L3 nach
+      Neu-Laden veröffentlicht, L5 direkt nach "Ziel übernehmen"; Vorrat P13-62 der Phase 13).
+      Dass Postgres jsonb-Schlüssel so ordnet, ist ABGELEITET; getragen wird es durch den
+      Hash-Treffer.
+    · SUCHE mit Positivkontrollen: `dataSaver`, `Datensparmodus`, `fieldNames` je 0 im Live-Text
+      und im rekonstruierten L3; ausserhalb von R2 steht allein die Marke; `/api/f`,
+      `referrerPolicy`, `same-origin` nur in R2.
+
+(8) V2 → L3 (+14 BYTES): UNGEKLÄRT, AUSSERHALB DES GENERATORS.
+    · Ausgeschlossen durch den Diff von `3b631a2` (ohne Relay-Ziel ändert sich ausser
+      Kommentaren nichts an der Ausgabe — GELESEN AM CODE, CC), den Test RT-10b
+      (src/lib/form-target.test.ts) und den Nachweis in Punkt (7).
+    · KEINE EINZELNE ZUSAMMENHÄNGENDE EINFÜGUNG (GEMESSEN, CC): jede 14-Byte-Streichung aus dem
+      rekonstruierten L3, in beiden Schlüssel-Reihenfolgen, gegen V2 und gegen `71ccff7b…` —
+      0 Treffer; Positivkontrolle: eine eingepflanzte Streichung wurde an ihrer Lage gefunden.
+    · GELESEN AM CODE (CC), zur Einordnung: "Ziel übernehmen" (`handleAssignFormTarget`,
+      src/components/CodeImporter.tsx) ruft `anchorMappingTarget` → `stabilizeIds`
+      (src/lib/detect.ts): DOMParser, `stabilizeDoc`, Serialisierung über `outerHTML`.
+      `generateFunctional` (src/lib/generate.ts) serialisiert auf DEMSELBEN Weg; Spuren der
+      Normalform im Live-Text (etwa `required=""`) belegen deshalb nichts über den Editor-Code.
+      `stabilizeDoc` setzt je Element 30 Bytes (` data-pagesmith-id="ps-…"`), nicht 14.
+    · Kandidaten, KEINER BELEGT: Bearbeitungen im Schritt L2 an Code, Adresse oder
+      Einstellungen; nicht-idempotentes Parsen. Keine spätere Handlung hängt daran; nicht
+      weiter untersucht. Anlass von Hebungs-Kandidat P13.6-73.
+
+(9) BAU: Gates und Mutationsproben des Bau-Commits stehen weder in dieser Datei noch im
+    Material der Abschluss-Runde; sie werden hier nicht nachgetragen. Die Commit-Nachricht nennt
+    "Seiten ohne Relay-Ziel bleiben byte-gleich gegen Vorher-Werte".
+
+(10) GRENZEN, als Grenzen benannt:
+    · nur Chrome, eine Make-Zone (eu2), eine Testseite; kein A/B live.
+    · Die Danke-Seite der Testseite (`testdankeseite.irgendwas`) löst nicht auf (GEMESSEN, CC,
+      nslookup, 2026-09-30: "Non-existent domain"); die "Danke-Seite" war eine Fehlerseite des
+      Browsers. Die Navigation ist damit belegt, eine echte Danke-Seite nicht.
+    · Die Netzwerk-Dauer von `/api/f` ist nicht gemessen (Punkt (3)).
+    · Der A/B-Randfall (Setzung P13.6-66, Q1) ist live nicht geprüft.
+
+(11) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN — Anweisungen, die mit der Scheibe
+    abgelaufen sind:
+    · aus dem GEGENSTAND der Satz "Zugeschnitten am 2026-09-30; der Plan folgt in einer eigenen
+      Runde."; der Gegenstand selbst steht im Abschluss-Kopf des Zuschnitts;
+    · der Abschnitt "Bindend für die Scheibe 13.6-4" — eine Liste von Zeigern auf
+      Owner-Entscheidungen P13.6-16, -18, -54, -55 und Setzungen P13.6-20 bis -22, -48 bis -51
+      und -59 (Q11); die Entscheidungen selbst stehen unverändert an ihrem Ort;
+    · aus "Ausser Scope der Scheibe 13.6-4" drei Zeilen: die Ratenbegrenzung und Zapier stehen
+      in Setzung P13.6-56 und an Setzung P13.6-14, "jedes Tracking-Ereignis vom Server" regeln
+      Setzungen P13.6-4 und P13.6-24.
+    STEHEN GEBLIEBEN: die Zeile "eine Anzeige des Relay-Status für den Betreiber" (sie steht an
+    keiner anderen Stelle dieser Datei); die Setzungen P13.6-61 bis P13.6-64; die Grenzen der
+    Scheibe; Vermerk P13.6-65, Setzungen P13.6-66 und P13.6-67 und Owner-Entscheidung P13.6-68.
+    Je ein Auflösungs-Satz steht an Setzung P13.6-66, Q5 und Q6.
+
+(12) NACHGEZOGEN IN DIESEM COMMIT: Punkt (9) am offenen Punkt "BETREIBER-DOKUMENTATION FEHLT —
+    DREI PUNKTE" samt Stub-Zeile in CLAUDE.md; datierte Ergänzung am offenen Punkt "IM
+    BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE …"
+    (docs/offene-punkte.md; Titel, Trigger und Stub unverändert, weil sie weiter zutreffen);
+    Owner-Entscheidung P13.6-71, Arbeit P13.6-72, Hebungs-Kandidat P13.6-73; die Reihenfolge an
+    Setzung P13.6-14; eine Ergänzung an Vorrat P13.6-69.
+
+**Hebungs-Kandidat P13.6-73 — EIN VERGLEICHSWERT FÜR EINEN LIVE-BYTE-VERGLEICH WIRD UNMITTELBAR
+VOR DEM VERGLICHENEN SCHRITT ERHOBEN, NACH DENSELBEN BEARBEITUNGSSCHRITTEN IM EDITOR — NICHT VOR
+EINEM SCHRITT, DER DIE EINGABE VERÄNDERN KANN.**
+PROVENIENZ: ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde der Scheibe 13.6-4 am
+2026-09-30. KANDIDAT für eine Dauerregel; ENTSCHEIDET DAS PHASENENDE.
+- ANLASS: V2 wurde vor dem Schritt L2 erhoben, L2 veränderte die Eingabe, L3 wich um 14 Bytes ab,
+  deren Ursache nicht mehr zu klären war (Vermerk P13.6-70, Punkt (8)).
+- ENTFÄLLT, sobald ein Byte-Vergleich serverseitig gegen denselben Eingabestand läuft.
+- BEZUG: Dauerregel "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN DOKUMENT, NIE
+  AN EINER GESPEICHERTEN DATEI" — ihre Herkunfts-Auflage (Mappings aus derselben Herkunft) ist
+  die nächste Nachbarin; ebenso "EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT …", die den
+  frühesten Zeitpunkt setzt, während dieser Kandidat den spätesten setzt (Abgrenzung CC).
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -1786,6 +1962,50 @@ Grundlage der Stufe 1 (Owner-Entscheidung P13.6-17). BEZUG: docs/formular-empfae
 - BEZUG 2026-09-29: Owner-Entscheidung P13.6-55 der Phase 13.6 legt die Dienste der Stufe 1
   fest (Make und Zapier) und die Bedingung für die Aufnahme (gelesen und einmal live getestet).
   Offen bleiben Zapier ganz und für Make die Hosts der Zonen ausser eu2.
+
+**Arbeit P13.6-72 — SCHEIBE "ZURÜCK-CACHE": DAS FORMULAR IST NACH DER RÜCKKEHR WIEDER
+ABSENDBAR** (ARCHITEKT 2026-09-30, übermittelt im Auftrag der Abschluss-Runde der Scheibe
+13.6-4). Setzt Owner-Entscheidung P13.6-71 um; Befund dort. Reihenfolge: Setzung P13.6-14. DIE
+WAHL DER GESTALT TRIFFT DER PLAN JENER SCHEIBE.
+- KANDIDATEN aus der Aufklärung vom 2026-09-30 (CC, ABGELEITET; keine Wahl):
+  · K1 — die Sperre bei Erfolg vor der Navigation lösen. `submittedForms` bleibt, P13-26 damit
+    wörtlich erhalten. PREIS: Zwischen Antwort und Seitenwechsel öffnet sich ein Fenster, in dem
+    ein zweiter Klick erneut sendet; heute schützt die Sperre auch dort (Phase 13, Live-Schritt
+    L6 "Doppelklick: genau ein Eingang").
+  · K2 — ein `pageshow`-Handler leert bei `persisted` die Sperre. Das Fenster aus K1 bleibt zu.
+    OFFEN: ob `submittedForms` mitgeleert wird — nach Owner-Entscheidung P13.6-71 NICHT (kein
+    zweiter Track). Die Felder tragen nach der Rückkehr noch ihre Werte. Der Baustein stünde neu
+    im ausgelieferten Text (Dauerregel "WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE
+    EINBAHNSTRASSE …").
+  · K3 — die Seite vom Zurück-Cache ausschliessen (etwa über Cache-Köpfe der Serve-Route):
+    trifft jede gehostete Seite, andere Schicht, nicht gelesen.
+  · K4 — Status quo plus Betreiber-Dokumentation. Steht nach Owner-Entscheidung P13.6-71 nicht
+    mehr zur Wahl; hier nur, damit die Liste vollständig ist.
+- MESSANLEITUNG (Vorlage, CC, 2026-09-30):
+  · VORBEDINGUNGEN: A/B aus; sha256 des Live-Stands notieren; Chrome-Version; DevTools mit
+    "Preserve log", Zustand von "Disable cache" notieren (seine Wirkung auf den Zurück-Cache
+    ist ungeprüft); DANKE-SEITE AUF EINE AUFLÖSBARE ADRESSE setzen und neu veröffentlichen —
+    `testdankeseite.irgendwas` löst nicht auf (Vermerk P13.6-70, Punkt (10)), sonst misst man
+    den Fehlerseiten-Fall; Make-Eingänge zählen.
+  · M1 — DevTools → Application → Back/forward cache → "Test back/forward cache": Urteil und
+    Gründe.
+  · M2 — der Diskriminator: in der Konsole `window.__probe = 'P1'` und ein
+    `pageshow`-Listener, der `e.persisted` ausgibt. Positivkontrolle: vorher `'P1'`, nach F5
+    `undefined`. Dann dreimal: Absenden → Danke-Seite → Zurück; je Runde `window.__probe`
+    (`'P1'` = aus dem Zurück-Cache, `undefined` = frisch geladen), die `pageshow`-Zeile, ob ein
+    Klick eine Anfrage an `/api/f` erzeugt, Make-Eingänge. Vorhersage: ein stummer Klick genau
+    in den Runden mit `'P1'`.
+  · M3 — dasselbe im Datensparmodus (Anfrage an `hook.eu2.make.com`); Vorhersage: dasselbe
+    Muster.
+  · M4 (optional) — M2 einmal mit einer per Adresszeile geöffneten Seite, einmal aus dem Editor
+    heraus geöffnet (Kandidat Opener-Beziehung).
+- UNGEKLÄRT, NICHT GEMESSEN: warum in L1 der zweite Versuch noch ging. Kandidaten (ABGELEITET,
+  Chrome-Doku NICHT gelesen): ein offener Aufruf zur Zeit der Navigation (Beacon des
+  Seitenaufrufs, `fbevents.js`), eine Opener-Beziehung. Der eigene Relay- bzw. Direkt-Aufruf ist
+  zur Navigationszeit abgeschlossen — navigiert wird erst im `then` (GELESEN AM CODE).
+- NEBENWIRKUNG, ABGELEITET: Nach einer Wiederherstellung aus dem Zurück-Cache feuert auch kein
+  neuer Seitenaufruf (`if (window.__ps_pv) return;` im Emitter).
+- VOR DEM ERSTEN FREMDEN NUTZER (Setzung P13.6-14).
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -2097,6 +2317,13 @@ NEU; STEHT ER NICHT IN NORMALFORM, WIRD DAS PROJEKT DIRTY, AUCH OHNE INHALTLICHE
   entsteht, ist nicht gelesen; ebenso nicht geprüft, ob andere Übernehmen-Wege (Weiterleitung,
   Track, Text) denselben Weg nehmen.
 - FOLGE: nur eine falsche Anzeige "ungespeichert"; kein Datenverlust bekannt.
+- MECHANISMUS GELESEN 2026-09-30 (CC, Stand `3b631a2`): `anchorMappingTarget` ruft
+  `stabilizeIds` (src/lib/detect.ts) — DOMParser, `stabilizeDoc`, Serialisierung über
+  `outerHTML` —, und `handleAssignFormTarget` übernimmt das Ergebnis, wenn es abweicht. Denselben
+  Weg nehmen `handleAssignMapping`, `handleAssignTextMapping`, `handleAssignTrack` und das
+  Neu-Verknüpfen. Weil `generateFunctional` auf demselben Weg serialisiert, ändert eine reine
+  Normalisierung des Editor-Codes den veröffentlichten Text nur, wo neue Kennungen entstehen oder
+  das Parsen nicht idempotent ist (ABGELEITET). Vermerk P13.6-70, Punkt (8).
 - WIRKUNG AUF DIE TESTS: Der Test CI-S1 (src/components/CodeImporter.test.tsx) war dadurch in
   seiner Dirty-Hälfte hohl. An der Wurzel behoben im Bau-Commit `3b631a2`: CI-S1 nutzt den Code in
   der Serialisierungs-Normalform und verankert zuerst "Übernehmen ohne Wechsel ist nicht dirty".

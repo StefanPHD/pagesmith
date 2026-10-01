@@ -3424,6 +3424,9 @@ DIESER DATEI.**
 NACHGETRAGEN 2026-10-01 (Runde "Spaltenrechte — Plan festhalten, Entscheidungen,
 Regel-Präzisierung"): Der Plan steht jetzt als Vermerk P13.6-116, die Gestalt als Setzung
 P13.6-117 (Abschnitt "Planrunde der Scheibe Spaltenrechte").
+NACHGETRAGEN 2026-10-01 (Runde "Spaltenrechte — Anbieter-Lesung"): Die Vorbedingung S4 (Vermerk
+P13.6-116, Punkt (4)) ist gelesen — docs/plattform-befunde.md, Supabase-Abschnitt, LAUF 5, Teile
+(bd) bis (bk). Doku-Aussagen, keine Messung; die offenen Messungen stehen dort in Teil (bk).
 - GEGENSTAND: Arbeit P13.6-113 der Phase 13.6 — die Sicherheits-Scheibe "Spaltenrechte". Befund:
   Vermerk P13.6-112. Reihenfolge: Setzung P13.6-14.
 - BENENNUNG, DEKLARIERT (CC): wie bei den Scheiben "Zurück-Cache", "Zapier ins Relay" und
@@ -3669,6 +3672,9 @@ Wo "(CC)" steht, stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD
   docs/db-stand.md, docs/db-regeln.md und diese Datei — 0 Treffer; Positivkontrolle `bypassrls`
   in docs/plattform-befunde.md 2 Treffer). Ob `postgres` Eigner der Tabellen ist, ist nicht
   gemessen. Die Lesung gehört zur Vorbedingung aus Vermerk P13.6-116, Punkt (4).
+  GELESEN 2026-10-01: docs/plattform-befunde.md, Supabase-Abschnitt, Teil (bg) — Dashboard-Abfragen
+  laufen als `postgres`, laut RLS-Seite ist `postgres` auf Supabase Eigentümer mit `bypassrls`.
+  Eigentümer und Attribute in DIESEM Projekt bleiben ungemessen (ebenda, Teil (bk)).
 
 PROVENIENZ von P13.6-119 und P13.6-120: OWNER-ENTSCHEIDUNG 2026-10-01, übermittelt im Auftrag der
 Runde "Spaltenrechte — Plan festhalten, Entscheidungen, Regel-Präzisierung". BINDEND. Die Titel

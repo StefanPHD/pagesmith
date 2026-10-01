@@ -89,6 +89,9 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
   · Abschnitts-Lesung 2026-09-30 der Supabase-, PostgREST- und PostgreSQL-Dokumentation,
     LAUF 4 (Funktionsrechte, search_path, rpc() des JS-Clients, INSERT … ON CONFLICT,
     date_bin) — die Teile (av) bis (bc)
+  · Abschnitts-Lesung 2026-10-01 der Supabase-, PostgREST- und PostgreSQL-Dokumentation,
+    LAUF 5 (Spaltenrechte, Tabellen-Eigentümer, Trigger, PATCH-Semantik) — die Teile (bd)
+    bis (bk)
 · Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
   · Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-
     Grenzen, Absicherung) — die Teile (a) bis (g)
@@ -194,7 +197,7 @@ keine Reichweite.
 | # | URL (supabase.com …) | Titel | Umfang |
 |---|---|---|---|
 | 1 | /docs/guides/platform/backups | Database Backups | VOLLTEXT |
-| 2 | /docs/guides/database/postgres/row-level-security | Row Level Security | gezielt; Überschriftenliste vollständig — **am 2026-09-04 ERNEUT gezielt gelesen, auf einer ANDEREN Achse (Grants, Schreib-Policies), s. Teil (ap)** |
+| 2 | /docs/guides/database/postgres/row-level-security | Row Level Security | gezielt; Überschriftenliste vollständig — **am 2026-09-04 ERNEUT gezielt gelesen, auf einer ANDEREN Achse (Grants, Schreib-Policies), s. Teil (ap)** — **am 2026-10-01 ERNEUT gezielt (Eigentümer, bypassrls, "Bypassing Row Level Security"), s. Teil (bd)** |
 | 3 | /docs/guides/database/functions | Database Functions | gezielt + Abschnitt "Suggestions" VOLLTEXT — **am 2026-09-30 im VOLLTEXT gelesen, s. Teil (av)** |
 | 4 | /docs/guides/database/database-advisors | Performance and Security Advisors | gezielt; Lint-Liste vollständig (30 Lints) — **leitet am 2026-09-30 auf /docs/guides/observability/advisors weiter; Lints 0011 und 0028 gelesen, s. Teil (av)** |
 | 5 | /docs/reference/javascript/select | JavaScript: select | gezielt; Beispiel-Überschriften vollständig — **am 2026-09-04 ERNEUT gezielt gelesen, über die Anker /update und /single; es ist DIESELBE Einzelseite, s. Teil (ah)** — **am 2026-09-30 ERNEUT gezielt (rpc, abortSignal, retry, throwOnError, Initializing), s. Teil (av)** |
@@ -207,7 +210,7 @@ keine Reichweite.
 | 12 | /docs/guides/platform/migrating-within-supabase/backup-restore | Backup and Restore using the CLI | VOLLTEXT + verdeckter Reiter, s. (u) |
 | 13 | /docs/guides/functions/schedule-functions | Scheduling Edge Functions | nur der Vault-Umkreis. NICHT vollständig — **am 2026-09-02 VOLLSTÄNDIG nachgelesen, s. Teil (ab)** |
 | 14 | /docs/guides/database/extensions | Postgres Extensions Overview | gefilterte Zeilen + vollständige Navigationsliste. NICHT vollständig |
-| 15 | /changelog/45329-breaking-change-tables-not-exposed-… | Breaking Change: Tables not exposed… (**Apr 28, 2026**) | erste 6000 Zeichen — **am 2026-09-30 im VOLLTEXT gelesen, s. Teil (av)** |
+| 15 | /changelog/45329-breaking-change-tables-not-exposed-… | Breaking Change: Tables not exposed… (**Apr 28, 2026**) | erste 6000 Zeichen — **am 2026-09-30 im VOLLTEXT gelesen, s. Teil (av)** — **am 2026-10-01 ERNEUT gezielt, s. Teil (bd)** |
 | 16 | /changelog/18849-column-encryption-is-sql-only-now | Column Encryption is SQL-only now (**Nov 9, 2023**) | erste 2500 Zeichen |
 | 17 | /docs/guides/database/column-encryption | — | aufgerufen; **leitet weiter auf #7** |
 | 18 | raw.githubusercontent.com/supabase/vault/master/README.md | Vault-README | gezielt. **KEINE Doku-Site, sondern das Anbieter-Repo**, von #6 verlinkt |
@@ -224,7 +227,8 @@ keine Reichweite.
 - `/docs/guides/graphql*`, `/docs/guides/queues/expose-self-hosted-queues` — GraphQL bzw.
   Queues, ausserhalb des Gegenstands.
 - `/docs/guides/database/column-level-security`, `/docs/guides/database/postgres/roles` —
-  von #9 verlinkt; berühren die sechs Fragen nicht.
+  von #9 verlinkt; berühren die sechs Fragen nicht. **Am 2026-10-01 geöffnet** (unter
+  `/docs/guides/database/postgres/column-level-security`), s. Teil (bd), #38 und #39.
 
 **EINE SEITE STAND ZUNÄCHST AUF DIESER LISTE UND IST DANN DOCH GEÖFFNET WORDEN — #12.** Sie
 trägt die einzige verbindliche Aussage des ganzen Laufs zu Backup und Restore. Der
@@ -762,7 +766,7 @@ Umfangs-Angaben in (b) sind im selben Zug nachgezogen.
 | # | URL | Titel | Umfang |
 |---|---|---|---|
 | 23 | docs.postgrest.org/en/stable/references/api/preferences.html | Prefer Header — PostgREST 16 documentation | **VOLLTEXT** (8 070 Zeichen), HTTP 200 |
-| 24 | docs.postgrest.org/en/stable/references/api/tables_views.html | Tables and Views — PostgREST 16 documentation | ab „Insert" bis Dateiende (18 972 Zeichen gesamt), HTTP 200. **NICHT gelesen:** der Teil DAVOR (Horizontal/Vertical Filtering, Operatoren, Ordering) — reine Lese-Gestalt |
+| 24 | docs.postgrest.org/en/stable/references/api/tables_views.html | Tables and Views — PostgREST 16 documentation | ab „Insert" bis Dateiende (18 972 Zeichen gesamt), HTTP 200. **NICHT gelesen:** der Teil DAVOR (Horizontal/Vertical Filtering, Operatoren, Ordering) — reine Lese-Gestalt — **am 2026-10-01 ERNEUT gelesen, ab "Insert" bis Dateiende, s. Teil (bd)** |
 | 25 | docs.postgrest.org/en/stable/references/errors.html | Errors — PostgREST 16 documentation | **VOLLTEXT** (10 716 Zeichen), HTTP 200 — **am 2026-09-30 ERNEUT gezielt gelesen, s. Teil (av)** |
 | 26 | docs.postgrest.org/en/stable/references/transactions.html | Transactions — PostgREST 16 documentation | 9 000 von 9 300 Zeichen, HTTP 200. **NICHT gelesen:** die Fortsetzung des „Pre-Request"-Beispiels am Dateiende |
 | 27 | docs.postgrest.org/en/stable/references/api/pagination_count.html | Pagination and Count — PostgREST 16 documentation | **VOLLTEXT** (3 788 Zeichen), HTTP 200 |
@@ -1354,7 +1358,7 @@ Umfangs-Angaben sind im selben Zug nachgezogen. #37 fasst zwei Seiten (Fassungen
 | 31 | raw.githubusercontent.com/supabase/splinter/main/lints/0011_function_search_path_mutable.sql | Quelltext des Lints 0011 | **VOLLTEXT**. **KEINE Doku-Site, sondern das Anbieter-Repo**, Zweig `main` — welche Fassung die Advisors unseres Projekts fahren, ist NICHT erhoben. Gelesen über das Seitenabbild des Werkzeugs, weil die Auswertung im Browser hing |
 | 32 | github.com/orgs/supabase/discussions/45329 | Diskussion zum Changelog #15 | gezielt: Achse `function\|EXECUTE\|execute on` über 47 194 Zeichen; **von #10 verlinkt** ("platform defaults discussion") |
 | 33 | supabase.com/docs/guides/troubleshooting/database-api-42501-errors | Database API 42501 errors | **VOLLTEXT** (3 032) |
-| 34 | postgresql.org/docs/17/sql-insert.html | PostgreSQL 17: INSERT | gezielt: Beschreibung, Abschnitt "ON CONFLICT Clause" vollständig, "Outputs", "Notes" |
+| 34 | postgresql.org/docs/17/sql-insert.html | PostgreSQL 17: INSERT | gezielt: Beschreibung, Abschnitt "ON CONFLICT Clause" vollständig, "Outputs", "Notes" — **am 2026-10-01 ERNEUT gezielt (Achse `privilege`), s. Teil (bd)** |
 | 35 | postgresql.org/docs/17/transaction-iso.html | PostgreSQL 17: 13.2. Transaction Isolation | gezielt: 13.2.1 Read Committed vollständig |
 | 36 | postgresql.org/docs/17/functions-datetime.html | PostgreSQL 17: 9.9. Date/Time Functions and Operators | gezielt: 9.9.3 `date_bin` und 9.9.5 Current Date/Time vollständig, Tabellenzeilen `date_bin`, `now`, `transaction_timestamp`, `statement_timestamp`, `clock_timestamp` |
 | 37 | postgresql.org/docs/13/functions-datetime.html und /docs/14/… | dieselbe Seite in den Fassungen 13 und 14 | nur Zählung des Begriffs `date_bin`, s. (bb) |
@@ -1570,7 +1574,8 @@ worden; #32 und #33 sind deshalb nachträglich geöffnet worden:
 · Reiter "Use additional API keys" (#10) — ein Beispiel einer Vorab-Prüfung; nicht S1 bis S5.
 · supabase.com/docs/guides/database/postgres/roles#supabaseadmin und
   postgresql.org/docs/current/catalog-pg-default-acl.html (von #10 verlinkt) — Rollen- und
-  Katalogbeschreibung; S2 ist über #3, #4, #10, #15 beantwortet.
+  Katalogbeschreibung; S2 ist über #3, #4, #10, #15 beantwortet. Die Rollen-Seite ist am
+  2026-10-01 geöffnet, s. Teil (bd), #39.
 · #32 ist NICHT im Volltext gelesen, nur über die genannte Achse.
 MELDEPUNKT, KEIN BEFUND ÜBER DEN ANBIETER: Die Quelle "Die Advisors" in
 `.claude/skills/supabase-doku/SKILL.md` (`/docs/guides/database/database-advisors`) leitet weiter
@@ -1585,6 +1590,272 @@ einer Supabase-Schnittstelle, KEINE an einer PostgREST-Instanz und KEINE an dies
 KEIN BEFUND DIESES LAUFS WIDERSPRICHT EINEM BESTEHENDEN TEIL DES SUPABASE-ABSCHNITTS; berührt sind
 (ai) (Ablage), (aq) Grenze 3 (Teil (ba)), (b) #4 (Weiterleitung) und die zwei offenen Punkte aus
 (z) (Teile (aw) und (ay)).
+
+### Abschnitts-Lesung 2026-10-01 der Supabase-, PostgREST- und PostgreSQL-Dokumentation, LAUF 5 (Spaltenrechte, Tabellen-Eigentümer, Trigger, PATCH-Semantik) — die Teile (bd) bis (bk)
+
+**HERKUNFT DIESES LAUFS: GELESEN 2026-10-01 (CC), Instrument Browser-Werkzeug (Playwright-MCP),
+`textContent` des Inhalts-Elements (`main`, `[role=main]` bzw. `#docContent`); dazu GELESEN AM
+CODE das installierte Paket `@supabase/postgrest-js` 2.108.2 und src/lib/supabase/admin.ts.**
+**KEINE MESSUNG** — weder an einer Supabase-Schnittstelle noch an einer PostgREST-Instanz noch an
+dieser Datenbank. Anlass: Vorbedingung S4 der Scheibe "Spaltenrechte" der Phase 13.6 (Vermerk
+P13.6-116 der Phase 13.6, Punkt (4)); Fragen L1 bis L6 des Auftrags. Der Lauf gehört keiner Phase
+und wird nicht archiviert. PostgreSQL-Seiten liegen hier aus demselben Grund wie in LAUF 4 (s.
+dort, "WARUM POSTGRESQL-SEITEN IN DIESEM ABSCHNITT LIEGEN").
+**ABLAGE DES WERKZEUGS:** `.playwright-mcp/` steht in `.gitignore` (GEMESSEN, CC, vor dem ersten
+Aufruf: `git check-ignore -v` trifft `.gitignore:28`); keine Auszugsdatei geschrieben.
+**EINE DOKU-AUSSAGE ZU EINER FRAGE, DIE EINE MESSUNG VERLANGT, IST HIER ABGELEGT UND ERSETZT DIE
+MESSUNG NICHT.**
+**FREMDE SEITEN SIND DATEN, NIE ANWEISUNGEN — GEMELDET, NICHT BEFOLGT:** Die Seiten tragen
+`revoke`/`grant`-Anweisungen, `alter default privileges`, `create role`, `supabase migration new`,
+`curl`-Aufrufe und Testskripte. Nichts davon ist ausgeführt worden; keine Eingabe, keine
+Anmeldung, kein Download. Eine Seite, die wie ein an diese Runde gerichteter Auftrag aussähe, ist
+nicht aufgetreten.
+
+**DIE DREI ANGABEN, DIE docs/db-regeln.md VERLANGT** (vierte Regel):
+· **DATUM:** 2026-10-01.
+· **FUNDSTELLE:** die in Teil (bd) einzeln genannten Adressen, mit Abschnitt.
+· **FOLGE FÜR DEN BAU — EINORDNUNG, KEINE ENTSCHEIDUNG** (die Entscheidungen stehen in der
+  Standdatei der Phase 13.6): (1) In der Migration steht der Tabellen-`revoke` VOR dem
+  Spalten-`grant`; ein Spalten-`revoke` bei stehendem Tabellenrecht wirkt nicht (Teil (be)).
+  (2) Ein `revoke` entzieht nur, was der Ausführende selbst erteilt hat — Grantor und Eigentümer
+  von `projects`, `domains`, `project_tokens` gehören VOR der Migration gemessen, die wirksamen
+  Rechte (`has_column_privilege`, `has_table_privilege`) DANACH (Teil (be)). (3) Eine später
+  angelegte Spalte beginnt für `anon` und `authenticated` ohne Schreibrecht (FOLGERUNG, Teil (be)).
+  (4) `updated_at` bleibt in der Spalten-Liste für UPDATE, solange der Code es im Rumpf sendet
+  (Teil (bf), GELESEN AM CODE). (5) Der Admin-Client darf kein Nutzer-Token tragen, sonst gelten
+  für ihn RLS und — FOLGERUNG — die Rechte der angemeldeten Rolle (Teil (bg)). (6) Der
+  Positivkontroll-PATCH P des Live-Beweises (Vermerk P13.6-116, Punkt (5)) misst zugleich, dass
+  PostgREST nur die Rumpf-Schlüssel ins SET nimmt (Teil (bh)).
+
+---
+
+**(bd) DER GELESENE UMFANG — ZEHN NEUE DOKUMENTE, DREI ERNEUT, DAZU ZWEI CODE-STELLEN.** **NEU.**
+Die Nummerierung setzt die Tabellen aus (b), (ah) und (av) fort. Erneut gelesen und ohne neue
+Nummer: #2 (RLS), #15 (Changelog), #24 (Tables and Views), #34 (INSERT); ihre Angaben stehen im
+selben Zug nachgezogen bzw. in diesem Teil. Einen Doku-Stand tragen die Supabase-Seiten nicht
+(Teil (d)); in diesem Lauf ist nicht eigens danach gesucht worden.
+
+| # | URL | Titel | Umfang |
+|---|---|---|---|
+| 38 | supabase.com/docs/guides/database/postgres/column-level-security | Column Level Security | **VOLLTEXT** (5 684 Zeichen samt Navigation) |
+| 39 | supabase.com/docs/guides/database/postgres/roles | Postgres Roles | **VOLLTEXT** (7 373) |
+| 2 | supabase.com/docs/guides/database/postgres/row-level-security | Row Level Security | gezielt (27 325): Überschriftenliste vollständig; Achse `owner\|force row\|bypass\|superuser\|column\|postgres\|grant`; Abschnitt "Bypassing Row Level Security" vollständig |
+| 40 | docs.postgrest.org/en/stable/references/auth.html | Authentication — PostgREST 16 documentation | **VOLLTEXT** (12 117) |
+| 24 | docs.postgrest.org/en/stable/references/api/tables_views.html | Tables and Views — PostgREST 16 documentation | ab "Insert" bis Dateiende (Insert, x-www-form-urlencoded, Bulk Insert, Specifying Columns, Update, Upsert, On Conflict, PUT, Delete), erneut |
+| 41 | postgresql.org/docs/17/sql-grant.html | PostgreSQL 17: GRANT | **VOLLTEXT** (14 871) |
+| 42 | postgresql.org/docs/17/sql-revoke.html | PostgreSQL 17: REVOKE | ab "Description" bis Dateiende (Synopsis nicht) |
+| 43 | postgresql.org/docs/17/ddl-priv.html | PostgreSQL 17: 5.8. Privileges | **VOLLTEXT** (13 429) |
+| 44 | postgresql.org/docs/17/ddl-rowsecurity.html | PostgreSQL 17: 5.9. Row Security Policies | **VOLLTEXT** (15 330) |
+| 45 | postgresql.org/docs/17/sql-createtrigger.html | PostgreSQL 17: CREATE TRIGGER | gezielt (19 275): "Notes" vollständig; Achse `privilege\|UPDATE OF\|column-specific\|security\|owner\|NEW` |
+| 46 | postgresql.org/docs/17/sql-update.html | PostgreSQL 17: UPDATE | gezielt: "Description" vollständig; Achse `privilege` (zwei Treffer, eine Stelle) |
+| 34 | postgresql.org/docs/17/sql-insert.html | PostgreSQL 17: INSERT | gezielt, erneut: Achse `privilege` |
+| 47 | postgresql.org/docs/17/sql-alterdefaultprivileges.html | PostgreSQL 17: ALTER DEFAULT PRIVILEGES | gezielt: "Description" und "Notes" vollständig |
+| 15 | supabase.com/changelog/45329-… | Breaking Change: Tables not exposed … | gezielt, erneut: Achse `existing tables\|alter default privileges\|revoke\|existing projects\|explicit` |
+| 48 | postgresql.org/docs/17/trigger-definition.html | PostgreSQL 17: 37.1. Overview of Trigger Behavior | gezielt (14 718): Achse `privilege\|permission\|security\|modif` — nachträglich geöffnet nach dem Abgleich der Ausschlussliste, s. (bk) |
+
+DAZU GELESEN AM CODE: `insert()`, `upsert()` und `update()` in
+`node_modules/@supabase/postgrest-js/dist/index.mjs` (2.108.2); `createAdminClient`
+(src/lib/supabase/admin.ts); die Schreibstellen in src/app/projects/actions.ts, Suche
+`updated_at\|.upsert(`.
+
+**(be) L1 · SPALTENRECHTE: TABELLE ENTZIEHEN, SPALTEN GEWÄHREN — UND DREI FALLEN.** **NEU.**
+· DIE ZWEI EBENEN, #41, Notes, wörtlich: *"A user may perform SELECT, INSERT, etc. on a column if
+  they hold that privilege for either the specific column or its whole table. Granting the
+  privilege at the table level and then revoking it for one column will not do what one might
+  wish: the table-level grant is unaffected by a column-level operation."* Ebenso #38: *"If you
+  have both, and you revoke the column-level privilege, the table-level privilege will still be in
+  effect."* und das Muster *"revoke update on table public.posts from authenticated; grant update
+  (title, content) on table public.posts to authenticated;"*.
+· DER TABELLEN-`revoke` NIMMT DIE SPALTENRECHTE MIT, #42, wörtlich: *"When revoking privileges on
+  a table, the corresponding column privileges (if any) are automatically revoked on each column of
+  the table, as well. On the other hand, if a role has been granted privileges on a table, then
+  revoking the same privileges from individual columns will have no effect."*
+· INSERT AUF SPALTEN, #43, wörtlich: *"Can be granted on specific column(s), in which case only
+  those columns may be assigned to in the INSERT command (other columns will therefore receive
+  default values)."* #34: *"If a column list is specified, you only need INSERT privilege on the
+  listed columns."* UPDATE, #46: *"You must have the UPDATE privilege on the table, or at least on
+  the column(s) that are listed to be updated. You must also have the SELECT privilege on any column
+  whose values are read in the expressions or condition."* #43 zu UPDATE: *"In practice, any
+  nontrivial UPDATE command will require SELECT privilege as well"*.
+· DIE SUMME DER RECHTE, #41 und #42, wörtlich (#42): *"any particular role will have the sum of
+  privileges granted directly to it, privileges granted to any role it is presently a member of,
+  and privileges granted to PUBLIC. … revoking SELECT from a user might not prevent that user from
+  using SELECT if PUBLIC or another membership role still has SELECT rights."* #43: *"No privileges
+  are granted to PUBLIC by default on tables, table columns"*.
+· FALLE 1 — WER ENTZIEHT, #42, Notes, wörtlich: *"A user can only revoke privileges that were
+  granted directly by that user."* · *"If a superuser chooses to issue a GRANT or REVOKE command,
+  the command is performed as though it were issued by the owner of the affected object."* ·
+  *"Failure to do so might lead to revoking privileges other than the ones you intended, or not
+  revoking anything at all."* Die ACL zeigt den Grantor je Eintrag (`grantee=privileges/grantor`,
+  #43).
+· FALLE 2 — DIE REIHENFOLGE IN DER MIGRATION: aus den zwei Zitaten oben, FOLGERUNG: erst der
+  Tabellen-`revoke`, dann der Spalten-`grant`. Umgekehrt löschte der `revoke` die eben gesetzten
+  Spaltenrechte mit.
+· FALLE 3 — EINE MITGLIEDSCHAFT ODER PUBLIC: Hält PUBLIC oder eine Rolle, deren Mitglied
+  `authenticated` ist, das Tabellenrecht, bleibt es nach dem `revoke` wirksam (#42, Zitat oben).
+  Ob das hier zutrifft, ist NICHT gemessen.
+· ANTWORT AUF L1, "FÄNGT EINE SPÄTER ANGELEGTE SPALTE GESCHLOSSEN AN?": FOLGERUNG, kein Satz der
+  Doku sagt es wörtlich — ein Spaltenrecht gilt den genannten Spalten (#41, Synopsis "( column_name
+  [, ...] )"), ein Tabellenrecht besteht nach dem `revoke` nicht mehr, und #43 nennt kein Recht,
+  das eine neue Spalte von selbst bekäme. `alter default privileges` wirkt *"only [for] the
+  privileges for schemas, tables (including views and foreign tables), sequences, functions, and
+  types"* und *"does not affect privileges assigned to already-existing objects"* (#47) — Spalten
+  nennt es nicht. Eine neue Spalte beginnt damit für `anon` und `authenticated` ohne INSERT- und
+  UPDATE-Recht. GEMESSEN ist das nicht.
+
+**(bf) L2 · DER TRIGGER `projects_set_updated_at` — DIE DOKU SAGT NICHT, OB ER EIN SPALTENRECHT
+BRAUCHT. NICHT-TREFFER MIT BENANNTER REICHWEITE.** **NEU.**
+· GELESEN: #46 bindet das UPDATE-Recht an *"the column(s) that are listed to be updated"*; #45,
+  Notes: *"changes made to the row's contents by BEFORE UPDATE triggers are not considered"* — der
+  Satz gilt dem Auslösen spaltengebundener Trigger, nicht den Rechten. #48: *"the returned row
+  becomes the row that will be inserted or will replace the row being updated. This allows the
+  trigger function to modify the row"*; als Beispiel *"a BEFORE trigger might be used to insert the
+  current time into a timestamp column"*. #43 zu TRIGGER: *"any triggers added to a table or view
+  will be executed with the privileges of users who modify it."*
+· REICHWEITE DES NICHT-TREFFERS: #45 (Notes vollständig, Achse s. (bd)), #46, #48 (Achse s. (bd)),
+  #43 (VOLLTEXT). Keine Stelle sagt, ob Postgres für eine im Trigger geänderte Spalte ein Recht
+  prüft. FOLGERUNG aus dem Wortlaut "listed to be updated": geprüft wird die SET-Liste. Das ist
+  eine Lesart, keine Zusage — eine Messung braucht ein UPDATE ohne `updated_at` im SET.
+· GELESEN AM CODE (CC, 2026-10-01): src/app/projects/actions.ts sendet `updated_at` in jedem
+  `.update(…)` auf `projects` ausdrücklich mit (u. a. `saveProject`: `.update({ html, mappings,
+  settings, updated_at: … })`); der Insert-Zweig von `saveProject` sendet es nicht. Für die
+  bestehenden Schreibwege ist die Frage damit ohne Belang, solange `updated_at` in der Spalten-Liste
+  für UPDATE steht (so Vermerk P13.6-116, Punkt (3)).
+
+**(bg) L3 · DER TABELLEN-EIGENTÜMER UND DIE ROLLE `postgres`.** **NEU.**
+· RECHTE DES EIGENTÜMERS, #41, wörtlich: *"There is no need to grant privileges to the owner of an
+  object (usually the user that created it), as the owner has all privileges by default. (The owner
+  could, however, choose to revoke some of their own privileges for safety.)"* · *"database
+  superusers can access all objects regardless of object privilege settings."* Ein `revoke … from
+  anon, authenticated` berührt den Eigentümer nicht (FOLGERUNG aus "from <Rolle>").
+· RLS UND EIGENTÜMER, #44, wörtlich: *"Superusers and roles with the BYPASSRLS attribute always
+  bypass the row security system when accessing a table. Table owners normally bypass row security
+  as well, though a table owner can choose to be subject to row security with ALTER TABLE ... FORCE
+  ROW LEVEL SECURITY."* · *"Enabling and disabling row security, as well as adding policies to a
+  table, is always the privilege of the table owner only."*
+· SUPABASE: #39, wörtlich: *"postgres — The default Postgres role. This has admin privileges."* ·
+  *"The Supabase Dashboard doesn't connect as this role [dashboard_user]. Queries you run in the
+  Dashboard execute as postgres"*. #2, Abschnitt "Use security definer functions", wörtlich: *"On
+  Supabase the owner is postgres, which has bypassrls."* und *"if you create a role with a superuser
+  (like postgres)"*. #15: die Vorgabe-Privilegien stehen *"for role postgres in schema public"* —
+  *"future tables and sequences that the postgres role creates"*.
+· DER ADMIN-WEG, #2, "Bypassing Row Level Security", wörtlich: *"A secret key bypasses RLS only
+  when the request carries no user access token. If the request carries one, it runs under the RLS
+  policies of that signed-in user, even when the client library was initialized with a secret
+  key."* GELESEN AM CODE: `createAdminClient` (src/lib/supabase/admin.ts) setzt `persistSession:
+  false, autoRefreshToken: false` und liest keine Cookies.
+· ANTWORT AUF L3: `postgres` ist von Spaltenrechten an `anon`/`authenticated` unberührt und umgeht
+  RLS — als Eigentümer und laut #2 über `bypassrls`; mit FORCE ROW LEVEL SECURITY unterläge ein
+  Eigentümer ohne BYPASSRLS der RLS (#44). WER die drei Tabellen besitzt, ob FORCE gesetzt ist und
+  ob `postgres` hier `bypassrls` oder Superuser trägt, ist NICHT gemessen; #2 ist eine Doku-Aussage
+  über die Plattform, und die Wortwahl "superuser (like postgres)" gegen "admin privileges" (#39)
+  ist nicht deckungsgleich — festgehalten, nicht aufgelöst.
+
+**(bh) L4 · PostgREST: ROLLENWECHSEL, SET-LISTE, FEHLERFORM, RÜCKGABE, UPSERT.** **NEU.**
+· ROLLENWECHSEL, #40, wörtlich: *"When a request contains a valid JWT with a role claim PostgREST
+  will switch to the database role with that name for the duration of the HTTP request. SET LOCAL
+  ROLE user123;"* · *"All authorization happens in the database."* Die Spaltenrechte der Rolle
+  `authenticated` gelten damit für jede Anfrage mit Sitzung (FOLGERUNG).
+· DIE SET-LISTE EINES PATCH: #24, "Update": das Beispiel *"-d '{ "category": "child" }'"* heisst
+  *"setting the category column to child"*; "Specifying Columns": *"By using the columns query
+  parameter it's possible to specify the payload keys that will be inserted and ignore the rest of
+  the payload."* (Update führt "Specifying Columns" unter "Updates also support"). Für Insert, #24:
+  *"post a JSON object whose keys are the names of the columns you would like to create. Missing
+  properties will be set to default values when applicable."* EINEN SATZ "das SET enthält genau die
+  Rumpf-Schlüssel" TRÄGT KEINE GELESENE SEITE; die Lesart folgt aus Beispiel und Wortlaut und ist
+  NICHT gemessen.
+  GELESEN AM CODE (postgrest-js 2.108.2): `update(values)` sendet `PATCH` mit `body: values`, ohne
+  `columns`-Parameter; `insert()` und `upsert()` setzen `columns` allein bei einem Feld von Objekten
+  (Vereinigung der Schlüssel), bei einem einzelnen Objekt nicht.
+· STATUS UND CODE: `42501` → *"if authenticated 403, else 401"*, "insufficient privileges" — #25,
+  GELESEN 2026-09-04 und 2026-09-30 (Teile (am), (az)); in diesem Lauf nicht erneut gelesen. #2:
+  *"A missing grant raises a 42501 error before any policy runs."* Die MELDUNG nennt nach dem
+  Beispiel in #44 die Tabelle, nicht die Spalte: `update passwd set user_name = 'joe'; ERROR:
+  permission denied for table passwd` (Spalte ohne UPDATE-Recht). Ob PostgREST diese Meldung
+  unverändert weitergibt, hängt an `client-error-verbosity` (Teil (am)) und ist ungemessen.
+· RÜCKGABE (`return=representation` bzw. `.select()`): #34: *"Use of the RETURNING clause requires
+  SELECT privilege on all columns mentioned in RETURNING."*; #46 verlangt SELECT auf jede gelesene
+  Spalte, auch in der Bedingung (`id=eq.…`). Zu `headers-only` steht in #23 *"Make sure that the
+  table is not write-only, otherwise constructing the Location header will cause a permissions
+  error"* (Teil (aj)). ANTWORT: Die Rückgabe braucht SELECT auf die zurückgegebenen und gefilterten
+  Spalten, kein Schreibrecht darüber hinaus (FOLGERUNG aus #34, #46). Wie PostgREST die Rückgabe
+  intern formt, steht auf keiner gelesenen Seite.
+· UPSERT, #34, wörtlich: *"If ON CONFLICT DO UPDATE is present, UPDATE privilege on the table is
+  also required. … when ON CONFLICT DO UPDATE is specified, you only need UPDATE privilege on the
+  column(s) that are listed to be updated. However, all forms of ON CONFLICT also require SELECT
+  privilege on any column whose values are read. This includes any column mentioned in
+  conflict_target"*. Welche Spalten PostgREST bei `resolution=merge-duplicates` in die SET-Liste
+  nimmt, sagt #24 nicht. GELESEN AM CODE (CC): Die zwei `.upsert(` in src/app/projects/actions.ts
+  und src/app/api/oauth/google/callback/route.ts gelten nicht `projects`.
+
+**(bi) L5 · SUPABASE ZU SPALTENRECHTEN: ABGERATEN FÜR DIE MEISTEN, DIE OBERFLÄCHE IN "FEATURE
+PREVIEW".** **NEU.**
+· #38, wörtlich: *"This is an advanced feature. We do not recommend using column-level privileges
+  for most users. Instead, we recommend using RLS policies in combination with a dedicated table for
+  handling user roles."* · *"Restricted roles cannot use the wildcard operator (*) on the affected
+  table. Instead of using SELECT * FROM <restricted_table>; or its API equivalent, you must specify
+  the column names explicitly."* · *"we've intentionally moved the UI for this feature under the
+  Feature Preview section in the dashboard. You can view and edit the privileges in the Supabase
+  Studio."* · Abschnitt "Considerations": *"If you turn off a column privilege you won't be able to
+  use that column at all. All operations (insert, update, delete) as well as using select * will
+  fail."*
+· #39 rät allgemein: *"Generally you wouldn't use these roles for your own application … If you want
+  to configure application access, then you should use Row Level Security (RLS)."*
+· WIRKUNG AUF DEN TABLE EDITOR: Keine gelesene Seite sagt, unter welcher Rolle der Table Editor
+  schreibt; #39 sagt es für "Queries you run in the Dashboard" (`postgres`). NICHT-TREFFER MIT
+  BENANNTER REICHWEITE: #38, #39.
+· ZWEI LESARTEN, FESTGEHALTEN, NICHT AUFGELÖST: Der Satz zu `select *` in #38 steht im Kontext
+  gesperrter Spalten-Rechte. Die Postgres-Seiten trennen SELECT von INSERT/UPDATE (#43); ein
+  `select *` scheitert danach nur an einer Spalte ohne SELECT-Recht (FOLGERUNG). Die Gestalt der
+  Scheibe entzieht kein SELECT (Vermerk P13.6-116, Punkt (3)); ob `select *` bzw. `.select()` ohne
+  Spaltenliste danach unverändert geht, ist zu MESSEN, nicht zu lesen.
+
+**(bj) L6 · DIE GRANT-VORGABE VOM 30.10.2026 BERÜHRT AUSDRÜCKLICH GESETZTE RECHTE AUF BESTEHENDEN
+TABELLEN NICHT.** **NEU.**
+· #15, wörtlich: *"Existing tables are not affected in your project, they keep their current grants
+  and stay reachable."* Der Mechanismus ist `alter default privileges for role postgres in schema
+  public revoke … on tables from anon, authenticated, service_role` — *"These four statements change
+  the defaults for future tables and sequences that the postgres role creates in the public schema.
+  Existing objects keep their current grants"*. #47: *"It does not affect privileges assigned to
+  already-existing objects."*
+· ANTWORT AUF L6: Ein `revoke` und ein Spalten-`grant` auf `projects`, `domains`, `project_tokens`
+  sind Rechte bestehender Tabellen; die Umstellung ändert daran nach beiden Quellen nichts. Für
+  eine NEUE Tabelle gilt Teil (ay) weiter. GELESEN, nicht gemessen.
+
+**(bk) WAS NACH DIESEM LAUF OFFEN IST, UND WAS GESEHEN, ABER NICHT GEÖFFNET WURDE.** **NEU.**
+OFFEN — je eine Messung, keine Lesung:
+1. Eigentümer, Grantor der heutigen Tabellenrechte, FORCE ROW LEVEL SECURITY und eine
+   Mitgliedschaft von `authenticated` bzw. ein Recht an PUBLIC auf den drei Tabellen (Teil (be),
+   Fallen 1 und 3; Teil (bg)).
+2. Ob ein UPDATE ohne `updated_at` im SET bei gesetztem Trigger ein Recht auf `updated_at` braucht
+   (Teil (bf)).
+3. Ob PostgREST bei PATCH genau die Rumpf-Schlüssel ins SET nimmt (Teil (bh)) — misst die
+   Positivkontrolle P aus Vermerk P13.6-116 der Phase 13.6, Punkt (5), mit.
+4. Ob `.select()` ohne Spaltenliste nach dem Entzug unverändert geht (Teil (bi)).
+5. Ob `postgres` in diesem Projekt Superuser ist oder `bypassrls` trägt (Teil (bg)).
+GESEHEN, NICHT GEÖFFNET, je mit Grund — die Liste ist vor dem Abschluss gegen L1 bis L6 gehalten
+worden; #48 ist deshalb nachträglich geöffnet worden (L2):
+· docs.postgrest.org …/preferences.html (#23) und …/errors.html (#25) — 2026-09-04 bzw.
+  2026-09-30 gelesen (Teile (aj), (am), (az)); nicht erneut.
+· PostgREST "Schema Cache Reloading" — von #24 verlinkt; trägt nach Titel keine der Fragen.
+· "Block Full-Table Operations" (von #24 verlinkt) — gilt Voll-Tabellen-Schreibungen, nicht Rechten.
+· postgresql.org/docs/17/sql-createpolicy.html, sql-altertable.html — Policies bzw. FORCE sind über
+  #44 beantwortet, so weit eine Lesung es kann.
+· postgresql.org/docs/17/functions-info.html — `has_column_privilege` ist dort am 2026-10-01
+  gelesen (Vermerk P13.6-112 der Phase 13.6, Punkt (1)).
+· Supabase "Securing your API" (#10) — am 2026-09-30 im VOLLTEXT gelesen; nicht erneut.
+· Die Testskripte (pgTAP) auf #2 — Beispiele einer Prüfung, keine Aussage über Rechte.
+
+**PROVENIENZ DES GANZEN LAUFS 5:** GELESEN am 2026-10-01 (CC) an den unter (bd) genannten Adressen,
+Instrument Browser-Werkzeug, `textContent`; der Client über das installierte Paket. Wo "GEMESSEN"
+steht, betrifft es ausschliesslich das eigene Vorgehen (Zeichenzahlen, Werkzeug-Ablage). **KEINE
+Messung an einer Supabase-Schnittstelle, KEINE an einer PostgREST-Instanz und KEINE an dieser
+Datenbank.**
+KEIN BEFUND DIESES LAUFS WIDERSPRICHT EINEM BESTEHENDEN TEIL DES SUPABASE-ABSCHNITTS. Berührt sind
+(n) (`service_role` mit `bypassrls` — ergänzt um die Bedingung "kein Nutzer-Token", Teil (bg)),
+(ap) (Grants vor Policies — deckungsgleich), (ay) (die Vorgabe vom 30.10.2026 — für bestehende
+Tabellen beantwortet, Teil (bj)) und (c) bzw. (bc) (zwei damals nicht geöffnete Seiten, jetzt #38
+und #39).
 
 ## Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
 

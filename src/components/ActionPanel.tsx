@@ -674,7 +674,7 @@ const DATA_SAVER_LABEL =
 const DATA_SAVER_HELP =
   "Aus (empfohlen): Pagesmith leitet die Eingaben weiter und prüft, ob sie ankommen. Scheitert das, sieht der Besucher eine Meldung statt der Danke-Seite. An: Der Browser sendet direkt; ob die Eingaben ankommen, prüft dann niemand.";
 const DATA_SAVER_UNLISTED_NOTE =
-  "Diese Adresse beliefert der Browser direkt. Die Zustellprüfung über Pagesmith gibt es derzeit für Make-Webhooks der Region EU2.";
+  "Diese Adresse beliefert der Browser direkt. Die Zustellprüfung über Pagesmith gibt es derzeit für Make-Webhooks der Region EU2 und für Zapier-Webhooks, deren Adresse mit https://hooks.zapier.com beginnt.";
 const DELIVERY_RELAY = "Zustellung: über Pagesmith, mit Prüfung";
 const DELIVERY_DATA_SAVER = "Zustellung: direkt vom Browser (Datensparmodus)";
 const DELIVERY_DIRECT = "Zustellung: direkt vom Browser";

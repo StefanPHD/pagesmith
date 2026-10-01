@@ -5,7 +5,12 @@
 // (Owner-Entscheidung P13.6-55 der Phase 13.6). Fuer Make ist das allein die Zone eu2:
 // `hook.eu2.make.com` ist gemessen (docs/formular-empfaenger-befunde.md, Abschnitt "Make",
 // Befund (s)); welchen Host die Zonen eu1, us1 und us2 tragen, steht auf keiner gelesenen Seite
-// (ebenda, Befund (g)). Zapier folgt nach Lesung und Live-Test in einer eigenen Runde.
+// (ebenda, Befund (g)).
+// Fuer Zapier ist es `hooks.zapier.com` (Owner-Entscheidung P13.6-97 der Phase 13.6; gelesen:
+// docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befund (b)). `zapier.com` steht NIE
+// hier, obwohl die Doku auch dort Webhook-Adressen zeigt: Der Pfad wird nicht geprueft, der Host
+// truege damit jede Seite von zapier.com (Vermerk P13.6-98 der Phase 13.6, Punkt (2)). Eine
+// Adresse der Form `zapier.com/hooks/…` bleibt browser-direkt.
 //
 // EXAKTER VERGLEICH, KEIN MUSTER (Vermerk P13.6-58 der Phase 13.6, G5): `*.make.com` liesse
 // fremde Make-Dienste zu (Befund (ab): `email.gh-mail.make.com`), `hook.*.make.com` ungelesene
@@ -14,7 +19,7 @@
 
 import { normalizeFormTargetHost } from "../form-target";
 
-export const RELAY_HOSTS: readonly string[] = ["hook.eu2.make.com"];
+export const RELAY_HOSTS: readonly string[] = ["hook.eu2.make.com", "hooks.zapier.com"];
 
 /**
  * Die Adresse, an die das Relay weiterleiten darf — oder null.

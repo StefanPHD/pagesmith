@@ -6358,9 +6358,11 @@ describe("CodeImporter — Formular-Ziel (Phase 13, Scheibe 13-1)", () => {
 
   // PHASE 13.6, SCHEIBE 13.6-4 (Setzungen P13.6-61 bis P13.6-67, Owner-Entscheidung P13.6-68
   // der Phase 13.6). Die Texte sind GETIPPT aus der Owner-Entscheidung, nicht aus ActionPanel.tsx.
+  // DS_UNLISTED seit der Scheibe "Zapier ins Relay": GETIPPT aus Owner-Entscheidung P13.6-99 der
+  // Phase 13.6 (die Ersetzung in der Infozeile aus P13.6-68).
   const DS_LABEL = "Datensparmodus: direkt vom Browser senden, ohne Pagesmith-Server";
   const DS_UNLISTED =
-    "Diese Adresse beliefert der Browser direkt. Die Zustellprüfung über Pagesmith gibt es derzeit für Make-Webhooks der Region EU2.";
+    "Diese Adresse beliefert der Browser direkt. Die Zustellprüfung über Pagesmith gibt es derzeit für Make-Webhooks der Region EU2 und für Zapier-Webhooks, deren Adresse mit https://hooks.zapier.com beginnt.";
   const Z_RELAY = "Zustellung: über Pagesmith, mit Prüfung";
   const Z_DS = "Zustellung: direkt vom Browser (Datensparmodus)";
   const Z_DIRECT = "Zustellung: direkt vom Browser";
@@ -6472,6 +6474,44 @@ describe("CodeImporter — Formular-Ziel (Phase 13, Scheibe 13-1)", () => {
     expect(screen.queryByLabelText(DS_LABEL)).toBeNull();
     expect(screen.getByText(DS_UNLISTED)).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Zieladresse"), { target: { value: ENDPOINT } });
+    expect(screen.getByLabelText(DS_LABEL)).toBeTruthy();
+    expect(screen.queryByText(DS_UNLISTED)).toBeNull();
+  });
+
+  // ZAPIER INS RELAY (Phase 13.6; Owner-Entscheidungen P13.6-97 und P13.6-99, Vermerk P13.6-98).
+  // Die Adressen sind GETIPPT aus docs/formular-empfaenger-befunde.md, Abschnitt "Zapier",
+  // Befund (b).
+  const Z_HOOKS = "https://hooks.zapier.com/hooks/catch/123456/abcde/";
+  const Z_COM = "https://zapier.com/hooks/catch/123456/abcde/";
+  const zapierZiel = (endpoint: string): Mapping =>
+    ({
+      elementId: "ps-ffffff",
+      type: "formTarget",
+      config: { endpoint, thanksUrl: "https://d.example/", fieldNames: ["email"] },
+    }) as Mapping;
+
+  it("CI-Z1: ein Ziel auf hooks.zapier.com -> Relay-Anzeige und der Schalter, keine Infozeile", async () => {
+    // Rot, wenn hooks.zapier.com nicht auf der Liste steht (MZ1).
+    render(<CodeImporter initialCode={DOC()} initialMappings={[zapierZiel(Z_HOOKS)]} />);
+    fireEvent.click(await screen.findByText("Absenden"));
+    fireEvent.click(screen.getByRole("button", { name: "Formular auswählen" }));
+    expect(screen.getByText(Z_RELAY)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Ziel bearbeiten" }));
+    expect(screen.getByLabelText(DS_LABEL)).toBeTruthy();
+    expect(screen.queryByText(DS_UNLISTED)).toBeNull();
+  });
+
+  it("CI-Z2: ein Ziel auf zapier.com -> direkt, kein Schalter, die Infozeile im neuen Wortlaut; Positivkontrolle mit hooks.zapier.com", async () => {
+    // Rot, wenn zapier.com auf die Liste geraet (MZ2), der neue Textteil fehlt (MZ5) oder —
+    // an der Positivkontrolle — hooks.zapier.com fehlt (MZ1).
+    render(<CodeImporter initialCode={DOC()} initialMappings={[zapierZiel(Z_COM)]} />);
+    fireEvent.click(await screen.findByText("Absenden"));
+    fireEvent.click(screen.getByRole("button", { name: "Formular auswählen" }));
+    expect(screen.getByText(Z_DIRECT)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Ziel bearbeiten" }));
+    expect(screen.queryByLabelText(DS_LABEL)).toBeNull();
+    expect(screen.getByText(DS_UNLISTED)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Zieladresse"), { target: { value: Z_HOOKS } });
     expect(screen.getByLabelText(DS_LABEL)).toBeTruthy();
     expect(screen.queryByText(DS_UNLISTED)).toBeNull();
   });

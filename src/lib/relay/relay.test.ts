@@ -477,6 +477,67 @@ describe("R-LIST1, R-LIST2 — die Host-Liste", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// R-Z — ZAPIER IM RELAY (Phase 13.6, Scheibe "Zapier ins Relay"; Owner-Entscheidung P13.6-97,
+// Vermerk P13.6-98 der Phase 13.6). Die Adressform ist GETIPPT aus
+// docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befund (b); die Antworten aus den
+// Befunden (e), (f), (h) und (j). Gelesen, nicht gemessen — der Live-Test misst sie.
+// ---------------------------------------------------------------------------
+const EP_Z = "https://hooks.zapier.com/hooks/catch/123456/abcde/";
+const EP_ZCOM = "https://zapier.com/hooks/catch/123456/abcde/";
+
+describe("R-Z1 bis R-Z3 — Zapier", () => {
+  it("R-Z1: ein Ziel auf hooks.zapier.com -> 204, GENAU EIN fetch an diese Adresse, keine Logzeile", async () => {
+    addProject({ id: "p-a", label: LABEL_A, mappings: [ft(ID, EP_Z)] });
+    const res = await handleRelay(req());
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe("");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchedUrls()).toEqual([EP_Z]);
+    expect(logLines()).toEqual([]);
+  });
+
+  it("R-Z2: ein Ziel auf zapier.com geht NIE ueber das Relay -> 502, KEIN fetch, host-not-listed", async () => {
+    // Der Beleg, dass zapier.com nicht auf der Liste steht (Vermerk P13.6-98, Punkt (2)).
+    addProject({ id: "p-a", label: LABEL_A, mappings: [ft(ID, EP_ZCOM)] });
+    await expectNotDelivered(await handleRelay(req()));
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(logLines()).toEqual(["[relay] not delivered: host-not-listed"]);
+  });
+
+  it("R-Z3: Zapiers Erfolgsantwort (200, JSON-Rumpf, Befund (e)) -> 204, GENAU EIN fetch", async () => {
+    addProject({ id: "p-a", label: LABEL_A, mappings: [ft(ID, EP_Z)] });
+    fetchMock.mockImplementation(
+      async () =>
+        new Response(
+          `{"attempt":"a-${MARK}","id":"i-${MARK}","request_id":"r-${MARK}","status":"success"}`,
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        )
+    );
+    const res = await handleRelay(req());
+    expect(res.status).toBe(204);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchedUrls()).toEqual([EP_Z]);
+    expect(logText()).not.toContain(MARK);
+  });
+
+  it.each([
+    [404, "Zap aus oder geloescht, Befund (f)"],
+    [429, "Ratenlimit, Befund (h)"],
+    [413, "zu gross, Befund (j)"],
+  ])("R-Z3: %i (%s) -> 502, GENAU EIN fetch, der Status als Zahl im Log", async (status) => {
+    // "GENAU EIN fetch" und die upstream-status-Zeile tragen den Test: Ohne sie waere die 502
+    // schon gruen, wenn hooks.zapier.com gar nicht auf der Liste stuende (dann host-not-listed,
+    // kein fetch).
+    addProject({ id: "p-a", label: LABEL_A, mappings: [ft(ID, EP_Z)] });
+    fetchMock.mockImplementation(async () => new Response(`Fehler ${MARK}`, { status }));
+    await expectNotDelivered(await handleRelay(req()));
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchedUrls()).toEqual([EP_Z]);
+    expect(logLines()).toEqual([`[relay] not delivered: upstream-status ${status}`]);
+  });
+});
+
 describe("R-BLOCK — der Kill-Switch", () => {
   it("R-BLOCK-P: gesperrtes Projekt -> 502, kein fetch", async () => {
     addProject({ id: "p-a", label: LABEL_A, blockedProject: "2026-09-29T00:00:00Z" });

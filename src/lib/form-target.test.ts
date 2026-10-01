@@ -1785,6 +1785,60 @@ describe("13.6-4 — RT-9 bis RT-11: die Byte-Nachweise", () => {
 });
 
 // ===========================================================================
+// ZAPIER INS RELAY (Phase 13.6; Owner-Entscheidung P13.6-97, Vermerk P13.6-98 der Phase 13.6).
+// RT-Z1 bis RT-Z3. Fixture und Einsetzungen (R2, D2, K2) sind die der RT-Tests; die Adressen
+// sind GETIPPT aus docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befund (b).
+// ===========================================================================
+const RT_ZAPIER = "https://hooks.zapier.com/hooks/catch/123456/abcde/";
+const RT_ZAPIER_COM = "https://zapier.com/hooks/catch/123456/abcde/";
+const rtZapier = (endpoint = RT_ZAPIER) => [...RT_BASE, rtTarget("ps-rraaaa", endpoint, RT_NAMES)];
+// DER VORHER-WERT FUER RT-Z3 IST EINE KONSTANTE, erhoben VOR dem ersten Code-Eingriff der Scheibe
+// am Commit 1428b33 (Sonde ausserhalb des Repos, jiti 2.7.0 mit jsdom 29.1.1, CC, 2026-10-01):
+// rtZapier() mit Merkmal hosted, mit dem damaligen Code — hooks.zapier.com stand noch nicht auf
+// der Liste, die Seite schickte also direkt (kein "/api/f", keine Marke). Instrument-Kontrolle
+// derselben Sonde: rtOut(RT_BASE) ergab genau RT_V9. Sie wird NIE neu berechnet.
+const RT_VZ = { bytes: 21687, sha: "a7906464523bc06463309ff9e5d01134bb6fbdcc5d6a12804db38dddbc5d7dc6" };
+
+describe("Zapier ins Relay — RT-Z1 bis RT-Z3", () => {
+  it("RT-Z1: veroeffentlichte Seite mit Ziel auf hooks.zapier.com -> Relay-Weg R2 und Marke D2 je genau einmal, Versand an /api/f", () => {
+    // Rot, wenn hooks.zapier.com nicht auf der Liste steht (MZ1).
+    const out = rtOut(rtZapier(), { hosted: true });
+    expect(count(out, R2)).toBe(1);
+    expect(count(out, D2)).toBe(1);
+    mount(out);
+    fill();
+    submit(RT_FORM_A);
+    expect(fetchCalls.map((c) => [c.url, c.init.mode])).toEqual([[RT_RELAY_URL, "same-origin"]]);
+  });
+
+  it("RT-Z2: ein Ziel auf zapier.com bleibt direkt — kein Relay-Weg, keine Marke, no-cors an diese Adresse", () => {
+    // Rot, wenn zapier.com auf die Liste geraet (MZ2).
+    const out = rtOut(rtZapier(RT_ZAPIER_COM), { hosted: true });
+    expect(out).not.toContain("/api/f");
+    expect(out).not.toContain('"relay"');
+    mount(out);
+    fill();
+    submit(RT_FORM_A);
+    expect(fetchCalls.map((c) => [c.url, c.init.mode])).toEqual([[RT_ZAPIER_COM, "no-cors"]]);
+  });
+
+  it("RT-Z3: Differenz-Nachweis — Zapier-Relay-Seite = Vorher + GENAU R2 und D2", () => {
+    // Die fuenf Schritte der Dauerregel "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD …":
+    // (1) Vorher-Wert RT_VZ (Konstante), (2) Nachher mit demselben Treiber, (3) jede Einsetzung
+    // genau einmal, (4) entfernt = Vorher in Bytes und sha256, (5) Positivkontrolle.
+    // K2 (Scheibe "Zurueck-Cache") steht auf allen drei Wegen und damit schon im Vorher-Wert;
+    // er bleibt stehen und wird NICHT entfernt.
+    const nachher = rtOut(rtZapier(), { hosted: true });
+    expect(count(nachher, R2)).toBe(1);
+    expect(count(nachher, D2)).toBe(1);
+    expect(count(nachher, K2)).toBe(1);
+    const zurueck = nachher.split(R2).join("").split(D2).join("");
+    expect([bytes(zurueck), sha(zurueck)]).toEqual([RT_VZ.bytes, RT_VZ.sha]);
+    expect(sha(nachher)).not.toBe(RT_VZ.sha);
+  });
+});
+
+// ===========================================================================
 // SCHEIBE "ZURUECK-CACHE" (Phase 13.6; Owner-Entscheidung P13.6-71, Setzungen P13.6-86 und
 // P13.6-88 der Phase 13.6). ZC-1 bis ZC-8. Die Wiederherstellung aus dem Zurueck-Cache ist ein
 // pageshow mit persisted === true (jsdom 29.1.1 liefert PageTransitionEvent, gemessen in der

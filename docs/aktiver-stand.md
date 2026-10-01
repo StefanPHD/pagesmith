@@ -3807,6 +3807,21 @@ stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD `38f502f`).
 - VORRAT (Phase 13.7): gelöschte Labels dauerhaft sperren (Grabstein-Modell) — Vorrat P13.6-126
   der Phase 13.6.
 
+PROVENIENZ von P13.6-128: OWNER-ENTSCHEIDUNG 2026-10-01, übermittelt im GO-Auftrag der Runde
+"Spaltenrechte — Code-Teil" (Teil A). BINDEND.
+
+**Owner-Entscheidung P13.6-128 — DER HINWEIS BEI `restored` LAUTET: "Die bisherige Adresse war
+nicht mehr erreichbar. Deine Seite ist jetzt unter einer neuen Adresse veröffentlicht. Bitte
+aktualisiere Links und Anzeigen."**
+- ENTSCHEIDET Vorrat P13.6-127 der Phase 13.6.
+- GRUND (OWNER): Der alte Text ("wiederhergestellt") liesse den Betreiber glauben, alte Links und
+  Anzeigen funktionierten noch — stiller Verlust von Anzeigen-Verkehr.
+- ORT (CC, GELESEN AM CODE, HEAD `a32592f`): der Zusatz in der Statuszeile von
+  src/components/PublishView.tsx, sichtbar bei `publishStatus === "published"` und
+  `publishRestored`. `PublishView.tsx` hat keine eigene Testdatei; seine Abdeckung liegt in
+  src/components/CodeImporter.test.tsx.
+- BEZUG: Owner-Entscheidung P13.6-123 (das neue Label) — der Hinweis benennt jetzt deren Preis.
+
 ## Plattform-Schritte der Phase 13.6
 
 **Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).
@@ -4806,3 +4821,26 @@ P13.6-123 NICHT MEHR.**
 - DER TEXT IST EIN OWNER-TEXT; PublishView.tsx liegt ausser Scope der Scheibe "Spaltenrechte".
 - TRIGGER: die nächste Arbeit an src/components/PublishView.tsx, spätestens vor dem ersten fremden
   Nutzer.
+- ENTSCHIEDEN 2026-10-01: Owner-Entscheidung P13.6-128 der Phase 13.6 (der neue Wortlaut); der
+  Bau kommt im Code-Commit der Scheibe "Spaltenrechte". Die Sätze darüber beschreiben den Stand
+  davor.
+
+PROVENIENZ von P13.6-129: OWNER-AUFTRAG 2026-10-01, Runde "Spaltenrechte — Code-Teil" (Teil A);
+der Befund aus dem Bau-Bericht derselben Scheibe (CC). Wo "(CC)" steht, hat CC die Angabe am
+Bestand geprüft (HEAD `a32592f`).
+
+**Vorrat P13.6-129 — TRUNCATE, REFERENCES UND TRIGGER FÜR anon UND authenticated AUF ALLEN TABELLEN
+IN public PRÜFEN UND ENTZIEHEN.**
+- BEFUND (Bau-Bericht der Scheibe "Spaltenrechte", Abweichungen, Punkt 4): Migration 0031
+  entzieht nur INSERT, UPDATE und DELETE; TRUNCATE, REFERENCES und TRIGGER bleiben, wie sie sind.
+  Ob die Vorgabe-Rechte sie für anon und authenticated tragen, ist NICHT gemessen (CC:
+  docs/db-stand.md, ROLLEN-GRANTS, nennt "volle DML-Rechte", keine Einzelrechte).
+- EINORDNUNG (AUFTRAG): über PostgREST nicht auslösbar, Verteidigung in der Tiefe. (CC) Am
+  Bestand nicht belegt: Die gelesene PostgREST-Seite "Tables and Views" (docs/plattform-befunde.md,
+  Supabase, Teil (bd), #24, ab "Insert" bis Dateiende) führt Insert, Update, Upsert, PUT und
+  Delete und kein TRUNCATE — ein Nicht-Treffer mit dieser Reichweite, keine Aussage über die
+  übrigen Seiten.
+- MESSUNG: supabase/checks/spaltenrechte.sql, Abfrage (8) (die drei Tabellen der Scheibe); für
+  ALLE Tabellen in public ist die Abfrage zu erweitern.
+- ZIEL: Phase 13.7 (Roadmap-Zeile 13.7).
+- AUSSER SCOPE der Scheibe "Spaltenrechte".

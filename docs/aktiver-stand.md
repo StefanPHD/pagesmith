@@ -38,6 +38,7 @@ beantworten.
 - Zuschnitt Scheibe 13.6-4
 - Zuschnitt Scheibe 13.6-5
 - Zuschnitt Scheibe Zurück-Cache
+- Zuschnitt Scheibe Zapier ins Relay
 - Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
@@ -587,6 +588,8 @@ ZAPIER-MONAT ZUM LIVE-TEST, UND DIE MESSKANDIDATEN ZM1 BIS ZM7 LAUFEN IM SELBEN 
 - OFFEN, VON DER ENTSCHEIDUNG NICHT GENANNT (CC): Owner-Entscheidung P13.6-90 bündelte den Monat
   zusätzlich mit dem Abnahme-Testprotokoll (offener Punkt "VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN
   ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP"). Ob diese Bündelung entfällt, sagt P13.6-97 nicht.
+  BEANTWORTET (ARCHITEKT, übermittelt am 2026-10-01): Die Bündelung ist aufgehoben — Setzung
+  P13.6-100 der Phase 13.6, (3).
 
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 
@@ -692,6 +695,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - NACHGETRAGEN 2026-09-30 (Runde "Adresse verbergen: entschieden"; CC, keine neue Setzung):
   Owner-Entscheidung P13.6-97 revidiert P13.6-90 — als Nächstes steht die Scheibe "Zapier ins
   Relay" an, mit Live-Test im gebuchten Zapier-Monat.
+- NACHGETRAGEN 2026-10-01 (Runde "Scheibe Zapier ins Relay — Bau"; CC, keine neue Setzung):
+  Zuschnitt und Plan stehen im Abschnitt "Zuschnitt Scheibe Zapier ins Relay"; Phase 0 des
+  Live-Tests läuft VOR dem Push (Setzung P13.6-100 der Phase 13.6, (2)).
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -2642,6 +2648,219 @@ Setzungen a–f) · dieser Commit (Abschluss).
     FREMDEN KNOTEN AN …" (Punkt (9)). Die Roadmap-Zeile 13.6 führt die Scheibe nicht als
     ausstehend und ist nicht geändert.
 
+## Zuschnitt Scheibe Zapier ins Relay
+
+**ZUGESCHNITTEN UND GEPLANT AM 2026-09-30; DER BAU BEGINNT AM 2026-10-01.**
+- GEGENSTAND: Owner-Entscheidung P13.6-97 der Phase 13.6 — `hooks.zapier.com` kommt in die
+  Host-Liste des Relays (`RELAY_HOSTS`, src/lib/relay/hosts.ts), `zapier.com` nie. Sonst ändert
+  sich am Relay nichts. Reihenfolge: Setzung P13.6-14.
+- BEDINGUNG DER AUFNAHME: Owner-Entscheidung P13.6-55 (gelesen UND einmal live getestet). Die
+  Lesung: docs/formular-empfaenger-befunde.md, Abschnitt "Zapier". Der Live-Test: Phase 0 der
+  Anleitung, VOR dem Push (Setzung P13.6-100, (2)).
+- BENENNUNG, DEKLARIERT (CC): wie bei der Scheibe "Zurück-Cache" ohne Nummer; die Überschrift
+  übernimmt den Namen aus den Aufträgen.
+
+### Planrunde der Scheibe Zapier ins Relay
+
+**Vermerk P13.6-98 — DER PLAN "ZAPIER INS RELAY" (P1 BIS P7), VERDICHTET.**
+PROVENIENZ: Bericht der Planrunde (CC, 2026-09-30, Sitzung nach Commit `87af209`; read-only,
+Code-Stand `87af209`). DER BERICHT STAND IN KEINER DATEI DES REPOS: Er ist hier aus dem lokalen
+Sitzungsprotokoll jener Runde übernommen (nicht im Repo) und verdichtet; seine Zeilennummern sind
+durch Symbolnamen ersetzt. GELESEN AM CODE, soweit nicht anders gekennzeichnet; NICHTS DAVON IST
+LIVE GEMESSEN. Die Antworten auf die neun offenen Fragen des Berichts: Owner-Entscheidung
+P13.6-99 (Fragen 1 und 4) und Setzung P13.6-100 (Fragen 2, 3, 5 bis 9).
+(1) SCOPE. Geändert: src/lib/relay/hosts.ts (Liste und Kopfkommentar, darin "Zapier folgt nach
+    Lesung und Live-Test in einer eigenen Runde."), src/lib/relay/hosts.test.ts,
+    src/lib/relay/relay.test.ts und src/lib/form-target.test.ts (je nur neue Tests),
+    src/components/ActionPanel.tsx und src/components/CodeImporter.test.tsx (allein der
+    Owner-Text, Owner-Entscheidung P13.6-99). UNBERÜHRT: src/lib/relay/relay.ts, rate-limit.ts,
+    resolve-relay.ts, src/lib/form-target.ts (auch `normalizeFormTargetHost`),
+    src/lib/generate.ts, `/api/e`, die Serve-Route, src/proxy.ts, alle Migrationen.
+    `generateFunctional` (Relay-Weg und Marke) und der Schalter in `FormTargetActions` fragen
+    dieselbe Prüfung (`allowedRelayEndpoint`); beide entstehen für Zapier ohne Codeänderung.
+(2) P1 — DIE LISTE. `allowedRelayEndpoint`: nur `https:`, ohne Nutzerangaben, ohne eigenen Port,
+    Host über `normalizeFormTargetHost` (Kleinschreibung, Punkt am Ende weg) EXAKT in
+    `RELAY_HOSTS`; der Pfad wird nicht geprüft. Allein H1 (src/lib/relay/hosts.test.ts) hält die
+    ganze Liste; kein Test trägt "zapier" (GEMESSEN AM REPO; erneut 2026-10-01 am Stand `87af209`:
+    `git grep -i zapier -- src` trifft allein den Kopfkommentar von hosts.ts). Die Erwartung
+    `["hook.eu2.make.com", "hooks.zapier.com"]` wird aus der Entscheidung getippt (P13.6-55;
+    Abschnitt "Make", Befund (s); P13.6-97; Abschnitt "Zapier", Befund (b)), maschinell gegen die
+    Befund-Datei geprüft, erst danach steht die Zeile in hosts.ts (Dauerregel "EIN WÄCHTER ÜBER
+    DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE …"). H1 bleibt ein Test auf die
+    EXAKTE Liste: jedes Mitglied braucht eine eigene Entscheidung. `zapier.com` nie: Der Pfad
+    wird nicht geprüft, der Host trüge jede Seite von zapier.com (Zapier, Befund (b), FOLGE).
+(3) P2 — TEXTE, DIE NUR MAKE NENNEN. `DATA_SAVER_UNLISTED_NOTE` (src/components/ActionPanel.tsx;
+    Wortlaut aus Owner-Entscheidung P13.6-68, abgetippt in src/components/CodeImporter.test.tsx)
+    wird mit der Aufnahme falsch → Owner-Entscheidung P13.6-99. Angepasst werden der Kopfkommentar
+    von hosts.ts und der Testkopf von hosts.test.ts ("Stufe 1 ist allein die gemessene Make-Zone
+    eu2"). Weiter zutreffend: der Platzhalter der Adress-Eingabe im `ActionPanel` und
+    "(z. B. Make)" in src/lib/form-target.ts (Beispiele), `FORM_TARGET_EXPLAIN` ("unterstützten
+    Diensten"), die 3xx-Regel in `forward` (mit Make begründet). Veraltet, ausser Scope: der Satz
+    "In dieser Scheibe ruft es noch keine ausgelieferte Seite auf" im Kopf von
+    src/lib/relay/relay.ts → Vorrat P13.6-101. Doku beim Abschluss (Setzung P13.6-100, (7)):
+    docs/offene-punkte.md, Punkt (9) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" und
+    "BESTEHT WEITER" am Posten "IM BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER ODER GELÖSCHTER
+    ZIELADRESSE DIE DANKE-SEITE …" (je "heute allein Make") — datierte Ergänzung, keine
+    Umschreibung.
+(4) P3 — ADRESSEN DER FORM `zapier.com/hooks/…` bleiben browser-direkt. Der Betreiber sieht heute
+    den allgemeinen Hinweis und "Zustellung: direkt vom Browser", nicht den Grund. Kandidaten:
+    (a) der Hinweis nennt die Adressform (ein Owner-Text) · (b) ein eigener Hinweis bei Host
+    `zapier.com` (neue Verzweigung der Oberfläche) · (c) automatisch auf `hooks.zapier.com`
+    umschreiben (dagegen: dass beide Formen gleich wirken, ist nicht gelesen; die Sammeladresse
+    `…/a,b,c` gibt es nur auf `zapier.com`, Zapier, Befund (b); es änderte die Eingabe) · (d) nur
+    Betreiber-Dokumentation. ENTSCHIEDEN: Owner-Entscheidung P13.6-99 — (a), dazu (d) beim
+    Phasenende.
+(5) P4 — BESTEHENDE SEITEN. Der Deploy ändert keinen ausgelieferten Text. Seiten mit einem Ziel
+    auf `hooks.zapier.com` werden beim nächsten Neu-Veröffentlichen Relay-Seiten
+    (Owner-Entscheidung P13.6-54; wie Setzung P13.6-61); ob es solche gibt, ist am Repo nicht
+    entscheidbar. Ab dem Deploy, ABGELEITET: Die Anzeige im Editor springt auf "über Pagesmith,
+    mit Prüfung", weil sie der Liste folgt, nicht dem veröffentlichten Text (Klasse des offenen
+    Punktes "NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST"); das Relay nimmt
+    einen von Hand gebauten POST für ein noch direkt veröffentlichtes Zapier-Ziel an, mit
+    Ratenbegrenzung (GRENZE an Setzung P13.6-56). MAKE-SEITEN BLEIBEN BYTE-GLEICH: am Code
+    (dieselbe `href`, src/lib/generate.ts unberührt), im Test (RT-9, RT-10, RT-11, W-B1, W-B2,
+    W-B2R ohne geänderte Konstante), live (Punkt (9), S2, L0, L1).
+(6) P5 — WIE DAS RELAY ZAPIERS ANTWORTEN WERTET (`forward`: Rumpf verworfen, 2xx und 3xx → 204,
+    sonst 502), je Befund im Abschnitt "Zapier": 200 mit JSON (e) → 204, "angenommen", nicht
+    "verarbeitet" · 404 bei Zap aus oder gelöscht (f) → 502; im Zeitfenster davor 200 → 204 bei
+    möglichem Verlust (Vorrat P13.6-92) · 429 (h) → 502, keine Wiederholung (Setzung P13.6-22) ·
+    413 (j) → 502, praktisch nie (64 KiB gegen 10 MB) · ungültiger oder leerer Rumpf "ignoriert,
+    trotzdem Erfolg" (d) → 204, ein falsches "zugestellt" · gehaltener Lauf (g) → Status
+    ungelesen (ZM5) · 3xx (i) → 204, für Zapier nicht beschrieben. Eine Antwortzeit von Zapier
+    steht auf keiner gelesenen Seite; ob das Zeitlimit von 5 000 ms kollidiert, ist NICHT
+    ENTSCHEIDBAR (ZM2 misst die Zeit).
+    NEBENBEFUND, BESTAND: Das Relay leitet an den Host MIT Punkt am Ende weiter —
+    `allowedRelayEndpoint` gibt `url.href` zurück, und `new URL("https://HOOKS.ZAPIER.COM./x").href`
+    ergibt `https://hooks.zapier.com./x` (GEMESSEN, Node 24.16.0, CC, 2026-10-01). Das gilt heute
+    schon für Make; ob die Empfänger es annehmen, ist ungemessen → Setzung P13.6-100, (6).
+(7) P6 — TESTS, Erwartungen getippt aus P13.6-55, P13.6-97 und Zapier, Befund (b):
+    · H1 geändert — genau `["hook.eu2.make.com", "hooks.zapier.com"]`.
+    · H2z — `https://hooks.zapier.com/hooks/catch/123456/abcde/` wird angenommen, `href` zurück.
+    · H3z — `HOOKS.ZAPIER.COM.` wird angenommen.
+    · H4z — je null: `zapier.com/hooks/catch/…` · die Sammeladresse `…/a,b` · `www.zapier.com` ·
+      `x.hooks.zapier.com` · `xhooks.zapier.com` · `hooks.zapier.com.evil.test` · `http:` ·
+      Port 8443.
+    · R-Z1 — Zapier-Ziel: 204, genau ein `fetch` an die `href`.
+    · R-Z2 — `zapier.com`-Adresse: 502 und KEIN `fetch` (der Beleg, dass `zapier.com` nicht über
+      das Relay geht).
+    · R-Z3 — 200 mit JSON → 204; 404, 429 und 413 → 502, je mit "`fetch` genau einmal" und
+      "`upstream-status <n>`" im Log. Ohne diese Prüfung wäre die 502 schon grün, wenn die Adresse
+      gar nicht auf der Liste steht.
+    · RT-Z1 — veröffentlichte Seite mit Zapier-Ziel: Relay-Weg R2 und Marke D2 je genau einmal.
+    · RT-Z2 — `zapier.com` bleibt direkt (`no-cors` an diese Adresse).
+    · RT-Z3 — Differenz-Nachweis: Zapier-Relay-Seite = Vorher + R2 + D2. Vorher = dieselbe
+      Eingabe mit dem HEUTIGEN Code (dann noch direkt), erhoben vor der ersten Code-Änderung, als
+      Konstante; mit Positivkontrolle. (CC, GELESEN AM CODE: Die Einsetzung K2 der Scheibe
+      "Zurück-Cache" steht auf allen drei Wegen und damit schon im Vorher-Wert; RT-11 rechnet
+      dagegen von einem Wert VOR K2 aus.)
+    · CI-Z — `hooks.zapier.com` zeigt den Schalter, `zapier.com` den Hinweis (mit dem Wortlaut aus
+      Owner-Entscheidung P13.6-99).
+(8) P6 — PFLICHT-MUTATIONEN, Vorhersage gegen den Bestand nach dem Bau, vor dem Lauf erneut
+    geprüft:
+    · MZ1 (Host fehlt) → H1, H2z, H3z, R-Z1, R-Z3, RT-Z1, RT-Z3, CI-Z.
+    · MZ2 (`zapier.com` zusätzlich) → H1, H4z (`zapier.com`, Sammeladresse), R-Z2, RT-Z2, der
+      Negativfall von CI-Z; grün bleibt H4z `www.zapier.com` (exakter Vergleich).
+    · MZ3 (Normalisierung in hosts.ts umgangen, `url.hostname` direkt) → H3 und H3z, je nur der
+      Fall mit Punkt am Ende, und die Positivkontrolle von R-LIST2; grün bleiben die Fälle mit
+      Grossschreibung — der URL-Parser schreibt schon klein (GEMESSEN, Node). Die Abdeckung
+      VERDECKT die Mutation (Lektion (b) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE"); vorab
+      angesagt.
+    · MZ4 (Unterdomänen zugelassen) → H4 "Unterdomaene" (Make), H4z `x.hooks.zapier.com`; grün
+      bleiben Präfix- und Suffix-Falle.
+    · Dazu MZ5 (Vorgabe des Bau-Auftrags vom 2026-10-01): der neue Textteil fehlt im Hinweis →
+      CI-Z rot.
+    Gates: tsc, eslint, vitest, build. Die berührten Dateien tragen LF; src/lib/mappings.ts
+    (NUL-Byte) wird nicht berührt.
+(9) P7 — LIVE-ANLEITUNG, ENTWURF.
+    VORBEDINGUNGEN: Zapier-Monat gebucht (Webhooks sind Premium, Zapier, Befund (a)) ·
+    Chrome-Version notiert · A/B in beiden Projekten aus · Danke-Seite auf einer AUFLÖSBAREN
+    Adresse (Vermerk P13.6-70, Punkt (10)) · ein EIGENES Zapier-Testprojekt (Setzung P13.6-100,
+    (5)).
+    PHASE 0 — ALTER CODE, VOR DEM PUSH (Owner-Entscheidung P13.6-55):
+    · S0/ZM1 — Zap mit Catch Hook anlegen, Host und Form der Adresse ablesen (nur verkürzt
+      notieren).
+    · S1/ZM2a und ZM3 — `curl`-POST, urlencoded, fremder `Origin`, mit
+      `interesse=kurs&interesse=beratung`: Status, Köpfe, Rumpf, `time_total`; im Zap "Test
+      trigger": kommen die Felder einzeln an? MITLÄUFER: derselbe Aufruf an die Make-Adresse
+      (Soll 200 "Accepted"). Variante: der Host mit Punkt am Ende, für Zapier UND Make (Setzung
+      P13.6-100, (6)).
+    · S2 — V0 der Make-Testseite: Editor neu laden, veröffentlichen, zweimal `fetch` mit
+      `no-store`, sha256 und `cache-control`; Bezug 20007 Bytes, `e283fa67…1500` (Vermerk
+      P13.6-89, Punkte (3) und (6)). Weicht V0 ab, gilt V0 (Hebungs-Kandidat P13.6-73).
+      Gegenprobe: die Seite ohne Ziel (30493 Bytes, `40c83cb3…37e5`).
+    · S3 — das Zapier-Projekt mit `hooks.zapier.com` veröffentlichen (es schickt noch direkt):
+      V-Z, Bytes und sha256, zweimal; einmal absenden — "erreicht", Danke-Seite, Eingang im Zap.
+      Zugleich ZM6 für `no-cors`; die CORS-Köpfe aus S1 (`curl -i`).
+    PHASE 1 — NACH DEM DEPLOY:
+    · L0 — beide Seiten ohne Neu-Veröffentlichen gleich V0 bzw. V-Z; die Zapier-Seite schickt
+      weiter direkt.
+    · L1 — Make-Regression: Editor neu laden, neu veröffentlichen, gleich V0; ein Absenden →
+      Danke-Seite, Make +1.
+    · L2 — Zapier-Projekt: Editor neu laden, neu veröffentlichen; Anzeige "über Pagesmith, mit
+      Prüfung"; Differenz-Nachweis V-Z + R2 + D2 mit dem Konsolen-Block aus Vermerk P13.6-89,
+      alle fünf Schritte. Positivkontrolle: die Zapier-Seite MUSS abweichen.
+    · L3 — Relay-Runde: `/api/f` 204, Danke-Seite, Zap-Verlauf +1 mit Einzelfeldern (ZM2b), eine
+      Checkbox-Gruppe (ZM3 über die Seite); Vercel-Log: ausgehend an `hooks.zapier.com`, keine
+      Referer-Zeile, keine `[relay]`-Zeile.
+    · L4 — Datensparmodus an, dann wieder aus: direkt an `hooks.zapier.com` mit `no-cors`;
+      Danke-Seite, Eingang (ZM6).
+    · L5 (optional) — ein Ziel `zapier.com/hooks/…`: Anzeige "direkt" und der Hinweis; kommt der
+      Lead an?
+    · L6/ZM4 — Zap aus: sofort `curl` und ein Relay-Absenden, nach mehreren Stunden erneut;
+      Mitläufer ein laufender Zap (Soll 200). Dazu: Zap gelöscht, erfundene Kennung auf
+      `hooks.zapier.com`, ein 3xx irgendwo?, eine Anfrage aus dem Zeitfenster nach dem
+      Wiedereinschalten.
+    · L7/ZM5 — am Monatsende bzw. im Free-Konto: Status und gehaltene Läufe (eigener Termin).
+    · L8/ZM7 — uBlock Origin Lite (Aufbau wie N3 in Vermerk P13-22 der Phase 13) gegen den
+      direkten Aufruf an `hooks.zapier.com`; Positivkontrolle: die doubleclick-Probe wird
+      geblockt.
+    Jede Beobachtung zählt nur mit ihrer Positivkontrolle bzw. ihrem Mitläufer.
+
+PROVENIENZ von P13.6-99: OWNER-ENTSCHEIDUNG, übermittelt im Auftrag der Runde "Scheibe Zapier ins
+Relay — Bau" (Teil A) am 2026-10-01; der Auftrag datiert sie auf den 2026-09-30. BINDEND.
+
+**Owner-Entscheidung P13.6-99 — DER HINWEIS BEI EINER ADRESSE AUSSERHALB DER HOST-LISTE NENNT
+ZAPIER MIT SEINER ADRESSFORM (P3, KANDIDAT (a)); DIE BETREIBER-DOKUMENTATION (d) KOMMT ZUSÄTZLICH
+BEIM PHASENENDE.** Beantwortet die Fragen 1 und 4 des Plans (Vermerk P13.6-98).
+- Im Hinweis `DATA_SAVER_UNLISTED_NOTE` (src/components/ActionPanel.tsx) wird die Zeichenfolge
+  "derzeit für Make-Webhooks der Region EU2" ersetzt durch "derzeit für Make-Webhooks der Region
+  EU2 und für Zapier-Webhooks, deren Adresse mit https://hooks.zapier.com beginnt". Sonst bleibt
+  der Text.
+- (CC, GELESEN AM CODE, Stand `87af209`): Die Zeichenfolge steht wörtlich in
+  `DATA_SAVER_UNLISTED_NOTE` und abgetippt in src/components/CodeImporter.test.tsx. Der neue
+  Wortlaut, zusammengesetzt aus Bestand und Ersetzung: "Diese Adresse beliefert der Browser
+  direkt. Die Zustellprüfung über Pagesmith gibt es derzeit für Make-Webhooks der Region EU2 und
+  für Zapier-Webhooks, deren Adresse mit https://hooks.zapier.com beginnt."
+- ÄNDERT die Infozeile aus Owner-Entscheidung P13.6-68; die übrigen Texte jener Entscheidung
+  bleiben.
+- GEMELDET, NICHT ENTSCHIEDEN (CC, ABGELEITET am Code): Der Hinweis erscheint bei jeder Adresse,
+  die `allowedRelayEndpoint` ablehnt. "deren Adresse mit https://hooks.zapier.com beginnt" trifft
+  dem Wortlaut nach auch Adressen, die die Prüfung ablehnt — etwa
+  `https://hooks.zapier.com.evil.test/…` (Suffix-Falle) oder `https://hooks.zapier.com:8443/…`
+  (eigener Port). Bei ihnen stünde der Hinweis und nennte eine Form, die ihre Adresse zu erfüllen
+  scheint. Eine echte Zapier-Adresse trägt nach allen gelesenen Beispielen keins von beiden
+  (Zapier, Befund (b)).
+
+PROVENIENZ von P13.6-100: ARCHITEKTEN-SETZUNG, übermittelt im selben Auftrag am 2026-10-01; der
+Auftrag datiert sie auf den 2026-09-30. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf.
+
+**Setzung P13.6-100 — DIE ANTWORTEN AUF DIE FRAGEN 2, 3 UND 5 BIS 9 DES PLANS (Vermerk P13.6-98).**
+- (2) REIHENFOLGE: Phase 0 (ZM1, ZM2 und ZM3 per `curl`, alter Code) läuft VOR dem Push — die
+  Lesart von Owner-Entscheidung P13.6-55 (die Ableitung an Owner-Entscheidung P13.6-97).
+- (3) Die Bündelung mit dem Abnahme-Testprotokoll aus Owner-Entscheidung P13.6-90 ist
+  AUFGEHOBEN; das Protokoll bleibt eigener offener Punkt vor dem ersten fremden Nutzer ("VOR DEM
+  ERSTEN FREMDEN NUTZER FEHLT EIN ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP", docs/offene-punkte.md).
+  GEMELDET (CC): Die Bündelung stand in einer OWNER-Entscheidung; ihre Aufhebung ist hier als
+  Architekten-Setzung geführt, wie übermittelt.
+- (5) Ein eigenes Zapier-Testprojekt; die Make-Testseite bleibt Bezugspunkt (Vermerk P13.6-89,
+  Punkt (3): 20007 Bytes, `e283fa67…1500`).
+- (6) Der Host mit Punkt am Ende wird in Phase 0 mitgemessen, für Zapier UND Make (Vermerk
+  P13.6-98, Punkt (6)).
+- (7) Die Ergänzungen an docs/offene-punkte.md ("heute allein Make") folgen beim Abschluss,
+  datiert (Vermerk P13.6-98, Punkt (3)).
+- (8) Der veraltete Satz im Kopf von src/lib/relay/relay.ts geht in den Vorrat: Vorrat P13.6-101.
+- (9) Neue Tests in src/lib/relay/relay.test.ts und src/lib/form-target.test.ts liegen im Scope.
+
 ## Plattform-Schritte der Phase 13.6
 
 **Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).
@@ -3415,3 +3634,25 @@ WISSEN.**
   Köderfeld reiste deshalb als eigenes Feld bis zum Empfänger, solange nichts es entfernt; es
   entfernen hiesse, den Rumpf im Relay zu parsen.
 - TRIGGER: vor dem ersten fremden Nutzer, oder der erste gemeldete Spam-Fall.
+- NACHGETRAGEN 2026-10-01 (ARCHITEKT, übermittelt im Auftrag der Runde "Scheibe Zapier ins Relay
+  — Bau", Teil A): KOPPLUNG MIT OWNER-ENTSCHEIDUNG P13.6-94. Ein Bot ohne Skript schickt an das
+  `action`-Attribut und damit direkt zum Empfänger; eine Prüfung allein im Relay erreicht ihn
+  nicht. Wer den Spam-Schutz zuschneidet, bewertet das Verbergen der Adresse mit. GESTALTEN:
+  Köderfeld und Zeitfalle ohne Dritte; eine unsichtbare Prüfung eines Dritten (etwa Turnstile)
+  verlangt Skript eines Dritten (Einwilligung; Dauerregel "WAS EINMAL IM AUSGELIEFERTEN TEXT
+  STEHT, IST EINE EINBAHNSTRASSE …") und eine Server-Bestätigung, die nur der Relay-Weg hat.
+  (CC, am Bestand) Die Adresse im `action`-Attribut: Arbeit P13.6-91, Q1; sie bleibt dort nach
+  Owner-Entscheidung P13.6-94.
+
+PROVENIENZ von P13.6-101: ARCHITEKT, Setzung P13.6-100, (8), übermittelt im Auftrag der Runde
+"Scheibe Zapier ins Relay — Bau" (Teil A) am 2026-10-01. Befund aus dem Plan (Vermerk P13.6-98,
+Punkt (3)).
+
+**Vorrat P13.6-101 — DER KOPF VON src/lib/relay/relay.ts SAGT "IN DIESER SCHEIBE RUFT ES NOCH
+KEINE AUSGELIEFERTE SEITE AUF"; SEIT DER SCHEIBE 13.6-4 RUFEN GEHOSTETE SEITEN DAS RELAY.**
+- GELESEN AM CODE (CC, Stand `87af209`): Der Satz steht wörtlich im ersten Absatz des
+  Kopfkommentars. Seit Bau-Commit `3b631a2` ruft der Relay-Weg (`relayBranch`, Text aus
+  `buildFormTargetRuntime`, src/lib/form-target.ts) das Relay aus veröffentlichten Seiten;
+  live: Vermerk P13.6-70, Punkt (3).
+- BEZUG: Dauerregel "EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT — UND ER VERMEHRT SICH".
+- TRIGGER: die nächste Runde, die src/lib/relay/relay.ts öffnet.

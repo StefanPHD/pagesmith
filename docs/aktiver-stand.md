@@ -713,6 +713,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
   P13.6-106) und als eigene Scheibe zugeschnitten, als nächste Scheibe der Phase und vor dem
   ersten fremden Nutzer (Setzung P13.6-107, Abschnitt "Zuschnitt Scheibe Beacon bei
   Erstveröffentlichung"). Arbeit P13.6-104 bleibt mit ihrer Frist daneben offen.
+- NACHGETRAGEN 2026-10-01 (ARCHITEKT, übermittelt im Auftrag der Runde "Beacon bei
+  Erstveröffentlichung — Fortsetzung"): NACH DIESER SCHEIBE, VOR ALLEM ANDEREN IN 13.6, die
+  Sicherheits-Scheibe "Spaltenrechte" — Arbeit P13.6-113.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -3091,7 +3094,9 @@ dieser Commit (Abschluss).
 ## Zuschnitt Scheibe Beacon bei Erstveröffentlichung
 
 **ZUGESCHNITTEN AM 2026-10-01 (ARCHITEKT); DER PLAN FOLGT IM BERICHT DERSELBEN RUNDE, NICHT IN
-DIESER DATEI.**
+DIESER DATEI.** NACHGETRAGEN 2026-10-01: Der Plan steht verdichtet in Vermerk P13.6-108, die
+Gestalt in Setzung P13.6-109 (Abschnitt "Planrunde der Scheibe Beacon bei
+Erstveröffentlichung").
 - GEGENSTAND: Vorrat P13.6-105 der Phase 13.6 — die erste Veröffentlichung eines neuen Projekts
   trägt den Conversion-Beacon, ohne dass der Betreiber den Editor neu laden muss.
 - BENENNUNG, DEKLARIERT (CC): wie bei den Scheiben "Zurück-Cache" und "Zapier ins Relay" ohne
@@ -3131,6 +3136,9 @@ NACH NEULADEN UND ERNEUTEM VERÖFFENTLICHEN TRÄGT SIE IHN.** KEIN BAU-COMMIT: M
       trägt, ist nicht angegeben.
     · ABGELEITET (CC), NICHT NACHGEZÄHLT: 4 Vorkommen = die Definition `function
       __psMetaFire(cfg)` + 3 Aufrufe.
+    · NACHGETRAGEN 2026-10-01: Owner-Angabe P13.6-111 der Phase 13.6 — das Prüfstück trägt
+      KEIN Formular-Ziel. Die Zerlegung in drei Aufrufe ist damit gestützt; sie bleibt
+      gerechnet, nicht als Text verglichen.
 
 (4) ERGEBNIS: Vorrat P13.6-105 ist GEMESSEN — B1 gegen B2, mit B2 als Positivkontrolle. Gemessen
     ist die WIRKUNG (kein Baustein bei der ersten Veröffentlichung ohne Neuladen); der
@@ -3171,6 +3179,101 @@ CONVERSION-BEACON, OHNE DASS DER BETREIBER NEU LADEN MUSS.**
   (CC): Jene Ausschluss-Entscheidung galt dem Zuschnitt der damaligen Scheibe; diese Setzung nimmt
   die Erst-Anlage jetzt als eigenen Gegenstand auf. Zur Verwerfung von "WEG D" nimmt der Plan
   Stellung, wo ein Kandidat ihr ähnelt.
+  NACHGETRAGEN 2026-10-01: Die Entscheidung vom 2026-09-07 ist durch Owner-Entscheidung
+  P13.6-110 der Phase 13.6 revidiert; die Stellungnahme zu "WEG D" steht in Setzung P13.6-109.
+
+### Planrunde der Scheibe Beacon bei Erstveröffentlichung
+
+**Vermerk P13.6-108 — DER PLAN (P1 BIS P6) UND DIE GATES G1 BIS G3, VERDICHTET.**
+PROVENIENZ: Berichte zweier read-only Runden (CC, 2026-10-01; Planrunde am Stand `0e34d8f`, Gates
+am Stand `3136962`). DIE BERICHTE STEHEN IN KEINER DATEI DES REPOS; hier verdichtet, Zeilennummern
+durch Symbolnamen ersetzt. GELESEN AM CODE, soweit nicht anders gekennzeichnet; NICHTS DAVON IST
+LIVE GEMESSEN.
+(1) P1 — DIE LÜCKE. `saveProject` (src/app/projects/actions.ts) ist der EINZIGE Insert in
+    `projects` (GEMESSEN AM REPO: ein `.insert(` über alle `from("projects")`); er schreibt keinen
+    Schlüssel. Der Editor hält ihn im Zustand `trackingKey` (src/components/CodeImporter.tsx),
+    gesät aus `initialTrackingKey` (src/app/page.tsx), `resetToEmpty`, `handleSwitch` und dem
+    Nachrück-Zweig in `handleDelete`, dazu gesetzt in `handleCredentialsSaved` — nicht in
+    `handleSave`, nicht in `handlePublish`. `handlePublish` erzeugt den Text über
+    `buildDocumentFor` mit dem Wert des laufenden Renders; erst `publishProject` ruft
+    `ensureTrackingKey` und schreibt die Spalte, und `PublishResult` trägt den Schlüssel nicht
+    zurück. Deshalb fehlt der Beacon auch bei einem zweiten Veröffentlichen in derselben
+    Sitzung.
+(2) P2 — WER NOCH BETROFFEN IST. Ja: die erste Veröffentlichung (auch wiederholt in derselben
+    Sitzung), der Export (derselbe Zustand; ein nie veröffentlichtes Projekt hat gar keinen
+    Schlüssel), Variante B (derselbe Aufruf), der Google-Weg (die OAuth-Rückkehr ruft
+    `ensureTrackingKey` ausdrücklich nicht; dass die Rückkehr den Editor neu lädt, ist
+    ABGELEITET), ein Projekt nur mit Pixel-ID (zur Hälfte: `fbq` ohne Beacon; ausser Scope), ein
+    vor dem ersten Veröffentlichen in einem zweiten Tab geladener Editor (Häufigkeit NICHT
+    ENTSCHEIDBAR). Nein: die Vorschau (sendet nie, Scheibe 13.6-2), Projektwechsel und
+    Nachrücken (lesen die Spalte), das Speichern von Zugangsdaten (heilt über
+    `handleCredentialsSaved`, Test K6).
+(3) P3 — KANDIDATEN: (a1) Schlüssel im Insert-Zweig von `saveProject` · (a2) Spalten-Default per
+    Migration · (b) eigene Server-Action vor der Erzeugung · (c1) `publishProject` liefert den
+    Schlüssel, der Client veröffentlicht erneut · (c2) der Server verweigert bei abweichendem
+    Schlüssel und liefert ihn, der Client versucht einmal erneut · (d1) der Server setzt Laufzeit
+    und Aufrufe selbst ein · (d2) Platzhalter im Client, Ersetzung auf dem Server · (e) Schlüssel
+    beim Laden sicherstellen. Gewählt und verworfen: Setzung P13.6-109.
+(4) P4 — BESTAND: drei lesende Abfragen für den Owner (Projekte ohne Schlüssel; veröffentlichte
+    Seiten mit Track-Aktion ohne Beacon, Marker `eventSourceUrl` — er steht im ausgelieferten Text
+    allein in `buildCapiBeaconStatement`, src/lib/tracking/meta.ts; Mitläufer das Prüfstück).
+    Nicht gefahren. Bereits veröffentlichte Seiten heilt kein Kandidat; sie brauchen Neuladen und
+    erneutes Veröffentlichen.
+(5) P5/P6 — Tests und Live-Entwurf: im Bau-Bericht der Scheibe.
+(6) G1 — Die Entscheidung "DIE ERST-ANLAGE — ENTSCHIEDEN: SIE WIRD NICHT GEBAUT" (Archiv der Phase
+    11.2, Abschnitt "Der Schlüssel kommt aus der Spalte") trägt die Provenienz
+    "ARCHITEKTEN-ENTSCHEIDUNG 2026-09-07 … OWNER-GO 2026-09-07". Einen Sachgrund gegen die
+    Erst-Anlage nennt das Archiv nicht; die Kandidaten am Speicher- und am Veröffentlichungs-Pfad
+    führt es als "eigene Entscheidungen, hier nicht getroffen". Revidiert: Owner-Entscheidung
+    P13.6-110.
+(7) G2 — Spaltenrechte auf `projects`: Vermerk P13.6-112 (gemessen) und Arbeit P13.6-113.
+(8) G3 — Insert und Erzeugung laufen in GETRENNTEN Handlern: `handlePublish` bricht ohne
+    `projectId` ab (`if (!projectId) return;`), der Insert läuft allein in `handleSave`, und
+    `setProjectId(result.id)` steht in dessen Erfolgszweig. Ein dort gesetzter Zustand ist beim
+    späteren Klick auf "Veröffentlichen" gerendert.
+
+**Setzung P13.6-109 — GESTALT (a1): DER SCHLÜSSEL ENTSTEHT IM INSERT-ZWEIG VON `saveProject`.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-10-01, übermittelt im Auftrag der Runde "Beacon bei
+Erstveröffentlichung — Fortsetzung". REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
+- GESTALT: Der Insert-Zweig von `saveProject` schreibt `tracking_key: ensureTrackingKey(null)` und
+  liest ihn per `.select("id,tracking_key")` zurück; `SaveResult` bekommt ein additives Feld;
+  `handleSave` setzt den Zustand `trackingKey`.
+- GRÜNDE: keine Migration · keine zusätzliche Rundreise · ein einziger Erzeuger (Invariante (4)
+  der Setzung P13.6-107) · heilt Export und Google-Weg für NEUE Projekte · keine neue
+  Server-Action.
+- VERWORFEN, je mit Grund: (a2) zweiter Erzeuger in der Datenbank und eine Migration · (b) "WEG D"
+  des Archivs der Phase 11.2, eine neue Server-Action (offener Punkt "DIE IDOR-WÄCHTER SIND
+  NAMENTLICH …") und der Wettlauf zweier Tabs · (c1) die Seite ist zeitweise ohne Beacon live ·
+  (c2) invasiv in `publishProject` · (d2) ein neuer Kontrakt, und den Export heilt sie nicht ·
+  (e) Schreiben im GET (Dauerregel "EINE ROUTE, DIE SCHREIBT ODER EINEN FREMDEN ENDPUNKT RUFT,
+  IST NIEMALS EIN GET"). (CC) (d1) nennt der Auftrag nicht; der Plan führte gegen sie: ohne
+  Parser nur über eine Server-Kopie der Laufzeit (ein zweiter Erzeuger) oder einen globalen
+  Hook-Namen (ein Kontrakt), und der Text JEDER Seite änderte sich (gegen Invariante (3)).
+- AUFLAGE, BEANTWORTET DURCH G3 (Vermerk P13.6-108, Punkt (8)): "Der Schlüssel aus dem Insert geht
+  direkt an `buildDocumentFor`, wenn Insert und Erzeugung im selben Handler laufen" — sie laufen
+  getrennt; die Auflage ist gegenstandslos, Mutation M2 entfällt.
+- GRENZEN: Ein Editor, der vor dem ersten Speichern in einem zweiten Tab geladen war, kennt den
+  Schlüssel nicht · Bestandsprojekte ohne Schlüssel (heute nur Testprojekte des Owners — ANGABE
+  DES AUFTRAGS) heilen erst durch Neuladen und erneutes Veröffentlichen; KEIN Backfill, er wäre
+  ein zweiter Erzeuger · bereits veröffentlichte Seiten und Exporte ändern sich erst durch
+  Neu-Veröffentlichen bzw. Neu-Export.
+
+**Owner-Entscheidung P13.6-110 — DIE ERST-ANLAGE DES SCHLÜSSELS WIRD GEBAUT; DIE ENTSCHEIDUNG VOM
+2026-09-07 IST REVIDIERT.**
+PROVENIENZ: OWNER-GO 2026-10-01, übermittelt im Auftrag der Runde "Beacon bei
+Erstveröffentlichung — Fortsetzung". BINDEND.
+- REVIDIERT: "DIE ERST-ANLAGE — ENTSCHIEDEN: SIE WIRD NICHT GEBAUT" (Architekten-Entscheidung mit
+  Owner-GO vom 2026-09-07; Archiv der Phase 11.2, Abschnitt "Der Schlüssel kommt aus der Spalte").
+- GRUND: Jede Erstveröffentlichung verliert still alle Conversions, live gemessen (Vermerk
+  P13.6-106).
+- DAS ARCHIV BLEIBT UNVERÄNDERT (Zeitdokument); der Zeiger steht hier.
+
+**Owner-Angabe P13.6-111 — DAS PRÜFSTÜCK DES VERMERKS P13.6-106 TRÄGT KEIN FORMULAR-ZIEL, NUR DIE
+TRACKING-AKTION.**
+PROVENIENZ: OWNER-ANGABE 2026-10-01, übermittelt im selben Auftrag.
+- FOLGE (CC): Drei Track-Zweige im Wiring-Skript, also drei Aufrufe (Vermerk P13.6-106, Punkt
+  (3)); die Zerlegung 2076 = 1968 + 3 × 36 ist damit gestützt, weiter gerechnet und nicht als Text
+  verglichen.
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -3459,6 +3562,70 @@ Relay" am 2026-10-01). Die Kandidaten stehen in docs/formular-empfaenger-befunde
   dem Ende des Test-Monats bzw. im Free-Konto". Dieser Teil ist erst MIT oder NACH dem Ablauf
   messbar, nicht davor; vor Ablauf messbar ist allein das erschöpfte Kontingent.
 
+PROVENIENZ von P13.6-112 und P13.6-113: Gate G2 der Scheibe "Beacon bei Erstveröffentlichung"
+(Vermerk P13.6-108, Punkt (7)); Messung des Owners und Auftrag des Architekten, übermittelt im
+Auftrag der Runde "Beacon bei Erstveröffentlichung — Fortsetzung" am 2026-10-01. Wo "(CC)" steht,
+hat CC die Angabe am Bestand geprüft (HEAD `3136962`).
+
+**Vermerk P13.6-112 — `projects` IST FÜR EINE ANGEMELDETE ROLLE SPALTENWEISE FREI SCHREIBBAR,
+AUCH IN SERVER-EIGENEN SPALTEN.** KEIN BAU-COMMIT: Messrunde im SQL-Editor; im Repo ändert sich
+keine Zeile Code.
+(0) PROVENIENZ DER PUNKTE (1) BIS (4): GEMESSEN, OWNER, 2026-10-01, SQL-Editor, Postgres-Ebene;
+    die Proben P-G2a bis P-G2d aus dem Gate-Bericht (CC) — sie stehen in keiner Datei des Repos.
+    Die Ergebnisse sind als Zusammenfassung übermittelt, nicht im Wortlaut.
+(1) P-G2a (`has_column_privilege`): anon, authenticated und service_role je true für INSERT und
+    UPDATE auf `tracking_key`, UPDATE auf `blocked_at`, UPDATE auf `published_content`.
+    GELESEN 2026-10-01 (CC, postgresql.org/docs/17/functions-info.html): die Funktion "succeeds
+    either if the privilege is held for the whole table, or if there is a column-level grant" —
+    sie unterscheidet Tabellen- und Spaltenrecht nicht.
+(2) P-G2b: genau vier Policies auf `projects` (select, insert, update, delete je `_own`), allein
+    `auth.uid() = user_id`.
+(3) P-G2c: einziger Trigger auf `projects` ist `projects_set_updated_at`; sein `tgenabled` ist
+    nicht übermittelt.
+(4) P-G2d: `projects_tracking_key_key` UNIQUE, partiell (`tracking_key IS NOT NULL`).
+(5) (CC, GELESEN AM BESTAND): Keine Migration trägt ein `grant` oder `revoke` auf `projects`; die
+    Policies aus 0001 nennen keine Rolle (`create policy … for update using (auth.uid() =
+    user_id) …`). Für anon greift die Policy deshalb nicht, weil `auth.uid()` dort leer ist —
+    ABGELEITET, nicht gemessen. Wirksam schreibt also die angemeldete Rolle, und zwar jede Spalte
+    ihrer EIGENEN Zeilen.
+(6) FOLGEN, ABGELEITET, NICHT GEMESSEN:
+    · `blocked_at`: Selbst-Entsperrung — der Kill-Switch (Tier 0) ist für den Betreiber des
+      gesperrten Projekts aufhebbar (Zusatz vom 2026-10-01 in beiden Fassungen des
+      Sicherheits-Manifests).
+    · `published_content`: Schreiben am Veröffentlichungs-Riegel vorbei (Prüfung des
+      Formular-Ziels, eigene Bausteine, Sperre der Custom-Domains in `publishProject`). Das Relay
+      liest seine Zieladresse aus dieser Spalte (Setzung P13.6-20); vor der Weiterleitung prüft es
+      selbst `formTargetProblem` gegen die Eigen-Liste, den Datensparmodus und die Host-Liste
+      (`relay`, src/lib/relay/relay.ts — GELESEN AM CODE, CC), nicht aber die Sperre der
+      Custom-Domains.
+    · `tracking_key`: Übernahme eines frei gewordenen Schlüssels eines GELÖSCHTEN Projekts — er
+      steht öffentlich in Exporten und ausgeliefertem Text; Beacons noch umlaufender Exporte
+      landeten dann im Projekt des Übernehmenden und gingen mit IP, User-Agent und Seitenadresse
+      fremder Besucher an dessen Ziele. Einen Schlüssel, den ein BESTEHENDES Projekt trägt,
+      verhindert der eindeutige Index (Punkt (4)).
+    · `ab_test_active`: ebenso direkt schreibbar.
+(7) GRENZE: Der Schreibweg über PostgREST mit echter Sitzung ist NICHT ausgeführt; gemessen ist
+    die Postgres-Ebene (Dauerregel "EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE
+    ANDERE SCHICHT NICHT SCHLIESSEN"). docs/db-stand.md ist NICHT nachgezogen (Scope dieses
+    Commits); die Spalten-Rechte stehen dort bisher nicht.
+
+**Arbeit P13.6-113 — SICHERHEITS-SCHEIBE "SPALTENRECHTE": HÖCHSTE DRINGLICHKEIT, ALS NÄCHSTE NACH
+DER SCHEIBE "BEACON BEI ERSTVERÖFFENTLICHUNG", VOR ALLEM ANDEREN IN 13.6** (ARCHITEKT 2026-10-01).
+- BEFUND: Vermerk P13.6-112.
+- AUFTRAG: SYSTEMATISCH ALLE Tabellen, die eine angemeldete Rolle per Policy schreiben darf, auf
+  server-eigene Spalten prüfen — nicht nur `projects`.
+  (CC, aus docs/db-stand.md, POLICIES, GEMESSEN 2026-08-05 — ein Dokument, keine heutige
+  Messung): Schreib-Policies tragen `projects` (insert, update, delete), `domains` (insert,
+  update) und `project_tokens` (insert, update); `events` trägt allein SELECT; `audit_logs`,
+  `schema_migrations`, `project_secrets` und `relay_rate_counters` tragen keine Policy. Die
+  Spalten von `domains` (etwa `blocked_at`, `custom_host`, `label`) und `project_tokens` sind
+  danach Gegenstand der Prüfung.
+- BEZUG: Zusatz vom 2026-10-01 am Kill-Switch in CLAUDE.md und in
+  docs/claude-history/security-manifest-full.md (Status dort unverändert); Dauerregel "GRANTS
+  SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT".
+- VOR DEM PLAN PFLICHT: docs/db-stand.md, docs/db-regeln.md, die Supabase-Lesung (vierte Regel in
+  docs/db-regeln.md).
+
 ## Vorrat (gemeldet, nicht gebaut)
 
 PROVENIENZ von P13.6-105: ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde der Scheibe
@@ -3503,6 +3670,7 @@ CONVERSION-BEACON: SEITENAUFRUFE WERDEN GEZÄHLT, CONVERSIONS FEHLEN STILL.**
   NICHT gemessen" darüber beschreibt den Stand vor dieser Messung; gemessen ist seither die
   Wirkung, der Mechanismus bleibt am Code gelesen. Der TRIGGER "SOFORT — als nächster Schritt die
   Messung" ist damit erfüllt.
+- GESTALT GESETZT 2026-10-01: Setzung P13.6-109 (a1) mit Owner-Entscheidung P13.6-110.
 
 **Vorrat P13.6-6 — B-1: DIE EIGEN-LISTE DER FORMULAR-ZIELE KENNT KEINE CUSTOM-DOMAINS UND KEIN
 `*.vercel.app` — EINE ZIELADRESSE DORTHIN TRÄGT FORMULARINHALTE IN UNSER DEPLOYMENT**
@@ -3919,6 +4087,9 @@ BEANTWORTET IST.**
 - WARUM NICHT JETZT: Eine Änderung an einer Aussage von CLAUDE.md verlangt zuerst das Laden von
   docs/claude-md-herleitung.md (Kopf von CLAUDE.md).
 - TRIGGER: die nächste Runde, die ohnehin eine Aussage in CLAUDE.md ändert.
+- TRIGGER EINGETRETEN 2026-10-01 (CC): Die Runde "Beacon bei Erstveröffentlichung — Fortsetzung"
+  ändert eine Aussage in CLAUDE.md (Zusatz am Kill-Switch). NICHT VOLLZOGEN — der Auftrag jener
+  Runde nennt diesen Posten nicht; vorgelegt im Bericht der Runde.
 
 **Vorrat P13.6-87 — EINE DANKE-ADRESSE OHNE SEITENWECHSEL LÄSST DIE SPERRE DES FORMULAR-ZIELS OHNE
 JEDES "ZURÜCK" STEHEN; DER KNOPF IST DANN TOT** (CC, Aufklärung zur Scheibe "Zurück-Cache" vom

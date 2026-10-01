@@ -583,6 +583,12 @@ einen setzen will, setzt ihn in BEIDEN Fassungen im selben Commit.
   Verwurf VOR Token-Lookup, spart die Token-Query). Migration 0008, Serve-Resolver auf
   ServeResult-Union (ok/blocked/notfound). BINDET-AN: Serving existiert (7a/7c-1) ->
   erledigt, vor erstem Fremd-Traffic.
+  ZUSATZ 2026-10-01 — STATUS UND BINDET-AN BLEIBEN UNVERÄNDERT: Die Sperre ist über PostgREST
+  vom Betreiber des gesperrten Projekts SELBST AUFHEBBAR. blocked_at ist für authenticated frei
+  schreibbar (has_column_privilege true, GEMESSEN Owner 2026-10-01, Probe P-G2a); die
+  Update-Policy prüft allein auth.uid() = user_id, kein Trigger schützt die Spalte. Der
+  Schreibweg mit echter Sitzung ist NICHT ausgeführt. Behebung: Arbeit P13.6-113 der Phase
+  13.6 (Sicherheits-Scheibe "Spaltenrechte"); Befund: Vermerk P13.6-112 der Phase 13.6.
 - KILL-SWITCH — LEKTION (Manifest, nicht nur Chat): identischer HTTP-Status bei /api/e ist
   HIER bewusstes Sicherheitsdesign (Sperre von "unbekannter Key" nicht unterscheidbar),
   KEIN Testfehler. Verifikation dieses Pfades MUSS über die NACHGELAGERTE Wirkung laufen

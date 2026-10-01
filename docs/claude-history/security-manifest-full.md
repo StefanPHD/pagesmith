@@ -53,6 +53,17 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   HTTP-Statuscode beweist nichts.
   BINDET-AN: erledigt vor erstem echten Fremd-Traffic. Serving existierte (7a/7c-1), die
   Sperre kam mit 0008.
+  ZUSATZ 2026-10-01 — STATUS UND BINDET-AN BLEIBEN UNVERÄNDERT; DIE TRAGENDE KONTROLLE HAT EINE
+  LÜCKE: Die Sperre ist über PostgREST vom Betreiber des gesperrten Projekts SELBST AUFHEBBAR.
+  GEMESSEN (Owner, 2026-10-01, SQL-Editor, Postgres-Ebene): has_column_privilege liefert für
+  anon, authenticated und service_role je true für UPDATE auf projects.blocked_at (Probe
+  P-G2a); die vier Policies auf projects prüfen allein auth.uid() = user_id (P-G2b); einziger
+  Trigger ist projects_set_updated_at (P-G2c). FOLGE, ABGELEITET: Ein angemeldeter Nutzer
+  setzt blocked_at seines eigenen Projekts auf NULL, und Serve-Route und Ingest liefern bzw.
+  nehmen wieder an. Für anon greift die Policy nicht, weil auth.uid() dort leer ist
+  (ABGELEITET). GRENZE: Der Schreibweg über PostgREST mit echter Sitzung ist NICHT ausgeführt.
+  BEHEBUNG: Arbeit P13.6-113 der Phase 13.6 (Sicherheits-Scheibe "Spaltenrechte", höchste
+  Dringlichkeit); Befund: Vermerk P13.6-112 der Phase 13.6 (docs/aktiver-stand.md).
 - E-MAIL-BESTÄTIGUNG wieder aktiv:
   RISIKO: fürs MVP deaktiviert (sofort eingeloggt) -> offene Registrierung =
   Spam-Accounts, Ressourcen-/Kosten-Missbrauch, Wegwerf-Identitäten.

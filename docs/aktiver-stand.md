@@ -2861,6 +2861,61 @@ Auftrag datiert sie auf den 2026-09-30. REVIDIERBAR; ein Owner-Widerspruch hebt 
 - (8) Der veraltete Satz im Kopf von src/lib/relay/relay.ts geht in den Vorrat: Vorrat P13.6-101.
 - (9) Neue Tests in src/lib/relay/relay.test.ts und src/lib/form-target.test.ts liegen im Scope.
 
+### Live-Test der Scheibe Zapier ins Relay
+
+**Vermerk P13.6-102 — PHASE 0, ALTER CODE, VOR DEM PUSH: ZAPIER NIMMT DIE FORM DES RELAYS AN.**
+KEIN BAU-COMMIT: Messrunde am alten Code (Stand `1428b33`, im Code gleich `87af209`).
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (4): GEMESSEN, OWNER, live, 2026-10-01, übermittelt im
+    GO-Auftrag der Scheibe samt Nachtrag mit der vollständigen curl-Ausgabe. Instrument für (2):
+    curl 8.14.1, Git Bash, schannel; die Befehle aus dem Bericht der Bau-Runde (urlencoded-Rumpf
+    mit `interesse=kurs&interesse=beratung`, fremder `Origin`, je ein eigener `probe`-Wert).
+    Vollständige Webhook-Adressen stehen bewusst nicht in dieser Datei.
+    ZEITANGABEN: Maßgeblich ist der `Date`-Kopf der Antworten. Zapiers Oberfläche zeigt die Läufe
+    mit dem Etikett "UTC", aber um +2 h gegenüber dem `Date`-Kopf (Lauf `zm2-z-ohne`: Oberfläche
+    08:30:43, `Date`-Kopf 06:30:43 GMT). Zapier-Zeiten unten sind deshalb als
+    OBERFLÄCHENANGABE gekennzeichnet. GRENZE (CC): Der Versatz ist an EINEM Lauf verglichen.
+
+(1) S0/ZM1 — DIE ADRESSE: Die Catch-Hook-Adresse im Konto beginnt mit
+    `https://hooks.zapier.com/hooks/catch/` (Form `…/catch/<Nutzer-ID>/<Kennung>/`). Der Host
+    deckt sich mit Zapier, Befund (b) (docs/formular-empfaenger-befunde.md).
+
+(2) S1/ZM2a UND ZM3 — VIER curl-AUFRUFE, `Date`-Köpfe 2026-10-01 06:30:42 bis 06:30:44 GMT:
+    · Make ohne Punkt (MITLÄUFER): 200, `text/plain` "Accepted", `time_total` 0,340 s,
+      `make-actual-status: 200`, `access-control-allow-origin: *`.
+    · Zapier ohne Punkt: 200, `application/json` mit `attempt`, `id`, `request_id`, `status`
+      "success"; 0,320 s; `x-zapier-hook-status: success`, `access-control-allow-origin: *`,
+      `x-rate-limit-limit: 20000` (remaining 19999).
+    · Zapier mit Punkt am Ende: gesendet `Host: hooks.zapier.com.` → 200, JSON "success", 0,270 s.
+    · Make mit Punkt am Ende: gesendet `Host: hook.eu2.make.com.` → 200 "Accepted", 0,315 s.
+    · EINGÄNGE: Zapier `zm2-z-ohne` (Oberflächenangabe 08:30:43) und `zm2-z-punkt`
+      (Oberflächenangabe 08:30:44); Make `zm2-m-ohne` und `zm2-m-punkt`. Felder je einzeln,
+      `interesse` bei beiden Empfängern als Liste `[kurs, beratung]`.
+    · FOLGE: Der Punkt am Ende wird von beiden angenommen — GEMESSEN MIT curl; GRENZE: nicht mit
+      Node-`fetch` vom Relay (Vermerk P13.6-98, Punkt (6)). Beide Antworten tragen
+      `access-control-allow-origin: *`. GRENZE (CC): gemessen an der Antwort auf einen POST mit
+      fremdem `Origin`; ein `OPTIONS`/Preflight ist nicht gemessen.
+    · Damit beantwortet, für Zapier gemessen: ZM2a (Status, Köpfe, Rumpf, Zeit der Form des
+      Relays), ZM3 (Mehrfachwerte als Liste); Zapier, Befunde (d) und (e), mit der Messung im
+      Einklang. Offen von ZM2: der Teil über das Relay einer Testseite (ZM2b, Phase 1, L3).
+
+(3) S2 — MAKE-TESTSEITE (Bezugspunkt): Editor neu geladen, veröffentlicht, zweimal: 20007
+    Bytes, sha256 `e283fa67…1500`; ohne K2 `e6ae154f…972f`. GEMESSEN AM BESTAND (CC): gleich L1
+    und V0 in Vermerk P13.6-89, Punkte (1) und (3). Der Bezugspunkt ist unverändert.
+
+(4) S3 — ZAPIER-TESTPROJEKT `zapier-test-m21cev.publayer.net` (Setzung P13.6-100, (5)):
+    Anzeige "Zustellung: direkt vom Browser"; zweimal 16841 Bytes, sha256
+    `aab1a0432d204f915791e7a9f275feae3181d3c06a0eabee5a921af87e4a3364` (V-Z, Vorher-Wert für L2).
+    Ein Absenden → Danke-Seite, Zapier-Eingang mit den Feldern (Oberflächenangabe 08:45:51).
+    ZM6: Zapier nimmt den browser-direkten Aufruf (`no-cors`) an.
+
+(5) EINORDNUNG (CC, ABGELEITET am Wortlaut): Owner-Entscheidung P13.6-55 verlangt vor der
+    Aufnahme "gelesen und einmal live getestet"; nach der Lesart der Setzung P13.6-100, (2), ist
+    das mit (1) und (2) VOR dem Push erfüllt.
+    NICHT IN DIESEM COMMIT: der Nachtrag dieser Messungen im Abschnitt "Zapier" von
+    docs/formular-empfaenger-befunde.md (Frage 7 des Plans nannte ihn; Setzung P13.6-100, (7),
+    nennt allein docs/offene-punkte.md).
+
 ## Plattform-Schritte der Phase 13.6
 
 **Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).

@@ -130,7 +130,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [x] Phase 13 — Formular-Ziel mit Danke-Seite
 - [ ] Phase 13.5 — Medien
-- [ ] Phase 13.6 — Formular-Relay (Lead-Relay)
+- [x] Phase 13.6 — Formular-Relay (Lead-Relay)
 - [ ] Phase 13.7 — Sicherheit & Datenintegrität
 - [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out)
 - [ ] Phase 13.9 — 1-Klick-Empfänger (Stufe 2)
@@ -1037,6 +1037,22 @@ das Archiv soll gerade NICHT geladen werden. Der EINE @-Import des Repos steht u
   Hebungs-Kandidat P13-63 als additive Ergänzung einer Dauerregel. Die Befunde über die
   Empfänger stehen in docs/formular-empfaenger-befunde.md. Ihr Kopf trägt das Protokoll der
   Hebung samt Gegenprobe und den Messwert nach Abschnitt 2b.
+- docs/claude-history/phase-13.6-formular-relay.md — gesamte Phase 13.6 (Formular-Relay, Stufe
+  1; neun Bau-Scheiben 13.6-1 bis 13.6-5, "Zurück-Cache", "Zapier ins Relay", "Beacon bei
+  Erstveröffentlichung", "Spaltenrechte"; Migrationen 0030 und 0031). HIER NACHSEHEN, WER AM
+  RELAY (`/api/f`, src/lib/relay/), AM FORMULAR-ZIEL, AM RÜCKFALL OHNE SKRIPT, AM
+  DATENSPARMODUS, AN DER VORSCHAU, AN DER RATENBEGRENZUNG, AM ZURÜCK-CACHE, AN SPALTENRECHTEN
+  ODER AM ADMIN-CLIENT ARBEITET — oder am Vercel-Tarif (Owner-Angabe P13.6-2: ein Upgrade auf
+  Pro ist, wenn nötig, freigegeben), an der Region (P13.6-52, -53) oder an
+  `NEXT_PUBLIC_APP_URL` (P13.6-47). 43 Entscheidungen, Setzungen und Owner-Angaben stehen NUR
+  dort, unter einem SAMMELVERMERK "NICHT GEHOBEN" im Abschnitt "Vollzogen" — darunter die
+  Angebotsregel und der Rückfall ohne Skript (P13.6-32 bis -36), Betriebsart und Host-Liste
+  (P13.6-54, -55, -61 bis -64), die Planrunden-Entscheidungen (P13.6-59, -66, -75, -88, -109).
+  SECHS Dauerregeln sind daraus entstanden (Transit im Relay, die Vorschau sendet nie, das
+  Einwilligungs-Urteil serverseitiger Ereignisse, der weiterleitende öffentliche Endpunkt, der
+  Admin-Client, der Vergleichswert eines Live-Byte-Vergleichs); vier weitere sind in der Phase
+  neu gefasst worden. Ihr Kopf trägt das Protokoll der Hebung samt Gegenprobe und den Messwert
+  nach Abschnitt 2b.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung (RISIKO /
   TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item). AUSLÖSER: Manifest-Arbeit;
   immer im SELBEN Commit wie die Tier-Übersicht hier.

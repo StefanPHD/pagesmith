@@ -5442,7 +5442,7 @@ zeichengleich; der ungekürzte Wortlaut steht im Archiv der Phase.
   (seit Phase 4 als akzeptiert geführt) und den Beacon an `/api/e` (nirgends geführt).
   **DER BELEG DER ERLEDIGUNG:** Bau-Commit `8be7bb3` ("feat(preview): Die Vorschau sendet nie
   — keine Meta-Laufzeit, keine Tracking-Eingaben"), live bestanden (Vermerk P13.6-45 der Phase
-  13.6, Standdatei der Phase 13.6, docs/aktiver-stand.md); Owner-Entscheidung P13.6-13
+  13.6, Archiv docs/claude-history/phase-13.6-formular-relay.md); Owner-Entscheidung P13.6-13
   und Setzung P13.6-38 derselben Phase nehmen BEIDE Hälften heraus. Seit dem 2026-10-01 eine
   Dauerregel: docs/immer-beachten.md, "DIE FUNKTIONALE VORSCHAU IM EDITOR SENDET NIE …".
   Der Rest, den die Entscheidung bewusst nicht erfasst — alte Pagesmith-Bausteine im
@@ -6542,8 +6542,8 @@ PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN".
   `formControlsWithImages` (src/lib/form-target.ts) ersetzt die Doppelantwort, ein Bild-Knopf
   zählt in `formTargetCheck` (Tests A2 in src/lib/form-target.test.ts); jedes `formaction`,
   `formmethod` und `formenctype` an einem Absende-Element sperrt seither (Setzungen P13.6-33
-  und P13.6-36, F1/F2) — Vermerk P13.6-37, Punkt (8), Standdatei der Phase 13.6,
-  docs/aktiver-stand.md.
+  und P13.6-36, F1/F2) — Vermerk P13.6-37, Punkt (8), Archiv
+  docs/claude-history/phase-13.6-formular-relay.md.
 
 - **Vorrat P13-62 — DIE SCHLÜSSEL-REIHENFOLGE DES DATENBLOCKS HÄNGT AN DER HERKUNFT DER MAPPINGS**
   GEMESSEN DURCH NACHBAU (CC, 2026-09-28; Vermerk P13-60, Punkt (4), Z, der Phase 13):
@@ -6587,8 +6587,8 @@ PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN".
 ## Aus Phase 13.6 gehoben (2026-10-01) — fünfzehn Vorrats-Einträge, eine Restarbeit und zwei Restfragen der Standdatei
 
 Gehoben beim Phasenende 13.6 aus der Standdatei der Phase 13.6 (Formular-Relay); die Nummern
-gehören zur Reihe `P13.6-n` jener Phase, ihr Archiv trägt den Wortlaut unter derselben Nummer
-(bis zur Archivierung: docs/aktiver-stand.md). Der Text hier ist VERDICHTET, nicht zeichengleich.
+gehören zur Reihe `P13.6-n` jener Phase, ihr Archiv
+(docs/claude-history/phase-13.6-formular-relay.md) trägt den Wortlaut unter derselben Nummer. Der Text hier ist VERDICHTET, nicht zeichengleich.
 Das Kriterium war zweiteilig — benennbarer Trigger UND "geht sonst still kaputt"; was beides
 trägt, steht in docs/offene-punkte.md, Block "AUS DEM PHASENENDE 13.6 GEHOBEN (2026-10-01)",
 was einer Phase zugewiesen ist, an den Roadmap-Zeilen 13.7, 13.8 und 14. KEIN FIX-VORSCHLAG

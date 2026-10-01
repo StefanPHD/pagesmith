@@ -442,7 +442,8 @@ aufeinander; sie liegen alle hier und finden einander.
   - DER SATZ "NICHT-SPEICHERN IST NICHT NICHT-VERARBEITEN" GILT HIER VERSCHÄRFT: Im Relay
     verarbeitet unser SERVER die Inhalte, nicht nur unser Skript im Browser.
   - VOLLTEXT, PROVENIENZ UND DIE ZUGEHÖRIGEN SETZUNGEN: Owner-Entscheidung P13.6-16 der Phase
-    13.6 (docs/aktiver-stand.md, Standdatei der Phase 13.6); die Freischaltung für fremde
+    13.6 (docs/claude-history/phase-13.6-formular-relay.md, Archiv der Phase 13.6); die
+    Freischaltung für fremde
     Nutzer erst mit Kunden-AVV: Owner-Entscheidung P13.6-18 der Phase 13.6.
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
@@ -1014,8 +1015,8 @@ aufeinander; sie liegen alle hier und finden einander.
     absendbar) · `93230df` (`hooks.zapier.com` auf der Host-Liste) · `1256f0e` (die erste
     Veröffentlichung eines neuen Projekts trägt den Conversion-Beacon). Eine vorher
     veröffentlichte Seite trägt das alte Verhalten bis zum erneuten Veröffentlichen, ein Export
-    bis zum Neu-Export (je die Grenzen der Scheiben, Standdatei der Phase 13.6,
-    docs/aktiver-stand.md). Welche Projekte seitdem neu veröffentlicht sind, ist nicht erhoben.
+    bis zum Neu-Export (je die Grenzen der Scheiben, Archiv der Phase 13.6,
+    docs/claude-history/phase-13.6-formular-relay.md). Welche Projekte seitdem neu veröffentlicht sind, ist nicht erhoben.
   · GEMESSEN (OWNER, live, 2026-10-01, Vermerk P13.6-103, Punkt (2), der Phase 13.6): Nach dem
     Deploy von `93230df` zeigte der Editor des Zapier-Testprojekts "Zustellung: über Pagesmith,
     mit Prüfung", während die veröffentlichte Seite noch direkt schickte. Die Anzeige folgt der
@@ -4333,7 +4334,8 @@ aufgenommen nach Entscheidung P13-3 (OWNER 2026-09-28). Der datierte Block träg
   - Das widerspricht zusätzlich dem Gegenstück von Entscheidung P13-7 der Phase 13 ("nie an
     `/api/e` …"); Invariante I2 der Phase 13 deckt nur die Adresse der Danke-Seite.
   - PROVENIENZ: ABGELEITET am Code (CC, 2026-09-29, HEAD `a3797d9`), NICHT gemessen. Volltext:
-    Vorrat P13.6-7 der Phase 13.6 (docs/aktiver-stand.md, Standdatei der Phase 13.6); die
+    Vorrat P13.6-7 der Phase 13.6 (docs/claude-history/phase-13.6-formular-relay.md, Archiv der
+    Phase 13.6); die
     Reparatur ist dort als erste Bau-Scheibe gesetzt (Setzung P13.6-3 der Phase 13.6).
   ERGÄNZT 2026-09-29 (Phase 13.6, Sonde zur Vercel-Protokollierung) — VERCEL PROTOKOLLIERT DIE
   QUERY UND DEN REFERER. Titel, Trigger und der Text darüber sind unverändert; der Titel bleibt

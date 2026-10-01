@@ -2537,7 +2537,7 @@ liegen beide hier und finden einander.
         Ergänzung vom 2026-09-29 am offenen Punkt "DIE SEITENADRESSE REIST SAMT QUERY …".
       Die Reparatur beider ist als ERSTE BAU-SCHEIBE der Phase 13.6 gesetzt, vor jedem
       Relay-Code (Setzung P13.6-3 der Phase 13.6, ARCHITEKT 2026-09-29, revidierbar). Fundort:
-      Standdatei der Phase 13.6 (docs/aktiver-stand.md).
+      Archiv der Phase 13.6 (docs/claude-history/phase-13.6-formular-relay.md).
 - [ ] Phase 13.5 — Medien: Bilder, SVG, Video und Hintergrundbilder im importierten
       Kunden-HTML erkennen und ändern. ANGELEGT am 2026-09-28 beim Phasenende 12.5; Nummer
       und Reihenfolge OWNER-ENTSCHEIDUNG 2026-09-28. Die Medien waren bis dahin der
@@ -2631,118 +2631,75 @@ liegen beide hier und finden einander.
       Fan-Out-Anpassungen, auf die der Satz darüber zeigt, sind die eigene Phase 13.8; ob sie
       vor oder nach dieser Phase steht, ist NICHT ENTSCHIEDEN (Zeile 13.8). Der Satz über die
       Grenze der Zeile 13.6 bleibt als Stand vom 2026-09-29 stehen.
-- [ ] Phase 13.6 — Formular-Relay (Lead-Relay): Formulardaten laufen flüchtig durch unseren
-      Server und werden an den Empfänger weitergereicht — native Anbindungen per Klick (Brevo,
-      Mailchimp, KlickTipp …) mit echter Erfolgs- und Fehlerrückmeldung, ohne dass der Nutzer
-      Make oder Zapier braucht. ANGELEGT am 2026-09-29 beim Phasenende 13; Nummer und
-      Reihenfolge OWNER-ENTSCHEIDUNG 2026-09-29. Die RICHTUNG ist Entscheidung P13-65 der Phase
-      13 (OWNER 2026-09-28) — BINDEND FÜR DIE RICHTUNG, NICHT FÜR EINE REGEL. Ihr Wortlaut steht
-      im Archiv der Phase 13; hier ist sie verdichtet übernommen, nicht zeichengleich.
-      REIHENFOLGE DES BAUS: diese Phase -> 13.5 -> 12 (OWNER-ENTSCHEIDUNG 2026-09-29).
-      GRUND (OWNER): Positionierung als Performance-Marketing-Werkzeug, nicht als
-      datenschutzgetriebenes Nischenprodukt · der browser-direkte Weg kann die Antwort eines
-      Anbieters nicht lesen — ein abgelehnter Kontakt sähe aus wie Erfolg
-      (docs/formular-empfaenger-befunde.md, Abschnitt "Mailchimp", EINORDNUNG und Befunde (c),
-      (d), (f); für eine gelöschte Adresse bei Make der offene Punkt "IM BROWSER-DIREKTEN WEG
-      ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE …").
-      UNVERÄNDERT IN KRAFT, BIS DER OWNER SIE NEU FASST: die Datenklassen-Regel — die Festlegung
-      vom 2026-08-15 und die Auflage vom 2026-08-19 (docs/offene-punkte.md, "DATENKLASSEN-GRENZE
-      VOR DER ERSTEN PII-SCHEIBE") —, Entscheidung P13-2 der Phase 13 samt ihrem "VERWORFEN: (a)
-      die Weiterleitung über unseren Server" und Entscheidung P13-7 der Phase 13 samt ihrem
-      Gegenstück "nie an `/api/e` … nie in unsere Datenbank, nie in unsere Logs". Diese Zeile
-      hebt keine davon auf; sie nennt die Richtung, in der ihre Neufassung gesucht wird.
-      FOLGERUNG (CC, 2026-09-29), KEINE ENTSCHEIDUNG: Solange P13-7 gilt, verletzte jeder
-      Relay-Weg, der Formularinhalte an unseren Server schickt, ihr Gegenstück; vor der
-      Neufassung entsteht deshalb kein Relay-Code.
-      NICHT ENTSCHIEDEN: die Neufassung der Datenklassen-Regel — sie fällt nach der Aufklärung
-      dieser Phase · ob der Nutzer zwischen Relay und browser-direktem Weg wählt, und ob das
-      eine Preisstaffel wird. Der browser-direkte Weg aus Phase 13 bleibt als DATENSPARMODUS
-      bestehen (Entscheidung P13-65).
-      FAHRPLAN-ENTWURF (ARCHITEKT, 2026-09-28; NICHT ENTSCHIEDEN): (1) Aufklärung — welche
-      personenbezogenen Daten heute verarbeitet werden, Stand von Schlüssel-Verwahrung und
-      Rate-Limiting, ausgelöste offene Punkte, Plattform-Grenzen (Vercel-Tarif, Laufzeit) ·
-      (2) Owner-Entscheidungen — neue Datenklassen-Regel, Datensparmodus als Wahl, erster
-      Anbieter nach Markt, Anwalt und AVV · (3) Schutz zuerst · (4) Relay an Webhook-Adressen mit
-      echter Rückmeldung · (5) erster nativer Anbieter per Klick · (6) Lead-Ereignis mit
-      gehashter E-Mail · (7) später: Speicherung.
-      ARCHITEKTEN-EINORDNUNG (ARCHITEKT, 2026-09-28; REVIDIERBAR, KEINE ENTSCHEIDUNG): zwei
-      getrennte Schritte — Transit ohne Speicherung und ohne Logging des Inhalts; Speicherung
-      (Lead-Postfach, Export, Rückmeldung "Lead wurde Kunde") als eigene, spätere
-      Owner-Entscheidung · die Hauptarbeit ist Sicherheit: Rate-Limiting und Bot-Schutz des
-      neuen Endpunkts, SSRF-Schutz bei kundeneigenen Adressen, sichere Verwahrung der
-      Kunden-API-Schlüssel. Dadurch rücken nach vorn: "DATENKLASSEN-GRENZE VOR DER ERSTEN
-      PII-SCHEIBE", "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT", "DER
-      PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT" (Trigger (i)), "DIE
-      GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026" (alle docs/offene-punkte.md) und
-      "PER-TENANT-RATE-LIMITING /api/e + /api/capi" (Security-Manifest Tier 1) · HYPOTHESE,
-      UNGEPRÜFT: Die serverseitige Übergabe an Meta überträgt schon heute IP-Adresse und
-      Browserkennung der Besucher — dann ist ein AVV unabhängig vom Relay nötig; das prüft die
-      Aufklärung · "Pagesmith wird kein Versender" bleibt — das Relay leitet weiter, es
-      versendet nicht · vor dem ersten zahlenden Kunden eine einmalige anwaltliche Prüfung und
-      eine AVV-Vorlage (Architekten-Empfehlung, keine juristische Aussage).
-      ANPASSUNGEN AN DEN FAN-OUT-ZIELEN — UMGEZOGEN AM 2026-10-01 AN DIE ZEILE 13.8
-      ("Lead-Ereignis vom Server (Fan-Out)"). Hier stand die Setzung des Architekten vom
-      2026-09-29 (vom Owner delegiert): Was aus dem Relay an den Zielen folgt — etwa ein
-      Lead-Ereignis mit gehashter E-Mail als Match-Feld — sei eine eigene, späte Scheibe dieser
-      Phase, mit der GRENZE, sie als eigene Phase direkt nach 13.6 zu schneiden, falls sie alle
-      Adapter-Nutzlasten oder den Ingest-Pfad /api/e berührt. Die Scheibe hat diese Phase
-      verlassen und ist eine eigene Phase (OWNER-ENTSCHEIDUNG 2026-10-01); Volltext, Grund und
-      Grenze stehen seither an der Zeile 13.8. Ein Zeiger auf diesen Block landet dort. Punkt (6)
-      des FAHRPLAN-ENTWURFS darüber ("Lead-Ereignis mit gehashter E-Mail") ist derselbe
-      Gegenstand und bleibt als Entwurf stehen.
+- [x] Phase 13.6 — Formular-Relay (Lead-Relay): ABGESCHLOSSEN (2026-09-29 bis 2026-10-01).
+      ANGELEGT am 2026-09-29 beim Phasenende 13; Richtung Entscheidung P13-65 der Phase 13.
+      GEBAUT IST STUFE 1 — DIE RELAY-BASIS OHNE KUNDEN-SCHLÜSSEL (Owner-Entscheidung P13.6-17),
+      in neun Code-Commits, je mit bestätigtem Live-Test (nur Chrome): 13.6-1 — der Rückfall ohne
+      Skript geht an die eingetragene Adresse, eigene Hosts gesperrt (`9fae014`) · 13.6-2 — die
+      Vorschau sendet nie (`8be7bb3`) · 13.6-3 — der Relay-Endpunkt `/api/f` (`aa05235`) · 13.6-4
+      — gehostete Seiten schicken über das Relay, Datensparmodus je Ziel (`3b631a2`) · 13.6-5 —
+      Ratenbegrenzung je Projekt, Migration 0030 (`fd1e089`) · "Zurück-Cache" (`29d0d22`) ·
+      "Zapier ins Relay" (`93230df`) · "Beacon bei Erstveröffentlichung" (`1256f0e`) ·
+      "Spaltenrechte", Migration 0031 (`6f66c44`). Für den Relay-Weg ist die Datenklassen-Regel
+      neu gefasst (Owner-Entscheidung P13.6-16; seit dem 2026-10-01 die Dauerregel
+      "FORMULARINHALTE IM RELAY SIND TRANSIT …"); im Datensparmodus gelten Entscheidungen P13-2
+      und P13-7 der Phase 13 unverändert. Volle Herleitung, die Vermerke, die bindenden
+      Entscheidungen und das Register der Hebung: docs/claude-history/phase-13.6-formular-relay.md.
+      ANPASSUNGEN AN DEN FAN-OUT-ZIELEN — UMGEZOGEN AM 2026-10-01 AN DIE ZEILE 13.8 (OWNER). Ein
+      Zeiger auf diesen Block landet dort.
       DIE NATIVEN 1-KLICK-EMPFÄNGER (STUFE 2) — UMGEZOGEN AM 2026-10-01 AN DIE ZEILE 13.9
-      ("1-Klick-Empfänger (Stufe 2)"; ARCHITEKT, Auflage A4 zum Phasenende 13.6). Gemeint sind die
-      "native[n] Anbindungen per Klick (Brevo, Mailchimp, KlickTipp …)" im Grundtext dieser Zeile
-      und Punkt (5) des FAHRPLAN-ENTWURFS; diese Phase hat allein Stufe 1 gebaut.
-      PRÜFLISTE FÜR DIE AUFKLÄRUNG (Phasenende 13, 2026-09-29) — was ein Relay-Weg berührt:
-      · die GRENZE der Setzung P13-6 der Phase 13, "Die Neubewertung kippt, sobald ein Weg über
-        unseren Server gewählt wird" (docs/offene-punkte.md, "DER PRIMÄRSCHLÜSSEL (project_id,
-        target) AUF project_secrets BLEIBT", Ergänzung vom 2026-09-28);
-      · Invariante I1 der Scheibe 13-1 — Formularinhalte gehen AUSSCHLIESSLICH an die
-        eingetragene Adresse, nie an `/api/e`, nie an ein Tracking-Ziel, nie in unsere Datenbank
-        oder unsere Logs; Wächter F1 (src/lib/form-target.test.ts);
-      · Setzung P13-49 der Phase 13 — die gespeicherte Namensliste enthält nur Namen, nie Werte;
-      · die ÜBERSCHNEIDUNG MIT PHASE 14 (Per-Tenant-Rate-Limiting auf /api/e + /api/capi):
-        Schritt (3) "Schutz zuerst" trägt das Rate-Limiting des neuen Endpunkts. Ob es hierher
-        gehört, nach Phase 14 oder in beide, ist eine Frage der Aufklärung, keine Entscheidung.
-      ANGRENZEND, DIE MITNAHME PRÜFT DER ZUSCHNITT: "Webhooks auf Performance-Events" aus dem
-      Grundtext der Zeile 13 — ein anderer Gegenstand als das Formular-Ziel (Setzung P13-9 der
-      Phase 13) · die Lesart (b) der Phase 11.6 — ein SERVER-seitiger Empfänger mit
-      KUNDENEIGENEM Endpunkt, samt SSRF-Schutz, Instanz-Achse und dynamischem Nutzlast-Mapping;
-      ihr Grund steht an der Roadmap-Zeile 11.6. Beide standen bis zum 2026-09-29 an der Zeile
-      13 und sind dort NICHT gebaut.
-      WAS DIESE PHASE VORFINDET: das Archiv der Phase 13 — Formular-Ziel mit Danke-Seite,
-      automatische Benennung der Felder, die bindenden Entscheidungen und Invarianten — und die
-      Befunde über Formular-Empfänger in docs/formular-empfaenger-befunde.md (Make gemessen;
-      Brevo, systeme.io, Mailchimp und KlickTipp gelesen, ungemessen).
-      PROVENIENZ: je Satz wie angegeben; Nummer und Reihenfolge OWNER 2026-09-29, Prüfliste und
-      Zeile ARCHITEKT 2026-09-29.
-      NACHGETRAGEN 2026-09-29 — DIE NEUFASSUNG FÜR DEN RELAY-WEG IST ERFOLGT. Der Satz
-      "UNVERÄNDERT IN KRAFT, BIS DER OWNER SIE NEU FASST" darüber bleibt stehen und beschreibt
-      den Stand bis zu diesem Tag.
-      · NEUGEFASST FÜR DEN RELAY-WEG (OWNER 2026-09-29): Formularinhalte dürfen unseren Server
-        im Transit durchlaufen — nie gespeichert, nie geloggt, nie an `/api/e`, nie an ein
-        Tracking-Ziel; eine Speicherung (Lead-Postfach) ist eine eigene spätere Entscheidung.
-        Für "nie geloggt" gelten zwei Bedingungen: eine Bauform mit Wächter-Test und eine
-        Lesung, was Vercel protokolliert, VOR dem ersten Relay-Code. Owner-Entscheidung
-        P13.6-16 der Phase 13.6.
-      · FÜR DEN DATENSPARMODUS gelten Entscheidungen P13-2 und P13-7 der Phase 13 WEITER,
-        unverändert.
-      · STUFE 1 (OWNER 2026-09-29, Wortlaut "Relay-Basis"; Auslegung ARCHITEKT, zur Korrektur
-        offen): ohne Kunden-Schlüssel, Zustellung nur an bekannte Webhook-Dienste über eine
-        feste Host-Liste; beliebige https-Adressen bleiben im Datensparmodus.
-        Owner-Entscheidung P13.6-17 der Phase 13.6.
-      · AUFLAGE DIESER ZEILE — DER AVV-RIEGEL (OWNER 2026-09-29): Das Relay wird für fremde
-        Nutzer erst freigeschaltet, wenn ein Kunden-AVV steht; bis dahin baut und testet der
-        Owner selbst. Owner-Entscheidung P13.6-18 der Phase 13.6.
-      Fundort: Standdatei der Phase 13.6 (docs/aktiver-stand.md).
-      NACHGETRAGEN 2026-10-01 — ZWEI OWNER-ENTSCHEIDUNGEN VOM 2026-10-01 (per Auswahl im Chat):
-      · Die Fan-Out-Scheibe verlässt diese Phase und wird die eigene Phase 13.8 (Block
-        "ANPASSUNGEN AN DEN FAN-OUT-ZIELEN" darüber).
-      · NACH DEM PHASENENDE DIESER PHASE KOMMT PHASE 13.7 ZUERST. Daraus (CC): 13.6 -> 13.7 ->
-        13.5 -> 12; 13.5 -> 12 bleibt untereinander unverändert. Der Satz "REIHENFOLGE DES BAUS:
-        diese Phase -> 13.5 -> 12" oben bleibt als Stand vom 2026-09-29 stehen. Wo 13.8 darin
-        steht, ist NICHT ENTSCHIEDEN (Zeile 13.8).
+      (ARCHITEKT, revidierbar): die "native[n] Anbindungen per Klick (Brevo, Mailchimp, KlickTipp
+      …)" des Grundtexts dieser Zeile und Punkt (5) ihres Fahrplan-Entwurfs.
+      NICHT GEBAUT — ORT NICHT ENTSCHIEDEN (ARCHITEKT 2026-10-01, Präzedenz Phase 13):
+      · SPEICHERUNG — ein Lead-Postfach, Export, Rückmeldung "Lead wurde Kunde" (Punkt (7) des
+        Fahrplan-Entwurfs); verlangt eine eigene Owner-Entscheidung (Owner-Entscheidung
+        P13.6-16).
+      · ANGRENZEND, seit dem 2026-09-29 an dieser Zeile: "Webhooks auf Performance-Events" aus dem
+        Grundtext der Zeile 13 (Setzung P13-9 der Phase 13) und die Lesart (b) der Phase 11.6 —
+        ein server-seitiger Empfänger mit kundeneigenem Endpunkt (Grund an der Roadmap-Zeile
+        11.6). Für beide gilt die Dauerregel "EIN ÖFFENTLICHER ENDPUNKT, DER AN EINE ADRESSE DES
+        BETREIBERS WEITERLEITET, NIMMT PROJEKT UND ADRESSE NIE AUS DER ANFRAGE".
+      DIE REIHENFOLGE NACH DIESER PHASE: 13.7 zuerst (OWNER 2026-10-01), danach 13.5 -> 12; wo 13.8
+      und 13.9 stehen, ist NICHT ENTSCHIEDEN.
+      WAS ZUM ZEITPUNKT DES HAKENS UNBEWIESEN ODER ALS MANGELHAFT BEKANNT IST — der Haken heisst
+      BAU-FERTIG. Das Kriterium und seine Auflage stehen in CLAUDE.md, "## Roadmap & aktueller
+      Stand", unter "WANN [x] GESETZT WIRD — DAS KRITERIUM"; sie werden hier eingelöst. Je Punkt
+      die Fundstelle im Archiv der Phase:
+      · (1) DAS RELAY IST IM CODE FÜR KEIN KONTO GESPERRT. Fremde Nutzer sollen es erst mit
+        Kunden-AVV bekommen (Owner-Entscheidung P13.6-18); einen Riegel gibt es nicht, und für
+        die Host-Liste ist das Relay der Standard. DIESER PUNKT IST DER TRAGENDE.
+        docs/offene-punkte.md, "DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT
+        KUNDEN-AVV HAT IM CODE KEINEN RIEGEL"; ob Vercel Rümpfe intern ablegt, ist dort (a).
+      · (2) LIVE NUR IN CHROME geprüft (Version 154, wo angegeben); Firefox und Safari fehlen.
+        Gemessen an einer Make-Zone (eu2), einem Zapier-Konto und je einer Testseite.
+      · (3) NUR IM TEST BELEGT, NICHT LIVE: die Sperre einer Custom-Domain als Zieladresse und die
+        strenge Host-Prüfung beim Veröffentlichen (Vermerk P13.6-37, Punkt (7)) · die A/B-Wahl im
+        Relay samt Randfall (Vermerke P13.6-60, Punkt (10), und P13.6-70, Punkt (10)) · die
+        Zeitlimits, die Grössengrenze und eine echte Umleitung von Make (Vermerk P13.6-60, Punkt
+        (10)) · der fail-open-Zweig des Zählers (Vermerk P13.6-81, Punkt (9)) · der Export mit
+        der Einsetzung K2 und "kein zweiter Track" nach dem Zurück-Cache (Vermerk P13.6-89, Punkt
+        (8)) · der Hinweistext für `zapier.com`-Adressen (Vermerk P13.6-103, Punkt (10)).
+      · (4) NICHT GEMESSEN: zwei gleichzeitige Anfragen desselben Projekts am Zähler (Vermerk
+        P13.6-81, Punkt (9)) · eine falsche oder gelöschte Zapier-Adresse über das Relay und der
+        Host mit Punkt am Ende über Node-`fetch` (Vermerk P13.6-103, Punkt (10)) · die
+        Netzwerk-Dauer von `/api/f` (Vermerk P13.6-70, Punkt (10)) · die Annahme bei Meta nach
+        der Erstveröffentlichung (Vermerk P13.6-114, Punkt (8)) · der Domain-Status nach Migration
+        0031 (Vermerk P13.6-130, Punkt (8)). ABGELEITET: 405 für eine nicht exportierte Methode
+        an `/api/f`, das Verhalten von Node-`fetch` bei `redirect: "manual"`, das
+        Varianten-Cookie bei same-origin (Vermerk P13.6-60, Punkt (10)).
+      · (5) ALS MANGELHAFT BEKANNT, MIT ORT: bereits veröffentlichte Seiten und Exporte tragen das
+        alte Verhalten bis zum Neu-Veröffentlichen bzw. Neu-Export, und die Anzeige im Editor
+        folgt der Host-Liste statt dem veröffentlichten Text (docs/offene-punkte.md, "NICHTS
+        ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST", Ergänzung vom 2026-10-01) ·
+        im Datensparmodus, für Adressen ausserhalb der Host-Liste und für Exporte erscheint bei
+        falscher Adresse die Danke-Seite (docs/offene-punkte.md, "IM BROWSER-DIREKTEN WEG
+        ERSCHEINT …") · ein abgeschalteter Zap wird bis zu Stunden als "zugestellt" gemeldet
+        (Punkt (10) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE"; die Messung ZM4 mit
+        Frist: "ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM GEBUCHTEN ZAPIER-MONAT
+        FAHRBAR") · kein Spam-Schutz, der Kill-Switch wirkt je Projekt, TRUNCATE, REFERENCES,
+        TRIGGER und MAINTAIN bleiben für anon und authenticated (Roadmap-Zeile 13.7).
+      DER VOLLTEXT DIESER ZEILE VOR DEM ABHAKEN STEHT IM COMMIT `2ab3fb3` (`git show
+      2ab3fb3:docs/roadmap.md`).
 - [ ] Phase 13.7 — Sicherheit & Datenintegrität: VOR DEM ERSTEN FREMDEN NUTZER BZW. VOR DEM
       LAUNCH wird das Produkt gegen ein ausdrückliches Bedrohungsmodell geprüft — erst das
       Modell, dann das Repo systematisch dagegen. ANGELEGT am 2026-10-01; Gegenstand und
@@ -2798,8 +2755,8 @@ liegen beide hier und finden einander.
       Chat); daraus (CC) 13.6 -> 13.7 -> 13.5 -> 12. Der Satz "wo die Phase darin steht, ist
       NICHT ENTSCHIEDEN" darüber beschreibt den Stand davor.
       AUS DEM VORRAT DER PHASE 13.6 AN DIESE ZEILE GEWIESEN (Phasenende 13.6, 2026-10-01; der
-      Wortlaut je Eintrag steht in der Standdatei der Phase 13.6, docs/aktiver-stand.md, unter
-      derselben Nummer). Verdichtet, je mit der Klasse des Bedrohungsmodells:
+      Wortlaut je Eintrag steht im Archiv der Phase 13.6,
+      docs/claude-history/phase-13.6-formular-relay.md, unter derselben Nummer). Verdichtet, je mit der Klasse des Bedrohungsmodells:
       · Vorrat P13.6-96 — SPAM-SCHUTZ FÜR FORMULARE (etwa ein unsichtbares Köderfeld oder eine
         Zeitfalle) — ANONYME ANGREIFER, "Formular-Spam". Heute gibt es keinen Bot-Schutz
         (Vermerk P13.6-19, Punkt (1)); über das Relay bremst allein die Ratenbegrenzung (120 je
@@ -2846,7 +2803,8 @@ liegen beide hier und finden einander.
       · DER VERCEL-TARIF: Der Hobby-Tarif ist auf nicht-kommerzielle, persönliche Nutzung
         beschränkt (GELESEN 2026-09-02, docs/plattform-befunde.md, Vercel-Abschnitt, Teil (g));
         ein Upgrade auf Pro ist, wenn nötig, freigegeben — Owner-Angabe P13.6-2 der Phase 13.6
-        (Standdatei der Phase 13.6, docs/aktiver-stand.md). Kein offener Punkt, keine
+        (Archiv der Phase 13.6, docs/claude-history/phase-13.6-formular-relay.md). Kein offener
+        Punkt, keine
         Roadmap-Zeile und kein Manifest-Item sagt das bisher (GEMESSEN AM REPO, CC,
         2026-10-01).
 - [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out): Aus einem Formular, das über das Relay
@@ -2876,7 +2834,8 @@ liegen beide hier und finden einander.
         Ergänzung vom 2026-09-29). Für Tracking-Merkmale gilt dort die Auflage vom 2026-08-19
         unverändert.
       AUS DEM VORRAT DER PHASE 13.6 HIERHER GEZOGEN — Vorrat P13.6-46 der Phase 13.6
-      (2026-09-29; Standdatei der Phase 13.6, docs/aktiver-stand.md); sein Trigger war der
+      (2026-09-29; Archiv der Phase 13.6, docs/claude-history/phase-13.6-formular-relay.md); sein
+      Trigger war der
       Zuschnitt dieser Scheibe. METAS AUTOMATISCHE EREIGNISSE SIND AKTIV; OB DER AUTOMATISCHE
       ERWEITERTE ABGLEICH FORMULARFELDER ÜBER UNSEREN PIXEL AN META SENDET, IST OFFEN.
       · GEMESSEN (OWNER, live, 2026-09-29, in der Vorschau vor dem Deploy der Scheibe 13.6-2):
@@ -2891,8 +2850,8 @@ liegen beide hier und finden einander.
         Metas Skript, seit der Scheibe 13.6-2 nur noch auf veröffentlichten Seiten und Exporten.
       · BEZUG: Entscheidung P13-7 der Phase 13; die offene Owner-Frage darüber.
       · TRIGGER: der Zuschnitt dieser Phase. KEINE HANDLUNG VORHER.
-      WAS DIESE PHASE VORFINDET (Zeiger, CC, 2026-10-01; Standdatei der Phase 13.6,
-      docs/aktiver-stand.md): Vermerk P13.6-1, Punkte (8) bis (10) — die eventID entsteht im
+      WAS DIESE PHASE VORFINDET (Zeiger, CC, 2026-10-01; Archiv der Phase 13.6,
+      docs/claude-history/phase-13.6-formular-relay.md): Vermerk P13.6-1, Punkte (8) bis (10) — die eventID entsteht im
       Browser, wo das Einwilligungs-Urteil sitzt, die Dedup-Kandidaten K1 bis K3 · Setzungen
       P13.6-4 und P13.6-24 — ein serverseitig erzeugtes Ereignis trägt nie ein fehlendes
       Einwilligungsfeld, sondern das Urteil aus dem Browser · das Relay selbst (`handleRelay`,
@@ -2926,8 +2885,8 @@ liegen beide hier und finden einander.
       DOKUMENTATION ABSCHNITTSWEISE GELESEN …" (docs/immer-beachten.md) · der offene Punkt "DER
       PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT", Trigger (i) · der offene
       Punkt "DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM
-      CODE KEINEN RIEGEL" · das Archiv der Phase 13.6 (Standdatei der Phase 13.6,
-      docs/aktiver-stand.md).
+      CODE KEINEN RIEGEL" · das Archiv der Phase 13.6
+      (docs/claude-history/phase-13.6-formular-relay.md).
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in
@@ -2944,7 +2903,8 @@ liegen beide hier und finden einander.
       13.6 anzufassen. Die Plattform-Ebene — eine Ratenregel der Vercel-Firewall je IP,
       `checkRateLimit`, "Attack Mode" — steht als Vorrat P13.6-78 bis P13.6-80 in
       docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 13.6 gehoben (2026-10-01) …".
-      Fundort von B12 und P13.6-75: Standdatei der Phase 13.6, docs/aktiver-stand.md.
+      Fundort von B12 und P13.6-75: Archiv der Phase 13.6,
+      docs/claude-history/phase-13.6-formular-relay.md.
 - [ ] Phase 15 — Public-Launch-Restarbeit (Tier 0): E-Mail-Bestätigung
       (Dashboard-Toggle), Abuse-Kanal + security.txt (s. "## Security
       Manifest & Launch Blocker", Tier 0). Subprozessor-/Kunden-DPA ist KEIN

@@ -1,4 +1,133 @@
-# Phase 13.6 — Formular-Relay (Lead-Relay): DER AKTIVE STAND
+# Phase 13.6 — Formular-Relay (Lead-Relay): DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 13.6. **Sie hiess bis zum Phasenende
+`docs/aktiver-stand.md`** und war das Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der
+Phase arbeitete. IHR NAME IST OWNER-ENTSCHEIDUNG (Auftrag des Phasenendes, 2026-10-01). Sie ist
+nie geteilt worden.
+
+**ZEITRAUM UND UMFANG:** 2026-09-29 bis 2026-10-01. 55 Commits bis zum Phasenende (`9df051a`
+bis `9fbdb6f`), darunter NEUN Code-Commits — `9fae014` (13.6-1), `8be7bb3` (13.6-2), `aa05235`
+(13.6-3), `3b631a2` (13.6-4), `fd1e089` (13.6-5, Migration 0030), `29d0d22` ("Zurück-Cache"),
+`93230df` ("Zapier ins Relay"), `1256f0e` ("Beacon bei Erstveröffentlichung"), `6f66c44`
+("Spaltenrechte", Migration 0031) —, dazu die drei Commits des Phasenendes: `6e37194`
+(Owner-Entscheidungen: Fan-Out als Phase 13.8, 13.7 nach 13.6), `2ab3fb3` (Hebung) und die
+Archivierung. Die Reihe `P13.6-n` endet bei 131: 26 Vermerke, 18 Owner-Entscheidungen, drei
+Owner-Angaben, 44 Architekten-Setzungen, sieben Arbeiten, 32 Vorrats-Einträge, ein
+Hebungs-Kandidat (GEMESSEN am Rumpf, CC, 2026-10-01: je Gattung die Zahl der fetten
+Eintragsköpfe, lückenlos 1 bis 131, keine Nummer doppelt).
+
+**WIE SIE ENDETE: `[x]`.** Gebaut ist Stufe 1, die Relay-Basis ohne Kunden-Schlüssel. WAS AM
+HAKEN UNBEWIESEN ODER ALS MANGELHAFT BEKANNT IST, STEHT AN DER ROADMAP-ZEILE 13.6
+(docs/roadmap.md) und wird hier NICHT verdoppelt; der tragende Punkt: Das Relay ist im Code für
+kein Konto gesperrt, obwohl fremde Nutzer es erst mit Kunden-AVV bekommen sollen
+(docs/offene-punkte.md, "DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT
+KUNDEN-AVV HAT IM CODE KEINEN RIEGEL"). Die Fan-Out-Scheibe steht an der Roadmap-Zeile 13.8,
+die nativen 1-Klick-Empfänger an der Zeile 13.9; als Nächstes kommt 13.7 (OWNER 2026-10-01).
+
+**HIER NACHSEHEN, WER AM RELAY, AM FORMULAR-ZIEL ODER AN DER SICHERHEIT DER SCHREIBWEGE
+ARBEITET:** die Datenklasse im Relay (Owner-Entscheidung P13.6-16, Setzungen P13.6-48 bis -51)
+· Projekt aus dem Host, Adresse aus `published_content`, zwei Antworten (Setzungen P13.6-20,
+-21, -57, -59) · Betriebsart, Host-Liste und Datensparmodus (Owner-Entscheidungen P13.6-54,
+-55, -97, -99; Setzungen P13.6-61 bis -64, -66, -67) · der Rückfall ohne Skript und die
+Angebotsregel (Setzungen P13.6-32 bis -36) · die Vorschau (Owner-Entscheidung P13.6-13,
+Setzungen P13.6-38 bis -43) · die Ratenbegrenzung (Setzungen P13.6-74, -75, -77, -82;
+Owner-Entscheidung P13.6-76) · der Zurück-Cache (Owner-Entscheidung P13.6-71, Setzungen
+P13.6-86, -88) · der Schlüssel bei Erstveröffentlichung (Setzungen P13.6-107, -109,
+Owner-Entscheidung P13.6-110) · Spaltenrechte und Admin-Client (Setzungen P13.6-115, -117,
+-125; Owner-Entscheidungen P13.6-119, -120, -123, -128) · der Vercel-Tarif (Owner-Angabe
+P13.6-2), die Region (Setzung P13.6-52, Vermerk P13.6-53) und `NEXT_PUBLIC_APP_URL` (Vermerk
+P13.6-47). Die Befunde über die Empfänger stehen in docs/formular-empfaenger-befunde.md, die über
+Vercel und Supabase in docs/plattform-befunde.md, nicht hier.
+
+**DER MESSWERT NACH docs/arbeitsweise.md, ABSCHNITT 2b** (GEMESSEN am Repo, CC, 2026-10-01,
+`git log --numstat`, Summen aus Einfügungen und Löschungen je Pfadpräfix; keine Datei als binär
+geführt):
+
+| Spanne | `docs/` | `src/` | Verhältnis docs : src |
+|---|---|---|---|
+| `9df051a^..9fbdb6f` (bis vor dem Phasenende, wie bei 13 und 12.5) | 7 779 | 6 083 | **1,28 : 1** |
+| `9df051a^..2ab3fb3` (mit den Commits `6e37194` und der Hebung) | 8 922 | 6 083 | 1,47 : 1 |
+
+Ausserhalb von `docs/` und `src/` liegen `CLAUDE.md` (54 bzw. 75 Zeilen) und `supabase/` (652:
+die Migrationen 0030 und 0031 und zwei Proben). In `docs/` bis vor dem Phasenende die grössten
+Posten: die Standdatei 5 384, docs/plattform-befunde.md 1 049, docs/formular-empfaenger-befunde.md
+499, docs/offene-punkte.md 341.
+ZUM VERGLEICH, aus den Köpfen der Archive übernommen und NICHT nachgemessen: Phase 13
+(`0456b0b^..50110fd`) `docs/` 3 382, `src/` 3 164 — 1,07 : 1; Phase 12.5 (`0529e02^..e7ea91a`)
+`docs/` 2 453, `src/` 2 641 — 0,93 : 1.
+**DER BEFUND DER ARBEITSWEISE TRITT EIN — EIN BEFUND FÜR DEN OWNER:** Das Verhältnis steigt
+ZWEI PHASEN IN FOLGE, 0,93 : 1 (12.5) auf 1,07 : 1 (13) auf 1,28 : 1 (13.6), jeweils in der Spanne
+bis vor dem Phasenende. Der Wert ersetzt die Abbruchkriterien nicht; eine Bewertung steht hier
+nicht.
+
+**DAS PROTOKOLL DER HEBUNG — 2026-10-01, ZWEI COMMITS (`6e37194`, `2ab3fb3`).** Das REGISTER steht
+im Abschnitt "Vollzogen — was hier stand und wohin es gegangen ist" am Ende des Rumpfes, mit dem
+SAMMELVERMERK "NICHT GEHOBEN". **DIE BILANZ: 112 = BL 18 · OP 4 · OPE 6 · DR 15 · DR-STEHT 5 ·
+RM13.7 5 · RM13.8 1 · RM14 1 · ERL 14 · ARCH 43**; die 26 Vermerke sind nicht zugeordnet. SECHS
+neue Dauerregeln (docs/immer-beachten.md, Kern, und docs/immer-beachten-herleitung.md, je nur
+hinten angefügt); zwei neue offene Punkte samt Stubs; Ergänzungen an drei bestehenden; neue
+Roadmap-Zeilen 13.8 und 13.9. Die Zuordnung ist der Vorschlag von CC, mit dem GO des Architekten
+und seinen Auflagen A1 bis A7 übernommen (s. Register).
+**DIE GEGENPROBE — AM BESTAND DER ZIELDATEIEN, JE EINTRAG, NICHT GEGEN DAS REGISTER** (GEMESSEN,
+CC, 2026-10-01, Skript über `git show HEAD:<pfad>` nach dem Hebungs-Commit `2ab3fb3`,
+leerraum-normalisiert, je Eintrag am Block bzw. Abschnitt seines Ziels; umgezogen ist derselbe
+Stand):
+
+| Ziel | Soll | gefunden | geprüft am Bestand |
+|---|---|---|---|
+| BL | 18 | 18 | je Eintragskopf im Abschnitt "Aus Phase 13.6 gehoben (2026-10-01) …" am Ende von docs/claude-history/backlog-polish.md |
+| OP | 4 | 4 | P13.6-18, P13.6-51 und Vorrat P13.6-11 (zweite Frage) im Posten "DAS RELAY LÄUFT FÜR JEDEN NUTZER …", Arbeit P13.6-104 im Posten "ZAPIER: DIE MESSKANDIDATEN …", beide im Block "AUS DEM PHASENENDE 13.6 GEHOBEN (2026-10-01)" von docs/offene-punkte.md |
+| OPE | 6 | 6 | Punkte (10), (11), (12) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE"; Setzung P13.6-25 am Posten "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS …"; zwei Ergänzungs-Punkte am Posten "NICHTS ZEIGT AN …" |
+| DR | 15 | 15 | je Fundstelle im angefügten Teil von docs/immer-beachten-herleitung.md (nach dem Eintrag "MEDIENBYTES …") |
+| DR-STEHT | 5 | 5 | P13.6-76 und P13.6-120 in docs/db-regeln.md; P13.6-119 und P13.6-123 in der Herleitung; der Satz zu P13.6-115 im Kern der Grants-Regel |
+| RM13.7 | 5 | 5 | Vorrat P13.6-96, -121, -126, -129, -131 im Block der Zeile 13.7 |
+| RM13.8 | 1 | 1 | Vorrat P13.6-46 im Block der Zeile 13.8 |
+| RM14 | 1 | 1 | Frage B12 im Block der Zeile 14 |
+| ERL | 14 | 14 | Eintrag steht in dieser Datei; Beleg-Commits per `git cat-file` (`27a5c93`, `9fae014`, `f12e7e5`, `33ff5cc`, `29d0d22`, `03d4338`, `87af209`, `1256f0e`, `6f66c44`, `1c53110`) |
+| ARCH | 43 | 43 | Eintragskopf steht in dieser Datei |
+| **Summe** | **112** | **112** | dazu Stubs, Marker 13.8 und 13.9 und die sechs Kern-Titel: 11 von 11 |
+
+NEGATIVKONTROLLE: fünf erfundene Anker ("Vorrat P13.6-132" und "**Arbeit P13.6-104" im
+Backlog-Abschnitt, "(13) " am Betreiber-Posten, "- [ ] Phase 13.10" in der Roadmap, "**Setzung
+P13.6-200 " in dieser Datei) je 0.
+
+**ZEIGER AUF `docs/aktiver-stand.md`, DIE DIESE PHASE MEINEN — GEMESSEN VOR DEM UMZUG (CC,
+2026-10-01).** ACHSEN: die in `9df051a^..2ab3fb3` hinzugefügten Zeilen ausser der Standdatei mit
+dem Pfad; über alle verfolgten Dateien in docs/, src/, supabase/ und CLAUDE.md der Pfad mit
+"13.6" oder "P13.6-" im Umfeld von acht Zeilen. POSITIVKONTROLLE: Die zweite Achse trifft jede
+Zeile der ersten.
+- **VIERZEHN NACHGEZOGEN** auf diese Datei: docs/roadmap.md acht (Nachtrag an der Zeile 13; der
+  Fundort der Zeile 13.6, der im Kollaps durch den Verweis auf dieses Archiv ersetzt ist; an der
+  Zeile 13.7 der Vorrats-Block und der Zeiger zum Vercel-Tarif; an der Zeile 13.8 Vorrat
+  P13.6-46 und "WAS DIESE PHASE VORFINDET"; an der Zeile 13.9 "WAS DIESE PHASE VORFINDET"; an der
+  Zeile 14 der Fundort von B12) · docs/offene-punkte.md drei ("DATENKLASSEN-GRENZE …",
+  Ergänzung vom 2026-09-29; "NICHTS ZEIGT AN …", Ergänzung vom 2026-10-01; "DIE SEITENADRESSE
+  REIST SAMT QUERY …", Vorrat P13.6-7) · docs/claude-history/backlog-polish.md drei (die Posten
+  P11.6-3 und P13-61, der Kopf des Abschnitts "Aus Phase 13.6 gehoben …").
+- **DREI NICHT NACHGEZOGEN — AUSSERHALB DES SCOPES DES PHASENENDES, GEMELDET:**
+  docs/claude-history/security-manifest-full.md, ein Zeiger im Kill-Switch-Abschnitt ("Befund und
+  Abschluss: Vermerke P13.6-112 und P13.6-130"); docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", zwei Zeiger (Vermerk
+  P13.6-102, Arbeit P13.6-104). Sie zeigen bis zu einem Nachzug auf einen Pfad, den es zwischen
+  den Phasen nicht gibt und der danach eine andere Phase trägt.
+- **IN `src/` UND `supabase/` KEIN ZEIGER AUF DEN PFAD, DER DIESE PHASE MEINT.** Die acht
+  Pfad-Treffer — src/app/projects/actions.testmode.test.ts, src/lib/tracking/consent-bar.test.ts,
+  src/lib/tracking/consent-modal.test.ts, src/lib/tracking/credential-state.ts (je einer),
+  supabase/migrations/0027, 0028 (je einer) und 0029 (zwei) — meinen frühere Phasen und sind
+  NICHT angefasst. Acht Stellen nennen die "Standdatei der Phase 13.6" ohne Pfad und lösen über
+  die Phase auf dieses Archiv auf (src/lib/form-target.ts, form-target.test.ts, generate.test.ts,
+  src/lib/relay/relay.ts, relay.test.ts, supabase/checks/relay-rate-counters.sql,
+  supabase/checks/spaltenrechte.sql, supabase/migrations/0030); NICHT angefasst.
+
+**DER RUMPF IST ZEICHENGLEICH MIT DEM STAND IN `2ab3fb3`**, ab der Zeile "**PFLICHT-GATE:**":
+5 267 Zeilen, 386 053 Bytes, sha256
+fb49cd9503637aa99377ebd68e9fcb086146496e789ed387b999809eb64cfbbd. Die Treffer auf
+`docs/aktiver-stand.md` in ihm bleiben als Zeitdokument stehen. Ersetzt ist allein die erste
+Zeile, die Überschrift "Phase 13.6 — Formular-Relay (Lead-Relay): DER AKTIVE STAND"; an ihrer
+Stelle steht dieser Kopf.
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **PFLICHT-GATE:** Diese Datei ist ab ihrer Anlage (2026-09-29) das Pflicht-Gate ("Auftrag 0")
 jedes Bau- und Aufklärungs-Prompts der Phase 13.6 (CLAUDE.md, "## Aktiver Stand — Verfahren ab

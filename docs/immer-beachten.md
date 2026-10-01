@@ -251,11 +251,23 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   Exporte und gehostete Seiten nutzen /api/e (geteilter Handler, lib/capi/ingest.ts).
 
 - GRANTS SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT
-  anon, authenticated und service_role haben per Supabase-Default volle DML-Rechte auf
-  alle public-Tabellen. Eine neue Tabelle ohne "enable row level security" ist damit sofort
-  für ANON offen — und der anon-Key steckt im Client-Bundle jeder Seite. Bei jeder neuen
-  Tabelle RLS explizit aktivieren und Policies bewusst setzen, nie auf den Event-Trigger
-  ensure_rls verlassen (er entsteht beim Rebuild aus den Migrationen nicht).
+  Der Titel meint die VORGABE-Rechte und die ZEILEN-Achse; er bleibt, weil er zitiert wird.
+  anon, authenticated und service_role tragen per Supabase-Vorgabe volle Rechte auf die
+  Tabellen in public, ausser wo eine Migration sie ausdrücklich entzieht (0030 auf
+  relay_rate_counters, 0031 auf projects, domains und project_tokens). Diese Vorgabe-Rechte
+  schützen weiterhin nichts. Eine neue Tabelle ohne "enable row level security" ist damit
+  sofort für ANON offen — und der anon-Key steckt im Client-Bundle jeder Seite. Bei jeder
+  neuen Tabelle RLS explizit aktivieren und Policies bewusst setzen, nie auf den
+  Event-Trigger ensure_rls verlassen (er entsteht beim Rebuild aus den Migrationen nicht).
+  RLS urteilt über ZEILEN, nicht über SPALTEN. Welche Spalten die angemeldete Rolle
+  schreiben darf, tragen ausdrücklich gesetzte Spaltenrechte: Seit 0031 darf authenticated
+  auf projects allein name, html, mappings, settings, html_b, mappings_b und updated_at
+  ändern und nichts einfügen; auf domains und project_tokens haben anon und authenticated
+  kein Schreibrecht.
+  Folge für jeden künftigen Bau: Eine neue CLIENT-eigene Spalte auf projects braucht in
+  ihrer Migration ein ausdrückliches GRANT UPDATE (Spalte) an authenticated — ohne es
+  scheitert das Speichern LAUT mit 42501. Eine neue SERVER-eigene Spalte bekommt keines;
+  sie schreibt allein der Server über service_role.
   Das reinste Beispiel: project_secrets trägt RLS aktiv und KEINE einzige Policy; die
   einzige Schreib-Autorisierung liegt im Ownership-Gate der Server-Actions. Wer dort eine
   Policy ergänzt, gewinnt keinen Schutz, sondern nur dessen Anschein.

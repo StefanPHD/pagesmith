@@ -53,17 +53,30 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   HTTP-Statuscode beweist nichts.
   BINDET-AN: erledigt vor erstem echten Fremd-Traffic. Serving existierte (7a/7c-1), die
   Sperre kam mit 0008.
-  ZUSATZ 2026-10-01 — STATUS UND BINDET-AN BLEIBEN UNVERÄNDERT; DIE TRAGENDE KONTROLLE HAT EINE
-  LÜCKE: Die Sperre ist über PostgREST vom Betreiber des gesperrten Projekts SELBST AUFHEBBAR.
-  GEMESSEN (Owner, 2026-10-01, SQL-Editor, Postgres-Ebene): has_column_privilege liefert für
-  anon, authenticated und service_role je true für UPDATE auf projects.blocked_at (Probe
-  P-G2a); die vier Policies auf projects prüfen allein auth.uid() = user_id (P-G2b); einziger
-  Trigger ist projects_set_updated_at (P-G2c). FOLGE, ABGELEITET: Ein angemeldeter Nutzer
-  setzt blocked_at seines eigenen Projekts auf NULL, und Serve-Route und Ingest liefern bzw.
-  nehmen wieder an. Für anon greift die Policy nicht, weil auth.uid() dort leer ist
-  (ABGELEITET). GRENZE: Der Schreibweg über PostgREST mit echter Sitzung ist NICHT ausgeführt.
-  BEHEBUNG: Arbeit P13.6-113 der Phase 13.6 (Sicherheits-Scheibe "Spaltenrechte", höchste
-  Dringlichkeit); Befund: Vermerk P13.6-112 der Phase 13.6 (docs/aktiver-stand.md).
+  SELBST-ENTSPERRUNG GESCHLOSSEN 2026-10-01 (Migration 0031, Phase 13.6, Scheibe
+  "Spaltenrechte") — STATUS UND BINDET-AN BLEIBEN UNVERÄNDERT; DIE TRAGENDE KONTROLLE IST
+  WIEDER VOLLSTÄNDIG, mit der einen Grenze unten.
+  RISIKO, DAS BESTAND: Die Sperre war über PostgREST vom Betreiber des gesperrten Projekts
+  SELBST AUFHEBBAR. Die Vorgabe-Rechte gaben authenticated UPDATE auf jede Spalte von projects,
+  die Update-Policy prüft allein auth.uid() = user_id, und kein Trigger schützte blocked_at.
+  GEMESSEN (Owner, 2026-10-01): auf Postgres-Ebene has_column_privilege true (Probe P-G2a) und
+  über PostgREST mit echter Sitzung ein PATCH auf blocked_at angenommen (200, 1 Zeile, vor 0031).
+  TRAGENDE KONTROLLE SEIT 0031: authenticated hat auf projects kein INSERT und UPDATE allein auf
+  name, html, mappings, settings, html_b, mappings_b und updated_at; auf domains (also auch
+  domains.blocked_at) haben anon und authenticated kein INSERT, UPDATE oder DELETE. GEMESSEN
+  (Owner, 2026-10-01, nach 0031): Katalog-ACL anon/authenticated `rdDxtm` auf projects und
+  `rDxtm` auf domains, sieben Spaltenrechte UPDATE für authenticated (Probe
+  supabase/checks/spaltenrechte.sql, (3) und (4)); über PostgREST ein PATCH auf blocked_at mit
+  Sitzung 403, ohne Sitzung 401, je 42501 (M3). Das Runbook läuft im SQL-Editor als postgres
+  (Eigentümer der Tabelle) und ist unberührt; nach 0031 live gesperrt (Sperrseite) und
+  entsperrt.
+  EHRLICHE EINORDNUNG: Die Lücke ist geschlossen, die Achse "je Projekt" nicht — ein gesperrter
+  Betreiber legt ein NEUES Projekt an und veröffentlicht es; das Anlegen prüft keine Sperre
+  (Vorrat P13.6-121 der Phase 13.6, Ziel Phase 13.7). Ob die Lücke vor 0031 je genutzt wurde, ist
+  nicht erhoben; heute benutzt niemand ausser dem Owner das Produkt.
+  Dieser Absatz ERSETZT den Zusatz vom selben Tag, der die Lücke gemeldet hatte (umgestuft, nicht
+  annotiert). Befund und Abschluss: Vermerke P13.6-112 und P13.6-130 der Phase 13.6
+  (docs/aktiver-stand.md).
 - E-MAIL-BESTÄTIGUNG wieder aktiv:
   RISIKO: fürs MVP deaktiviert (sofort eingeloggt) -> offene Registrierung =
   Spam-Accounts, Ressourcen-/Kosten-Missbrauch, Wegwerf-Identitäten.

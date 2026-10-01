@@ -136,6 +136,19 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   REIHENFOLGE AUS ZWEI ZEITSTEMPELN: 0030 lief um 10:23:41 UTC; der erste Versand über den
   neuen Code trägt im Zähler window_start 2026-09-30 10:36:00+00 (Live-Test der Scheibe,
   Owner). MIGRATION VOR CODE-DEPLOY ist damit für diese Scheibe nachvollziehbar.
+  NACHGEZOGEN AM 2026-10-01: DER HEUTIGE STAND IST 0001-0031. 0031 (0031_spaltenrechte.sql,
+  Phase 13.6, Scheibe "Spaltenrechte") steht im Protokoll mit applied_at
+  2026-10-01 12:55:40.274618+00 — GEMESSEN am 2026-10-01 (SQL-Editor, Owner, Abfrage (10) aus
+  supabase/checks/spaltenrechte.sql: GENAU EINE Zeile; derselbe Lauf VOR dem Einspielen ergab
+  KEINE).
+  DIE GRENZE IST DIESELBE KLASSE WIE BEI 0026 BIS 0030: Abgelesen ist der VOLLZUG DIESER EINEN
+  Migration, nicht die arithmetische Lückenlosigkeit — Abfrage (10) filtert auf version '0031'.
+  DIE APPLIED_AT-REGEL IST MIT 0031 ERNEUT BESTÄTIGT (gefüllt).
+  DIE REIHENFOLGE IST HIER BEWUSST UMGEKEHRT: 0031 entzieht Rechte, die der alte Code brauchte,
+  und folgt deshalb dem Code (docs/db-regeln.md, "MIGRATION IMMER VOR CODE-DEPLOY", präzisiert
+  durch Owner-Entscheidung P13.6-120 der Phase 13.6). Der Code-Commit 6f66c44 war deployt und
+  live geprüft, bevor 0031 lief — OWNER-ANGABE aus der Folge der Live-Durchgänge (Vermerk
+  P13.6-130 der Phase 13.6); ein Deploy-Zeitstempel ist nicht übermittelt.
   · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
     nicht nur an der Dateisortierung abgelesen. GEMESSEN am 2026-08-05: 21 Zeilen,
     Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020 und 0021 — bei 0021 mit
@@ -178,6 +191,18 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   aktiver RLS ohne Policy ist die Tabelle für anon und authenticated verschlossen, einziger
   Schreiber ist die RPC relay_rate_hit über service_role. DIE GESAMTZAHL ZEHN IST NICHT
   NACHGEMESSEN; dass sie gleich bleibt, ist eine ABLEITUNG aus dieser einen Null.
+  NACHGEZOGEN AM 2026-10-01 — DIE ZAHLEN DER DREI TABELLEN DER MIGRATION 0031 SIND ÜBERHOLT:
+  projects 3 (projects_select_own, projects_update_own, projects_delete_own — projects_insert_own
+  gelöscht); domains 1 (domains_select_own — domains_insert_own und domains_update_own
+  gelöscht); project_tokens 0 (project_tokens_insert_own und project_tokens_update_own
+  gelöscht). GEMESSEN am 2026-10-01 (SQL-Editor, Owner, Abfrage (9) aus
+  supabase/checks/spaltenrechte.sql): nach 0031 vier Policies auf den drei Tabellen, vorher neun
+  — die Zahl vorher bestätigt die Angaben oben (4 + 3 + 2) für diese drei Tabellen.
+  DIE GESAMTZAHL IST NICHT NACHGEMESSEN; die Abfrage filtert auf die drei Tabellen. Dass sie
+  FÜNF beträgt (dazu events_select_own; audit_logs, schema_migrations, project_secrets und
+  relay_rate_counters je 0), ist eine ABLEITUNG.
+  project_tokens IST DAMIT POLICY-FREI, wie die Dauerregel "APPEND-ONLY-TABELLEN BLEIBEN
+  POLICY-FREI" es beschreibt; die Schreibwege laufen allein über service_role.
   BEI project_secrets IST DIE LEERE POLICY-LISTE DIE TRAGENDE KONTROLLE — der Satz gehört
   zwingend dazu, sonst liest jemand die Null als Lücke und "repariert" sie: unter aktiver RLS
   ohne JEDE Policy ist die Tabelle für anon und authenticated VOLLSTÄNDIG verschlossen, nur
@@ -214,6 +239,10 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   events_select_own trägt (select auth.uid()) gekapselt. projects/domains/project_tokens tragen
   blankes auth.uid() (Auswertung pro Zeile). Ein Fix wäre eine Migration -> aufgeschoben, s.
   docs/claude-history/backlog-polish.md.
+  NACHGETRAGEN AM 2026-10-01: Seit 0031 trägt project_tokens keine Policy mehr und domains allein
+  domains_select_own (s. POLICIES); die Aussage gilt für die verbliebenen Policies auf projects
+  und domains. Ob sie blankes auth.uid() tragen, ist an diesem Tag nicht erneut abgelesen — 0031
+  legt keine Policy an.
   events_select_own spiegelt die Ownership-ACHSE von projects_select_own 1:1 — EXISTS-Semi-Join
   statt direktem Vergleich, also andere SYNTAX bei gleicher ACHSE. Beide Unterschiede (Kapselung
   und EXISTS) sind bekannt und unbedenklich; eine Divergenz in der ACHSE selbst WÄRE das Leak.
@@ -229,6 +258,34 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   als role_table_grants vom 2026-08-05). Im Wortlaut übermittelt ist allein "service_role
   delete = true"; die übrigen Werte sind als "wie erwartet" gegen die ERWARTUNG der Probe
   gemeldet. Die RLS bleibt auch hier die tragende Schicht.
+  SEIT 0031 WEICHEN AUCH projects, domains UND project_tokens AB — mit SPALTENRECHTEN auf
+  projects. GEMESSEN am 2026-10-01 (SQL-Editor, Owner, supabase/checks/spaltenrechte.sql,
+  Katalog über aclexplode; Kürzel nach postgresql.org/docs/17/ddl-priv.html, Tabelle 5.1,
+  GELESEN 2026-10-01: a INSERT, r SELECT, w UPDATE, d DELETE, D TRUNCATE, x REFERENCES,
+  t TRIGGER, m MAINTAIN):
+  · VOR 0031, Abfrage (3): relacl je Tabelle postgres, anon, authenticated und service_role je
+    arwdDxtm, Grantor überall postgres, kein Recht an PUBLIC. Abfrage (4): keine Spalten-ACL.
+  · NACH 0031, Abfrage (3): anon und authenticated auf projects rdDxtm, auf domains und
+    project_tokens je rDxtm; service_role unverändert arwdDxtm. Abfrage (4): authenticated UPDATE
+    auf GENAU SIEBEN Spalten von projects — name, html, mappings, settings, html_b, mappings_b,
+    updated_at; für anon keine.
+  · FOLGE: authenticated kann projects nicht einfügen und keine Spalte ausserhalb der sieben
+    ändern — darunter tracking_key, published_content, ab_test_active, ab_test_started_at,
+    blocked_at, blocked_reason und user_id; domains und project_tokens schreiben anon und authenticated gar
+    nicht. Über PostgREST gemessen: ein PATCH auf blocked_at, tracking_key und domains.label mit
+    echter Sitzung 403 mit 42501, auf name 200 (Vermerk P13.6-130 der Phase 13.6, Punkt (1)).
+  · TRUNCATE, REFERENCES, TRIGGER und MAINTAIN tragen anon und authenticated auf allen drei
+    Tabellen weiterhin (Vorrat P13.6-129 der Phase 13.6).
+  · VOR 0031 ebenfalls gemessen, Abfragen (1), (2), (7): current_user und session_user postgres;
+    Eigentümer der drei Tabellen postgres mit rolsuper false und rolbypassrls true;
+    relrowsecurity true, relforcerowsecurity false auf allen drei; anon und authenticated in
+    keiner Rolle Mitglied. NACH 0031 sind (1), (2) und (7) nicht übermittelt.
+  · NICHT ÜBERMITTELT in beiden Läufen: Abfrage (8), die Matrix der wirksamen Rechte je Spalte,
+    sowie die Gegenlesungen (5) und (6).
+  DER SATZ ÜBER DIE "VOLLEN DML-RECHTE AUF ALLE SIEBEN" OBEN IST DAMIT FÜR DIESE DREI TABELLEN
+  ÜBERHOLT; für events, audit_logs, schema_migrations und project_secrets ist er an diesem Tag
+  nicht nachgemessen. Die Dauerregel dazu ist am 2026-10-01 präzisiert (docs/immer-beachten.md,
+  "GRANTS SCHÜTZEN NICHTS").
 - TABELLE public.events: id uuid PK (gen_random_uuid()); project_id uuid FK -> projects
   ON DELETE CASCADE; event_type text; event_id text; source text (KEIN Default); created_at
   timestamptz (now()) — diese SECHS NOT NULL. DAZU: variant text NULLABLE (0017).
@@ -245,6 +302,10 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   (CLIENT-autoritativ, wird von saveProject ganzheitlich ersetzt).
   CONSTRAINTS: projects_variant_b_pair ((html_b IS NULL) = (mappings_b IS NULL));
   projects_ab_test_needs_variant_b (NOT ab_test_active OR html_b IS NOT NULL).
+  SPALTENRECHTE SEIT 0031 (s. ROLLEN-GRANTS): authenticated UPDATE allein auf name, html,
+  mappings, settings, html_b, mappings_b und updated_at; INSERT für anon und authenticated
+  entzogen. Eine neue client-eigene Spalte braucht ein eigenes Spaltenrecht, sonst scheitert das
+  Speichern mit 42501.
 - TABELLE public.project_secrets (0021, Phase 11 Scheibe 1; umgebaut durch 0025, Phase 11.8
   Scheibe 11.8b). SPALTEN IN DER GEMESSENEN REIHENFOLGE (GEMESSEN 2026-08-26, SQL-Editor,
   Owner, Probe 2 aus supabase/checks/db-stand.sql): project_id uuid NULLABLE; target text

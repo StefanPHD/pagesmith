@@ -301,6 +301,10 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   GEMELDET, NICHT ENTSCHIEDEN: Der Hinweis im Editor bei `restored` sagt "Adresse … wurde
   wiederhergestellt" und stimmt nach der Neufassung nicht mehr (Vorrat P13.6-127 der Phase
   13.6). Ein neues Label im Heilungsfall ist damit heute nicht als GEÄNDERTE Adresse angezeigt.
+  ENTSCHIEDEN UND UMGESETZT 2026-10-01: Owner-Entscheidung P13.6-128 der Phase 13.6 (der
+  Hinweis nennt die neue Adresse und verlangt, Links und Anzeigen zu aktualisieren), Code-Commit
+  `6f66c44`; live gesehen (Vermerk P13.6-130 der Phase 13.6, Punkt (4)). Der Satz darüber
+  beschreibt den Stand davor.
   PROVENIENZ: die Entscheidung OWNER 2026-10-01; die Fundstellen GELESEN AM CODE (CC,
   2026-10-01, HEAD `38f502f`); die Neufassung des Kerns und dieser Absatz CC, im Auftrag
   derselben Runde, nach vollständigem Laden dieser Datei.
@@ -317,6 +321,14 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   UND ausschliesslicher service_role-Zugriff bei service-seitig geschriebenen Tabellen
   (project_secrets, events). Wer die Liste oben als vollstaendig liest, haelt eine
   policy-freie Tabelle ausserhalb davon fuer einen Fehler und "repariert" sie.
+  BELEG GEPRÜFT 2026-10-01 (Abschluss der Scheibe "Spaltenrechte", Phase 13.6) — DIE REGEL
+  BLEIBT WÖRTLICH, IHR BELEG STIMMT WIEDER. Von 0005 bis 0031 trug project_tokens die Policies
+  `project_tokens_insert_own` und `project_tokens_update_own`; "keine SELECT/UPDATE/DELETE-Policy"
+  war für UPDATE falsch (Vermerk P13.6-116, Punkt (1), NEBENBEFUND, der Phase 13.6). 0031 hat
+  beide gelöscht. GEMESSEN (Owner, 2026-10-01, supabase/checks/spaltenrechte.sql, (9)):
+  project_tokens trägt NULL Policies; anon und authenticated haben dort kein INSERT, UPDATE oder
+  DELETE mehr. Der Kern sagt nichts Gegenteiliges und ist nicht geändert. Für audit_logs ist an
+  diesem Tag nichts gemessen.
 - AUDIT-LOG-DISZIPLIN: GENAU EIN Eintrag pro Mutations-AUFRUF, auch bei frueher
   Ablehnung — geschrieben aus einem finally, damit kein Ausgang ihn verliert (Muster:
   register.ts / remove.ts). Nie Doppel-Feuern (verfaelscht das Rate-Limit), nie
@@ -712,6 +724,49 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   verschlossen, obwohl beide per Grant volle DML-Rechte auf ihr haben; die einzige
   Schreib-Autorisierung liegt im Ownership-Gate der Server-Actions. Wer dort eine Policy
   ergänzt, gewinnt keinen Schutz, sondern nur dessen Anschein.
+  NEU GEFASST 2026-10-01 — RLS URTEILT ÜBER ZEILEN, NICHT ÜBER SPALTEN (OWNER-ENTSCHEIDUNG
+  P13.6-119 der Phase 13.6, vollzogen beim Abschluss der Scheibe "Spaltenrechte"). Der Titel
+  bleibt; der Text darüber bleibt als Stand davor stehen. Drei seiner Angaben gelten NICHT
+  MEHR: "volle DML-Rechte auf ALLE public-Tabellen, auch auf project_tokens" (seit 0030 nicht
+  für relay_rate_counters, seit 0031 nicht für projects, domains und project_tokens), "hält
+  ALLEIN dadurch, dass project_tokens RLS aktiv hat" (seit 0031 fehlt dort auch das
+  Schreibrecht) und "project_tokens trägt ZWEI Policies (insert/update)" (seit 0031 NULL).
+  DIE NEUE FASSUNG: Die VORGABE-Rechte schützen weiterhin nichts — eine neue Tabelle ohne RLS
+  ist für anon offen, und daran ändert die Scheibe nichts. RLS urteilt aber über ZEILEN: Eine
+  Policy `auth.uid() = user_id` lässt den Betreiber JEDE Spalte seiner eigenen Zeile
+  schreiben, auch die server-eigenen. Welche Spalten die angemeldete Rolle schreiben darf,
+  tragen ausdrücklich gesetzte SPALTENRECHTE. Seit 0031: authenticated hat auf projects kein
+  INSERT und UPDATE allein auf name, html, mappings, settings, html_b, mappings_b und
+  updated_at; anon und authenticated haben auf domains und project_tokens weder INSERT noch
+  UPDATE noch DELETE, die Schreib-Policies dort sind gelöscht. Der Titel meint damit die
+  VORGABE-Rechte und die ZEILEN-Achse; er ist nicht umformuliert, weil er von aussen zitiert
+  wird (GEMESSEN am Repo, CC, 2026-10-01, Achse "GRANTS SCH" über alle .md-Dateien: die
+  Standdatei der Phase 13.6, docs/db-stand.md, docs/plattform-befunde.md,
+  docs/claude-history/phase-11-multi-tracking.md und backlog-polish.md; dazu in dieser Datei
+  umlautfrei "GRANTS SCHUETZEN NICHTS" an "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI").
+  DER GRUND (Vermerk P13.6-112 der Phase 13.6): `blocked_at`, `tracking_key`,
+  `published_content` und `ab_test_active` waren für den eigenen Betreiber über PostgREST frei
+  schreibbar — darunter die Selbst-Entsperrung des Kill-Switch. GEMESSEN, OWNER, 2026-10-01:
+  vor 0031 nahm ein PATCH mit echter Sitzung auf `blocked_at` an (200, 1 Zeile), danach 403 mit
+  `42501` (Vermerk P13.6-130 der Phase 13.6, Punkt (1)).
+  DIE FOLGE FÜR KÜNFTIGE BAUTEN, und sie ist der Teil, der sonst beim nächsten Bau übersehen
+  wird: Eine neue CLIENT-eigene Spalte auf projects braucht in ihrer Migration ein
+  ausdrückliches `grant update (<spalte>) on public.projects to authenticated`. Ohne es
+  scheitert das Speichern LAUT mit 42501 — kein stiller Verlust, aber ein Speicherpfad, der
+  nach dem Deploy der Migration bricht. Eine neue SERVER-eigene Spalte bekommt KEIN Recht; sie
+  schreibt allein der Server über service_role, nach dem Eigentums-Gate und mit
+  `user_id`-Filter (Setzung P13.6-117).
+  PROVENIENZ, GETRENNT: Dass eine NACH 0031 angelegte Spalte für anon und authenticated ohne
+  Schreibrecht beginnt, ist FOLGERUNG aus der Lesung (docs/plattform-befunde.md, Supabase,
+  Teil (be)), nicht gemessen. Dass ein Schreiben auf eine nicht gewährte Spalte über PostgREST
+  mit 403 und `42501` abgewiesen wird, ist GEMESSEN (Owner, 2026-10-01, Schritte S und K). Die
+  Rechte nach 0031 sind GEMESSEN am Katalog (Owner, 2026-10-01, supabase/checks/spaltenrechte.sql,
+  (3), (4), (9)). Die Neufassung des Kerns und dieser Absatz: CC, im Auftrag der Abschluss-Runde,
+  nach vollständigem Laden dieser Datei.
+  WAS NICHT GEÄNDERT IST: "Bei JEDER neuen Tabelle RLS explizit aktivieren und Policies bewusst
+  setzen, NIE auf den Trigger verlassen" und das Beispiel project_secrets gelten unverändert.
+  TRUNCATE, REFERENCES, TRIGGER und MAINTAIN tragen anon und authenticated auf den drei Tabellen
+  weiterhin (GEMESSEN nach 0031); ob sie entzogen werden, ist Vorrat P13.6-129 der Phase 13.6.
 - HOST-ONLY-COOKIES AUF GETEILTEN WILDCARD-DOMAINS (Phase 9): Auf einer
   Serving-Domain, die als Wildcard mehrere Kundenprojekte gleichzeitig
   trägt, bekommt JEDES Cookie NIE ein explizites Domain-Attribut. Ein

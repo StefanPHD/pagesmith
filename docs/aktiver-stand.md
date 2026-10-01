@@ -724,6 +724,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - NACHGETRAGEN 2026-10-01 (Runde "Scheibe Spaltenrechte — Zuschnitt und Plan"; CC, keine neue
   Setzung an dieser Stelle): Arbeit P13.6-113 ist zugeschnitten (Setzung P13.6-115, Abschnitt
   "Zuschnitt Scheibe Spaltenrechte"); der Plan steht im Bericht derselben Runde.
+- NACHGETRAGEN 2026-10-01 (Abschluss der Scheibe "Spaltenrechte"; CC, keine neue Setzung): Die
+  Scheibe ist abgeschlossen (Vermerk P13.6-130). Die Reihenfolge darüber nennt danach keine
+  weitere Scheibe; offen bleibt Arbeit P13.6-104 mit ihrer Frist.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -3419,22 +3422,16 @@ Sicherheitsbefund Spaltenrechte) · dieser Commit (Abschluss).
 
 ## Zuschnitt Scheibe Spaltenrechte
 
-**ZUGESCHNITTEN AM 2026-10-01 (ARCHITEKT); DER PLAN FOLGT IM BERICHT DERSELBEN RUNDE, NICHT IN
-DIESER DATEI.**
-NACHGETRAGEN 2026-10-01 (Runde "Spaltenrechte — Plan festhalten, Entscheidungen,
-Regel-Präzisierung"): Der Plan steht jetzt als Vermerk P13.6-116, die Gestalt als Setzung
-P13.6-117 (Abschnitt "Planrunde der Scheibe Spaltenrechte").
-NACHGETRAGEN 2026-10-01 (Runde "Spaltenrechte — Anbieter-Lesung"): Die Vorbedingung S4 (Vermerk
-P13.6-116, Punkt (4)) ist gelesen — docs/plattform-befunde.md, Supabase-Abschnitt, LAUF 5, Teile
-(bd) bis (bk). Doku-Aussagen, keine Messung; die offenen Messungen stehen dort in Teil (bk).
-NACHGETRAGEN 2026-10-01 (Runde "Spaltenrechte — Bau", Teil A): Die Bau-Entscheidungen stehen als
-Owner-Entscheidung P13.6-123, Owner-Angabe P13.6-124 und Setzung P13.6-125 (Abschnitt
-"Bau-Entscheidungen der Scheibe Spaltenrechte").
+**ABGESCHLOSSEN AM 2026-10-01 — Code-Commit `6f66c44`, Migration 0031 eingespielt, Live-Test
+bestanden (nur Chrome); Abschluss-Vermerk P13.6-130.**
 - GEGENSTAND: Arbeit P13.6-113 der Phase 13.6 — die Sicherheits-Scheibe "Spaltenrechte". Befund:
   Vermerk P13.6-112. Reihenfolge: Setzung P13.6-14.
 - BENENNUNG, DEKLARIERT (CC): wie bei den Scheiben "Zurück-Cache", "Zapier ins Relay" und
   "Beacon bei Erstveröffentlichung" ohne Nummer; die Überschrift übernimmt den Namen aus Arbeit
   P13.6-113.
+- Der Zuschnitt ist verdichtet: Hier stehen die Setzungen, Entscheidungen und Grenzen, die über
+  die Scheibe hinaus binden, dazu die Vermerke der Scheibe. Was gestrichen ist: Vermerk
+  P13.6-130, Punkt (9).
 
 ### Architekten-Setzung zur Scheibe Spaltenrechte
 
@@ -3489,6 +3486,8 @@ SCHREIBEN — IN KEINER TABELLE.**
     AUFGELÖST 2026-10-01: Owner-Entscheidung P13.6-120 (die Regel ist präzisiert) und die
     Reihenfolge in Setzung P13.6-117; Invariante (5) ist entsprechend geändert. Der offene
     Punkt trägt eine datierte Ergänzung.
+- UMGESETZT 2026-10-01: Code-Commit `6f66c44`, Migration 0031 eingespielt, Live-Test bestanden
+  (nur Chrome) — Vermerk P13.6-130 der Phase 13.6; die Nachweise je Invariante dort, Punkt (6).
 
 ### Planrunde der Scheibe Spaltenrechte
 
@@ -3532,6 +3531,9 @@ ohne Fundstelle in docs/plattform-befunde.md ist UNGEPRÜFT.
     docs/db-stand.md führt zwei Policies (insert, update). Der Beleg der Regel ist für UPDATE falsch
     (Dauerregel "EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD"). Mit Setzung
     P13.6-117 fällt die Policy weg; danach stimmt der Beleg wieder.
+    NACHGETRAGEN 2026-10-01 (Abschluss der Scheibe): `project_tokens` trägt NULL Policies,
+    GEMESSEN nach 0031 (Vermerk P13.6-130, Punkt (3)); die Herleitung der Dauerregel trägt den
+    geprüften Beleg.
 (2) S2 — SCHREIBWEGE DER SERVER-EIGENEN SPALTEN.
     · ÜBER DEN CLIENT MIT NUTZER-SITZUNG (`createClient`), alle in src/app/projects/actions.ts:
       `tracking_key` im Insert-Zweig von `saveProject`, in `setCapiToken` und in `publishProject`
@@ -3628,6 +3630,8 @@ ohne Fundstelle in docs/plattform-befunde.md ist UNGEPRÜFT.
     Dauerregel — Owner-Entscheidung P13.6-119; der Beleg der Append-only-Regel — Punkt (1),
     NEBENBEFUND; docs/db-stand.md ohne Spaltenrechte (Vermerk P13.6-112, Punkt (7)) — offen bis
     zum Abschluss der Scheibe.
+    NACHGETRAGEN 2026-10-01: docs/db-stand.md ist im Abschluss-Commit der Scheibe aus der Messung
+    nach 0031 nachgezogen (Vermerk P13.6-130, Punkt (10)).
 
 **Setzung P13.6-117 — GESTALT (a) SPALTENRECHTE; SERVER-EIGENE SPALTEN SCHREIBT ALLEIN
 service_role, NACH DEM EIGENTUMS-GATE UND MIT `user_id`-FILTER.**
@@ -3665,6 +3669,8 @@ Wo "(CC)" steht, stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD
   eingetreten. Am Bestand ist er dem Wortlaut nach schon mit 0025 eingetreten (Ergänzung vom
   2026-08-27 an jenem Punkt); die Migration dieser Scheibe ist geplant, nicht geschrieben und
   nicht gelaufen. Die Ergänzung sagt beides.
+- UMGESETZT 2026-10-01: Code-Commit `6f66c44` (die Schreibwege), Migration 0031 (die Rechte), in
+  der Reihenfolge dieser Setzung — Vermerk P13.6-130 der Phase 13.6.
 
 **Vermerk P13.6-118 — DER SQL-EDITOR FÄHRT `postgres`.** KEIN BAU-COMMIT: Messung im SQL-Editor.
 - GEMESSEN, OWNER, 2026-10-01, SQL-Editor, übermittelt im Auftrag derselben Runde:
@@ -3680,6 +3686,9 @@ Wo "(CC)" steht, stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD
   GELESEN 2026-10-01: docs/plattform-befunde.md, Supabase-Abschnitt, Teil (bg) — Dashboard-Abfragen
   laufen als `postgres`, laut RLS-Seite ist `postgres` auf Supabase Eigentümer mit `bypassrls`.
   Eigentümer und Attribute in DIESEM Projekt bleiben ungemessen (ebenda, Teil (bk)).
+  NACHGETRAGEN 2026-10-01: GEMESSEN (Owner, SQL-Editor, Probe supabase/checks/spaltenrechte.sql,
+  (1) und (2), vor 0031): `current_user` und `session_user` `postgres`; Eigentümer der drei
+  Tabellen `postgres` mit rolsuper false und rolbypassrls true — Vermerk P13.6-130, Punkt (2).
 
 PROVENIENZ von P13.6-119 und P13.6-120: OWNER-ENTSCHEIDUNG 2026-10-01, übermittelt im Auftrag der
 Runde "Spaltenrechte — Plan festhalten, Entscheidungen, Regel-Präzisierung". BINDEND. Die Titel
@@ -3695,6 +3704,13 @@ EINZIGE TRAGENDE SCHICHT".**
   docs/immer-beachten-herleitung.md sind nicht geändert.
 - (CC) Beim Vollzug berührt: der offene Punkt "DIE GRANT-VORGABE DER PLATTFORM KIPPT AM
   30.10.2026" ("Die Regel 'GRANTS SCHÜTZEN NICHTS …' bleibt unverändert richtig").
+- VOLLZOGEN 2026-10-01 im Abschluss-Commit der Scheibe: Kern (docs/immer-beachten.md) neu
+  gefasst, Titel unverändert, samt der Folge für künftige Spalten; in
+  docs/immer-beachten-herleitung.md eine datierte Neufassung an der Regel, der Text davor bleibt
+  als Stand davor. Herleitung vorher vollständig geladen (CC, 2026-10-01). Vermerk P13.6-130,
+  Punkt (10). Der offene Punkt in docs/offene-punkte.md ist NICHT geändert (ausserhalb des
+  Scopes jenes Commits); sein zitierter Satz ist dem Wortlaut nach überholt — gemeldet im Bericht
+  der Runde.
 
 **Owner-Entscheidung P13.6-120 — PRÄZISIERUNG DER REGEL "MIGRATION IMMER VOR CODE-DEPLOY".**
 - INHALT: Sie gilt für Migrationen, die der Code braucht. Eine Migration, die Rechte entzieht und
@@ -3748,6 +3764,8 @@ VERÖFFENTLICHEN. `settings.hosting.label` IST NIE QUELLE EINES NEUEN LABELS.**
   src/components/PublishView.tsx lautet "— Adresse war nicht mehr erreichbar und wurde
   wiederhergestellt." Nach dieser Entscheidung ist die Adresse eine neue; der Satz behauptet
   dann etwas Falsches. Vorrat P13.6-127 der Phase 13.6.
+  ENTSCHIEDEN UND UMGESETZT 2026-10-01: Owner-Entscheidung P13.6-128, Code-Commit `6f66c44`.
+- UMGESETZT 2026-10-01: Code-Commit `6f66c44`; live belegt — Vermerk P13.6-130, Punkt (4).
 
 **Owner-Angabe P13.6-124 — DAS LABEL-SCHEMA "SLUG AUS DEM PROJEKTNAMEN + ZUFÄLLIGE ENDUNG"
 BLEIBT.**
@@ -3806,6 +3824,8 @@ stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD `38f502f`).
   DELETE-Policy trägt keine der beiden Tabellen.
 - VORRAT (Phase 13.7): gelöschte Labels dauerhaft sperren (Grabstein-Modell) — Vorrat P13.6-126
   der Phase 13.6.
+- UMGESETZT 2026-10-01: Code-Commit `6f66c44`, Migration 0031. Der Grantor-Befund vor dem
+  Einspielen ist erhoben und hat keine Stopp-Bedingung getroffen — Vermerk P13.6-130, Punkt (2).
 
 PROVENIENZ von P13.6-128: OWNER-ENTSCHEIDUNG 2026-10-01, übermittelt im GO-Auftrag der Runde
 "Spaltenrechte — Code-Teil" (Teil A). BINDEND.
@@ -3821,6 +3841,174 @@ aktualisiere Links und Anzeigen."**
   `publishRestored`. `PublishView.tsx` hat keine eigene Testdatei; seine Abdeckung liegt in
   src/components/CodeImporter.test.tsx.
 - BEZUG: Owner-Entscheidung P13.6-123 (das neue Label) — der Hinweis benennt jetzt deren Preis.
+- UMGESETZT 2026-10-01: Code-Commit `6f66c44`; Wächter RH-1 und RH-2
+  (src/components/CodeImporter.test.tsx); live gesehen im Owner-Wortlaut — Vermerk P13.6-130,
+  Punkt (4).
+
+### Abschluss der Scheibe Spaltenrechte
+
+**Vermerk P13.6-130 — ABSCHLUSS DER SCHEIBE "SPALTENRECHTE". Code-Commit `6f66c44`**
+("fix(security): server-eigene Spalten nur noch ueber den Server schreiben"), Migration 0031
+eingespielt. LIVE-TEST BESTANDEN, nur Chrome.
+Doku-Commits der Scheibe: `498fd97` (Zuschnitt) · `a12c39a` (Plan, Gestalt (a), Regel
+Migrationsreihenfolge) · `38f502f` (Anbieter-Lesung, docs/plattform-befunde.md, Supabase-Abschnitt,
+LAUF 5, Teile (bd) bis (bk)) · `a32592f` (Label-Wiederherstellung, Bau-Entscheidungen) · `59a3435`
+(Hinweistext, Vorrat Vorgabe-Rechte) · dieser Commit (Abschluss).
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (4): GEMESSEN, OWNER, 2026-10-01, im SQL-Editor bzw. live in
+    Chrome (Version nicht angegeben), übermittelt im Auftrag der Abschluss-Runde als
+    Zusammenfassung, nicht im Wortlaut. Instrumente: die Probe supabase/checks/spaltenrechte.sql
+    (Abfragen (1) bis (10)) und der Konsolen-Block aus dem Bau-Bericht der Scheibe — PATCH über
+    PostgREST mit der Sitzung aus dem Cookie, je mit dem heutigen Wert: P `name`, S `blocked_at`,
+    K `tracking_key`, D `domains.label`, alle mit Sitzung; N `blocked_at` OHNE Sitzung; L Lesen
+    ohne Spaltenliste; Gegenlesung von Name, `blocked_at` und Schlüssel. Der Block steht in
+    keiner Datei des Repos. Projekt-Kennungen und Schlüssel stehen bewusst nicht in dieser Datei;
+    das Wegwerf-Projekt der Schnittstellen-Läufe ist `578a0edd…`.
+    DURCHGÄNGE: D1 alter Code, alte Rechte · D2 neuer Code (`6f66c44`), alte Rechte · M1 bis M4
+    nach dem Einspielen von 0031.
+
+(1) DIE SCHNITTSTELLE (PostgREST, echte Sitzung):
+    · D1: P, S, K, D je 200, 1 Zeile · N 200, 0 Zeilen · L 200, 1 Zeile · Gegenlesung true.
+      S ist der ERSTE PostgREST-Beleg zu Vermerk P13.6-112: Der eigene Betreiber konnte
+      `blocked_at` schreiben. Geschrieben wurde der heutige Wert (null) — belegt ist die Annahme,
+      kein Entsperren.
+    · D2: wie D1. Der PostgREST-Weg blieb bis zur Migration offen; das ist die Reihenfolge der
+      Owner-Entscheidung P13.6-120.
+    · M3: P 200, 1 Zeile · S, K, D je 403, Code `42501` · N 401, `42501` · L 200, 1 Zeile ·
+      Gegenlesung true.
+    · EINORDNUNG (CC): P ist die Positivkontrolle — die Sitzung trägt, und eine gewährte Spalte
+      bleibt schreibbar; ohne P wäre das 403 bei S von einer kaputten Sitzung nicht zu trennen. N
+      antwortet nach 0031 anders als vorher (401 statt 200 mit 0 Zeilen): anon hat kein UPDATE
+      mehr auf `projects`. L beantwortet docs/plattform-befunde.md, Supabase, Teil (bk), Punkt 4:
+      Lesen ohne Spaltenliste geht nach dem Entzug unverändert. Punkt 3 jenes Teils
+      (PostgREST nimmt allein die Rumpf-Schlüssel ins SET) stützt P nach 0031 — mit einer nicht
+      gewährten Spalte im SET wäre P gescheitert (ABGELEITET, CC).
+
+(2) DIE RECHTE VOR 0031 (D1, Probe): (1) `current_user` und `session_user` `postgres` · (2)
+    Eigentümer der drei Tabellen `postgres`, rolsuper false, rolbypassrls true; relrowsecurity
+    true, relforcerowsecurity false, je auf allen drei Tabellen · (3) relacl je Tabelle
+    `postgres`, `anon`, `authenticated`, `service_role` je `arwdDxtm`, Grantor überall `postgres`,
+    kein PUBLIC · (4) keine Spalten-ACL · (7) keine Mitgliedschaften · (9) neun Policies · (10)
+    keine Zeile 0031. Nicht übermittelt: (5), (6), (8).
+    · DER GRANTOR-BEFUND (Setzung P13.6-125): Grantor gleich `current_user`, kein PUBLIC, keine
+      Mitgliedschaft — keine Stopp-Bedingung der Probe getroffen; 0031 durfte eingespielt werden.
+    · NEBENBEFUND: `postgres` ist in diesem Projekt KEIN Superuser und trägt bypassrls. Damit sind
+      Teil (bk), Punkte 1 und 5, in docs/plattform-befunde.md gemessen; jene Datei ist in diesem
+      Commit nicht nachgezogen.
+
+(3) DIE RECHTE NACH 0031: M1 — 0031 im SQL-Editor eingespielt, "Success", applied_at
+    2026-10-01 12:55:40.274618+00. M2 (Probe): (3) anon und authenticated auf `domains` und
+    `project_tokens` je `rDxtm`, auf `projects` `rdDxtm`; service_role unverändert `arwdDxtm` ·
+    (4) authenticated UPDATE auf `name`, `html`, `mappings`, `updated_at`, `settings`, `html_b`,
+    `mappings_b` · (9) vier Policies: `domains_select_own`, `projects_delete_own`,
+    `projects_select_own`, `projects_update_own` · (10) eine Zeile 0031. Nicht übermittelt: (1),
+    (2), (5) bis (8).
+    · GEGEN DEN BLOCK "NACH DER MIGRATION" der Probe gehalten (CC): (3), (4), (9) und (10) treffen
+      ihn. `project_tokens` trägt NULL Policies.
+    · KÜRZEL (GELESEN 2026-10-01, CC, postgresql.org/docs/17/ddl-priv.html, Tabelle 5.1): `a`
+      INSERT, `r` SELECT, `w` UPDATE, `d` DELETE, `D` TRUNCATE, `x` REFERENCES, `t` TRIGGER, `m`
+      MAINTAIN.
+
+(4) REGRESSION UND AUSGELIEFERTER TEXT:
+    · Zwei Seiten, je Länge und sha256: die Make-Testseite 20007 / `e283fa67…1500`, die zweite
+      30493 / `40c83cb3…37e5` — in D1, D2 und M4 je identisch. Die Einheit ist im Auftrag nicht
+      genannt (die Anleitung verlangte Bytes); ob vor jeder Messung neu veröffentlicht wurde, ist
+      nicht angegeben. Invariante (4) der Setzung P13.6-115 ist damit live belegt.
+    · D2: ein neues Projekt — `gleicher_besitzer` true, Schlüssel gesetzt (so übermittelt; die
+      Abfrage selbst ist nicht übermittelt) · Umbenennen, A/B (anlegen, veröffentlichen,
+      starten, stoppen, entfernen), Zugangsdaten (setzen, entfernen) ohne Fehler · HEILUNG:
+      Label-Zeile gelöscht, alte Adresse 404, Veröffentlichen ergab das neue Label
+      `test-beacon-fehler-neu-qcgqmi` und den Hinweis im Owner-Wortlaut (Owner-Entscheidungen
+      P13.6-123 und P13.6-128) · Kill-Switch per SQL: Sperrseite "Seite deaktiviert …",
+      entsperrt lädt die Seite.
+    · M4: Anlegen und Speichern, A/B, Zugangsdaten, Kill-Switch ohne Fehler.
+
+(5) BAU (CC, aus dem Bau- und dem GO-Bericht der Scheibe):
+    · Geändert, neun Dateien (`git show --stat 6f66c44`): src/app/projects/actions.ts — die
+      Schreibvorgänge auf server-eigene Spalten (Insert in `saveProject`, `publishProject`,
+      `setCapiToken`, `setAbTestActive`, `removeVariantB`, `assignDomainLabel`) über den
+      Admin-Client nach dem Eigentums-Gate, mit `id`- und `user_id`-Filter und lautem Fehler,
+      wenn keine Zeile getroffen ist; `insertDomainLabel` gestrichen, die Heilung vergibt ein
+      neues Label über `assignDomainLabel` · src/components/PublishView.tsx — der Hinweis bei
+      `restored` · supabase/migrations/0031_spaltenrechte.sql · supabase/checks/spaltenrechte.sql
+      samt README-Zeile · die Tests in actions.test.ts, actions.targets.test.ts, publish.test.ts
+      und CodeImporter.test.tsx.
+    · Unberührt: generate.ts, meta.ts, form-target.ts, pageview-emitter.ts, ingest.ts, `/api/e`,
+      `/api/capi`, `/api/f`, src/lib/relay/, die Serve-Route, proxy, alle älteren Migrationen.
+    · Gates: `tsc --noEmit` exit 0; `eslint` 0 Fehler, die bekannte Warnung in
+      src/lib/tracking/consent.test.ts; `vitest run` 2797 Tests (vor der Scheibe 2776, nach dem
+      ersten Bau-Teil 2795); `next build` exit 0.
+    · Mutationen, volle Suite, Vorhersage je vor dem Lauf, Rücknahme per sha256 belegt, ALLE WIE
+      VORHERGESAGT: M1 (`user_id`-Filter an allen vier Admin-Updates entfernt) 5 rot — SR-P1,
+      SR-A3 dreimal, SR-A4 · M2 (Admin-Client vor dem Gate in `publishProject`) 6 — 7a, P3, P3b,
+      P5, SR-P3, SR-P4 · M2b (dasselbe in `setAbTestActive`) 1 — SR-A2 · M3 (`user_id` des
+      Inserts aus dem Eingabewert) 1 — SR-A1 · M4 (Heilung aus `settings.hosting.label`) 2 —
+      TEST 2, TEST 3 · M5 (`blocked_at` in der GRANT-Liste) 1 — MIG-1 · M6 (SELECT-Entzug in der
+      Migration) 2 — MIG-2, MIG-3 · RH-M1 (der alte Hinweistext) 1 — RH-1.
+
+(6) NACHWEISE JE INVARIANTE DER SETZUNG P13.6-115:
+    · Gegenstand (keine Rolle ausser dem Server schreibt eine server-eigene Spalte): live M3 (S,
+      K, D je 403/`42501`); Probe M2 (3) und (4); Tests MIG-1 bis MIG-5 über den Migrationstext.
+    · (1) Speichern, Veröffentlichen, A/B, Kill-Switch, Zugangsdaten, Domains funktionieren:
+      live D2 und M4; SR-A1 bis SR-A6, SR-P1 bis SR-P5. Der Domain-Status ist in M4 NICHT
+      gemeldet.
+    · (2) RLS bleibt aktiv, keine Policy gelockert: gelöscht sind allein Schreib-Policies (M2
+      (9)); relrowsecurity ist VOR 0031 gemessen (D1 (2)), danach nicht übermittelt.
+    · (3) `/api/e`, `/api/f`, Ingest, Relay, Serve-Route unberührt: der Scope des Code-Commits,
+      Punkt (5); kein eigener Test.
+    · (4) Kein ausgelieferter Text ändert sich: Punkt (4), erster Unterpunkt.
+    · (5) Code vor Migration: D2 (neuer Code, alte Rechte) lief vor M1. Ein Deploy-Zeitstempel ist
+      nicht übermittelt; die Reihenfolge folgt aus der Folge der Durchgänge (OWNER-ANGABE).
+
+(7) ABWEICHUNGEN, im Bau deklariert und hier nur benannt: die Klammer `begin`/`commit` und der
+    Prüfblock am Ende von 0031 · das Spalten-UPDATE allein an authenticated · `publishProject`
+    erzeugt den Admin-Client lazy nach dem Gate · actions.targets.test.ts berührt · ein
+    abgebrochener Heredoc-Anhang ohne Schreibwirkung, danach `cat >>` aus dem Scratchpad, Byte-
+    Kontrolle ohne Befund.
+
+(8) GRENZEN, als Grenzen benannt:
+    · TRUNCATE, REFERENCES, TRIGGER und MAINTAIN bleiben für anon und authenticated auf allen drei
+      Tabellen (GEMESSEN, M2 (3)). Dass sie über PostgREST nicht auslösbar sind, ist ANGABE DES
+      AUFTRAGS; der Bestand trägt dazu allein einen Nicht-Treffer mit benannter Reichweite (Vorrat
+      P13.6-129, ergänzt in diesem Commit).
+    · Der Kill-Switch wirkt je Projekt; ein gesperrter Betreiber umgeht ihn mit einem neu
+      angelegten Projekt (Vorrat P13.6-121).
+    · Gelöschte Labels sind wieder vergebbar; das Grabstein-Modell ist offen (Vorrat P13.6-126).
+    · Nur Chrome.
+    · Nicht übermittelt: Abfrage (8) der Probe in beiden Läufen; die Vercel-Logs auf `42501` (M5
+      des Live-Entwurfs); der Domain-Status in M4.
+    · Die Lücke war vom 2026-10-01 bis zum Einspielen von 0031 über PostgREST offen, wie seit
+      jeher; ob sie je genutzt wurde, ist nicht erhoben. Heute benutzt niemand ausser dem Owner
+      das Produkt (CLAUDE.md, "## Modus").
+
+(9) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN — mit der Scheibe abgelaufen: im Kopf
+    der Satz "ZUGESCHNITTEN AM 2026-10-01 (ARCHITEKT); DER PLAN FOLGT IM BERICHT DERSELBEN RUNDE,
+    NICHT IN DIESER DATEI." samt seinen drei Nachträgen vom selben Tag — ersetzt durch die
+    Abschluss-Zeile. Worauf die Nachträge zeigten, steht unverändert: der Plan als Vermerk
+    P13.6-116, die Gestalt als Setzung P13.6-117, die Anbieter-Lesung in docs/plattform-befunde.md
+    (Supabase, LAUF 5, Teile (bd) bis (bk); Doku-Commit `38f502f`), die Bau-Entscheidungen als
+    P13.6-123, P13.6-124 und P13.6-125. Sonst ist nichts abgelaufen: Die übrigen Anweisungen des
+    Zuschnitts sind Teile bindender Einträge und tragen einen Nachtrag statt einer Streichung.
+    STEHEN GEBLIEBEN: Setzung P13.6-115, Vermerk P13.6-116, Setzung P13.6-117, Vermerk P13.6-118,
+    Owner-Entscheidungen P13.6-119, P13.6-120, P13.6-123, Owner-Angabe P13.6-124, Setzung
+    P13.6-125, Owner-Entscheidung P13.6-128. BINDEND bleiben P13.6-115, P13.6-117, P13.6-119,
+    P13.6-120, P13.6-123, P13.6-124, P13.6-125 und P13.6-128.
+    BEWUSST NICHT FESTGEHALTEN: der Ablauf der Live-Durchgänge über das in Punkt (0) bis (4)
+    Verdichtete hinaus — an ihm hängt keine spätere Handlung.
+
+(10) NACHGEZOGEN IN DIESEM COMMIT: Setzung P13.6-14 (Reihenfolge); Setzungen P13.6-115, P13.6-117,
+    P13.6-125, Owner-Entscheidungen P13.6-119 (vollzogen), P13.6-123, P13.6-128 (umgesetzt);
+    Vermerke P13.6-112, P13.6-116, P13.6-118; Arbeit P13.6-113 (erledigt); Vorrat P13.6-127
+    (erledigt), Vorrat P13.6-129 (MAINTAIN und die Messung). Ausserhalb dieser Datei: die
+    Dauerregel "GRANTS SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT" (Kern und
+    Herleitung, Owner-Entscheidung P13.6-119); in der Herleitung der geprüfte Beleg der Dauerregel
+    "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI" und die Auflösung des gemeldeten Punktes an "DIE
+    domains-ZEILE IST DIE ALLEINIGE WAHRHEIT …"; der Kill-Switch in beiden Fassungen des
+    Sicherheits-Manifests (der Zusatz vom 2026-10-01 ist durch die Sachkorrektur "Lücke
+    geschlossen" ersetzt); docs/db-stand.md (Migrationsstand, Policies, Rollen-Grants,
+    Spaltenrechte). NICHT geändert, gemeldet im Bericht der Runde: docs/plattform-befunde.md,
+    Teil (bk); docs/offene-punkte.md, "DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026" und
+    "DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT"; die Roadmap-Zeile 13.6.
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -4155,6 +4343,11 @@ keine Zeile Code.
     die Postgres-Ebene (Dauerregel "EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE
     ANDERE SCHICHT NICHT SCHLIESSEN"). docs/db-stand.md ist NICHT nachgezogen (Scope dieses
     Commits); die Spalten-Rechte stehen dort bisher nicht.
+    NACHGETRAGEN 2026-10-01 (Abschluss der Scheibe "Spaltenrechte"): Der Schreibweg über
+    PostgREST mit echter Sitzung ist ausgeführt — VOR 0031 nahm ein PATCH auf `blocked_at`,
+    `tracking_key` und `domains.label` je an (200, 1 Zeile), DANACH je 403 mit `42501`. Das ist der
+    PostgREST-Beleg für Punkt (1) und zugleich der Beleg seiner Behebung. docs/db-stand.md ist
+    nachgezogen. Vermerk P13.6-130, Punkte (1) bis (3).
 
 **Arbeit P13.6-113 — SICHERHEITS-SCHEIBE "SPALTENRECHTE": HÖCHSTE DRINGLICHKEIT, ALS NÄCHSTE NACH
 DER SCHEIBE "BEACON BEI ERSTVERÖFFENTLICHUNG", VOR ALLEM ANDEREN IN 13.6** (ARCHITEKT 2026-10-01).
@@ -4179,6 +4372,8 @@ DER SCHEIBE "BEACON BEI ERSTVERÖFFENTLICHUNG", VOR ALLEM ANDEREN IN 13.6** (ARC
   Spaltenrechte"); der Plan steht im Bericht jener Runde.
 - PLAN UND GESTALT FESTGEHALTEN 2026-10-01: Vermerk P13.6-116 (Plan), Setzung P13.6-117 (Gestalt
   (a)), Owner-Entscheidungen P13.6-119 und P13.6-120 der Phase 13.6.
+- ERLEDIGT 2026-10-01: Code-Commit `6f66c44`, Migration 0031 eingespielt, Live-Test bestanden
+  (nur Chrome) — Vermerk P13.6-130 der Phase 13.6. Die Sätze darüber beschreiben den Stand davor.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -4824,6 +5019,7 @@ P13.6-123 NICHT MEHR.**
 - ENTSCHIEDEN 2026-10-01: Owner-Entscheidung P13.6-128 der Phase 13.6 (der neue Wortlaut); der
   Bau kommt im Code-Commit der Scheibe "Spaltenrechte". Die Sätze darüber beschreiben den Stand
   davor.
+- ERLEDIGT 2026-10-01: Code-Commit `6f66c44` — Vermerk P13.6-130 der Phase 13.6, Punkt (4).
 
 PROVENIENZ von P13.6-129: OWNER-AUFTRAG 2026-10-01, Runde "Spaltenrechte — Code-Teil" (Teil A);
 der Befund aus dem Bau-Bericht derselben Scheibe (CC). Wo "(CC)" steht, hat CC die Angabe am
@@ -4844,3 +5040,19 @@ IN public PRÜFEN UND ENTZIEHEN.**
   ALLE Tabellen in public ist die Abfrage zu erweitern.
 - ZIEL: Phase 13.7 (Roadmap-Zeile 13.7).
 - AUSSER SCOPE der Scheibe "Spaltenrechte".
+- ERGÄNZT 2026-10-01 (Abschluss der Scheibe "Spaltenrechte") — EIN VIERTES RECHT UND DIE MESSUNG.
+  Titel und Text darüber bleiben stehen; der Satz "NICHT gemessen" gilt für die drei Tabellen der
+  Scheibe nicht mehr.
+  · GEMESSEN (Owner, SQL-Editor, Abfrage (3) der Probe, Katalog-ACL): VOR 0031 trugen anon und
+    authenticated auf `projects`, `domains` und `project_tokens` je `arwdDxtm`, Grantor
+    `postgres`. NACH 0031: auf `domains` und `project_tokens` je `rDxtm`, auf `projects` `rdDxtm`
+    (Vermerk P13.6-130, Punkte (2) und (3)).
+  · GELESEN 2026-10-01 (CC, postgresql.org/docs/17/ddl-priv.html, Tabelle 5.1 "ACL Privilege
+    Abbreviations"): `D` TRUNCATE · `x` REFERENCES · `t` TRIGGER · `m` MAINTAIN. Neben den drei
+    im Titel genannten Rechten bleibt damit auch MAINTAIN für anon und authenticated stehen.
+  · Abfrage (8) — die Matrix je Spalte — ist in keinem der beiden Läufe übermittelt; gemessen sind
+    die Rechte auf Tabellen-Ebene aus (3). Über die Tabellen ausserhalb der Scheibe sagt die
+    Messung nichts.
+  · "Über PostgREST nicht auslösbar" bleibt ANGABE DES AUFTRAGS (Abschluss-Runde 2026-10-01);
+    der Bestand trägt dazu weiterhin allein den Nicht-Treffer mit der Reichweite darüber, und für
+    MAINTAIN keinen.

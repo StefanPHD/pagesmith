@@ -589,12 +589,15 @@ einen setzen will, setzt ihn in BEIDEN Fassungen im selben Commit.
   Verwurf VOR Token-Lookup, spart die Token-Query). Migration 0008, Serve-Resolver auf
   ServeResult-Union (ok/blocked/notfound). BINDET-AN: Serving existiert (7a/7c-1) ->
   erledigt, vor erstem Fremd-Traffic.
-  ZUSATZ 2026-10-01 — STATUS UND BINDET-AN BLEIBEN UNVERÄNDERT: Die Sperre ist über PostgREST
-  vom Betreiber des gesperrten Projekts SELBST AUFHEBBAR. blocked_at ist für authenticated frei
-  schreibbar (has_column_privilege true, GEMESSEN Owner 2026-10-01, Probe P-G2a); die
-  Update-Policy prüft allein auth.uid() = user_id, kein Trigger schützt die Spalte. Der
-  Schreibweg mit echter Sitzung ist NICHT ausgeführt. Behebung: Arbeit P13.6-113 der Phase
-  13.6 (Sicherheits-Scheibe "Spaltenrechte"); Befund: Vermerk P13.6-112 der Phase 13.6.
+  SELBST-ENTSPERRUNG GESCHLOSSEN 2026-10-01 (Migration 0031) — STATUS UND BINDET-AN BLEIBEN
+  UNVERÄNDERT: blocked_at war für den Betreiber des gesperrten Projekts über PostgREST frei
+  schreibbar (vor 0031 PATCH mit echter Sitzung 200, 1 Zeile). Seit 0031 darf authenticated
+  auf projects nur sieben client-eigene Spalten ändern; ein PATCH auf blocked_at antwortet mit
+  Sitzung 403, ohne 401, je 42501 (GEMESSEN Owner 2026-10-01, PostgREST). domains schreiben
+  anon und authenticated gar nicht mehr. Das Runbook läuft als postgres und ist unberührt
+  (nach 0031 live gesperrt und entsperrt). Weiter offen: ein gesperrter Betreiber umgeht die
+  Sperre mit einem NEUEN Projekt (Vorrat P13.6-121 der Phase 13.6). Befund und Abschluss:
+  Vermerke P13.6-112 und P13.6-130 der Phase 13.6.
 - KILL-SWITCH — LEKTION (Manifest, nicht nur Chat): identischer HTTP-Status bei /api/e ist
   HIER bewusstes Sicherheitsdesign (Sperre von "unbekannter Key" nicht unterscheidbar),
   KEIN Testfehler. Verifikation dieses Pfades MUSS über die NACHGELAGERTE Wirkung laufen

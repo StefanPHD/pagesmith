@@ -132,6 +132,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 13.5 — Medien
 - [ ] Phase 13.6 — Formular-Relay (Lead-Relay)
 - [ ] Phase 13.7 — Sicherheit & Datenintegrität
+- [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out)
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
 - [ ] Phase 15 — Public-Launch-Restarbeit (Tier 0)
 - [ ] Phase 16 — Analytics-Vertiefung (Uniques, Traffic-Health-Metriken)

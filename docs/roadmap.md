@@ -2466,6 +2466,9 @@ liegen beide hier und finden einander.
       (OWNER-ENTSCHEIDUNG 2026-09-29): Zwischen 13 und 13.5 tritt die Zeile 13.6
       (Formular-Relay). Der Satz "13 -> 13.5 -> 12" darüber bleibt als Stand vom 2026-09-28
       stehen.
+      NACHGETRAGEN 2026-10-01 — NACH DEM PHASENENDE 13.6 KOMMT 13.7 ZUERST (OWNER-ENTSCHEIDUNG
+      2026-10-01); daraus (CC) 13.6 -> 13.7 -> 13.5 -> 12. Diese Phase folgt weiter auf 13.5.
+      Wo die neue Zeile 13.8 steht, ist NICHT ENTSCHIEDEN (dort).
 - [x] Phase 13 — Formular-Ziel mit Danke-Seite: ABGESCHLOSSEN (2026-09-28 bis 2026-09-29).
       Angelegt als "E-Mail-/ESP-Webhooks"; Titel OWNER-ENTSCHEIDUNG 2026-09-29. ZWEI Scheiben, je
       mit bestätigtem Live-Test: 13-1 — ein Formular, das der Betreiber im Tool mit einem Ziel
@@ -2623,6 +2626,11 @@ liegen beide hier und finden einander.
       Der Satz "REIHENFOLGE DES BAUS" oben bleibt als Stand vom 2026-09-28 stehen. Eine Grenze
       der Zeile 13.6 kann eine weitere Phase direkt nach 13.6 und vor diese setzen (dort,
       "ANPASSUNGEN AN DEN FAN-OUT-ZIELEN").
+      NACHGETRAGEN 2026-10-01 — ZWEI OWNER-ENTSCHEIDUNGEN VOM 2026-10-01: (1) Nach dem
+      Phasenende 13.6 kommt 13.7 zuerst; daraus (CC) 13.6 -> 13.7 -> 13.5 -> 12. (2) Die
+      Fan-Out-Anpassungen, auf die der Satz darüber zeigt, sind die eigene Phase 13.8; ob sie
+      vor oder nach dieser Phase steht, ist NICHT ENTSCHIEDEN (Zeile 13.8). Der Satz über die
+      Grenze der Zeile 13.6 bleibt als Stand vom 2026-09-29 stehen.
 - [ ] Phase 13.6 — Formular-Relay (Lead-Relay): Formulardaten laufen flüchtig durch unseren
       Server und werden an den Empfänger weitergereicht — native Anbindungen per Klick (Brevo,
       Mailchimp, KlickTipp …) mit echter Erfolgs- und Fehlerrückmeldung, ohne dass der Nutzer
@@ -2672,13 +2680,16 @@ liegen beide hier und finden einander.
       Aufklärung · "Pagesmith wird kein Versender" bleibt — das Relay leitet weiter, es
       versendet nicht · vor dem ersten zahlenden Kunden eine einmalige anwaltliche Prüfung und
       eine AVV-Vorlage (Architekten-Empfehlung, keine juristische Aussage).
-      ANPASSUNGEN AN DEN FAN-OUT-ZIELEN (ARCHITEKT 2026-09-29, vom Owner delegiert): Was aus dem
-      Relay an den Zielen folgt — etwa ein Lead-Ereignis mit gehashter E-Mail als Match-Feld —,
-      ist eine EIGENE, SPÄTE Scheibe dieser Phase. GRUND: Es hängt an derselben Neufassung der
-      Datenklassen-Regel; Entscheidung P13-7 verbietet heute Formularinhalte an ein Ziel.
-      GRENZE: Zeigt die Aufklärung dieser Phase, dass die Anpassungen alle Adapter-Nutzlasten
-      oder den Ingest-Pfad /api/e berühren, werden sie als eigene Phase direkt nach 13.6
-      geschnitten, vor 13.5. Entschieden wird am Ende jener Aufklärung.
+      ANPASSUNGEN AN DEN FAN-OUT-ZIELEN — UMGEZOGEN AM 2026-10-01 AN DIE ZEILE 13.8
+      ("Lead-Ereignis vom Server (Fan-Out)"). Hier stand die Setzung des Architekten vom
+      2026-09-29 (vom Owner delegiert): Was aus dem Relay an den Zielen folgt — etwa ein
+      Lead-Ereignis mit gehashter E-Mail als Match-Feld — sei eine eigene, späte Scheibe dieser
+      Phase, mit der GRENZE, sie als eigene Phase direkt nach 13.6 zu schneiden, falls sie alle
+      Adapter-Nutzlasten oder den Ingest-Pfad /api/e berührt. Die Scheibe hat diese Phase
+      verlassen und ist eine eigene Phase (OWNER-ENTSCHEIDUNG 2026-10-01); Volltext, Grund und
+      Grenze stehen seither an der Zeile 13.8. Ein Zeiger auf diesen Block landet dort. Punkt (6)
+      des FAHRPLAN-ENTWURFS darüber ("Lead-Ereignis mit gehashter E-Mail") ist derselbe
+      Gegenstand und bleibt als Entwurf stehen.
       PRÜFLISTE FÜR DIE AUFKLÄRUNG (Phasenende 13, 2026-09-29) — was ein Relay-Weg berührt:
       · die GRENZE der Setzung P13-6 der Phase 13, "Die Neubewertung kippt, sobald ein Weg über
         unseren Server gewählt wird" (docs/offene-punkte.md, "DER PRIMÄRSCHLÜSSEL (project_id,
@@ -2721,6 +2732,13 @@ liegen beide hier und finden einander.
         Nutzer erst freigeschaltet, wenn ein Kunden-AVV steht; bis dahin baut und testet der
         Owner selbst. Owner-Entscheidung P13.6-18 der Phase 13.6.
       Fundort: Standdatei der Phase 13.6 (docs/aktiver-stand.md).
+      NACHGETRAGEN 2026-10-01 — ZWEI OWNER-ENTSCHEIDUNGEN VOM 2026-10-01 (per Auswahl im Chat):
+      · Die Fan-Out-Scheibe verlässt diese Phase und wird die eigene Phase 13.8 (Block
+        "ANPASSUNGEN AN DEN FAN-OUT-ZIELEN" darüber).
+      · NACH DEM PHASENENDE DIESER PHASE KOMMT PHASE 13.7 ZUERST. Daraus (CC): 13.6 -> 13.7 ->
+        13.5 -> 12; 13.5 -> 12 bleibt untereinander unverändert. Der Satz "REIHENFOLGE DES BAUS:
+        diese Phase -> 13.5 -> 12" oben bleibt als Stand vom 2026-09-29 stehen. Wo 13.8 darin
+        steht, ist NICHT ENTSCHIEDEN (Zeile 13.8).
 - [ ] Phase 13.7 — Sicherheit & Datenintegrität: VOR DEM ERSTEN FREMDEN NUTZER BZW. VOR DEM
       LAUNCH wird das Produkt gegen ein ausdrückliches Bedrohungsmodell geprüft — erst das
       Modell, dann das Repo systematisch dagegen. ANGELEGT am 2026-10-01; Gegenstand und
@@ -2771,6 +2789,62 @@ liegen beide hier und finden einander.
       2026-10-01; Nummer und Position nach der Hausform dieser Datei (CC, 2026-10-01); die
       Berührung mit 14 und 15 und der Bezug zum Plan-Gate sind CC-Einordnungen, keine
       Entscheidungen.
+      NACHGETRAGEN 2026-10-01 — DIE STELLE IN DER REIHENFOLGE IST ENTSCHIEDEN: Nach dem
+      Phasenende 13.6 kommt diese Phase zuerst (OWNER-ENTSCHEIDUNG 2026-10-01, per Auswahl im
+      Chat); daraus (CC) 13.6 -> 13.7 -> 13.5 -> 12. Der Satz "wo die Phase darin steht, ist
+      NICHT ENTSCHIEDEN" darüber beschreibt den Stand davor.
+- [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out): Aus einem Formular, das über das Relay
+      der Phase 13.6 zugestellt wird, erzeugt der Server das Lead-Ereignis für die
+      Fan-Out-Ziele — etwa mit einer gehashten E-Mail als Match-Feld. ANGELEGT am 2026-10-01.
+      HERKUNFT (OWNER-ENTSCHEIDUNG 2026-10-01, per Auswahl im Chat): Die Fan-Out-Scheibe
+      verlässt Phase 13.6 und wird eine eigene Phase. Nummer und Titel sind
+      ARCHITEKTEN-SETZUNG 2026-10-01, REVIDIERBAR.
+      DER GEGENSTAND, AUS DER ZEILE 13.6 ÜBERNOMMEN (dort Block "ANPASSUNGEN AN DEN
+      FAN-OUT-ZIELEN", ARCHITEKT 2026-09-29, vom Owner delegiert): Was aus dem Relay an den
+      Zielen folgt — etwa ein Lead-Ereignis mit gehashter E-Mail als Match-Feld. GRUND der
+      Abtrennung damals: Es hängt an der Neufassung der Datenklassen-Regel; Entscheidung P13-7
+      der Phase 13 verbot Formularinhalte an ein Ziel. Die damalige GRENZE ("Zeigt die
+      Aufklärung dieser Phase, dass die Anpassungen alle Adapter-Nutzlasten oder den
+      Ingest-Pfad /api/e berühren, werden sie als eigene Phase direkt nach 13.6 geschnitten,
+      vor 13.5.") ist durch die Owner-Entscheidung zur eigenen Phase erledigt; ihr "vor 13.5"
+      ist NICHT übernommen.
+      NICHT ENTSCHIEDEN (OWNER, 2026-10-01):
+      · WO DIESE PHASE IN DER REIHENFOLGE STEHT — gegenüber 13.5, 12 und den
+        1-Klick-Empfängern. Fest steht allein: Nach dem Phasenende 13.6 kommt 13.7 zuerst. DIE
+        NUMMER TRÄGT KEINE REIHENFOLGE DES BAUS (Eintrag 11.10, Punkt (d)).
+      · OB EINE GEHASHTE E-MAIL AN DIE ZIELE GEHT — OWNER-FRAGE, OFFEN. Für den Relay-Weg gilt
+        die Neufassung der Datenklassen-Regel: Formularinhalte gehen "nie an ein
+        Tracking-Ziel", und ob eine gehashte E-Mail als Match-Feld an Tracking-Ziele gehen
+        darf, ist dort ausdrücklich NICHT ENTSCHIEDEN (Owner-Entscheidung P13.6-16 der Phase
+        13.6; docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE",
+        Ergänzung vom 2026-09-29). Für Tracking-Merkmale gilt dort die Auflage vom 2026-08-19
+        unverändert.
+      AUS DEM VORRAT DER PHASE 13.6 HIERHER GEZOGEN — Vorrat P13.6-46 der Phase 13.6
+      (2026-09-29; Standdatei der Phase 13.6, docs/aktiver-stand.md); sein Trigger war der
+      Zuschnitt dieser Scheibe. METAS AUTOMATISCHE EREIGNISSE SIND AKTIV; OB DER AUTOMATISCHE
+      ERWEITERTE ABGLEICH FORMULARFELDER ÜBER UNSEREN PIXEL AN META SENDET, IST OFFEN.
+      · GEMESSEN (OWNER, live, 2026-09-29, in der Vorschau vor dem Deploy der Scheibe 13.6-2):
+        Nach einem Track-Klick sandte `fbevents.js` neben "Lead" von sich aus ein Ereignis
+        "SubscribedButtonClick" (Vermerk P13.6-45 der Phase 13.6, Punkt (2)). Die automatischen
+        Ereignisse des Pixels sind damit für diese Pixel-ID aktiv.
+      · OFFEN, ABGELEITET — NICHT GEMESSEN, NICHT GELESEN: Ist Metas automatischer erweiterter
+        Abgleich eingeschaltet, liest `fbevents.js` Formularfelder (etwa eine E-Mail) und
+        sendet sie gehasht an Meta — über den Pixel, den wir auf veröffentlichten Seiten laden
+        (Lader in `__psMetaInit`, src/lib/tracking/meta.ts). Unser Code hasht und sendet selbst
+        keine E-Mail (Vermerk P13.6-1 der Phase 13.6, Punkt (3)); dieser Weg liefe allein über
+        Metas Skript, seit der Scheibe 13.6-2 nur noch auf veröffentlichten Seiten und Exporten.
+      · BEZUG: Entscheidung P13-7 der Phase 13; die offene Owner-Frage darüber.
+      · TRIGGER: der Zuschnitt dieser Phase. KEINE HANDLUNG VORHER.
+      WAS DIESE PHASE VORFINDET (Zeiger, CC, 2026-10-01; Standdatei der Phase 13.6,
+      docs/aktiver-stand.md): Vermerk P13.6-1, Punkte (8) bis (10) — die eventID entsteht im
+      Browser, wo das Einwilligungs-Urteil sitzt, die Dedup-Kandidaten K1 bis K3 · Setzungen
+      P13.6-4 und P13.6-24 — ein serverseitig erzeugtes Ereignis trägt nie ein fehlendes
+      Einwilligungsfeld, sondern das Urteil aus dem Browser · das Relay selbst (`handleRelay`,
+      src/lib/relay/relay.ts), das nach Owner-Entscheidung P13.6-16 weder `/api/e` noch ein
+      Tracking-Ziel berührt.
+      PROVENIENZ: Abtrennung und die zwei offenen Fragen OWNER 2026-10-01; Nummer und Titel
+      ARCHITEKT 2026-10-01; der Gegenstand aus der Zeile 13.6 (ARCHITEKT 2026-09-29); Vorrat
+      P13.6-46 verdichtet übernommen, nicht zeichengleich.
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in

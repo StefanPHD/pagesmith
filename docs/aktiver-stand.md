@@ -4736,6 +4736,10 @@ ABGLEICH FORMULARFELDER ÜBER UNSEREN PIXEL AN META SENDET, IST OFFEN** (2026-09
   veröffentlichte Seiten und Exporte.
 - TRIGGER: der Zuschnitt der Fan-Out-Scheibe (Roadmap-Zeile 13.6, Block "ANPASSUNGEN AN DEN
   FAN-OUT-ZIELEN"). KEINE HANDLUNG JETZT.
+- GEZOGEN 2026-10-01 AN DIE ROADMAP-ZEILE 13.8 ("Lead-Ereignis vom Server (Fan-Out)",
+  docs/roadmap.md): Die Fan-Out-Scheibe ist eine eigene Phase (OWNER-ENTSCHEIDUNG 2026-10-01).
+  Der Eintrag steht dort verdichtet, sein Trigger ist der Zuschnitt der Phase 13.8. Die Sätze
+  darüber beschreiben den Stand davor.
 
 **Vorrat P13.6-69 — "ZIEL ÜBERNEHMEN" IM FORMULAR-ZIEL-PANEL SERIALISIERT DEN CODE DES PROJEKTS
 NEU; STEHT ER NICHT IN NORMALFORM, WIRD DAS PROJEKT DIRTY, AUCH OHNE INHALTLICHE ÄNDERUNG**

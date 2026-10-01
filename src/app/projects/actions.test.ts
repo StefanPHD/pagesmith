@@ -1,3 +1,5 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 // Den authenticated-SSR-Client (next/headers) komplett mocken: verhindert echten
@@ -85,6 +87,8 @@ function makeClient(opts: {
   const rec = {
     selectCols: [] as { table: string; cols: string }[],
     updatePatch: null as unknown,
+    // Scheibe "Beacon bei Erstveroeffentlichung": die Zeile des INSERT-Zweigs von saveProject.
+    insertRow: null as unknown,
     fromTables: [] as string[],
   };
 
@@ -103,6 +107,26 @@ function makeClient(opts: {
       rec.updatePatch = patch;
       awaited = results[`${table}.update`] ?? { error: null };
       return b;
+    });
+    // INSERT-Kette (saveProject ohne projectId): .insert(row).select(cols).single().
+    // OHNE eigenes Ergebnis ANTWORTET DIE ATTRAPPE WIE DIE DATENBANK: Sie gibt die
+    // geschriebene Zeile zurueck, aber NUR in den Spalten, die select() verlangt hat, dazu
+    // eine feste id. Ein Wert, den der Code nicht zurueckliest, kommt also auch hier nicht
+    // zurueck (Mutation M6).
+    b.insert = vi.fn((row: unknown) => {
+      rec.insertRow = row;
+      return b;
+    });
+    b.single = vi.fn(async () => {
+      const own = results[`${table}.insert`];
+      if (own) return own;
+      const cols = (rec.selectCols.filter((s) => s.table === table).at(-1)?.cols ?? "")
+        .split(",")
+        .map((c) => c.trim());
+      const row = (rec.insertRow ?? {}) as Record<string, unknown>;
+      const data: Record<string, unknown> = {};
+      for (const c of cols) data[c] = c === "id" ? "new-id" : row[c];
+      return { data, error: null };
     });
     // Thenable -> `await supabase.from(t).update(...).eq()...`.
     b.then = (onF: (v: unknown) => unknown) => onF(awaited);
@@ -557,6 +581,8 @@ describe("saveProject — Durability-Kontrast (Scheibe 2b-0)", () => {
     expect(patch).toHaveProperty("updated_at");
     // Der STRUKTURELLE Grund, warum die server-autoritative Spalte den Save ueberlebt:
     // sie steht nicht im Payload -> ein UPDATE laesst nicht-gelistete Spalten unberuehrt.
+    // DAS GILT DEM UPDATE-ZWEIG. Der INSERT-Zweig legt den Schluessel seit der Scheibe
+    // "Beacon bei Erstveroeffentlichung" (Phase 13.6) an — Laeufe S-INS weiter unten.
     expect(patch).not.toHaveProperty("tracking_key");
   });
 
@@ -579,8 +605,134 @@ describe("saveProject — Durability-Kontrast (Scheibe 2b-0)", () => {
     } & Record<string, unknown>;
     // ROT-Beweis "warum nicht settings": das server-Feld ist im geschriebenen settings weg.
     expect(patch.settings.capi?.trackingKey).toBeUndefined();
-    // GRUEN-Beweis "warum Spalte": tracking_key ist im Save-Pfad strukturell unerreichbar.
+    // GRUEN-Beweis "warum Spalte": tracking_key ist im UPDATE-Zweig des Save-Pfads
+    // strukturell unerreichbar. (Der INSERT-Zweig schreibt ihn beim Anlegen — S-INS.)
     expect(patch).not.toHaveProperty("tracking_key");
+  });
+});
+
+// ===========================================================================
+// SCHEIBE "BEACON BEI ERSTVEROEFFENTLICHUNG" (Phase 13.6; Setzung P13.6-109, Gestalt (a1);
+// Owner-Entscheidung P13.6-110). Der Insert-Zweig von saveProject legt den Schluessel an
+// und liefert den ZURUECKGELESENEN Wert. Die Editor-Haelfte pruefen BE-1, BE-PIN und
+// BE-PIN-2 in src/components/CodeImporter.test.tsx.
+// ===========================================================================
+describe("saveProject — der Insert-Zweig legt den Schluessel an (Beacon bei Erstveroeffentlichung)", () => {
+  // Die Form, die ensureTrackingKey(null) erzeugt (crypto.randomUUID, Version 4). GETIPPT
+  // aus der Erzeugungsfunktion, nicht aus einem Ist-Wert.
+  const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
+  it("S-INS-1: der Insert traegt tracking_key, liest ihn zurueck, und das Ergebnis traegt GENAU diesen Wert", async () => {
+    // WIRD ROT, WENN der Insert keinen Schluessel schreibt (M4), der Rueckgabewert nicht der
+    // geschriebene ist — etwa ein zweiter Erzeuger statt der Uebergabe (M3) —, oder select den
+    // Schluessel nicht zurueckliest (M6; die Attrappe antwortet nur in den verlangten Spalten).
+    const { rec } = makeClient({ user: { id: "user-1" } });
+
+    const res = await saveProject(null, "<h1>neu</h1>", [], {});
+
+    const row = rec.insertRow as Record<string, unknown>;
+    expect(row.user_id).toBe("user-1");
+    expect(typeof row.tracking_key).toBe("string");
+    expect(row.tracking_key as string).toMatch(UUID_V4);
+    // ZURUECKGELESEN: die Spalten des select, wortgleich aus der Setzung.
+    expect(rec.selectCols.at(-1)).toEqual({ table: "projects", cols: "id,tracking_key" });
+    expect(res).toEqual({ ok: true, id: "new-id", trackingKey: row.tracking_key });
+  });
+
+  it("S-INS-2: zwei Inserts -> zwei verschiedene Schluessel (kein fester Wert)", async () => {
+    // WIRD ROT, WENN der Insert einen festen Wert schreibt; zwei Projekte mit demselben
+    // Schluessel schlueegen am eindeutigen Index fehl (projects_tracking_key_key).
+    const a = makeClient({ user: { id: "user-1" } });
+    const resA = await saveProject(null, "<h1>a</h1>", [], {});
+    const keyA = (a.rec.insertRow as Record<string, unknown>).tracking_key;
+    const b = makeClient({ user: { id: "user-1" } });
+    const resB = await saveProject(null, "<h1>b</h1>", [], {});
+    const keyB = (b.rec.insertRow as Record<string, unknown>).tracking_key;
+    expect(keyA).not.toBe(keyB);
+    expect(resA.ok && resA.trackingKey).toBe(keyA);
+    expect(resB.ok && resB.trackingKey).toBe(keyB);
+  });
+
+  it("S-INS-3: der Update-Zweig liefert KEINEN Schluessel (der Client laesst seinen Zustand stehen)", async () => {
+    // Gegenrichtung zu S-INS-1. WIRD ROT, WENN der Update-Zweig anfaengt, einen Schluessel
+    // zu liefern oder zu schreiben — dann muesste BE-PIN-2 neu bewertet werden.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: { id: "proj-1" }, error: null } },
+    });
+    const res = await saveProject("proj-1", "<h1>x</h1>", [], {});
+    expect(res).toEqual({ ok: true, id: "proj-1" });
+    expect(rec.insertRow).toBeNull();
+    expect(rec.updatePatch).not.toHaveProperty("tracking_key");
+  });
+
+  // W-INV4 — QUELLTEXT-WAECHTER FUER INVARIANTE (4) DER SETZUNG P13.6-107: kein zweiter Weg
+  // zur Schluessel-Erzeugung.
+  // SEINE GRENZE, AN IHM SELBST: Er sieht Zeichen, nicht Bedeutung. Eine Erwaehnung von
+  // "tracking_key:" in einem Kommentar zaehlt als Schreibstelle — er irrt in die STRENGE
+  // Richtung (Dauerregel "EIN WAECHTER UEBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG …").
+  // Er erfasst den Pfad der Spalte unter src/ und supabase/migrations/, keine
+  // Datenaenderung von Hand im SQL-Editor.
+  it("W-INV4: tracking_key wird in src/ allein in actions.ts geschrieben, nur aus ensureTrackingKey; crypto.randomUUID steht allein in ensureTrackingKey; keine Migration setzt einen Default", () => {
+    const root = process.cwd();
+    // (a) DIE SCHREIBSTELLEN. ERWARTUNG GETIPPT aus der Setzung: setCapiToken und
+    //     publishProject schreiben den Wert aus ensureTrackingKey, der Insert-Zweig
+    //     ensureTrackingKey(null) — drei Stellen, eine Datei.
+    const srcFiles = (readdirSync(join(root, "src"), { recursive: true }) as string[])
+      .filter((f) => /\.(ts|tsx)$/.test(f) && !/\.test\.(ts|tsx)$/.test(f));
+    const writes: string[] = [];
+    for (const f of srcFiles) {
+      const text = readFileSync(join(root, "src", f), "utf8");
+      for (const m of text.matchAll(/tracking_key\s*:\s*([^,\n}]+)/g)) {
+        const value = m[1].trim();
+        if (value.startsWith("string")) continue; // die Typangabe in ProjectRow
+        writes.push(`${f.replace(/\\/g, "/")} = ${value}`);
+      }
+    }
+    expect(writes.sort()).toEqual(
+      [
+        "app/projects/actions.ts = ensureTrackingKey(null)",
+        "app/projects/actions.ts = trackingKey",
+        "app/projects/actions.ts = trackingKey",
+      ].sort(),
+    );
+    // Die zwei "trackingKey" stammen aus ensureTrackingKey: jede Zuweisung dieses Namens aus
+    // einer Erzeugung in actions.ts ruft ensureTrackingKey. Die Rueckgabe des Insert-Zweigs
+    // liest den Wert aus der Zeile (data.tracking_key) und erzeugt nichts.
+    const actions = readFileSync(join(root, "src/app/projects/actions.ts"), "utf8");
+    const producers = [...actions.matchAll(/const trackingKey\s*=\s*([^\n;]+)/g)].map((m) =>
+      m[1].trim(),
+    );
+    expect(producers.filter((p) => p.startsWith("ensureTrackingKey(")).length).toBe(2);
+    expect(
+      producers.filter((p) => !p.startsWith("ensureTrackingKey(")),
+    ).toEqual(['typeof data.tracking_key === "string" ? data.tracking_key.trim() : ""']);
+    expect(actions).not.toMatch(/randomUUID|gen_random_uuid/);
+
+    // (b) DER ERZEUGER: crypto.randomUUID() steht in settings.ts genau einmal, und zwar im
+    //     Rumpf von ensureTrackingKey.
+    const settings = readFileSync(join(root, "src/lib/settings.ts"), "utf8");
+    const fn = settings.match(/export function ensureTrackingKey[\s\S]*?\n}/)?.[0] ?? "";
+    expect(fn).toContain("crypto.randomUUID()");
+    expect(settings.split("crypto.randomUUID()").length - 1).toBe(1);
+
+    // (c) KEINE MIGRATION SETZT EINEN DEFAULT AUF tracking_key.
+    const DEFAULT_RE = /tracking_key[^;]*\bdefault\b/i;
+    // POSITIVKONTROLLE: das Muster trifft die Form, die es verbieten soll.
+    expect(
+      DEFAULT_RE.test("alter table public.projects alter column tracking_key set default gen_random_uuid()::text;"),
+    ).toBe(true);
+    const migDir = join(root, "supabase/migrations");
+    const migs = readdirSync(migDir).filter((f) => f.endsWith(".sql"));
+    const mentioning = migs.filter((f) => readFileSync(join(migDir, f), "utf8").includes("tracking_key"));
+    // POSITIVKONTROLLE: die Suche laeuft nicht leer — 0012 legt die Spalte an.
+    expect(mentioning).toContain("0012_project_tracking_key.sql");
+    const withDefault = migs.filter((f) =>
+      readFileSync(join(migDir, f), "utf8")
+        .split(";")
+        .some((stmt) => DEFAULT_RE.test(stmt + ";")),
+    );
+    expect(withDefault).toEqual([]);
   });
 });
 
@@ -617,7 +769,7 @@ describe("Varianten-Slots (Phase 9 Scheibe 9a) — Invariante (ii): der Slot ist
     // Auflage 6: settings ist BEWUSST im Payload (das Einstellungs-Panel ist
     // variant-unabhaengig editierbar und haengt am selben Speichern-Button).
     expect(patch.settings).toEqual({ pixels: { meta: { pixelId: "123" } } });
-    // Server-autoritative Spalten bleiben wie in saveProject unerreichbar.
+    // Server-autoritative Spalten bleiben wie im Update-Zweig von saveProject unerreichbar.
     expect(patch).not.toHaveProperty("tracking_key");
     expect(patch).not.toHaveProperty("published_content");
   });

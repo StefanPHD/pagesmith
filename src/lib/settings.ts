@@ -668,7 +668,9 @@ export function getTrackingKey(settings: ProjectSettings): string {
 // erzeugt ('||' short-circuited -> kein randomUUID bei vorhandenem Key). Bewusst
 // settings-AGNOSTISCH: nimmt den ROHEN Spaltenwert (projects.tracking_key), nicht
 // ProjectSettings — die Spalte ist die Autoritaet, settings nur noch die Client-
-// Einbettung. Geteilt von setCapiToken UND publishProject (eine Implementierung).
+// Einbettung. Geteilt von setCapiToken, publishProject UND dem Insert-Zweig von saveProject
+// (eine Implementierung; der Insert-Zweig ruft sie mit null, seit der Scheibe "Beacon bei
+// Erstveroeffentlichung" der Phase 13.6).
 export function ensureTrackingKey(existing: string | null | undefined): string {
   return existing?.trim() || crypto.randomUUID();
 }

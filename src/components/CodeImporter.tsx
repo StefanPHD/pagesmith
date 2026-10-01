@@ -358,7 +358,9 @@ export default function CodeImporter({
   initialAbTestStartedAt?: string | null;
   // Der oeffentliche Tracking-Schluessel. Aus projects.tracking_key — SERVER-
   // autoritativ, projekt-abgeleitet wie die drei Felder darueber. "" = noch keiner
-  // vergeben (die Identitaet entsteht lazy in setCapiToken bzw. publishProject).
+  // vergeben (seit der Scheibe "Beacon bei Erstveroeffentlichung" entsteht er beim Anlegen
+  // und kommt ueber handleSave hierher; lazy in setCapiToken bzw. publishProject nur noch
+  // fuer Projekte, die vorher angelegt worden sind).
   // NICHT aus settings.capi.trackingKey: den befuellt nur der Meta-Weg, waehrend der
   // Google-Autorisierungs-Fluss allein die Spalte schreibt — s. den Kommentar an
   // ProjectRow.tracking_key (src/app/projects/actions.ts).
@@ -2029,6 +2031,17 @@ export default function CodeImporter({
       setSavedMappings(mappings);
       setSavedSettings(settings);
       setProjectId(result.id);
+      // DER SCHLUESSEL AUS DEM INSERT (Phase 13.6, Scheibe "Beacon bei Erstveroeffentlichung",
+      // Setzung P13.6-109). Der Server legt ihn beim ANLEGEN an und liest ihn zurueck; ohne
+      // diese Zeile truege die erste Veroeffentlichung keinen Conversion-Beacon, bis der Editor
+      // neu geladen wird (Vermerk P13.6-106, live gemessen).
+      // DIESELBE ACHSE WIE IN handleCredentialsSaved, NICHT DIE DER VIER SAAT-PUNKTE: ein
+      // veralteter Zustand IM SELBEN Projekt, kein Leak zwischen Projekten. Er steht am SELBEN
+      // Punkt wie setProjectId und wird mit ihm gerendert; handlePublish laeuft erst danach in
+      // einem eigenen Handler (es bricht ohne projectId ab).
+      // NUR SETZEN, NIE LEEREN: Der Update-Zweig und saveVariantB liefern keinen Schluessel —
+      // ein bekannter Schluessel bleibt dann stehen (Lauf BE-PIN-2).
+      if (result.trackingKey) setTrackingKey(result.trackingKey);
       // ERFOLG ZUERST QUITTIEREN, DANN erst der Folge-Refresh (Invariante iv):
       // stand setSaveStatus("saved") hinter listProjects(), liess ein Wurf DORT den
       // Button haengen, OBWOHL gespeichert wurde. Die Projektliste ist ein

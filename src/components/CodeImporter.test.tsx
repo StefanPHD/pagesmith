@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CONSENT_TEXT_MAX_LENGTH } from "@/lib/settings";
 import {
@@ -4123,6 +4124,163 @@ describe("CodeImporter — der Beacon-Schluessel stammt aus der Spalte, nicht au
     const nachher = await exportDoc();
     expect(nachher).toContain("navigator.sendBeacon(");
     expect(nachher).toContain('"tk-mock"');
+  });
+});
+
+// ===========================================================================
+// SCHEIBE "BEACON BEI ERSTVEROEFFENTLICHUNG" (Phase 13.6; Setzung P13.6-109, Gestalt (a1)).
+// Der Schluessel entsteht im Insert-Zweig von saveProject und kommt ueber das Ergebnis des
+// Speicherns in den Zustand des Editors. Die Server-Haelfte pruefen die Laeufe S-INS in
+// src/app/projects/actions.test.ts; hier steht die Editor-Haelfte.
+// WAS DIESE LAEUFE NICHT LEISTEN: Sie laufen gegen Attrappen der Server-Actions. Dass der
+// Schluessel im deployten Pfad ankommt, zeigt allein der Live-Test.
+// ===========================================================================
+describe("CodeImporter — Beacon bei Erstveroeffentlichung", () => {
+  const BE_HTML =
+    '<!DOCTYPE html><html><head></head><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>';
+  const BE_MAPPINGS = [
+    { elementId: "ps-aaaaaa", type: "track" as const, config: { event: "Lead" } },
+  ];
+  const sha = (s: string) => createHash("sha256").update(s, "utf8").digest("hex");
+
+  // DER PIN FUER INVARIANTE (3) DER SETZUNG P13.6-107: Fuer ein Projekt, dessen Schluessel
+  // schon im Editor bekannt ist, aendert sich der erzeugte Text nicht. Die Werte sind am
+  // UNVERAENDERTEN Code erhoben, vor der ersten Code-Zeile der Scheibe (Stand `a882ae3`),
+  // mit genau dem Render und dem Ablauf des Laufs BE-PIN darunter.
+  const PIN_BYTES = 10770;
+  const PIN_SHA256 = "9723ce7bac67b7e9645db004a545f52fa3f4e7baea26859ca618a532f7e8f471";
+
+  const ORIGINAL_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+  beforeEach(() => {
+    // Wie im Block darueber: ohne die Variable faellt der EXPORT in den fail-loud-Zweig, und
+    // die Verankerung in BE-1 ("vorher kein Beacon") waere aus dem falschen Grund wahr.
+    process.env.NEXT_PUBLIC_APP_URL = "https://app.pagesmith.io";
+  });
+  afterEach(() => {
+    if (ORIGINAL_APP_URL === undefined) delete process.env.NEXT_PUBLIC_APP_URL;
+    else process.env.NEXT_PUBLIC_APP_URL = ORIGINAL_APP_URL;
+  });
+
+  async function exportDoc(): Promise<string> {
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    try {
+      fireEvent.click(
+        screen.getByRole("button", { name: "In Zwischenablage kopieren" }),
+      );
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+      return (writeText.mock.calls[0] as unknown[])[0] as string;
+    } finally {
+      delete (navigator as { clipboard?: unknown }).clipboard;
+    }
+  }
+
+  // Das VEROEFFENTLICHTE Dokument (Argument 2 an publishProject) — der Text, den die
+  // Scheibe betrifft. Der Export allein waere der falsche Messpunkt: Er traegt eine andere
+  // Beacon-Adresse und laeuft nicht ueber handlePublish.
+  async function publishDoc(): Promise<string> {
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /^(Veröffentlichen|Erneut veröffentlichen)$/ }),
+    );
+    await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+    return (publishProject.mock.calls[0] as unknown[])[1] as string;
+  }
+
+  // BE-1 — DER FALL, DEN DIE SCHEIBE BEHEBT, IN DER PRODUKTIVEN SCHRITTFOLGE: kein Projekt,
+  // Code einfuegen, Track-Aktion ueber die Oberflaeche, Speichern (Insert), Veroeffentlichen —
+  // OHNE Neuladen.
+  it("BE-1: neues Projekt, erstes Veroeffentlichen ohne Neuladen -> das Dokument traegt den Beacon mit dem Schluessel aus dem Insert", async () => {
+    // WIRD ROT, WENN handleSave den Schluessel aus dem Ergebnis des Speicherns nicht in den
+    // Zustand uebernimmt (Mutation M1). Vor der Scheibe war dieser Lauf rot — der Text trug
+    // weder Laufzeit noch Aufruf (Vermerk P13.6-106 der Phase 13.6, live gemessen).
+    // DER SCHLUESSEL IM ERGEBNIS IST EIN ATTRAPPEN-WERT. Dass der Server ihn erzeugt und
+    // zurueckliest, pruefen die Laeufe S-INS in src/app/projects/actions.test.ts.
+    render(<CodeImporter />);
+    fireEvent.change(screen.getByPlaceholderText(/Füge hier deinen HTML-Code/), {
+      target: { value: BE_HTML },
+    });
+    fireEvent.click(await screen.findByText("Kaufen"));
+    fireEvent.click(await screen.findByText(/Tracking-Event/));
+    fireEvent.change(await screen.findByRole("combobox"), {
+      target: { value: "Lead" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+    await screen.findByTitle("Verknüpft: track");
+
+    // VERANKERUNG: vor dem Speichern kennt der Editor keinen Schluessel; der Export desselben
+    // Zustands traegt die Track-Aktion, aber keinen Beacon. Ohne sie ginge die Zusicherung
+    // unten auch auf, wenn der Schluessel von woanders kaeme.
+    const vorher = await exportDoc();
+    expect(vorher).toContain('"event":"Lead"');
+    expect(vorher).not.toContain("navigator.sendBeacon(");
+
+    saveProject.mockResolvedValueOnce({
+      ok: true as const,
+      id: "p-neu",
+      trackingKey: "tk-aus-dem-insert",
+    } as never);
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    // Der INSERT-Zweig: ohne Projekt-Kennung gerufen.
+    expect((saveProject.mock.calls[0] as unknown[])[0]).toBeNull();
+
+    const doc = await publishDoc();
+    expect((publishProject.mock.calls[0] as unknown[])[0]).toBe("p-neu");
+    expect(doc).toContain('navigator.sendBeacon("/api/e"');
+    expect(doc).toContain('"tk-aus-dem-insert"');
+    expect(doc).toContain("__psMetaFire(a.config);");
+  });
+
+  // BE-PIN — INVARIANTE (3): bekannter Schluessel, erzeugter Text byte-gleich zum Vorher-Wert.
+  it("BE-PIN: Projekt mit bekanntem Schluessel -> das veroeffentlichte Dokument ist byte-gleich zum Vorher-Wert", async () => {
+    // WIRD ROT, WENN die Scheibe den Text eines Projekts mit bekanntem Schluessel veraendert
+    // — an der Engine, am Erzeuger im Editor oder an seinen Eingaben.
+    // POSITIVKONTROLLE IM LAUF: Das Dokument traegt den Beacon mit DIESEM Schluessel; ein
+    // Pin ueber einen Text ohne Beacon bewiese fuer Invariante (3) nichts.
+    render(
+      <CodeImporter
+        initialProjectId="p-be"
+        initialCode={BE_HTML}
+        initialMappings={BE_MAPPINGS}
+        initialTrackingKey="tk-bekannt"
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const doc = await publishDoc();
+    expect(doc).toContain('"tk-bekannt"');
+    expect(doc).toContain("__psMetaFire(a.config);");
+    expect(Buffer.byteLength(doc, "utf8")).toBe(PIN_BYTES);
+    expect(sha(doc)).toBe(PIN_SHA256);
+  });
+
+  // BE-PIN-2 — INVARIANTE (3) NACH EINEM SPEICHERN IM UPDATE-ZWEIG.
+  it("BE-PIN-2: bekannter Schluessel, Speichern eines bestehenden Projekts (Ergebnis ohne Schluessel) -> das Dokument bleibt byte-gleich zum Pin", async () => {
+    // WIRD ROT, WENN ein Speicher-Ergebnis OHNE Schluessel den bekannten Schluessel im
+    // Zustand leert oder ersetzt (Mutation M7). Der Update-Zweig und saveVariantB liefern
+    // keinen Schluessel; der Zustand muss dann stehenbleiben.
+    render(
+      <CodeImporter
+        initialProjectId="p-be"
+        initialCode={BE_HTML}
+        initialMappings={BE_MAPPINGS}
+        initialTrackingKey="tk-bekannt"
+      />,
+    );
+    await screen.findByText("Kaufen");
+    saveProject.mockResolvedValueOnce({ ok: true as const, id: "p-be" });
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    // Der UPDATE-Zweig: mit der Projekt-Kennung gerufen.
+    expect((saveProject.mock.calls[0] as unknown[])[0]).toBe("p-be");
+
+    const doc = await publishDoc();
+    expect(doc).toContain('"tk-bekannt"');
+    expect(Buffer.byteLength(doc, "utf8")).toBe(PIN_BYTES);
+    expect(sha(doc)).toBe(PIN_SHA256);
   });
 });
 

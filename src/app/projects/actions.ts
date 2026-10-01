@@ -104,8 +104,15 @@ import {
  * Speichern-Ergebnis. Bei { ok: true } liefert die Action die (ggf. NEU
  * angelegte) projectId zurueck, damit der Client sie als aktives Projekt
  * uebernimmt. Bei { ok: false } zeigt er error an.
+ *
+ * trackingKey (Phase 13.6, Scheibe "Beacon bei Erstveroeffentlichung", Setzung P13.6-109)
+ * steht NUR im Ergebnis des INSERT-Zweigs: der dort erzeugte und zurueckgelesene
+ * Schluessel. Der Update-Zweig und saveVariantB liefern ihn nicht; der Client laesst
+ * seinen Zustand dann stehen.
  */
-export type SaveResult = { ok: true; id: string } | { ok: false; error: string };
+export type SaveResult =
+  | { ok: true; id: string; trackingKey?: string }
+  | { ok: false; error: string };
 
 /** Schmales ok/error-Ergebnis fuer Aktionen ohne Rueckgabewert (delete/rename). */
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -145,8 +152,10 @@ export type ProjectRow = {
   // Der oeffentliche Tracking-Schluessel (Phase 8 Scheibe 2b-0). SERVER-autoritativ,
   // eigene Spalte — aus demselben Grund wie ab_test_active darueber: settings ist
   // client-besessen und wuerde ihn beim naechsten saveProject wortlos zuruecksetzen.
-  // NULL heisst "noch keiner vergeben": die Identitaet entsteht LAZY, in
-  // setCapiToken oder publishProject. Ein frisch angelegtes Projekt hat keine.
+  // NULL heisst "noch keiner vergeben". Seit der Scheibe "Beacon bei Erstveroeffentlichung"
+  // (Phase 13.6) entsteht er beim ANLEGEN (Insert-Zweig von saveProject); LAZY in
+  // setCapiToken oder publishProject bekommen ihn nur noch Projekte, die vorher angelegt
+  // worden sind.
   //
   // WOFUER DIE UI IHN BRAUCHT (Scheibe "Der Schluessel kommt aus der Spalte"): Die
   // zwei Erzeuger des funktionalen Dokuments (Vorschau-Memo und buildDocumentFor)
@@ -259,6 +268,15 @@ export async function saveProject(
     return { ok: true, id: data.id };
   }
 
+  // DER SCHLUESSEL ENTSTEHT BEIM ANLEGEN (Phase 13.6, Scheibe "Beacon bei
+  // Erstveroeffentlichung"; Setzung P13.6-109, Owner-Entscheidung P13.6-110). Vorher entstand
+  // er erst in publishProject, NACHDEM der Client den Text schon erzeugt hatte — die erste
+  // Veroeffentlichung trug deshalb keinen Conversion-Beacon (Vermerk P13.6-106, live gemessen).
+  // EIN ERZEUGER: ensureTrackingKey, dieselbe Funktion wie in setCapiToken und publishProject
+  // (Invariante (4) der Setzung P13.6-107); null, weil eine neue Zeile keinen Wert hat.
+  // ZURUECKGELESEN, NICHT ZURUECKGEREICHT: Der Client bekommt den Wert, den die Zeile traegt.
+  // Nur der INSERT-Zweig — der Update-Zweig schreibt die Spalte weiterhin NICHT (sie ueberlebt
+  // jeden Save, Scheibe 2b-0).
   const { data, error } = await supabase
     .from("projects")
     .insert({
@@ -267,13 +285,18 @@ export async function saveProject(
       mappings,
       settings,
       name: "Unbenanntes Projekt",
+      tracking_key: ensureTrackingKey(null),
     })
-    .select("id")
+    .select("id,tracking_key")
     .single();
 
   if (error || !data)
     return { ok: false, error: error?.message ?? "Anlegen fehlgeschlagen." };
-  return { ok: true, id: data.id };
+  const trackingKey =
+    typeof data.tracking_key === "string" ? data.tracking_key.trim() : "";
+  return trackingKey
+    ? { ok: true, id: data.id, trackingKey }
+    : { ok: true, id: data.id };
 }
 
 /**

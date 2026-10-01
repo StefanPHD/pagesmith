@@ -2048,3 +2048,58 @@ BEZUG Setzungen P13-6 der Phase 13 und P13.6-32 der Phase 13.6. (2) Im Zeitfenst
 Ausschalten eines Zaps antwortet die Adresse bis zu mehreren Stunden weiter mit 200 ((f)); die
 Doku widerspricht sich zudem an dieser Stelle. (3) Die Daten liegen in den USA, ohne EU-Option
 ((l)); der DPA gilt zwischen Zapier und dem Betreiber ((m)). Webhooks sind eine Premium-App ((a)).
+
+### Messung 2026-10-01 (Owner, Phase 13.6, Scheibe "Zapier ins Relay", Messkandidaten ZM1–ZM3, ZM6, ZM2b)
+
+**PROVENIENZ:** GEMESSEN, OWNER, live, 2026-10-01, im bezahlten Zapier-Monat. Phase 0 am alten
+Code vor der Aufnahme in die Host-Liste: docs/aktiver-stand.md, Vermerk P13.6-102 der Phase
+13.6; Phase 1 nach Bau-Commit `93230df`: ebenda, Vermerk P13.6-103. Instrument für (r) bis (u):
+curl 8.14.1, Git Bash, schannel, ein urlencoded-POST wie der des Relays (Rumpf mit
+`interesse=kurs&interesse=beratung`, fremder `Origin`, je ein eigener `probe`-Wert); für (v) und
+(x): Chrome 154 und das Vercel-Dashboard. Webhook-Adressen stehen nur gekürzt in dieser Datei.
+**ZEITANGABEN:** Maßgeblich ist der `Date`-Kopf der Antworten (2026-10-01, 06:30:42 bis 06:30:44
+GMT); Angaben aus Zapiers Oberfläche sind als OBERFLÄCHENANGABE gekennzeichnet (s. (w)).
+**OFFEN:** ZM4, ZM5, ZM7 — docs/aktiver-stand.md, Arbeit P13.6-104 der Phase 13.6. Die Liste
+"Messkandidaten Zapier" oben bleibt als Stand vom 2026-09-30 stehen.
+
+**(q) ZM1 — DIE ADRESSE.** GEMESSEN (Owner, abgelesen im Konto): Die Catch-Hook-Adresse beginnt
+mit `https://hooks.zapier.com/hooks/catch/` (Form `…/catch/<Nutzer-ID>/<Kennung>/`). Der Host
+deckt sich mit (b).
+
+**(r) ZM2a — DIE ANTWORT AUF DIE FORM DES RELAYS.** GEMESSEN (curl): 200,
+`application/json` mit `attempt`, `id`, `request_id`, `status` "success"; `time_total` 0,320 s;
+Kopfzeilen `x-zapier-hook-status: success`, `access-control-allow-origin: *`,
+`x-rate-limit-limit: 20000` (remaining 19999). Eingang im Zap mit den Feldern einzeln.
+MITLÄUFER im selben Lauf: Make (Zone eu2) 200, `text/plain` "Accepted", 0,340 s,
+`make-actual-status: 200`, `access-control-allow-origin: *` — wie erwartet.
+Mit (d) und (e) im Einklang: urlencoded wird angenommen, Erfolg ist 200 mit JSON.
+
+**(s) ZM3 — MEHRFACH VORKOMMENDER NAME.** GEMESSEN (curl, Eingang im Zap): `interesse` kam als
+Liste `[kurs, beratung]` an; derselbe Befund bei Make im selben Lauf. Damit beantwortet, was (d)
+als "STEHT AUF KEINER GELESENEN SEITE" führte — für Catch Hook, eine Messung.
+
+**(t) DER HOST MIT PUNKT AM ENDE.** GEMESSEN (curl, `-v`): gesendet `Host: hooks.zapier.com.` → 200,
+JSON "success", 0,270 s, Eingang im Zap. Mitläufer: `Host: hook.eu2.make.com.` → 200
+"Accepted", 0,315 s, Eingang bei Make. GRENZE: gemessen mit curl, NICHT mit Node-`fetch`, das das
+Relay nutzt; ob dieses denselben `Host` und dieselbe SNI sendet, sagt der Lauf nicht.
+
+**(u) CORS DER STANDARDANTWORT.** GEMESSEN (curl): Die Antwort auf einen POST mit fremdem `Origin`
+trägt `access-control-allow-origin: *`. Damit teilweise beantwortet, was (n) als ungelesen
+führte. GRENZE: ein `OPTIONS`/Preflight ist nicht gemessen.
+
+**(v) ZM6 — DER BROWSER-DIREKTE AUFRUF (`no-cors`).** GEMESSEN (Owner, Chrome 154): Die
+Zapier-Testseite, veröffentlicht vor der Aufnahme in die Host-Liste und damit browser-direkt,
+schickte ein Formular ab → Danke-Seite, Eingang im Zap mit den Feldern (Oberflächenangabe
+08:45:51). Catch Hook nimmt den Aufruf im Modus `no-cors` an; offen in (n).
+Ein zweiter Lauf im Datensparmodus nach der Aufnahme (Danke-Seite, Eingang) ist gemeldet; ob
+dort direkt versandt wurde, ist nicht gemeldet (Vermerk P13.6-103, Punkt (6)).
+
+**(w) ZEITANGABEN IN ZAPIERS OBERFLÄCHE.** GEMESSEN (Owner): Die Oberfläche zeigt die Läufe mit
+dem Etikett "UTC", aber um +2 h gegenüber dem `Date`-Kopf der Antwort (Lauf `zm2-z-ohne`:
+Oberfläche 08:30:43, `Date`-Kopf 06:30:43 GMT). GRENZE: an EINEM Lauf verglichen.
+
+**(x) ZM2b — ÜBER DAS RELAY EINER GEHOSTETEN SEITE.** GEMESSEN (Owner, Chrome 154, Vercel-Detail):
+Nach dem Neu-Veröffentlichen der Zapier-Testseite: `POST /api/f` → 204, Danke-Seite, Eingang im
+Zap mit den Feldern; Function 678 ms in `fra1`, "External APIs" 4 (GET, GET, POST, POST), keine
+`[relay]`-Zeile. GRENZE: Die Ziel-Hosts der ausgehenden Anfragen sind nicht gemeldet; die
+Ankunft belegt der Eingang im Zap.

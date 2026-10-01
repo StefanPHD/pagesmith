@@ -785,6 +785,13 @@ aufeinander; sie liegen alle hier und finden einander.
   verliert die Prüfung, ohne dass eine Seite anders aussieht; einer, der beim Relay die
   Meldung sieht, hält sie für einen Fehler von Pagesmith. KEINE EMPFEHLUNG, wie der Satz
   lautet. Der Trigger ist der des Postens.
+  ERGÄNZT AM 2026-10-01 (Abschluss der Scheibe "Zapier ins Relay" der Phase 13.6, Vermerk
+  P13.6-103 der Phase 13.6; Setzung P13.6-100, (7), derselben Phase). Der Text darüber bleibt
+  wörtlich; "heute allein Make, Zone eu2" beschreibt den Stand davor. Seit Bau-Commit `93230df`
+  trägt die Host-Liste ZWEI Hosts: `hook.eu2.make.com` und `hooks.zapier.com`. Eine
+  Zapier-Adresse der Form `zapier.com/hooks/…` bleibt browser-direkt; der Hinweis in der
+  Oberfläche nennt die Form `https://hooks.zapier.com` (Owner-Entscheidung P13.6-99 der Phase
+  13.6, die dazu Betreiber-Dokumentation beim Phasenende verlangt).
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
   ENTSCHEIDUNG). Grund: Die Achse hat keinen realen Konsumenten; was still kaputtginge, setzt
@@ -4328,3 +4335,13 @@ ergibt, liegt in docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 13 
     GRENZE oben ("Für den DATENSPARMODUS … bleibt er bestehen") trägt damit weiter und gilt
     ebenso für die zwei anderen Fälle.
   · Für den Betreiber: Punkt (9) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE".
+  ERGÄNZT AM 2026-10-01 (Abschluss der Scheibe "Zapier ins Relay" der Phase 13.6, Vermerk
+  P13.6-103 der Phase 13.6). Der Text darüber bleibt wörtlich; "heute allein
+  `hook.eu2.make.com`" beschreibt den Stand davor. Seit Bau-Commit `93230df` steht auch
+  `hooks.zapier.com` auf der Host-Liste; ein Ziel auf diesem Host ist nach dem
+  Neu-Veröffentlichen ein Relay-Ziel. LIVE BELEGT (GEMESSEN, OWNER, 2026-10-01, Chrome 154):
+  `/api/f` → 204, Danke-Seite, Eingang im Zap. NICHT gemessen: eine falsche oder gelöschte
+  Zapier-Adresse über das Relay. GRENZE: Nach dem Ausschalten eines Zaps antwortet Zapier laut
+  Doku bis zu mehreren Stunden mit 200 — dann meldet auch das Relay "zugestellt" (Vorrat
+  P13.6-92 der Phase 13.6; Messkandidat ZM4, Arbeit P13.6-104 derselben Phase). Titel, Trigger
+  und Stub bleiben.

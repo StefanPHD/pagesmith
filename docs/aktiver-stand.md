@@ -482,6 +482,9 @@ DIE HOST-LISTE, WENN SEINE WEBHOOK-ADRESSEN GELESEN UND EINMAL LIVE GETESTET SIN
 - FORTGESCHRIEBEN 2026-09-30 (Runde "Adresse verbergen: entschieden"): Die Bündelung ist
   revidiert — Owner-Entscheidung P13.6-97 der Phase 13.6 (Zapier jetzt). Die Bedingung dieser
   Entscheidung (gelesen UND einmal live getestet) gilt unverändert.
+- ERFÜLLT FÜR ZAPIER 2026-10-01: gelesen (Abschnitt "Zapier" der Befund-Datei), live getestet vor
+  dem Push (Vermerk P13.6-102 der Phase 13.6); `hooks.zapier.com` steht seit Bau-Commit
+  `93230df` in `RELAY_HOSTS` (Vermerk P13.6-103). Für Make bleibt es bei der Zone eu2.
 
 PROVENIENZ von P13.6-71: OWNER-ENTSCHEIDUNG 2026-09-30, übermittelt im Auftrag der
 Abschluss-Runde der Scheibe 13.6-4. BINDEND. (Die Überschrift dieses Abschnitts nennt das
@@ -590,6 +593,9 @@ ZAPIER-MONAT ZUM LIVE-TEST, UND DIE MESSKANDIDATEN ZM1 BIS ZM7 LAUFEN IM SELBEN 
   ABNAHME-TESTPROTOKOLL FÜR DIE GANZE APP"). Ob diese Bündelung entfällt, sagt P13.6-97 nicht.
   BEANTWORTET (ARCHITEKT, übermittelt am 2026-10-01): Die Bündelung ist aufgehoben — Setzung
   P13.6-100 der Phase 13.6, (3).
+- UMGESETZT 2026-10-01: Bau-Commit `93230df`, Live-Test bestanden (Vermerk P13.6-103 der Phase
+  13.6). Von den Messkandidaten sind ZM1 bis ZM3 und ZM6 gemessen (Vermerk P13.6-102 und
+  P13.6-103); ZM4, ZM5 und ZM7 trägt Arbeit P13.6-104 der Phase 13.6.
 
 ## Architekten-Setzungen zur Phase 13.6 vom 2026-09-29
 
@@ -698,6 +704,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - NACHGETRAGEN 2026-10-01 (Runde "Scheibe Zapier ins Relay — Bau"; CC, keine neue Setzung):
   Zuschnitt und Plan stehen im Abschnitt "Zuschnitt Scheibe Zapier ins Relay"; Phase 0 des
   Live-Tests läuft VOR dem Push (Setzung P13.6-100 der Phase 13.6, (2)).
+- NACHGETRAGEN 2026-10-01 (Abschluss der Scheibe "Zapier ins Relay"; CC, keine neue Setzung): Die
+  Scheibe ist abgeschlossen (Vermerk P13.6-103). Die Reihenfolge darüber nennt danach keine
+  weitere Scheibe; offen sind Arbeit P13.6-104 (Frist am Zapier-Monat) und Vorrat P13.6-105.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -1958,6 +1967,12 @@ PROVENIENZ: ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde der Scheibe 1
   AN EINER GESPEICHERTEN DATEI" — ihre Herkunfts-Auflage (Mappings aus derselben Herkunft) ist
   die nächste Nachbarin; ebenso "EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT …", die den
   frühesten Zeitpunkt setzt, während dieser Kandidat den spätesten setzt (Abgrenzung CC).
+- NACHGETRAGEN 2026-10-01 (ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde der Scheibe
+  "Zapier ins Relay") — ZWEITER FALL: Ein NEUES Projekt, erstmals ohne Neuladen veröffentlicht,
+  liefert einen Vorher-Wert mit anderer Eingabe — der Tracking-Schlüssel fehlte im Client.
+  V-Z der Zapier-Testseite trug deshalb keine Meta-Laufzeit, die Seite nach Neuladen und
+  Veröffentlichen schon; der Differenz-Nachweis ging erst per vollständiger Rückrechnung auf
+  (Vermerk P13.6-103 der Phase 13.6, Punkte (4) und (7); Produktbefund: Vorrat P13.6-105).
 
 ## Zuschnitt Scheibe 13.6-5
 
@@ -2650,7 +2665,8 @@ Setzungen a–f) · dieser Commit (Abschluss).
 
 ## Zuschnitt Scheibe Zapier ins Relay
 
-**ZUGESCHNITTEN UND GEPLANT AM 2026-09-30; DER BAU BEGINNT AM 2026-10-01.**
+**ABGESCHLOSSEN AM 2026-10-01 — Bau-Commit `93230df`, Live-Test bestanden (nur Chrome);
+Abschluss-Vermerk P13.6-103.**
 - GEGENSTAND: Owner-Entscheidung P13.6-97 der Phase 13.6 — `hooks.zapier.com` kommt in die
   Host-Liste des Relays (`RELAY_HOSTS`, src/lib/relay/hosts.ts), `zapier.com` nie. Sonst ändert
   sich am Relay nichts. Reihenfolge: Setzung P13.6-14.
@@ -2840,6 +2856,8 @@ BEIM PHASENENDE.** Beantwortet die Fragen 1 und 4 des Plans (Vermerk P13.6-98).
   (eigener Port). Bei ihnen stünde der Hinweis und nennte eine Form, die ihre Adresse zu erfüllen
   scheint. Eine echte Zapier-Adresse trägt nach allen gelesenen Beispielen keins von beiden
   (Zapier, Befund (b)).
+- UMGESETZT 2026-10-01: Bau-Commit `93230df`; im Test belegt (CI-Z2, Mutation MZ5), live nicht
+  gesehen (Vermerk P13.6-103, Punkt (10)). Die Betreiber-Dokumentation (d) steht weiter aus.
 
 PROVENIENZ von P13.6-100: ARCHITEKTEN-SETZUNG, übermittelt im selben Auftrag am 2026-10-01; der
 Auftrag datiert sie auf den 2026-09-30. REVIDIERBAR; ein Owner-Widerspruch hebt jede auf.
@@ -2915,6 +2933,154 @@ KEIN BAU-COMMIT: Messrunde am alten Code (Stand `1428b33`, im Code gleich `87af2
     NICHT IN DIESEM COMMIT: der Nachtrag dieser Messungen im Abschnitt "Zapier" von
     docs/formular-empfaenger-befunde.md (Frage 7 des Plans nannte ihn; Setzung P13.6-100, (7),
     nennt allein docs/offene-punkte.md).
+    NACHGETRAGEN 2026-10-01: Der Nachtrag ist erfolgt — docs/formular-empfaenger-befunde.md,
+    Abschnitt "Zapier", Befunde (q) bis (x) (Vermerk P13.6-103, Punkt (12)).
+
+### Abschluss der Scheibe Zapier ins Relay
+
+**Vermerk P13.6-103 — ABSCHLUSS DER SCHEIBE "ZAPIER INS RELAY". Bau-Commit `93230df`**
+("feat(relay): Zapier-Webhooks (hooks.zapier.com) auf die Relay-Host-Liste"). LIVE-TEST
+BESTANDEN, nur Chrome — der Differenz-Nachweis in der Form der Bewertung unter Punkt (7).
+Doku-Commits der Scheibe: `1428b33` (Planrunde, Owner-Text, Vorrat) · `bdee2c2` (Phase 0) ·
+dieser Commit (Abschluss).
+
+(0) PROVENIENZ DER PUNKTE (2) BIS (6), soweit nicht anders gekennzeichnet: GEMESSEN, OWNER, live,
+    2026-10-01, Chrome 154 (Build nicht angegeben), übermittelt im Auftrag der Abschluss-Runde.
+    Bytes und sha256 über den Konsolen-Block aus dem Bericht der Bau-Runde (Teil C; der Block
+    steht nicht in dieser Datei), je zweimal gleich. Zapier-Testprojekt
+    `zapier-test-m21cev.publayer.net`, Make-Testseite `projekt-n-sy5bjj.publayer.net`.
+    Webhook-Adressen, Request-ID und Tracking-Schlüssel stehen bewusst nicht in dieser Datei.
+
+(1) PHASE 0 — alter Code, vor dem Push: Vermerk P13.6-102 (Adresse, vier curl-Aufrufe samt Punkt
+    am Ende, Make-Bezugspunkt, V-Z, ZM6).
+
+(2) L0 — Deploy `93230df` "Ready", ohne Neu-Veröffentlichen:
+    · Der Editor des Zapier-Projekts zeigt "Zustellung: über Pagesmith, mit Prüfung", während die
+      Seite noch direkt schickt. Damit ist die ABGELEITETE Folge aus Vermerk P13.6-98, Punkt (5)
+      (die Anzeige folgt der Liste, nicht dem veröffentlichten Text), GEMESSEN.
+    · Make-Testseite: 20007 Bytes, `e283fa67…1500`, `ohneGleichVorher` true.
+    · Zapier-Seite: zweimal 16841 Bytes, `aab1a043…3364` — gleich V-Z.
+
+(3) L1 — MAKE-REGRESSION: Editor neu geladen, neu veröffentlicht, zweimal unverändert
+    `e283fa67…1500`; Absenden → Danke-Seite, Eingang bei Make. Make-Seiten bleiben damit live
+    byte-gleich (Vermerk P13.6-98, Punkt (5)).
+
+(4) L2 — ZAPIER-PROJEKT, Editor neu geladen, veröffentlicht, der Block zweimal identisch:
+    19999 Bytes, sha256 `824c1bbc0354fc2b795201c8459bc17733d76b28d0742a0039033d4a9016ffa8`;
+    R2 1-mal, D2 1-mal, K2 1-mal; ohne R2 und D2 18953 Bytes, sha256
+    `1d0e701f8fda6d47c071b66cdbf264cea67dc792b178b0799d197cab70e33675`; `ohneGleichVorher`
+    false (erwartet waren 16841 Bytes), `textGleichRoh` true. (Die vollen sha256 hat CC am selben
+    Tag per `curl` an der Live-Seite erhoben, siehe unten; die Owner-Werte lauteten gekürzt
+    gleich.)
+    AUFKLÄRUNG (CC, 2026-10-01, read-only; Texte im Scratchpad, nicht im Repo):
+    · V-Z lag als Datei vor (16841 Bytes, `aab1a043…3364`, GEMESSEN per sha256). Die Live-Seite,
+      zweimal per `curl` geholt (`Date` 07:26:24 und 07:26:25 GMT): je 19999 Bytes,
+      `824c1bbc…ffa8`.
+    · Zeilen-Diff des Live-Textes ohne R2 und D2 gegen V-Z (GEMESSEN): netto +2112 Bytes =
+      die Meta-Laufzeit `function __psMetaFire(cfg) { … }` (1968 Bytes; nur der Beacon-Teil mit
+      `__psConsent("meta")`, eventID und `sendBeacon("/api/e", …)`, kein `fbq(` — das Projekt
+      trägt keine Pixel-ID) + viermal `__psMetaFire(a.config);` (je 36 Bytes) in den vier
+      `if (a.type === "track")`-Zweigen des Wiring-Skripts + der Datenblock in anderer
+      Schlüssel-Reihenfolge bei gleicher Länge (alt `elementId, type, config`, neu `type,
+      config, elementId`).
+    · RÜCKRECHNUNG (GEMESSEN): Meta-Laufzeit und die vier Aufrufe entfernt, die Datenblock-Zeile
+      durch die alte ersetzt → 16841 Bytes, `aab1a043…3364`, zeichengleich mit V-Z.
+      Positivkontrolle: ohne den Tausch der Datenblock-Zeile ungleich.
+    · WOVON DER BAUSTEIN ABHÄNGT (GELESEN AM CODE): `generateFunctional` (src/lib/generate.ts)
+      ruft im Modus "export" `buildMetaRuntime`; ohne Pixel-ID UND ohne Tracking-Schlüssel ist
+      das Ergebnis leer, und `metaTrackStatement` lässt den Aufruf weg. In V-Z steht der
+      Schlüssel genau einmal — im PageView-Emitter, den `publishProject` serverseitig einfügt
+      (`injectPageViewEmitter`); im neuen Text zweimal (Emitter und Beacon) (GEMESSEN am Text).
+    · KANDIDAT FÜR DIE URSACHE, ABGELEITET AM CODE, nicht gemessen: V-Z war die erste
+      Veröffentlichung eines neuen Projekts ohne Neuladen; der Client kannte den Schlüssel noch
+      nicht. Ob das Projekt vor S3 einen Schlüssel trug und ob der Editor vor S3 neu geladen
+      wurde, ist nicht erhoben. Der Produktbefund dahinter: Vorrat P13.6-105.
+    · Am Zapier-Bau liegt die Abweichung nicht: R2 und D2 stehen je genau einmal da.
+
+(5) L3 — RELAY-RUNDE: Absenden → Danke-Seite, Zapier-Eingang mit den Feldern. Vercel-Detail
+    `POST /api/f`, Host `zapier-test-m21cev`: 204, `fra1`, Function 678 ms, "External APIs" 4
+    (GET, GET, POST, POST), keine `[relay]`-Zeile.
+    · Die Zahl vier deckt sich mit Vermerk P13.6-81, Punkt (4); ihre ZUORDNUNG (zwei Abfragen der
+      Relay-Suche, die Zähler-RPC, die Weiterleitung) bleibt ABGELEITET, die Ziel-Hosts sind nicht
+      gemeldet. Damit ist nicht gemessen, dass die POST an `hooks.zapier.com` ging; belegt ist
+      die Ankunft durch den Zapier-Eingang.
+    · ZM2b (der Weg über das Relay einer Testseite) ist damit gemessen.
+
+(6) L4 — DATENSPARMODUS: an → Anzeige "Zustellung: direkt vom Browser (Datensparmodus)",
+    Danke-Seite, Zapier-Eingang. Ob dazwischen neu veröffentlicht wurde und ob der Versand direkt
+    lief (Netzwerk), ist NICHT gemeldet; ZM6 trägt deshalb Vermerk P13.6-102, Punkt (4).
+    · Danach aus: 19999 Bytes, `27ecda17…d2de` (gekürzt übermittelt). OWNER-ANGABE: unsicher,
+      ob ein zweites Neuladen erfolgte.
+    · AUFKLÄRUNG (CC, 2026-10-01, GEMESSEN per Rückrechnung): Allein der Datenblock des Textes von
+      L2 in der Reihenfolge `elementId, type, config` ergibt 19999 Bytes, `27ecda17…d2de`, und
+      ohne R2 und D2 `f9181478…c9ee` — beide gekürzten Owner-Werte getroffen. Der Text von L4
+      selbst liegt nicht vor. Dieselbe Erscheinung wie in Vermerk P13.6-70, Punkt (7), und
+      Vermerk P13.6-89, Punkt (5): direkt nach "Ziel übernehmen" eine andere Reihenfolge als nach
+      dem Neuladen.
+    · Um 07:26 GMT trug die Live-Seite wieder den Stand von L2 (Punkt (4)); ein späteres
+      Veröffentlichen nach Neuladen ist damit ABGELEITET, vom Owner nicht gemeldet.
+
+(7) BEWERTUNG DES DIFFERENZ-NACHWEISES — ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde:
+    BESTANDEN in der STÄRKEREN Form der vollständigen Rückrechnung (Punkt (4)). Die Zusage "nur
+    R2 und D2" galt gegen ein V-Z mit anderer Eingabe (der Schlüssel fehlte im Client). Der
+    Code-Nachweis RT-Z3 (src/lib/form-target.test.ts) und L1 (Make unverändert) stützen das.
+    (CC) Die Auflage der Dauerregel "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD …" ist
+    damit in einer anderen Form erfüllt als angesagt: Die Einsetzung ist gezählt und entfernt,
+    der Rest aber erst nach Entfernen eines zweiten, benannten Bausteins und Rücktausch der
+    Reihenfolge gleich V-Z. Die Dauerregel selbst ist nicht geändert.
+
+(8) BAU (CC, 2026-10-01, am Stand vor dem Commit `93230df`):
+    · Vorher-Wert für RT-Z3, erhoben vor der ersten Code-Änderung (Sonde ausserhalb des Repos,
+      jiti 2.7.0 mit jsdom 29.1.1; Instrument-Kontrolle: dieselbe Sonde ergab `RT_V9`
+      zeichengleich): 21687 Bytes, sha256 `a7906464…7dc6`; der Test trägt ihn als Konstante
+      `RT_VZ`.
+    · Gates: `tsc --noEmit` exit 0; `eslint` 0 Fehler, die eine bekannte Warnung in
+      src/lib/tracking/consent.test.ts; `vitest run` 102 Dateien, 2769 Tests (vorher 2746);
+      `next build` exit 0. Vor dem Commit erneut gefahren, dasselbe Ergebnis.
+    · Mutationen, volle Suite, Vorhersage je vor dem Lauf gegen den aktuellen Bestand, Rücknahme
+      per sha256 belegt, ALLE WIE VORHERGESAGT: MZ1 (Host fehlt) 14 rot — CI-Z2 an seiner
+      Positivkontrolle · MZ2 (`zapier.com` zusätzlich) 6, H4z `www.zapier.com` grün · MZ3
+      (Normalisierung umgangen) 4, H3z "Grossschreibung" grün — vom URL-Parser VERDECKT, vorab
+      angesagt · MZ4 (Unterdomänen zugelassen) 2 · MZ5 (neuer Textteil fehlt) 2 — CI-S3 und
+      CI-Z2.
+    · Byte-Kontrolle der sechs Dateien am committeten Objekt: CR 0, NUL 0.
+
+(9) ABWEICHUNGEN VOM PLAN, IM BAU DEKLARIERT:
+    · H3z in drei Fälle geteilt (Grossschreibung, Punkt am Ende, beides), damit die Verdeckung
+      bei MZ3 sichtbar wird; R-Z3 in zwei Tests (200 und 404/429/413); CI-Z als CI-Z1 und CI-Z2,
+      CI-Z2 mit Positivkontrolle; RT-Z3 prüft zusätzlich K2 genau einmal.
+    · Die erste maschinelle Prüfung der Erwartung von H1 hatte eine zu enge Achse (nur
+      `https://<host>/`; Befund (s) des Abschnitts "Make" schreibt den Host in Backticks) und
+      wurde mit korrigierter Achse wiederholt.
+    · Eine Kommentarzeile in src/components/ActionPanel.tsx kam hinzu und wieder heraus (Scope
+      "nur der Owner-Text"); netto ändert sich allein der Text.
+
+(10) GRENZEN, als Grenzen benannt:
+    · Der Punkt am Ende ist nur mit `curl` gemessen, nicht mit Node-`fetch` vom Relay (Vermerk
+      P13.6-102, Punkt (2)).
+    · Der Hinweistext für `zapier.com`-Adressen ist nur im Test belegt (CI-Z2); L5 ist nicht
+      gefahren. Der Randfall an Owner-Entscheidung P13.6-99 ("GEMELDET, NICHT ENTSCHIEDEN")
+      bleibt.
+    · Nur Chrome.
+    · ZM4, ZM5 und ZM7 sind offen — Arbeit P13.6-104.
+    · Eine falsche oder gelöschte Zapier-Adresse über das Relay ist live nicht geprüft.
+    · Die Ziel-Hosts der ausgehenden Anfragen in L3 sind nicht gemeldet (Punkt (5)).
+
+(11) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN: im Kopf der Satz "ZUGESCHNITTEN UND
+    GEPLANT AM 2026-09-30; DER BAU BEGINNT AM 2026-10-01." — mit dem Abschluss abgelaufen,
+    ersetzt durch die Abschluss-Zeile. Sonst ist nichts abgelaufen.
+    STEHEN GEBLIEBEN: der Gegenstand samt Bedingung der Aufnahme, Vermerk P13.6-98 (der Plan),
+    Owner-Entscheidung P13.6-99, Setzung P13.6-100 und Vermerk P13.6-102 (mit einem Nachtrag).
+
+(12) NACHGEZOGEN IN DIESEM COMMIT: Setzung P13.6-14; Owner-Entscheidungen P13.6-55, P13.6-97 und
+    P13.6-99 (umgesetzt); Arbeit P13.6-27; Hebungs-Kandidat P13.6-73 (zweiter Fall); Vorrat
+    P13.6-92; Vermerk P13.6-102, Punkt (5). NEU: Arbeit P13.6-104, Vorrat P13.6-105.
+    docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befunde (q) bis (x);
+    docs/offene-punkte.md, datierte Ergänzungen an Punkt (9) des Postens "BETREIBER-DOKUMENTATION
+    FEHLT — DREI PUNKTE" und am Posten "IM BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER ODER
+    GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE …" (Titel, Trigger und Stubs in CLAUDE.md
+    unverändert — keiner der Stubs nennt "allein Make"). Die Roadmap-Zeile 13.6 ist nicht
+    geändert.
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -3036,6 +3202,8 @@ Grundlage der Stufe 1 (Owner-Entscheidung P13.6-17). BEZUG: docs/formular-empfae
   damit der Zapier-Live-Test und für Make die Hosts der Zonen ausser eu2.
 - REVIDIERT 2026-09-30: Live-Test und Aufnahme jetzt — Owner-Entscheidung P13.6-97 der Phase
   13.6. Der Satz über "gebündelt vor dem Launch" darüber beschreibt den Stand davor.
+- FÜR ZAPIER ERLEDIGT 2026-10-01: live getestet und aufgenommen (Vermerke P13.6-102 und P13.6-103
+  der Phase 13.6). Offen bleiben die Hosts der Make-Zonen ausser eu2.
 
 **Arbeit P13.6-72 — SCHEIBE "ZURÜCK-CACHE": DAS FORMULAR IST NACH DER RÜCKKEHR WIEDER
 ABSENDBAR** (ARCHITEKT 2026-09-30, übermittelt im Auftrag der Abschluss-Runde der Scheibe
@@ -3181,7 +3349,63 @@ spätere Runde hier ein.
 - ERLEDIGT 2026-09-30: entschieden durch Owner-Entscheidung P13.6-94 der Phase 13.6 (V4 —
   nichts wird gebaut). Die Punkte darüber beschreiben den Stand vor der Entscheidung.
 
+**Arbeit P13.6-104 — ZAPIER: DIE OFFENEN MESSKANDIDATEN ZM4, ZM5 UND ZM7, VOR ABLAUF DES
+ZAPIER-MONATS** (ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde der Scheibe "Zapier ins
+Relay" am 2026-10-01). Die Kandidaten stehen in docs/formular-empfaenger-befunde.md, Abschnitt
+"Zapier", "Messkandidaten Zapier"; der Live-Entwurf in Vermerk P13.6-98, Punkt (9), L6 bis L8.
+- ZM4 — Zap aus bzw. gelöscht: der Status sofort und nach mehreren Stunden (laut Doku erst 200,
+  dann 404), dazu eine erfundene Kennung auf `hooks.zapier.com`, ein 3xx irgendwo, der Verbleib
+  einer Anfrage aus dem Zeitfenster; Mitläufer ein laufender Zap (Soll 200). BEZUG: Vorrat
+  P13.6-92 (im Zeitfenster meldet das Relay "zugestellt").
+- ZM5 — gehaltene Läufe: Status und Verbleib bei erschöpftem Kontingent bzw. ohne Premium.
+- ZM7 — Adblocker gegen den Direktweg (Datensparmodus) an `hooks.zapier.com`; Aufbau wie N3 in
+  Vermerk P13-22 der Phase 13, Positivkontrolle die doubleclick-Probe.
+- FRIST: vor Ablauf des Zapier-Monats. Buchungsdatum 2026-10-01 — ANGABE DES AUFTRAGS, im
+  Bestand nicht belegt; belegt ist nur, dass Webhooks am 2026-10-01 im Konto liefen (Vermerk
+  P13.6-102).
+- UNBEOBACHTETER TRIGGER: Nichts im Repo und keine Anzeige meldet das Näherrücken der Frist;
+  allein dieser Eintrag trägt sie. Verstreicht sie, fällt das nicht auf.
+- GEMELDET, NICHT ENTSCHIEDEN (CC, ABGELEITET am Wortlaut des Messkandidaten): ZM5 lautet "nach
+  dem Ende des Test-Monats bzw. im Free-Konto". Dieser Teil ist erst MIT oder NACH dem Ablauf
+  messbar, nicht davor; vor Ablauf messbar ist allein das erschöpfte Kontingent.
+
 ## Vorrat (gemeldet, nicht gebaut)
+
+PROVENIENZ von P13.6-105: ARCHITEKT, übermittelt im Auftrag der Abschluss-Runde der Scheibe
+"Zapier ins Relay" am 2026-10-01; der Befund aus der Aufklärung jener Runde (CC). Er steht
+WEGEN SEINER DRINGLICHKEIT OBEN in diesem Abschnitt (Auftrag); seine Nummer folgt der Reihe.
+
+**Vorrat P13.6-105 — DIE ERSTE VERÖFFENTLICHUNG EINES NEUEN PROJEKTS TRÄGT KEINEN
+CONVERSION-BEACON: SEITENAUFRUFE WERDEN GEZÄHLT, CONVERSIONS FEHLEN STILL.**
+- GELESEN AM CODE (CC, Stand `93230df`):
+  · `ensureTrackingKey` (src/lib/settings.ts) läuft allein in `setCapiToken` und
+    `publishProject` (src/app/projects/actions.ts) (GEMESSEN AM REPO: `git grep` ausserhalb der
+    Tests, zwei Aufrufe). Ein neues Projekt ohne gespeicherte Zugangsdaten bekommt seinen
+    Schlüssel damit erst beim ersten Veröffentlichen.
+  · Der Editor erzeugt den ausgelieferten Text mit dem Schlüssel aus seinem Zustand
+    (`trackingKey` in src/components/CodeImporter.tsx). `setTrackingKey` steht beim
+    Projektladen, beim Zurücksetzen, beim Nachrücken eines Projekts und nach dem Speichern von
+    Zugangsdaten — NICHT in `handlePublish`.
+  · Ohne Pixel-ID und ohne Schlüssel liefert `buildMetaRuntime` nichts, und
+    `metaTrackStatement` lässt den Aufruf weg (`generateFunctional`, src/lib/generate.ts). Den
+    PageView-Emitter fügt `publishProject` dagegen serverseitig mit dem Schlüssel aus der Spalte
+    ein (`injectPageViewEmitter`).
+- FOLGE, ABGELEITET: Die erste Veröffentlichung eines solchen Projekts zählt Seitenaufrufe; jede
+  Track-Aktion bleibt ohne Server-Ereignis und ohne Fan-Out — bis der Editor neu geladen und
+  erneut veröffentlicht wird. Nichts zeigt es an.
+- AM TEXT VERTRÄGLICH GEMESSEN (CC, 2026-10-01): V-Z der Zapier-Testseite trägt den Schlüssel
+  genau einmal, im Emitter; nach Neuladen und Veröffentlichen trägt die Seite zusätzlich die
+  Meta-Laufzeit mit dem Beacon (Vermerk P13.6-103, Punkt (4)). Ob V-Z die erste Veröffentlichung
+  ohne Neuladen war, ist nicht erhoben — der Mechanismus selbst ist NICHT gemessen.
+- VERWANDT: Archiv der Phase 11.2 (docs/claude-history/phase-11.2-google.md), Abschnitt "Der
+  Schlüssel kommt aus der Spalte" — dasselbe Bild für den Google-Weg ("Die Ansicht zeigt also
+  Verkehr, während jede Conversion fehlt."); das Veröffentlichen ist dort kein Saat-Punkt.
+- EINORDNUNG (ARCHITEKT): berührt das Kern-Verkaufsargument (Server-Side-Tracking; CLAUDE.md,
+  "## Vision").
+- TRIGGER: SOFORT — als nächster Schritt die Messung durch den Owner. Vorschlag des Instruments
+  (CC, nicht entschieden): ein neues Projekt mit Track-Aktion, ohne Neuladen veröffentlichen, im
+  Live-Text nach `__psMetaFire` suchen; danach neu laden, erneut veröffentlichen, erneut suchen.
+  Positivkontrolle: ein bestehendes Projekt mit Schlüssel trägt `__psMetaFire`.
 
 **Vorrat P13.6-6 — B-1: DIE EIGEN-LISTE DER FORMULAR-ZIELE KENNT KEINE CUSTOM-DOMAINS UND KEIN
 `*.vercel.app` — EINE ZIELADRESSE DORTHIN TRÄGT FORMULARINHALTE IN UNSER DEPLOYMENT**
@@ -3645,6 +3869,9 @@ MEHREREN STUNDEN WEITER MIT ERFOLG; DAS RELAY MELDET DANN "ZUGESTELLT".**
   sobald `hooks.zapier.com` in `RELAY_HOSTS` steht und eine Seite neu veröffentlicht ist; ZM4
   läuft im jetzt gebuchten Monat. "HEUTE OHNE WIRKUNG IM RELAY" darüber beschreibt den Stand
   davor.
+- NACHGETRAGEN 2026-10-01: `hooks.zapier.com` steht seit Bau-Commit `93230df` in `RELAY_HOSTS`;
+  wirksam für jede danach veröffentlichte Seite mit einem solchen Ziel (Vermerk P13.6-103 der
+  Phase 13.6). Die Messung ZM4 trägt Arbeit P13.6-104 der Phase 13.6.
 
 **Vorrat P13.6-93 — ZAPIER SPEICHERT NUR IN DEN USA, OHNE EU-OPTION.**
 - BEFUND (GELESEN, Befund (l)): "Zapier hosts data in AWS servers located in the United States

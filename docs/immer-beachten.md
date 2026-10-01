@@ -1335,3 +1335,78 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   Anwendung.
   Entfällt, sobald der Hosting-Plan UND seine Fair-Use-Bedingungen Medien-Hosting
   nachweislich zulassen — gelesen und datiert. Ein Wechsel auf Pro allein erfüllt das nicht.
+
+- FORMULARINHALTE IM RELAY SIND TRANSIT — NIE GESPEICHERT, NIE GELOGGT, NIE AN /api/e, NIE AN
+  EIN TRACKING-ZIEL; SIE STEHEN NUR IM RUMPF
+  Formularinhalte im Relay (`/api/f`) gehen allein an die eingetragene Adresse: in keine
+  Tabelle, in keine eigene Logzeile, nicht an `/api/e`, an kein Fan-Out-Ziel. Speicherung
+  (etwa ein Lead-Postfach) und ein Ereignis aus Formularinhalten an ein Ziel verlangen je eine
+  eigene Owner-Entscheidung.
+  Pflicht für den Relay-Code und jeden Aufruf an ihn: Formularwerte nur im Rumpf, nie in Pfad
+  oder Query · der Aufruf ohne Referer · geloggt werden allein Status und eigenes Vokabular,
+  nie der Rumpf, nie `err.message` · jeder Fehler im Relay-Pfad wird gefangen · ein
+  Wächter-Test hält das fest.
+  Die Zusage "nie geloggt" gilt unserem Code, nicht der Plattform.
+  Wird neu gefasst, sobald eine Owner-Entscheidung Speicherung von Formularinhalten oder ihren
+  Weg an ein Tracking-Ziel zulässt.
+
+- DIE FUNKTIONALE VORSCHAU IM EDITOR SENDET NIE — EIN SENDEWEG, DEN PAGESMITH EINBAUT,
+  ENTSTEHT NUR IM MODUS "export"
+  Gemeint ist jeder Weg: Beacon und Bestätigung an `/api/e`, Lader und `fbq` des Meta-Pixels,
+  Seitenaufruf, Custom-Pixel, Formular-Ziel samt Relay und jedes künftige Browser-Tag eines
+  Ziels. Tracking wird an der veröffentlichten Seite geprüft.
+  Wer einen neuen Sendeweg baut, baut ihn nur für "export" und erweitert den Wächter am Text
+  und am Verhalten der Vorschau. Der Schutz hängt nie an einem Nebeneffekt.
+  Nicht erfasst: Skripte im importierten HTML des Betreibers, auch alte Pagesmith-Bausteine
+  aus einem früheren Export.
+  Entfällt mit einer Owner-Entscheidung, die die Vorschau senden lässt.
+
+- EIN SERVERSEITIG ERZEUGTES EREIGNIS TRÄGT NIE EIN FEHLENDES EINWILLIGUNGSFELD, SONDERN
+  IMMER EIN AUSDRÜCKLICHES URTEIL — DAS DES BESUCHERS AUS DEM BROWSER
+  Ein Ereignis, das der Server selbst erzeugt und an ein Ziel gibt, trägt immer ein
+  ausdrückliches Einwilligungs-Urteil, und zwar das des Besuchers aus dem Browser — nie ein
+  fehlendes Feld; der Server erfindet keines.
+  Der Transit eines Formulars an die eigene Adresse des Betreibers braucht keine
+  Einwilligung; ein daraus abgeleitetes Ereignis braucht sie.
+  Entfällt, sobald `allowedTargets` (src/lib/capi/ingest.ts) bei fehlendem Feld kein Ziel
+  mehr durchlässt.
+
+- EIN ÖFFENTLICHER ENDPUNKT, DER AN EINE ADRESSE DES BETREIBERS WEITERLEITET, NIMMT PROJEKT
+  UND ADRESSE NIE AUS DER ANFRAGE
+  Das Projekt kommt allein aus dem Host der Anfrage (Label oder Custom-Domain, wie die
+  Auslieferung), die Adresse allein aus der veröffentlichten Fassung (`published_content`) —
+  nie aus Rumpf, Query oder Entwurf. Ihr Host steht EXAKT auf einer festen Liste; Umleitungen
+  werden nie verfolgt. Der Aufrufer erfährt genau zwei Zustände, "zugestellt" und "nicht
+  zugestellt"; gesperrt, unbekannt, begrenzt, abgelehnt und Zeitlimit antworten gleich.
+  Gilt für jeden Endpunkt dieser Art, nicht nur für das Formular-Relay.
+  Entfällt für die Host-Liste, sobald eine Prüfung auf Netzebene (private Adressbereiche,
+  Metadaten-Dienste, Namensauflösung) gebaut und gemessen ist; für Projekt und Adresse, sobald
+  ein Aufrufer sein Projekt kryptografisch belegt.
+
+- EIN SCHREIBWEG ÜBER DEN ADMIN-CLIENT SCHREIBT ERST NACH DEM EIGENTUMS-GATE, FILTERT AUF DIE
+  EIGENTUMS-ACHSE SEINER TABELLE, UND EIN UPDATE OHNE TREFFER IST EIN FEHLER
+  Gilt jedem Schreibvorgang über service_role, insbesondere auf server-eigene Spalten:
+  (1) Kein Write vor dem bestandenen Eigentums-Gate. Prüft das Gate über die Nutzer-Sitzung,
+      entsteht der Admin-Client erst danach; liest das Gate selbst über den Admin-Client,
+      vergleicht es das Eigentum ausdrücklich mit dem Nutzer des Aufrufs, bevor geschrieben
+      wird.
+  (2) Ein Update oder Delete trifft allein die Zeilen, deren Eigentum das Gate geprüft hat —
+      auf `projects` Filter auf `id` UND `user_id` aus der server-geprüften Sitzung; auf einer
+      Tabelle ohne `user_id` der Schlüssel der geprüften Zeile (`project_id` des geprüften
+      Projekts, bei `domains` das `label` der geprüften Zeile).
+  (3) Soll ein Update eine bestimmte Zeile ändern und trifft keine, bricht der Vorgang laut
+      ab, statt Erfolg zu melden.
+  (4) Ein Insert oder Upsert setzt den Eigentums-Schlüssel allein aus Sitzung bzw. Gate —
+      `user_id` aus der Sitzung, `project_id` des geprüften Projekts —, nie aus einer
+      Eingabe; scheitert er, bricht der Vorgang laut ab.
+  Entfällt, sobald server-eigene Spalten nicht mehr über service_role geschrieben werden.
+
+- EIN VERGLEICHSWERT FÜR EINEN LIVE-BYTE-VERGLEICH WIRD UNMITTELBAR VOR DEM VERGLICHENEN
+  SCHRITT ERHOBEN — NACH DENSELBEN BEARBEITUNGSSCHRITTEN, NICHT VOR EINEM, DER DIE EINGABE
+  VERÄNDERN KANN
+  Zwischen Vorher-Wert und verglichenem Schritt liegt kein Schritt, der Code, Adresse,
+  Einstellungen oder den Zustand des Editors ändern kann. Pflicht-Schritt jeder
+  Live-Anleitung mit Byte-Vergleich: Editor neu laden, veröffentlichen, messen — unmittelbar
+  vor dem verglichenen Schritt. Gilt neben "EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT …",
+  das den frühesten Zeitpunkt setzt.
+  Entfällt, sobald ein Byte-Vergleich serverseitig gegen denselben Eingabestand läuft.

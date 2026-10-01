@@ -133,6 +133,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 13.6 — Formular-Relay (Lead-Relay)
 - [ ] Phase 13.7 — Sicherheit & Datenintegrität
 - [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out)
+- [ ] Phase 13.9 — 1-Klick-Empfänger (Stufe 2)
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
 - [ ] Phase 15 — Public-Launch-Restarbeit (Tier 0)
 - [ ] Phase 16 — Analytics-Vertiefung (Uniques, Traffic-Health-Metriken)
@@ -192,8 +193,11 @@ in docs/claude-md-herleitung.md.
   dem 2026-09-24 einen PUNKT (5), Warnungen in den Oberflächen der Netzwerke, und seit dem
   2026-09-29 einen PUNKT (6) aus der Phase 13, die öffentliche Adresse eines Formular-Ziels,
   sowie einen PUNKT (7) aus der Phase 13.6, die Vorschau im Editor sendet nie, einen
-  PUNKT (8) aus der Phase 13.6, ein Make-Szenario mit Antwort-Modul im Relay-Modus, und seit
-  dem 2026-09-30 einen PUNKT (9) aus der Phase 13.6, welcher Weg zustellt und welcher prüft)
+  PUNKT (8) aus der Phase 13.6, ein Make-Szenario mit Antwort-Modul im Relay-Modus, seit
+  dem 2026-09-30 einen PUNKT (9) aus der Phase 13.6, welcher Weg zustellt und welcher prüft,
+  und seit dem 2026-10-01 die PUNKTE (10) bis (12) aus dem Phasenende 13.6: ein
+  abgeschalteter Zap meldet "zugestellt", Zapier speichert nur in den USA, die Adresse steht
+  auch im Relay-Weg öffentlich in der Seite)
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real — EINGETRETEN mit dem Abschluss der
   Phase 11.5 am 2026-09-16, nachgezogen am 2026-09-25)
@@ -393,6 +397,18 @@ eigene Zeile: Es steht als PUNKT (6) am Posten "BETREIBER-DOKUMENTATION FEHLT �
 - IM BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE —
   DER LEAD IST VERLOREN, UND NIEMAND SIEHT ES (Trigger: das erste fremde Nutzerkonto, das ein
   Formular-Ziel einträgt — spätestens vor echtem Ad-Traffic)
+
+**AUS DEM PHASENENDE 13.6 GEHOBEN (2026-10-01) — ZWEI POSTEN.** Weitere Ergebnisse stehen als
+Ergänzung an bestehenden Posten und haben keine eigene Zeile: Punkte (10) bis (12) an
+"BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE", je eine datierte Ergänzung an "NICHTS ZEIGT AN,
+DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST" und an "DIE VERWAHRUNG DES
+CHIFFRIER-SCHLÜSSELS IST UNGEREGELT".
+- DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM CODE KEINEN
+  RIEGEL (Trigger: das erste fremde Nutzerkonto, das ein Formular-Ziel mit einer Adresse der
+  Host-Liste veröffentlicht — spätestens vor einem Beta-Launch mit fremden Nutzern)
+- ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM GEBUCHTEN ZAPIER-MONAT FAHRBAR
+  (Trigger: das Ende des gebuchten Zapier-Monats — Buchung am 2026-10-01 nach Angabe des
+  Architekten, im Bestand nicht belegt; daraus ABGELEITET um den 2026-10-31)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

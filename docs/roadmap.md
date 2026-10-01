@@ -2690,6 +2690,10 @@ liegen beide hier und finden einander.
       Grenze stehen seither an der Zeile 13.8. Ein Zeiger auf diesen Block landet dort. Punkt (6)
       des FAHRPLAN-ENTWURFS darüber ("Lead-Ereignis mit gehashter E-Mail") ist derselbe
       Gegenstand und bleibt als Entwurf stehen.
+      DIE NATIVEN 1-KLICK-EMPFÄNGER (STUFE 2) — UMGEZOGEN AM 2026-10-01 AN DIE ZEILE 13.9
+      ("1-Klick-Empfänger (Stufe 2)"; ARCHITEKT, Auflage A4 zum Phasenende 13.6). Gemeint sind die
+      "native[n] Anbindungen per Klick (Brevo, Mailchimp, KlickTipp …)" im Grundtext dieser Zeile
+      und Punkt (5) des FAHRPLAN-ENTWURFS; diese Phase hat allein Stufe 1 gebaut.
       PRÜFLISTE FÜR DIE AUFKLÄRUNG (Phasenende 13, 2026-09-29) — was ein Relay-Weg berührt:
       · die GRENZE der Setzung P13-6 der Phase 13, "Die Neubewertung kippt, sobald ein Weg über
         unseren Server gewählt wird" (docs/offene-punkte.md, "DER PRIMÄRSCHLÜSSEL (project_id,
@@ -2793,6 +2797,58 @@ liegen beide hier und finden einander.
       Phasenende 13.6 kommt diese Phase zuerst (OWNER-ENTSCHEIDUNG 2026-10-01, per Auswahl im
       Chat); daraus (CC) 13.6 -> 13.7 -> 13.5 -> 12. Der Satz "wo die Phase darin steht, ist
       NICHT ENTSCHIEDEN" darüber beschreibt den Stand davor.
+      AUS DEM VORRAT DER PHASE 13.6 AN DIESE ZEILE GEWIESEN (Phasenende 13.6, 2026-10-01; der
+      Wortlaut je Eintrag steht in der Standdatei der Phase 13.6, docs/aktiver-stand.md, unter
+      derselben Nummer). Verdichtet, je mit der Klasse des Bedrohungsmodells:
+      · Vorrat P13.6-96 — SPAM-SCHUTZ FÜR FORMULARE (etwa ein unsichtbares Köderfeld oder eine
+        Zeitfalle) — ANONYME ANGREIFER, "Formular-Spam". Heute gibt es keinen Bot-Schutz
+        (Vermerk P13.6-19, Punkt (1)); über das Relay bremst allein die Ratenbegrenzung (120 je
+        60 s je Projekt, SCHÄTZUNG, Setzung P13.6-75, E3). Ein Köderfeld ändert den
+        ausgelieferten Text; eine Prüfung allein im Relay erfasst Datensparmodus, Export und den
+        Rückfall ohne Skript nicht — ein Bot ohne Skript schickt an das `action`-Attribut direkt
+        zum Empfänger. Wer den Spam-Schutz zuschneidet, bewertet das Verbergen der Adresse mit
+        (Owner-Entscheidung P13.6-94: sie bleibt im Text). Eine Prüfung eines Dritten (etwa
+        Turnstile) verlangt fremdes Skript und eine Server-Bestätigung, die nur der Relay-Weg
+        hat. Sein Trigger war "vor dem ersten fremden Nutzer, oder der erste gemeldete
+        Spam-Fall"; zugewiesen an diese Zeile von CC beim Phasenende, weil sie "Formular-Spam"
+        als Klasse nennt (Vorschlag, dem Owner vorgelegt).
+      · Vorrat P13.6-121 — DER KILL-SWITCH WIRKT JE PROJEKT; EIN NEU ANGELEGTES PROJEKT UMGEHT
+        IHN — DER UNEHRLICHE BETREIBER, "Sperren aushebeln". `saveProject`
+        (src/app/projects/actions.ts) liest im Insert-Zweig keine Sperre (ABGELEITET am Code,
+        CC). Zugewiesen an diese Zeile (ARCHITEKT 2026-10-01).
+      · Vorrat P13.6-126 — GELÖSCHTE LABELS DAUERHAFT SPERREN (GRABSTEIN-MODELL) — DER
+        UNEHRLICHE BETREIBER, "Phishing auf unserer Domain". `domains.project_id` trägt `on
+        delete cascade` (0006_hosting); das Label eines gelöschten Projekts ist danach frei, der
+        Erzeuger kann es zufällig neu würfeln, und über den SQL-Editor ist jedes Label setzbar.
+        Zugewiesen an diese Zeile (Setzung P13.6-125, ARCHITEKT 2026-10-01).
+      · Vorrat P13.6-129 — TRUNCATE, REFERENCES, TRIGGER UND MAINTAIN FÜR anon UND
+        authenticated AUF ALLEN TABELLEN IN public PRÜFEN UND ENTZIEHEN — Verteidigung in der
+        Tiefe. GEMESSEN (OWNER, 2026-10-01): Nach 0031 tragen anon und authenticated auf
+        `domains` und `project_tokens` `rDxtm`, auf `projects` `rdDxtm` (Vermerk P13.6-130,
+        Punkt (3)); `D` TRUNCATE, `x` REFERENCES, `t` TRIGGER, `m` MAINTAIN (GELESEN,
+        postgresql.org/docs/17/ddl-priv.html, Tabelle 5.1). Über die übrigen Tabellen sagt die
+        Messung nichts; Abfrage (8) von supabase/checks/spaltenrechte.sql ist dafür zu
+        erweitern. "Über PostgREST nicht auslösbar" ist ANGABE DES AUFTRAGS, belegt allein durch
+        einen Nicht-Treffer mit benannter Reichweite (docs/plattform-befunde.md, Supabase, Teil
+        (bd)), für MAINTAIN durch keinen. Zugewiesen an diese Zeile (OWNER-AUFTRAG 2026-10-01).
+      · Vorrat P13.6-131 — MANIFEST-ITEM VERCEL-TOKEN: DIE VOLLFASSUNG TRÄGT EINEN STATUS
+        ("TEILERFÜLLT (Stand 2026-07-28)"), DIE TIER-ÜBERSICHT IN CLAUDE.md KEINEN — entgegen der
+        Deckungsgleichheit der Fassungen (CLAUDE.md, "## Security Manifest & Launch Blocker").
+        Nicht entschieden: welcher Status richtig ist; nicht geprüft: ob weitere Items dieselbe
+        Divergenz tragen. Trigger: der Zuschnitt dieser Phase — das Manifest ist die Basis des
+        Bedrohungsmodells (ARCHITEKT 2026-10-01).
+      EINGABEN INS BEDROHUNGSMODELL AUS DEM PHASENENDE 13.6 (Zeiger, 2026-10-01):
+      · DAS RELAY IST IM CODE FÜR KEIN KONTO GESPERRT. Owner-Entscheidung P13.6-18 der Phase
+        13.6 gibt es fremden Nutzern erst mit Kunden-AVV frei; einen Riegel je Nutzer, Projekt
+        oder Tarif gibt es nicht, und für die Host-Liste ist das Relay der Standard. Offener
+        Punkt "DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM
+        CODE KEINEN RIEGEL" (docs/offene-punkte.md).
+      · DER VERCEL-TARIF: Der Hobby-Tarif ist auf nicht-kommerzielle, persönliche Nutzung
+        beschränkt (GELESEN 2026-09-02, docs/plattform-befunde.md, Vercel-Abschnitt, Teil (g));
+        ein Upgrade auf Pro ist, wenn nötig, freigegeben — Owner-Angabe P13.6-2 der Phase 13.6
+        (Standdatei der Phase 13.6, docs/aktiver-stand.md). Kein offener Punkt, keine
+        Roadmap-Zeile und kein Manifest-Item sagt das bisher (GEMESSEN AM REPO, CC,
+        2026-10-01).
 - [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out): Aus einem Formular, das über das Relay
       der Phase 13.6 zugestellt wird, erzeugt der Server das Lead-Ereignis für die
       Fan-Out-Ziele — etwa mit einer gehashten E-Mail als Match-Feld. ANGELEGT am 2026-10-01.
@@ -2845,12 +2901,50 @@ liegen beide hier und finden einander.
       PROVENIENZ: Abtrennung und die zwei offenen Fragen OWNER 2026-10-01; Nummer und Titel
       ARCHITEKT 2026-10-01; der Gegenstand aus der Zeile 13.6 (ARCHITEKT 2026-09-29); Vorrat
       P13.6-46 verdichtet übernommen, nicht zeichengleich.
+- [ ] Phase 13.9 — 1-Klick-Empfänger (Stufe 2): Native Anbindungen von Formular-Empfängern per
+      Klick (etwa Brevo, Mailchimp, KlickTipp) über das Relay der Phase 13.6, mit echter
+      Erfolgs- und Fehlerrückmeldung, ohne dass der Betreiber Make oder Zapier braucht.
+      ANGELEGT am 2026-10-01 beim Phasenende 13.6; Nummer und Titel ARCHITEKTEN-SETZUNG
+      2026-10-01, REVIDIERBAR (Auflage A4 zum Phasenende 13.6).
+      HERKUNFT: der Grundtext der Zeile 13.6 ("native Anbindungen per Klick … mit echter Erfolgs-
+      und Fehlerrückmeldung") und Punkt (5) ihres FAHRPLAN-ENTWURFS ("erster nativer Anbieter
+      per Klick"). Gebaut hat 13.6 allein Stufe 1 — die Relay-Basis ohne Kunden-Schlüssel, an
+      die Webhook-Dienste der Host-Liste (Owner-Entscheidung P13.6-17 der Phase 13.6: "1-Klick-
+      Anbindungen nativer Anbieter folgen später").
+      STELLUNG IN DER REIHENFOLGE: NICHT ENTSCHIEDEN. Fest steht allein: nach dem Phasenende 13.6
+      kommt 13.7 zuerst. Die Nummer trägt keine Reihenfolge des Baus.
+      VORBEDINGUNG: der offene Punkt "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT"
+      (docs/offene-punkte.md) ist gelöst. Dort steht seit dem 2026-10-01 die Setzung P13.6-25
+      der Phase 13.6: Kunden-API-Schlüssel nur chiffriert nach dem OAuth-Muster, einer je
+      Anbieter und Projekt; ein neuer Zielwert verlangt eine Migration am CHECK
+      `project_secrets_target_valid`.
+      WAS DIESE PHASE VORFINDET (Zeiger): die Befunde über die Empfänger in
+      docs/formular-empfaenger-befunde.md (Brevo, systeme.io, Mailchimp, KlickTipp gelesen,
+      ungemessen) · die Dauerregeln "EIN ÖFFENTLICHER ENDPUNKT, DER AN EINE ADRESSE DES
+      BETREIBERS WEITERLEITET, NIMMT PROJEKT UND ADRESSE NIE AUS DER ANFRAGE", "FORMULARINHALTE
+      IM RELAY SIND TRANSIT …" und "EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE
+      DOKUMENTATION ABSCHNITTSWEISE GELESEN …" (docs/immer-beachten.md) · der offene Punkt "DER
+      PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT", Trigger (i) · der offene
+      Punkt "DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM
+      CODE KEINEN RIEGEL" · das Archiv der Phase 13.6 (Standdatei der Phase 13.6,
+      docs/aktiver-stand.md).
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in
       prüfen). Security-Manifest-Tier-1 (s. "## Security Manifest & Launch
       Blocker"), kein Produkt-Feature. Bleibt an dieser Stelle: echter
       Ad-Traffic ist noch nicht terminiert, kein Grund zum Vorziehen.
+      NACHGETRAGEN 2026-10-01 (Phasenende 13.6) — WAS DIESE PHASE AUS 13.6 VORFINDET: `/api/f`
+      (Formular-Relay) ist seit der Scheibe 13.6-5 je Projekt begrenzt — `countRelayHit`
+      (src/lib/relay/rate-limit.ts), Tabelle `relay_rate_counters` und RPC `relay_rate_hit`
+      (Migration 0030), 120 Anfragen je 60 s (SCHÄTZUNG), Zähler-Ausfall fail-open (Setzung
+      P13.6-75 der Phase 13.6). Beides ist RELAY-EIGEN; eine Wiederverwendung für `/api/e` ist
+      nicht vorbereitet (GELESEN AM CODE, CC). UNBEANTWORTET, aus der Scheibe 13.6-5 hierher
+      (Frage B12 jener Scheibe): was davon für `/api/e` wiederverwendbar wäre, ohne `/api/e` in
+      13.6 anzufassen. Die Plattform-Ebene — eine Ratenregel der Vercel-Firewall je IP,
+      `checkRateLimit`, "Attack Mode" — steht als Vorrat P13.6-78 bis P13.6-80 in
+      docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 13.6 gehoben (2026-10-01) …".
+      Fundort von B12 und P13.6-75: Standdatei der Phase 13.6, docs/aktiver-stand.md.
 - [ ] Phase 15 — Public-Launch-Restarbeit (Tier 0): E-Mail-Bestätigung
       (Dashboard-Toggle), Abuse-Kanal + security.txt (s. "## Security
       Manifest & Launch Blocker", Tier 0). Subprozessor-/Kunden-DPA ist KEIN

@@ -802,6 +802,39 @@ aufeinander; sie liegen alle hier und finden einander.
   Zapier-Adresse der Form `zapier.com/hooks/…` bleibt browser-direkt; der Hinweis in der
   Oberfläche nennt die Form `https://hooks.zapier.com` (Owner-Entscheidung P13.6-99 der Phase
   13.6, die dazu Betreiber-Dokumentation beim Phasenende verlangt).
+  (10) NACH DEM AUSSCHALTEN ODER LÖSCHEN EINES ZAPS MELDET DAS RELAY BIS ZU MEHREREN STUNDEN
+  "ZUGESTELLT" — ERGÄNZT AM 2026-10-01 (Phasenende 13.6, aus Vorrat P13.6-92 der Phase 13.6).
+  Zapier antwortet laut Doku nach dem Ausschalten oder Löschen eines Zaps bis zu mehreren
+  Stunden weiter mit 200 ("there is a system update delay of up to several hours before the 404
+  response takes effect", docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befund (f);
+  GELESEN, die Doku widerspricht sich dort selbst). `forward` (src/lib/relay/relay.ts) wertet
+  allein den Status; der Besucher sieht die Danke-Seite. Ob eine Anfrage aus diesem Zeitfenster
+  später verarbeitet wird, steht auf keiner gelesenen Seite; die Messung ist ZM4 (offener Punkt
+  "ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM GEBUCHTEN ZAPIER-MONAT FAHRBAR"). Was
+  still kaputtgeht: Leads aus diesem Fenster verschwinden, obwohl Seite und Relay "zugestellt"
+  sagen. KEINE EMPFEHLUNG, wie der Satz lautet. Der Trigger ist der des Postens.
+  (11) ZAPIER SPEICHERT NUR IN DEN USA, OHNE EU-OPTION — ERGÄNZT AM 2026-10-01 (Phasenende 13.6,
+  aus Vorrat P13.6-93 der Phase 13.6). GELESEN (ebenda, Befund (l)): "Zapier hosts data in AWS
+  servers located in the United States …" und "Is there an option to have my data stored only
+  within the EU? Zapier does not support this option." Die Formularwerte liegen danach im Konto
+  des Betreibers bei Zapier (Befund (k)); Zapiers DPA gilt zwischen Zapier und dem Betreiber und
+  ersetzt unseren Kunden-AVV nicht (Befund (m), FOLGERUNG ebenda). Die Wahl ist die des
+  Betreibers; unsere Transit-Zusage gilt unserem Server, nicht dem Empfänger. Was still
+  kaputtgeht: Ein Betreiber, der "über Pagesmith" für "in der EU" hält, wählt einen Empfänger,
+  dessen Standort er nicht kennt. Die AVV-Seite steht am offenen Punkt "DAS RELAY LÄUFT FÜR
+  JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM CODE KEINEN RIEGEL". KEINE
+  EMPFEHLUNG, wie der Satz lautet. Der Trigger ist der des Postens.
+  (12) DIE EMPFÄNGER-ADRESSE STEHT ÖFFENTLICH IN DER SEITE, AUCH IM RELAY-WEG — ERGÄNZT AM
+  2026-10-01 (Phasenende 13.6, aus Vorrat P13.6-95 der Phase 13.6). Die Adresse steht auf allen
+  drei Wegen — Relay, browser-direkt, Export — im `action`-Attribut und im Datenblock (Arbeit
+  P13.6-91, (Q1), der Phase 13.6); so bleibt es (Owner-Entscheidung P13.6-94, ebenda). Wer sie
+  ersetzen will, braucht eine NEUE Adresse — bei Zapier praktisch einen neuen Zap
+  (docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befund (b)) — und muss neu
+  veröffentlichen. Zapier rät, die Adresse wie ein Passwort zu behandeln (Befund (c)); das
+  Produkt tut das bewusst nicht. Punkt (6) oben sagt dasselbe für den browser-direkten Weg; neu
+  ist, dass das Relay daran nichts ändert. Was still kaputtgeht: Ein Betreiber, der das Relay
+  für einen Schutz der Adresse hält, rechnet nicht mit Einträgen, die an Pagesmith vorbei
+  direkt ankommen. KEINE EMPFEHLUNG, wie der Satz lautet. Der Trigger ist der des Postens.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
   ENTSCHEIDUNG). Grund: Die Achse hat keinen realen Konsumenten; was still kaputtginge, setzt
@@ -971,6 +1004,26 @@ aufeinander; sie liegen alle hier und finden einander.
   Veröffentlicht vergleicht, sähe diesen Anlass nicht (ABLEITUNG, keine Entscheidung über den
   Bau). Fundstellen: Vermerke P12.5-9, Punkt (4), P12.5-20, Punkt (6), P12.5-36, Punkt (6),
   und P12.5-45, Punkt (7), der Phase 12.5. Trigger unverändert.
+  ERGÄNZT AM 2026-10-01 (Phasenende 13.6) — FÜNF WEITERE ANLÄSSE OHNE ÄNDERUNG DES BETREIBERS,
+  UND EIN GEMESSENER FALL, IN DEM DIE ANZEIGE DEM VERÖFFENTLICHTEN TEXT WIDERSPRICHT.
+  · Fünf Bau-Commits der Phase 13.6 ändern den ausgelieferten Text: `9fae014` (ein Formular mit
+    Ziel trägt `action`, `method`, `enctype` und `accept-charset`, damit der Rückfall ohne
+    Skript an die eingetragene Adresse geht; vorher standen die Feldwerte dort im Query der
+    eigenen Seite, Vorrat P13.6-7 der Phase 13.6) · `3b631a2` (der Relay-Weg für Adressen der
+    Host-Liste) · `29d0d22` (nach der Rückkehr aus dem Zurück-Cache ist das Formular wieder
+    absendbar) · `93230df` (`hooks.zapier.com` auf der Host-Liste) · `1256f0e` (die erste
+    Veröffentlichung eines neuen Projekts trägt den Conversion-Beacon). Eine vorher
+    veröffentlichte Seite trägt das alte Verhalten bis zum erneuten Veröffentlichen, ein Export
+    bis zum Neu-Export (je die Grenzen der Scheiben, Standdatei der Phase 13.6,
+    docs/aktiver-stand.md). Welche Projekte seitdem neu veröffentlicht sind, ist nicht erhoben.
+  · GEMESSEN (OWNER, live, 2026-10-01, Vermerk P13.6-103, Punkt (2), der Phase 13.6): Nach dem
+    Deploy von `93230df` zeigte der Editor des Zapier-Testprojekts "Zustellung: über Pagesmith,
+    mit Prüfung", während die veröffentlichte Seite noch direkt schickte. Die Anzeige folgt der
+    Host-Liste, nicht dem veröffentlichten Text — der Betreiber liest "mit Prüfung" für eine
+    Seite, die nicht prüft.
+  · Eine Anzeige des Relay-Status für den Betreiber ist nicht gebaut (Abschnitt "Ausser Scope
+    der Scheibe 13.6-4", Standdatei der Phase 13.6).
+  Trigger unverändert.
 - JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN (Trigger: der erste
   echte Kunden-Traffic. HEUTE IST NICHTS ZU TUN, und der Grund gehört in den Eintrag: Bis
   der Owner das Produkt selbst vollständig geprüft hat, sieht es kein Kunde; ein Ausfall
@@ -1831,6 +1884,21 @@ aufeinander; sie liegen alle hier und finden einander.
   2026-08-25 entschieden; dieser Punkt trägt ausschliesslich die Folge daraus.
   PROVENIENZ: die Entscheidung ist OWNER (2026-08-25), die Einordnung der drei offenen
   Dinge ist ARCHITEKT (2026-08-25). KEINE Messung.
+  ERGÄNZT AM 2026-10-01 (Phasenende 13.6, aus Setzung P13.6-25 der Phase 13.6) — DIE
+  KUNDEN-SCHLÜSSEL NATIVER FORMULAR-EMPFÄNGER HÄNGEN AN DIESEM POSTEN. Titel und Trigger
+  bleiben. Setzung P13.6-25 (ARCHITEKT 2026-09-29, revidierbar): Kommen Kunden-API-Schlüssel mit
+  einer späteren Stufe des Relays (native Empfänger per Klick, etwa Brevo, Mailchimp,
+  KlickTipp), liegen sie nur chiffriert nach dem OAuth-Muster (`secret_enc`), einer je Anbieter
+  und Projekt — das hält die Eindeutigkeit (project_id, target) (offener Punkt "DER
+  PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT", Trigger (i)). IHRE GRENZE IST
+  DIESER POSTEN: vorher ist die Verwahrung zu regeln. Ein neuer Zielwert verlangt dazu eine
+  Migration am CHECK `project_secrets_target_valid` (docs/immer-beachten.md, "JEDES WEITERE
+  FAN-OUT-ZIEL BRINGT SEINE EIGENE CONSTRAINT-ERWEITERUNG MIT …"). GELESEN AM CODE (Vermerk
+  P13.6-19, Punkt (6), der Phase 13.6): Eingefügte Zugangsdaten schreibt `setCapiToken` heute
+  im KLARTEXT nach `secret`; chiffriert schreiben allein die OAuth-Rückkehr und die Erneuerung.
+  Was still kaputtginge: Ein nativer Empfänger nach dem Muster von `setCapiToken` legte fremde
+  API-Schlüssel im Klartext ab. Die Roadmap-Zeile 13.9 ("1-Klick-Empfänger (Stufe 2)") nennt
+  diesen Posten als ihre Vorbedingung.
 - EINE ZEILE OHNE PROJEKT LIEGT AUSSERHALB JEDER KASKADE (Trigger: die erste Zeile mit
   project_id IS NULL — also der erste Schreibpfad, der die Eigentums-Achse BENUTZT, statt
   sie offenzuhalten): Mit der Migration 0025 (Scheibe 11.8b) ist project_secrets.project_id
@@ -4409,3 +4477,73 @@ ergibt, liegt in docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 13 
   Doku bis zu mehreren Stunden mit 200 — dann meldet auch das Relay "zugestellt" (Vorrat
   P13.6-92 der Phase 13.6; Messkandidat ZM4, Arbeit P13.6-104 derselben Phase). Titel, Trigger
   und Stub bleiben.
+
+**AUS DEM PHASENENDE 13.6 GEHOBEN (2026-10-01) — ZWEI POSTEN.** Aus der Standdatei der Phase
+13.6 (Formular-Relay). DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still
+kaputt". Zwei neue Posten sind daraus entstanden; ihr Ursprung steht je am Eintrag. WEITERE
+ERGEBNISSE DIESER HEBUNG STEHEN ALS ERGÄNZUNG AN BESTEHENDEN POSTEN und nicht als eigene Zeile:
+Punkte (10) bis (12) an "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE", die Ergänzung vom
+2026-10-01 an "NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST" und an "DIE
+VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT". Was keinen offenen Punkt ergibt, liegt in
+docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 13.6 gehoben (2026-10-01) …", oder
+an den Roadmap-Zeilen 13.7, 13.8 und 14.
+- DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM CODE KEINEN
+  RIEGEL (Trigger: das erste fremde Nutzerkonto, das ein Formular-Ziel mit einer Adresse der
+  Host-Liste veröffentlicht — spätestens vor einem Beta-Launch mit fremden Nutzern):
+  DIE ENTSCHEIDUNG (Owner-Entscheidung P13.6-18 der Phase 13.6, OWNER 2026-09-29): Das Relay
+  wird für fremde Nutzer erst freigeschaltet, wenn ein Kunden-AVV steht; bis dahin baut und
+  testet der Owner selbst.
+  DER BEFUND (GELESEN AM CODE, CC, 2026-10-01, Stand `6e37194`): Es gibt keinen Schalter je
+  Nutzer, Projekt oder Tarif. `generateFunctional` (src/lib/generate.ts) setzt den Relay-Weg für
+  jedes Formular-Ziel, dessen Adresse `allowedRelayEndpoint` (src/lib/relay/hosts.ts) besteht
+  und das nicht im Datensparmodus ist; `relay` (src/lib/relay/relay.ts) prüft Datensparmodus und
+  Host-Liste, keinen Nutzer. Nach Owner-Entscheidung P13.6-54 derselben Phase ist das Relay für
+  die Host-Liste der STANDARD — heute `hook.eu2.make.com` und `hooks.zapier.com`.
+  WAS STILL KAPUTTGEHT: Das erste fremde Konto, das eine solche Adresse einträgt und
+  veröffentlicht, schickt Formularinhalte über unseren Server, ohne dass ein AVV steht — ohne
+  eigenes Zutun und ohne dass etwas es meldet.
+  WAS DIE AVV-ARBEIT ZUSÄTZLICH KLÄRT, beides offen:
+  (a) OB VERCEL RÜMPFE INTERN ABLEGT. Setzung P13.6-51 (R4) der Phase 13.6: das klärt die
+      AVV-Arbeit über den DPA; bis dahin gilt "nie im Log" für unseren Code, nicht für die
+      Plattform. Weder die Lesung noch die Sonde vom 2026-09-29 entscheidet es
+      (docs/plattform-befunde.md, Vercel-Abschnitt, Teile (l), (q) und (t)); offen geblieben
+      aus Arbeit P13.6-26 und aus der zweiten Frage des Vorrats P13.6-11 derselben Phase.
+  (b) DER DATENSTANDORT DER EMPFÄNGER — Zapier speichert nur in den USA (Punkt (11) am Posten
+      "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE").
+  BEZUG, NICHT GEÄNDERT: das Tier-0-Item "SUBPROZESSOR-DPAs + Kunden-DPA" (CLAUDE.md, "##
+  Security Manifest & Launch Blocker"; BINDET-AN: öffentlicher Launch mit echten Kundendaten) —
+  es bindet später als dieser Posten. Der Trigger "das erste FREMDE Nutzerkonto legt ein
+  Projekt an" in CLAUDE.md, "## Modus". Die Dauerregel "FORMULARINHALTE IM RELAY SIND TRANSIT
+  …" (docs/immer-beachten.md) trägt die Grenze "nie geloggt gilt unserem Code".
+  KEINE EMPFEHLUNG, ob ein Riegel gebaut oder der AVV vorgezogen wird.
+  HERKUNFT: Owner-Entscheidung P13.6-18, Setzung P13.6-51, Arbeit P13.6-26 (Rest) und Vorrat
+  P13.6-11 (zweite Frage) der Phase 13.6.
+  PROVENIENZ: Entscheidung OWNER 2026-09-29; Befund am Code und Einordnung CC, Phasenende 13.6
+  (2026-10-01). Der Stub in CLAUDE.md, "## Offene Punkte", Block "AUS DEM PHASENENDE 13.6
+  GEHOBEN (2026-10-01)", trägt Titel und Trigger im SELBEN Zug.
+- ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM GEBUCHTEN ZAPIER-MONAT FAHRBAR
+  (Trigger: das Ende des gebuchten Zapier-Monats — Buchung am 2026-10-01 nach Angabe des
+  Architekten, im Bestand nicht belegt; daraus ABGELEITET um den 2026-10-31):
+  DIE MESSUNGEN (docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", "Messkandidaten
+  Zapier"; Live-Entwurf in Vermerk P13.6-98, Punkt (9), L6 bis L8, der Phase 13.6):
+  · ZM4 — Zap aus bzw. gelöscht: der Status sofort und nach mehreren Stunden (laut Doku erst
+    200, dann 404), eine erfundene Kennung auf `hooks.zapier.com`, ein 3xx irgendwo, der
+    Verbleib einer Anfrage aus dem Zeitfenster; Mitläufer ein laufender Zap (Soll 200). Er
+    misst den Fall von Punkt (10) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE": Im
+    Zeitfenster meldet das Relay "zugestellt".
+  · ZM5 — gehaltene Läufe: Status und Verbleib bei erschöpftem Kontingent bzw. ohne Premium.
+    Der Teil "nach dem Ende des Test-Monats bzw. im Free-Konto" ist erst MIT oder NACH dem
+    Ablauf messbar; vor Ablauf allein das erschöpfte Kontingent (ABGELEITET, CC, am Wortlaut
+    des Messkandidaten).
+  · ZM7 — ein Adblocker gegen den Direktweg (Datensparmodus) an `hooks.zapier.com`; Aufbau wie
+    N3 in Vermerk P13-22 der Phase 13, Positivkontrolle die doubleclick-Probe.
+  GEMESSEN SIND ZM1 bis ZM3 und ZM6 (Vermerke P13.6-102 und P13.6-103 der Phase 13.6).
+  WAS STILL KAPUTTGEHT: Verstreicht der Monat, sind ZM4 und ZM7 ohne neue Buchung nicht mehr
+  fahrbar, und nichts im Repo und keine Anzeige meldet das Näherrücken — allein dieser Posten
+  trägt die Frist. Ungemessen bleibt dann vor allem ZM4, und damit, ob Leads aus dem
+  Zeitfenster nach dem Ausschalten eines Zaps verloren gehen, während Seite und Relay
+  "zugestellt" sagen.
+  HERKUNFT: Arbeit P13.6-104 der Phase 13.6 (ARCHITEKT 2026-10-01).
+  PROVENIENZ: Frist und Zuordnung ARCHITEKT 2026-10-01; das Buchungsdatum ANGABE DES AUFTRAGS
+  der Abschluss-Runde "Zapier ins Relay"; das Monatsende ABGELEITET, nicht aus einer Rechnung
+  oder dem Konto abgelesen. Der Stub in CLAUDE.md trägt Titel und Trigger im SELBEN Zug.

@@ -252,6 +252,12 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - JEDER FAN-OUT-ADAPTER SCHREIBT BEI EINER ANGENOMMENEN ANTWORT GENAU EINE ...
 - GIT BASH WANDELT EIN ARGUMENT, DAS MIT `@/` BEGINNT, STILL IN EINEN ...
 - MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN — UND DAS GILT FÜR ...
+- FORMULARINHALTE IM RELAY SIND TRANSIT — NIE GESPEICHERT, NIE GELOGGT, ...
+- DIE FUNKTIONALE VORSCHAU IM EDITOR SENDET NIE — EIN SENDEWEG, DEN ...
+- EIN SERVERSEITIG ERZEUGTES EREIGNIS TRÄGT NIE EIN FEHLENDES ...
+- EIN ÖFFENTLICHER ENDPUNKT, DER AN EINE ADRESSE DES BETREIBERS ...
+- EIN SCHREIBWEG ÜBER DEN ADMIN-CLIENT SCHREIBT ERST NACH DEM ...
+- EIN VERGLEICHSWERT FÜR EINEN LIVE-BYTE-VERGLEICH WIRD UNMITTELBAR VOR ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -3480,3 +3486,307 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   PROVENIENZ: die Entscheidung OWNER 2026-09-25; die Fundstellen GELESEN wie oben; die
   Erhebung zur Regel, ihr Geltungsbereich und die Bedingung des Entfallens ARCHITEKT
   2026-09-28; der Wortlaut CC, 2026-09-28. Herleitung: das Archiv der Phase 12.5.
+- FORMULARINHALTE IM RELAY SIND TRANSIT — NIE GESPEICHERT, NIE GELOGGT, NIE AN /api/e, NIE AN
+  EIN TRACKING-ZIEL; SIE STEHEN NUR IM RUMPF (Phase 13.6, gehoben 2026-10-01 aus
+  Owner-Entscheidung P13.6-16, Setzungen P13.6-48 bis P13.6-50 und P13.6-67):
+  DER URSPRUNG: Owner-Entscheidung P13.6-16 der Phase 13.6 (OWNER 2026-09-29) — die
+  Neufassung der Datenklassen-Regel für Formularinhalte im Relay: Transit ja; nie
+  gespeichert, nie geloggt, nie an `/api/e`, nie an ein Tracking-Ziel; Speicherung als eigener
+  späterer Schritt mit eigener Owner-Entscheidung. Für "nie geloggt" verlangte sie zwei
+  Bedingungen: eine Bauform mit Wächter-Test und eine Lesung, was Vercel protokolliert, VOR dem
+  ersten Relay-Code. Die Lesung steht in docs/plattform-befunde.md, Vercel-Abschnitt, Teile (i)
+  bis (t) (Lesung und Sonde vom 2026-09-29).
+  DIE BAUFORM — die Setzungen P13.6-48 bis P13.6-51 (R1 bis R4) derselben Phase, ARCHITEKT
+  2026-09-29:
+  · R1 — kein Referer am Relay-Aufruf (`referrerPolicy: "no-referrer"` in `relayBranch`, Text
+    aus `buildFormTargetRuntime`, src/lib/form-target.ts). GRUND: Der Referer steht im
+    Vercel-Log und trüge die volle Seitenadresse samt Query (GEMESSEN, Sonde vom 2026-09-29,
+    Teil (r)). Live bestätigt nur in Chrome (Vermerke P13.6-60, Punkt (4), und P13.6-70,
+    Punkt (3), der Phase 13.6).
+  · R2 — Formularwerte nie in Pfad oder Query, nur im Rumpf. GRUND: Search Params stehen im
+    Klartext im Vercel-Log (ebenda, Teil (r)). Das Relay trägt in der Query allein die
+    Formular-Kennung (`?f=`).
+  · R3 — der Relay-Code gibt den Rumpf nie in eine Logzeile oder Fehlermeldung, jeder Fehler
+    wird im Relay-Pfad gefangen. Wächter: R-LOG, R-NOTHROW und R-NON2XX
+    (src/lib/relay/relay.test.ts); Mutationen M2a (Rumpf im Nicht-2xx-Zweig geloggt) und M2b
+    (`err.message` statt `errorName`) wurden rot (Vermerk P13.6-60, Punkt (7)).
+  · R4 — ob Vercel Rümpfe intern ablegt, klärt die AVV-Arbeit über den DPA; bis dahin gilt "nie
+    im Log" für unseren Code, nicht für die Plattform. DIESE HÄLFTE IST NICHT GEHOBEN, sondern
+    offen: docs/offene-punkte.md, "DAS RELAY LÄUFT FÜR JEDEN NUTZER …".
+  DIE NEUFASSUNG VON I1 DER PHASE 13 FÜR DEN RELAY-WEG (Setzung P13.6-67 der Phase 13.6,
+  ARCHITEKT 2026-09-30): "Formularinhalte gehen ausschliesslich an die eingetragene Adresse —
+  über das Relay, nie an /api/e, nie an ein Tracking-Ziel, nie in unsere Datenbank oder Logs."
+  Das Archiv der Phase 13 trägt I1 in der Fassung für den browser-direkten Weg; die Neufassung
+  stand bis zu dieser Hebung allein in der Standdatei der Phase 13.6, die ihre Hebung beim
+  Phasenende vorsah.
+  WARUM EINE DAUERREGEL UND NICHT NUR DER OFFENE PUNKT: Die Neufassung steht seit dem
+  2026-09-29 auch am offenen Punkt "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"
+  (docs/offene-punkte.md, Ergänzung jenes Tages). Dort lädt sie nur, wer den Punkt aufschlägt;
+  ein späterer Eingriff an ANDERER Stelle — ein Fehler-Tracker, der Anfragerümpfe mitnimmt, ein
+  Lead-Ereignis aus dem Relay, ein Postfach — bräche sie, ohne dass der Eingreifende das Archiv
+  der Phase 13.6 aufschlägt. Die Regel tritt daneben; der offene Punkt wird nicht geändert.
+  DIE GRENZE: Im Datensparmodus (browser-direkt) berührt der Inhalt unseren Server nicht; dort
+  gelten Entscheidungen P13-2 und P13-7 der Phase 13 unverändert. Für TRACKING-MERKMALE gilt
+  die Auflage vom 2026-08-19 am genannten offenen Punkt unverändert. Ob eine gehashte E-Mail an
+  Ziele geht, ist NICHT entschieden (Roadmap-Zeile 13.8).
+  ABGRENZUNG ZU "INGEST-204-CONTAINMENT": Jene schützt den Zustand eines Schlüssels am Ingest;
+  diese schützt den Inhalt eines Formulars. Ein Relay-Weg, der den Ingest-Pfad teilte, bräche
+  beide.
+  ABGRENZUNG ZU "SCHWÄRZUNG — VIER TEILE, DIE NUR ZUSAMMEN TRAGEN": Die Schwärzung fängt
+  Geheimnisse in Fremdtext nach FORM; eine E-Mail-Adresse, ein Name oder eine Telefonnummer
+  überstehen sie (Vermerk P13.6-19, Punkt (9), der Phase 13.6). Getragen hat bisher allein die
+  BAUFORM, den Rumpf gar nicht zu loggen — darum steht sie hier.
+  DIE BEDINGUNG DES ENTFALLENS: Die Regel wird neu gefasst, sobald eine Owner-Entscheidung
+  Speicherung von Formularinhalten oder ihren Weg an ein Tracking-Ziel zulässt; bis dahin gilt
+  sie unverändert (ARCHITEKT-Vorschlag CC, 2026-10-01, beim Phasenende 13.6 vorgelegt).
+  PROVENIENZ: die Neufassung OWNER 2026-09-29; die Bauform ARCHITEKT 2026-09-29; die Befunde
+  GEMESSEN bzw. GELESEN wie angegeben; die Erhebung zur Dauerregel beim Phasenende 13.6
+  (2026-10-01); der Wortlaut CC. Herleitung: das Archiv der Phase 13.6.
+- DIE FUNKTIONALE VORSCHAU IM EDITOR SENDET NIE — EIN SENDEWEG, DEN PAGESMITH EINBAUT, ENTSTEHT
+  NUR IM MODUS "export" (Phase 13.6, gehoben 2026-10-01 aus Owner-Entscheidung P13.6-13 und
+  Setzung P13.6-38):
+  DER URSPRUNG: Owner-Entscheidung P13.6-13 der Phase 13.6 (OWNER 2026-09-29): "Die
+  funktionale Vorschau im Editor sendet nie echte Ereignisse — weder an `/api/e` noch an ein
+  Ziel." GRUND: Klicks beim Gestalten liefen sonst als Conversions in Messung und
+  Gebotsoptimierung der Kampagnen des Betreibers. VERWORFEN: "nur bei eingeschaltetem
+  Testmodus" (der Testmodus isoliert nicht bei jedem Ziel, linkedin und google haben keinen —
+  Regel "SICHTBARKEIT STATT ISOLATION …") und "die Vorschau sendet echt".
+  DIE REICHWEITE: Setzung P13.6-38 derselben Phase (ARCHITEKT 2026-09-29) — "nie" umfasst
+  jeden Sendeweg, den Pagesmith in die Vorschau einbaut, auch jeden, der später käme. Damit ist
+  die "akzeptierte Marketer-eigene-Vorschau-Verschmutzung" der Phase 4
+  (docs/claude-history/phase-4-mapping-codegen-export.md) aufgehoben; jenes Archiv bleibt
+  unverändert.
+  DER SCHUTZ HING AN EINEM NEBENEFFEKT, UND DAS IST DER GRUND FÜR DEN WÄCHTER: Bis zum
+  Bau-Commit `8be7bb3` (2026-09-29) baute die Vorschau den Beacon mit `getCapiProxyUrl`, und das
+  lieferte in der Produktions-App `http://localhost:3000/api/e` — eine falsch importierte
+  Umgebungsvariable (Vorrat P13.6-12 der Phase 13.6). Lader und `fbq` hingen allein an der
+  Pixel-ID; `fbevents.js` lud im Vorschau-Rahmen und sandte (GEMESSEN, OWNER, 2026-09-29,
+  Vermerk P13.6-45, Punkt (2)).
+  GEBAUT: `generateFunctional` (src/lib/generate.ts) baut die Meta-Laufzeit nur im Modus
+  "export"; die Track-Anweisung ist in "preview" leer; der Editor übergibt der Vorschau weder
+  Pixel-ID noch Tracking-Schlüssel noch Beacon-Adresse (Setzung P13.6-43, Punkte (2) und (4)).
+  Formular-Ziel und Custom-Pixel entstanden schon vorher nur in "export" (Setzung P13-30 der
+  Phase 13; Entscheidung P11.6-6 (d) der Phase 11.6), der Seitenaufruf nur beim
+  Veröffentlichen (`injectPageViewEmitter`). WÄCHTER: W-P1 (Text) und W-P2 (Verhalten), je mit
+  Positivkontrolle am Export (src/lib/generate.test.ts), W-E2E (src/components/CodeImporter.test.tsx),
+  T13 (src/lib/tracking/custom-pixel.test.ts).
+  DIE GRENZE: Setzung P13.6-39 derselben Phase — Skripte im importierten HTML des Betreibers
+  erfasst die Entscheidung nicht; wir fassen fremden Code nicht an. Darunter alte
+  Pagesmith-Bausteine aus einem früheren Export (Klasse "eigen" der Phase 11.11), die in der
+  Vorschau laufen und an ihr Ursprungsprojekt senden (docs/claude-history/backlog-polish.md,
+  Vorrat P13.6-44).
+  WARUM EINE DAUERREGEL: Ein neuer Sendeweg — das Browser-Tag eines weiteren Ziels, ein
+  Lead-Ereignis — entsteht in einer Scheibe, die die Vorschau nicht zum Gegenstand hat und
+  das Archiv der Phase 13.6 nicht aufschlägt. W-P1 sucht nach benannten Nadeln und sagt an
+  sich selbst: "Ein Sendeweg unter einem Namen, der hier nicht steht, oder aus Teilen
+  zusammengesetzt, geht an ihm vorbei — dafuer gibt es W-P2" (src/lib/generate.test.ts);
+  W-P2 prüft das Verhalten der Wege, die seine Fixture auslöst.
+  ABGRENZUNG ZU "Importierter User-Code läuft NUR im sandboxed iframe": Der Rahmen und sein
+  Riegel unterbinden keinen Sendeweg (Vermerk P13.6-42, Punkt (5), der Phase 13.6); die Sandbox
+  trennt Ursprünge, sie hält nichts vom Senden ab.
+  DAS FORMULAR-ZIEL SAMT RELAY GEHÖRT DAZU: Seine Laufzeit entsteht nur im Modus "export"
+  (Setzung P13-30 der Phase 13), der Relay-Zweig nur im Text einer veröffentlichten Seite
+  (`buildFormTargetRuntime` mit `withRelay`, src/lib/form-target.ts). Ein Vorschau-Lead an
+  einen Formular-Empfänger wäre ein echter Lead beim Betreiber — kein Testmodus eines
+  Tracking-Ziels macht ihn unecht.
+  DIE BEDINGUNG DES ENTFALLENS: eine Owner-Entscheidung, die die Vorschau senden lässt
+  (ARCHITEKT, Auflage A1 zum Phasenende 13.6, 2026-10-01).
+  KONTEXT, ABGELEITET, KEINE BEDINGUNG: Vorgelegt war zuerst "für JEDES Ziel ist ein Testmodus
+  auf beiden Achsen als isolierend gemessen" (CC, aus dem VERWORFEN der Owner-Entscheidung). Sie
+  trägt nicht, weil die Regel jedem Sendeweg gilt, auch dem Formular-Relay; ein isolierender
+  Testmodus wäre allenfalls ein Grund, dem Owner die Frage erneut vorzulegen.
+  PROVENIENZ: die Entscheidung OWNER 2026-09-29; Reichweite und Gestalt ARCHITEKT 2026-09-29;
+  die Messungen wie angegeben; die Erhebung zur Dauerregel beim Phasenende 13.6 (2026-10-01),
+  die Bedingung des Entfallens ARCHITEKT 2026-10-01; der Wortlaut CC. Herleitung: das Archiv
+  der Phase 13.6.
+- EIN SERVERSEITIG ERZEUGTES EREIGNIS TRÄGT NIE EIN FEHLENDES EINWILLIGUNGSFELD, SONDERN IMMER
+  EIN AUSDRÜCKLICHES URTEIL — DAS DES BESUCHERS AUS DEM BROWSER (Phase 13.6, gehoben 2026-10-01
+  aus Setzungen P13.6-4 und P13.6-24):
+  DER URSPRUNG: Setzung P13.6-4 der Phase 13.6 (ARCHITEKT 2026-09-29) — "Ein serverseitig
+  erzeugtes Ereignis trägt nie ein fehlendes Einwilligungsfeld, sondern immer ein
+  ausdrückliches Urteil"; Setzung P13.6-24 (ARCHITEKT 2026-09-29) — der Transit an den Betreiber
+  braucht keine Einwilligung (Setzung P13-8 der Phase 13), ein daraus abgeleitetes
+  Tracking-Ereignis trägt das Urteil aus dem Browser.
+  DER BEFUND, AUF DEM SIE RUHT (GELESEN AM CODE, Vermerk P13.6-1, Punkt (9), der Phase 13.6;
+  nachgelesen CC, 2026-10-01): `allowedTargets` (src/lib/capi/ingest.ts) liest `cns` aus dem
+  Rumpf; bei fehlendem Feld (`wireAbsent`) passieren allein die Ziele mit
+  `LEGACY_CONSENT_ROLE` (src/lib/tracking/consent-targets.ts) — heute `meta: true`, alle
+  übrigen `false`. Im Browser entsteht ohne Zustimmung gar kein Beacon (`__psConsent` in
+  `__psMetaFire`); ein SERVERSEITIG erzeugtes Ereignis durchläuft diese Prüfung nicht und
+  hätte ohne Feld den Weg an meta frei (ABGELEITET).
+  WARUM EINE DAUERREGEL: Heute erzeugt kein Code ein Ereignis auf dem Server. Der erste, der es
+  tut — die Phase 13.8 (Lead-Ereignis vom Server), ein Offline- oder Webhook-Ereignis, ein
+  Aufruf über die spätere MCP-Schicht —, entsteht an einer Stelle, die dieses Archiv nicht
+  zum Gegenstand hat, und der Fehler wäre ein Forward ohne Einwilligung, den kein Kanal
+  anzeigt.
+  ABGRENZUNG ZU "EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN FAIL-CLOSED AN, UND EIN
+  DEPLOY HEILT DAS NICHT": Jene beschreibt dieselbe Mechanik von der Seite der ALTEN Seiten —
+  ohne Feld bleibt nur meta, ein neues Ziel sendet nicht. Diese gilt der NEUEN Quelle: ohne
+  Feld bleibt meta offen, und das ist dort der Schaden.
+  DIE GRENZE: Woher das Urteil kommt und wie es mit dem Ereignis zum Server reist, entscheidet
+  der Zuschnitt, der das Ereignis baut (Setzungen P13.6-4 und P13.6-24, je GRENZE).
+  DIE BEDINGUNG DES ENTFALLENS: `allowedTargets` lässt bei fehlendem Feld kein Ziel mehr
+  durch — dann ist ein fehlendes Feld kein offener Weg mehr.
+  PROVENIENZ: die Setzungen ARCHITEKT 2026-09-29; der Befund am Code wie angegeben; die
+  Erhebung zur Dauerregel und die Bedingung des Entfallens beim Phasenende 13.6 (2026-10-01,
+  CC-Vorschlag); der Wortlaut CC. Herleitung: das Archiv der Phase 13.6.
+- EIN ÖFFENTLICHER ENDPUNKT, DER AN EINE ADRESSE DES BETREIBERS WEITERLEITET, NIMMT PROJEKT UND
+  ADRESSE NIE AUS DER ANFRAGE (Phase 13.6, gehoben 2026-10-01 aus Setzungen P13.6-20,
+  P13.6-21 und P13.6-57, dazu Setzung P13.6-59, Q3 und Q8):
+  DER URSPRUNG, JE TEIL (alle ARCHITEKTEN-SETZUNGEN der Phase 13.6, revidierbar):
+  · Setzung P13.6-57 (2026-09-29) — das Projekt aus dem Host der Anfrage, nicht aus einem
+    Schlüssel im Rumpf: "Damit gilt das Relay per Bauart nur für gehostete Seiten, und kein
+    Aufrufer kann ein fremdes Projekt adressieren." Sie ersetzt den ersten Punkt der Setzung
+    P13.6-20 (Setzung P13.6-59, Q10).
+  · Setzung P13.6-20 (2026-09-29) — die Zieladresse kommt ausschliesslich aus
+    `published_content`, nie aus der Anfrage, nie aus dem Entwurf. GRUND: Für Exporte gibt es
+    keine geprüfte Serverfassung, und `saveProject` schreibt ungeprüft; `published_content` ist
+    der beim Veröffentlichen geprüfte Stand.
+  · Setzung P13.6-21 (2026-09-29) mit Setzung P13.6-59, Q3 — genau zwei Zustände, 204
+    "zugestellt" und 502 "nicht zugestellt", je ohne Rumpf; Sperre und unbekannter Schlüssel
+    bleiben ununterscheidbar, im Sinne von "INGEST-204-CONTAINMENT". Bei der Ratenbegrenzung
+    gehalten (Setzung P13.6-75, E5: "begrenzt" ist dieselbe 502).
+  · Setzung P13.6-59, Q8 — `redirect: "manual"`, nie folgen; 2xx und 3xx gelten als
+    zugestellt (`forward`, src/lib/relay/relay.ts).
+  · Die exakte Host-Liste: Owner-Entscheidung P13.6-55 und Vermerk P13.6-58, G5 — ein Muster
+    liesse fremde Dienste desselben Anbieters und ungelesene Zonen zu (Kopfkommentar von
+    src/lib/relay/hosts.ts).
+  DER GRUND, AUS DEM KERN HIERHER (Auflage A3, 2026-10-01): Sonst adressiert ein Aufrufer von
+  unserem Server aus ein fremdes Projekt oder eine beliebige Adresse, und eine unterscheidbare
+  Antwort verrät den Zustand eines Projekts.
+  DER BEFUND, GEGEN DEN SIE STEHT (Vermerk P13.6-19, Punkt (4), der Phase 13.6, GEMESSEN AM
+  REPO 2026-09-29): Bis zum Relay riefen alle zehn Server-Aufrufe konstante Hosts; keine Prüfung
+  auf private Adressbereiche, Loopback oder Metadaten-Dienste existiert. Das Relay ist der
+  erste Server-Aufruf an eine Adresse, die ein Betreiber eingetragen hat.
+  GEBAUT UND GEWACHT: `lookupRelayProject` und `resolveRelayTarget`
+  (src/lib/relay/resolve-relay.ts), `relay` und `forward` (src/lib/relay/relay.ts),
+  `allowedRelayEndpoint` (src/lib/relay/hosts.ts); Tests R-TENANT-1 und -2, R-PARITY, R-REDIR,
+  H1 bis H4z (src/lib/relay/relay.test.ts, hosts.test.ts); live L3 (Mandantentrennung) und L4
+  (Kill-Switch) in Vermerk P13.6-60, Punkt (6).
+  WARUM EINE DAUERREGEL: Der nächste Endpunkt dieser Art entsteht nicht im Relay — die
+  nativen Empfänger mit Kundenschlüssel, "Webhooks auf Performance-Events" und die Lesart (b)
+  der Phase 11.6 (ein server-seitiger Empfänger mit kundeneigenem Endpunkt) stehen als eigene
+  Gegenstände an. Wer dort baut, schlägt nicht das Archiv des Formular-Relays auf.
+  ABGRENZUNG ZU "EINE ROUTE, DIE SCHREIBT ODER EINEN FREMDEN ENDPUNKT RUFT, IST NIEMALS EIN
+  GET": Jene gilt dem Auslöser (wer den Aufruf auslöst); diese dem Ziel und der Zuordnung.
+  ABGRENZUNG ZU "HOST-QUELLE FÜR APP-vs-SERVING-BRANCHING": Jene benennt, welcher Kopf den Host
+  trägt; diese, wofür der Host benutzt wird.
+  DIE GRENZE: Exporte haben keinen Host, aus dem ein Projekt folgte, und keine geprüfte
+  Serverfassung; sie bleiben browser-direkt (Setzung P13.6-59, Q11). Dass Node-`fetch` bei
+  `redirect: "manual"` den 3xx-Status liefert, ist ABGELEITET, nicht gemessen.
+  DIE BEDINGUNG DES ENTFALLENS: für die Host-Liste eine gebaute und gemessene Prüfung auf
+  Netzebene (private Adressbereiche, Metadaten-Dienste, Namensauflösung); für Projekt und
+  Adresse ein Aufrufer, der sein Projekt kryptografisch belegt (CC-Vorschlag, 2026-10-01).
+  PROVENIENZ: die Setzungen ARCHITEKT 2026-09-29; die Host-Liste OWNER 2026-09-29; die Befunde
+  wie angegeben; die Erhebung zur Dauerregel beim Phasenende 13.6 (2026-10-01); der Wortlaut
+  CC. Herleitung: das Archiv der Phase 13.6.
+- EIN SCHREIBWEG ÜBER DEN ADMIN-CLIENT SCHREIBT ERST NACH DEM EIGENTUMS-GATE, FILTERT AUF DIE
+  EIGENTUMS-ACHSE SEINER TABELLE, UND EIN UPDATE OHNE TREFFER IST EIN FEHLER (Phase 13.6,
+  gehoben 2026-10-01 aus Setzungen P13.6-117 und P13.6-125):
+  DER GRUND, AUS DEM KERN HIERHER (Auflage A3, 2026-10-01): service_role umgeht RLS. Ohne Gate
+  oder Filter ist der Admin-Client eine IDOR-Lücke mit vollen Rechten; ein stiller
+  Fehlschlag meldet "gespeichert", wo nichts geschrieben ist.
+  DIE EIGENTUMS-ACHSE JE TABELLE, GELESEN AM CODE (CC, 2026-10-01, Stand `6e37194`; Auflage A2):
+  · `projects` — die Updates in `publishProject`, `setCapiToken`, `setAbTestActive` und
+    `removeVariantB` (src/app/projects/actions.ts) filtern auf `id` und `user_id` und lesen
+    per `.select("id").maybeSingle()` zurück; ohne Treffer "Projekt nicht gefunden.". Der
+    Insert in `saveProject` setzt `user_id: user.id` aus der Sitzung; ein Fehler oder eine
+    fehlende Rückgabe meldet "Anlegen fehlgeschlagen.".
+  · `domains` (ohne `user_id`) — `assignDomainLabel` (actions.ts) fügt `{ label, project_id }`
+    mit der `projectId` ein, die das Gate in `publishProject` bestanden hat; jeder Fehler ausser
+    23505 bricht ab, und `publishProject` meldet "Label-Vergabe fehlgeschlagen.".
+    `persistDomainRow` (src/lib/domains/register.ts) fügt ebenso mit der geprüften
+    `projectId` ein. Update (`checkDomainStatus`, src/lib/domains/status.ts) und Delete
+    (`removeCustomDomain`, src/lib/domains/remove.ts) filtern auf das `label` der Zeile,
+    deren Projekt-Eigentum sie vorher gelesen und mit `userId` verglichen haben.
+  · `project_secrets` und `project_tokens` (ohne `user_id`) — Upsert und Delete in
+    `setCapiToken` und `removeCapiToken` auf die `project_id` des geprüften Projekts; jeder
+    Fehler bricht ab.
+  ZWEI ABWEICHUNGEN IM BESTAND, GEMELDET, NICHT GEÄNDERT (CC, 2026-10-01):
+  · In src/lib/domains/register.ts, status.ts und remove.ts entsteht der Admin-Client VOR dem
+    Gate; das Gate selbst liest über ihn und vergleicht das Eigentum ausdrücklich mit `userId`,
+    bevor geschrieben wird (Bestand seit Phase 7, Muster "Session-unabhängige Mutationen").
+    Punkt (1) des Kerns ist deshalb zweigeteilt formuliert.
+  · Das Update in `checkDomainStatus` liest nicht zurück, ob es eine Zeile getroffen hat;
+    Punkt (3) des Kerns ist dort nicht erfüllt (die Zeile ist im selben Aufruf vorher gelesen
+    worden). Ein Delete ohne Treffer gilt im Bestand nicht als Fehler (`removeCapiToken`).
+  ZU (3) BEI EINEM INSERT: An die Stelle von "keine Zeile getroffen" tritt der Fehler des
+  Inserts selbst und, wo zurückgelesen wird, eine fehlende Rückgabe (`saveProject`).
+  DER URSPRUNG: Setzung P13.6-117 der Phase 13.6 (ARCHITEKT 2026-10-01) — Gestalt (a)
+  Spaltenrechte; server-eigene Spalten schreibt allein service_role, nach dem Eigentums-Gate
+  und mit `user_id`-Filter. Setzung P13.6-125 (ARCHITEKT 2026-10-01) — `saveProject` legt das
+  Projekt über den Admin-Client an, `user_id` allein aus der server-geprüften Sitzung, in einem
+  einzigen Schreibvorgang. Die Revision von Setzung P13.6-36, F7 (Admin-Client in
+  `publishProject` nur bei Formular-Ziel) steht an P13.6-117.
+  DER ZUSTAND, AUS DEM SIE FOLGT: Seit Migration 0031 (eingespielt 2026-10-01) darf
+  authenticated auf `projects` allein sieben client-eigene Spalten ändern; ein PATCH auf
+  `blocked_at`, `tracking_key` oder `domains.label` antwortet 403 mit `42501` (GEMESSEN, OWNER,
+  2026-10-01, Vermerk P13.6-130, Punkte (1) und (3), der Phase 13.6). Die Regel "GRANTS SCHÜTZEN
+  NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT" trägt seither die Folge: eine server-eigene
+  Spalte "schreibt allein der Server über service_role". WIE er schreibt, steht dort nicht.
+  GEBAUT: in src/app/projects/actions.ts schreiben `saveProject` (Insert), `publishProject`,
+  `setCapiToken`, `setAbTestActive`, `removeVariantB` und `assignDomainLabel` server-eigene
+  Spalten über `createAdminClient()` nach dem Eigentums-Gate, mit `id`- und `user_id`-Filter und
+  lautem Fehler bei null getroffenen Zeilen (Vermerk P13.6-130, Punkt (5)). WÄCHTER: SR-A1 bis
+  SR-A6 (src/app/projects/actions.test.ts), SR-P1 bis SR-P5 (src/app/projects/publish.test.ts);
+  die Mutationen M1 (`user_id`-Filter entfernt), M2 und M2b (Admin-Client vor dem Gate) und M3
+  (`user_id` aus der Eingabe) wurden rot (ebenda).
+  WARUM EINE DAUERREGEL: Eine neue Server-Action, die eine server-eigene Spalte schreibt —
+  etwa in der Phase 13.7 oder 13.8 —, folgt der Grants-Regel und greift zu service_role; ob
+  sie das Gate vorher setzt und den Filter mitnimmt, sieht kein Test der bestehenden Aktionen.
+  Der offene Punkt "DIE IDOR-WÄCHTER SIND NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT
+  BY DEFAULT, UND NICHTS WIRD DAVON ROT" (docs/offene-punkte.md) beschreibt dieselbe Lücke von
+  der Seite der Wächter.
+  ABGRENZUNG ZU "Session-unabhängige Mutationen": Jene trennt Autorisierung und
+  Geschäftslogik als Baustil; diese legt fest, wo der Client mit vollen Rechten entstehen darf
+  und was jede seiner Schreibungen trägt.
+  ABGRENZUNG ZU "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI": Jene gilt Tabellen, die nur
+  service_role berührt; diese den Schreibwegen in Tabellen, die zugleich die Nutzer-Sitzung
+  liest.
+  NICHT ÜBERNOMMEN, WEIL DER BESTAND ES NICHT TRÄGT: Die Übergabe zum Phasenende nannte "nie mit
+  Nutzer-Token"; eine Fundstelle dazu steht weder in der Standdatei der Phase 13.6 noch im Code
+  (GEMESSEN AM REPO, CC, 2026-10-01). Der Satz ist nicht geschrieben.
+  DIE BEDINGUNG DES ENTFALLENS: Server-eigene Spalten werden nicht mehr über service_role
+  geschrieben, etwa über je eine geprüfte DB-Funktion (CC-Vorschlag, 2026-10-01).
+  WARUM HIER UND NICHT IN docs/db-regeln.md: Jene Datei lädt bei Migration, Schema, Policy, RPC
+  und Analytics-Lesepfad. Eine neue Server-Action ohne Migration löst keinen dieser Auslöser
+  aus — genau dort entsteht der Fehler.
+  PROVENIENZ: die Setzungen ARCHITEKT 2026-10-01; Messung und Bau wie angegeben; die Erhebung
+  zur Dauerregel beim Phasenende 13.6 (2026-10-01); der Wortlaut CC. Herleitung: das Archiv der
+  Phase 13.6.
+- EIN VERGLEICHSWERT FÜR EINEN LIVE-BYTE-VERGLEICH WIRD UNMITTELBAR VOR DEM VERGLICHENEN SCHRITT
+  ERHOBEN — NACH DENSELBEN BEARBEITUNGSSCHRITTEN, NICHT VOR EINEM, DER DIE EINGABE VERÄNDERN KANN
+  (Phase 13.6, gehoben 2026-10-01 aus Hebungs-Kandidat P13.6-73):
+  DER URSPRUNG: Hebungs-Kandidat P13.6-73 der Phase 13.6 (ARCHITEKT 2026-09-30, Nachtrag
+  2026-10-01), samt seiner Bedingung des Entfallens.
+  DER GRUND, AUS DEM KERN HIERHER (Auflage A3, 2026-10-01): Liegt zwischen Vorher-Wert und
+  Vergleich ein Schritt, der die Eingabe ändern kann, werden zwei verschiedene Eingaben
+  verglichen, und eine Abweichung ist vom Prüfling nicht mehr zu trennen.
+  DIE ZWEI FÄLLE:
+  · Scheibe 13.6-4 (Vermerk P13.6-70, Punkt (8), der Phase 13.6): V2 wurde vor dem Schritt L2
+    erhoben, L2 veränderte die Eingabe, L3 wich um 14 Bytes ab — weder eine zusammenhängende
+    Einfügung noch eine andere Ursache war danach noch zu belegen (GEMESSEN, CC, 2026-09-30).
+  · Scheibe "Zapier ins Relay" (Vermerk P13.6-103, Punkte (4) und (7), derselben Phase): Ein
+    NEUES Projekt, erstmals ohne Neuladen veröffentlicht, lieferte einen Vorher-Wert ohne
+    Meta-Laufzeit, weil der Tracking-Schlüssel im Client fehlte; der Differenz-Nachweis ging
+    erst per vollständiger Rückrechnung auf. Der Produktfehler dahinter ist behoben (Bau-Commit
+    `1256f0e`); die Lehre für das Instrument bleibt.
+  DIE PRAXIS, DIE SICH BEWÄHRT HAT: Setzung P13.6-88, (d), derselben Phase machte V0 zum
+  Pflicht-Schritt — "Editor neu laden, veröffentlichen, Bytes, sha256 und `cache-control`
+  zweimal messen"; die Scheiben "Zurück-Cache" (Vermerk P13.6-89, Punkt (1)), "Zapier ins
+  Relay" an der Make-Seite (Vermerk P13.6-102, Punkt (3)) und "Beacon bei
+  Erstveröffentlichung" (Vermerk P13.6-114, Punkt (1)) haben ihre Vorher-Werte so erhoben.
+  ABGRENZUNG ZU "EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT
+  MEHR HERSTELLBAR": Jene setzt den frühesten Zeitpunkt (vor dem Deploy), diese den spätesten
+  (unmittelbar vor dem verglichenen Schritt). Beide gelten zugleich.
+  ABGRENZUNG ZU "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN DOKUMENT, NIE AN
+  EINER GESPEICHERTEN DATEI": Deren Herkunfts-Auflage (Mappings aus derselben Herkunft) gilt
+  allein der Schlüssel-Reihenfolge des Datenblocks und entfällt mit Kandidat (a) des Vorrats
+  P13-62; diese gilt jeder Änderung der Eingabe und entfällt erst mit dem Vergleich auf dem
+  Server. Die Nachbarregel ist NICHT geändert, weil ihr Wortlaut beim Phasenende 13.6 nicht im
+  Auftrag lag.
+  DIE BEDINGUNG DES ENTFALLENS (aus dem Kandidaten): Ein Byte-Vergleich läuft serverseitig gegen
+  denselben Eingabestand.
+  PROVENIENZ: der Kandidat ARCHITEKT 2026-09-30 und 2026-10-01; die Fälle GEMESSEN wie
+  angegeben; die Erhebung beim Phasenende 13.6 (2026-10-01); der Wortlaut CC. Herleitung: das
+  Archiv der Phase 13.6.

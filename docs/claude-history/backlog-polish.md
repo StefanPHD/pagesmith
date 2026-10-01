@@ -5435,23 +5435,19 @@ zeichengleich; der ungekürzte Wortlaut steht im Archiv der Phase.
   ungenau. Offen ist allein, ob der Posten eine Richtigstellung bekommt. KEINE EMPFEHLUNG.
 
 - **P11.6-3 — DIE VORSCHAU FEUERT ECHTE EREIGNISSE: EINE HÄLFTE IST GEFÜHRT, DIE ANDERE NICHT**
-  **Die `fbq`-Hälfte ist geführt** und ausdrücklich akzeptiert:
-  docs/claude-history/phase-4-mapping-codegen-export.md sagt wörtlich "Die Vorschau feuert
-  bereits bei Linksklick echtes fbq (akzeptierte Marketer-eigene-Vorschau-Verschmutzung)" —
-  festgehalten beim Bau des auxclick-Listeners. **Dafür steht hier nur der Zeiger.**
-  **Die `/api/e`-Beacon-Hälfte ist NICHT geführt** (GEMESSEN am Repo, CC, 2026-09-19, Achse
-  `Vorschau` neben `Beacon` bzw. `api/e` über alle Doku-Dateien: null Treffer;
-  Positivkontrolle: `Vorschau` trifft in dieser Datei fünfmal, in docs/offene-punkte.md
-  elfmal). Erklärbar und trotzdem eine Lücke: Jener Satz stammt aus Phase 4, den CAPI-Beacon
-  gibt es erst seit Phase 6, und seit Phase 11 Scheibe 8 hängt er nicht einmal mehr an der
-  Pixel-ID. **Die akzeptierte Verschmutzung ist seither GRÖSSER als der Satz, der sie
-  akzeptiert** — sie erreicht die eigene `events`-Tabelle und damit die Analytics-Zahlen.
-  **WOZU ER IN DER PHASE 11.6 GEBRAUCHT WURDE:** Entscheidung P11.6-6 (d) nimmt den
-  Custom-Baustein aus der Vorschau heraus und weicht damit vom Bestand ab. Dieser Eintrag
-  belegt, dass der Bestand dort nicht sauber ist, sondern gewachsen — die Abweichung ist
-  also keine Inkonsequenz.
-  **KEIN TRIGGER** — der Zustand geht nicht still kaputt, er ist seit Phase 4 bekannt und
-  bewusst. KEINE EMPFEHLUNG, ob Meta und der Beacon in der Vorschau bleiben sollen.
+  **ERLEDIGT AM 2026-09-29 MIT DER SCHEIBE 13.6-2. TITEL UND BELEG BLEIBEN, DER VOLLTEXT IST
+  GESTRICHEN** (docs/arbeitsweise.md, "Wie ein Satz wieder herausgeht"); er ist unter dem
+  Commit `6e37194` vollständig nachzulesen.
+  **DER GEGENSTAND, IN EINEM SATZ:** Die funktionale Vorschau feuerte echte Ereignisse — `fbq`
+  (seit Phase 4 als akzeptiert geführt) und den Beacon an `/api/e` (nirgends geführt).
+  **DER BELEG DER ERLEDIGUNG:** Bau-Commit `8be7bb3` ("feat(preview): Die Vorschau sendet nie
+  — keine Meta-Laufzeit, keine Tracking-Eingaben"), live bestanden (Vermerk P13.6-45 der Phase
+  13.6, Standdatei der Phase 13.6, docs/aktiver-stand.md); Owner-Entscheidung P13.6-13
+  und Setzung P13.6-38 derselben Phase nehmen BEIDE Hälften heraus. Seit dem 2026-10-01 eine
+  Dauerregel: docs/immer-beachten.md, "DIE FUNKTIONALE VORSCHAU IM EDITOR SENDET NIE …".
+  Der Rest, den die Entscheidung bewusst nicht erfasst — alte Pagesmith-Bausteine im
+  importierten HTML —, steht als Vorrat P13.6-44 im Abschnitt "Aus Phase 13.6 gehoben
+  (2026-10-01) …" am Ende dieser Datei.
 
 ## Aus Phase 11.11 gehoben (2026-09-22) — sieben Vorrats-Einträge und ein Restsatz
 
@@ -6459,6 +6455,16 @@ PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN".
   die Auslieferung; den Empfang eines Rumpfes durch eine Route nennt ihr Kern nicht.
   TRIGGER: der Zuschnitt des Relay-Endpunkts in Phase 13.6 — dort nimmt erstmals ein Endpunkt
   Formularrümpfe absichtlich an.
+  TRIGGER EINGETRETEN 2026-09-29 (Zuschnitt der Scheibe 13.6-3), VON DER PHASE NICHT
+  BEARBEITET — VERMERKT 2026-10-01 beim Phasenende 13.6. Der Eintrag bleibt hier; nach dem
+  zweiteiligen Kriterium ist er KEIN offener Punkt: Der Besucher bekommt eine Fehlerantwort
+  statt einer Seite, der Verlust ist für ihn sichtbar. Die 405 ist für einen POST auf einen
+  unbekannten Pfad des Serving-Hosts GEMESSEN (OWNER, 2026-09-29, Vermerk P13.6-60, Punkt (3),
+  der Phase 13.6 — derselbe Weg über `/app-serve`), für die Startseite selbst nicht. Was ein
+  eingehender Rumpf im Tarif kostet und ob die Plattform ihn ablegt, ist weiter offen; die
+  zweite Frage steht unter (a) am offenen Punkt "DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE
+  FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM CODE KEINEN RIEGEL". NEUER TRIGGER: das erste
+  Formular OHNE Ziel auf einer gehosteten Seite eines fremden Nutzers.
 
 - **Vorrat P13-37 — IN `mappingsEqual` STEHT EIN LITERALES NUL-BYTE ALS TRENNER; DER KOMMENTAR
   DARÜBER NENNT EIN LEERZEICHEN**
@@ -6508,21 +6514,36 @@ PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN".
   BETREIBER zeigt nichts den Fehlschlag (ABGELEITET).
   TRIGGER: der Zuschnitt des Datensparmodus (der browser-direkte Weg, der neben dem Relay
   bestehen bleibt; Roadmap-Zeile 13.6).
+  TRIGGER EINGETRETEN 2026-09-30 (Zuschnitt der Scheibe 13.6-4, Datensparmodus), VON DER
+  PHASE NICHT BEARBEITET — VERMERKT 2026-10-01 beim Phasenende 13.6. GEPRÜFT, OB AN DER
+  GRENZE EIN LEAD ODER EIN EREIGNIS STILL VERLOREN GEHT: NEIN, nach dem Code. GELESEN AM CODE
+  (CC, 2026-10-01, Stand `6e37194`): `__psFormTargetSend` (Text aus `buildFormTargetRuntime`,
+  src/lib/form-target.ts) ruft auf jedem Fehlerweg `fail()` — ein Wurf beim Aufruf, eine
+  abgewiesene Promise, eine Antwort ohne `opaque` bzw. ohne 204, das Zeitlimit; dann bleibt das
+  Formular mit der Meldung stehen. Der Track (`onReached`) läuft allein bei "erreicht". Der
+  Relay-Weg ruft ebenfalls mit `keepalive: true` und nimmt höchstens 64 KiB an
+  (`RELAY_MAX_BODY_BYTES`, src/lib/relay/relay.ts), darüber 502 und dieselbe Meldung. Der
+  Verlust ist damit für den Besucher sichtbar, für den Betreiber nicht. Kein offener Punkt.
+  GRENZE: Ob ein Browser einen zu grossen `keepalive`-Rumpf ablehnt statt ihn abzuschneiden oder
+  ohne `keepalive` zu senden, ist weder gelesen noch gemessen — die MESSFRAGE oben bleibt.
+  NEUER TRIGGER: die erste Meldung eines Formulars, das sich nicht absenden lässt, oder die
+  nächste Arbeit an `__psFormTargetSend`.
 
 - **Vorrat P13-61 — BILD-KNOPF MIT `formaction`: EIN ZIEL WIRD ANGEBOTEN, OBWOHL SETZUNG P13-31 ES
   AUSSCHLIESST**
-  GELESEN AM CODE (CC, 2026-09-28; nachgelesen 2026-09-29): `formTargetCheck`
-  (src/lib/form-target.ts) prüft `formaction` und `formmethod` über `Array.from(form.elements)`.
-  Ein `<input type="image" formaction="https://…">` steht nicht in `form.elements` (Angabe des
-  Architekten, NICHT gemessen); dann wird ein Ziel angeboten. Für `formmethod="dialog"` an
-  einem Bild-Knopf gilt dieselbe Lücke (ABGELEITET).
-  DIE DOPPELANTWORT IN DERSELBEN DATEI (GELESEN AM CODE, CC, 2026-09-29): `deriveFormFieldNames`
-  holt Bild-Absendeknöpfe eigens dazu — über `form.ownerDocument` und `el.form === form`, mit
-  dem Kommentar, sie stünden "NICHT in form.elements (HTML-Spezifikation …)". Die Datei gibt
-  damit zwei verschiedene Antworten auf die Frage, welche Elemente zu einem Formular gehören;
-  der Kommentar zitiert die Spezifikation, gemessen ist keine der beiden.
-  KEIN DATENLECK: Unser Abfangen im submit-Listener übersteuert die fremde Adresse; betroffen
-  ist nur die Angebotsregel. KEIN TRIGGER GESETZT.
+  **ERLEDIGT AM 2026-09-29 MIT DER SCHEIBE 13.6-1. TITEL UND BELEG BLEIBEN, DER VOLLTEXT IST
+  GESTRICHEN** (docs/arbeitsweise.md, "Wie ein Satz wieder herausgeht"); er ist unter dem
+  Commit `6e37194` vollständig nachzulesen.
+  **DER GEGENSTAND, IN EINEM SATZ:** Ein Bild-Knopf (`<input type="image">`) mit `formaction`
+  stand nicht in `form.elements`, und `formTargetCheck` bot deshalb ein Ziel an, das Setzung
+  P13-31 der Phase 13 ausschliesst — bei einer Doppelantwort gegen `deriveFormFieldNames`.
+  **DER BELEG DER ERLEDIGUNG:** Die Prämisse ist gemessen (Chrome 154 und jsdom 29.1.1, Vermerk
+  P13.6-35, M-a und M-b, der Phase 13.6). Bau-Commit `9fae014`: der gemeinsame Helfer
+  `formControlsWithImages` (src/lib/form-target.ts) ersetzt die Doppelantwort, ein Bild-Knopf
+  zählt in `formTargetCheck` (Tests A2 in src/lib/form-target.test.ts); jedes `formaction`,
+  `formmethod` und `formenctype` an einem Absende-Element sperrt seither (Setzungen P13.6-33
+  und P13.6-36, F1/F2) — Vermerk P13.6-37, Punkt (8), Standdatei der Phase 13.6,
+  docs/aktiver-stand.md.
 
 - **Vorrat P13-62 — DIE SCHLÜSSEL-REIHENFOLGE DES DATENBLOCKS HÄNGT AN DER HERKUNFT DER MAPPINGS**
   GEMESSEN DURCH NACHBAU (CC, 2026-09-28; Vermerk P13-60, Punkt (4), Z, der Phase 13):
@@ -6562,3 +6583,189 @@ PHASENENDE 13 GEHOBEN (2026-09-29) — EIN POSTEN".
   Feldern erscheint in der Namensliste des Panels doppelt ("interesse" zweimal). Reine Anzeige;
   dort als "bewusst nicht dokumentiert" vermerkt, hier gehoben, damit der Befund das Redesign
   erreicht. TRIGGER: Zuschnitt des UI-Redesigns.
+
+## Aus Phase 13.6 gehoben (2026-10-01) — fünfzehn Vorrats-Einträge, eine Restarbeit und zwei Restfragen der Standdatei
+
+Gehoben beim Phasenende 13.6 aus der Standdatei der Phase 13.6 (Formular-Relay); die Nummern
+gehören zur Reihe `P13.6-n` jener Phase, ihr Archiv trägt den Wortlaut unter derselben Nummer
+(bis zur Archivierung: docs/aktiver-stand.md). Der Text hier ist VERDICHTET, nicht zeichengleich.
+Das Kriterium war zweiteilig — benennbarer Trigger UND "geht sonst still kaputt"; was beides
+trägt, steht in docs/offene-punkte.md, Block "AUS DEM PHASENENDE 13.6 GEHOBEN (2026-10-01)",
+was einer Phase zugewiesen ist, an den Roadmap-Zeilen 13.7, 13.8 und 14. KEIN FIX-VORSCHLAG
+über das Benannte hinaus. Zuordnung CC (Phasenende 13.6, 2026-10-01).
+
+- **Vorrat P13.6-9 — ZWEI LISTEN DESSELBEN GEGENSTANDS: DIE DURCHGELASSENEN API-PFADE**
+  GELESEN AM CODE (CC, 2026-09-29): `proxy` (src/proxy.ts) lässt `/api/e`, `/api/capi` und seit
+  der Scheibe 13.6-3 `/api/f` EXAKT durch; `isPublicRoute` in `updateSession`
+  (src/lib/supabase/middleware.ts) nimmt `/api/capi` als PRÄFIX und `/api/e` exakt. Ein neuer
+  öffentlicher Pfad muss in beide Listen, und nichts wird rot, wenn er in einer fehlt. EINE
+  GEMEINSAME KONSTANTE WÄRE FALSCH: `/api/f` soll auf dem App-Host gerade NICHT öffentlich sein
+  (Vermerk P13.6-58, Punkt (1), der Phase 13.6). KEIN TRIGGER GESETZT.
+
+- **Vorrat P13.6-11, dritte Frage — OB `auth.getUser()` IN `updateSession` OHNE SITZUNGS-COOKIE
+  EINEN NETZRUF KOSTET**
+  TEILWEISE GEMESSEN (Sonde, Owner, 2026-09-29; docs/plattform-befunde.md, Vercel, Teil (s)):
+  MIT Sitzungs-Cookie macht die Middleware eine ausgehende GET-Anfrage an den Supabase-Host;
+  ohne Cookie ist nicht gemessen, die Zuordnung zu `auth.getUser()` ist ABGELEITET. Die erste
+  Frage jenes Eintrags ist beantwortet (Vorrat P13.6-12), die zweite steht am offenen Punkt "DAS
+  RELAY LÄUFT FÜR JEDEN NUTZER …". KEIN TRIGGER GESETZT.
+
+- **Vorrat P13.6-15 — IM DEPLOYMENT LIEGEN GEHEIMNISSE, DIE DER CODE NICHT LIEST — DARUNTER SOLCHE
+  MIT DIREKTEM DATENBANKZUGANG**
+  DIE NAMEN (OWNER-ANGABE, 2026-09-29, aus dem Vercel-Dashboard): `POSTGRES_URL`,
+  `POSTGRES_PRISMA_URL`, `POSTGRES_URL_NON_POOLING`, `POSTGRES_USER`, `POSTGRES_HOST`,
+  `POSTGRES_PASSWORD`, `POSTGRES_DATABASE`, `SUPABASE_JWT_SECRET`, `SUPABASE_URL`,
+  `SUPABASE_ANON_KEY`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`,
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. NICHT GELESEN (GEMESSEN AM REPO, CC, 2026-09-29,
+  `git grep -w` ausser docs/ und Markdown, je 0 Treffer; Positivkontrolle
+  `NEXT_PUBLIC_SUPABASE_URL` sieben Dateien). HERKUNFT, ABGELEITET: die
+  Vercel-Supabase-Integration. Die Regel "Ausschliesslich über den Supabase-JS-Client … Keine
+  direkte PostgreSQL-Verbindung" (CLAUDE.md, Block A) bindet den Code, nicht das Deployment.
+  KANDIDATEN, NICHT ENTSCHIEDEN: entfernen · bewusst lassen, falls die Integration sie
+  verwaltet. BEZUG: Roadmap-Zeile 13.7, Klassen "GESTOHLENE ZUGÄNGE" und "LIEFERKETTE". KEIN
+  TRIGGER GESETZT.
+
+- **Arbeit P13.6-27, Rest — DIE HOSTS DER MAKE-ZONEN AUSSER eu2 STEHEN NICHT AUF DER
+  RELAY-HOST-LISTE**
+  Für Zapier ist die Arbeit erledigt (Vermerke P13.6-102 und P13.6-103 der Phase 13.6). Für Make
+  ist allein `hook.eu2.make.com` gemessen (docs/formular-empfaenger-befunde.md, Abschnitt
+  "Make", Befund (s)); welchen Host die Zonen eu1, us1 und us2 tragen, steht auf keiner
+  gelesenen Seite (ebenda, Befund (g); Messkandidat M8 teilweise offen). Eine Adresse dieser
+  Zonen geht browser-direkt, ohne Zustellprüfung; die Oberfläche zeigt es (Owner-Entscheidung
+  P13.6-99). Aufnahme nur nach Lesung UND Live-Test (Owner-Entscheidung P13.6-55).
+  TRIGGER: der erste Betreiber mit einer Make-Adresse ausserhalb von eu2, oder die nächste
+  Make-Lesung.
+
+- **Vorrat P13.6-28 — DER KOPFKOMMENTAR VON `cipher.ts` BEHAUPTET, SIE HABE IM PRODUKTIVCODE KEINEN
+  AUFRUFER; ES GIBT FÜNF**
+  GELESEN AM CODE (CC, 2026-09-29): Der Kopf von src/lib/secrets/cipher.ts sagt "SIE HAT IM
+  PRODUKTIVCODE HEUTE KEINEN AUFRUFER"; `encryptSecret` rufen die OAuth-Rückkehr
+  (src/app/api/oauth/google/callback/route.ts) und src/lib/oauth/token-refresh.ts,
+  `decryptSecret` src/lib/capi/token.ts, token-refresh.ts und src/app/projects/actions.ts.
+  BEZUG: docs/immer-beachten.md, "EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT …".
+  TRIGGER: die nächste Runde, die src/lib/secrets/cipher.ts öffnet.
+
+- **Vorrat P13.6-29 — DER INGEST PRÜFT `domains.blocked_at` NICHT, DIE SERVE-ROUTE SCHON**
+  GELESEN AM CODE (CC, 2026-09-29): `resolvePublished` (src/lib/hosting/resolve.ts) prüft
+  `domains.blocked_at` und `projects.blocked_at`; `getCapiConfigByTrackingKey`
+  (src/lib/capi/token.ts) allein `projects.blocked_at`. Die Serve-Hälfte steht im
+  Kill-Switch-Item (CLAUDE.md, Tier 0: "domains.blocked_at … operativ noch nicht gesetzt").
+  ABGELEITET: Wird `domains.blocked_at` einmal gesetzt, liefert die Serve-Route 451, der Ingest
+  nimmt Beacons des Projekts weiter an. WARUM NICHT BEI DEN OFFENEN PUNKTEN: Der Ingest kennt
+  keinen Host, sondern einen Schlüssel je PROJEKT — eine Sperre je Domain ist dort nicht
+  abbildbar, und eine gesperrte Seite liefert ihr Skript nicht mehr aus; ob das ein Fehler oder
+  die richtige Achse ist, ist nicht entschieden. TRIGGER: die erste operative Setzung von
+  `domains.blocked_at`.
+
+- **Vorrat P13.6-30 — `published_content.mappings` IST DER STAND DES CLIENTS; DER SERVER KANN NICHT
+  PRÜFEN, OB ER ZUM AUSGELIEFERTEN HTML PASST**
+  GELESEN AM CODE (CC, 2026-09-29): `publishProject` (src/app/projects/actions.ts) nimmt
+  `functionalHtml` und `snapshot.mappings` vom Client und legt beide ab; der Server parst kein
+  HTML ("KEIN SERVER-SEITIGES HTML-PARSING"). Das Relay liest die Adresse aus den Mappings
+  (Dauerregel "EIN ÖFFENTLICHER ENDPUNKT, DER AN EINE ADRESSE DES BETREIBERS WEITERLEITET …");
+  `publishProject` prüft jede Adresse darin (`formTargetProblem`). Seit Migration 0031 schreibt
+  die Spalte allein der Server. BEZUG: Roadmap-Zeile 13.7, Klasse "DER UNEHRLICHE BETREIBER".
+  KEIN TRIGGER GESETZT.
+
+- **Vorrat P13.6-44 — ALTE PAGESMITH-BAUSTEINE IM IMPORTIERTEN HTML SENDEN AUS DER VORSCHAU**
+  ABGELEITET am Code (CC, 2026-09-29), NICHT gemessen: Bausteine aus einem früheren Export
+  (Klasse "eigen" der Phase 11.11) bleiben im `DOMParser`-Rundlauf erhalten; das Memo
+  `functionalHtml` (src/components/CodeImporter.tsx) fragt `hasOwnBlocks` nicht. Sie laufen in
+  der Vorschau und senden an das Projekt, aus dem exportiert wurde. Veröffentlichen und Export
+  sind in diesem Zustand gesperrt, die Vorschau nicht; ob es auch im Editier-Rahmen gilt, ist
+  nicht geprüft. GRENZE der Dauerregel "DIE FUNKTIONALE VORSCHAU IM EDITOR SENDET NIE …"
+  (Setzung P13.6-39). TRIGGER: die nächste Arbeit am Memo `functionalHtml` oder an
+  `hasOwnBlocks`.
+
+- **Vorrat P13.6-69 — "ZIEL ÜBERNEHMEN" SERIALISIERT DEN CODE DES PROJEKTS NEU; STEHT ER NICHT IN
+  NORMALFORM, WIRD DAS PROJEKT DIRTY, AUCH OHNE INHALTLICHE ÄNDERUNG**
+  GEMESSEN IM TEST (Sonde der Bau-Runde 13.6-4, nicht im Repo) und GELESEN AM CODE (CC,
+  2026-09-30): `anchorMappingTarget` ruft `stabilizeIds` (src/lib/detect.ts — DOMParser,
+  `stabilizeDoc`, `outerHTML`), und `handleAssignFormTarget`, `handleAssignMapping`,
+  `handleAssignTextMapping`, `handleAssignTrack` übernehmen das Ergebnis, wenn es abweicht.
+  Folge: eine falsche Anzeige "ungespeichert", kein Datenverlust bekannt. Der Test CI-S1 ist an
+  der Wurzel repariert (Bau-Commit `3b631a2`). KEIN TRIGGER GESETZT.
+
+- **Vorrat P13.6-78 — EINE RATENREGEL DER VERCEL-FIREWALL JE IP, VOR DER FUNKTION**
+  GELESEN (docs/plattform-befunde.md, Vercel, Teil (w), 2026-09-30): Auf Hobby genau EINE
+  Ratenregel je Projekt, nach IP oder JA4, festes Fenster von 10 s bis 10 min; ohne Bedingung
+  auf den Hostnamen zählte sie je IP über alle Kundenseiten gemeinsam (FOLGERUNG ebenda). Der
+  Zähler der Scheibe 13.6-5 läuft in der Funktion und verhindert ihren Aufruf nicht
+  (ABGELEITET). OFFEN: der Einsatz, die Pfade (`/api/f`, `/api/e`), das Verhältnis zur
+  Festlegung "je Projekt, nicht je IP" (Setzung P13.6-23; die Zählung läge beim Anbieter). WARUM
+  NICHT BEI DEN OFFENEN PUNKTEN: Eine Flut ist laut, nicht still. TRIGGER: vor dem ersten
+  fremden Nutzer bzw. der Zuschnitt der Phase 14 — was früher eintritt.
+
+- **Vorrat P13.6-79 — `@vercel/firewall` (`checkRateLimit`) ALS ZÄHLWEG: FÜR DIE SCHEIBE 13.6-5
+  VERWORFEN**
+  GRÜNDE (ARCHITEKT, 2026-09-30): Die Konfiguration läge ausserhalb des Repos (Dashboard-Regel
+  mit "Rate limit ID", Vercel, Teil (y)); ob ein eigener `rateLimitKey` auf Hobby zulässig ist,
+  ist ungelesen; die EINE Regel des Tarifs gehört der IP-Abwehr (Vorrat P13.6-78). Zählweg
+  bleibt die Zeile je Projekt in der Datenbank (Setzung P13.6-75, E1). TRIGGER: der Zuschnitt
+  der Phase 14.
+
+- **Vorrat P13.6-80 — "ATTACK MODE" ALS NOTFALL-HEBEL BEI EINER FLUT**
+  GELESEN, NICHT GEMESSEN (Vercel, Teil (z), 2026-09-30): auf allen Tarifen frei; abgewiesene
+  Anfragen zählen nicht gegen die Nutzungsgrenzen; eine API-Route ist nur innerhalb einer
+  gültigen Challenge-Sitzung erreichbar. ABGELEITET: Der Relay-Aufruf einer geladenen Seite
+  geht durch, ein `POST` ohne geladene Seite scheitert; ob ein `keepalive`-Aufruf die Sitzung
+  trägt, ist ungelesen und ungemessen. KEIN TRIGGER GESETZT.
+
+- **Vorrat P13.6-83 — DIE ERWARTUNGEN IN supabase/checks/db-stand.sql SIND SEIT MIGRATION 0030
+  VERALTET; DER NÄCHSTE LAUF MELDET FEHLALARME**
+  GELESEN AM BESTAND (CC, 2026-09-30): Probe 4 erwartet SIEBEN Tabellen und die Policy-Summe
+  ZEHN, Probe 6 "volle DML-Rechte auf ALLE SIEBEN Tabellen" für anon, authenticated und
+  service_role, Probe 8 FÜNF Funktionen; 0030 legt `relay_rate_counters` und `relay_rate_hit`
+  an. SEIT 0031 VERALTET AUCH PROBE 6 FÜR DREI WEITERE TABELLEN UND PROBE 4 IN DEN
+  POLICY-ZAHLEN: anon und authenticated tragen auf `domains` und `project_tokens` nur noch
+  `rDxtm`, auf `projects` `rdDxtm`; es bleiben vier Policies auf diesen drei Tabellen
+  (GEMESSEN, OWNER, 2026-10-01, Vermerk P13.6-130, Punkt (3), der Phase 13.6). Die Datei ist
+  seit `696a6d5` (Stand 0028) unverändert (GEMESSEN AM REPO, CC, 2026-10-01, `git log`).
+  WARUM NICHT BEI DEN OFFENEN PUNKTEN: Ein Fehlalarm ist laut. TRIGGER: der nächste Lauf von
+  supabase/checks/db-stand.sql — dann die Proben 4, 6 und 8 messen und ihre Erwartungen samt
+  docs/db-stand.md im selben Zug nachziehen.
+
+- **Vorrat P13.6-87 — EINE DANKE-ADRESSE OHNE SEITENWECHSEL LÄSST DIE SPERRE DES FORMULAR-ZIELS
+  STEHEN; DER KNOPF IST DANN TOT**
+  GELESEN AM CODE (CC, 2026-09-30): Bei Erfolg navigiert `__psFormTargetSend` über
+  `window.location.href = cfg.thanksUrl`, ohne die Sperre zu lösen (`buildFormTargetRuntime`,
+  src/lib/form-target.ts); `formTargetProblem` verlangt für die Danke-Seite allein eine
+  absolute http(s)-Adresse. ABGELEITET aus der HTML-Spezifikation, NICHT gelesen: Unterscheidet
+  sich die Danke-Adresse nur im Fragment oder lädt ihre Antwort kein neues Dokument, bleibt die
+  Seite stehen, und jeder weitere Klick endet stumm. Die Gestalt K2 (`pageshow`, Setzung
+  P13.6-86) erfasst diesen Weg nicht. TRIGGER: die nächste Arbeit an der Prüfung der
+  Danke-Adresse, oder der erste Support-Fall "Knopf tot ohne Zurück".
+
+- **Vorrat P13.6-101 — DER KOPF VON src/lib/relay/relay.ts SAGT "IN DIESER SCHEIBE RUFT ES NOCH
+  KEINE AUSGELIEFERTE SEITE AUF"; SEIT DER SCHEIBE 13.6-4 RUFEN GEHOSTETE SEITEN DAS RELAY**
+  GELESEN AM CODE (CC, 2026-10-01): Der Satz steht im ersten Absatz des Kopfkommentars; seit
+  Bau-Commit `3b631a2` ruft `relayBranch` (src/lib/form-target.ts) das Relay aus
+  veröffentlichten Seiten (live: Vermerk P13.6-70, Punkt (3)). TRIGGER: die nächste Runde, die
+  src/lib/relay/relay.ts öffnet.
+
+- **Vorrat P13.6-122 — OB `project_tokens` ÜBERHAUPT GEBRAUCHT WIRD**
+  GELESEN AM CODE (Vermerk P13.6-116, Punkt (1), der Phase 13.6): geschrieben allein über den
+  Admin-Client (`setCapiToken`, `removeCapiToken`), nirgends gelesen (Kopf von
+  src/lib/supabase/admin.ts); der Kommentar in `setCapiToken` nennt sie "die Rollback-Reserve
+  fuer die vorige Code-Fassung" (Doppelschreib seit Phase 11, Scheibe 1). Seit Migration 0031
+  trägt sie keine Policy mehr. KEIN TRIGGER GESETZT.
+
+- **Ohne Nummer, aus Owner-Entscheidung P13.6-99 der Phase 13.6 — DER HINWEIS "… DEREN ADRESSE MIT
+  https://hooks.zapier.com BEGINNT" TRIFFT DEM WORTLAUT NACH AUCH ADRESSEN, DIE DIE PRÜFUNG
+  ABLEHNT**
+  ABGELEITET am Code (CC, 2026-10-01): Der Hinweis `DATA_SAVER_UNLISTED_NOTE`
+  (src/components/ActionPanel.tsx) erscheint bei jeder Adresse, die `allowedRelayEndpoint`
+  ablehnt — auch bei `https://hooks.zapier.com.evil.test/…` (Suffix-Falle) oder
+  `https://hooks.zapier.com:8443/…` (eigener Port). Dort nennte er eine Form, die die Adresse zu
+  erfüllen scheint. Eine echte Zapier-Adresse trägt nach allen gelesenen Beispielen keins von
+  beiden (docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befund (b)). Der Text ist ein
+  Owner-Text. TRIGGER: die nächste Arbeit an `DATA_SAVER_UNLISTED_NOTE` oder das Redesign.
+
+- **Ohne Nummer, aus Setzung P13.6-14 und Vermerk P13.6-47 der Phase 13.6 — WELCHE UMGEBUNGEN
+  `NEXT_PUBLIC_APP_URL` IN VERCEL TRAGEN, IST NICHT ANGEGEBEN**
+  Der Wert in Production ist seit dem 2026-09-29 `https://pagesmith-delta.vercel.app` (OWNER-
+  ANGABE, Vermerk P13.6-47, Punkt (1)); ein neuer Export sendet an den Produktions-Ingest
+  (GEMESSEN, ebenda, Punkt (2)). OFFEN seit Setzung P13.6-14: der Preview-Scope — dieselbe
+  Adresse (Exporte aus Vorschau-Deployments beaconen an den Produktions-Ingest) gegen leer (kein
+  Beacon, `getCapiProxyUrl` fail-loud). Heute exportiert allein der Owner. KEIN TRIGGER
+  GESETZT.

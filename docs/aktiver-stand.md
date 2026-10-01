@@ -44,6 +44,7 @@ beantworten.
 - Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
+- Vollzogen — was hier stand und wohin es gegangen ist
 
 ## Aufklärung A1 zur Phase 13.6 vom 2026-09-29
 
@@ -5098,3 +5099,171 @@ TIER-ÜBERSICHT IN CLAUDE.md KEINEN — ENTGEGEN DER DECKUNGSGLEICHHEIT DER FASS
 - Status und Wortlaut beider Fassungen sind in der Runde, die diesen Eintrag anlegt, unberührt.
 - TRIGGER: der Zuschnitt der Phase 13.7 — dort wird das Produkt gegen ein Bedrohungsmodell
   geprüft, und das Sicherheits-Manifest ist dessen Basis (Roadmap-Zeile 13.7).
+
+## Vollzogen — was hier stand und wohin es gegangen ist
+
+**DIE HEBUNG DES PHASENENDES 13.6, 2026-10-01.** Anlass: Phasenende 13.6 (OWNER 2026-10-01).
+Vorab im selben Zug, Commit `6e37194`: die OWNER-ENTSCHEIDUNGEN vom 2026-10-01 — die
+Fan-Out-Scheibe wird die eigene Phase 13.8 (Roadmap-Zeile 13.8, dorthin auch Vorrat P13.6-46),
+nach dem Phasenende 13.6 kommt 13.7 zuerst. Die Zuordnung unten ist der Vorschlag von CC
+(2026-10-01), vor dem Commit vorgelegt und mit dem GO des Architekten samt Auflagen A1 bis A7
+(2026-10-01) übernommen: A1 bis A3 fassen die neuen Dauerregeln, A4 legt die Roadmap-Zeile
+13.9 an, A5 ordnet zwei Backlog-Posten der Phase 13 zu, A6 und A7 setzen Zeiger an der
+Roadmap-Zeile 13.7. Dieser Abschnitt ist das REGISTER; an den
+Einträgen oben steht kein Einzelzeiger (Ausnahme: Vorrat P13.6-46, dessen Zeiger mit Commit
+`6e37194` entstand). Titel-Zitate ohne Überschriften-Marke. Die 26 Vermerke (P13.6-1, -19,
+-31, -35, -37, -42, -45, -47, -53, -58, -60, -65, -70, -81, -85, -89, -98, -102, -103, -106,
+-108, -112, -114, -116, -118, -130) werden nicht zugeordnet; sie bleiben im Archiv. Aus
+Vermerk P13.6-103, Punkt (2), ist der gemessene Anzeige-Befund in eine Ergänzung (OPE)
+gegangen.
+
+**DIE ZIELE UND IHRE FUNDSTELLEN:**
+- **BL** — docs/claude-history/backlog-polish.md, neuer Abschnitt am Dateiende "Aus Phase 13.6
+  gehoben (2026-10-01) — fünfzehn Vorrats-Einträge, eine Restarbeit und zwei Restfragen der
+  Standdatei".
+- **OP** — docs/offene-punkte.md, neuer Block "AUS DEM PHASENENDE 13.6 GEHOBEN (2026-10-01) —
+  ZWEI POSTEN" am Dateiende; Stubs in CLAUDE.md, "## Offene Punkte", im selben Zug.
+- **OPE** — docs/offene-punkte.md, datierte Ergänzung vom 2026-10-01 an einem bestehenden
+  Posten; Titel und Trigger unverändert; der Stub, der Punkte aufzählt, im selben Zug.
+- **DR** — eine NEUE Dauerregel: Kern hinten in docs/immer-beachten.md, Volltext hinten in
+  docs/immer-beachten-herleitung.md, dort eine Verzeichnis-Zeile.
+- **DR-STEHT** — die Dauerregel steht schon, vollzogen in der Phase; nicht gedoppelt.
+- **RM13.7 / RM13.8 / RM14** — docs/roadmap.md, an der genannten Zeile. Die Zeile 13.9 ist
+  NEU (Auflage A4), trägt aber keinen Eintrag dieser Bilanz; sie zeigt auf Setzung P13.6-25
+  (OPE) und Owner-Entscheidung P13.6-17 (ARCH).
+- **ERL** — gestrichen mit Beleg; der Eintrag steht oben unverändert, der Beleg hier.
+- **ARCH** — NICHT GEHOBEN, bleibt im Archiv; Sammelvermerk unten.
+
+**JE EINTRAG — NUMMER MIT GATTUNG → ZIEL, FUNDSTELLE BZW. BELEG:**
+- Arbeit P13.6-5 → ERL. Beleg: Vermerk P13.6-19 (Aufklärung A2), Commit `27a5c93`.
+- Vorrat P13.6-6 → ERL. Beleg: Bau-Commit `9fae014`; Vermerk P13.6-37, Punkte (7) und (8).
+- Vorrat P13.6-7 → ERL. Beleg: Bau-Commit `9fae014`; live Vermerk P13.6-37, Punkt (3), L4.
+- Vorrat P13.6-8 → ERL. Beleg: Bau-Commit `9fae014` (Setzung P13.6-36, F8).
+- Vorrat P13.6-9 → BL.
+- Vorrat P13.6-10 → ERL. Beleg: Vermerk P13.6-19, Punkt (9), Commit `27a5c93`.
+- Vorrat P13.6-11, erste Frage → ERL. Beleg: Vorrat P13.6-12 und Vermerk P13.6-47, Commit
+  `f12e7e5`.
+- Vorrat P13.6-11, zweite Frage → OP, Posten "DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE
+  FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM CODE KEINEN RIEGEL", (a).
+- Vorrat P13.6-11, dritte Frage → BL.
+- Vorrat P13.6-12 → ERL. Beleg: Vermerk P13.6-47 (Plattform-Schritt, gemessen bis in
+  `events`), Commit `f12e7e5`.
+- Vorrat P13.6-15 → BL.
+- Arbeit P13.6-26 → ERL. Beleg: Lesung und Sonde, Commit `33ff5cc` (docs/plattform-befunde.md,
+  Vercel, Teile (i) bis (t)). Der offene Rest (Rümpfe intern) geht mit Setzung P13.6-51 an OP.
+- Arbeit P13.6-27 → BL (Rest: die Make-Zonen ausser eu2). Der Zapier-Teil ist erledigt —
+  Bau-Commit `93230df`, Vermerke P13.6-102 und P13.6-103.
+- Vorrat P13.6-28 → BL.
+- Vorrat P13.6-29 → BL.
+- Vorrat P13.6-30 → BL.
+- Vorrat P13.6-44 → BL.
+- Vorrat P13.6-46 → RM13.8 (Commit `6e37194`).
+- Vorrat P13.6-69 → BL.
+- Arbeit P13.6-72 → ERL. Beleg: Bau-Commit `29d0d22`; Vermerk P13.6-89.
+- Hebungs-Kandidat P13.6-73 → DR "EIN VERGLEICHSWERT FÜR EINEN LIVE-BYTE-VERGLEICH WIRD
+  UNMITTELBAR VOR DEM VERGLICHENEN SCHRITT ERHOBEN …".
+- Vorrat P13.6-78, -79, -80 → BL; Zeiger an der Roadmap-Zeile 14.
+- Vorrat P13.6-83 → BL, mit dem Nachtrag zu 0031.
+- Vorrat P13.6-84 → ERL. Beleg: der Satz in CLAUDE.md ist ganz ersetzt, Commit `03d4338`.
+- Vorrat P13.6-87 → BL.
+- Arbeit P13.6-91 → ERL. Beleg: entschieden durch Owner-Entscheidung P13.6-94, Commit
+  `87af209`.
+- Vorrat P13.6-92 → OPE, Punkt (10) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE".
+- Vorrat P13.6-93 → OPE, Punkt (11) am selben Posten; die AVV-Seite als (b) am Posten "DAS
+  RELAY LÄUFT FÜR JEDEN NUTZER …".
+- Vorrat P13.6-95 → OPE, Punkt (12) am selben Posten.
+- Vorrat P13.6-96 → RM13.7 (Klasse "Formular-Spam").
+- Vorrat P13.6-101 → BL.
+- Arbeit P13.6-104 → OP, Posten "ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM
+  GEBUCHTEN ZAPIER-MONAT FAHRBAR".
+- Vorrat P13.6-105 → ERL. Beleg: Bau-Commit `1256f0e`; Vermerk P13.6-114.
+- Arbeit P13.6-113 → ERL. Beleg: Code-Commit `6f66c44`, Migration 0031; Vermerk P13.6-130,
+  Commit `1c53110`.
+- Vorrat P13.6-121 → RM13.7.
+- Vorrat P13.6-122 → BL.
+- Vorrat P13.6-126 → RM13.7.
+- Vorrat P13.6-127 → ERL. Beleg: Code-Commit `6f66c44`; Vermerk P13.6-130, Punkt (4).
+- Vorrat P13.6-129 → RM13.7.
+- Vorrat P13.6-131 → RM13.7 (Trigger: Zuschnitt 13.7).
+- Owner-Entscheidung P13.6-13 und Setzung P13.6-38 → DR "DIE FUNKTIONALE VORSCHAU IM EDITOR
+  SENDET NIE …".
+- Owner-Entscheidung P13.6-16, Setzungen P13.6-48, -49, -50 und Setzung P13.6-67 (die
+  Neufassung von I1) → DR "FORMULARINHALTE IM RELAY SIND TRANSIT …". Die Neufassung steht
+  zusätzlich, unverändert, am offenen Punkt "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"
+  (Ergänzung vom 2026-09-29).
+- Setzungen P13.6-4 und P13.6-24 → DR "EIN SERVERSEITIG ERZEUGTES EREIGNIS TRÄGT NIE EIN
+  FEHLENDES EINWILLIGUNGSFELD …"; dazu der Zeiger an der Roadmap-Zeile 13.8 ("WAS DIESE PHASE
+  VORFINDET").
+- Setzungen P13.6-20, -21 und -57 → DR "EIN ÖFFENTLICHER ENDPUNKT, DER AN EINE ADRESSE DES
+  BETREIBERS WEITERLEITET, NIMMT PROJEKT UND ADRESSE NIE AUS DER ANFRAGE".
+- Setzungen P13.6-117 und P13.6-125 → DR "EIN SCHREIBWEG ÜBER DEN ADMIN-CLIENT SCHREIBT ERST
+  NACH DEM EIGENTUMS-GATE …".
+- Owner-Entscheidung P13.6-18 und Setzung P13.6-51 → OP, Posten "DAS RELAY LÄUFT FÜR JEDEN
+  NUTZER …".
+- Setzung P13.6-25 → OPE am Posten "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT".
+- Owner-Entscheidung P13.6-76 → DR-STEHT: docs/db-regeln.md, "DB-FUNKTIONEN + SEARCH_PATH",
+  neu gefasst am 2026-09-30.
+- Owner-Entscheidung P13.6-120 → DR-STEHT: docs/db-regeln.md, "MIGRATION IMMER VOR
+  CODE-DEPLOY", präzisiert am 2026-10-01.
+- Owner-Entscheidung P13.6-119 und Setzung P13.6-115 → DR-STEHT: docs/immer-beachten.md,
+  "GRANTS SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT", neu gefasst am 2026-10-01.
+- Owner-Entscheidung P13.6-123 → DR-STEHT: docs/immer-beachten.md, "DIE domains-ZEILE IST DIE
+  ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"", neu gefasst am 2026-10-01.
+- Ohne Nummer, "Ausser Scope der Scheibe 13.6-4" (eine Anzeige des Relay-Status für den
+  Betreiber) → OPE am Posten "NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN
+  IST".
+- Ohne Nummer, aus Vermerk P13.6-103, Punkt (2) (die Anzeige folgt der Host-Liste, nicht dem
+  veröffentlichten Text), samt den Grenzen "bereits veröffentlichte Seiten ändern sich erst
+  durch Neu-Veröffentlichen" der Scheiben → OPE am selben Posten.
+- Ohne Nummer, "Offene Frage der Scheibe 13.6-5", B12 → RM14.
+- Ohne Nummer, aus Owner-Entscheidung P13.6-99 ("GEMELDET, NICHT ENTSCHIEDEN": der Hinweis
+  trifft dem Wortlaut nach auch abgelehnte Adressen) → BL. Ihr Teil (d), die
+  Betreiber-Dokumentation zu `zapier.com/hooks/…`, steht seit dem 2026-10-01 an Punkt (9),
+  Ergänzung jenes Tages, des Postens "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE".
+- Ohne Nummer, aus Setzung P13.6-14 und Vermerk P13.6-47 (der Preview-Scope von
+  `NEXT_PUBLIC_APP_URL`) → BL.
+- Owner-Angaben P13.6-2, -111, -124 → ARCH.
+- Owner-Entscheidungen P13.6-17, -54, -55, -68, -71, -90, -94, -97, -99, -110, -128 → ARCH.
+- Setzungen P13.6-3, -14, -22, -23, -32, -33, -34, -36, -39, -40, -41, -43, -52, -56, -59,
+  -61, -62, -63, -64, -66, -74, -75, -77, -82, -86, -88, -100, -107, -109 → ARCH.
+
+**DIE BILANZ: 112 = BL 18 · OP 4 · OPE 6 · DR 15 · DR-STEHT 5 · RM13.7 5 · RM13.8 1 · RM14 1 ·
+ERL 14 · ARCH 43.** Gezählt sind die 105 nummerierten Einträge ausser den Vermerken, Vorrat
+P13.6-11 in seinen drei Fragen (+2) und fünf Posten ohne Nummer. DR 15 trägt sechs neue
+Dauerregeln.
+
+**SAMMELVERMERK — NICHT GEHOBEN: die 43 Entscheidungen, Setzungen und Owner-Angaben der Klasse
+ARCH.** GRUND: Sie beschreiben, WIE der Code dieser Phase gebaut ist — der Rückfall ohne Skript
+und die Angebotsregel (P13.6-32 bis -36), die Vorschau-Gestalt (P13.6-39 bis -43), Stufe 1
+und ihr Schnitt (P13.6-17, -56), Betriebsart, Host-Liste und Schalter (P13.6-54, -55, -61 bis
+-64, -66, -68, -99), die Entscheidungen der Planrunden (P13.6-59, -74, -75, -77, -82, -88,
+-100, -107, -109), Zeitlimit und Wiederholung (P13.6-22), Schutz und Region (P13.6-23, -52),
+der Zurück-Cache (P13.6-71, -86), Adresse im Text (P13.6-94), Zapier (P13.6-90, -97), die
+Erst-Anlage des Schlüssels (P13.6-110), der Hinweis bei `restored` (P13.6-128), das
+Label-Schema (P13.6-124). Sie gelten, solange der Code steht; gestrichen zu nennen wären sie
+falsch. Am Ort der Handlung stehen sie als Kommentare und Wächter (src/lib/relay/,
+src/lib/form-target.ts samt Tests, `generateFunctional` und `buildWiringScript` in
+src/lib/generate.ts, `publishProject` und `saveProject` in src/app/projects/actions.ts,
+`FormTargetActions` in src/components/ActionPanel.tsx, src/components/PublishView.tsx,
+supabase/migrations/0030 und 0031); auffindbar ist das Archiv über seinen Eintrag unter
+"## Detail-Archiv" in CLAUDE.md.
+DREI SONDERFÄLLE IN DIESER KLASSE: Setzung P13.6-14 ist eine Reihenfolge und vollständig
+abgearbeitet; Owner-Entscheidung P13.6-90 ist durch P13.6-97 revidiert; Owner-Angabe P13.6-2
+(ein Upgrade des Vercel-Tarifs auf Pro ist, wenn nötig, freigegeben) beschreibt keinen Code,
+steht aber nach der Architekten-Entscheidung vom 2026-09-29 bewusst allein hier — wer den
+Tarif berührt, findet sie über den Detail-Archiv-Eintrag und seit dem 2026-10-01 über einen
+Zeiger an der Roadmap-Zeile 13.7 (Auflage A6): Kein offener Punkt, keine Roadmap-Zeile und
+kein Manifest-Item sagte, dass kommerzielle Nutzung den Pro-Tarif verlangt.
+
+**AUSSERHALB DER BILANZ, IM SELBEN COMMIT:** (a) docs/claude-history/backlog-polish.md: die
+Posten "P11.6-3 — DIE VORSCHAU FEUERT ECHTE EREIGNISSE …" und "Vorrat P13-61 — BILD-KNOPF MIT
+`formaction` …" sind auf Titel und Beleg gekürzt (`8be7bb3` bzw. `9fae014`). (b) Die
+Abschnittsliste oben um diesen Abschnitt ergänzt. (c) Auflage A5 — zwei Backlog-Posten der
+Phase 13, deren Trigger in 13.6 eingetreten sind, bleiben BL, je mit datiertem Vermerk
+"TRIGGER EINGETRETEN" samt Grund und neuem Trigger: Vorrat P13-14 (Trigger 2026-09-29; der
+Besucher sieht eine Fehlerantwort) und Vorrat P13-40 (Trigger 2026-09-30; jeder Fehlerweg
+endet in `fail()`, ein stiller Verlust folgt aus dem Code nicht — ob ein Browser einen zu
+grossen `keepalive`-Rumpf abschneidet, ist ungemessen). (d) Auflage A4: Roadmap-Zeile 13.9
+"1-Klick-Empfänger (Stufe 2)" samt Stub in CLAUDE.md, Zeiger an der Zeile 13.6. (e) Auflage
+A7: Zeiger an der Roadmap-Zeile 13.7 auf den offenen Punkt "DAS RELAY LÄUFT FÜR JEDEN NUTZER
+…".

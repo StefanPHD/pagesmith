@@ -19,7 +19,7 @@ vi.mock("server-only", () => ({}));
 // Doppelschreib-Test haette damit nur geprueft, dass ZWEIMAL irgendetwas geschrieben
 // wird — also den Mock statt den Code. Die Reihenfolge ist eine ENTSCHEIDUNG
 // (neue Tabelle zuerst) und braucht deshalb eine Aufzeichnung, die sie sichtbar macht.
-const { createAdminClient, adminUpsert, adminDelete, adminTables, adminDeleteEq } = vi.hoisted(() => {
+const { createAdminClient, adminUpsert, adminDelete, adminTables, adminDeleteEq, adminIo } = vi.hoisted(() => {
   // Signatur ueber den Generic -> calls[0][0]/[1] sind typisiert, ohne ungenutzte
   // Parameter in der Implementierung (die vi.fn ohnehin nur zum Aufzeichnen braucht).
   const adminUpsert = vi.fn<
@@ -43,13 +43,71 @@ const { createAdminClient, adminUpsert, adminDelete, adminTables, adminDeleteEq 
     };
     return chain;
   });
+  // SCHEIBE "SPALTENRECHTE" (Phase 13.6, Setzung P13.6-117): saveProject (Insert),
+  // setCapiToken, setAbTestActive und removeVariantB schreiben projects seither ueber den
+  // Admin-Client. adminIo verbindet ihn mit der Aufzeichnung des laufenden makeClient: ein
+  // Admin-Write landet in DERSELBEN rec (updatePatch, insertRow), damit die
+  // Bestandsaussagen weiter tragen; adminIo.updates/inserts/updateEq halten fest, WELCHER
+  // Client schrieb und mit welchen Filtern. Ergebnisse aus results["<table>.update"] bzw.
+  // results["<table>.insert"], wie beim SSR-Client.
+  const adminIo = {
+    rec: null as null | { updatePatch: unknown; insertRow: unknown; selectCols: { table: string; cols: string }[] },
+    results: {} as Record<string, { data?: unknown; error: unknown }>,
+    updates: [] as { table: string; patch: unknown }[],
+    inserts: [] as { table: string; row: unknown }[],
+    updateEq: [] as [string, unknown][],
+  };
+  const adminInsert = (table: string) => (row: unknown) => {
+    adminIo.inserts.push({ table, row });
+    if (adminIo.rec) adminIo.rec.insertRow = row;
+    let cols = "";
+    const chain: Record<string, unknown> = {
+      select: (c: string) => {
+        cols = c;
+        if (adminIo.rec) adminIo.rec.selectCols.push({ table, cols: c });
+        return chain;
+      },
+      single: async () => {
+        const own = adminIo.results[`${table}.insert`];
+        if (own) return own;
+        const r = (row ?? {}) as Record<string, unknown>;
+        const data: Record<string, unknown> = {};
+        for (const c of cols.split(",").map((x) => x.trim()))
+          data[c] = c === "id" ? "new-id" : r[c];
+        return { data, error: null };
+      },
+    };
+    return chain;
+  };
+  const adminUpdate = (table: string) => (patch: unknown) => {
+    adminIo.updates.push({ table, patch });
+    if (adminIo.rec) adminIo.rec.updatePatch = patch;
+    const chain: Record<string, unknown> = {
+      eq: (col: string, val: unknown) => {
+        adminIo.updateEq.push([col, val]);
+        return chain;
+      },
+      select: () => chain,
+      maybeSingle: async () => {
+        const r = adminIo.results[`${table}.update`] ?? { error: null };
+        if (r.error) return { data: null, error: r.error };
+        return { data: "data" in r ? r.data : { id: "proj-1" }, error: null };
+      },
+    };
+    return chain;
+  };
   const createAdminClient = vi.fn(() => ({
     from: vi.fn((table: string) => {
       adminTables.push(table);
-      return { upsert: adminUpsert, delete: adminDelete };
+      return {
+        upsert: adminUpsert,
+        delete: adminDelete,
+        insert: adminInsert(table),
+        update: adminUpdate(table),
+      };
     }),
   }));
-  return { createAdminClient, adminUpsert, adminDelete, adminTables, adminDeleteEq };
+  return { createAdminClient, adminUpsert, adminDelete, adminTables, adminDeleteEq, adminIo };
 });
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
@@ -65,6 +123,7 @@ import {
   getVariantBPublished,
   getEventCounts,
   getVariantCounts,
+  renameProject,
 } from "./actions";
 import {
   deliverableVariantB,
@@ -90,7 +149,11 @@ function makeClient(opts: {
     // Scheibe "Beacon bei Erstveroeffentlichung": die Zeile des INSERT-Zweigs von saveProject.
     insertRow: null as unknown,
     fromTables: [] as string[],
+    // Scheibe "Spaltenrechte": Writes ueber die NUTZER-SITZUNG (update/insert dieses Clients).
+    ssrWrites: [] as { table: string; op: "update" | "insert"; body: unknown }[],
   };
+  adminIo.rec = rec;
+  adminIo.results = results;
 
   function builder(table: string) {
     let awaited: { data?: unknown; error: unknown } = { error: null };
@@ -105,6 +168,7 @@ function makeClient(opts: {
     b.maybeSingle = vi.fn(async () => results[`${table}.select`] ?? { data: null, error: null });
     b.update = vi.fn((patch: unknown) => {
       rec.updatePatch = patch;
+      rec.ssrWrites.push({ table, op: "update", body: patch });
       awaited = results[`${table}.update`] ?? { error: null };
       return b;
     });
@@ -115,6 +179,7 @@ function makeClient(opts: {
     // zurueck (Mutation M6).
     b.insert = vi.fn((row: unknown) => {
       rec.insertRow = row;
+      rec.ssrWrites.push({ table, op: "insert", body: row });
       return b;
     });
     b.single = vi.fn(async () => {
@@ -151,6 +216,11 @@ afterEach(() => {
   // Vorgaengertests mit sich.
   adminTables.length = 0;
   adminDeleteEq.length = 0;
+  adminIo.rec = null;
+  adminIo.results = {};
+  adminIo.updates.length = 0;
+  adminIo.inserts.length = 0;
+  adminIo.updateEq.length = 0;
 });
 
 describe("setCapiToken (Scheibe 2a)", () => {
@@ -182,7 +252,10 @@ describe("setCapiToken (Scheibe 2a)", () => {
     });
     expect(adminUpsert.mock.calls[1][1]).toEqual({ onConflict: "project_id" });
 
-    // settings-Update laeuft ueber den authenticated-SSR-Client (nicht Admin).
+    // settings-Update: SEIT DER SCHEIBE "SPALTENRECHTE" ueber DENSELBEN Admin-Client
+    // (tracking_key ist server-eigen) — bis dahin ueber den authenticated-SSR-Client.
+    expect(adminIo.updates.map((u) => u.table)).toEqual(["projects"]);
+    expect(rec.ssrWrites).toEqual([]);
     const patch = rec.updatePatch as {
       settings: { capi: { tokenSet: boolean; trackingKey: string } };
       tracking_key: string;
@@ -209,7 +282,9 @@ describe("setCapiToken (Scheibe 2a)", () => {
     // POSITIVKONTROLLE — sie steht VOR den Abwesenheits-Behauptungen, weil diese sonst
     // auch dann aufgingen, wenn die Aufzeichnung schlicht leer bliebe.
     expect(rec.fromTables).toContain("projects");
-    expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
+    // Der dritte Eintrag "projects" ist seit der Scheibe "Spaltenrechte" der Write der
+    // Spalte tracking_key samt settings (Setzung P13.6-117).
+    expect(adminTables).toEqual(["project_secrets", "project_tokens", "projects"]);
 
     // Der authenticated-SSR-Client beruehrt KEINE der beiden Geheimnis-Tabellen (weder
     // .from noch .select). Nur der Admin-Client (service_role) schreibt.
@@ -238,7 +313,9 @@ describe("setCapiToken (Scheibe 2a)", () => {
 
     const result = await setCapiToken("proj-1", "meta", "SECRET");
     expect(result.ok).toBe(true);
-    expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
+    // "projects" (Scheibe "Spaltenrechte") folgt NACH beiden Geheimnis-Tabellen; die
+    // entschiedene Reihenfolge der zwei bleibt.
+    expect(adminTables).toEqual(["project_secrets", "project_tokens", "projects"]);
   });
 
   it("Phase 11 Scheibe 1: die neue Zeile traegt (project_id, target, secret) und das Konflikt-PAAR", async () => {
@@ -1338,5 +1415,234 @@ describe("getVariantCounts — Query-Form (Scheibe 9c-1)", () => {
       rpcResult: { data: [], error: null },
     });
     expect(await getVariantCounts("proj-1")).toEqual({ ok: true, rows: [] });
+  });
+});
+
+// ===========================================================================
+// SPALTENRECHTE (Phase 13.6, Scheibe "Spaltenrechte"; Setzungen P13.6-117 und P13.6-125).
+//
+// DIE ERWARTUNGEN SIND AUS DER ENTSCHEIDUNG GETIPPT, NICHT AUS DEM CODE (Dauerregel "EIN
+// WAECHTER UEBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE …"):
+// - CLIENT_COLUMNS: die sieben Spalten, auf denen authenticated nach 0031 UPDATE behaelt
+//   (Setzung P13.6-125: name, html, mappings, settings, html_b, mappings_b, updated_at).
+// - Die server-eigenen Schreibvorgaenge laufen ueber den Admin-Client, erst nach dem
+//   Eigentums-Gate, mit Filter auf id UND user_id aus der Sitzung; der Insert traegt user_id
+//   allein aus der Sitzung.
+// ===========================================================================
+const CLIENT_COLUMNS = ["name", "html", "mappings", "settings", "html_b", "mappings_b", "updated_at"];
+
+describe("Spaltenrechte — die server-eigenen Schreibvorgaenge laufen ueber den Admin-Client", () => {
+  const PUBLISHED_B = {
+    html: "<h1>A</h1>",
+    mappings: [],
+    settings: {},
+    publishedAt: "t",
+    variantB: { html: "<h1>B</h1>", mappings: [] },
+  };
+
+  it("SR-A1: saveProject legt ueber den Admin-Client an; der Rumpf traegt genau die beabsichtigten Spalten, user_id allein aus der Sitzung", async () => {
+    // Rot, wenn user_id aus einem Eingabewert kommt (Mutation SR-M3) oder der Insert zurueck
+    // auf die Nutzer-Sitzung wandert.
+    const { rec } = makeClient({ user: { id: "user-1" } });
+    // Ein Client, der user_id in den Blob schmuggelt, bewegt die Zeile nicht.
+    const res = await saveProject(null, "<h1>neu</h1>", [], { user_id: "fremd" } as never);
+    expect(res.ok).toBe(true);
+    expect(adminIo.inserts.map((i) => i.table)).toEqual(["projects"]);
+    expect(rec.ssrWrites).toEqual([]);
+    const row = adminIo.inserts[0].row as Record<string, unknown>;
+    expect(Object.keys(row).sort()).toEqual(
+      ["user_id", "html", "mappings", "settings", "name", "tracking_key"].sort()
+    );
+    expect(row.user_id).toBe("user-1");
+  });
+
+  it("SR-A2: KEIN Admin-Client ohne Sitzung oder bei fremdem Projekt — saveProject, setAbTestActive, removeVariantB, setCapiToken", async () => {
+    // Rot, wenn der Admin-Client vor die Sitzungs- bzw. Eigentums-Pruefung rutscht (SR-M2).
+    makeClient({ user: null });
+    await saveProject(null, "<h1>x</h1>", [], {});
+    await setAbTestActive("proj-1", false);
+    await removeVariantB("proj-1");
+    await setCapiToken("proj-1", "meta", "S");
+    expect(createAdminClient).not.toHaveBeenCalled();
+    // Fremdes Projekt: das Gate liefert keine Zeile.
+    makeClient({ user: { id: "user-1" }, results: { "projects.select": { data: null, error: null } } });
+    await setAbTestActive("proj-fremd", false);
+    await removeVariantB("proj-fremd");
+    expect(createAdminClient).not.toHaveBeenCalled();
+    // POSITIVKONTROLLE: das eigene Projekt erzeugt ihn.
+    makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: { id: "proj-1", html_b: null, published_content: null }, error: null } },
+    });
+    expect((await setAbTestActive("proj-1", false)).ok).toBe(true);
+    expect(createAdminClient).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["setAbTestActive (Start)", () => setAbTestActive("proj-1", true), ["ab_test_active", "ab_test_started_at", "updated_at"]],
+    ["setAbTestActive (Stopp)", () => setAbTestActive("proj-1", false), ["ab_test_active", "updated_at"]],
+    ["removeVariantB", () => removeVariantB("proj-1"), ["html_b", "mappings_b", "ab_test_active", "updated_at", "published_content"]],
+  ] as const)("SR-A3: %s schreibt ueber den Admin-Client, filtert auf id UND user_id, Rumpf genau wie entschieden", async (_n, run, keys) => {
+    // Rot, wenn der user_id-Filter fehlt (SR-M1).
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: { id: "proj-1", html_b: "<h1>B</h1>", published_content: PUBLISHED_B },
+          error: null,
+        },
+      },
+    });
+    const res = await run();
+    expect(res.ok).toBe(true);
+    expect(adminIo.updates.map((u) => u.table)).toEqual(["projects"]);
+    expect(rec.ssrWrites).toEqual([]);
+    expect(adminIo.updateEq).toEqual([
+      ["id", "proj-1"],
+      ["user_id", "user-1"],
+    ]);
+    expect(Object.keys(adminIo.updates[0].patch as object).sort()).toEqual([...keys].sort());
+  });
+
+  it("SR-A4: setCapiToken schreibt settings und tracking_key ueber den Admin-Client, gefiltert auf id UND user_id", async () => {
+    makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: { id: "proj-1", settings: {} }, error: null } },
+    });
+    expect((await setCapiToken("proj-1", "meta", "S")).ok).toBe(true);
+    expect(adminIo.updates.map((u) => u.table)).toEqual(["projects"]);
+    expect(adminIo.updateEq).toEqual([
+      ["id", "proj-1"],
+      ["user_id", "user-1"],
+    ]);
+    expect(Object.keys(adminIo.updates[0].patch as object).sort()).toEqual(
+      ["settings", "tracking_key", "updated_at"].sort()
+    );
+  });
+
+  it("SR-A5: Fehler bleiben LAUT — 42501 und 'keine Zeile getroffen' sind kein Erfolg", async () => {
+    const owned = {
+      data: { id: "proj-1", html_b: "<h1>B</h1>", published_content: PUBLISHED_B, settings: {} },
+      error: null,
+    };
+    const denied = { code: "42501", message: "permission denied for table projects" };
+    makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": owned, "projects.update": { error: denied } },
+    });
+    expect(await setAbTestActive("proj-1", false)).toEqual({ ok: false, error: denied.message });
+    expect(await removeVariantB("proj-1")).toEqual({ ok: false, error: denied.message });
+    expect(await setCapiToken("proj-1", "meta", "S")).toEqual({ ok: false, error: denied.message });
+    makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": owned, "projects.update": { data: null, error: null } },
+    });
+    expect(await setAbTestActive("proj-1", false)).toEqual({ ok: false, error: "Projekt nicht gefunden." });
+    expect(await removeVariantB("proj-1")).toEqual({ ok: false, error: "Projekt nicht gefunden." });
+    expect(await setCapiToken("proj-1", "meta", "S")).toEqual({ ok: false, error: "Projekt nicht gefunden." });
+  });
+
+  it("SR-A6: die Schreibvorgaenge, die ueber die Nutzer-Sitzung BLEIBEN, tragen nur Spalten aus der GRANT-Liste", async () => {
+    // Rot, wenn ein solcher Rumpf eine Spalte traegt, die nach 0031 nicht mehr gewaehrt ist —
+    // der Fehler kaeme sonst erst LIVE als 42501.
+    const owned = {
+      data: { id: "proj-1", html: "<h1>A</h1>", mappings: [], html_b: null, settings: {} },
+      error: null,
+    };
+    const { rec } = makeClient({ user: { id: "user-1" }, results: { "projects.select": owned } });
+    await saveProject("proj-1", "<h1>x</h1>", [], {});
+    await saveVariantB("proj-1", "<h1>b</h1>", [], {});
+    await createVariantB("proj-1");
+    await removeCapiToken("proj-1", "meta");
+    await renameProject("proj-1", "Neu");
+    const projectWrites = rec.ssrWrites.filter((w) => w.table === "projects");
+    // POSITIVKONTROLLE: fuenf Updates sind wirklich ueber die Nutzer-Sitzung gelaufen.
+    expect(projectWrites.map((w) => w.op)).toEqual(["update", "update", "update", "update", "update"]);
+    for (const w of projectWrites)
+      for (const k of Object.keys(w.body as object)) expect(CLIENT_COLUMNS).toContain(k);
+    expect(adminIo.updates.filter((u) => u.table === "projects")).toEqual([]);
+  });
+});
+
+// ===========================================================================
+// WAECHTER UEBER DEN MIGRATIONSTEXT 0031. SEINE GRENZE, AN IHM SELBST: Er sieht Zeichen,
+// nicht Bedeutung — er prueft den TEXT, nicht, was die laufende Datenbank traegt (das tut
+// supabase/checks/spaltenrechte.sql, und die Wirkung mit echter Sitzung allein der
+// Live-Test). Kommentarzeilen ("-- …") werden vor der Pruefung entfernt; eine Erwaehnung im
+// Kopf zaehlt damit nicht als Anweisung. Er irrt in die STRENGE Richtung: jedes "select" oder
+// "all" in einer revoke-Anweisung macht ihn rot.
+// ===========================================================================
+describe("Migration 0031 — der Wortlaut", () => {
+  const sql = readFileSync(join(process.cwd(), "supabase/migrations/0031_spaltenrechte.sql"), "utf8");
+  const code = sql
+    .split("\n")
+    .filter((l) => !l.trim().startsWith("--"))
+    .join("\n");
+  // Der Pruefblock (do $$ … $$) wird als EINE Anweisung behandelt: er traegt eigene
+  // Semikolons, die keine Anweisungsgrenze sind.
+  const doBlock = code.match(/do \$\$[\s\S]*?\$\$;/)?.[0] ?? "";
+  const statements = code
+    .replace(doBlock, "DO_BLOCK;")
+    .split(";")
+    .map((s) => s.replace(/\s+/g, " ").trim().toLowerCase())
+    .filter(Boolean);
+
+  it("MIG-1: die GRANT-Liste ist exakt die der Entscheidung, nur an authenticated", () => {
+    // Rot, wenn blocked_at (oder eine andere server-eigene Spalte) in der Liste steht
+    // (Mutation SR-M5).
+    const grants = statements.filter((s) => s.startsWith("grant "));
+    expect(grants).toHaveLength(1);
+    const m = grants[0].match(/^grant update \(([^)]*)\) on table public\.projects to authenticated$/);
+    expect(m).not.toBeNull();
+    const cols = (m?.[1] ?? "").split(",").map((c) => c.trim());
+    expect(cols.sort()).toEqual([...CLIENT_COLUMNS].sort());
+  });
+
+  it("MIG-2: REVOKE fuer anon UND authenticated — projects insert/update, domains und project_tokens insert/update/delete — VOR dem grant", () => {
+    const revokes = statements.filter((s) => s.startsWith("revoke "));
+    expect(revokes).toEqual([
+      "revoke insert, update on table public.projects from anon, authenticated",
+      "revoke insert, update, delete on table public.domains from anon, authenticated",
+      "revoke insert, update, delete on table public.project_tokens from anon, authenticated",
+    ]);
+    // REIHENFOLGE (docs/plattform-befunde.md, Supabase, Teil (be)): der Tabellen-revoke auf
+    // projects steht VOR dem Spalten-grant.
+    const iRevoke = statements.indexOf(revokes[0]);
+    const iGrant = statements.findIndex((s) => s.startsWith("grant "));
+    expect(iRevoke).toBeGreaterThanOrEqual(0);
+    expect(iRevoke).toBeLessThan(iGrant);
+  });
+
+  it("MIG-3: KEIN Entzug von SELECT", () => {
+    // Rot, wenn eine revoke-Anweisung select (oder all) nennt (Mutation SR-M6).
+    // POSITIVKONTROLLE: das Muster trifft die Form, die es verbieten soll.
+    const SELECT_REVOKE = /^revoke [^;]*\b(select|all)\b/;
+    expect(SELECT_REVOKE.test("revoke select, insert on table public.projects from anon")).toBe(true);
+    expect(statements.filter((s) => SELECT_REVOKE.test(s))).toEqual([]);
+  });
+
+  it("MIG-4: genau die fuenf Schreib-Policies werden geloescht, sonst keine; keine neue entsteht", () => {
+    const drops = statements.filter((s) => s.startsWith("drop policy"));
+    expect(drops.sort()).toEqual(
+      [
+        'drop policy if exists "projects_insert_own" on public.projects',
+        'drop policy if exists "domains_insert_own" on public.domains',
+        'drop policy if exists "domains_update_own" on public.domains',
+        'drop policy if exists "project_tokens_insert_own" on public.project_tokens',
+        'drop policy if exists "project_tokens_update_own" on public.project_tokens',
+      ].sort()
+    );
+    expect(statements.some((s) => s.startsWith("create policy") || s.startsWith("alter policy"))).toBe(false);
+  });
+
+  it("MIG-5: Klammer, lock_timeout, Pruefblock, Protokoll-Zeile zuletzt vor dem commit", () => {
+    expect(doBlock).toMatch(/raise exception/);
+    expect(statements[0]).toBe("begin");
+    expect(statements[1]).toBe("set local lock_timeout = '3s'");
+    expect(statements.at(-1)).toBe("commit");
+    expect(statements.at(-2)).toMatch(
+      /^insert into public\.schema_migrations .*'0031'.*on conflict \(version\) do nothing$/
+    );
+    expect(statements.indexOf("do_block")).toBe(statements.length - 3);
   });
 });

@@ -54,10 +54,21 @@ const {
     };
     return chain;
   });
+  // SCHEIBE "SPALTENRECHTE" (Phase 13.6, Setzung P13.6-117): setCapiToken schreibt settings
+  // und tracking_key seither ueber den Admin-Client —
+  // .update(patch).eq().eq().select("id").maybeSingle(), getroffen ist die Zeile.
+  const adminUpdate = vi.fn(() => {
+    const chain: Record<string, unknown> = {
+      eq: () => chain,
+      select: () => chain,
+      maybeSingle: async () => ({ data: { id: "proj-1" }, error: null }),
+    };
+    return chain;
+  });
   const createAdminClient = vi.fn(() => ({
     from: vi.fn((table: string) => {
       adminTables.push(table);
-      return { upsert: adminUpsert, delete: adminDelete, select: adminSelect };
+      return { upsert: adminUpsert, delete: adminDelete, select: adminSelect, update: adminUpdate };
     }),
   }));
   return {
@@ -226,7 +237,8 @@ describe("Ein gueltiges zweites Ziel schreibt seine EIGENE Zeile", () => {
     // keinen richtigen Wert, den man dort ablegen koennte.
     makeClient({ user: { id: "u1" } });
     await setCapiToken("proj-1", "pinterest", "PIN");
-    expect(adminTables).toEqual(["project_secrets"]);
+    // "projects": seit der Scheibe "Spaltenrechte" der Write von settings und tracking_key.
+    expect(adminTables).toEqual(["project_secrets", "projects"]);
     expect(adminUpsert).toHaveBeenCalledTimes(1);
   });
 
@@ -235,7 +247,7 @@ describe("Ein gueltiges zweites Ziel schreibt seine EIGENE Zeile", () => {
     // die Alt-Tabelle ausspart — nicht, dass Meta sie weiterhin trifft.
     makeClient({ user: { id: "u1" } });
     await setCapiToken("proj-1", "meta", "META-SECRET");
-    expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
+    expect(adminTables).toEqual(["project_secrets", "project_tokens", "projects"]);
   });
 
   // DAS VIERTE ZIEL (11.1a) — ES BRAUCHT KEINEN EIGENEN SCHREIBPFAD, und dieser Lauf
@@ -254,7 +266,7 @@ describe("Ein gueltiges zweites Ziel schreibt seine EIGENE Zeile", () => {
       target: "linkedin",
       secret: "LI-SECRET",
     });
-    expect(adminTables).toEqual(["project_secrets"]);
+    expect(adminTables).toEqual(["project_secrets", "projects"]);
   });
 });
 

@@ -277,7 +277,16 @@ export async function saveProject(
   // ZURUECKGELESEN, NICHT ZURUECKGEREICHT: Der Client bekommt den Wert, den die Zeile traegt.
   // Nur der INSERT-Zweig — der Update-Zweig schreibt die Spalte weiterhin NICHT (sie ueberlebt
   // jeden Save, Scheibe 2b-0).
-  const { data, error } = await supabase
+  //
+  // UEBER DEN ADMIN-CLIENT (Phase 13.6, Scheibe "Spaltenrechte"; Setzungen P13.6-117 und
+  // P13.6-125): Die angemeldete Rolle verliert mit Migration 0031 das INSERT-Recht auf
+  // projects — sonst legte sie eine Zeile mit selbst gewaehltem tracking_key, blocked_at oder
+  // published_content an. Das Eigentums-Gate ist hier die SITZUNG: user_id kommt allein aus
+  // dem server-geprueften Nutzer darueber, nie aus einem Argument. Der Admin-Client entsteht
+  // erst danach. EIN Schreibvorgang mit dem Schluessel — ein getrenntes Nachschreiben koennte
+  // scheitern und braechte den Beacon-Fehler zurueck (Vermerk P13.6-106).
+  const admin = createAdminClient();
+  const { data, error } = await admin
     .from("projects")
     .insert({
       user_id: user.id,
@@ -491,12 +500,21 @@ export async function removeVariantB(
     patch.published_content = rest;
   }
 
-  const { error: updateError } = await supabase
+  // UEBER DEN ADMIN-CLIENT, ERST NACH DEM GATE (Scheibe "Spaltenrechte", Setzung P13.6-117):
+  // ab_test_active und published_content sind server-eigen; die angemeldete Rolle darf sie
+  // nach Migration 0031 nicht mehr schreiben. EIN atomarer Write bleibt (der CHECK oben).
+  // Der user_id-Filter traegt die Eigentums-Achse mit, weil service_role RLS umgeht.
+  // `.select("id")` macht "keine Zeile getroffen" sichtbar statt still.
+  const admin = createAdminClient();
+  const { data: written, error: updateError } = await admin
     .from("projects")
     .update(patch)
     .eq("id", projectId)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .select("id")
+    .maybeSingle();
   if (updateError) return { ok: false, error: updateError.message };
+  if (!written) return { ok: false, error: "Projekt nicht gefunden." };
 
   return { ok: true };
 }
@@ -541,8 +559,9 @@ export type SetAbTestResult =
  * (Route liefert A) und darf darum an keiner Vorbedingung scheitern.
  *
  * Ownership-Gate wie ueberall: user_id-Filter zusaetzlich zur RLS (defense in
- * depth), Baustil wie setCapiToken. KEIN service_role — die projects-Zeile ist
- * owner-lesbar und owner-schreibbar.
+ * depth), Baustil wie setCapiToken. SEIT DER SCHEIBE "SPALTENRECHTE" (Phase 13.6) laeuft
+ * der SCHREIBVORGANG ueber service_role, nach dem Gate: ab_test_active ist server-eigen,
+ * und die angemeldete Rolle darf die Spalte nach Migration 0031 nicht mehr schreiben.
  */
 export async function setAbTestActive(
   projectId: string,
@@ -613,12 +632,20 @@ export async function setAbTestActive(
   const startedAt = active ? new Date().toISOString() : undefined;
   if (startedAt) patch.ab_test_started_at = startedAt;
 
-  const { error: updateError } = await supabase
+  // UEBER DEN ADMIN-CLIENT, ERST NACH GATE UND VORBEDINGUNG (Scheibe "Spaltenrechte",
+  // Setzung P13.6-117): ab_test_active und ab_test_started_at sind server-eigen. Der
+  // user_id-Filter traegt die Eigentums-Achse mit; `.select("id")` macht "keine Zeile
+  // getroffen" sichtbar.
+  const admin = createAdminClient();
+  const { data: written, error: updateError } = await admin
     .from("projects")
     .update(patch)
     .eq("id", projectId)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .select("id")
+    .maybeSingle();
   if (updateError) return { ok: false, error: updateError.message };
+  if (!written) return { ok: false, error: "Projekt nicht gefunden." };
 
   // startedAt wird nur im Start-Zweig mitgegeben -> beim Stoppen fehlt das Feld, und
   // der Client behaelt seinen bekannten Wert (s. SetAbTestResult).
@@ -658,8 +685,10 @@ export type SetCapiTokenResult =
  *    BLEIBT unveraendert (keine neue Policy) — nur der WRITE laeuft privilegiert.
  *    SEIT PHASE 11 SCHEIBE 1 IST DAS EIN DOPPELSCHREIB in BEIDE Geheimnis-Tabellen,
  *    Reihenfolge und Fehlerverhalten festgelegt — s. den Kommentar an der Stelle.
- * 5. settings-Merge (trackingKey lazy + tokenSet) bleibt ueber den authenticated-SSR-
- *    Client (RLS greift; kein Grund fuer service_role auf der geschuetzten Zeile).
+ * 5. settings-Merge (trackingKey lazy + tokenSet) und die Spalte tracking_key laufen seit
+ *    der Scheibe "Spaltenrechte" (Phase 13.6) ueber DENSELBEN Admin-Client, mit
+ *    user_id-Filter: tracking_key ist server-eigen und fuer die angemeldete Rolle nach
+ *    Migration 0031 nicht mehr schreibbar.
  *
  * Der Client spiegelt {trackingKey, tokenSet:true} nach Erfolg in settings UND
  * savedSettings (setCapiState) -> kein false-dirty (settingsEqual ignoriert capi).
@@ -797,8 +826,8 @@ export async function setCapiToken(
   //    - tracking_key (Spalte) = Aufloesungs-Autoritaet (der Resolver liest nur sie);
   //    - settings.capi.trackingKey (via setCapiState, UNVERAENDERT) = heutige Client-
   //      Einbettung, byte-gleicher Wert -> CAPI-Client-Pfad bleibt identisch.
-  //    tokenSet=true, pixels unangetastet. updated_at explizit. Ueber den
-  //    authenticated-SSR-Client (RLS greift auf der geschuetzten projects-Zeile).
+  //    tokenSet=true, pixels unangetastet. updated_at explizit. Ueber welchen Client: s. den
+  //    Absatz am Schreibvorgang unten.
   //
   //    DER trackingKey WIRD FUER JEDES ZIEL SICHERGESTELLT: Er identifiziert das
   //    PROJEKT, nicht ein Ziel (Ausgangslage: er ist in ausgelieferte Seiten
@@ -822,7 +851,13 @@ export async function setCapiToken(
           tokenSet: current.capi?.tokenSet === true,
         });
 
-  const { error: settingsError } = await supabase
+  //    SEIT DER SCHEIBE "SPALTENRECHTE" (Phase 13.6, Setzung P13.6-117) UEBER DEN
+  //    ADMIN-CLIENT von oben: tracking_key ist server-eigen, die angemeldete Rolle darf die
+  //    Spalte nach Migration 0031 nicht mehr schreiben. EIN Write fuer settings und Spalte,
+  //    sonst liefen Spiegel und Spalte bei einem Teilausfall auseinander. Der
+  //    user_id-Filter traegt die Eigentums-Achse mit; `.select("id")` macht "keine Zeile
+  //    getroffen" sichtbar.
+  const { data: written, error: settingsError } = await admin
     .from("projects")
     .update({
       settings: nextSettings,
@@ -830,8 +865,11 @@ export async function setCapiToken(
       updated_at: new Date().toISOString(),
     })
     .eq("id", projectId)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .select("id")
+    .maybeSingle();
   if (settingsError) return { ok: false, error: settingsError.message };
+  if (!written) return { ok: false, error: "Projekt nicht gefunden." };
 
   return { ok: true, trackingKey };
 }
@@ -1432,67 +1470,54 @@ export type PublishResult =
       ok: true;
       url: string;
       label: string;
-      // Die Label-Zeile fehlte und wurde MIT DEM ALTEN Label wiederhergestellt (die
-      // Live-URL war bis eben tot). Optional und nur im Heilungsfall gesetzt ->
+      // Die Label-Zeile eines veroeffentlichten Projekts fehlte und wurde NEU angelegt —
+      // seit Owner-Entscheidung P13.6-123 (Phase 13.6) mit einem NEUEN Label, nicht mehr
+      // mit dem alten aus settings. Optional und nur im Heilungsfall gesetzt ->
       // Projekte ohne Divergenz bekommen die byte-gleiche Antwort wie bisher
       // (Invariante i). Der Client zeigt es als Zusatz in der bestehenden
-      // Statuszeile; fehlt das Feld, aendert sich am UI nichts.
+      // Statuszeile; fehlt das Feld, aendert sich am UI nichts. DER DORTIGE TEXT SAGT
+      // NOCH "wiederhergestellt" — Vorrat P13.6-127 der Phase 13.6.
       restored?: true;
     }
   | { ok: false; error: string };
 
-// Der authenticated-SSR-Client (fuer die Typisierung des Helpers).
-type SsrClient = Awaited<ReturnType<typeof createClient>>;
+// Der Admin-Client (fuer die Typisierung des Helpers).
+type AdminClient = ReturnType<typeof createAdminClient>;
 
 /**
  * Vergibt EINEM Projekt ein neues, global eindeutiges domains-Label (slug + Random),
- * mit Kollisions-Retry. INSERT laeuft ueber den authenticated-Client -> die RLS-
- * WITH-CHECK-Policy (Projekt-Ownership) muss greifen. Unique-Violation (23505) ->
- * neuer Versuch; anderer Fehler -> Abbruch (null). Gibt das vergebene Label oder null.
+ * mit Kollisions-Retry. Unique-Violation (23505) -> neuer Versuch; anderer Fehler ->
+ * Abbruch (null). Gibt das vergebene Label oder null.
+ *
+ * DER EINZIGE ERZEUGER EINES PROJEKT-LABELS — beim ersten Veroeffentlichen UND bei der
+ * Wiederherstellung einer fehlenden Zeile (Owner-Entscheidung P13.6-123, Phase 13.6). Ein
+ * Label aus settings.hosting.label legt hier niemand mehr an: der Blob ist client-besessen,
+ * und ein Wert von dort uebernaehme das freigewordene Label eines geloeschten fremden
+ * Projekts.
+ *
+ * UEBER DEN ADMIN-CLIENT (Scheibe "Spaltenrechte", Setzung P13.6-117): Die angemeldete Rolle
+ * verliert mit Migration 0031 das INSERT-Recht auf domains. Die Projekt-Grenze zog bis
+ * dahin zusaetzlich die WITH-CHECK-Policy domains_insert_own; jetzt traegt sie allein das
+ * Eigentums-Gate des Aufrufers (publishProject), vor dem der Admin-Client nicht entsteht.
+ * Der Rumpf traegt genau label und project_id.
  */
 async function assignDomainLabel(
-  supabase: SsrClient,
+  admin: AdminClient,
   projectId: string,
   name: string | null
 ): Promise<string | null> {
   const base = slugForLabel(name);
   for (let i = 0; i < 6; i++) {
     const label = `${base}-${randomLabelSuffix()}`;
-    const { error } = await supabase
+    const { error } = await admin
       .from("domains")
       .insert({ label, project_id: projectId });
     if (!error) return label;
     // 23505 = unique_violation -> Label schon vergeben, neuer Kandidat. Jeder andere
-    // Fehler (z.B. RLS/Verbindung) ist echt -> abbrechen.
+    // Fehler (z.B. Rechte/Verbindung) ist echt -> abbrechen.
     if (error.code !== "23505") return null;
   }
   return null;
-}
-
-/**
- * Legt die Label-Zeile mit einem VORGEGEBENEN Label an (Wiederherstellung nach einer
- * Divergenz). Gegenstueck zu assignDomainLabel, das ein FRISCHES Label wuerfelt.
- *
- * Rueckgabe: null = angelegt; "taken" = das Label gehoert bereits jemandem
- * (23505 auf dem PK); "error" = alles andere.
- *
- * KEIN LABEL-DIEBSTAHL (Invariante ii) — und zwar STRUKTURELL, nicht per Guard: label
- * ist der PRIMAERSCHLUESSEL der Tabelle (Migration 0006). Ein Insert auf ein fremdes
- * Label scheitert mit 23505, unabhaengig von jeder Policy. Zusaetzlich laesst die
- * WITH-CHECK-Policy domains_insert_own nur Zeilen auf EIGENE Projekte zu. Es gibt
- * hier bewusst KEIN update/upsert — nur ein Insert kann fehlschlagen, ein Upsert
- * wuerde die fremde Zeile uebernehmen.
- */
-async function insertDomainLabel(
-  supabase: SsrClient,
-  projectId: string,
-  label: string
-): Promise<null | "taken" | "error"> {
-  const { error } = await supabase
-    .from("domains")
-    .insert({ label, project_id: projectId });
-  if (!error) return null;
-  return error.code === "23505" ? "taken" : "error";
 }
 
 /**
@@ -1502,24 +1527,24 @@ async function insertDomainLabel(
  * kein DOM, siehe generate.ts SSR-Guard). Der Server SPEICHERT nur, wie saveProject.
  *
  * IDOR-Muster wie setCapiToken: Session-Check + Ownership-Gate ZWINGEND ueber den
- * authenticated-SSR-Client (RLS greift). Beide Writes (projects.published_content und
- * domains) laufen ueber DENSELBEN authenticated-Client — anders als setCapiToken OHNE
- * service_role, weil domains owner-scoped lesbar ist (keine write-only-Sperre, kein
- * RETURNING-Konflikt). Ein Nicht-Owner scheitert am Gate, bevor irgendetwas geschrieben
- * wird.
- * SEIT DER SCHEIBE 13.6-1 GIBT ES GENAU EINEN service_role-ZUGRIFF, UND ER LIEST NUR
- * (Setzungen P13.6-34 und P13.6-36 der Phase 13.6, F7): die Pruefung, ob eine Zieladresse
- * eines Formular-Ziels auf der Custom-Domain IRGENDEINES Projekts liegt. RLS zeigte dem
- * authenticated-Client nur die eigenen Domains. Der Admin-Client entsteht erst NACH dem
- * Ownership-Gate und nur, wenn mindestens ein Formular-Ziel besteht; ohne Formular-Ziel wird
- * er nie instanziiert (Waechter in publish.test.ts: "Scheibe 7a", P3b; vor dem Gate: P3).
- * Geschrieben wird weiterhin ausschliesslich ueber den authenticated-Client.
+ * authenticated-SSR-Client (RLS greift). Ein Nicht-Owner scheitert am Gate, bevor
+ * irgendetwas geschrieben wird.
+ * SEIT DER SCHEIBE "SPALTENRECHTE" (Phase 13.6, Setzung P13.6-117) LAUFEN BEIDE WRITES —
+ * projects (published_content, settings, tracking_key, updated_at) und das domains-Label —
+ * UEBER DEN ADMIN-CLIENT: published_content und tracking_key sind server-eigen, und die
+ * angemeldete Rolle verliert mit Migration 0031 das Schreibrecht auf sie und auf domains.
+ * Der Admin-Client entsteht genau EINMAL, erst NACH dem Gate und erst beim ersten Bedarf
+ * (getAdmin unten): bei der Custom-Domain-Pruefung eines Formular-Ziels (Setzungen
+ * P13.6-34 und P13.6-36, F7) oder beim Label-Block. Eine Ablehnung durch einen Riegel
+ * davor erzeugt ihn nie. Der projects-Write traegt den user_id-Filter aus der Sitzung.
+ * Gelesen wird weiterhin ueber den authenticated-Client (Gate, Label-Zeilen).
  *
  * published_content = { html: functionalHtml, mappings, settings, publishedAt }
  * — plus, NUR wenn das Projekt eine Variante B traegt, den additiven Geschwister-Key
  * variantB: { html, mappings } (Scheibe 9a).
- * IDEMPOTENZ: ein bereits vergebenes Label (settings.hosting.label) wird
- * WIEDERVERWENDET -> Re-Publish erzeugt KEINE zweite domains-Row und KEINEN neuen Label
+ * IDEMPOTENZ: das Label der bestehenden domains-Zeile wird WIEDERVERWENDET (seit der
+ * Scheibe "domains-Wahrheit" aus der Zeile, nicht aus settings.hosting.label)
+ * -> Re-Publish erzeugt KEINE zweite domains-Row und KEINEN neuen Label
  * (die Live-URL bleibt stabil). Das Label wird in settings.hosting gespiegelt
  * (oeffentlich, client-lesbar), damit der Client die URL ueber Sessions hinweg kennt.
  */
@@ -1559,6 +1584,13 @@ export async function publishProject(
   if (ownError) return { ok: false, error: ownError.message };
   if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
 
+  // DER ADMIN-CLIENT ENTSTEHT ERST HIER, HINTER DEM GATE, UND ERST BEIM ERSTEN BEDARF —
+  // genau einmal je Aufruf (Scheibe "Spaltenrechte", Setzung P13.6-117). Oberhalb dieser
+  // Zeile steht im Nicht-Owner-Pfad keine Admin-Zeile. Ein Riegel, der vor dem ersten
+  // getAdmin() ablehnt, erzeugt ihn nie.
+  let adminClient: AdminClient | null = null;
+  const getAdmin = (): AdminClient => (adminClient ??= createAdminClient());
+
   // Der SERVER ist Autoritaet darueber, OB eine Variante B existiert (Spalte), nicht
   // der Client. Ein Client, der ein B-Artefakt mitschickt, obwohl die Spalte leer
   // ist, wird ignoriert (kein Weg, per Publish eine Variante zu erfinden).
@@ -1582,7 +1614,7 @@ export async function publishProject(
   //
   // WARUM HIER UND NICHT WEITER UNTEN — das ist die eigentliche Auflage, nicht der
   // Riegel selbst: Der Label-Block direkt darunter SCHREIBT bereits
-  // (insertDomainLabel/assignDomainLabel legen eine domains-Zeile an). Laege der
+  // (assignDomainLabel legt eine domains-Zeile an). Laege der
   // Riegel danach, hinterliesse ein ABGELEHNTER Publish eine frische Label-Zeile —
   // eine Live-URL, die nie Inhalt bekommt, und laut "DIE domains-ZEILE IST DIE
   // ALLEINIGE WAHRHEIT" waere das Projekt damit fuer jede Divergenz-Pruefung
@@ -1629,7 +1661,7 @@ export async function publishProject(
   //
   // WARUM HIER UND NICHT BEI DER INJEKTION WEITER UNTEN — derselbe Grund wie beim
   // Leer-Riegel darueber: Der Label-Block direkt darunter SCHREIBT bereits
-  // (insertDomainLabel/assignDomainLabel). Eine Verweigerung dahinter hinterliesse eine
+  // (assignDomainLabel). Eine Verweigerung dahinter hinterliesse eine
   // Label-Zeile. Hier oben schreibt sie GAR NICHTS.
   //
   // WARUM ABBRUCH UND KEIN RUECKFALL: "Unbekannt -> AUS" waere FAIL-OPEN — keine
@@ -1827,8 +1859,7 @@ export async function publishProject(
         return { ok: false, error: FORM_TARGET_HOST_UNCHECKABLE_MESSAGE };
       hosts.add(host);
     }
-    const admin = createAdminClient();
-    const { data: servedHosts, error: servedError } = await admin
+    const { data: servedHosts, error: servedError } = await getAdmin()
       .from("domains")
       .select("custom_host")
       .in("custom_host", Array.from(hosts))
@@ -1844,7 +1875,7 @@ export async function publishProject(
   //
   // WARUM HIER — dieselbe Auflage wie beim Leer-Riegel weiter oben, und sie ist der
   // eigentliche Grund fuer die Platzierung: Der Label-Block weiter unten SCHREIBT
-  // bereits (insertDomainLabel/assignDomainLabel legen eine domains-Zeile an). Laege
+  // bereits (assignDomainLabel legt eine domains-Zeile an). Laege
   // der Riegel danach, hinterliesse ein ABGELEHNTER Publish eine frische Label-Zeile —
   // eine Live-URL, die nie Inhalt bekommt. Hier oben schreibt die Ablehnung GAR NICHTS.
   // Ans ENDE der bestehenden Tor-Kette gesetzt, bleibt diese unveraendert; der Eingriff
@@ -2005,35 +2036,26 @@ export async function publishProject(
     // Label-Abweichung), deshalb bewusst ohne eigenen UI-Hinweis.
     const match = rows.find((r) => r.label === settingsLabel);
     label = (match ?? rows[0]).label;
-  } else if (settingsLabel) {
-    // HEILUNG von Richtung (a): die Zeile fehlt, das Label steht aber in settings.
-    // Es wird MIT DEM ALTEN Label wiederhergestellt — ABGELEITET, nicht erfunden,
-    // und die Live-URL bleibt stabil (Invariante iii).
-    const ins = await insertDomainLabel(supabase, projectId, settingsLabel);
-    if (ins === "taken")
-      // KEIN Diebstahl (Invariante ii): das Label gehoert inzwischen jemand
-      // anderem. Fail-closed statt still ein NEUES Label zu vergeben — eine
-      // lautlos geaenderte Live-URL waere der teurere Fehler (laufende Ads zeigten
-      // weiter auf die tote Adresse, und der Nutzer erfuehre es nie). Kein
-      // Support-Kanal wird versprochen, es gibt heute keinen.
-      return {
-        ok: false,
-        error: `Die bisherige Adresse "${settingsLabel}" ist inzwischen anderweitig vergeben. Es wurde NICHTS veröffentlicht — die Seite bleibt unter dieser Adresse offline, bis eine neue Adresse vergeben wird.`,
-      };
-    if (ins === "error")
-      return { ok: false, error: "Label-Vergabe fehlgeschlagen." };
-    label = settingsLabel;
-    restored = true;
   } else {
-    // ERSTER PUBLISH: weder Zeile noch settings -> frisches Label wie bisher.
+    // KEINE ZEILE: ERSTER PUBLISH (settings ohne Label) ODER HEILUNG von Richtung (a)
+    // (settings traegt ein Label, die Zeile fehlt). BEIDE vergeben ein NEUES Label ueber
+    // DENSELBEN Erzeuger (Owner-Entscheidung P13.6-123, Phase 13.6). settingsLabel ist NIE
+    // Quelle: der Blob ist client-besessen, und ein Wert von dort uebernaehme das
+    // freigewordene Label eines geloeschten fremden Projekts (on delete cascade, 0006).
+    // DER PREIS, bewusst: Im Heilungsfall aendert sich die Adresse; Anzeigen, die auf die
+    // alte zeigen, bleiben tot — sie war es ohnehin. Der Spiegel in settings wird unten
+    // (setHostingState) auf das neue Label gezogen.
     const assigned = await assignDomainLabel(
-      supabase,
+      getAdmin(),
       projectId,
       (owned.name as string | null) ?? null
     );
     if (!assigned)
       return { ok: false, error: "Label-Vergabe fehlgeschlagen." };
     label = assigned;
+    // restored meldet allein, dass eine fehlende Zeile neu angelegt wurde — nicht, dass die
+    // Adresse dieselbe ist (Vorrat P13.6-127 der Phase 13.6).
+    restored = settingsLabel !== "";
   }
 
   // Scheibe 2b-0: server-autoritative Tracking-Identitaet lazy sicherstellen. Aus der
@@ -2100,7 +2122,11 @@ export async function publishProject(
     : base;
   const nextSettings = setHostingState(currentSettings, { label, publishedAt });
 
-  const { error: updateError } = await supabase
+  // UEBER DEN ADMIN-CLIENT (Scheibe "Spaltenrechte", Setzung P13.6-117): published_content
+  // und tracking_key sind server-eigen. Der user_id-Filter aus der Sitzung traegt die
+  // Eigentums-Achse mit, weil service_role RLS umgeht; `.select("id")` macht "keine Zeile
+  // getroffen" sichtbar statt still.
+  const { data: written, error: updateError } = await getAdmin()
     .from("projects")
     .update({
       published_content,
@@ -2109,8 +2135,11 @@ export async function publishProject(
       updated_at: publishedAt,
     })
     .eq("id", projectId)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .select("id")
+    .maybeSingle();
   if (updateError) return { ok: false, error: updateError.message };
+  if (!written) return { ok: false, error: "Projekt nicht gefunden." };
 
   // Live-URL aus der Basis-Domain (env NEXT_PUBLIC_HOSTING_DOMAIN) + Label. Fehlt die
   // env, ist url "" -> der Client zeigt dann nur das Label.

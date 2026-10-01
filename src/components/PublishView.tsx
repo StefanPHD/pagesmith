@@ -320,15 +320,20 @@ export default function PublishView({
           <p className="mt-2 text-xs text-green-600">
             ● veröffentlicht
             {publishStatus === "published" && " ✓ aktualisiert"}
-            {/* Ein Publish, der eine tote Adresse wiederbelebt hat, darf nicht
-                aussehen wie jeder andere — der Nutzer soll wissen, dass etwas
-                repariert wurde. Zusatz in der BESTEHENDEN Statuszeile, kein
-                neues UI-Konzept. */}
+            {/* Ein Publish, der eine fehlende Label-Zeile neu angelegt hat, darf nicht
+                aussehen wie jeder andere. SEIT OWNER-ENTSCHEIDUNG P13.6-123 (Phase 13.6)
+                ist die Adresse dann eine NEUE; der Wortlaut ist Owner-Entscheidung
+                P13.6-128 — der alte Satz ("wiederhergestellt") liess glauben, alte Links
+                und Anzeigen funktionierten noch. Zusatz in der BESTEHENDEN Statuszeile,
+                kein neues UI-Konzept; der Gedankenstrich trennt nur und gehoert nicht zum
+                Wortlaut. */}
             {publishStatus === "published" && publishRestored && (
-              <span className="font-medium">
-                {" "}
-                — Adresse war nicht mehr erreichbar und wurde wiederhergestellt.
-              </span>
+              <>
+                {" — "}
+                <span className="font-medium">
+                  Die bisherige Adresse war nicht mehr erreichbar. Deine Seite ist jetzt unter einer neuen Adresse veröffentlicht. Bitte aktualisiere Links und Anzeigen.
+                </span>
+              </>
             )}
           </p>
         ) : (

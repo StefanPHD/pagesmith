@@ -7174,3 +7174,46 @@ describe("CodeImporter — Editor-Geruest: Reiter der linken Spalte (Phase 12.5,
     }
   });
 });
+
+// ===========================================================================
+// DER HINWEIS BEI restored (Phase 13.6, Scheibe "Spaltenrechte"; Owner-Entscheidung
+// P13.6-128). DIE ERWARTUNG IST AUS DER ENTSCHEIDUNG GETIPPT, NICHT AUS PublishView.tsx.
+// Seit Owner-Entscheidung P13.6-123 ist die Adresse im Heilungsfall eine NEUE; der alte Satz
+// ("wiederhergestellt") liess glauben, alte Links und Anzeigen funktionierten noch.
+// ===========================================================================
+describe("PublishView — der Hinweis bei einer neu vergebenen Adresse (P13.6-128)", () => {
+  const HTML =
+    '<!DOCTYPE html><html><head></head><body><h1 data-pagesmith-id="ps-aaaaaa">Titel</h1></body></html>';
+  const HINWEIS =
+    "Die bisherige Adresse war nicht mehr erreichbar. Deine Seite ist jetzt unter einer neuen Adresse veröffentlicht. Bitte aktualisiere Links und Anzeigen.";
+  const ALTER_SATZ = "wiederhergestellt";
+  const publishBtn = () =>
+    screen.getByRole("button", { name: /^(Veröffentlichen|Erneut veröffentlichen)$/ });
+  const openSettings = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+
+  it("RH-1: restored -> genau der Wortlaut der Entscheidung, der alte Satz nicht", async () => {
+    // Rot, wenn der alte Text zurueckkehrt (Mutation RH-M1) oder der Wortlaut abweicht.
+    publishProject.mockResolvedValueOnce({
+      ok: true,
+      url: "http://neu-abc123.lvh.me:3000",
+      label: "neu-abc123",
+      restored: true,
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} initialMappings={[]} />);
+    await screen.findByText("Titel");
+    openSettings();
+    fireEvent.click(publishBtn());
+    expect(await screen.findByText(HINWEIS)).toBeTruthy();
+    expect(document.body.textContent).not.toContain(ALTER_SATZ);
+  });
+
+  it("RH-2: ohne restored -> kein Hinweis (Positivkontrolle: veroeffentlicht steht da)", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} initialMappings={[]} />);
+    await screen.findByText("Titel");
+    openSettings();
+    fireEvent.click(publishBtn());
+    expect(await screen.findByText(/aktualisiert/)).toBeTruthy();
+    expect(screen.queryByText(HINWEIS)).toBeNull();
+  });
+});

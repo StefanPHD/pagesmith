@@ -4,11 +4,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const { createClient } = vi.hoisted(() => ({ createClient: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createClient }));
 vi.mock("server-only", () => ({}));
-// Admin-Client existiert im Modul (setCapiToken) — mocken, damit der Import nicht den echten
-// service_role-Pfad laedt. Der Spy beweist zugleich: OHNE Formular-Ziel fasst publishProject
-// service_role NIE an (Write laeuft ueber den authenticated-Client). SEIT DER SCHEIBE 13.6-1
-// liest es MIT Formular-Ziel genau einmal domains.custom_host ueber ihn (Block "P — die
-// Custom-Domain-Pruefung" unten; makeAdmin).
+// Admin-Client mocken, damit der Import nicht den echten service_role-Pfad laedt.
+// SEIT DER SCHEIBE "SPALTENRECHTE" (Phase 13.6, Setzung P13.6-117) laufen BEIDE Writes von
+// publishProject — das domains-Label und der projects-Write — ueber ihn; makeClient richtet
+// ihn deshalb mit ein und schreibt in DIESELBE Aufzeichnung (rec.inserts, rec.updatePatch),
+// damit die Bestandsaussagen ("nichts geschrieben") weiter tragen. Welcher Client schrieb,
+// halten rec.ssrWrites und rec.adminWrites fest. Die Custom-Domain-Pruefung der Scheibe
+// 13.6-1 liest ueber denselben Client (Block "P" unten; makeAdmin setzt ihr Ergebnis).
 const { createAdminClient } = vi.hoisted(() => ({ createAdminClient: vi.fn() }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
@@ -26,11 +28,18 @@ import {
  * Chainbarer Client-Mock. Unterstuetzt select().maybeSingle() (Ownership),
  * update() (thenable) UND insert() (thenable, mit konfigurierbarer Ergebnis-Queue
  * fuer den Kollisions-Retry). Zeichnet auf, was geschrieben wird.
+ *
+ * SEIT DER SCHEIBE "SPALTENRECHTE": Derselbe Aufruf richtet den ADMIN-CLIENT ein. Beide
+ * Clients schreiben in DIESELBE Aufzeichnung (inserts, updatePatch); ssrWrites und
+ * adminWrites zaehlen getrennt, adminUpdateEq haelt die Filter des Admin-Writes fest.
+ * Der Admin-Write `.update().eq().eq().select("id").maybeSingle()` liefert aus
+ * updateResult: ein Fehler -> { data: null, error }; sonst `data`, falls angegeben
+ * (null = keine Zeile getroffen), sonst { id: "proj-1" }.
  */
 function makeClient(opts: {
   user: { id: string } | null;
   ownRow?: { data: unknown; error: unknown };
-  updateResult?: { error: unknown };
+  updateResult?: { error: unknown; data?: unknown };
   insertResults?: { error: unknown }[]; // pro insert-Aufruf, der Reihe nach
   // Scheibe "domains-Wahrheit": das Ergebnis der Label-Zeilen-Abfrage
   // (select label,created_at from domains where project_id=… and custom_host is null).
@@ -41,8 +50,68 @@ function makeClient(opts: {
     fromTables: [] as string[],
     updatePatch: null as unknown,
     inserts: [] as unknown[],
+    ssrWrites: 0,
+    adminWrites: 0,
+    adminUpdateTables: [] as string[],
+    adminInsertTables: [] as string[],
+    adminUpdateEq: [] as [string, unknown][],
   };
   const insertQueue = [...(opts.insertResults ?? [])];
+
+  // DER ADMIN-CLIENT (s. Kopf). from() zaehlt in adminCheck.tables mit — die Pruefung der
+  // Custom-Domains (P1) liest von dort.
+  function adminBuilder(table: string) {
+    let awaited: { data?: unknown; error: unknown } = { error: null };
+    let mode: "select" | "update" | "insert" = "select";
+    const b: Record<string, unknown> = {};
+    b.select = vi.fn((cols: string) => {
+      if (mode === "select") {
+        adminCheck.selects.push(cols);
+        awaited = adminCheck.result;
+      }
+      return b;
+    });
+    b.in = vi.fn((column: string, values: string[]) => {
+      adminCheck.inCalls.push({ column, values });
+      return b;
+    });
+    b.limit = vi.fn((n: number) => {
+      adminCheck.limits.push(n);
+      return b;
+    });
+    b.eq = vi.fn((col: string, val: unknown) => {
+      if (mode === "update") rec.adminUpdateEq.push([col, val]);
+      return b;
+    });
+    b.update = vi.fn((patch: unknown) => {
+      mode = "update";
+      rec.updatePatch = patch;
+      rec.adminWrites++;
+      rec.adminUpdateTables.push(table);
+      return b;
+    });
+    b.insert = vi.fn((row: unknown) => {
+      mode = "insert";
+      rec.inserts.push(row);
+      rec.adminWrites++;
+      rec.adminInsertTables.push(table);
+      awaited = insertQueue.shift() ?? { error: null };
+      return b;
+    });
+    b.maybeSingle = vi.fn(async () => {
+      const ur = opts.updateResult ?? { error: null };
+      if (ur.error) return { data: null, error: ur.error };
+      return { data: "data" in ur ? ur.data : { id: "proj-1" }, error: null };
+    });
+    b.then = (onF: (v: unknown) => unknown) => onF(awaited);
+    return b;
+  }
+  createAdminClient.mockImplementation(() => ({
+    from: vi.fn((table: string) => {
+      adminCheck.tables.push(table);
+      return adminBuilder(table);
+    }),
+  }));
 
   function builder(table: string) {
     let awaited: { data?: unknown; error: unknown } = { error: null };
@@ -63,13 +132,18 @@ function makeClient(opts: {
         ? opts.ownRow ?? { data: null, error: null }
         : { data: null, error: null }
     );
+    // SEIT DER SCHEIBE "SPALTENRECHTE" schreibt publishProject NICHT mehr ueber diesen
+    // Client. Ein Write hier zaehlt ssrWrites hoch und wird trotzdem aufgezeichnet, damit
+    // ein Rueckfall in den alten Weg nicht als "nichts geschrieben" durchgeht.
     b.update = vi.fn((patch: unknown) => {
       rec.updatePatch = patch;
+      rec.ssrWrites++;
       awaited = opts.updateResult ?? { error: null };
       return b;
     });
     b.insert = vi.fn((row: unknown) => {
       rec.inserts.push(row);
+      rec.ssrWrites++;
       awaited = insertQueue.shift() ?? { error: null };
       return b;
     });
@@ -89,38 +163,26 @@ function makeClient(opts: {
 }
 
 /**
- * Der Admin-Client der Custom-Domain-Pruefung (Scheibe 13.6-1): from().select().in().limit(),
- * am Ende awaited. Zeichnet Tabelle, Spalten und die in()-Argumente auf.
+ * Die LESENDE Seite des Admin-Clients — die Custom-Domain-Pruefung (Scheibe 13.6-1):
+ * from().select().in().limit(), am Ende awaited. Zeichnet Tabellen (JEDES admin.from()),
+ * Spalten und die in()-Argumente auf. makeAdmin setzt das Ergebnis jener Abfrage; den Client
+ * selbst richtet makeClient ein (Reihenfolge der zwei Aufrufe gleichgueltig).
  */
+type AdminCheck = {
+  result: { data: unknown; error: unknown };
+  tables: string[];
+  selects: string[];
+  inCalls: { column: string; values: string[] }[];
+  limits: number[];
+};
+const freshAdminCheck = (
+  result: { data: unknown; error: unknown } = { data: [], error: null }
+): AdminCheck => ({ result, tables: [], selects: [], inCalls: [], limits: [] });
+let adminCheck: AdminCheck = freshAdminCheck();
+
 function makeAdmin(result: { data: unknown; error: unknown } = { data: [], error: null }) {
-  const rec = {
-    tables: [] as string[],
-    selects: [] as string[],
-    inCalls: [] as { column: string; values: string[] }[],
-    limits: [] as number[],
-  };
-  const b: Record<string, unknown> = {};
-  b.select = vi.fn((cols: string) => {
-    rec.selects.push(cols);
-    return b;
-  });
-  b.in = vi.fn((column: string, values: string[]) => {
-    rec.inCalls.push({ column, values });
-    return b;
-  });
-  b.limit = vi.fn((n: number) => {
-    rec.limits.push(n);
-    return b;
-  });
-  b.then = (onF: (v: unknown) => unknown) => onF(result);
-  const admin = {
-    from: vi.fn((table: string) => {
-      rec.tables.push(table);
-      return b;
-    }),
-  };
-  createAdminClient.mockReturnValue(admin);
-  return rec;
+  adminCheck = freshAdminCheck(result);
+  return adminCheck;
 }
 
 const snapshot = { html: "<h1 data-pagesmith-id='ps-1'>x</h1>", mappings: [], settings: {} };
@@ -128,7 +190,10 @@ const snapshot = { html: "<h1 data-pagesmith-id='ps-1'>x</h1>", mappings: [], se
 beforeEach(() => {
   process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "lvh.me:3000";
 });
-afterEach(() => vi.clearAllMocks());
+afterEach(() => {
+  vi.clearAllMocks();
+  adminCheck = freshAdminCheck();
+});
 
 describe("publishProject (Scheibe 7a)", () => {
   it("Happy-Path (neu): Label vergeben, published_content gesetzt, Live-URL zurück", async () => {
@@ -161,8 +226,12 @@ describe("publishProject (Scheibe 7a)", () => {
 
     // URL absolut aus env-Basis + Label.
     expect(res.url).toBe(`http://${res.label}.lvh.me:3000`);
-    // KEIN service_role beteiligt.
-    expect(createAdminClient).not.toHaveBeenCalled();
+    // NEU GEFASST (Scheibe "Spaltenrechte", Setzung P13.6-117): Bis dahin stand hier "KEIN
+    // service_role beteiligt". Seither schreiben BEIDE Writes ueber den Admin-Client, und er
+    // entsteht genau EINMAL; ueber die Nutzer-Sitzung wird nichts geschrieben.
+    expect(createAdminClient).toHaveBeenCalledTimes(1);
+    expect(rec.adminWrites).toBe(2);
+    expect(rec.ssrWrites).toBe(0);
   });
 
   it("IDEMPOTENZ: bestehendes Label -> KEIN neuer insert, gleiche URL", async () => {
@@ -508,16 +577,24 @@ describe("publishProject — domains-Zeile ist die alleinige Wahrheit", () => {
     expect(res).not.toHaveProperty("restored");
   });
 
-  it("TEST 2 HEILUNG: settings-Label da, Zeile FEHLT -> Insert mit DEMSELBEN Label", async () => {
-    // Der Kernfall. Vorher lief publishProject hier durch, OHNE die Zeile anzulegen —
-    // die Live-URL blieb dauerhaft 404 (live gemessen).
+  // TEST 2 UND TEST 3 SIND NEU GEFASST (Owner-Entscheidung P13.6-123 der Phase 13.6): Bis
+  // dahin stellte die Heilung die Zeile MIT DEM ALTEN Label aus settings.hosting.label wieder
+  // her und brach bei 23505 fail-closed ab. Seither vergibt sie ein NEUES Label ueber den
+  // Erzeuger des ersten Veroeffentlichens; settings.hosting.label ist nie Quelle. Die
+  // Erwartung ist aus der Entscheidung geschrieben: Slug aus dem PROJEKTNAMEN plus Endung,
+  // nie der settings-Wert, der Spiegel wird auf das neue Label gezogen.
+  it("TEST 2 HEILUNG (SR-H1): settings-Label da, Zeile FEHLT -> NEUES Label aus dem Erzeuger, nie der settings-Wert", async () => {
+    // Der Kernfall. Vor der Scheibe "domains-Wahrheit" lief publishProject hier durch, OHNE
+    // die Zeile anzulegen — die Live-URL blieb dauerhaft 404 (live gemessen).
+    // Rot, wenn die Heilung den settings-Wert als Label nimmt (Mutation SR-M4).
     const { rec } = makeClient({
       user: { id: "user-1" },
       ownRow: {
         data: {
           id: "proj-1",
-          name: "P",
-          settings: { hosting: { label: "scheibe-7b-test-ef6dh9" } },
+          name: "Mein Shop",
+          // Ein Wunsch-Label OHNE Endung — wie es ein Angreifer setzen koennte.
+          settings: { hosting: { label: "fremd-geloescht" } },
         },
         error: null,
       },
@@ -526,19 +603,28 @@ describe("publishProject — domains-Zeile ist die alleinige Wahrheit", () => {
     const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
     expect(res.ok).toBe(true);
     if (!res.ok) return;
-    // DASSELBE Label — die URL bleibt stabil (Invariante iii).
-    expect(res.label).toBe("scheibe-7b-test-ef6dh9");
-    expect(rec.inserts).toEqual([
-      { label: "scheibe-7b-test-ef6dh9", project_id: "proj-1" },
-    ]);
+    expect(res.label).toMatch(/^mein-shop-[a-z0-9]{6}$/);
+    expect(res.label).not.toBe("fremd-geloescht");
+    expect(rec.inserts).toHaveLength(1);
+    expect(rec.inserts[0]).toEqual({ label: res.label, project_id: "proj-1" });
+    expect(rec.adminInsertTables).toEqual(["domains"]);
     // Der Heilungsfall ist am Ergebnis erkennbar.
     expect(res.restored).toBe(true);
-    // Und published_content wurde geschrieben.
-    const patch = rec.updatePatch as { published_content: unknown };
+    // Der Spiegel wird auf das NEUE Label gezogen, published_content geschrieben.
+    const patch = rec.updatePatch as {
+      published_content: unknown;
+      settings: { hosting: { label: string } };
+    };
+    expect(patch.settings.hosting.label).toBe(res.label);
     expect(patch.published_content).toBeTruthy();
+    // POSITIVKONTROLLE: der Test sieht ueberhaupt einen settings-Wert im Spiel — der
+    // gelesene Blob trug ihn, der geschriebene nicht mehr.
+    expect(JSON.stringify(rec.updatePatch)).not.toContain("fremd-geloescht");
   });
 
-  it("TEST 3 KEIN DIEBSTAHL: Label gehoert fremdem Projekt (23505) -> fail-closed", async () => {
+  it("TEST 3 (SR-H2): Kollision bei der Heilung -> neuer Kandidat aus dem Erzeuger, nie der settings-Wert", async () => {
+    // Vorher: fail-closed mit "anderweitig vergeben". Seither gibt es kein fremdes Label, das
+    // "gehoeren" koennte — eine Kollision beim Wuerfeln behandelt der Erzeuger.
     const { rec } = makeClient({
       user: { id: "user-1" },
       ownRow: {
@@ -550,19 +636,29 @@ describe("publishProject — domains-Zeile ist die alleinige Wahrheit", () => {
         error: null,
       },
       labelRows: { data: [], error: null },
-      insertResults: [{ error: { code: "23505" } }],
+      insertResults: [{ error: { code: "23505" } }, { error: null }],
     });
     const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
-    expect(res.ok).toBe(false);
-    if (!res.ok) {
-      // Der Text nennt die ADRESSE und die FOLGE — und verspricht keinen
-      // Support-Kanal, den es nicht gibt.
-      expect(res.error).toContain("fremd-abc123");
-      expect(res.error).toMatch(/anderweitig vergeben/i);
-      expect(res.error).toMatch(/NICHTS veröffentlicht/i);
-      expect(res.error).not.toMatch(/melde dich|kontaktiere|support/i);
+    expect(res.ok).toBe(true);
+    expect(rec.inserts).toHaveLength(2);
+    for (const row of rec.inserts as { label: string }[]) {
+      expect(row.label).toMatch(/^p-[a-z0-9]{6}$/);
+      expect(row.label).not.toBe("fremd-abc123");
     }
-    // NICHTS geschrieben: kein published_content, keine Uebernahme der Fremdzeile.
+  });
+
+  it("TEST 3b (SR-H3): ein anderer Fehler beim Anlegen bricht LAUT ab — nichts veroeffentlicht", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "P", settings: { hosting: { label: "p-abc123" } } },
+        error: null,
+      },
+      labelRows: { data: [], error: null },
+      insertResults: [{ error: { code: "42501" } }],
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res).toEqual({ ok: false, error: "Label-Vergabe fehlgeschlagen." });
     expect(rec.updatePatch).toBeNull();
   });
 
@@ -2035,13 +2131,17 @@ describe("F8 — das Tor des Formular-Ziels in publishProject", () => {
     expect(createAdminClient).not.toHaveBeenCalled();
   });
 
-  it("P3b: ohne Formular-Ziel wird der Admin-Client NIE instanziiert (Positivkontrolle: mit Ziel genau einmal)", async () => {
+  // P3b NEU GEFASST (Scheibe "Spaltenrechte", Setzung P13.6-117 — F7 revidiert): Bis dahin
+  // "ohne Formular-Ziel wird der Admin-Client NIE instanziiert". Seither schreibt
+  // publishProject immer ueber ihn; die Zusage lautet jetzt: GENAU EINMAL je Aufruf, mit
+  // und ohne Ziel — die Pruefung der Custom-Domains und die Writes teilen ihn.
+  it("P3b: der Admin-Client entsteht je Veroeffentlichen GENAU EINMAL — ohne und mit Formular-Ziel", async () => {
     own();
     expect((await publishProject("proj-1", "<h1>LIVE</h1>", snapshot)).ok).toBe(true);
-    expect(createAdminClient).not.toHaveBeenCalled();
+    expect(createAdminClient).toHaveBeenCalledTimes(1);
     own();
     expect((await publishProject("proj-1", "<h1>LIVE</h1>", { ...snapshot, mappings: [ziel()] })).ok).toBe(true);
-    expect(createAdminClient).toHaveBeenCalledTimes(1);
+    expect(createAdminClient).toHaveBeenCalledTimes(2);
   });
 
   it("P4 (Server): Hosts beider Varianten gehen normalisiert in EINE Abfrage — klein, ohne Punkt am Ende, jeder einmal", async () => {
@@ -2074,5 +2174,86 @@ describe("F8 — das Tor des Formular-Ziels in publishProject", () => {
     expect(adm.inCalls).toEqual([]);
     expect(rec.inserts).toHaveLength(0);
     expect(rec.updatePatch).toBeNull();
+  });
+});
+
+// =============================================================================
+// SPALTENRECHTE (Phase 13.6, Scheibe "Spaltenrechte"; Setzungen P13.6-117 und P13.6-125,
+// Owner-Entscheidung P13.6-123). DIE ERWARTUNGEN SIND AUS DER ENTSCHEIDUNG GESCHRIEBEN, NICHT
+// AUS DEM CODE: Die server-eigenen Spalten schreibt allein service_role, nach dem
+// Eigentums-Gate und mit user_id-Filter aus der Sitzung; der Rumpf traegt genau die
+// beabsichtigten Spalten; Fehler bleiben laut.
+// =============================================================================
+describe("publishProject — Spaltenrechte", () => {
+  const owned = () =>
+    makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "Mein Shop", settings: {} }, error: null },
+    });
+
+  it("SR-P1: der projects-Write laeuft ueber den Admin-Client und filtert auf id UND user_id aus der Sitzung", async () => {
+    // Rot, wenn der user_id-Filter fehlt (Mutation SR-M1) oder der Write zurueck auf die
+    // Nutzer-Sitzung wandert.
+    const { rec } = owned();
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    expect(rec.adminUpdateTables).toEqual(["projects"]);
+    expect(rec.adminUpdateEq).toEqual([
+      ["id", "proj-1"],
+      ["user_id", "user-1"],
+    ]);
+    expect(rec.ssrWrites).toBe(0);
+  });
+
+  it("SR-P2: die Rumpf-Schluessel — projects genau published_content/settings/tracking_key/updated_at, domains genau label/project_id", async () => {
+    const { rec } = owned();
+    expect((await publishProject("proj-1", "<h1>LIVE</h1>", snapshot)).ok).toBe(true);
+    expect(Object.keys(rec.updatePatch as object).sort()).toEqual(
+      ["published_content", "settings", "tracking_key", "updated_at"].sort()
+    );
+    expect(rec.inserts).toHaveLength(1);
+    expect(Object.keys(rec.inserts[0] as object).sort()).toEqual(["label", "project_id"]);
+  });
+
+  it("SR-P3: KEIN Admin-Client vor dem Gate — nicht eingeloggt, fremdes Projekt", async () => {
+    // Rot, wenn der Admin-Client vor das Eigentums-Gate rutscht (Mutation SR-M2).
+    makeClient({ user: null });
+    expect((await publishProject("proj-1", "<h1>x</h1>", snapshot)).ok).toBe(false);
+    makeClient({ user: { id: "user-1" }, ownRow: { data: null, error: null } });
+    expect((await publishProject("proj-fremd", "<h1>x</h1>", snapshot)).ok).toBe(false);
+    expect(createAdminClient).not.toHaveBeenCalled();
+    // POSITIVKONTROLLE: ein eigenes Projekt erzeugt ihn.
+    owned();
+    expect((await publishProject("proj-1", "<h1>x</h1>", snapshot)).ok).toBe(true);
+    expect(createAdminClient).toHaveBeenCalledTimes(1);
+  });
+
+  it("SR-P4: ein Riegel, der ablehnt, erzeugt den Admin-Client nicht", async () => {
+    owned();
+    const res = await publishProject("proj-1", "   ", snapshot);
+    expect(res.ok).toBe(false);
+    expect(createAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("SR-P5: Fehler bleiben LAUT — 42501 und 'keine Zeile getroffen' sind kein Erfolg", async () => {
+    // Rot, wenn das Ergebnis des Admin-Writes nicht ausgewertet wird.
+    makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+      updateResult: { error: { code: "42501", message: "permission denied for table projects" } },
+    });
+    expect(await publishProject("proj-1", "<h1>x</h1>", snapshot)).toEqual({
+      ok: false,
+      error: "permission denied for table projects",
+    });
+    makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+      updateResult: { error: null, data: null },
+    });
+    expect(await publishProject("proj-1", "<h1>x</h1>", snapshot)).toEqual({
+      ok: false,
+      error: "Projekt nicht gefunden.",
+    });
   });
 });

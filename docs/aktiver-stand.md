@@ -39,6 +39,7 @@ beantworten.
 - Zuschnitt Scheibe 13.6-5
 - Zuschnitt Scheibe Zurück-Cache
 - Zuschnitt Scheibe Zapier ins Relay
+- Zuschnitt Scheibe Beacon bei Erstveröffentlichung
 - Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
@@ -707,6 +708,11 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - NACHGETRAGEN 2026-10-01 (Abschluss der Scheibe "Zapier ins Relay"; CC, keine neue Setzung): Die
   Scheibe ist abgeschlossen (Vermerk P13.6-103). Die Reihenfolge darüber nennt danach keine
   weitere Scheibe; offen sind Arbeit P13.6-104 (Frist am Zapier-Monat) und Vorrat P13.6-105.
+- NACHGETRAGEN 2026-10-01 (Runde "Beacon bei Erstveröffentlichung — Messvermerk, Zuschnitt,
+  Plan"; CC, keine neue Setzung an dieser Stelle): Vorrat P13.6-105 ist gemessen (Vermerk
+  P13.6-106) und als eigene Scheibe zugeschnitten, als nächste Scheibe der Phase und vor dem
+  ersten fremden Nutzer (Setzung P13.6-107, Abschnitt "Zuschnitt Scheibe Beacon bei
+  Erstveröffentlichung"). Arbeit P13.6-104 bleibt mit ihrer Frist daneben offen.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -3082,6 +3088,90 @@ dieser Commit (Abschluss).
     unverändert — keiner der Stubs nennt "allein Make"). Die Roadmap-Zeile 13.6 ist nicht
     geändert.
 
+## Zuschnitt Scheibe Beacon bei Erstveröffentlichung
+
+**ZUGESCHNITTEN AM 2026-10-01 (ARCHITEKT); DER PLAN FOLGT IM BERICHT DERSELBEN RUNDE, NICHT IN
+DIESER DATEI.**
+- GEGENSTAND: Vorrat P13.6-105 der Phase 13.6 — die erste Veröffentlichung eines neuen Projekts
+  trägt den Conversion-Beacon, ohne dass der Betreiber den Editor neu laden muss.
+- BENENNUNG, DEKLARIERT (CC): wie bei den Scheiben "Zurück-Cache" und "Zapier ins Relay" ohne
+  Nummer; die Überschrift übernimmt den Namen aus dem Auftrag.
+
+### Messung zur Scheibe Beacon bei Erstveröffentlichung
+
+**Vermerk P13.6-106 — DIE ERSTE VERÖFFENTLICHUNG OHNE NEULADEN TRÄGT KEINEN CONVERSION-BEACON;
+NACH NEULADEN UND ERNEUTEM VERÖFFENTLICHEN TRÄGT SIE IHN.** KEIN BAU-COMMIT: Messrunde; im Repo
+ändert sich keine Zeile Code.
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (3): GEMESSEN, OWNER, live, 2026-10-01, Chrome 154 (Build nicht
+    angegeben), übermittelt im Auftrag der Runde "Beacon bei Erstveröffentlichung — Messvermerk,
+    Zuschnitt, Plan". Das Instrument (Zählung im Live-Text, Bytes) ist im Auftrag nicht
+    beschrieben; ob je zweimal gemessen wurde, ist nicht angegeben. Tracking-Schlüssel stehen
+    bewusst nicht in dieser Datei.
+
+(1) DAS PRÜFSTÜCK: ein neues Projekt `test-beacon-fehler-lgsn6g.publayer.net`, HTML importiert,
+    EINE Tracking-Aktion (Ereignis) auf einem Knopf, KEINE Pixel-ID, KEINE Zugangsdaten eines
+    Ziels.
+
+(2) B1 — erstes Veröffentlichen OHNE Neuladen: `__psMetaFire` 0-mal im Live-Text, 9720 Bytes.
+    B2 — Editor neu geladen, erneut veröffentlicht: `__psMetaFire` 4-mal, 11796 Bytes.
+    POSITIVKONTROLLE: B2 — derselbe Text-Weg trifft den Baustein, sobald der Schlüssel im Editor
+    bekannt ist; die Null in B1 ist damit kein Fehlschlag des Instruments.
+
+(3) GERECHNET (ARCHITEKT), NICHT ALS TEXT VERGLICHEN: 11796 − 9720 = 2076 = 1968 (die
+    Meta-Laufzeit, Mass aus Vermerk P13.6-103, Punkt (4)) + 3 × 36 (die Aufrufe).
+    · NACHGERECHNET (CC): 11796 − 9720 = 2076; 1968 + 108 = 2076.
+    · GELESEN AM CODE (CC, Stand `0e34d8f`): Ohne Pixel-ID trägt `metaTrackStatement`
+      (src/lib/tracking/meta.ts) die Warnzeile ohnehin; der Aufruf kommt als Zeilenumbruch, zwölf
+      Leerzeichen und `__psMetaFire(a.config);` hinzu — 1 + 12 + 23 = 36 Bytes. Das
+      Wiring-Skript (`buildWiringScript`, src/lib/generate.ts) trägt drei Track-Zweige; ein
+      vierter steht allein in `formTargetBranch`, also nur bei einem Formular-Ziel. Drei
+      Aufrufe sind damit mit einem Prüfstück OHNE Formular-Ziel verträglich (die Zapier-Seite in
+      Vermerk P13.6-103 trug eines und viermal den Aufruf). Ob das Prüfstück ein Formular-Ziel
+      trägt, ist nicht angegeben.
+    · ABGELEITET (CC), NICHT NACHGEZÄHLT: 4 Vorkommen = die Definition `function
+      __psMetaFire(cfg)` + 3 Aufrufe.
+
+(4) ERGEBNIS: Vorrat P13.6-105 ist GEMESSEN — B1 gegen B2, mit B2 als Positivkontrolle. Gemessen
+    ist die WIRKUNG (kein Baustein bei der ersten Veröffentlichung ohne Neuladen); der
+    Mechanismus (der Schlüssel fehlt im Zustand des Editors) bleibt GELESEN AM CODE (Vorrat
+    P13.6-105).
+
+(5) GRENZEN: nur Chrome; ein Prüfstück; ohne Pixel-ID und ohne Zugangsdaten; ob nach B1 ein
+    Klick ohne Server-Ereignis blieb, ist nicht gemessen (ABGELEITET aus dem fehlenden
+    Baustein).
+
+### Architekten-Setzung zur Scheibe Beacon bei Erstveröffentlichung
+
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-10-01, übermittelt im Auftrag der Runde "Beacon bei
+Erstveröffentlichung — Messvermerk, Zuschnitt, Plan". REVIDIERBAR; ein Owner-Widerspruch hebt
+sie auf. Wo "(CC)" steht, stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD
+`0e34d8f`).
+
+**Setzung P13.6-107 — DER ZUSCHNITT: DIE ERSTE VERÖFFENTLICHUNG EINES PROJEKTS TRÄGT DEN
+CONVERSION-BEACON, OHNE DASS DER BETREIBER NEU LADEN MUSS.**
+- EIGENE SCHEIBE IN 13.6, ALS NÄCHSTE; VORAUSSETZUNG VOR DEM ERSTEN FREMDEN NUTZER.
+- INVARIANTEN:
+  (1) `tracking_key` bleibt eigene, server-autoritative Spalte, nie in `settings`.
+      FUNDSTELLE (CC): docs/arbeitsweise.md, 4b, "Identität"; Dauerregel "SERVER-EIGENE
+      IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB".
+  (2) `/api/e`, `/api/capi`, der Ingest und die 204-Regeln bleiben unberührt.
+  (3) Für ein Projekt, dessen Schlüssel schon im Editor bekannt ist, ändert sich der erzeugte
+      Text nicht (Byte-Gleichheit).
+  (4) Kein zweiter Weg zur Schlüssel-Erzeugung, der mit `ensureTrackingKey` (src/lib/settings.ts)
+      auseinanderlaufen kann ("kein drittes Urteil" — FUNDSTELLE (CC): docs/arbeitsweise.md,
+      4b, dort am geteilten Auslieferbarkeits-Prädikat formuliert).
+  (5) Relay, Formular-Ziel und Serve-Route bleiben unberührt.
+- AUSSER SCOPE: der Weg über die Pixel-ID · ein Umbau des Google-Wegs (nur geprüft wird, ob
+  derselbe Fehler dort wirkt — Befund, kein Bau) · Oberfläche.
+- BEZUG (CC): Archiv der Phase 11.2 (docs/claude-history/phase-11.2-google.md), Abschnitt "Der
+  Schlüssel kommt aus der Spalte": Dort ist die Erst-Anlage am 2026-09-07 ausdrücklich NICHT
+  gebaut worden ("DIE ERST-ANLAGE — ENTSCHIEDEN: SIE WIRD NICHT GEBAUT"), und eine eigene
+  Server-Action, die den Schlüssel liefert, ist dort als "WEG D" am Fehlerkanal verworfen. EINORDNUNG
+  (CC): Jene Ausschluss-Entscheidung galt dem Zuschnitt der damaligen Scheibe; diese Setzung nimmt
+  die Erst-Anlage jetzt als eigenen Gegenstand auf. Zur Verwerfung von "WEG D" nimmt der Plan
+  Stellung, wo ein Kandidat ihr ähnelt.
+
 ## Plattform-Schritte der Phase 13.6
 
 **Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).
@@ -3406,6 +3496,13 @@ CONVERSION-BEACON: SEITENAUFRUFE WERDEN GEZÄHLT, CONVERSIONS FEHLEN STILL.**
   (CC, nicht entschieden): ein neues Projekt mit Track-Aktion, ohne Neuladen veröffentlichen, im
   Live-Text nach `__psMetaFire` suchen; danach neu laden, erneut veröffentlichen, erneut suchen.
   Positivkontrolle: ein bestehendes Projekt mit Schlüssel trägt `__psMetaFire`.
+- GEMESSEN 2026-10-01 (OWNER): Vermerk P13.6-106 der Phase 13.6 — B1 (erste Veröffentlichung
+  ohne Neuladen) 0-mal `__psMetaFire`, B2 (nach Neuladen) 4-mal; die Positivkontrolle ist B2 am
+  selben Projekt statt eines bestehenden Projekts. ZUGESCHNITTEN 2026-10-01: Setzung P13.6-107
+  (Abschnitt "Zuschnitt Scheibe Beacon bei Erstveröffentlichung"). "Der Mechanismus selbst ist
+  NICHT gemessen" darüber beschreibt den Stand vor dieser Messung; gemessen ist seither die
+  Wirkung, der Mechanismus bleibt am Code gelesen. Der TRIGGER "SOFORT — als nächster Schritt die
+  Messung" ist damit erfüllt.
 
 **Vorrat P13.6-6 — B-1: DIE EIGEN-LISTE DER FORMULAR-ZIELE KENNT KEINE CUSTOM-DOMAINS UND KEIN
 `*.vercel.app` — EINE ZIELADRESSE DORTHIN TRÄGT FORMULARINHALTE IN UNSER DEPLOYMENT**

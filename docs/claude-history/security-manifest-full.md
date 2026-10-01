@@ -238,10 +238,14 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   schreiben ihr Audit-Log (lib/domains/register.ts und remove.ts, je aus dem finally). Die
   LABEL-Vergabe dagegen nicht: assignDomainLabel und die Label-Wiederherstellung schreiben
   KEINEN Eintrag — ausgerechnet die Vorgänge, deren Historie man bei einer Divergenz
-  bräuchte. Der Grund ist bekannt und nicht nebenbei zu beheben: writeAuditLog verlangt
-  einen service_role-Client, den publishProject bewusst NICHT instanziiert. Kein neuer
-  offener Punkt — der Eintrag existiert bereits in der Root, CLAUDE.md "## Offene Punkte",
-  "LABEL-VERGABE IST UNPROTOKOLLIERT".
+  bräuchte. Ein fehlender Client steht dem nicht mehr im Weg (GELESEN AM CODE, CC,
+  2026-10-01, Stand `1c53110`): writeAuditLog (src/lib/domains/audit.ts) nimmt einen
+  service_role-Client, und publishProject erzeugt seit Code-Commit `6f66c44` einen —
+  nach dem Eigentums-Gate, über getAdmin —, über den es auch das Label vergibt
+  (assignDomainLabel; Setzung P13.6-117 der Phase 13.6). Gebaut ist der Eintrag nicht:
+  writeAuditLog rufen allein register.ts und remove.ts (GEMESSEN AM REPO, CC, 2026-10-01).
+  Kein neuer offener Punkt — der Eintrag existiert bereits in der Root, CLAUDE.md
+  "## Offene Punkte", "LABEL-VERGABE IST UNPROTOKOLLIERT".
   BINDET-AN: 7c-2 (Vercel-Domains-API) — abgeschlossen; der Rest bindet an den
   Abuse-/Audit-Ausbau bzw. an öffentlichen Traffic.
 - META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM ZURÜCK (EINGESTUFT 2026-08-10 als TIER 1 —

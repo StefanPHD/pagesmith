@@ -3710,7 +3710,7 @@ EINZIGE TRAGENDE SCHICHT".**
   als Stand davor. Herleitung vorher vollständig geladen (CC, 2026-10-01). Vermerk P13.6-130,
   Punkt (10). Der offene Punkt in docs/offene-punkte.md ist NICHT geändert (ausserhalb des
   Scopes jenes Commits); sein zitierter Satz ist dem Wortlaut nach überholt — gemeldet im Bericht
-  der Runde.
+  der Runde. NACHGEZOGEN 2026-10-01: der Satz ist dort ersetzt (Vermerk P13.6-130, Punkt (10)).
 
 **Owner-Entscheidung P13.6-120 — PRÄZISIERUNG DER REGEL "MIGRATION IMMER VOR CODE-DEPLOY".**
 - INHALT: Sie gilt für Migrationen, die der Code braucht. Eine Migration, die Rechte entzieht und
@@ -3894,7 +3894,8 @@ LAUF 5, Teile (bd) bis (bk)) · `a32592f` (Label-Wiederherstellung, Bau-Entschei
       Mitgliedschaft — keine Stopp-Bedingung der Probe getroffen; 0031 durfte eingespielt werden.
     · NEBENBEFUND: `postgres` ist in diesem Projekt KEIN Superuser und trägt bypassrls. Damit sind
       Teil (bk), Punkte 1 und 5, in docs/plattform-befunde.md gemessen; jene Datei ist in diesem
-      Commit nicht nachgezogen.
+      Commit nicht nachgezogen. NACHGEZOGEN 2026-10-01: docs/plattform-befunde.md, Supabase,
+      Teil (bl) (Punkt (10)).
 
 (3) DIE RECHTE NACH 0031: M1 — 0031 im SQL-Editor eingespielt, "Success", applied_at
     2026-10-01 12:55:40.274618+00. M2 (Probe): (3) anon und authenticated auf `domains` und
@@ -4009,6 +4010,21 @@ LAUF 5, Teile (bd) bis (bk)) · `a32592f` (Label-Wiederherstellung, Bau-Entschei
     Spaltenrechte). NICHT geändert, gemeldet im Bericht der Runde: docs/plattform-befunde.md,
     Teil (bk); docs/offene-punkte.md, "DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026" und
     "DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT"; die Roadmap-Zeile 13.6.
+    NACHGEZOGEN 2026-10-01 (Doku-Runde "Meldungen aus dem Abschluss Spaltenrechte"; CC):
+    · Teil (bk): Die Provenienz der Punkte 1, 3, 4 und 5 steht in docs/plattform-befunde.md,
+      Supabase-Abschnitt, neuer Teil (bl); (bk) selbst ist unverändert, Punkt 2 bleibt offen.
+    · "DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026": Der überholte Satz über die Regel
+      ist in docs/offene-punkte.md am Eintrag dieses Titels ersetzt; Titel und Trigger
+      unverändert.
+    · "DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT": Der Vollzug von 0031 und die
+      offen bleibenden Fälle stehen in docs/offene-punkte.md an der Ergänzung vom 2026-10-01
+      jenes Eintrags; der Punkt bleibt offen.
+    · Eine vierte Meldung jener Runde stand hier nicht: der Beleg "publishProject instanziiert
+      keinen service_role-Client" — richtiggestellt in
+      docs/claude-history/security-manifest-full.md, Item "VERCEL-TOKEN maximal scoped +
+      Domain-Mutations-AUDIT-LOG", und in docs/offene-punkte.md, "LABEL-VERGABE IST
+      UNPROTOKOLLIERT".
+    · Die Roadmap-Zeile 13.6 lag nicht im Auftrag jener Runde und ist nicht geändert.
 
 ## Plattform-Schritte der Phase 13.6
 

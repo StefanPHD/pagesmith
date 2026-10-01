@@ -92,6 +92,8 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
   · Abschnitts-Lesung 2026-10-01 der Supabase-, PostgREST- und PostgreSQL-Dokumentation,
     LAUF 5 (Spaltenrechte, Tabellen-Eigentümer, Trigger, PATCH-Semantik) — die Teile (bd)
     bis (bk)
+  · Vermerk 2026-10-01 (Messungen zu den offenen Punkten aus Teil (bk), Scheibe
+    "Spaltenrechte") — der Teil (bl)
 · Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
   · Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-
     Grenzen, Absicherung) — die Teile (a) bis (g)
@@ -1856,6 +1858,49 @@ KEIN BEFUND DIESES LAUFS WIDERSPRICHT EINEM BESTEHENDEN TEIL DES SUPABASE-ABSCHN
 (ap) (Grants vor Policies — deckungsgleich), (ay) (die Vorgabe vom 30.10.2026 — für bestehende
 Tabellen beantwortet, Teil (bj)) und (c) bzw. (bc) (zwei damals nicht geöffnete Seiten, jetzt #38
 und #39).
+
+### Vermerk 2026-10-01 (Messungen zu den offenen Punkten aus Teil (bk), Scheibe "Spaltenrechte") — der Teil (bl)
+
+**HERKUNFT DIESES VERMERKS: KEINE LESUNG.** Er trägt die Provenienz von Messungen nach, die die
+Punkte 1, 3, 4 und 5 aus Teil (bk) betreffen — erhoben in der Scheibe "Spaltenrechte" der Phase
+13.6, festgehalten in Vermerk P13.6-130 der Phase 13.6, hierher übertragen von CC am 2026-10-01.
+**TEIL (bk) BLEIBT UNVERÄNDERT.** Diese Datei kennt eine Fortschreibung für ein erneutes Lesen oder
+Messen (Kopf, "FORTSCHREIBUNG"), aber keine für das Hochstufen der Provenienz eines bestehenden
+Teils; gewählt ist deshalb die Form, die nichts Bestehendes überschreibt — ein eigener, datierter
+Teil.
+**DER GEMESSENE ZUSTAND UNSERER DATENBANK STEHT NICHT HIER** (Kopf, "WAS SIE NICHT TRÄGT"), sondern
+in docs/db-stand.md, ROLLEN-GRANTS. Hier steht je Punkt, DASS, WANN und WOMIT gemessen ist und wo
+der Wert steht.
+
+**(bl) DIE PUNKTE AUS TEIL (bk), JE MIT PROVENIENZ.** **NEU.**
+1. GEMESSEN — Owner, 2026-10-01, SQL-Editor, Probe supabase/checks/spaltenrechte.sql, Abfragen
+   (2), (3) und (7), Durchgang D1 VOR Migration 0031 (Vermerk P13.6-130 der Phase 13.6, Punkt
+   (2)): Eigentümer, Grantor der Tabellenrechte, FORCE ROW LEVEL SECURITY, ein Recht an PUBLIC und
+   Mitgliedschaften, je auf `projects`, `domains` und `project_tokens`. Die Werte: docs/db-stand.md,
+   ROLLEN-GRANTS. GRENZE: als Zusammenfassung übermittelt, nicht im Wortlaut; (2) und (7) sind
+   NACH 0031 nicht übermittelt.
+2. OFFEN — nicht gemessen. Vermerk P13.6-130 trägt kein UPDATE ohne `updated_at` im SET.
+3. GESTÜTZT, NICHT GEMESSEN — ABGELEITET (CC, Vermerk P13.6-130, Punkt (1), EINORDNUNG): Die
+   Positivkontrolle P, ein PATCH auf `name` mit echter Sitzung, antwortete NACH 0031 mit 200 und
+   einer Zeile (GEMESSEN, Owner, 2026-10-01, PostgREST, Konsolen-Block aus dem Bau-Bericht,
+   Chrome, Durchgang M3). Hätte PostgREST eine Spalte ausserhalb der sieben gewährten ins SET
+   genommen, wäre P mit `42501` gescheitert. Belegt ist damit: Das SET enthielt keine nicht
+   gewährte Spalte. Dass es GENAU die Rumpf-Schlüssel enthält, trägt P nicht — eine weitere
+   gewährte Spalte im SET bliebe unsichtbar.
+4. GEMESSEN — Owner, 2026-10-01, PostgREST mit echter Sitzung, derselbe Konsolen-Block, Chrome,
+   Prüfung L in den Durchgängen D1 und M3 (Vermerk P13.6-130, Punkt (1)): Lesen ohne Spaltenliste
+   vor und nach 0031 je 200, eine Zeile. GRENZE: als Zusammenfassung übermittelt; welche Tabelle L
+   liest, nennt der Vermerk nicht; 0031 entzieht kein SELECT. Die Lesart aus Teil (bi) — `select *`
+   scheitert nur an einer Spalte ohne SELECT-Recht — ist damit nicht geprüft.
+5. GEMESSEN — Owner, 2026-10-01, SQL-Editor, Probe supabase/checks/spaltenrechte.sql, Abfrage (2),
+   Durchgang D1 vor 0031 (Vermerk P13.6-130, Punkt (2)): `postgres` ist in DIESEM Projekt kein
+   Superuser und trägt `bypassrls` (rolsuper false, rolbypassrls true). Die in Teil (bg)
+   festgehaltene Wortwahl "superuser (like postgres)" (#2) gegen "admin privileges" (#39) bleibt
+   eine Doku-Aussage; für dieses Projekt sagt die Messung: kein Superuser. GRENZE: nach 0031 nicht
+   übermittelt.
+
+**PROVENIENZ DES TEILS (bl):** übertragen von CC am 2026-10-01 aus Vermerk P13.6-130 der Phase
+13.6; die Messungen selbst sind des Owners. KEINE Lesung, KEINE eigene Messung von CC.
 
 ## Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
 

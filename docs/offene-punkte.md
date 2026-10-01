@@ -462,9 +462,19 @@ aufeinander; sie liegen alle hier und finden einander.
   (register.ts, remove.ts, je im finally). Das Tier-1-Item
   "Domain-Mutations-Audit-Log" ist damit nur teilweise erfüllt — und genau die
   Label-Vorgänge sind die, deren Historie man bei einer Divergenz bräuchte.
-  Bewusst nicht in der Fix-Scheibe mitgebaut: writeAuditLog verlangt einen
-  service_role-Client, den publishProject bewusst NICHT instanziiert
-  (dokumentierte Entscheidung) — das umzustossen gehört in eine eigene Runde.
+  Seit der Wiederherstellung über denselben Erzeuger (Owner-Entscheidung P13.6-123 der
+  Phase 13.6) läuft jede Vergabe eines Projekt-Labels über assignDomainLabel. Ein
+  fehlender Client steht dem Eintrag nicht mehr im Weg (GELESEN AM CODE, CC, 2026-10-01,
+  Stand `1c53110`):
+  writeAuditLog (src/lib/domains/audit.ts) nimmt einen service_role-Client, und
+  publishProject erzeugt seit Code-Commit `6f66c44` einen — nach dem Eigentums-Gate, über
+  getAdmin —, über den es auch das Label vergibt (Setzung P13.6-117 der Phase 13.6). Die
+  Bauform, die dem entgegenstand — kein service_role beim Schreiben im Publish (Archiv
+  der Phase 7, docs/claude-history/phase-7-hosting.md, "SICHERHEIT/ARCHITEKTUR-Notizen
+  7a"), seit Setzung P13.6-36, F7 der Phase 13.6 nur bei einem Formular-Ziel
+  durchbrochen —, ist mit Setzung P13.6-117 aufgegeben. Gebaut ist der Eintrag nicht:
+  writeAuditLog rufen allein register.ts und remove.ts (GEMESSEN AM REPO, CC,
+  2026-10-01). Der Gegenstand besteht damit weiter.
 - DER PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT — ENTSCHIEDEN
   (Owner, 2026-08-12), Herleitung: Phase-11-Historie. ZWEI TRIGGER, je einzeln
   hinreichend: (i) die erste Scheibe, die MEHRERE EMPFÄNGER DESSELBEN TYPS JE PROJEKT
@@ -1593,18 +1603,42 @@ aufeinander; sie liegen alle hier und finden einander.
     (docs/db-regeln.md) gilt für Migrationen, die der Code braucht; eine Migration, die Rechte
     entzieht und alten Code bräche, folgt dem Code. Der Satz oben "die REIHENFOLGE ist geregelt"
     meint seither beide Richtungen.
-  · DIE SCHEIBE: "Spaltenrechte" der Phase 13.6 (Setzung P13.6-117). Ihre Migration entzieht der
-    angemeldeten Rolle Schreibrechte, die der heutige Code benutzt (`publishProject` schreibt
-    `published_content` und `tracking_key` über den Client mit Nutzer-Sitzung — GELESEN AM CODE).
-    Sie wäre die erste Migration dieses Projekts, die einer bestehenden Tabelle ein Recht
-    entzieht (GEMESSEN AM REPO, CC, 2026-10-01: `revoke` steht bis 0030 allein in 0003 — EXECUTE
-    auf eine Funktion — und in 0030 — auf die dort neu angelegte Tabelle und Funktion).
+  · DIE SCHEIBE: "Spaltenrechte" der Phase 13.6 (Setzung P13.6-117). Ihre Migration 0031 entzieht
+    der angemeldeten Rolle Schreibrechte, die der Code VOR der Scheibe benutzte (`publishProject`
+    schrieb `published_content` und `tracking_key` über den Client mit Nutzer-Sitzung — GELESEN
+    AM CODE; seit Code-Commit `6f66c44` über den Admin-Client). Sie ist die erste Migration
+    dieses Projekts, die einer bestehenden Tabelle ein Recht entzieht (GEMESSEN AM REPO, CC,
+    2026-10-01: `revoke` steht bis 0030 allein in 0003 — EXECUTE auf eine Funktion — und in
+    0030 — auf die dort neu angelegte Tabelle und Funktion; in 0031 auf `projects`, `domains`
+    und `project_tokens`). Daneben löscht sie fünf Schreib-Policies.
   · WIE SIE DAS FENSTER REGELT: Code, der ohne die entzogenen Rechte auskommt → Deploy, Prüfung →
     Migration → Prüfung. Im Fenster läuft NEUER Code gegen das ALTE Schema und kommt mit beiden
     aus.
-  · ZUM TRIGGER, GEMELDET (CC): Der Auftrag dieser Ergänzung nennt ihn mit der Scheibe
-    eingetreten. Dem Wortlaut nach ist er schon mit 0025 eingetreten (Block vom 2026-08-27); die
-    Migration der Scheibe ist geplant, nicht geschrieben und nicht gelaufen.
+  · DER VOLLZUG, in dieser Reihenfolge (Vermerk P13.6-130 der Phase 13.6, Punkte (1), (3) und
+    (6)): Code-Commit `6f66c44`, datiert 2026-10-01 14:27:52 +0200 (GEMESSEN AM REPO, CC,
+    `git log`; ein Commit-Datum ist kein Deploy-Datum) → Deploy des neuen Codes, Zeitpunkt NICHT
+    übermittelt → Durchgang D2, neuer Code gegen die alten Rechte, ohne Fehler (GEMESSEN, Owner)
+    → 0031 im SQL-Editor eingespielt, applied_at 2026-10-01 12:55:40.274618+00 (GEMESSEN, Owner,
+    M1) → M2 bis M4 nach der Migration: Probe und PostgREST-Beweis wie erwartet, Regression
+    ohne Fehler (GEMESSEN, Owner). Dass der Deploy vor dem Einspielen lag, folgt aus der Folge
+    der Durchgänge (OWNER-ANGABE), nicht aus einem Zeitstempel. Im Fenster ist kein Fehler gemeldet; ob dort ein Besucher- oder Betreiber-Aufruf
+    lief, ist nicht erhoben.
+  · ZUM TRIGGER, GEMELDET (CC): Der Auftrag dieser Ergänzung nannte ihn mit der Scheibe
+    eingetreten. Dem Wortlaut nach ist er schon mit 0025 eingetreten (Block vom 2026-08-27).
+    0031 trifft den GEGENSTAND dieses Punktes — vor dem neuen Code hätte sie den laufenden alten
+    gebrochen (Kopf von supabase/migrations/0031_spaltenrechte.sql) —, nicht aber seine
+    AUFZÄHLUNG: Der Wortlaut nennt Umbenennen, Löschen und das Verengen eines Constraints, einen
+    Entzug von Rechten nennt er nicht. "Nicht-additiv" definiert der Eintrag weiterhin nicht.
+  · WAS DIE PRÄZISIERUNG REGELT UND WAS NICHT (CC, 2026-10-01, am Wortlaut von docs/db-regeln.md,
+    "MIGRATION IMMER VOR CODE-DEPLOY"; ABGELEITET, nicht gemessen): Sie regelt ZWEI Fälle — eine
+    Migration, die der Code braucht (vor dem Deploy), und eine, die Rechte entzieht und alten Code
+    bräche (nach dem Deploy). OFFEN bleiben: (1) das Umbenennen oder Löschen einer Spalte, die der
+    laufende Code liest oder schreibt — dort bricht jede der beiden Reihenfolgen eine Fassung des
+    Codes, es sei denn, eine Fassung kommt mit beiden Schemata aus; ein Verfahren dafür nennt die
+    Regel nicht · (2) das Verengen eines Constraints, gegen den der alte Code schreibt · (3) der
+    zweite Teil des Befunds — ein Deploy, der den Ingest bricht, verwirft Conversions still; das
+    ist keine Frage der Migrations-Reihenfolge · (4) die Vorfrage unten. Der Punkt bleibt deshalb
+    offen.
   · DIE VORFRAGE BLEIBT OFFEN: Die Scheibe liefert EIN Merkmal, das sich vor dem Deploy erkennen
     lässt — eine Migration entzieht ein Recht, das der laufende Code benutzt —, keine allgemeine
     Antwort.
@@ -1714,9 +1748,17 @@ aufeinander; sie liegen alle hier und finden einander.
   current grants and stay reachable." (Der Bruch "applied it" steht so im Original und ist
   KEIN Übertragungsfehler — wer ihn glättet, macht aus einem Zitat eine Wiedergabe.)
   WAS DABEI NICHT KIPPT, UND DAS IST DER GRUND FÜR DIESEN EINTRAG: Die Regel "GRANTS
-  SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT" (docs/immer-beachten.md) bleibt
-  unverändert richtig. Was sich ändert, ist der AUSGANGSZUSTAND, gegen den sie schützt —
-  nicht die Schicht, die trägt.
+  SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT" (docs/immer-beachten.md) bleibt in
+  ihrem Kern richtig: Die VORGABE-Rechte schützen nichts, und über die ZEILEN urteilt allein
+  die RLS. Seit dem 2026-10-01 ist sie präzisiert — welche SPALTEN die angemeldete Rolle
+  schreiben darf, tragen ausdrücklich gesetzte Spaltenrechte (Owner-Entscheidung P13.6-119
+  der Phase 13.6, vollzogen mit Migration 0031). Was sich ändert, ist der AUSGANGSZUSTAND,
+  gegen den sie schützt — nicht die Schicht, die trägt.
+  WAS DABEI DOCH KIPPT, ABGELEITET (CC, 2026-10-01, am Wortlaut der Regel und der Ankündigung,
+  nicht gemessen): Der Satz der Regel "anon, authenticated und service_role tragen per
+  Supabase-Vorgabe volle Rechte auf die Tabellen in public, ausser wo eine Migration sie
+  ausdrücklich entzieht …" gilt nach der Umstellung für NEU angelegte Tabellen nicht mehr. Die
+  Regel ist hier nicht geändert.
   WER DIE ANKÜNDIGUNG FÜR EINE ENTWARNUNG HÄLT, HAT SIE FALSCH GELESEN: Eine neue Tabelle
   ohne "enable row level security" ist danach nicht sicher, sondern nur vorübergehend
   unerreichbar. Ein einziges GRANT, das jemand nachträglich ergänzt, damit die Anwendung

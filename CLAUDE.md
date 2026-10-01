@@ -44,6 +44,8 @@ Text geprüft, 2026-08-20):
 · "HOBBY-50-DOMAIN-DECKE (Trigger: echte Skalierung)"
 · Sicherheits-Manifest Tier 1: "SAFE-BROWSING" · "SHARED-REPUTATION publayer.net"
 · Sicherheits-Manifest Tier 2: "BACKUPS + Restore-Drill"
+· ERGÄNZT 2026-10-01, am Text geprüft: "Phase 13.7 — Sicherheit & Datenintegrität" — dort "VOR
+  DEM ERSTEN FREMDEN NUTZER BZW. VOR DEM LAUNCH" (docs/roadmap.md)
 AUSDRÜCKLICH NICHT AUFGEFÜHRT, obwohl es danach aussieht: "DATA-RETENTION" (Tier 2) ruht
 darauf, dass heute KEINE IP/UA persistiert werden; der "KOSTEN-CIRCUIT-BREAKER" ruht auf dem
 Vercel-HOBBY-Plan, nicht auf der Kundenzahl. Wer sie mitzählt, hängt sie an den falschen

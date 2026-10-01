@@ -40,6 +40,7 @@ beantworten.
 - Zuschnitt Scheibe Zurück-Cache
 - Zuschnitt Scheibe Zapier ins Relay
 - Zuschnitt Scheibe Beacon bei Erstveröffentlichung
+- Zuschnitt Scheibe Spaltenrechte
 - Plattform-Schritte der Phase 13.6
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
@@ -720,6 +721,9 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
   neue Setzung): Die Scheibe ist abgeschlossen (Vermerk P13.6-114). Nach dem Nachtrag darüber
   steht als Nächstes die Sicherheits-Scheibe "Spaltenrechte" an — Arbeit P13.6-113; Arbeit
   P13.6-104 bleibt mit ihrer Frist daneben offen.
+- NACHGETRAGEN 2026-10-01 (Runde "Scheibe Spaltenrechte — Zuschnitt und Plan"; CC, keine neue
+  Setzung an dieser Stelle): Arbeit P13.6-113 ist zugeschnitten (Setzung P13.6-115, Abschnitt
+  "Zuschnitt Scheibe Spaltenrechte"); der Plan steht im Bericht derselben Runde.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -3410,6 +3414,62 @@ Sicherheitsbefund Spaltenrechte) · dieser Commit (Abschluss).
     ersetzte Satz in CLAUDE.md, "## Aktueller DB-/Analytics-Stand". Die Roadmap-Zeile 13.6 ist
     nicht geändert.
 
+## Zuschnitt Scheibe Spaltenrechte
+
+**ZUGESCHNITTEN AM 2026-10-01 (ARCHITEKT); DER PLAN FOLGT IM BERICHT DERSELBEN RUNDE, NICHT IN
+DIESER DATEI.**
+- GEGENSTAND: Arbeit P13.6-113 der Phase 13.6 — die Sicherheits-Scheibe "Spaltenrechte". Befund:
+  Vermerk P13.6-112. Reihenfolge: Setzung P13.6-14.
+- BENENNUNG, DEKLARIERT (CC): wie bei den Scheiben "Zurück-Cache", "Zapier ins Relay" und
+  "Beacon bei Erstveröffentlichung" ohne Nummer; die Überschrift übernimmt den Namen aus Arbeit
+  P13.6-113.
+
+### Architekten-Setzung zur Scheibe Spaltenrechte
+
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-10-01, übermittelt im Auftrag der Runde "Scheibe
+Spaltenrechte — Zuschnitt und Plan". REVIDIERBAR; ein Owner-Widerspruch hebt sie auf. Wo "(CC)"
+steht, stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD `03d4338`).
+
+**Setzung P13.6-115 — DER ZUSCHNITT: KEINE ROLLE AUSSER DEM SERVER KANN EINE SERVER-EIGENE SPALTE
+SCHREIBEN — IN KEINER TABELLE.**
+- REICHWEITE: jede Tabelle, die eine Rolle per Policy schreiben darf, nicht nur `projects` (Arbeit
+  P13.6-113, AUFTRAG).
+- INVARIANTEN:
+  (1) Speichern, Veröffentlichen, A/B-Aktivierung, Kill-Switch, Zugangsdaten und Domains
+      funktionieren wie heute.
+  (2) RLS bleibt aktiv; keine Policy wird gelockert.
+  (3) `/api/e`, `/api/f`, Ingest, Relay und Serve-Route bleiben unberührt.
+  (4) Kein ausgelieferter Text ändert sich.
+  (5) Migration vor Code-Deploy.
+- OFFENE FRAGEN: die Gates S1 bis S7 der Planrunde — S1 Inventar der Tabellen und Spalten
+  (client-eigen gegen server-eigen) · S2 die Schreibwege jeder server-eigenen Spalte · S3 die
+  Kandidaten (a) Spaltenrechte, (b) BEFORE-Trigger, (c) SECURITY-DEFINER-RPCs, (d) eigene Tabelle,
+  je mit Kosten und der Folge für die Dauerregel "GRANTS SCHÜTZEN NICHTS — RLS IST DIE EINZIGE
+  TRAGENDE SCHICHT" · S4 die Anbieter-Lesung als Vorbedingung · S5 der Live-Beweis über PostgREST
+  mit echter Sitzung · S6 das Plan-Gate "Missbrauch und stiller Verlust" · S7 die Tests. Die
+  Antworten stehen im Bericht der Planrunde.
+- FUNDSTELLEN (CC): Invariante (2) — Dauerregel "GRANTS SCHÜTZEN NICHTS — RLS IST DIE EINZIGE
+  TRAGENDE SCHICHT"; (4) — Dauerregel "WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE
+  EINBAHNSTRASSE …"; (5) — docs/db-regeln.md, "MIGRATION IMMER VOR CODE-DEPLOY"; der
+  Kill-Switch — CLAUDE.md, Tier 0, samt Zusatz vom 2026-10-01; das Plan-Gate —
+  docs/arbeitsweise.md, "Missbrauch und stiller Verlust" (Commit `03d4338`).
+- BEZUG (CC): Roadmap-Zeile 13.7 (die Arbeit bleibt in 13.6, Abgrenzung dort); offener Punkt "DIE
+  GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026" (docs/offene-punkte.md).
+- KOLLISIONEN, GEMELDET, NICHT AUFGELÖST (CC, ABGELEITET am Wortlaut und am Code):
+  · ZIEL GEGEN INVARIANTE (1): Das Kill-Switch-Runbook (CLAUDE.md, Tier 0, "SQL-RUNBOOK") setzt
+    `blocked_at` im SQL-Editor, nicht über den Server. "Keine Rolle ausser dem Server" darf die
+    Rolle des SQL-Editors nicht treffen, sonst bricht der Kill-Switch. Welche Rolle der
+    SQL-Editor fährt, ist am Repo NICHT ENTSCHEIDBAR.
+  · INVARIANTE (5) GEGEN DIE WIRKRICHTUNG: Der heutige Code schreibt server-eigene Spalten über den
+    Client mit Nutzer-Sitzung — etwa `publishProject` (src/app/projects/actions.ts) die Spalten
+    `published_content` und `tracking_key`. Entzieht eine Migration der angemeldeten Rolle dieses
+    Recht, bricht im Fenster zwischen Migration und Deploy der ALTE Code. Der Grund der Regel
+    ("sonst liest der neue Code eine Spalte/Funktion, die es noch nicht gibt") trifft diesen Fall
+    nicht, und ihr Satz "eine Migration OHNE den zugehörigen Code [ist] in der Regel ein No-op"
+    gilt hier nicht. Berührt ist der offene Punkt "DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST
+    UNGEREGELT"; ob ein Entzug von Rechten dort als "nicht-additiv" zählt, definiert der Eintrag
+    nicht.
+
 ## Plattform-Schritte der Phase 13.6
 
 **Vermerk P13.6-47 — `NEXT_PUBLIC_APP_URL` KORRIGIERT; EXPORTE ERREICHEN DEN INGEST** (2026-09-29).
@@ -3763,6 +3823,8 @@ DER SCHEIBE "BEACON BEI ERSTVERÖFFENTLICHUNG", VOR ALLEM ANDEREN IN 13.6** (ARC
 - BEZUG 2026-10-01: Roadmap-Zeile 13.7 ("Sicherheit & Datenintegrität", angelegt am selben Tag).
   Diese Arbeit bleibt in 13.6 und geht nicht in jene Phase über (OWNER-ENTSCHEIDUNG 2026-10-01,
   Abgrenzung an jener Zeile).
+- ZUGESCHNITTEN 2026-10-01: Setzung P13.6-115 der Phase 13.6 (Abschnitt "Zuschnitt Scheibe
+  Spaltenrechte"); der Plan steht im Bericht jener Runde.
 
 ## Vorrat (gemeldet, nicht gebaut)
 

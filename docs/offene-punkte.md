@@ -1551,7 +1551,8 @@ aufeinander; sie liegen alle hier und finden einander.
   Zeiger oben so lauten, wie hier zitiert, ist GEMESSEN am Dateitext (CC, 2026-08-25). KEINE
   Messung an einer Anbieter-Schnittstelle.
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
-  nicht-additive Migration): In diesem Fenster läuft der ALTE Code gegen das NEUE
+  nicht-additive Migration — EINGETRETEN am 2026-08-26 mit Migration 0025, dem Wortlaut nach;
+  0031 vom 2026-10-01 trifft den Gegenstand, nicht die Aufzählung): In diesem Fenster läuft der ALTE Code gegen das NEUE
   Schema. Beim Anlegen einer Spalte ist das folgenlos; beim Umbenennen, beim Löschen
   oder beim Verengen eines Constraints nicht. NIRGENDS STEHT, WELCHE MIGRATIONSARTEN
   ES GEFÄHRLICH MACHEN — die REIHENFOLGE ist geregelt (docs/db-regeln.md, "MIGRATION

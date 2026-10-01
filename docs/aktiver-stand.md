@@ -5072,3 +5072,25 @@ IN public PRÜFEN UND ENTZIEHEN.**
   · "Über PostgREST nicht auslösbar" bleibt ANGABE DES AUFTRAGS (Abschluss-Runde 2026-10-01);
     der Bestand trägt dazu weiterhin allein den Nicht-Treffer mit der Reichweite darüber, und für
     MAINTAIN keinen.
+
+PROVENIENZ von P13.6-131: ARCHITEKT, übermittelt im Auftrag der Runde "Nachzug zu cb56840" am
+2026-10-01; der Befund aus der Runde "Meldungen aus dem Abschluss Spaltenrechte" (CC, Commit
+`cb56840`). Wo "(CC)" steht, hat CC die Angabe am Bestand geprüft (HEAD `cb56840`).
+
+**Vorrat P13.6-131 — MANIFEST-ITEM VERCEL-TOKEN: DIE VOLLFASSUNG TRÄGT EINEN STATUS, DIE
+TIER-ÜBERSICHT IN CLAUDE.md KEINEN — ENTGEGEN DER DECKUNGSGLEICHHEIT DER FASSUNGEN.**
+- BEFUND (CC, GELESEN AM BESTAND): docs/claude-history/security-manifest-full.md, Item
+  "VERCEL-TOKEN maximal scoped + Domain-Mutations-AUDIT-LOG", trägt "TEILERFÜLLT (Stand
+  2026-07-28)" und "BINDET-AN: 7c-2 (Vercel-Domains-API) — abgeschlossen; der Rest bindet an den
+  Abuse-/Audit-Ausbau bzw. an öffentlichen Traffic." CLAUDE.md, "## Security Manifest & Launch
+  Blocker", Tier 1, "VERCEL-TOKEN scoped + Domain-Mutations-AUDIT-LOG", trägt keinen Status und
+  "BINDET-AN: 7c-2."
+- GEGEN: CLAUDE.md, ebenda: "DER STATUS JE ITEM STEHT IN BEIDEN FASSUNGEN UND MUSS DECKUNGSGLEICH
+  SEIN."
+- (CC) Der Satz in CLAUDE.md, ebenda, "ELF ITEMS TRAGEN IN KEINER DER BEIDEN FASSUNGEN EINEN
+  AUSDRÜCKLICHEN STATUS" erfasst diesen Fall nicht: Hier trägt EINE Fassung einen.
+- NICHT ENTSCHIEDEN: welcher Status richtig ist.
+- NICHT GEPRÜFT: ob weitere Items dieselbe Divergenz tragen.
+- Status und Wortlaut beider Fassungen sind in der Runde, die diesen Eintrag anlegt, unberührt.
+- TRIGGER: der Zuschnitt der Phase 13.7 — dort wird das Produkt gegen ein Bedrohungsmodell
+  geprüft, und das Sicherheits-Manifest ist dessen Basis (Roadmap-Zeile 13.7).

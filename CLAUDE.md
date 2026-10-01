@@ -216,7 +216,8 @@ in docs/claude-md-herleitung.md.
   (5) TRIGGER: ein Schreibweg auf `project_secrets`, der die Nicht-Leer-Prüfung nicht trägt.
 - DER PAGEVIEW-TOKEN IST ALS CUSTOM-EVENT EINTIPPBAR (Trigger: vor echtem Ad-Traffic)
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
-  nicht-additive Migration)
+  nicht-additive Migration — EINGETRETEN am 2026-08-26 mit Migration 0025, dem Wortlaut nach;
+  0031 vom 2026-10-01 trifft den Gegenstand, nicht die Aufzählung)
 - DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026 (Trigger: das Anlegen einer NEUEN
   Tabelle in public ab dem 30.10.2026 — insbesondere der Geheimnis-Speicher der
   Autorisierungsschicht, falls er danach entsteht)

@@ -1587,6 +1587,27 @@ aufeinander; sie liegen alle hier und finden einander.
   s. docs/claude-history/phase-11.8-autorisierungsschicht.md, Vermerk 2**)**; die Zuordnung "nicht-additiv" ist eine
   ABLEITUNG aus dem Wortlaut dieses Eintrags und **keine Entscheidung** — der Eintrag
   definiert den Begriff selbst nicht.
+  ERGÄNZT AM 2026-10-01 — DIE REGEL ZUR REIHENFOLGE IST PRÄZISIERT, UND EINE SCHEIBE REGELT IHR
+  FENSTER; DER PUNKT BLEIBT OFFEN. Die Blöcke darüber sind unverändert.
+  · DIE REGEL: Owner-Entscheidung P13.6-120 der Phase 13.6 — "MIGRATION IMMER VOR CODE-DEPLOY"
+    (docs/db-regeln.md) gilt für Migrationen, die der Code braucht; eine Migration, die Rechte
+    entzieht und alten Code bräche, folgt dem Code. Der Satz oben "die REIHENFOLGE ist geregelt"
+    meint seither beide Richtungen.
+  · DIE SCHEIBE: "Spaltenrechte" der Phase 13.6 (Setzung P13.6-117). Ihre Migration entzieht der
+    angemeldeten Rolle Schreibrechte, die der heutige Code benutzt (`publishProject` schreibt
+    `published_content` und `tracking_key` über den Client mit Nutzer-Sitzung — GELESEN AM CODE).
+    Sie wäre die erste Migration dieses Projekts, die einer bestehenden Tabelle ein Recht
+    entzieht (GEMESSEN AM REPO, CC, 2026-10-01: `revoke` steht bis 0030 allein in 0003 — EXECUTE
+    auf eine Funktion — und in 0030 — auf die dort neu angelegte Tabelle und Funktion).
+  · WIE SIE DAS FENSTER REGELT: Code, der ohne die entzogenen Rechte auskommt → Deploy, Prüfung →
+    Migration → Prüfung. Im Fenster läuft NEUER Code gegen das ALTE Schema und kommt mit beiden
+    aus.
+  · ZUM TRIGGER, GEMELDET (CC): Der Auftrag dieser Ergänzung nennt ihn mit der Scheibe
+    eingetreten. Dem Wortlaut nach ist er schon mit 0025 eingetreten (Block vom 2026-08-27); die
+    Migration der Scheibe ist geplant, nicht geschrieben und nicht gelaufen.
+  · DIE VORFRAGE BLEIBT OFFEN: Die Scheibe liefert EIN Merkmal, das sich vor dem Deploy erkennen
+    lässt — eine Migration entzieht ein Recht, das der laufende Code benutzt —, keine allgemeine
+    Antwort.
 - DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT — GESTRICHEN AM 2026-09-11, DER
   GEGENSTAND IST ERLEDIGT. Der Punkt hielt fest, dass das angebotene Postgres-Upgrade ein
   Wartungsfenster ist, das heute nichts kostet und mit dem ersten echten Kunden-Traffic

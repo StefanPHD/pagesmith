@@ -27,6 +27,10 @@ Regel, die vorher jede Session gelesen wurde** — das ist kein Redaktionsvorgan
 UND DRITTEN BLOCK.** Der erste, "DB-FUNKTIONEN + SEARCH_PATH", ist per Owner-Entscheidung
 P13.6-76 der Phase 13.6 neu gefasst; sein Titel ist unverändert. Der Stand davor steht
 zeichengleich unter Commit `99b5ba8`.
+**GEÄNDERT AM 2026-10-01 — SEITHER GILT DIE ZUSAGE "ZEICHENGLEICH" NUR NOCH FÜR DEN DRITTEN
+BLOCK.** Der zweite, "MIGRATION IMMER VOR CODE-DEPLOY", ist per Owner-Entscheidung P13.6-120 der
+Phase 13.6 präzisiert; sein Titel ist unverändert. Der Stand davor steht zeichengleich unter
+Commit `498fd97`.
 
 ## Die drei Regeln
 
@@ -76,11 +80,18 @@ zeichengleich unter Commit `99b5ba8`.
   auf public eingeladen — das hätte die einzige Sicherheitsfunktion des Systems STILL
   geschwächt, mit der Doku als Rückendeckung. Bei jedem Rebuild bleibt der Byte-Abgleich gegen
   pg_get_functiondef Pflicht (s. "## Offene Punkte").
-- MIGRATION IMMER VOR CODE-DEPLOY (fail-closed): Eine Migration läuft IMMER im SQL-Editor VOR
-  dem zugehörigen Code-Deploy — sonst liest der neue Code eine Spalte/Funktion, die es noch
-  nicht gibt (bei CAPI hätte das die laufende trackingKey-Auflösung gebrochen). Umgekehrt ist
-  eine Migration OHNE den zugehörigen Code in der Regel ein No-op und damit gefahrlos. Detail:
+- MIGRATION IMMER VOR CODE-DEPLOY (fail-closed; PRÄZISIERT 2026-10-01 per OWNER-ENTSCHEIDUNG,
+  Owner-Entscheidung P13.6-120 der Phase 13.6): Eine Migration, die der Code BRAUCHT, läuft
+  IMMER im SQL-Editor VOR dem zugehörigen Code-Deploy — sonst liest der neue Code eine
+  Spalte/Funktion, die es noch nicht gibt (bei CAPI hätte das die laufende
+  trackingKey-Auflösung gebrochen). Umgekehrt ist eine solche Migration OHNE den zugehörigen
+  Code in der Regel ein No-op und damit gefahrlos. Detail:
   docs/claude-history/phase-8-analytics.md.
+  DIE ANDERE RICHTUNG: Eine Migration, die Rechte ENTZIEHT und den ALTEN Code bräche, folgt dem
+  Code — erst den Code deployen und prüfen, der ohne das entzogene Recht auskommt, dann die
+  Migration, dann erneut prüfen. Für sie gilt der Satz "ohne den zugehörigen Code ein No-op"
+  nicht: Vor dem neuen Code bricht sie den laufenden. Im Fenster dazwischen läuft so NEUER Code
+  gegen das ALTE Schema, und er kommt mit beiden aus.
   PROTOKOLL-PFLICHT (ab 0018): JEDE künftige Migration schreibt als LETZTE Anweisung ihren
   eigenen Eintrag:
   ```sql
@@ -128,8 +139,9 @@ Abschnitt darüber sagt zu, seine **drei** Blöcke seien zeichengleich aus CLAUD
 übernommen. Diese Regel stammt nicht von dort — sie ist am 2026-08-13 neu geschrieben
 worden. Stünde sie unter jener Überschrift, wäre die Herkunftszusage falsch, und zwar
 still: Niemand hätte einen Anlass, sie nachzuprüfen. Die drei Blöcke oben bleiben
-unberührt und per Prüfsumme belegt. (Seit dem 2026-09-30 gilt das für den zweiten und
-dritten; der erste ist neu gefasst, s. "HERKUNFT UND UNVERSEHRTHEIT".)
+unberührt und per Prüfsumme belegt. (Seit dem 2026-09-30 gilt das nicht mehr für den ersten,
+seit dem 2026-10-01 auch nicht mehr für den zweiten — beide sind neu gefasst bzw. präzisiert,
+s. "HERKUNFT UND UNVERSEHRTHEIT"; zeichengleich ist allein der dritte.)
 
 - WER DB-CODE ANFASST, LEGT DIE GELESENE ANBIETER-DOKU ALS PROVENIENZ VOR (neu
   2026-08-13; AUSLÖSER: derselbe wie der Pflicht-Stopp — Migration, Schema, Policy/RLS,

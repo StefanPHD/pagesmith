@@ -975,6 +975,9 @@ REVIDIERBAR; ein Owner-Widerspruch hebt sie auf.
   die Abfrage liest nur `custom_host`, mit `.in(…)` und `.limit(1)`; `{data, error}` getrennt
   ausgewertet, ein Fehler bricht ab und gilt nie als "erlaubt"; alles vor dem Schreiben des
   Labels.
+  REVIDIERT 2026-10-01 (ARCHITEKT, Setzung P13.6-117 der Phase 13.6): `publishProject` nutzt den
+  Admin-Client für die server-eigenen Schreibvorgänge IMMER, nach dem Eigentums-Gate. Die
+  Bedingung "nur, wenn mindestens ein Formular-Ziel besteht" beschreibt den Stand davor.
 - F8 — Die drei Kommentare aus Vorrat P13.6-8 der Phase 13.6 werden in dieser Scheibe
   berichtigt; die Messungen stehen in Vermerk P13.6-35.
 - GRENZEN, BENANNT:
@@ -3418,6 +3421,9 @@ Sicherheitsbefund Spaltenrechte) · dieser Commit (Abschluss).
 
 **ZUGESCHNITTEN AM 2026-10-01 (ARCHITEKT); DER PLAN FOLGT IM BERICHT DERSELBEN RUNDE, NICHT IN
 DIESER DATEI.**
+NACHGETRAGEN 2026-10-01 (Runde "Spaltenrechte — Plan festhalten, Entscheidungen,
+Regel-Präzisierung"): Der Plan steht jetzt als Vermerk P13.6-116, die Gestalt als Setzung
+P13.6-117 (Abschnitt "Planrunde der Scheibe Spaltenrechte").
 - GEGENSTAND: Arbeit P13.6-113 der Phase 13.6 — die Sicherheits-Scheibe "Spaltenrechte". Befund:
   Vermerk P13.6-112. Reihenfolge: Setzung P13.6-14.
 - BENENNUNG, DEKLARIERT (CC): wie bei den Scheiben "Zurück-Cache", "Zapier ins Relay" und
@@ -3440,7 +3446,10 @@ SCHREIBEN — IN KEINER TABELLE.**
   (2) RLS bleibt aktiv; keine Policy wird gelockert.
   (3) `/api/e`, `/api/f`, Ingest, Relay und Serve-Route bleiben unberührt.
   (4) Kein ausgelieferter Text ändert sich.
-  (5) Migration vor Code-Deploy.
+  (5) Code vor Migration: erst der Code, der ohne die entzogenen Rechte auskommt — deployen,
+      prüfen —, dann die Migration, dann erneut prüfen.
+      GEÄNDERT 2026-10-01 (ARCHITEKT, Setzung P13.6-117; Regel: Owner-Entscheidung P13.6-120).
+      Bis dahin lautete sie "Migration vor Code-Deploy."
 - OFFENE FRAGEN: die Gates S1 bis S7 der Planrunde — S1 Inventar der Tabellen und Spalten
   (client-eigen gegen server-eigen) · S2 die Schreibwege jeder server-eigenen Spalte · S3 die
   Kandidaten (a) Spaltenrechte, (b) BEFORE-Trigger, (c) SECURITY-DEFINER-RPCs, (d) eigene Tabelle,
@@ -3460,6 +3469,8 @@ SCHREIBEN — IN KEINER TABELLE.**
     `blocked_at` im SQL-Editor, nicht über den Server. "Keine Rolle ausser dem Server" darf die
     Rolle des SQL-Editors nicht treffen, sonst bricht der Kill-Switch. Welche Rolle der
     SQL-Editor fährt, ist am Repo NICHT ENTSCHEIDBAR.
+    BEANTWORTET 2026-10-01: Der SQL-Editor fährt `postgres` (Vermerk P13.6-118); die Gestalt
+    entzieht Rechte allein anon und authenticated (Setzung P13.6-117).
   · INVARIANTE (5) GEGEN DIE WIRKRICHTUNG: Der heutige Code schreibt server-eigene Spalten über den
     Client mit Nutzer-Sitzung — etwa `publishProject` (src/app/projects/actions.ts) die Spalten
     `published_content` und `tracking_key`. Entzieht eine Migration der angemeldeten Rolle dieses
@@ -3469,6 +3480,223 @@ SCHREIBEN — IN KEINER TABELLE.**
     gilt hier nicht. Berührt ist der offene Punkt "DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST
     UNGEREGELT"; ob ein Entzug von Rechten dort als "nicht-additiv" zählt, definiert der Eintrag
     nicht.
+    AUFGELÖST 2026-10-01: Owner-Entscheidung P13.6-120 (die Regel ist präzisiert) und die
+    Reihenfolge in Setzung P13.6-117; Invariante (5) ist entsprechend geändert. Der offene
+    Punkt trägt eine datierte Ergänzung.
+
+### Planrunde der Scheibe Spaltenrechte
+
+**Vermerk P13.6-116 — DER PLAN "SPALTENRECHTE" (S1 BIS S7), VERDICHTET.**
+PROVENIENZ: Bericht der Planrunde (CC, 2026-10-01, read-only, Code-Stand `03d4338`; Teil A jener
+Runde ist Commit `498fd97`). DER BERICHT STAND IN KEINER DATEI DES REPOS; hier verdichtet,
+Zeilennummern durch Symbolnamen bzw. Migrationsnamen ersetzt. GELESEN AM CODE bzw. AM BESTAND,
+soweit nicht anders gekennzeichnet; NICHTS DAVON IST LIVE GEMESSEN. Eine Anbieter-Lesung hat in
+jener Runde NICHT stattgefunden (Auftrag S4); jede Angabe über Postgres- oder PostgREST-Verhalten
+ohne Fundstelle in docs/plattform-befunde.md ist UNGEPRÜFT.
+(1) S1 — INVENTAR. RLS ist auf allen acht Tabellen in public aktiv (Migrationen; docs/db-stand.md).
+    Schreib-Policies tragen nur drei Tabellen; keine Policy nennt eine Rolle (kein `TO`), für anon
+    greift keine, weil `auth.uid()` leer ist (ABGELEITET):
+    · `projects` — INSERT, UPDATE, DELETE, je `auth.uid() = user_id` (0001_projects).
+    · `domains` — INSERT und UPDATE über einen EXISTS-Join auf das eigene Projekt, kein DELETE
+      (0006_hosting).
+    · `project_tokens` — INSERT und UPDATE; das WITH CHECK prüft NUR `user_id`, nicht, ob
+      `project_id` dem Nutzer gehört (0005_project_tokens, Kommentar dort selbst).
+    · `events` nur SELECT (0013_events_read); `audit_logs`, `schema_migrations`,
+      `project_secrets`, `relay_rate_counters` keine Policy.
+    Kein `grant`/`revoke` auf diese drei Tabellen in einer Migration; die Grants sind die
+    Vorgabe-Grants auf Tabellen-Ebene (docs/db-stand.md, ROLLEN-GRANTS, GEMESSEN 2026-08-05).
+    EINORDNUNG JE SPALTE:
+    · `projects` CLIENT-EIGEN: `name`, `html`, `mappings`, `settings`, `html_b`, `mappings_b`
+      (Schreiber `saveProject`, `saveVariantB`, `renameProject`, `createVariantB`; `settings` ist
+      client-autoritativ — Dauerregel "SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN
+      BLOB", docs/arbeitsweise.md, 4b, "Identität"). SERVER-EIGEN: `published_content` (der beim
+      Veröffentlichen geprüfte Stand, Setzung P13.6-20), `tracking_key`, `ab_test_active`,
+      `ab_test_started_at` (je als server-autoritativ kommentiert an `ProjectRow`,
+      src/app/projects/actions.ts), `blocked_at`, `blocked_reason` (Kill-Switch, CLAUDE.md
+      Tier 0), `id`, `created_at` (Vorgabewerte). SONDERFÄLLE: `user_id` ist an die Zeilen-Achse
+      gebunden (WITH CHECK); `updated_at` setzt bei UPDATE der Trigger `projects_set_updated_at`.
+    · `domains` (zehn Spalten): KEINE client-eigene. `label` würfelt der Server (`slugForLabel`
+      plus `randomLabelSuffix`); `custom_host`, `verification_status`, `verification`,
+      `vercel_synced_at`, `dns_config`, `apex_name` schreibt allein der Admin-Client
+      (src/lib/domains/register.ts, status.ts); `blocked_at` hat keinen Code-Schreiber.
+    · `project_tokens` (fünf Spalten): KEINE client-eigene; geschrieben allein über den
+      Admin-Client, gelesen nirgends (Kopf von src/lib/supabase/admin.ts).
+    NEBENBEFUND: Die Dauerregel "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI" sagt, `project_tokens`
+    trage "bewusst keine SELECT/UPDATE/DELETE-Policy"; 0005 legt `project_tokens_update_own` an,
+    docs/db-stand.md führt zwei Policies (insert, update). Der Beleg der Regel ist für UPDATE falsch
+    (Dauerregel "EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD"). Mit Setzung
+    P13.6-117 fällt die Policy weg; danach stimmt der Beleg wieder.
+(2) S2 — SCHREIBWEGE DER SERVER-EIGENEN SPALTEN.
+    · ÜBER DEN CLIENT MIT NUTZER-SITZUNG (`createClient`), alle in src/app/projects/actions.ts:
+      `tracking_key` im Insert-Zweig von `saveProject`, in `setCapiToken` und in `publishProject`
+      · `published_content` in `publishProject` und `removeVariantB` · `ab_test_active` in
+      `setAbTestActive` und `removeVariantB` · `ab_test_started_at` in `setAbTestActive` ·
+      `domains.label` in `assignDomainLabel` und `insertDomainLabel`.
+    · ÜBER DEN ADMIN-CLIENT: `domains` Insert (`persistDomainRow`, register.ts), Update
+      (`checkDomainStatus`, status.ts), Delete (`removeCustomDomain`, remove.ts);
+      `project_tokens` Upsert und Delete (`setCapiToken`, `removeCapiToken`).
+    · OHNE CODE-SCHREIBER: `projects.blocked_at`, `projects.blocked_reason`, `domains.blocked_at`
+      — allein das SQL-Runbook (CLAUDE.md, Tier 0).
+    · NEBENBEFUND: Der Heilungs-Zweig in `publishProject` vergibt das Label aus
+      `settings.hosting.label` (`getHostingLabel`, src/lib/settings.ts: nur `trim`) über
+      `insertDomainLabel`, wenn keine Label-Zeile besteht. `settings` schreibt der Client frei
+      (`saveProject`); die Wahl eines Labels ist damit auch über die eigene Server-Action
+      client-kontrolliert, unabhängig von Spaltenrechten.
+(3) S3 — KANDIDATEN.
+    · (a) SPALTENRECHTE: INSERT/UPDATE auf `projects` für anon und authenticated entziehen und
+      spaltenweise neu gewähren (Insert: `user_id`, `name`, `html`, `mappings`, `settings`;
+      Update: `name`, `html`, `mappings`, `settings`, `html_b`, `mappings_b`, `updated_at`);
+      auf `domains` und `project_tokens` INSERT/UPDATE ganz entziehen. Code: die Schreibwege aus
+      (2), erster Punkt, auf den Admin-Client nach dem Eigentums-Gate, mit `user_id`-Filter.
+      Kosten: Setzung P13.6-36, F7 (Admin-Client nur bei Formular-Ziel) und die Wächter
+      publish.test.ts "Scheibe 7a" ("KEIN service_role beteiligt") und P3b werden absichtlich rot;
+      eine vergessene client-eigene Spalte bricht das Speichern laut (42501, ABGELEITET aus
+      docs/plattform-befunde.md, Supabase, Teil (ap)). ZU LESEN: Tabellen-REVOKE gegen
+      Spalten-GRANT; ob ein Trigger, der `updated_at` setzt, ein Recht braucht; ob eine später
+      angelegte Spalte geschlossen beginnt. Die Dauerregel "GRANTS SCHÜTZEN NICHTS …" wird auf der
+      Spalten-Achse unwahr; ihr Beleg ("volle DML-Rechte auf alle public-Tabellen") ist schon
+      seit 0030 nicht mehr allgemein wahr (`relay_rate_counters`). 30.10.2026: nicht berührt,
+      nur bestehende Tabellen.
+    · (b) BEFORE-TRIGGER, der Änderungen server-eigener Spalten ausser für die Server-Rolle
+      abweist: Rollen-Erkennung (`current_user`, `auth.role()`, JWT-Claims) ungelesen; nur als
+      INVOKER trägt sie; die Rolle des SQL-Editors muss durch. Mit IS DISTINCT FROM passiert
+      "gleicher Wert" (der Live-Beweis aus (5) trennt dann nicht); setzte der Trigger zurück statt
+      zu werfen, entstünde stiller Verlust. Dieselben Code-Umzüge wie (a).
+    · (c) SECURITY-DEFINER-RPCs: schliessen die Lücke allein nicht — der direkte Schreibweg bleibt;
+      für authenticated ausführbar erlauben sie genau den verwehrten Schreibvorgang, nur für
+      service_role sind sie dem Admin-Client gleich. CLAUDE.md, Block A (DEFINER nur mit
+      Einzelfall-Begründung); Lints 0028/0029 (docs/plattform-befunde.md, Supabase, Teil (ax)).
+    · (d) EIGENE TABELLE: berührt die Resolver in src/lib/hosting/resolve.ts,
+      src/lib/relay/resolve-relay.ts, src/lib/capi/token.ts und `get_variant_counts` (gegen
+      Invariante (3)); der CHECK `projects_ab_test_needs_variant_b` reicht nicht über zwei
+      Tabellen; Backfill, nicht-additive Migration, geändertes Runbook; nach dem 30.10.2026
+      ausdrückliche Grants (Teil (ay)).
+    · REIHENFOLGE: Bei (a) und (b) bricht eine Migration vor dem Deploy den alten Code; die
+      sichere Folge ist Code vor Migration.
+(4) S4 — VORBEDINGUNG VOR DEM BAU (docs/db-regeln.md, vierte Regel), in jener Runde nicht
+    gefahren: supabase.com/docs/guides/database/postgres/column-level-security ·
+    …/database/postgres/roles · …/database/postgres/row-level-security (Abschnitt Grants) ·
+    docs.postgrest.org: Authentication/User Impersonation; Tables and Views, Abschnitt "Update"
+    (enthält das SET nur die Schlüssel des Rumpfes?) · postgresql.org/docs/17: sql-grant,
+    sql-revoke, ddl-priv, sql-createtrigger (`UPDATE OF`). Bereits tragend: Supabase, Teile (ap),
+    (ax), (ay) und Errors (#25) in docs/plattform-befunde.md.
+(5) S5 — LIVE-BEWEIS, ENTWURF (PostgREST mit echter Sitzung, eigenes Testprojekt, Konsole der
+    eingeloggten App). VORBEDINGUNGEN: Projekt-ID per SQL-Editor, nur lesend; `blocked_at` muss
+    leer sein; Project-URL und anon-Key aus dem Dashboard (öffentlich; die App liest
+    `NEXT_PUBLIC_SUPABASE_ANON_KEY`); der Vorher-Lauf VOR Deploy und Migration. Die Sitzung aus dem
+    Cookie (`@supabase/ssr` 0.12.0, Präfix "base64-", ggf. gestückelt — GELESEN in
+    node_modules). Drei PATCH an `projects?id=eq.<ID>&select=id` mit `Prefer:
+    return=representation`; ausgegeben werden nur Status, Zeilenzahl, Fehlercode und ein
+    Wahrheitswert, nie ein Schlüssel:
+    · P (Positivkontrolle): `name` = heutiger Wert, mit Sitzung — vorher und nachher 200, 1 Zeile.
+    · S (Prüfling): `blocked_at` = null (heutiger Wert), mit Sitzung — vorher 200, 1 Zeile (der
+      PostgREST-Beleg für Vermerk P13.6-112); nachher 401/403, Code `42501` (ABGELEITET aus #25).
+    · N (Negativkontrolle): dasselbe ohne Sitzung — vorher und nachher keine Zeile.
+    · Gegenlesung: Name und `blocked_at` unverändert.
+    Danach die Regression: Speichern, Veröffentlichen mit Byte-Vergleich (Invariante (4)), A/B
+    starten und stoppen, Zugangsdaten, Domain-Status, Kill-Switch per Runbook sperren und
+    entsperren.
+(6) S6 — MISSBRAUCH UND STILLER VERLUST. HEUTE, der eigene Betreiber mit eigener Sitzung über
+    PostgREST: Selbst-Entsperrung (`blocked_at`) · `published_content` am Riegel vorbei (eigene
+    Bausteine, Leer-Riegel, Consent-Werte, Formular-Ziel) · Übernahme des `tracking_key` eines
+    gelöschten Projekts · ein Wunsch-Label auf publayer.net (Phishing) oder das Label eines
+    gelöschten Projekts · ein `custom_host` reserviert, mit gefälschtem `verification_status` —
+    der echte Inhaber bekommt "bereits anderswo verknuepft" (`registerCustomDomain`,
+    register.ts), Ratenbegrenzung und Audit-Log umgangen · `domains.blocked_at` geleert · eine
+    `project_tokens`-Zeile auf eine fremde `project_id` (die UUID kommt in generate.ts,
+    pageview-emitter.ts und meta.ts nicht vor; die Tabelle hat keinen Leser). JE KANDIDAT: (a)
+    Missbrauch bleibt über den Heilungs-Zweig (Punkt (2)); Fehler laut statt still; neues Risiko
+    ein Admin-Update ohne `user_id`-Filter · (b) wie (a), stiller Verlust beim Zurücksetzen ·
+    (c) die Lücke bleibt · (d) Leser-Drift. JEDE GESTALT: Der Kill-Switch wirkt je Projekt; ein
+    neues Projekt umgeht ihn (Vorrat P13.6-121).
+(7) S7 — TESTS. vitest: Wächter auf die Nutzlast-Schlüssel jedes Schreibvorgangs über die
+    Nutzer-Sitzung (Erwartung aus der Entscheidung, nicht aus dem Code), "Admin erst nach dem
+    Gate" und `user_id`-Filter je umgezogener Aktion, Wächter über den Migrationstext (Muster
+    W-MIG-COLS). SQL-Probe (Freigabe nötig): `has_column_privilege`/`has_table_privilege` je
+    Rolle und Spalte, Policies, Schreibversuche als `set local role authenticated` mit rollback —
+    allein die Postgres-Schicht. Live: allein die PostgREST-Schicht (5). MUTATIONEN: M1
+    `blocked_at` in der Grant-Liste · M2 `publishProject` schreibt `tracking_key` wieder über die
+    Nutzer-Sitzung · M3 Admin-Update ohne `user_id` · M4 Admin-Client vor dem Gate.
+(8) OFFENE FRAGEN DES BERICHTS, je mit Antwort: Gestalt, `project_tokens`, Heilungs-Zweig, F7,
+    Reihenfolge — Setzung P13.6-117; Rolle des SQL-Editors — Vermerk P13.6-118; Präzisierung der
+    Dauerregel — Owner-Entscheidung P13.6-119; der Beleg der Append-only-Regel — Punkt (1),
+    NEBENBEFUND; docs/db-stand.md ohne Spaltenrechte (Vermerk P13.6-112, Punkt (7)) — offen bis
+    zum Abschluss der Scheibe.
+
+**Setzung P13.6-117 — GESTALT (a) SPALTENRECHTE; SERVER-EIGENE SPALTEN SCHREIBT ALLEIN
+service_role, NACH DEM EIGENTUMS-GATE UND MIT `user_id`-FILTER.**
+PROVENIENZ: ARCHITEKTEN-SETZUNG 2026-10-01, übermittelt im Auftrag der Runde "Spaltenrechte — Plan
+festhalten, Entscheidungen, Regel-Präzisierung". REVIDIERBAR; ein Owner-Widerspruch hebt jede auf.
+Wo "(CC)" steht, stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD `498fd97`).
+- GESTALT: Kandidat (a) aus Vermerk P13.6-116, Punkt (3).
+- VERWORFEN: (b) — die Rollen-Erkennung wäre zu erraten, "gleicher Wert" passiert, Zurücksetzen
+  wäre stiller Verlust · (c) — schliesst die Lücke allein nicht · (d) — verletzt Invariante (3),
+  der CHECK über zwei Tabellen geht verloren.
+- `domains` UND `project_tokens`: INSERT und UPDATE für anon und authenticated werden ENTZOGEN,
+  ihre Schreib-Policies GELÖSCHT — keine der beiden trägt eine client-eigene Spalte. Ob
+  `project_tokens` überhaupt gebraucht wird: Vorrat P13.6-122.
+  (CC) Invariante (2) ("keine Policy wird gelockert") ist damit eingehalten — gelöscht werden
+  Schreib-Policies, die Lesepolicy `domains_select_own` bleibt.
+- DIE LABEL-VERGABE AUS `settings.hosting.label` (Heilungs-Zweig in `publishProject`) GEHÖRT IN
+  DIESE SCHEIBE: Ein neues Label entsteht nie aus einem client-besessenen Wert.
+  KOLLISION, GEMELDET, NICHT AUFGELÖST (CC, am Wortlaut): Die Dauerregel "DIE domains-ZEILE IST
+  DIE ALLEINIGE WAHRHEIT ÜBER 'IST DIESES PROJEKT LIVE?'" sagt, `publishProject` stelle die Zeile
+  "bei Bedarf mit dem ALTEN Label wieder her" — laufende Ads zeigten sonst auf die tote Adresse.
+  Gelesen wird jenes ALTE Label heute aus `settings.hosting.label` (Vermerk P13.6-116, Punkt
+  (2)). Ob die Wiederherstellung als "neues Label" gilt und woher das alte Label künftig kommt,
+  entscheidet der Bau-Auftrag; die Dauerregel ist hier nicht geändert.
+- SETZUNG P13.6-36, F7 IST REVIDIERT: `publishProject` nutzt den Admin-Client für die
+  server-eigenen Schreibvorgänge IMMER, nach dem Eigentums-Gate. (CC) Absichtlich rot werden damit
+  publish.test.ts "Scheibe 7a" ("KEIN service_role beteiligt") und P3b.
+- REIHENFOLGE: Code, der ohne die entzogenen Rechte auskommt → deployen, prüfen → Migration →
+  prüfen. Invariante (5) der Setzung P13.6-115 ist entsprechend geändert. Die Regel dazu:
+  Owner-Entscheidung P13.6-120.
+- DER OFFENE PUNKT "DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT"
+  (docs/offene-punkte.md) trägt eine datierte Ergänzung: wie diese Scheibe das Fenster regelt.
+  ABWEICHUNG VOM AUFTRAG, GEMELDET (CC): Der Auftrag nennt den Trigger mit dieser Scheibe
+  eingetreten. Am Bestand ist er dem Wortlaut nach schon mit 0025 eingetreten (Ergänzung vom
+  2026-08-27 an jenem Punkt); die Migration dieser Scheibe ist geplant, nicht geschrieben und
+  nicht gelaufen. Die Ergänzung sagt beides.
+
+**Vermerk P13.6-118 — DER SQL-EDITOR FÄHRT `postgres`.** KEIN BAU-COMMIT: Messung im SQL-Editor.
+- GEMESSEN, OWNER, 2026-10-01, SQL-Editor, übermittelt im Auftrag derselben Runde:
+  `current_user` = `session_user` = `postgres`. Die Abfrage selbst ist nicht übermittelt.
+- FOLGE (ABGELEITET, ARCHITEKT): Das Kill-Switch-Runbook (CLAUDE.md, Tier 0) ist von einem
+  Rechte-Entzug an anon und authenticated unberührt.
+  ABWEICHUNG VOM AUFTRAG, GEMELDET (CC): Der Auftrag nennt die Folge "Lesung bestätigt". Eine
+  Lesung dazu trägt der Bestand nicht (GEMESSEN AM REPO, 2026-10-01: Suche nach `session_user`,
+  `current_user`, `superuser`, `rolsuper`, "table owner" über docs/plattform-befunde.md,
+  docs/db-stand.md, docs/db-regeln.md und diese Datei — 0 Treffer; Positivkontrolle `bypassrls`
+  in docs/plattform-befunde.md 2 Treffer). Ob `postgres` Eigner der Tabellen ist, ist nicht
+  gemessen. Die Lesung gehört zur Vorbedingung aus Vermerk P13.6-116, Punkt (4).
+
+PROVENIENZ von P13.6-119 und P13.6-120: OWNER-ENTSCHEIDUNG 2026-10-01, übermittelt im Auftrag der
+Runde "Spaltenrechte — Plan festhalten, Entscheidungen, Regel-Präzisierung". BINDEND. Die Titel
+beider Regeln bleiben unverändert.
+
+**Owner-Entscheidung P13.6-119 — PRÄZISIERUNG DER DAUERREGEL "GRANTS SCHÜTZEN NICHTS — RLS IST DIE
+EINZIGE TRAGENDE SCHICHT".**
+- INHALT: RLS urteilt über Zeilen, nicht über Spalten; welche Spalten die angemeldete Rolle
+  schreiben darf, tragen ausdrücklich gesetzte Spaltenrechte; die Standard-Rechte schützen
+  weiterhin nichts.
+- VOLLZUG ERST BEIM ABSCHLUSS DER SCHEIBE — die Präzisierung beschreibt den Zustand nach der
+  Migration. Bis dahin steht sie nur hier; docs/immer-beachten.md und
+  docs/immer-beachten-herleitung.md sind nicht geändert.
+- (CC) Beim Vollzug berührt: der offene Punkt "DIE GRANT-VORGABE DER PLATTFORM KIPPT AM
+  30.10.2026" ("Die Regel 'GRANTS SCHÜTZEN NICHTS …' bleibt unverändert richtig").
+
+**Owner-Entscheidung P13.6-120 — PRÄZISIERUNG DER REGEL "MIGRATION IMMER VOR CODE-DEPLOY".**
+- INHALT: Sie gilt für Migrationen, die der Code braucht. Eine Migration, die Rechte entzieht und
+  alten Code bräche, folgt dem Code — erst Code deployen und prüfen, der ohne das Recht auskommt,
+  dann die Migration.
+- VOLLZOGEN IM SELBEN COMMIT an jedem Ort, der die Regel trägt: docs/db-regeln.md (die Regel samt
+  Kopf "HERKUNFT UND UNVERSEHRTHEIT"), docs/arbeitsweise.md (Kadenz und 4b), docs/offene-punkte.md
+  ("DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT"). Die Liste der geprüften und
+  NICHT geänderten Fundstellen steht im Bericht der Runde; die tragenden Gründe: Titel-Zeiger
+  (CLAUDE.md, docs/immer-beachten.md, "COMMIT-KONVENTIONEN"), eingefrorene oder datierte Texte
+  (docs/claude-md-herleitung.md, docs/immer-beachten-herleitung.md, docs/db-stand.md, Archive),
+  angewandte Migrationen (Dauerregel "ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH
+  UMGESCHRIEBEN").
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -3825,6 +4053,8 @@ DER SCHEIBE "BEACON BEI ERSTVERÖFFENTLICHUNG", VOR ALLEM ANDEREN IN 13.6** (ARC
   Abgrenzung an jener Zeile).
 - ZUGESCHNITTEN 2026-10-01: Setzung P13.6-115 der Phase 13.6 (Abschnitt "Zuschnitt Scheibe
   Spaltenrechte"); der Plan steht im Bericht jener Runde.
+- PLAN UND GESTALT FESTGEHALTEN 2026-10-01: Vermerk P13.6-116 (Plan), Setzung P13.6-117 (Gestalt
+  (a)), Owner-Entscheidungen P13.6-119 und P13.6-120 der Phase 13.6.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -4420,3 +4650,24 @@ KEINE AUSGELIEFERTE SEITE AUF"; SEIT DER SCHEIBE 13.6-4 RUFEN GEHOSTETE SEITEN D
   live: Vermerk P13.6-70, Punkt (3).
 - BEZUG: Dauerregel "EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT — UND ER VERMEHRT SICH".
 - TRIGGER: die nächste Runde, die src/lib/relay/relay.ts öffnet.
+
+PROVENIENZ von P13.6-121 und P13.6-122: ARCHITEKT 2026-10-01, übermittelt im Auftrag der Runde
+"Spaltenrechte — Plan festhalten, Entscheidungen, Regel-Präzisierung"; die Befunde aus dem Plan
+(Vermerk P13.6-116). Wo "(CC)" steht, hat CC die Angabe am Bestand geprüft (HEAD `498fd97`).
+
+**Vorrat P13.6-121 — DER KILL-SWITCH WIRKT JE PROJEKT; EIN NEU ANGELEGTES PROJEKT UMGEHT IHN.**
+- BEFUND (Vermerk P13.6-116, Punkt (6)): Die Sperre sitzt auf `projects.blocked_at` bzw.
+  `domains.blocked_at` (CLAUDE.md, Tier 0, "KILL-SWITCH"); ein gesperrter Betreiber legt ein neues
+  Projekt an und veröffentlicht es. (CC, ABGELEITET am Code) Das Anlegen prüft keine Sperre:
+  `saveProject` (src/app/projects/actions.ts) liest im Insert-Zweig keine Spalte `blocked_at`.
+- ZIEL: Phase 13.7 (Roadmap-Zeile 13.7, Klasse "DER UNEHRLICHE BETREIBER — Sperren aushebeln").
+- AUSSER SCOPE der Scheibe "Spaltenrechte".
+
+**Vorrat P13.6-122 — OB `project_tokens` ÜBERHAUPT GEBRAUCHT WIRD.**
+- BEFUND (Vermerk P13.6-116, Punkt (1)): Die Tabelle wird allein über den Admin-Client geschrieben
+  (`setCapiToken`, `removeCapiToken`) und nirgends gelesen (Kopf von src/lib/supabase/admin.ts);
+  der Kommentar in `setCapiToken` nennt sie "die Rollback-Reserve fuer die vorige Code-Fassung"
+  (Doppelschreib seit Phase 11, Scheibe 1).
+- (CC) Mit Setzung P13.6-117 verliert sie ihre Schreib-Policies; die Frage nach der Tabelle selbst
+  bleibt.
+- KEIN TRIGGER GESETZT.

@@ -188,6 +188,9 @@ Stufe-2-Prompt: BAU + Live-Testanleitung
 Diff prüfen → GO mit Commit-Message
    ↓
 Migration (falls vorhanden) im SQL-Editor VOR dem Deploy  ← fail-closed
+   (Ausnahme: eine Migration, die Rechte entzieht und alten Code bräche, folgt
+    dem Code — erst Push, Deploy und Prüfung, dann die Migration, dann erneut
+    prüfen; docs/db-regeln.md, "MIGRATION IMMER VOR CODE-DEPLOY")
    ↓
 Push → Deploy → Deployment verifizieren (Vercel „Ready"!) → LIVE-TEST
    ↓
@@ -1107,8 +1110,11 @@ nächsten Refactor als unnötig defensiv wegoptimiert.
   exportierte Konstante dort löst beim Serverstart einen ReferenceError aus.
   Deshalb liegen geteilte Texte und Prädikate in reinen Dateien. Richtung:
   `server-only` → pure, nie umgekehrt.
-- **Migration immer vor Code-Deploy** (fail-closed). Umgekehrt ist eine
-  Migration ohne Code meist ein No-op und gefahrlos.
+- **Migration immer vor Code-Deploy** (fail-closed) — für Migrationen, die der
+  Code braucht. Umgekehrt ist eine solche Migration ohne Code meist ein No-op und
+  gefahrlos. **Eine Migration, die Rechte entzieht und alten Code bräche, folgt
+  dem Code:** erst den Code deployen und prüfen, der ohne das Recht auskommt, dann
+  die Migration (Owner-Entscheidung 2026-10-01; docs/db-regeln.md).
 - **PostgREST:** `{data, error}` immer destrukturieren, kein `SELECT *`, und vor
   der Nutzung eines Feldnamens den echten Primärschlüssel nachsehen — der PK von
   `domains` ist `label`, nicht `id`.

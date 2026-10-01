@@ -3427,6 +3427,9 @@ P13.6-117 (Abschnitt "Planrunde der Scheibe Spaltenrechte").
 NACHGETRAGEN 2026-10-01 (Runde "Spaltenrechte — Anbieter-Lesung"): Die Vorbedingung S4 (Vermerk
 P13.6-116, Punkt (4)) ist gelesen — docs/plattform-befunde.md, Supabase-Abschnitt, LAUF 5, Teile
 (bd) bis (bk). Doku-Aussagen, keine Messung; die offenen Messungen stehen dort in Teil (bk).
+NACHGETRAGEN 2026-10-01 (Runde "Spaltenrechte — Bau", Teil A): Die Bau-Entscheidungen stehen als
+Owner-Entscheidung P13.6-123, Owner-Angabe P13.6-124 und Setzung P13.6-125 (Abschnitt
+"Bau-Entscheidungen der Scheibe Spaltenrechte").
 - GEGENSTAND: Arbeit P13.6-113 der Phase 13.6 — die Sicherheits-Scheibe "Spaltenrechte". Befund:
   Vermerk P13.6-112. Reihenfolge: Setzung P13.6-14.
 - BENENNUNG, DEKLARIERT (CC): wie bei den Scheiben "Zurück-Cache", "Zapier ins Relay" und
@@ -3648,6 +3651,8 @@ Wo "(CC)" steht, stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD
   Gelesen wird jenes ALTE Label heute aus `settings.hosting.label` (Vermerk P13.6-116, Punkt
   (2)). Ob die Wiederherstellung als "neues Label" gilt und woher das alte Label künftig kommt,
   entscheidet der Bau-Auftrag; die Dauerregel ist hier nicht geändert.
+  AUFGELÖST 2026-10-01: Owner-Entscheidung P13.6-123 der Phase 13.6 — die Wiederherstellung
+  vergibt ein NEUES Label; die Dauerregel ist im selben Commit angepasst.
 - SETZUNG P13.6-36, F7 IST REVIDIERT: `publishProject` nutzt den Admin-Client für die
   server-eigenen Schreibvorgänge IMMER, nach dem Eigentums-Gate. (CC) Absichtlich rot werden damit
   publish.test.ts "Scheibe 7a" ("KEIN service_role beteiligt") und P3b.
@@ -3703,6 +3708,104 @@ EINZIGE TRAGENDE SCHICHT".**
   (docs/claude-md-herleitung.md, docs/immer-beachten-herleitung.md, docs/db-stand.md, Archive),
   angewandte Migrationen (Dauerregel "ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH
   UMGESCHRIEBEN").
+
+### Bau-Entscheidungen der Scheibe Spaltenrechte
+
+PROVENIENZ von P13.6-123 und P13.6-124: OWNER-ENTSCHEIDUNG bzw. OWNER-ANGABE 2026-10-01,
+übermittelt im Auftrag der Runde "Spaltenrechte — Bau" (Teil A). BINDEND. Wo "(CC)" steht, hat CC
+die Angabe am Bestand bzw. am Code geprüft (HEAD `38f502f`), GELESEN AM CODE, nicht live gemessen.
+
+**Owner-Entscheidung P13.6-123 — FEHLT DIE domains-ZEILE EINES VERÖFFENTLICHTEN PROJEKTS, VERGIBT
+DER SERVER BEI DER WIEDERHERSTELLUNG EIN NEUES LABEL ÜBER DENSELBEN ERZEUGER WIE BEIM ERSTEN
+VERÖFFENTLICHEN. `settings.hosting.label` IST NIE QUELLE EINES NEUEN LABELS.**
+- GRUND (OWNER): Das alte Label stammt aus einem client-besessenen Blob; ein Angreifer könnte das
+  Label eines gelöschten fremden Projekts übernehmen.
+- PREIS (OWNER): In diesem Fall ändert sich die Adresse; sie war ohnehin tot.
+- AM CODE GEPRÜFT (CC):
+  · Der Heilungs-Zweig in `publishProject` (src/app/projects/actions.ts) liest das Label aus
+    `settings.hosting.label` über `getHostingLabel` (src/lib/settings.ts, nur `trim`) und legt es
+    über `insertDomainLabel` an, wenn das Projekt keine Label-Zeile hat (Vermerk P13.6-116,
+    Punkt (2), NEBENBEFUND). `settings` schreibt der Client frei (`saveProject`).
+  · `domains.project_id` trägt `on delete cascade` (0006_hosting): Wird ein Projekt gelöscht,
+    wird sein Label frei. Der Grund trägt damit am Code.
+  · "Derselbe Erzeuger wie beim ersten Veröffentlichen" ist `assignDomainLabel`
+    (`slugForLabel` aus dem Projektnamen plus `randomLabelSuffix`, bis zu sechs Versuche bei
+    23505).
+  · "Sie war ohnehin tot": Ohne Zeile findet die Auslieferung das Label nicht (Dauerregel "DIE
+    domains-ZEILE IST DIE ALLEINIGE WAHRHEIT …"). ABGELEITET (CC): Bis heute belebte die
+    Wiederherstellung die ALTE Adresse wieder, sofern das Label frei war; laufende Anzeigen, die
+    auf sie zeigen, bleiben künftig tot. Der Preis trifft genau sie.
+  · ABGELEITET (CC): Dieselbe Entscheidung schliesst auch das Wunsch-Label (etwa ein Label ohne
+    Endung oder eines, das eine Marke nachahmt) über den eigenen Heilungs-Zweig — Vermerk
+    P13.6-116, Punkt (6). Über PostgREST mit eigener Sitzung bleibt ein Wunsch-Label bis zur
+    Migration der Scheibe möglich (Policy `domains_insert_own`).
+- DIE DAUERREGEL "DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?""
+  IST IM SELBEN COMMIT ANGEPASST: Kern (docs/immer-beachten.md) neu gefasst, Titel unverändert;
+  in docs/immer-beachten-herleitung.md eine datierte Neufassung an der Regel, der Text davor
+  bleibt als Stand davor. Herleitung vorher vollständig geladen (CC, 2026-10-01). ALT/NEU im
+  Bericht der Runde.
+- GEMELDET, NICHT ENTSCHIEDEN (CC, GELESEN AM CODE): Der Hinweis bei `restored` in
+  src/components/PublishView.tsx lautet "— Adresse war nicht mehr erreichbar und wurde
+  wiederhergestellt." Nach dieser Entscheidung ist die Adresse eine neue; der Satz behauptet
+  dann etwas Falsches. Vorrat P13.6-127 der Phase 13.6.
+
+**Owner-Angabe P13.6-124 — DAS LABEL-SCHEMA "SLUG AUS DEM PROJEKTNAMEN + ZUFÄLLIGE ENDUNG"
+BLEIBT.**
+- GRUND (OWNER): Nutzer finden ohne Wiederholungsversuche eine freie Adresse; ein Wettbewerber
+  zwang zu vielen Versuchen.
+- FOLGE (OWNER): Ein Label ohne Endung ist nicht mehr erzeugbar.
+- AM CODE GEPRÜFT (CC): Labels erzeugen zwei Stellen, beide mit Endung — `assignDomainLabel`
+  (src/app/projects/actions.ts, Slug aus dem Projektnamen) und `persistDomainRow`
+  (src/lib/domains/register.ts, Slug aus dem Custom-Host, für Custom-Domain-Zeilen). Der dritte
+  Weg, der Heilungs-Zweig, übernimmt heute einen beliebigen Wert aus `settings`.
+- GRENZE DER FOLGE (CC, ABGELEITET): Über die App gilt sie ab dem Deploy des Baus dieser Scheibe;
+  über PostgREST mit eigener Sitzung erst nach der Migration der Scheibe (bis dahin erlaubt
+  `domains_insert_own` jedes Label auf ein eigenes Projekt); über den SQL-Editor (`postgres`)
+  bleibt jedes Label erzeugbar.
+
+PROVENIENZ von P13.6-125: ARCHITEKTEN-SETZUNG 2026-10-01, übermittelt im Auftrag der Runde
+"Spaltenrechte — Bau" (Teil A). REVIDIERBAR; ein Owner-Widerspruch hebt jede auf. Wo "(CC)" steht,
+stammt die Angabe von CC (GELESEN AM BESTAND bzw. AM CODE, HEAD `38f502f`).
+
+**Setzung P13.6-125 — DIE BAUENTSCHEIDUNGEN DER SCHEIBE SPALTENRECHTE.**
+- GESTALT (a) BLEIBT, TROTZ DES SUPABASE-RATS GEGEN SPALTENRECHTE (docs/plattform-befunde.md,
+  Supabase, Teil (bi)). GRUND: Der Rat zielt auf das Verbergen beim LESEN; die Scheibe entzieht
+  nur Schreibrechte, SELECT bleibt. Ein Trigger (Kandidat (b)) kann still versagen, (a) scheitert
+  laut.
+  (CC, am Wortlaut von Teil (bi)): Der Rat selbst nennt keinen Grund; die zwei Einschränkungen,
+  die die Seite nennt, gelten `select *` bzw. einer Spalte ohne Recht. Ob `.select()` ohne
+  Spaltenliste nach dem Entzug unverändert geht, bleibt eine Messung (Teil (bk), Punkt 4) und
+  gehört in die Live-Regression. "(b) kann still versagen": Setzung P13.6-117, VERWORFEN (b).
+- GRANTOR-BEFUND (Teil (be)): Die Messung VOR der Migration (Eigentümer, Grantor, FORCE ROW LEVEL
+  SECURITY, PUBLIC, Mitgliedschaften) und DANACH (wirksame Rechte) sind Pflicht-Schritte. GRUND:
+  Ein still wirkungsloser Entzug ist die gefährlichste Form des Scheiterns.
+  (CC) Teil (be), Falle 1: "A user can only revoke privileges that were granted directly by that
+  user." — ein `revoke` eines Nicht-Grantors entzieht nichts.
+- `saveProject` LEGT DAS PROJEKT ÜBER DEN ADMIN-CLIENT AN, `user_id` ALLEIN AUS DER
+  SERVER-GEPRÜFTEN SITZUNG — EIN EINZIGER, ATOMARER SCHREIBVORGANG. GRUND: Ein getrenntes
+  Nachschreiben des Schlüssels könnte scheitern und brächte den Beacon-Fehler zurück (Vermerk
+  P13.6-106).
+- `projects`: INSERT für anon und authenticated ganz entziehen, `projects_insert_own` löschen;
+  UPDATE nur auf die client-eigenen Spalten `name`, `html`, `mappings`, `settings`, `html_b`,
+  `mappings_b`, `updated_at`; DELETE und SELECT unverändert.
+  (CC, gegen S1 und die echten Update-Rümpfe geprüft): Die sieben Spalten sind die
+  client-eigenen aus Vermerk P13.6-116, Punkt (1), dazu `updated_at` (Teil (bf): der Code sendet
+  es in jedem `.update(…)` auf `projects`). Die Update-Rümpfe, die über die Nutzer-Sitzung
+  bleiben: `saveProject` (Update-Zweig) `html`, `mappings`, `settings`, `updated_at` ·
+  `saveVariantB` `html_b`, `mappings_b`, `settings`, `updated_at` · `createVariantB` `html_b`,
+  `mappings_b`, `updated_at` · `removeCapiToken` `settings`, `updated_at` · `renameProject`
+  `name`. Jeder liegt in der Liste. Ausserhalb von src/app/projects/actions.ts schreibt kein Code
+  `projects` über die Nutzer-Sitzung (GEMESSEN AM REPO: Suche `.from("projects")` über src/
+  ausserhalb der Tests; die übrigen Treffer lesen). Die Rümpfe mit server-eigenen Spalten —
+  `publishProject`, `setCapiToken`, `setAbTestActive`, `removeVariantB` — ziehen auf den
+  Admin-Client.
+- `domains` UND `project_tokens`: INSERT, UPDATE, DELETE für anon und authenticated entziehen,
+  ihre Schreib-Policies löschen; SELECT unverändert.
+  (CC) Die Schreib-Policies sind `domains_insert_own`, `domains_update_own` (0006_hosting),
+  `project_tokens_insert_own`, `project_tokens_update_own` (0005_project_tokens); eine
+  DELETE-Policy trägt keine der beiden Tabellen.
+- VORRAT (Phase 13.7): gelöschte Labels dauerhaft sperren (Grabstein-Modell) — Vorrat P13.6-126
+  der Phase 13.6.
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -4677,3 +4780,29 @@ PROVENIENZ von P13.6-121 und P13.6-122: ARCHITEKT 2026-10-01, übermittelt im Au
 - (CC) Mit Setzung P13.6-117 verliert sie ihre Schreib-Policies; die Frage nach der Tabelle selbst
   bleibt.
 - KEIN TRIGGER GESETZT.
+
+PROVENIENZ von P13.6-126: ARCHITEKT 2026-10-01, Setzung P13.6-125, übermittelt im Auftrag der
+Runde "Spaltenrechte — Bau" (Teil A). PROVENIENZ von P13.6-127: CC, dieselbe Runde, GELESEN AM
+CODE (HEAD `38f502f`).
+
+**Vorrat P13.6-126 — GELÖSCHTE LABELS DAUERHAFT SPERREN (GRABSTEIN-MODELL).**
+- BEFUND (CC, GELESEN AM BESTAND): `domains.project_id` trägt `on delete cascade` (0006_hosting);
+  mit dem Projekt verschwindet seine Label-Zeile, das Label ist danach wieder frei. Seit
+  Owner-Entscheidung P13.6-123 übernimmt es der Heilungs-Zweig nicht mehr; der Erzeuger kann es
+  aber zufällig neu würfeln, und über den SQL-Editor bleibt jedes Label setzbar (Owner-Angabe
+  P13.6-124, GRENZE DER FOLGE).
+- ZIEL: Phase 13.7 (Roadmap-Zeile 13.7).
+- AUSSER SCOPE der Scheibe "Spaltenrechte".
+
+**Vorrat P13.6-127 — DER HINWEIS "ADRESSE … WURDE WIEDERHERGESTELLT" STIMMT NACH OWNER-ENTSCHEIDUNG
+P13.6-123 NICHT MEHR.**
+- GELESEN AM CODE: `publishProject` liefert `restored: true`, wenn die Label-Zeile fehlte;
+  src/components/PublishView.tsx zeigt dann "— Adresse war nicht mehr erreichbar und wurde
+  wiederhergestellt." Der Kommentar an `PublishResult` (src/app/projects/actions.ts) sagt "MIT DEM
+  ALTEN Label wiederhergestellt".
+- FOLGE (ABGELEITET): Seit der Entscheidung ist die Adresse in diesem Fall eine NEUE. Der Satz
+  behauptet eine Wiederherstellung derselben Adresse; der Betreiber, dessen Anzeigen auf die alte
+  zeigen, liest daraus nicht, dass er sie umstellen muss.
+- DER TEXT IST EIN OWNER-TEXT; PublishView.tsx liegt ausser Scope der Scheibe "Spaltenrechte".
+- TRIGGER: die nächste Arbeit an src/components/PublishView.tsx, spätestens vor dem ersten fremden
+  Nutzer.

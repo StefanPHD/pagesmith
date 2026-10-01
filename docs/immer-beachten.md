@@ -27,10 +27,12 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
   settings.hosting.label ist ein SPIEGEL, keine Quelle — settings ist client-besessen, die
   Auslieferung hängt allein an der domains-Zeile. publishProject liest das Label aus der
-  Zeile (project_id + custom_host IS NULL, ORDER BY created_at) und stellt sie bei Bedarf
-  mit dem ALTEN Label wieder her; gehört das Label einem fremden Projekt (23505), wird
-  fail-closed abgebrochen — nie still eine neue Adresse vergeben, laufende Ads zeigten
-  sonst weiter auf die tote alte.
+  Zeile (project_id + custom_host IS NULL, ORDER BY created_at). Fehlt sie, vergibt der
+  Server ein NEUES Label über denselben Erzeuger wie beim ersten Veröffentlichen und zieht
+  den Spiegel darauf; settings.hosting.label ist nie Quelle eines neuen Labels — ein Wert
+  aus dem client-besessenen Blob könnte das Label eines gelöschten fremden Projekts
+  übernehmen. Der Preis: Die Adresse ändert sich, und Anzeigen, die auf die alte zeigen,
+  bleiben tot (sie war es ohnehin).
   Messfalle: Jede Divergenz-Prüfung joint mit `and custom_host is null`, sonst werden
   Projekte mit Custom-Domain fälschlich als divergent gemeldet.
 

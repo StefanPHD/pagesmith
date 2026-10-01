@@ -272,6 +272,38 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Projekte mit Custom-Domain fälschlich als divergent (real passiert). Die
   Label-Zeile ist die mit custom_host IS NULL.
   Volle Herleitung: docs/claude-history/phase-7-hosting.md.
+  NEU GEFASST 2026-10-01 — DIE WIEDERHERSTELLUNG VERGIBT EIN NEUES LABEL (OWNER-ENTSCHEIDUNG
+  P13.6-123 der Phase 13.6, Scheibe "Spaltenrechte"). Der Titel bleibt; der Text darüber bleibt
+  als Stand davor stehen. Seine Sätze "stellt sie bei Bedarf mit DEM ALTEN Label wieder her" und
+  "Gehört einem FREMDEN Projekt dieses Label (23505 auf dem PK), wird fail-closed abgebrochen:
+  NIE stillschweigend eine neue Adresse vergeben" gelten NICHT MEHR.
+  DIE NEUE FASSUNG: Fehlt die Label-Zeile eines veröffentlichten Projekts, vergibt der Server
+  ein NEUES Label über denselben Erzeuger wie beim ersten Veröffentlichen (`assignDomainLabel`:
+  Slug aus dem Projektnamen plus zufällige Endung) und zieht den Spiegel
+  `settings.hosting.label` darauf. `settings.hosting.label` ist NIE Quelle eines neuen Labels.
+  DER GRUND (OWNER): Das alte Label stammt aus einem CLIENT-BESESSENEN Blob. Der Heilungs-Zweig
+  übernahm jeden Wert, der dort stand (`getHostingLabel` trimmt nur), und ein Projekt-Delete
+  gibt sein Label per `on delete cascade` (0006) frei — ein Angreifer setzte das Label eines
+  gelöschten fremden Projekts in seinen eigenen Blob, veröffentlichte, und bekam dessen Adresse
+  samt der Anzeigen, die noch darauf zeigen. Dieselbe Lücke liess jedes freie Wunsch-Label zu
+  (ABGELEITET, CC; Vermerk P13.6-116, Punkt (6), der Phase 13.6). Die Regel ruhte damit auf
+  einer Annahme, die ihr eigener erster Satz verneint: dass der Spiegel als Quelle taugt.
+  DER PREIS (OWNER), UND WEN ER TRIFFT: Die Adresse ändert sich; sie war ohnehin tot. Bis zum
+  2026-10-01 belebte die Wiederherstellung die ALTE Adresse wieder, sofern das Label frei war —
+  Anzeigen, die auf sie zeigen, bleiben künftig tot (ABGELEITET, CC). Das ist der bewusste
+  Tausch: URL-Stabilität im seltenen Divergenzfall gegen die Übernahme fremder Adressen.
+  WAS MIT DEM FAIL-CLOSED-ZWEIG GESCHIEHT: Er entfällt mit seinem Gegenstand. Ein neues Label
+  kann nicht "einem fremden Projekt gehören"; eine Kollision beim Würfeln behandelt der
+  Erzeuger mit einem neuen Kandidaten.
+  WAS NICHT GEÄNDERT IST: Die Zeile bleibt die alleinige Wahrheit; bei vorhandenen Zeilen
+  wählt `settings.hosting.label` weiterhin nur ZWISCHEN den Zeilen DES EIGENEN Projekts (die
+  Heilung von Richtung (b)) — das ist keine Quelle eines neuen Labels. Die Messfalle bleibt.
+  GEMELDET, NICHT ENTSCHIEDEN: Der Hinweis im Editor bei `restored` sagt "Adresse … wurde
+  wiederhergestellt" und stimmt nach der Neufassung nicht mehr (Vorrat P13.6-127 der Phase
+  13.6). Ein neues Label im Heilungsfall ist damit heute nicht als GEÄNDERTE Adresse angezeigt.
+  PROVENIENZ: die Entscheidung OWNER 2026-10-01; die Fundstellen GELESEN AM CODE (CC,
+  2026-10-01, HEAD `38f502f`); die Neufassung des Kerns und dieser Absatz CC, im Auftrag
+  derselben Runde, nach vollständigem Laden dieser Datei.
 - APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI (gehoben aus der abgeschafften
   Reviewer-Checkliste): project_tokens UND audit_logs tragen bewusst KEINE
   SELECT/UPDATE/DELETE-Policy — Zugriff ausschliesslich ueber service_role. Eine neue

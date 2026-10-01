@@ -129,6 +129,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 13 — Formular-Ziel mit Danke-Seite
 - [ ] Phase 13.5 — Medien
 - [ ] Phase 13.6 — Formular-Relay (Lead-Relay)
+- [ ] Phase 13.7 — Sicherheit & Datenintegrität
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
 - [ ] Phase 15 — Public-Launch-Restarbeit (Tier 0)
 - [ ] Phase 16 — Analytics-Vertiefung (Uniques, Traffic-Health-Metriken)
@@ -415,9 +416,12 @@ den REGELTITEL — ohne Pfad, ohne Dateinamen, er zeigte also nie hierher.
 BEIDE PFAD-ZEIGER SIND AM 2026-08-14 AUF docs/db-regeln.md NACHGEZOGEN: Sie zeigten seit
 dem 2026-08-13 an der Regel vorbei, weil die Regel dorthin umgezogen war, und mit der
 Auslagerung von "## Immer beachten" wären sie ein zweites Mal falsch geworden.
-WAS DAMIT OFFEN IST UND HIER NICHT ENTSCHIEDEN WIRD: Der Titel-Zeiger in db-stand.sql
-braucht die Titel weiterhin an einem auffindbaren Ort; ein Pfad-Zeiger auf diese Datei
-existiert nicht mehr.
+DER TITEL-ZEIGER IN db-stand.sql IST GEPRÜFT UND TRÄGT (seit Commit `cc8fc98`, 2026-09-30;
+offen ist hier nichts mehr): Er braucht die Titel weiterhin an einem auffindbaren Ort, und er
+findet sie — sein Zeiger in PROBE 8 trifft in docs/db-regeln.md genau eine Regel dieses
+Titels. Ein Pfad-Zeiger auf diese Datei existiert nicht mehr (GEMESSEN 2026-09-30 und erneut
+2026-10-01, CC). Der Beleg steht in docs/offene-punkte.md am gestrichenen Eintrag "DER
+TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT".
 
 ## Anbieter-Befunde der Fan-Out-Ziele — AUSGELAGERT nach docs/ziel-befunde/
 Was über die Schnittstellen der Fan-Out-Ziele GEMESSEN und GELESEN ist (verlangte Felder,

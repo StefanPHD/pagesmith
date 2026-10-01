@@ -716,6 +716,10 @@ Vercel-Befunde, Reihenfolge". REVIDIERBAR.
 - NACHGETRAGEN 2026-10-01 (ARCHITEKT, übermittelt im Auftrag der Runde "Beacon bei
   Erstveröffentlichung — Fortsetzung"): NACH DIESER SCHEIBE, VOR ALLEM ANDEREN IN 13.6, die
   Sicherheits-Scheibe "Spaltenrechte" — Arbeit P13.6-113.
+- NACHGETRAGEN 2026-10-01 (Abschluss der Scheibe "Beacon bei Erstveröffentlichung"; CC, keine
+  neue Setzung): Die Scheibe ist abgeschlossen (Vermerk P13.6-114). Nach dem Nachtrag darüber
+  steht als Nächstes die Sicherheits-Scheibe "Spaltenrechte" an — Arbeit P13.6-113; Arbeit
+  P13.6-104 bleibt mit ihrer Frist daneben offen.
 
 PROVENIENZ von P13.6-20 bis P13.6-25: ARCHITEKTEN-SETZUNG 2026-09-29, übermittelt im Auftrag
 der Runde "Neufassung der Datenklassen-Regel, Aufklärung A2, Setzungen". REVIDIERBAR.
@@ -3093,14 +3097,15 @@ dieser Commit (Abschluss).
 
 ## Zuschnitt Scheibe Beacon bei Erstveröffentlichung
 
-**ZUGESCHNITTEN AM 2026-10-01 (ARCHITEKT); DER PLAN FOLGT IM BERICHT DERSELBEN RUNDE, NICHT IN
-DIESER DATEI.** NACHGETRAGEN 2026-10-01: Der Plan steht verdichtet in Vermerk P13.6-108, die
-Gestalt in Setzung P13.6-109 (Abschnitt "Planrunde der Scheibe Beacon bei
-Erstveröffentlichung").
+**ABGESCHLOSSEN AM 2026-10-01 — Bau-Commit `1256f0e`, Live-Test bestanden (nur Chrome);
+Abschluss-Vermerk P13.6-114.**
 - GEGENSTAND: Vorrat P13.6-105 der Phase 13.6 — die erste Veröffentlichung eines neuen Projekts
   trägt den Conversion-Beacon, ohne dass der Betreiber den Editor neu laden muss.
 - BENENNUNG, DEKLARIERT (CC): wie bei den Scheiben "Zurück-Cache" und "Zapier ins Relay" ohne
   Nummer; die Überschrift übernimmt den Namen aus dem Auftrag.
+- Der Zuschnitt ist verdichtet: Hier stehen die Setzungen, Entscheidungen und Grenzen, die über
+  die Scheibe hinaus binden, dazu die Vermerke der Scheibe. Was gestrichen ist: Vermerk
+  P13.6-114, Punkt (9).
 
 ### Messung zur Scheibe Beacon bei Erstveröffentlichung
 
@@ -3181,6 +3186,10 @@ CONVERSION-BEACON, OHNE DASS DER BETREIBER NEU LADEN MUSS.**
   Stellung, wo ein Kandidat ihr ähnelt.
   NACHGETRAGEN 2026-10-01: Die Entscheidung vom 2026-09-07 ist durch Owner-Entscheidung
   P13.6-110 der Phase 13.6 revidiert; die Stellungnahme zu "WEG D" steht in Setzung P13.6-109.
+- UMGESETZT 2026-10-01: Bau-Commit `1256f0e`, Live-Test bestanden (nur Chrome) — Vermerk
+  P13.6-114 der Phase 13.6; die Wächter je Invariante dort, Punkt (6). Der Befund zum Google-Weg
+  aus AUSSER SCOPE steht in Vermerk P13.6-108, Punkt (2) (betroffen); für NEUE Projekte heilt
+  ihn die Gestalt (a1) mit (Setzung P13.6-109, GRÜNDE), gebaut ist am Google-Weg nichts.
 
 ### Planrunde der Scheibe Beacon bei Erstveröffentlichung
 
@@ -3274,6 +3283,132 @@ PROVENIENZ: OWNER-ANGABE 2026-10-01, übermittelt im selben Auftrag.
 - FOLGE (CC): Drei Track-Zweige im Wiring-Skript, also drei Aufrufe (Vermerk P13.6-106, Punkt
   (3)); die Zerlegung 2076 = 1968 + 3 × 36 ist damit gestützt, weiter gerechnet und nicht als Text
   verglichen.
+
+### Abschluss der Scheibe Beacon bei Erstveröffentlichung
+
+**Vermerk P13.6-114 — ABSCHLUSS DER SCHEIBE "BEACON BEI ERSTVERÖFFENTLICHUNG". Bau-Commit
+`1256f0e`** ("fix(tracking): Tracking-Schluessel beim Anlegen erzeugen, Beacon ab
+Erstveroeffentlichung"). LIVE-TEST BESTANDEN, nur Chrome.
+Doku-Commits der Scheibe: `3136962` (Messung, Zuschnitt) · `a882ae3` (Planrunde, Gestalt (a1),
+Sicherheitsbefund Spaltenrechte) · dieser Commit (Abschluss).
+
+(0) PROVENIENZ DER PUNKTE (1) BIS (4): GEMESSEN, OWNER, live, 2026-10-01, Chrome 154 (Build nicht
+    angegeben), übermittelt im Auftrag der Abschluss-Runde. Gezählt und gemessen am Live-Text; das
+    Instrument ist im Auftrag nicht beschrieben. Tracking-Schlüssel stehen bewusst nicht in dieser
+    Datei.
+
+(1) V0 — VOR DEM PUSH, Prüfstück `test-beacon-fehler`, Editor neu geladen, veröffentlicht,
+    zweimal: 11796 Bytes, sha256
+    `22c8a4116531e4c5bfc6bf74c0e9afec2f04975fadf6ced7ad2e55dbe1558b6b`; `eventSourceUrl` 1-mal,
+    `__psMetaFire` 4-mal.
+    · GEMESSEN AM BESTAND (CC): Bytes und `__psMetaFire` gleichen B2 in Vermerk P13.6-106, Punkt
+      (2); einen sha256 trägt jener Vermerk nicht. Dass es dasselbe Prüfstück ist, ist nach Name
+      und Werten ABGELEITET.
+
+(2) L0 — nach dem Deploy `1256f0e` ("Ready"), ohne Neu-Veröffentlichen: gleich V0.
+    L1 — Editor neu geladen, erneut veröffentlicht, zweimal: gleich V0. Invariante (3) der Setzung
+    P13.6-107 ist damit live belegt — für ein Projekt, dessen Schlüssel im Editor bekannt ist,
+    ändert sich der erzeugte Text nicht.
+
+(3) L2 — DER KERNFALL: ein NEUES Projekt `test-beacon-fehler-neu-yqxidu.publayer.net`,
+    Track-Aktion "Lead", keine Pixel-ID, keine Zugangsdaten, gespeichert und OHNE Neuladen
+    veröffentlicht: `eventSourceUrl` 1-mal, `__psMetaFire` 4-mal, Schlüssel-Stellen 2, alle gleich.
+    · Gegenstück zu B1 in Vermerk P13.6-106, Punkt (2) (0-mal `__psMetaFire`): Die erste
+      Veröffentlichung ohne Neuladen trägt jetzt den Beacon.
+    · ABGELEITET AM CODE (CC): Die eine Stelle setzt `publishProject` aus der Spalte ein (der
+      PageView-Emitter, `injectPageViewEmitter`), die andere stammt aus dem Zustand des Editors,
+      gesetzt in `handleSave` aus dem Ergebnis des Inserts. "Alle gleich" belegt damit live, dass
+      der Editor den Wert der Spalte bekommen hat — kein zweiter, abweichender Schlüssel. Welche
+      zwei Stellen gezählt wurden, ist nicht übermittelt.
+
+(4) L3 — EIN KLICK auf der Seite aus (3), SQL über `events` und `domains` (letzte 15 Minuten, nur
+    Zählungen): `Lead | server | 1`; Positivkontrolle `__ps_pageview | server | 1`. Das
+    Conversion-Ereignis der ersten Veröffentlichung kommt damit am Server an.
+
+(5) BAU (CC, 2026-10-01, am Stand vor dem Commit `1256f0e`):
+    · Geändert, fünf Dateien (`git show --stat 1256f0e`): src/app/projects/actions.ts — der
+      Insert-Zweig von `saveProject` schreibt `tracking_key: ensureTrackingKey(null)` und liest
+      per `.select("id,tracking_key")` zurück, `SaveResult` trägt additiv `trackingKey?` ·
+      src/components/CodeImporter.tsx — `handleSave` setzt den Zustand `trackingKey` nur, wenn das
+      Ergebnis einen Schlüssel trägt (nur setzen, nie leeren) · src/lib/settings.ts — allein der
+      Kommentar über `ensureTrackingKey` · src/app/projects/actions.test.ts und
+      src/components/CodeImporter.test.tsx — neue Tests. Berichtigt sind dazu die Kommentare an
+      `ProjectRow`, am Prop `initialTrackingKey` und "strukturell unerreichbar" am Update-Zweig
+      in actions.test.ts.
+    · Unberührt: `publishProject`, der Rumpf von `ensureTrackingKey`, generate.ts, meta.ts,
+      ingest.ts, `/api/e`, `/api/capi`, src/lib/relay/, form-target.ts, die Serve-Route, proxy,
+      alle Migrationen.
+    · Vorher-Wert für BE-PIN, erhoben vor der ersten Code-Änderung: 10770 Bytes, sha256
+      `9723ce7bac67b7e9645db004a545f52fa3f4e7baea26859ca618a532f7e8f471` (Konstanten `PIN_BYTES`
+      und `PIN_SHA256` in src/components/CodeImporter.test.tsx).
+    · BE-1 war am alten Code rot, an der Zusicherung auf `sendBeacon` — die Verankerung "vorher
+      kein Beacon".
+    · Gates: `tsc --noEmit` exit 0; `eslint` 0 Fehler, die eine bekannte Warnung in
+      src/lib/tracking/consent.test.ts; `vitest run` 102 Dateien, 2776 Tests (vorher 102 Dateien,
+      2769 Tests); `next build` exit 0. Vor dem Commit erneut gefahren, dasselbe Ergebnis.
+    · Mutationen, volle Suite, Vorhersage je vor dem Lauf, Rücknahme per sha256 belegt
+      (actions.ts `b514c516…`, CodeImporter.tsx `b06a5026…`), ALLE WIE VORHERGESAGT: M1 (die
+      Setzung in `handleSave` entfällt) 1 rot — BE-1 · M3 (ein zweiter Erzeuger statt der
+      Übergabe) 2 — S-INS-1, S-INS-2 · M4 (Insert ohne `tracking_key`, Rückgabe gesetzt) 3 —
+      S-INS-1, S-INS-2, W-INV4 · M6 (`.select("id")`) 2 — S-INS-1, S-INS-2 · M7 (ein Ergebnis ohne
+      Schlüssel leert den Zustand) 1 — BE-PIN-2. M2 ist entfallen: ihre Auflage ist durch G3
+      gegenstandslos (Setzung P13.6-109).
+    · Byte-Kontrolle der fünf Dateien am committeten Objekt: alle LF, CR 0, NUL 0.
+
+(6) WÄCHTER, je Festlegung (A = src/app/projects/actions.test.ts, CI =
+    src/components/CodeImporter.test.tsx):
+    · Gegenstand der Setzung P13.6-107 (die erste Veröffentlichung trägt den Beacon): BE-1 (CI);
+      S-INS-1 (A).
+    · Invariante (1) — `tracking_key` bleibt eigene, server-autoritative Spalte: W-INV4 (A;
+      Schreibstellen allein in actions.ts und allein aus `ensureTrackingKey`, kein Default auf
+      der Spalte in den Migrationen).
+    · Invarianten (2) und (5) — Ingest, Relay, Formular-Ziel und Serve-Route unberührt: der Scope
+      des Bau-Commits, Punkt (5); kein eigener Test.
+    · Invariante (3) — Byte-Gleichheit bei bekanntem Schlüssel: BE-PIN, BE-PIN-2 (CI); live L1.
+    · Invariante (4) — kein zweiter Erzeuger: W-INV4 (`crypto.randomUUID` allein in
+      `ensureTrackingKey`) und S-INS-2 (A).
+    · Der Update-Zweig liefert keinen Schlüssel: S-INS-3 (A).
+
+(7) ABWEICHUNG, IM BAU DEKLARIERT: `PIN_BYTES` in src/components/CodeImporter.test.tsx ist einmal
+    mit `sed -i` gesetzt worden, einem Ganz-Datei-Schreiber; die volle Byte-Kontrolle danach ohne
+    Befund (CR 0, CRLF 0, LF gleich Zeilenzahl, NUL 0; Diff rein additiv). Danach allein das
+    Editier-Werkzeug. Die Erweiterung des Scopes auf den Kommentar in src/lib/settings.ts war im
+    GO-Auftrag freigegeben.
+
+(8) GRENZEN, als Grenzen benannt:
+    · Ein Editor, der vor dem ersten Speichern in einem ZWEITEN Tab geladen war, kennt den
+      Schlüssel nicht; veröffentlicht er ohne Neuladen, fehlt der Beacon weiter (Setzung
+      P13.6-109, GRENZEN).
+    · Projekte, die VOR dem Fix angelegt und nie veröffentlicht wurden, tragen keinen Schlüssel.
+      Sie heilen durch Veröffentlichen, Neuladen und erneutes Veröffentlichen; kein Backfill
+      (ebenda).
+    · Bereits veröffentlichte Seiten ohne Beacon bleiben so bis zum Neu-Veröffentlichen, Exporte
+      bis zum Neu-Export (Dauerregel "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY").
+    · Die Annahme bei Meta ist nicht geprüft: Das Prüfstück trägt keine Pixel-ID und keine
+      Zugangsdaten. Belegt ist die `events`-Zeile `server`, kein Forward.
+    · Nur Chrome.
+    · Die Bestandsabfragen aus Plan P4 (Vermerk P13.6-108, Punkt (4)) sind nicht gemeldet.
+
+(9) VERDICHTUNG DES ZUSCHNITTS (dieser Commit). GESTRICHEN — mit der Scheibe abgelaufen: im Kopf
+    der Satz "ZUGESCHNITTEN AM 2026-10-01 (ARCHITEKT); DER PLAN FOLGT IM BERICHT DERSELBEN RUNDE,
+    NICHT IN DIESER DATEI." samt seinem Nachtrag vom selben Tag — ersetzt durch die
+    Abschluss-Zeile; Plan und Gestalt, auf die der Nachtrag zeigte, stehen unverändert als
+    Vermerk P13.6-108 und Setzung P13.6-109. Sonst ist nichts abgelaufen: Die übrigen Anweisungen
+    des Zuschnitts sind Teile bindender Einträge und tragen einen Nachtrag statt einer Streichung
+    (an Setzung P13.6-107 der Punkt "UMGESETZT", dort auch der Befund zum Google-Weg aus AUSSER
+    SCOPE).
+    STEHEN GEBLIEBEN: Vermerk P13.6-106, Setzung P13.6-107, Vermerk P13.6-108, Setzung P13.6-109,
+    Owner-Entscheidung P13.6-110, Owner-Angabe P13.6-111. BINDEND bleiben P13.6-107, P13.6-109,
+    P13.6-110 und P13.6-111.
+    BEWUSST NICHT FESTGEHALTEN: der Ablauf der Gate-Runde G1 bis G3 über das in Vermerk P13.6-108
+    Verdichtete hinaus — an ihm hängt keine spätere Handlung.
+
+(10) NACHGEZOGEN IN DIESEM COMMIT: Setzung P13.6-14 (als Nächstes Arbeit P13.6-113); Vorrat
+    P13.6-105 (erledigt); Arbeit P13.6-113 (Bezug zur Roadmap-Zeile 13.7); Vorrat P13.6-84
+    (vollzogen). Im selben Commit, nicht aus dieser Scheibe: die Roadmap-Zeile 13.7 samt Stub in
+    CLAUDE.md, der Punkt "Missbrauch und stiller Verlust" in docs/arbeitsweise.md und der
+    ersetzte Satz in CLAUDE.md, "## Aktueller DB-/Analytics-Stand". Die Roadmap-Zeile 13.6 ist
+    nicht geändert.
 
 ## Plattform-Schritte der Phase 13.6
 
@@ -3625,6 +3760,9 @@ DER SCHEIBE "BEACON BEI ERSTVERÖFFENTLICHUNG", VOR ALLEM ANDEREN IN 13.6** (ARC
   SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT".
 - VOR DEM PLAN PFLICHT: docs/db-stand.md, docs/db-regeln.md, die Supabase-Lesung (vierte Regel in
   docs/db-regeln.md).
+- BEZUG 2026-10-01: Roadmap-Zeile 13.7 ("Sicherheit & Datenintegrität", angelegt am selben Tag).
+  Diese Arbeit bleibt in 13.6 und geht nicht in jene Phase über (OWNER-ENTSCHEIDUNG 2026-10-01,
+  Abgrenzung an jener Zeile).
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -3671,6 +3809,11 @@ CONVERSION-BEACON: SEITENAUFRUFE WERDEN GEZÄHLT, CONVERSIONS FEHLEN STILL.**
   Wirkung, der Mechanismus bleibt am Code gelesen. Der TRIGGER "SOFORT — als nächster Schritt die
   Messung" ist damit erfüllt.
 - GESTALT GESETZT 2026-10-01: Setzung P13.6-109 (a1) mit Owner-Entscheidung P13.6-110.
+- ERLEDIGT 2026-10-01: Bau-Commit `1256f0e`, Live-Test bestanden (nur Chrome) — Abschluss-Vermerk
+  P13.6-114 der Phase 13.6. Die erste Veröffentlichung eines NEUEN Projekts trägt den Beacon
+  (ebenda, L2 und L3). Was weiter ohne Beacon bleibt — der zweite Tab, Projekte von vor dem Fix,
+  bereits veröffentlichte Seiten und Exporte —, steht dort unter GRENZEN. Die Sätze darüber
+  beschreiben den Stand davor.
 
 **Vorrat P13.6-6 — B-1: DIE EIGEN-LISTE DER FORMULAR-ZIELE KENNT KEINE CUSTOM-DOMAINS UND KEIN
 `*.vercel.app` — EINE ZIELADRESSE DORTHIN TRÄGT FORMULARINHALTE IN UNSER DEPLOYMENT**
@@ -4090,6 +4233,15 @@ BEANTWORTET IST.**
 - TRIGGER EINGETRETEN 2026-10-01 (CC): Die Runde "Beacon bei Erstveröffentlichung — Fortsetzung"
   ändert eine Aussage in CLAUDE.md (Zusatz am Kill-Switch). NICHT VOLLZOGEN — der Auftrag jener
   Runde nennt diesen Posten nicht; vorgelegt im Bericht der Runde.
+- VOLLZOGEN 2026-10-01 (Runde "Abschluss Beacon-Scheibe", Auftrag E): Der Satz in CLAUDE.md ist
+  GANZ ersetzt — die zwei Sachaussagen stehen weiter, die Einordnung als OFFEN ist durch die
+  Erledigung mit `cc8fc98` und den Zeiger auf den Beleg in docs/offene-punkte.md ersetzt.
+  docs/claude-md-herleitung.md ist vorher vollständig geladen worden und ist NICHT geändert: Ihr
+  Rumpf ist der eingefrorene Stand vom 2026-09-22 und trägt keinen eigenen Beleg zu diesem
+  Satz. Die Messung "kein Pfad-Zeiger" ist am 2026-10-01 wiederholt (CC: Suche "CLAUDE" in
+  supabase/checks/db-stand.sql 0 Treffer; Positivkontrolle "DB-FUNKTIONEN + SEARCH_PATH" dort
+  1 Treffer, in docs/db-regeln.md als Regeltitel 1-mal). Die Sätze darüber beschreiben den Stand
+  davor.
 
 **Vorrat P13.6-87 — EINE DANKE-ADRESSE OHNE SEITENWECHSEL LÄSST DIE SPERRE DES FORMULAR-ZIELS OHNE
 JEDES "ZURÜCK" STEHEN; DER KNOPF IST DANN TOT** (CC, Aufklärung zur Scheibe "Zurück-Cache" vom

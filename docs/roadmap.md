@@ -2721,6 +2721,56 @@ liegen beide hier und finden einander.
         Nutzer erst freigeschaltet, wenn ein Kunden-AVV steht; bis dahin baut und testet der
         Owner selbst. Owner-Entscheidung P13.6-18 der Phase 13.6.
       Fundort: Standdatei der Phase 13.6 (docs/aktiver-stand.md).
+- [ ] Phase 13.7 — Sicherheit & Datenintegrität: VOR DEM ERSTEN FREMDEN NUTZER BZW. VOR DEM
+      LAUNCH wird das Produkt gegen ein ausdrückliches Bedrohungsmodell geprüft — erst das
+      Modell, dann das Repo systematisch dagegen. ANGELEGT am 2026-10-01; Gegenstand und
+      Zeitpunkt OWNER-ENTSCHEIDUNG 2026-10-01.
+      ANLASS (OWNER): zwei stille Fehler am 2026-10-01, beide nur als Nebenbefund gefunden — die
+      erste Veröffentlichung eines neuen Projekts trug keinen Conversion-Beacon (Vermerk
+      P13.6-106 der Phase 13.6), und `projects` ist für die angemeldete Rolle spaltenweise frei
+      schreibbar, auch in server-eigenen Spalten wie `blocked_at` (Vermerk P13.6-112 der Phase
+      13.6).
+      ERST DAS BEDROHUNGSMODELL, SECHS KLASSEN (OWNER):
+      · ANONYME ANGREIFER — Bots, Formular-Spam, Fluten gegen öffentliche Endpunkte,
+        Kosten-Angriffe;
+      · DER UNEHRLICHE BETREIBER — Sperren aushebeln, Phishing auf unserer Domain, gefälschte
+        Conversions, fremde Daten;
+      · GESTOHLENE ZUGÄNGE — das Kundenkonto, gespeicherte Anbieter-Zugangsdaten;
+      · DATENABFLUSS — Leads und Besucherdaten unterwegs, in Logs, bei Dienstleistern;
+      · LIEFERKETTE;
+      · STILLER DATENVERLUST — jeder Weg, auf dem ein Lead, ein Ereignis oder eine Einstellung
+        ohne Signal verschwindet.
+      DANACH DAS REPO SYSTEMATISCH DAGEGEN. Das Sicherheits-Manifest (CLAUDE.md, "## Security
+      Manifest & Launch Blocker"; Vollfassung docs/claude-history/security-manifest-full.md)
+      ist die BASIS, NICHT DER ERSATZ (OWNER).
+      ABGRENZUNG (OWNER):
+      · Arbeit P13.6-113 der Phase 13.6 (Sicherheits-Scheibe "Spaltenrechte") bleibt in 13.6,
+        als nächste Scheibe dort; diese Zeile übernimmt sie nicht.
+      · Der offene Punkt "VOR DEM ERSTEN FREMDEN NUTZER FEHLT EIN ABNAHME-TESTPROTOKOLL FÜR DIE
+        GANZE APP" (docs/offene-punkte.md) bleibt ein eigener Punkt.
+      BERÜHRUNG, GEMELDET, NICHT ENTSCHIEDEN (CC): Die Zeilen 14 und 15 tragen Posten des
+      Manifests, die das Bedrohungsmodell ebenfalls trifft — etwa das Per-Tenant-Rate-Limiting
+      (anonyme Angreifer), Login-Brute-Force (gestohlene Zugänge), Abuse-Kanal und
+      Safe-Browsing (der unehrliche Betreiber). Ob ein Befund dieser Phase dort oder hier gebaut
+      wird, entscheidet ihr Zuschnitt.
+      BEZUG (CC): Für NEUE Bau-Scheiben gilt seit dem 2026-10-01 das Plan-Gate "Missbrauch und
+      stiller Verlust" (docs/arbeitsweise.md, "Prompt-Bauform für CC"; angenommener
+      Änderungsantrag, OWNER 2026-10-01). Diese Zeile gilt dem, was schon gebaut ist.
+      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 11.10, 13.5, 13.6): Die Arbeit gehört
+      vor den ersten fremden Nutzer und damit vor die Zeilen 14 (vor echtem Ad-Traffic) und 15
+      (Public-Launch), sachlich neben 13.6, deren Befund ihr Anlass ist; KEINE bestehende Nummer
+      wird verschoben. Dass 13.7 im Bestand als Phase unbelegt war, ist GEMESSEN am Repo (CC,
+      2026-10-01; einziger Treffer ein erfundener Negativ-Anker im Archiv der Phase 13).
+      DIE NUMMER TRÄGT KEINE REIHENFOLGE DES BAUS (Eintrag 11.10, Punkt (d)): Die Reihenfolge
+      13.6 -> 13.5 -> 12 (OWNER-ENTSCHEIDUNG 2026-09-29) ist von dieser Zeile nicht geändert; wo
+      die Phase darin steht, ist NICHT ENTSCHIEDEN.
+      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet nichts zu und terminiert nichts, und
+      sie setzt kein Bedrohungsmodell fest — die sechs Klassen sind die Vorgabe, das Modell
+      entsteht in der Phase.
+      PROVENIENZ: Gegenstand, Zeitpunkt, Klassen, Abgrenzung und Anlass OWNER-ENTSCHEIDUNG
+      2026-10-01; Nummer und Position nach der Hausform dieser Datei (CC, 2026-10-01); die
+      Berührung mit 14 und 15 und der Bezug zum Plan-Gate sind CC-Einordnungen, keine
+      Entscheidungen.
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in

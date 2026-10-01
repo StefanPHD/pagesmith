@@ -709,6 +709,11 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
   je mit Datei:Zeile. Dazu: *„wo du etwas nicht am Code entscheiden kannst, sag
   das ausdrücklich"* — ein ehrliches „ungeklärt" ist wertvoll, eine plausible
   Vermutung als Befund ist gefährlich.
+- **Missbrauch und stiller Verlust:** Jeder Plan einer Bau-Scheibe beantwortet
+  am Code zwei Fragen. Wer kann diese Stelle missbrauchen — ein anonymer
+  Besucher, ein Bot, ein fremder Betreiber, der eigene Betreiber gegen uns? Und
+  wo kann hier etwas verloren gehen, ohne dass es jemand bemerkt — ein Lead, ein
+  Ereignis, eine Einstellung? „Keine" braucht eine Begründung am Code.
 - **Geschützte Invarianten, nummeriert und wörtlich benannt.** Nicht „die Doku
   beachten", sondern die konkrete Regel im Wortlaut — nur so ist der Check
   sichtbar und prüfbar.

@@ -22,6 +22,16 @@ function stripPort(host: string): string {
 // Serving bricht nie komplett.
 const FALLBACK_SUFFIX = ".lvh.me";
 
+// Die Haertung der Variable (s. servingSuffixes) als EINE Funktion, damit servingSuffixes und
+// isReservedHost dieselbe Lesung teilen (kein zweiter Rechenweg). Liefert den Wert VOR
+// stripPort, genau wie zuvor inline in servingSuffixes.
+function cleanedHostingDomainEnv(): string {
+  return (process.env.NEXT_PUBLIC_HOSTING_DOMAIN ?? "")
+    .trim()
+    .replace(/^\.+/, "")
+    .replace(/\/+$/, "");
+}
+
 /**
  * Die Suffixe, unter denen ein einzelnes Label eine gehostete Seite adressiert —
  * EINE Quelle der Wahrheit: der Prod-Suffix wird aus NEXT_PUBLIC_HOSTING_DOMAIN
@@ -36,10 +46,7 @@ const FALLBACK_SUFFIX = ".lvh.me";
  * zweimal Zeit gekostet hat).
  */
 function servingSuffixes(): string[] {
-  const cleaned = (process.env.NEXT_PUBLIC_HOSTING_DOMAIN ?? "")
-    .trim()
-    .replace(/^\.+/, "")
-    .replace(/\/+$/, "");
+  const cleaned = cleanedHostingDomainEnv();
   const suffixes = [FALLBACK_SUFFIX];
   if (cleaned) {
     const suffix = "." + stripPort(cleaned);
@@ -135,6 +142,49 @@ export function resolveEffectiveHost(headers: Headers): string | null {
  */
 export function isAppHost(host: string): boolean {
   return APP_HOSTS.has(host) || host.endsWith(".vercel.app");
+}
+
+// --- Phase 13.7, Scheibe K2a: reservierte Hosts ----------------------------------
+//
+// Plattform-Suffixe, die NICHT aus unserer Env kommen. vercel.app: dort liegen unsere
+// Deployment- und Alias-Adressen; ein Alias am eigenen Vercel-Projekt darf nie als
+// Custom-Domain eines Projekts angelegt und spaeter "entfernt" werden. Weitere Suffixe sind
+// weder gelesen noch gemessen und stehen bewusst NICHT hier (Zuschnitt P13.7-31 der Phase
+// 13.7); an ihre Stelle tritt die Ablesung der Domainliste des Vercel-Projekts vor dem Deploy.
+const PLATFORM_SUFFIXES = ["vercel.app"];
+
+/**
+ * true, wenn ein Host der Plattform selbst gehoert und deshalb NIE als Custom-Domain
+ * angelegt, an Vercel gegeben oder dort entfernt werden darf (Befund B1 der Phase 13.7).
+ *
+ * QUELLE (Entscheidung E1): dieselben Mengen wie Proxy und Serve-Dispatch — servingSuffixes()
+ * (Serving-Domain aus der Env plus .lvh.me), APP_HOSTS, dazu PLATFORM_SUFFIXES. Bewusst NICHT
+ * isAppHost: das prueft APP_HOSTS exakt, hier gilt die LABEL-GRENZE fuer jeden Eintrag —
+ * host == Eintrag ODER host endet auf "." + Eintrag. Damit ist der GANZE Teilbaum der
+ * Serving-Domain reserviert, nicht nur der Apex: Apex und verschachtelte Namen fallen im
+ * Serve-Dispatch in den custom_host-Pfad (extractLabel liefert null). "meinpublayer.net" ist
+ * kein Treffer.
+ *
+ * EIGENE NORMALISIERUNG (Kleinschreibung, Punkte am Ende ab): remove und status lesen den
+ * Host aus der Datenbank, nicht aus normalizeDomain.
+ *
+ * FAIL-CLOSED (Entscheidung E2): fehlt NEXT_PUBLIC_HOSTING_DOMAIN, ist die Serving-Domain
+ * unbekannt — dann gilt JEDER Host als reserviert, und das wird geloggt (ohne den Host).
+ */
+export function isReservedHost(host: string): boolean {
+  if (!stripPort(cleanedHostingDomainEnv())) {
+    console.warn(
+      "[hosting] reserved-host check: hosting domain not configured -> every host reserved (fail-closed)",
+    );
+    return true;
+  }
+  const h = host.trim().toLowerCase().replace(/\.+$/, "");
+  const entries = [
+    ...servingSuffixes().map((s) => s.replace(/^\.+/, "")),
+    ...APP_HOSTS,
+    ...PLATFORM_SUFFIXES,
+  ].filter((e) => e !== "");
+  return entries.some((e) => h === e || h.endsWith("." + e));
 }
 
 /**

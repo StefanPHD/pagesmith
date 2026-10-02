@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // `import "server-only"` wirft ausserhalb der react-server-Condition -> leeres Modul.
 vi.mock("server-only", () => ({}));
@@ -85,6 +85,22 @@ const auditOutcomes = (rec: { audits: Record<string, unknown>[] }) =>
   rec.audits.map((a) => a.outcome);
 
 afterEach(() => vi.clearAllMocks());
+
+// Seit K2a (Phase 13.7, Zuschnitt P13.7-31, E2) gilt bei FEHLENDEM NEXT_PUBLIC_HOSTING_DOMAIN
+// jeder Host als reserviert (fail-closed). Die Testumgebung setzt die Variable nicht; jeder Test
+// dieser Datei laeuft deshalb mit einer neutralen Serving-Domain wie in Production. Tests, die
+// die leere Env pruefen, loeschen sie selbst. Muster: restoreHostingDomain in host.test.ts.
+const ORIGINAL_HOSTING_DOMAIN = process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+beforeEach(() => {
+  process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "beispiel.net";
+});
+afterEach(() => {
+  if (ORIGINAL_HOSTING_DOMAIN === undefined) {
+    delete process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+  } else {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = ORIGINAL_HOSTING_DOMAIN;
+  }
+});
 
 describe("removeCustomDomain (7c-2c Domain entfernen)", () => {
   it("Happy-Path: Vercel-DELETE ok -> DB-Zeile geloescht, genau 1 Audit 'domain_remove'/success", async () => {
@@ -198,5 +214,54 @@ describe("removeCustomDomain (7c-2c Domain entfernen)", () => {
     expect(rec.deleteCalls).toBe(0);
     expect(rec.audits).toHaveLength(1);
     expect(rec.audits[0].outcome).toBe("internal_error");
+  });
+});
+
+// Phase 13.7, Scheibe K2a (Zuschnitt P13.7-31): ein reservierter Host geht NIE an Vercel, auch
+// wenn eine Zeile existiert; die Zeile bleibt. Positivkontrolle ist der Happy-Path oben
+// (kunde.de geht an Vercel).
+describe("removeCustomDomain — reservierte Hosts (Phase 13.7, K2a)", () => {
+  // M1 — Pflicht-Mutation (c): faellt, wenn die Pruefung in remove fehlt.
+  it("M1: eigene Zeile mit dem Apex der Serving-Domain -> KEIN Vercel-DELETE, kein .delete(), 1 Audit", async () => {
+    const { rec } = makeAdmin({ row: owned("beispiel.net") });
+    removeDomainFromVercel.mockResolvedValue({ kind: "ok" });
+
+    const res = await removeCustomDomain("user-1", { domainLabel: "beispiel-net-abc" });
+
+    expect(res).toEqual({
+      ok: false,
+      error: "Diese Domain kann hier nicht entfernt werden.",
+      reason: "reserved_host",
+    });
+    expect(removeDomainFromVercel).not.toHaveBeenCalled();
+    expect(rec.deleteCalls).toBe(0);
+    expect(rec.audits).toHaveLength(1);
+    expect(rec.audits[0]).toMatchObject({ outcome: "rejected_reserved_host", target: "beispiel.net" });
+  });
+
+  it("M2: Schreibweise aus Hand-SQL ('X.Beispiel.NET.') -> ebenfalls KEIN Vercel-DELETE", async () => {
+    const { rec } = makeAdmin({ row: owned("X.Beispiel.NET.") });
+    removeDomainFromVercel.mockResolvedValue({ kind: "ok" });
+
+    const res = await removeCustomDomain("user-1", { domainLabel: "x-abc" });
+
+    expect(res).toMatchObject({ ok: false, reason: "reserved_host" });
+    expect(removeDomainFromVercel).not.toHaveBeenCalled();
+    expect(rec.deleteCalls).toBe(0);
+  });
+
+  it("E2: Serving-Domain nicht konfiguriert -> auch kunde.de geht NICHT an Vercel, 1 Audit", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    delete process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+    const { rec } = makeAdmin({ row: owned("kunde.de") });
+    removeDomainFromVercel.mockResolvedValue({ kind: "ok" });
+
+    const res = await removeCustomDomain("user-1", { domainLabel: "kunde-de-abc" });
+
+    expect(res).toMatchObject({ ok: false, reason: "reserved_host" });
+    expect(removeDomainFromVercel).not.toHaveBeenCalled();
+    expect(rec.deleteCalls).toBe(0);
+    expect(rec.audits).toHaveLength(1);
+    vi.restoreAllMocks();
   });
 });

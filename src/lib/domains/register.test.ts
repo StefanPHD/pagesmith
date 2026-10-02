@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // `import "server-only"` wirft ausserhalb der react-server-Condition -> leeres Modul.
 vi.mock("server-only", () => ({}));
@@ -90,6 +90,22 @@ function greenCfg(extra: Cfg = {}): Cfg {
 
 afterEach(() => {
   vi.clearAllMocks();
+});
+
+// Seit K2a (Phase 13.7, Zuschnitt P13.7-31, E2) gilt bei FEHLENDEM NEXT_PUBLIC_HOSTING_DOMAIN
+// jeder Host als reserviert (fail-closed). Die Testumgebung setzt die Variable nicht; jeder Test
+// dieser Datei laeuft deshalb mit einer neutralen Serving-Domain wie in Production. Tests, die
+// die leere Env pruefen, loeschen sie selbst. Muster: restoreHostingDomain in host.test.ts.
+const ORIGINAL_HOSTING_DOMAIN = process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+beforeEach(() => {
+  process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "beispiel.net";
+});
+afterEach(() => {
+  if (ORIGINAL_HOSTING_DOMAIN === undefined) {
+    delete process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+  } else {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = ORIGINAL_HOSTING_DOMAIN;
+  }
 });
 
 describe("registerCustomDomain (Scheibe 7c-2b)", () => {
@@ -350,5 +366,91 @@ describe("registerCustomDomain (Scheibe 7c-2b)", () => {
     const audit = auditInserts(rec);
     expect(audit).toHaveLength(1);
     expect(audit[0].row.outcome).toBe("internal_error");
+  });
+});
+
+// Phase 13.7, Scheibe K2a (Zuschnitt P13.7-31): reservierte Hosts. Positivkontrolle ist der
+// Happy-Path oben (landing.kunde.de geht an Vercel).
+describe("registerCustomDomain — reservierte Hosts (Phase 13.7, K2a)", () => {
+  // R1 — faellt, wenn der Aufruf des Praedikats in register fehlt (Mutation (c) analog).
+  it("R1: Apex der Serving-Domain -> abgelehnt VOR Vercel, kein Insert, genau 1 Audit 'rejected_reserved_host'", async () => {
+    const { rec } = makeAdmin(greenCfg());
+
+    const result = await registerCustomDomain("user-1", {
+      projectId: "proj-1",
+      domainName: "beispiel.net",
+    });
+
+    expect(result).toMatchObject({ ok: false, reason: "reserved_host" });
+    expect(addDomainToVercel).not.toHaveBeenCalled();
+    expect(domainInserts(rec)).toHaveLength(0);
+    const audit = auditInserts(rec);
+    expect(audit).toHaveLength(1);
+    expect(audit[0].row).toMatchObject({ outcome: "rejected_reserved_host", target: "beispiel.net" });
+  });
+
+  it("R2: Schreibvariante 'https://WWW.Beispiel.NET/' -> erst normalisiert, dann reserviert", async () => {
+    const { rec } = makeAdmin(greenCfg());
+
+    const result = await registerCustomDomain("user-1", {
+      projectId: "proj-1",
+      domainName: "  https://WWW.Beispiel.NET/  ",
+    });
+
+    expect(result).toMatchObject({ ok: false, reason: "reserved_host" });
+    expect(addDomainToVercel).not.toHaveBeenCalled();
+    expect(auditInserts(rec)[0].row).toMatchObject({
+      outcome: "rejected_reserved_host",
+      target: "www.beispiel.net",
+    });
+  });
+
+  // R3 — einziger Test, der die REIHENFOLGE traegt (Mutation (e): Praedikat hinter Schritt 3).
+  it("R3: bestehende reservierte Zeile DESSELBEN Projekts -> Ablehnung, NICHT 'already_registered_self'", async () => {
+    const { rec } = makeAdmin(
+      greenCfg({ "domains.single": { data: { project_id: "proj-1" }, error: null } }),
+    );
+
+    const result = await registerCustomDomain("user-1", {
+      projectId: "proj-1",
+      domainName: "shop.beispiel.net",
+    });
+
+    expect(result).toMatchObject({ ok: false, reason: "reserved_host" });
+    expect(auditInserts(rec)).toHaveLength(1);
+    expect(auditInserts(rec)[0].row.outcome).toBe("rejected_reserved_host");
+  });
+
+  // R4 — Wortlaut aus der Entscheidung (neutral), ausgeschrieben, nicht aus dem Code bezogen.
+  it("R4: Meldungstext ist der neutrale Wortlaut (vercel.app-Alias)", async () => {
+    makeAdmin(greenCfg());
+
+    const result = await registerCustomDomain("user-1", {
+      projectId: "proj-1",
+      domainName: "pagesmith-delta.vercel.app",
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      error: "Diese Domain kann hier nicht verbunden werden.",
+      reason: "reserved_host",
+    });
+    expect(addDomainToVercel).not.toHaveBeenCalled();
+  });
+
+  it("E2: Serving-Domain nicht konfiguriert -> auch kunde.de abgelehnt, kein Vercel-Call, 1 Audit", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    delete process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+    const { rec } = makeAdmin(greenCfg());
+
+    const result = await registerCustomDomain("user-1", {
+      projectId: "proj-1",
+      domainName: "landing.kunde.de",
+    });
+
+    expect(result).toMatchObject({ ok: false, reason: "reserved_host" });
+    expect(addDomainToVercel).not.toHaveBeenCalled();
+    expect(auditInserts(rec)).toHaveLength(1);
+    vi.restoreAllMocks();
   });
 });

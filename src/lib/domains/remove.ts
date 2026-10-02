@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { removeDomainFromVercel } from "@/lib/vercel/client";
+import { isReservedHost } from "@/lib/hosting/host";
 import {
   writeAuditLog,
   countRecentAttempts,
@@ -26,6 +27,7 @@ const RATE_LIMIT_PER_HOUR = 5;
 export type RemoveDomainReason =
   | "not_owner"
   | "not_custom_domain"
+  | "reserved_host"
   | "rate_limited"
   | "vercel_error"
   | "internal_error";
@@ -49,9 +51,9 @@ function ownerId(projects: DomainOwnerRow["projects"]): string | undefined {
 /**
  * Entfernt eine Custom-Domain: Vercel-DELETE zuerst, DB-Zeile erst nach Erfolg.
  *
- * Reihenfolge: Ownership-Gate -> Serving-Row-Schutz -> Rate-Limit -> Vercel-DELETE ->
- * (nur bei ok|404) DB-Delete -> Audit. GENAU EIN Audit-Eintrag pro Aufruf (finally);
- * ein Log-Fehler ueberschreibt den Mutations-Ausgang NIE.
+ * Reihenfolge: Ownership-Gate -> Serving-Row-Schutz -> reservierter Host (seit K2a) ->
+ * Rate-Limit -> Vercel-DELETE -> (nur bei ok|404) DB-Delete -> Audit. GENAU EIN
+ * Audit-Eintrag pro Aufruf (finally); ein Log-Fehler ueberschreibt den Mutations-Ausgang NIE.
  */
 export async function removeCustomDomain(
   userId: string,
@@ -104,6 +106,20 @@ export async function removeCustomDomain(
     }
     const host = row.custom_host;
     audit = { ...audit, target: host };
+
+    // 2b) RESERVIERTER HOST (Phase 13.7, Scheibe K2a, Zuschnitt P13.7-31): ein Host der
+    //     Plattform selbst geht NIE an Vercel — auch nicht, wenn eine Zeile existiert. Ein
+    //     DELETE hinge sonst eine Domain vom eigenen Vercel-Projekt ab. Die Zeile BLEIBT
+    //     (der DB-Delete steht erst hinter Vercel); eine solche Zeile wird per SQL entfernt.
+    if (isReservedHost(host)) {
+      result = {
+        ok: false,
+        error: "Diese Domain kann hier nicht entfernt werden.",
+        reason: "reserved_host",
+      };
+      audit = { ...audit, outcome: "rejected_reserved_host" };
+      return result;
+    }
 
     // 3) RATE-LIMIT (eigenes Budget: action='domain_remove', zaehlt ALLE Remove-Versuche).
     const attempts = await countRecentAttempts(admin, userId, "domain_remove");

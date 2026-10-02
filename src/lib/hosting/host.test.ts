@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   buildLiveUrl,
   extractLabel,
   isAppHost,
+  isReservedHost,
   isServingHost,
   randomLabelSuffix,
   resolveEffectiveHost,
@@ -210,5 +211,86 @@ describe("slugForLabel / randomLabelSuffix", () => {
 
   it("Suffix ist [a-z0-9], 6 Zeichen", () => {
     expect(randomLabelSuffix()).toMatch(/^[a-z0-9]{6}$/);
+  });
+});
+
+// Phase 13.7, Scheibe K2a (Zuschnitt P13.7-31): reservierte Hosts. Die Erwartungen stammen
+// aus den Entscheidungen E1/E2 (Quelle, Label-Grenze, fail-closed), nicht aus dem Code.
+describe("isReservedHost (Phase 13.7, K2a; env=beispiel.net)", () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "beispiel.net";
+  });
+  afterEach(() => {
+    restoreHostingDomain();
+    vi.restoreAllMocks();
+  });
+
+  // T1 — einziger Test, der die Apex-GLEICHHEIT traegt (Mutation (b)).
+  it("T1: der Apex der Serving-Domain ist reserviert", () => {
+    expect(isReservedHost("beispiel.net")).toBe(true);
+  });
+
+  it("T2: der ganze Teilbaum der Serving-Domain und von .lvh.me ist reserviert", () => {
+    expect(isReservedHost("foo.beispiel.net")).toBe(true);
+    expect(isReservedHost("a.b.beispiel.net")).toBe(true);
+    expect(isReservedHost("lvh.me")).toBe(true);
+    expect(isReservedHost("x.lvh.me")).toBe(true);
+  });
+
+  // T3 — traegt die LABEL-GRENZE (Mutation (a): blosses endsWith sperrt diese Namen).
+  it("T3: Namen, die nur auf die Zeichenfolge enden, sind NICHT reserviert", () => {
+    expect(isReservedHost("meinbeispiel.net")).toBe(false);
+    expect(isReservedHost("beispiel.net.kunde.de")).toBe(false);
+    expect(isReservedHost("myvercel.app")).toBe(false);
+    expect(isReservedHost("meinlvh.me")).toBe(false);
+  });
+
+  it("T4: vercel.app samt Teilbaum ist reserviert", () => {
+    expect(isReservedHost("vercel.app")).toBe(true);
+    expect(isReservedHost("pagesmith-delta.vercel.app")).toBe(true);
+  });
+
+  it("T5: die App-Hosts samt Subdomains sind reserviert (Label-Grenze, nicht exakt wie isAppHost)", () => {
+    expect(isReservedHost("pagesmith.app")).toBe(true);
+    expect(isReservedHost("www.pagesmith.app")).toBe(true);
+    expect(isReservedHost("x.pagesmith.app")).toBe(true);
+    expect(isReservedHost("localhost")).toBe(true);
+    expect(isReservedHost("127.0.0.1")).toBe(true);
+  });
+
+  it("T6: eigene Normalisierung — Grossschreibung, Punkte am Ende, Leerraum (Werte aus der DB)", () => {
+    expect(isReservedHost("BEISPIEL.NET.")).toBe(true);
+    expect(isReservedHost(" Foo.Beispiel.Net.. ")).toBe(true);
+    expect(isReservedHost("X.VERCEL.APP.")).toBe(true);
+  });
+
+  // T7 — POSITIVKONTROLLE: ohne sie bestuende ein Praedikat, das immer true liefert, T1-T6.
+  it("T7: eine Kundendomain ist NICHT reserviert", () => {
+    expect(isReservedHost("kunde.de")).toBe(false);
+    expect(isReservedHost("landing.kunde.de")).toBe(false);
+  });
+
+  // T8 — Entscheidung E2: fehlt die Serving-Domain, gilt JEDER Host als reserviert, und das
+  // wird geloggt, ohne den Host. Rot bei fail-open.
+  it("T8: Env fehlt oder leer -> fail-closed, auch kunde.de; geloggt ohne den Host", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    delete process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+    expect(isReservedHost("kunde.de")).toBe(true);
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "   ";
+    expect(isReservedHost("kunde.de")).toBe(true);
+    expect(warn).toHaveBeenCalledTimes(2);
+    for (const call of warn.mock.calls) {
+      expect(call.join(" ")).not.toContain("kunde.de");
+    }
+  });
+
+  // T8b — GEGENPROBE zu T8: eine gesetzte Env, die nur den Fallback ergibt (lokal "lvh.me:3000"),
+  // ist NICHT "fehlend" — eine Erkennung ueber die Zahl der Suffixe saehe das anders.
+  it("T8b: Env 'lvh.me:3000' (lokal) ist gesetzt -> kunde.de NICHT reserviert, kein Log", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "lvh.me:3000";
+    expect(isReservedHost("kunde.de")).toBe(false);
+    expect(isReservedHost("x.lvh.me")).toBe(true);
+    expect(warn).not.toHaveBeenCalled();
   });
 });

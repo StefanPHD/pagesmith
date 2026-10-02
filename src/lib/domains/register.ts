@@ -1,6 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { slugForLabel, randomLabelSuffix } from "@/lib/hosting/host";
+import { slugForLabel, randomLabelSuffix, isReservedHost } from "@/lib/hosting/host";
 import { normalizeDomain } from "@/lib/domains/normalize";
 import { addDomainToVercel, type VercelDomainBody } from "@/lib/vercel/client";
 import { writeAuditLog, countRecentAttempts, type AuditRecord } from "@/lib/domains/audit";
@@ -27,6 +27,7 @@ export type AddDomainReason =
   | "wildcard_rejected"
   | "invalid_format"
   | "invalid_domain"
+  | "reserved_host"
   | "rate_limited"
   | "cap_reached"
   | "conflict_other_account"
@@ -42,8 +43,8 @@ export type AddDomainResult =
 
 /**
  * Registriert eine Custom-Domain fuer ein Projekt. Reihenfolge bindend (billig ->
- * teuer): Ownership -> Normalisierung -> lokale Kollision -> Rate-Limit -> Cap ->
- * Vercel-Call -> Fehler-Mapping -> Persistenz + Audit.
+ * teuer): Ownership -> Normalisierung -> reservierter Host (seit K2a) -> lokale
+ * Kollision -> Rate-Limit -> Cap -> Vercel-Call -> Fehler-Mapping -> Persistenz + Audit.
  *
  * GENAU EIN Audit-Eintrag pro Aufruf: jeder Zweig setzt `audit`/`result` und return't;
  * der finally-Block schreibt exakt einmal. Ein Fehler beim Log-Write ueberschreibt den
@@ -101,6 +102,17 @@ export async function registerCustomDomain(
     }
     const host = norm.host;
     audit = { ...audit, target: host };
+
+    // 2b) RESERVIERTER HOST (Phase 13.7, Scheibe K2a, Zuschnitt P13.7-31): ein Host der
+    //     Plattform selbst (Serving-Domain samt Teilbaum, App-Hosts, vercel.app) wird nie
+    //     angelegt. Auf dem NORMALISIERTEN Host — derselben Zeichenfolge, die Vercel bekaeme —
+    //     und VOR Schritt 3: sonst meldete eine bestehende reservierte Zeile desselben Projekts
+    //     "already_registered_self" als Erfolg. Damit vor jedem Vercel-Aufruf.
+    if (isReservedHost(host)) {
+      result = { ok: false, error: rejectionMessage("reserved_host"), reason: "reserved_host" };
+      audit = { ...audit, outcome: "rejected_reserved_host" };
+      return result;
+    }
 
     // 3) LOKALER DB-KOLLISIONSCHECK (global via admin; custom_host ist global unique).
     const { data: existing, error: exErr } = await admin
@@ -248,6 +260,9 @@ export async function registerCustomDomain(
   }
 }
 
+/** Meldung bei einem reservierten Host (der Test schreibt den Wortlaut selbst aus). */
+const RESERVED_HOST_MESSAGE = "Diese Domain kann hier nicht verbunden werden.";
+
 /** Nutzerlesbare Meldung je Ablehnungsgrund der Normalisierung. */
 function rejectionMessage(reason: AddDomainReason): string {
   switch (reason) {
@@ -257,6 +272,9 @@ function rejectionMessage(reason: AddDomainReason): string {
       return "Wildcard-Domains (*.) werden nicht unterstuetzt.";
     case "invalid_format":
       return "Bitte nur den Hostnamen angeben (ohne Pfad oder Port).";
+    case "reserved_host":
+      // Neutral: behauptet weder Ursache noch Ergebnis (Zuschnitt P13.7-31).
+      return RESERVED_HOST_MESSAGE;
     default:
       return "Domain ungueltig.";
   }

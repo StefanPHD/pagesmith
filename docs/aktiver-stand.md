@@ -27,6 +27,7 @@ genannten Werten.
 ## Abschnitte der Standdatei 13.7
 
 - Erste Aufklärung zur Phase 13.7 vom 2026-10-02
+- Vermerke, Entscheidungen und Zuschnitte ab dem 2026-10-02
 - Noch nicht geschnittene Arbeit
 - Vorrat (gemeldet, nicht gebaut)
 
@@ -379,10 +380,140 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
 
 ---
 
+## Vermerke, Entscheidungen und Zuschnitte ab dem 2026-10-02
+
+**Vermerk P13.7-24 — DIE REGISTRIERUNG IST GESCHLOSSEN (OWNER-MESSUNG 2026-10-02). KEIN
+BAU-COMMIT: eine Einstellung im Supabase-Dashboard, keine Zeile Code.**
+- MESSUNG (OWNER, 2026-10-02; NICHT von CC gemessen): Supabase, Authentication → Sign In /
+  Providers → "Allow new users to sign up" steht AUS. Ein Registrierungsversuch ergibt "Signups
+  not allowed for this instance". POSITIVKONTROLLE: Die Anmeldung des Owners funktioniert.
+- AM CODE (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `7e14e07`): Die Anwendung kennt genau zwei
+  Auth-Eingänge, `signInWithPassword` und `signUp` (src/app/login/page.tsx). Die Oberfläche
+  bietet "signup" weiter an; der Schalter wirkt beim Anbieter, nicht im Code.
+- FOLGE FÜR DIE BEFUNDE DES VERMERKS P13.7-1 (ABGELEITET), solange der Schalter AUS steht:
+  · A6 (Konten in Massen) ist über `signUp` nicht erreichbar.
+  · Jeder Befund, der ein EIGENES Konto des Angreifers voraussetzt, ist für Fremde nicht
+    erreichbar: B1 bis B3, dazu ebenso B4 (Phishing auf unserer Domain), B5 (Grabstein), B6 und
+    B7 — alle setzen ein Konto voraus, das veröffentlicht oder Domains anlegt.
+  · C1 (gestohlenes Kundenkonto) ist nur TEILWEISE erfasst: Fremde Kundenkonten gibt es nicht,
+    das Konto des Owners bleibt ein Ziel. C1 ist damit nicht unerreichbar.
+  · UNBERÜHRT bleiben die anonymen Befunde A1 bis A5 und A7 — sie brauchen kein Konto.
+- ZUORDNUNG: Befund N1 des Vermerks P13.7-1 (Vorrat P13.7-12 der Phase 13.7) sagt, den Moment
+  "erstes fremdes Konto" kontrolliere der Owner nicht (A6). Für die Dauer dieser Einstellung trifft
+  das nicht mehr zu: Der Moment "erster fremder Nutzer" ist das WIEDEREINSCHALTEN. N1 bleibt als
+  Befund vom 2026-10-02 (Code-Stand `c18fd55`) stehen; seine Aussage über den Zeitpunkt der
+  Roadmap-Zeile 13.7 (zwei Ereignisse, kein Abschlusskriterium) ist davon nicht berührt.
+- GRENZEN:
+  · Der Schalter liegt AUSSERHALB DES REPOS. Nichts im Code meldet ein Umlegen, und kein Test
+    wird davon rot.
+  · Ob weitere Wege der Konto-Anlage bestehen — Einladung oder Anlage über das Dashboard, die
+    Admin-Schnittstelle mit service_role, OTP oder OAuth-Anbieter mit Konto-Anlage —, ist NICHT
+    GELESEN (Supabase-Doku nicht gelesen) und NICHT GEMESSEN. Über den Anon-Schlüssel ist
+    ausschliesslich der geprüfte `signUp`-Weg belegt. Ein fremdes Konto, das der Owner selbst
+    anlegt, ist ebenfalls ein "erster fremder Nutzer".
+- BEZUG: Kandidat K4 (Vermerk P13.7-1) — "Registrierung schliessen" ist damit als Einstellung
+  vollzogen; E-Mail-Bestätigung und Login-Grenzwerte sind davon nicht berührt.
+
+**Entscheidung P13.7-25 — REIHENFOLGE DER NÄCHSTEN ARBEIT.**
+- OWNER-ENTSCHEIDUNG 2026-10-02 (Angabe aus dem Auftrag): erst die Dependabot-Meldung sichten,
+  dann "K2a" = Befund B1 plus Vorrat P13.7-2. Die Bezeichnung "K2a" stand bis dahin nicht im
+  Bestand; sie meint die Teilmenge von Kandidat K2 (Vermerk P13.7-1) aus Befund B1
+  (plattform-eigene Domains als Custom-Domain) und Vorrat P13.7-2 (`checkDomainStatus`).
+- ARCHITEKTEN-SETZUNG 2026-10-02, revidierbar: Davor kommt die Scheibe "Abhängigkeiten"
+  (Zuschnitt P13.7-27).
+- Die Sichtung ist erfolgt: Vermerk P13.7-26.
+
+**Vermerk P13.7-26 — DEPENDABOT-SICHTUNG: MELDUNG 45 (undici) UND DER STAND VON `npm audit`. KEIN
+BAU-COMMIT: Aufklärung, read-only; CC, 2026-10-02, Code-Stand `7e14e07`.**
+- DIE MELDUNG: Nr. 45, undici, "TLS certificate validation bypass via dropped connect options in
+  BalancedPool", Schweregrad high, Einstufung "Development", package-lock.json — OWNER-ANGABE aus
+  der GitHub-Oberfläche (2026-10-02). Die Nummer ist von CC nicht bestätigt (`gh` nicht
+  installiert, die Liste liegt nicht im Repo).
+- KETTE (GEMESSEN AM REPO, `npm ls undici --all`): genau eine Kopie, `jsdom@29.1.1` →
+  `undici@7.29.0`. Im Lockfile `"node_modules/undici"` mit `"dev": true`; jsdom verlangt
+  `"undici": "^7.25.0"` und ist selbst dev (devDependencies `"jsdom": "^29.1.1"`; vitest 4.1.11
+  verlangt `jsdom: *` als Peer). Die Einstufung "Development" ist am Lockfile bestätigt.
+- ERREICHBARKEIT:
+  · Suche `undici|BalancedPool` (ohne Gross-/Kleinschreibung) über das Repo ohne node_modules,
+    .next, .git und Lockfile: 0 Treffer. POSITIVKONTROLLE: dasselbe Werkzeug trifft
+    `node_modules/undici` im Lockfile (2). GEMESSEN AM REPO.
+  · jsdom ist ausserhalb der Doku allein `environment: "jsdom"` in `vitest.config.ts` — die
+    Testumgebung.
+  · Lokaler Build (`.next`, BUILD_ID vom 2026-10-02 08:54, Commit-Bindung nicht geprüft): undici
+    in 0 `.js`-Dateien unter `.next/server` (Kontrolle: `supabase` in 49); in 0 von 15
+    `.nft.json` (Kontrolle: alle 15 nennen `node_modules/next/`). In zwei geprüften `.map`-Dateien
+    steht undici nur in Kommentaren. Es ist der LOKALE Build, nicht das Vercel-Deployment.
+  · Next bringt eigene undici-Kopien mit, die nicht im Lockfile stehen und die Dependabot nicht
+    sieht: `next/dist/compiled/@edge-runtime/primitives/fetch.js` trägt `undici@6.21.0` —
+    ausserhalb des Advisory-Bereichs. `next/dist/compiled/@vercel/blob/index.cjs` trägt eine
+    Kopie ohne Versions-String (Version NICHT ENTSCHEIDBAR; Aufrufer `upload-trace` aus
+    `cli/next-dev.js` und `build/index.js`). Die undici-Version der Node-Laufzeit auf Vercel ist
+    am Repo NICHT ENTSCHEIDBAR.
+  · ERGEBNIS: Kein Pfad unseres Codes erzeugt einen `BalancedPool`; die gemeldete Kopie wird
+    allein in der Testumgebung gebraucht. Ein erreichbarer Produktivpfad ist NICHT GEFUNDEN — ein
+    Nicht-Treffer mit benannter Reichweite (die Suchen oben), keine Aussage über das Deployment.
+- BEHOBENE FASSUNG (GELESEN, `npm audit --json`; GitHub Advisory Database, GHSA-w293-vg96-wgc3,
+  veröffentlicht 2026-09-29): betroffen `>=7.24.1 <7.29.1`, behoben ab 7.29.1 (im 8er-Zweig ab
+  8.10.2). `npm audit` führt für undici neun weitere Advisories, alle mit der Obergrenze
+  `<7.29.1`. Registry (GEMESSEN, `npm view`): 7.29.1 und 7.30.0 existieren, beide innerhalb von
+  `^7.25.0`; undici@7.29.1 trägt keine eigenen Abhängigkeiten, Engines `node >=20.18.1`
+  unverändert.
+- NEBENBEFUND — `npm audit` (GEMESSEN, CC, 2026-10-02) meldet DREI Positionen, 1 kritisch und
+  2 hoch, nicht null:
+  · next 16.3.5, kritisch: GHSA-vcvr-r3jv-pc5j, "Remote Code Execution in next/og ImageResponse",
+    betroffen `>=16.2.0 <16.3.6`, `fixAvailable` 16.3.8. Erste Probe auf Erreichbarkeit:
+    `next/og|ImageResponse` in src/ und next.config.ts 0 Treffer (Kontrolle: `next/server` trifft
+    src/proxy.ts). Eine vollständige Sichtung ist das nicht.
+  · brace-expansion, hoch (DoS-Advisories, zwei Knoten): 1.1.18 unter eslint → minimatch 3.1.5
+    (`^1.1.7`) und 5.0.9 unter eslint-config-next → typescript-eslint →
+    @typescript-eslint/typescript-estree → minimatch 10.2.5 (`^5.0.5`); beide `"dev": true`.
+  · undici, hoch: die Meldung oben.
+- ZÄHLUNG: npm zählt je Paket (3), Dependabot je Advisory und Manifest. Für undici allein sind
+  bis zu zehn Meldungen zu erwarten — ABGELEITET, nicht abgelesen. Die Dependabot-Zahl von heute
+  ist von CC nicht erhoben.
+- FOLGE FÜR DAS MANIFEST: Der Stand "NULL OFFEN" des Items DEPENDABOT-MELDUNGEN (beide Fassungen,
+  2026-09-14) war überholt. Weil die Korrektur die Statuszeile berührt, ist sie dem Architekten
+  vorgelegt worden; vollzogen im Commit dieses Vermerks nach ARCHITEKTEN-ENTSCHEIDUNG 2026-10-02:
+  neue Statuszeile und neuer ZUSTAND in beiden Fassungen, "RUHENDER POSTEN … kein offener"
+  entfällt in beiden (in der Vollfassung auch im BINDET-AN-Feld), BINDET-AN "DIE NÄCHSTE MELDUNG"
+  bleibt; in der Vollfassung dazu TRAGENDE KONTROLLE und EHRLICHE EINORDNUNG berichtigt. Nach
+  bestätigtem Live-Test der Scheibe "Abhängigkeiten" geht das Item auf den ruhenden Posten zurück
+  (Auftrag des Architekten, 2026-10-02).
+  DER ZEIGER IN docs/roadmap.md, Roadmap-Zeile 11.10, Punkt (b), zitiert den alten Titel
+  "DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12)". Er ist beschreibend und bleibt stehen; er löst
+  über den Wortanfang "DEPENDABOT-MELDUNGEN" auf, und die Erreichbarkeits-Prüfung je Paket, auf
+  die er zeigt, steht seit dem 2026-09-22 in docs/claude-md-herleitung.md und in der Vollfassung.
+
+**Zuschnitt P13.7-27 — SCHEIBE "ABHÄNGIGKEITEN". ARCHITEKTEN-SETZUNG 2026-10-02 (Angabe aus dem
+Auftrag). Stufe 1 (Plan) ausstehend; kein Code.**
+- UMFANG:
+  · undici im Lockfile auf ≥7.29.1, innerhalb des jsdom-Bereichs `^7.25.0` (Kandidat K-a der
+    Sichtung, Vermerk P13.7-26).
+  · brace-expansion auf die behobene Fassung, soweit innerhalb der bestehenden Bereiche.
+    GEMESSEN (Registry, 2026-10-02): 1.1.21 liegt in `^1.1.7`, 5.0.12 in `^5.0.5`.
+  · next von 16.3.5 auf eine behobene Patch-Fassung; die Wahl trifft der Plan.
+- ZIELVERSION next 16.3.8 (ARCHITEKT, 2026-10-02). GRUND: die einzige Fassung, die alle bekannten
+  Advisories schliesst — ein späterer Sprung bräuchte eine zweite Live-Regression. Die sieben
+  Advisories, die erst 16.3.8 schliesst, standen am 2026-10-02 nicht im globalen
+  Advisory-Verzeichnis und nicht in `npm audit`; ob 16.3.5 von ihnen betroffen ist, ist NICHT
+  ENTSCHEIDBAR (GELESEN: Release-Text v16.3.8 über die GitHub-API, 2026-10-02).
+- BINDENDE PRÜFUNGEN (ARCHITEKT, 2026-10-02): die Routen-Tabelle des Builds ist vorher und nachher
+  zeichengleich, alle Routen `ƒ`; live liefern zwei Hosts je ihre eigene Seite.
+  "ALLE ƒ" TRIFFT SCHON VORHER NICHT ZU (GEMESSEN, CC, 2026-10-02, `npm run build` auf
+  `7e14e07`, next 16.3.5): Die Tabelle führt acht Routen `ƒ` (`/`, `/api/capi`, `/api/e`,
+  `/api/f`, die drei `/api/oauth/google/*`, `/app-serve`) und zwei `○` (`/_not-found`, `/login`).
+  Tragend ist "zeichengleich"; die acht `ƒ` bleiben `ƒ`. Die Lesart ist dem Architekten gemeldet.
+- AUSDRÜCKLICH NICHT: jsdom 30 (Kandidat K-c), `overrides` (Kandidat K-b), andere Upgrades.
+- BINDET ÜBER DIE SCHEIBE HINAUS: nichts.
+
+---
+
 ## Noch nicht geschnittene Arbeit
 
-Der Zuschnitt der Phase steht aus; ihn entscheidet der Architekt. Die Kandidaten stehen im
-Vermerk P13.7-1, Punkt (4); der Vorrat darunter.
+Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Geschnitten ist seit
+dem 2026-10-02 die Scheibe "Abhängigkeiten" (Zuschnitt P13.7-27); die Reihenfolge der nächsten
+Arbeit steht in Entscheidung P13.7-25. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der
+Vorrat darunter.
 
 ---
 

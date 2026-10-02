@@ -718,12 +718,15 @@ einen setzen will, setzt ihn in BEIDEN Fassungen im selben Commit.
   Server Action mit Secret-Parameter (erhoben 2026-07-24). Bei JEDER neuen Server Action mit
   Secret-Parameter neu bewerten.
 - DEPENDABOT: ERLEDIGT (2026-07-24: Alerts, Security Updates, Dependency Graph aktiv, 1 Regel).
-- DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12) — ERLEDIGT (2026-09-14): NULL OFFEN NACH DEM
-  NEXT-SPRUNG. RUHENDER POSTEN — er sagt, WIE gesichtet wird, und ist kein offener.
-  DER ZUSTAND: Dependabot führt NULL offene Meldungen — OWNER-ANGABE 2026-09-14, nach dem
-  Sprung auf next 16.3.5. NICHT von CC gemessen: gh ist auf dieser Maschine nicht
-  installiert, und die Liste liegt nicht im Repo. DANEBEN GEMESSEN (CC, 2026-09-14):
-  `npm audit` meldet "found 0 vulnerabilities" bei installiertem und gepinntem next 16.3.5.
+- DEPENDABOT-MELDUNGEN — DIE ACHT VOM 2026-09-12 ERLEDIGT (2026-09-14); SEIT DEM 2026-10-02
+  WIEDER OFFEN: DREI POSITIONEN IN `npm audit`, MELDUNG 45 GESICHTET, BEHEBUNG GESCHNITTEN
+  (Zuschnitt P13.7-27 der Phase 13.7).
+  DER ZUSTAND (2026-10-02): `npm audit` meldet DREI Positionen — 1 kritisch (next 16.3.5,
+  GHSA-vcvr-r3jv-pc5j, betroffen `<16.3.6`), 2 hoch (undici 7.29.0; brace-expansion 1.1.18
+  und 5.0.9, beide allein in der Entwicklungs-Kette) — GEMESSEN, CC, 2026-10-02. Dependabot:
+  offen ist mindestens Meldung 45 (undici) — OWNER-ANGABE 2026-10-02; die Gesamtzahl ist
+  NICHT erhoben (gh ist auf dieser Maschine nicht installiert, die Liste liegt nicht im
+  Repo). Sichtung: Vermerk P13.7-26 der Phase 13.7.
   BINDET-AN: DIE NÄCHSTE MELDUNG (ARCHITEKT-VORSCHLAG 2026-09-14). Sie wird wie am
   2026-09-12 gesichtet — JE MELDUNG AUF ERREICHBARKEIT eines Produktivpfades statt auf die
   blosse Meldung, und die DEPENDABOT-ZAHL WIRD NEBEN `npm audit` GELESEN, NICHT STATT

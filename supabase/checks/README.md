@@ -115,3 +115,4 @@ bevor er sie hatte.
 | `bedingte-schreibung-probe.sql` | Was meldet PostgREST bei einer bedingten Schreibung zurück — bei null Treffern, mit `count`, und bei Singular-Anforderung? |
 | `relay-rate-counters.sql` | Steht der Zähler der Relay-Ratenbegrenzung (0030) wie entschieden da — drei Spalten, RLS ohne Policy, Rechte je Rolle, EXECUTE nur für `service_role`, `search_path` leer? |
 | `spaltenrechte.sql` | Wer darf `projects`, `domains`, `project_tokens` schreiben, und wer hat das Recht erteilt — vor 0031 die Vorbedingung (Eigentümer, Grantor, FORCE, PUBLIC, Mitgliedschaften), danach die wirksamen Rechte je Rolle und Spalte? |
+| `reservierte-hosts.sql` | Trägt `domains` einen `custom_host`, den `isReservedHost` reserviert (Serving-Domain samt Teilbaum, App-Hosts, `vercel.app`) — und ist jede Domain am Vercel-Projekt, die das Prädikat nicht erfasst, durch genau eine Zeile gedeckt? |

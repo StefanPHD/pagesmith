@@ -896,63 +896,134 @@ im Chat; übermittelt im Auftrag der Doku-Runde).**
   (iv) trägt das: Die Sperr-Befehle haben zwei Einsetzstellen (Referenz und Ziel); der Umbau auf
   eine Stelle steht mit K3 an — Vorrat P13.7-42.
 
-**Zuschnitt P13.7-43 — SCHEIBE "SUPABASE-PAKETE" (Gegenstand von Vorrat P13.7-29).
-ARCHITEKTEN-ENTSCHEIDUNGEN 2026-10-02 (E1 bis E3, Angabe aus dem Auftrag); Formulierung CC.
-Muster: Scheibe "Abhängigkeiten" (Zuschnitt P13.7-27, Vermerk P13.7-28).**
-- UMFANG: `@supabase/ssr` 0.12.0 → 0.12.7 und `@supabase/supabase-js` 2.108.2 → 2.117.2; mit ziehen
-  die fünf exakt gepinnten Unterpakete (`auth-js`, `functions-js`, `postgrest-js`, `realtime-js`,
-  `storage-js`) 2.108.2 → 2.117.2 und `@supabase/phoenix` 0.4.2 → 0.4.5. Unverändert bleiben
-  `cookie` 1.1.1, `iceberg-js` 0.8.1 und `tslib` 2.8.1 (je die höchste bzw. einzige Fassung im
-  Bereich; GEMESSEN, `npm view`, CC, 2026-10-02).
-- ZIELVERSIONEN 0.12.7 und 2.117.2: die Fassungen der Dependabot-PRs (#22 bzw. #26), zugleich die
-  höchsten im Bereich und das dist-tag `latest` (GEMESSEN, `npm view`, CC, 2026-10-02).
-- (E1) LOKAL STATT GITHUB-MERGE, weil (a) die PRs #22 und #26 sich in denselben Lockfile-Einträgen
-  überschneiden — `@supabase/ssr` 0.12.7 verlangt als Peer `@supabase/supabase-js` `^2.114.0`, schon
-  #22 allein zieht supabase-js samt Unterpaketen auf 2.117.2 — und (b) nur lokal Mengennachweis und
-  vier Gates vor dem Push laufen (die CI ist kein Merge-Gate). Die PRs werden danach geschlossen bzw.
-  schliessen sich selbst.
-  RICHTIGGESTELLT (ARCHITEKT, 2026-10-02): Die frühere Begründung "gebaut auf einem Stand vor
-  5567d14, Lockfile veraltet" war falsch. GEMESSEN (CC, 2026-10-02, `git ls-remote`, `git fetch` der
-  zwei Commits, `git log`): `c5ca072` (#22, ssr) hat den Elternteil `5567d14` (08:30:17 UTC, 2,5
-  Minuten nach `5567d14`); `daef240` (#26, supabase-js) hat den Elternteil `2a69571`;
-  `git log 5567d14..HEAD -- package.json package-lock.json` liefert 0 Commits. Beide PR-Lockfiles
-  bauen auf dem heutigen auf.
-- (E2) VARIANTE R: Untergrenzen in package.json auf `^0.12.7` und `^2.117.2`. SOLL: package.json
-  genau 2 Zeilen, Lockfile genau 9 Einträge (Root-Eintrag, ssr, supabase-js, fünf Unterpakete,
-  phoenix). ZUSATZKONTROLLE: unser Lockfile gegen `c5ca072:package-lock.json` — genau 1 Unterschied,
-  der Root-Eintrag (dort `^2.108.2` für supabase-js). Grund für R: der Peer `^2.114.0` von ssr 0.12.7
-  und der Node-Boden (unten) stehen an der Untergrenze, statt dass der Bereich eine Kombination
-  zulässt, die beides verletzt.
-- (E3) PFLICHT-STOPP VOR DEM PUSH DES BAU-COMMITS: Die Node.js-Fassung in Vercel ist ≥ 22
-  (OWNER-ABLESUNG ausstehend). GRUND: supabase-js und alle fünf Unterpakete verlangen ab 2.110.0
-  `node >=22.0.0`, vorher `>=20.0.0` (GEMESSEN, `npm view … engines`; GELESEN, Release v2.110.0
-  "drop Node.js 20 support", #2482). Lokal v24.16.0, CI `node-version: '24'`; package.json trägt kein
-  `engines`-Feld, npm warnt nur. Die Fassung bei Vercel ist am Repo NICHT ENTSCHEIDBAR.
-  RÜCKFALL-VARIANTE FÜR NODE 20: `@supabase/ssr` bleibt 0.12.0, `@supabase/supabase-js` höchstens
-  2.109.0 — schon ssr 0.12.1 verlangt supabase-js `^2.110.3` (GEMESSEN, `npm view`).
-- LESUNG (2026-10-02, CC): GitHub-Releases supabase/supabase-js v2.109.0 bis v2.117.2 und
-  supabase/ssr v0.12.1 bis v0.12.7, dazu die PR-Beschreibungen ssr #246, #275, #283, #294 und
-  supabase-js #2504, #2580, #2587, #2698; supabase.com/docs/reference/javascript/select und
-  guides/auth/server-side/creating-a-client (Next.js). Ergebnis: keine Laufzeitänderung an count/head,
-  `!inner`, `.select` nach `update` und der Form `{ data, error }`; Laufzeitänderungen allein in auth
-  (`signOut` löscht die lokale Sitzung auch bei Fehlschlag, 5xx trägt die Server-Meldung, verlorene
-  Erneuerung gegen einen anderen Tab liefert die gespeicherte Sitzung) und `maybeSingle` mit
-  `throwOnError` (in src/ 0 Treffer). Kein Test fährt echten Supabase-Code (19 Testdateien mocken ihn;
-  GEMESSEN AM REPO) — für das Verhalten der Pakete tragen allein `tsc`, `build` und der Live-Test.
-- AUSDRÜCKLICH NICHT: next, react, andere Pakete, Code-Änderungen.
-- BINDET ÜBER DIE SCHEIBE HINAUS: nichts.
-- RUNBOOK: Die Scheibe schafft keine Betriebs-Handlung — das sagt der Abschluss-Vermerk in einem
-  Satz.
+**Zuschnitt P13.7-43 — SCHEIBE "SUPABASE-PAKETE" (Gegenstand von Vorrat P13.7-29). ABGELAUFEN mit
+Vermerk P13.7-48 (2026-10-02), verdichtet in derselben Runde.**
+- BINDET ÜBER DIE SCHEIBE HINAUS: nichts (ARCHITEKTEN-SETZUNG 2026-10-02).
+- WAS ABGELAUFEN IST, und wo es steht: der UMFANG (`@supabase/ssr`, `@supabase/supabase-js` samt
+  fünf Unterpaketen und `@supabase/phoenix`; `cookie`, `iceberg-js`, `tslib` unverändert) · die
+  ZIELVERSIONEN 0.12.7 und 2.117.2 · (E1) lokal statt GitHub-Merge samt der RICHTIGSTELLUNG der
+  früheren Begründung · (E2) Variante R mit dem Soll 2/9 und dem Abgleich gegen `c5ca072` · (E3) der
+  Pflicht-Stopp Node ≥ 22 vor dem Push, erfüllt · die RÜCKFALL-VARIANTE für Node 20, entfallen · die
+  LESUNG der Releases und der Supabase-Doku · die AUSSCHLÜSSE (next, react, andere Pakete, Code).
+  Inhalt und Ergebnis: Vermerk P13.7-48, Punkte (1) bis (4). Der Wortlaut vor der Verdichtung steht
+  unter Commit `3e77812`.
+
+**Vermerk P13.7-48 — ABSCHLUSS DER SCHEIBE "SUPABASE-PAKETE". Bau-Commit `a36d8d6`
+(`chore(deps): @supabase/ssr 0.12.7, @supabase/supabase-js 2.117.2, Untergrenzen angehoben`),
+2026-10-02.**
+
+(1) GEBAUT, GEGEN DEN ZUSCHNITT P13.7-43 (GEMESSEN AM REPO, CC, 2026-10-02, `git show a36d8d6`):
+    · package.json genau 2 Zeilen (Variante R, E2): `@supabase/ssr` `^0.12.0` → `^0.12.7`,
+      `@supabase/supabase-js` `^2.108.2` → `^2.117.2`.
+    · Lockfile genau 9 Einträge: Root, `@supabase/ssr` 0.12.0 → 0.12.7, `@supabase/supabase-js` und
+      die fünf Unterpakete (`auth-js`, `functions-js`, `postgrest-js`, `realtime-js`, `storage-js`)
+      2.108.2 → 2.117.2, `@supabase/phoenix` 0.4.2 → 0.4.5. Unverändert: `cookie` 1.1.1,
+      `iceberg-js` 0.8.1, `tslib` 2.8.1, `next` 16.3.8, `react` 19.2.4.
+    · E1 — LOKAL STATT MERGE der PRs #22 und #26, weil (a) beide sich in denselben
+      Lockfile-Einträgen überschneiden (ssr 0.12.7 verlangt supabase-js `^2.114.0`) und (b) nur
+      lokal Mengennachweis und Gates vor dem Push laufen. Die frühere Begründung "auf einem Stand vor
+      5567d14" war falsch (RICHTIGGESTELLT, ARCHITEKT, 2026-10-02; GEMESSEN, CC: Elternteile `5567d14`
+      bzw. `2a69571`).
+    · E3 — Node.js in Vercel 24.x (OWNER-ABLESUNG 2026-10-02); der Pflicht-Stopp vor dem Push ist
+      erfüllt. supabase-js und seine Unterpakete verlangen ab 2.110.0 `node >=22.0.0`. Die
+      Rückfall-Variante für Node 20 entfällt.
+    · NICHT GEBAUT, wie zugeschnitten: next, react, andere Pakete, Code-Änderungen.
+
+(2) BAU-NACHWEIS (GEMESSEN, CC, 2026-10-02; Vorher-Werte am Stand `3e77812`, dessen Diff gegen
+    `24516f2` ausserhalb von docs/ leer ist):
+    · Mengennachweis — Vergleich je Schlüssel in `packages` und der übrigen obersten Felder des
+      Lockfiles, mit einer Köder-Änderung als Positivkontrolle (Köder: genau 1 Eintrag): genau 9
+      Einträge = Soll.
+    · Zusatzkontrolle (E2): unser Lockfile gegen `c5ca072:package-lock.json` (PR #22) — genau 1
+      Unterschied, der Root-Eintrag.
+    · `npm audit` 0 vorher, 0 nachher. `npm ls --all`: 9 Pfade geändert, alle unter `@supabase`.
+    · Gates: `tsc --noEmit` 0 · `lint` 0 Fehler, 1 bekannte Warnung, Ausgabe vorher wie nachher ·
+      `vitest run` 103 Dateien / 2829 Tests vorher wie nachher · `build` 0,
+      `▲ Next.js 16.3.8 (Turbopack)`.
+    · Routen-Tabelle zeichengleich, sha256 `ad8c6a09…7e00` vorher und nachher (Gegenprobe mit einer
+      veränderten Kopie: abweichend). Der Wert ist mit `bf8bc323…e664` aus Vermerk P13.7-28 nicht
+      vergleichbar: Der Auszug schliesst diesmal die Kopfzeile "Route (app)" ein.
+    · Proxy-Laufzeit: `functions-config-manifest.json` (`runtime` `nodejs`) und
+      `middleware-manifest.json` (0/0) je bytegleich vorher und nachher; `middleware.js` plus
+      `.nft.json` vorhanden; kein `server/edge/`.
+    · Vor dem Commit: `git status` allein package.json und package-lock.json; Secret-Prüfung mit
+      Köder 2 von 2, im Diff 0 Treffer. Byte-Kontrolle am committeten Objekt: CR = 0; package.json
+      35 LF, Lockfile 8694 → 8702 LF.
+
+(3) LIVE-TEST (OWNER, 2026-10-02 — alle Angaben OWNER-ANGABEN, nicht von CC gemessen):
+    · N0 — Production-Deployment `a36d8d6`, Ready.
+    · V0 — A/B aus, kein Einwilligungs-Dialog, kein Fan-Out-Ziel, auf beiden Testprojekten. Node.js
+      in Vercel 24.x; Gültigkeit des JWT 3600 s (Ablesungen).
+    · V1 (nach Neu-Veröffentlichen, vor dem Push) = N1 (nach dem Deploy), je zweimal: Make-Seite
+      20008 Bytes, sha256 `5a2e0e774222e2f3f97011423ac650bcd915bcefa1f459d044ec471a06dca6ae` (mit
+      einer Text-Änderung des Owners, +1 Zeichen); Zapier-Seite 19999 Bytes, sha256
+      `824c1bbc…ffa8`.
+    · N2 — falsches Passwort → "Invalid login credentials"; Registrierung → "Signups not allowed for
+      this instance"; Anmeldung ok, 14:53 UTC.
+    · N3 — die Sitzung hält über Neuladen, Projektwechsel und Domain-Verwaltung.
+    · N4 — Speichern und Veröffentlichen ohne Fehler; dabei entfernte der Owner das zusätzliche
+      Zeichen → Make-Seite 20007 Bytes, sha256 `e283fa67…1500`.
+    · N5 — `/api/e`: unbekannter Schlüssel → 204, Rumpf 0; Pflichtfeld fehlt → 400, Rumpf 0.
+      Seitenaufrufe +1.
+    · N6 — Relay: `/api/f` 204, Danke-Seite, Lauf "N6" in Make. `relay_rate_counters` des
+      Projekts: vorher `window_start` 08:37:00, `hits` 1; nachher `window_start` 15:02:00, `hits` 1.
+    · N7 — Status `thr-ty.com` → "Live — DNS korrekt, TLS-Zertifikat aktiv"; `vercel_synced_at`
+      15:05:51.98 → 15:07:34.933 UTC.
+    · N8 — Löschen-Riegel: Probe-Zeile `k2b-l2-probe` (`custom_host` `k2b-delete-probe.invalid`)
+      an "W4 Löschtest" → "Bitte entferne zuerst die verbundene Domain."; Probe-Zeile per SQL
+      entfernt, Rest 0; danach Löschen erfolgreich.
+    · N9 — nach Ablauf des Access-Tokens (≥ 65 min nach der Anmeldung, ohne Abmelden): weiter
+      angemeldet, Speichern ohne Fehler.
+    · DEPENDABOT — die PRs #22 und #26 sind nach dem Push nicht mehr gelistet, geschlossen
+      (OWNER-ABLESUNG 2026-10-02).
+
+(4) WAS DIE BEOBACHTUNGEN TRAGEN (ABGELEITET, CC, 2026-10-02, am Code `a36d8d6`):
+    · N4: 20007 Bytes und `e283fa67…1500` sind der Bezugswert der Phase 13.6 (Vermerk P13.7-28,
+      Punkt (4)). V1 = N1 zeigt den Text über den Deploy unverändert, N4 führt nach Rücknahme der
+      Änderung auf den Bezugswert zurück: Die Auslieferung ist bytegenau reproduzierbar, der
+      Bezugswert gilt weiter. Die Zapier-Seite trägt weiter ihren Bezugswert.
+    · N6: `relay_rate_counters` trägt EINE Zeile je Projekt (Primärschlüssel `project_id`,
+      Migration 0030). `relay_rate_hit` setzt bei einem neueren 60-s-Fenster `window_start` neu
+      und `hits` auf 1 — genau das zeigt N6; der RPC über `countRelayHit` antwortet mit
+      supabase-js 2.117.2 richtig.
+    · N7: Der gespeicherte Wert war beim Klick älter als die Cache-Bremse (`FRESH_MS`, 20 s, in
+      `checkDomainStatus`) und ist nachgerückt — das Update mit `.select("label")` schreibt. Damit
+      ist die offene Stelle aus Vermerk P13.7-33, Punkt (4), geschlossen: N5 jener Scheibe trennte
+      Update-Pfad und Cache-Bremse nicht.
+    · N8: Die Prüfung in `deleteProject` (src/app/projects/actions.ts) ist eine verknüpfte
+      Zählabfrage (`projects!inner(user_id)`, `count: "exact"`, `head: true`); die Meldung entsteht
+      nur bei einer Zahl > 0. Sie trägt mit postgrest-js 2.117.2.
+    · N9: Der Browser-Client (`createBrowserClient`) lebt allein in src/app/login/page.tsx; erneuert
+      wird also serverseitig. `updateSession` (src/lib/supabase/middleware.ts) durchläuft jede
+      Anfrage auf dem App-Host zuerst; dass dort erneuert wurde, ist die Zuordnung des Owners. Eine
+      Erneuerung im Server-Client einer Server-Aktion trennt N9 davon nicht.
+    · Die Lesung des Zuschnitts (keine Laufzeitänderung an count/head, `!inner`, `.select` nach
+      `update`, `{ data, error }`) ist für die Formen aus N6 bis N8 live bestätigt. Die Änderungen in
+      auth (`signOut`, Meldung bei 5xx, verlorene Erneuerung gegen einen anderen Tab) sind live nicht
+      gezielt geprüft.
+
+(5) GRENZEN (OWNER): OAuth-Rückkehr und -Erneuerung nicht geprüft · Kill-Switch nicht geprüft ·
+    Meta-Weiterleitung nicht geprüft · Cap- und Rate-Limit-Zählung beim Hinzufügen einer Domain live
+    nicht geprüft (Vorrat P13.7-44) · nur Chrome. DAZU (CC, GEMESSEN AM REPO): Kein Test fährt echten
+    Supabase-Code (19 Testdateien mocken ihn) — für das Verhalten der Pakete tragen allein `tsc`,
+    `build` und dieser Live-Test.
+
+(6) RUNBOOK: Die Scheibe schafft keine Betriebs-Handlung des Owners — kein Szenario in
+    docs/ADMIN_RUNBOOK.md.
+
+(7) FOLGEN: Vorrat P13.7-29 ist ERLEDIGT. Als Nächstes Kandidat K1 ("Noch nicht geschnittene
+    Arbeit").
 
 ---
 
 ## Noch nicht geschnittene Arbeit
 
 Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Abgeschlossen sind seit
-dem 2026-10-02 die Scheiben "Abhängigkeiten" (Vermerk P13.7-28), "K2a" (Vermerk P13.7-33) und
-"K2b" (Vermerk P13.7-39). Als Nächstes die Scheibe zu Vorrat P13.7-29 (die zwei
-Supabase-Versions-PRs), geschnitten als Zuschnitt P13.7-43, danach Kandidat K1 (ARCHITEKT, 2026-10-02, Auftrag der Doku-Runde zu
-Vermerk P13.7-39). Der Grabstein (Vorrat P13.7-37) und der Serve-Riegel (Vorrat P13.7-32) gehen an
+dem 2026-10-02 die Scheiben "Abhängigkeiten" (Vermerk P13.7-28), "K2a" (Vermerk P13.7-33), "K2b"
+(Vermerk P13.7-39) und "Supabase-Pakete" (Vermerk P13.7-48). Als Nächstes Kandidat K1 (ARCHITEKT,
+2026-10-02, Aufträge der Doku-Runden zu Vermerk P13.7-39 und zu Vermerk P13.7-48). Im Zuschnitt K1
+ist Vorrat P13.7-45 (Cache-Header beim Setzen von Sitzungs-Cookies) nach seinem eigenen Trigger zu
+bewerten; spätestens dort fällig ist auch Vorrat P13.7-44 (`count ?? 0` fail-open). Der Grabstein (Vorrat P13.7-37) und der Serve-Riegel (Vorrat P13.7-32) gehen an
 die Hebung am Phasenende 13.7. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der Vorrat
 darunter.
 
@@ -1059,6 +1130,8 @@ mit Positivkontrolle; keine Handlung). Vermerk P13.7-1, Befund N23.
 - → 2026-10-02: GESCHNITTEN als Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43). Die PRs sind #22
   (ssr) und #26 (supabase-js); die Begründung "gebaut auf einem Stand vor 5567d14" ist dort
   richtiggestellt.
+- → 2026-10-02: ERLEDIGT mit Bau-Commit `a36d8d6`, live verifiziert (Vermerk P13.7-48); die PRs
+  #22 und #26 sind geschlossen (OWNER-ABLESUNG).
 
 **Vorrat P13.7-30 — FRAGE ZU K9: LAUFEN PREVIEW-DEPLOYMENTS MIT DENSELBEN GEHEIMNISSEN UND
 DERSELBEN DATENBANK WIE PRODUCTION?**

@@ -62,6 +62,14 @@ Wo eine Probe ein bestimmtes Projekt braucht, steht `<PROJEKT_UUID>` im Text —
 markiert und im Kopfkommentar unter `PLATZHALTER` benannt. **Es stehen keine echten
 Projekt-IDs, Labels oder Tokens in diesen Dateien.**
 
+**Die Serving-Domain ist NIE ein Platzhalter.** Sie steht als `publayer.net` fest im Text
+(`reservierte-hosts.sql`, `verwaiste-domains.sql`), und jeder Block, der eine
+Reservierungs-Liste trägt, prüft sich selbst: Erfasst seine Liste `publayer.net`,
+`*.publayer.net` oder `pagesmith-delta.vercel.app` nicht, liefert er genau eine Zeile
+`PROBE DEFEKT …` statt eines Befunds. Anlass (2026-10-02): Ein Lauf mit unersetztem
+Platzhalter meldete die Plattform-Domains als VERWAIST — wer daraufhin bei Vercel entfernt,
+nimmt jede Seite unter der Serving-Domain vom Netz (ABGELEITET).
+
 Eine Probe, die gegen den REST-Endpunkt misst, braucht zwei weitere Angaben: eine
 **Basis-Adresse** und ein **Zugangsdatum**. Für die Basis-Adresse gilt dasselbe wie für
 `<PROJEKT_UUID>` — Platzhalter im Text, benannt unter `PLATZHALTER`.
@@ -115,5 +123,5 @@ bevor er sie hatte.
 | `bedingte-schreibung-probe.sql` | Was meldet PostgREST bei einer bedingten Schreibung zurück — bei null Treffern, mit `count`, und bei Singular-Anforderung? |
 | `relay-rate-counters.sql` | Steht der Zähler der Relay-Ratenbegrenzung (0030) wie entschieden da — drei Spalten, RLS ohne Policy, Rechte je Rolle, EXECUTE nur für `service_role`, `search_path` leer? |
 | `spaltenrechte.sql` | Wer darf `projects`, `domains`, `project_tokens` schreiben, und wer hat das Recht erteilt — vor 0031 die Vorbedingung (Eigentümer, Grantor, FORCE, PUBLIC, Mitgliedschaften), danach die wirksamen Rechte je Rolle und Spalte? |
-| `reservierte-hosts.sql` | Trägt `domains` einen `custom_host`, den `isReservedHost` reserviert (Serving-Domain samt Teilbaum, App-Hosts, `vercel.app`) — und ist jede Domain am Vercel-Projekt, die das Prädikat nicht erfasst, durch genau eine Zeile gedeckt? |
-| `verwaiste-domains.sql` | Hängt eine Domain am Vercel-Projekt, die weder das Prädikat erfasst noch eine `domains`-Zeile deckt (verwaist) — und welche Add-Versuche sind seit K2b daran gescheitert (`rejected_already_on_project`)? |
+| `reservierte-hosts.sql` | Trägt `domains` einen `custom_host`, den `isReservedHost` reserviert (Serving-Domain samt Teilbaum, App-Hosts, `vercel.app`) — und ist jede Domain des festen Vercel-Blocks, die das Prädikat nicht erfasst, durch genau eine Zeile gedeckt? Ohne Platzhalter; Selbsttest in Q1, Q2, Q4. |
+| `verwaiste-domains.sql` | Hängt eine Domain am Vercel-Projekt, die weder das Prädikat erfasst noch eine `domains`-Zeile deckt (verwaist) — und welche Add-Versuche sind seit K2b daran gescheitert (`rejected_already_on_project`)? V2 prüft die vier bekannten Namen fest, V3 einen weiteren Namen an genau einer Einsetzstelle; Selbsttest in V2 und V3. |

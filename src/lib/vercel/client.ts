@@ -2,8 +2,8 @@ import "server-only";
 import type { VercelDomainConfig } from "@/lib/domains/config";
 
 // Server-only Vercel-Domains-API-Client. NUR HTTP + Fehler-Uebersetzung — KEINE
-// Geschaeftslogik, KEIN DB. Der Aufrufer (lib/domains/register, lib/domains/status)
-// sichert Autorisierung, Cap, Rate-Limit und Persistenz.
+// Geschaeftslogik, KEIN DB. Der Aufrufer (lib/domains/register, lib/domains/remove,
+// lib/domains/status) sichert Autorisierung, Cap, Rate-Limit und Persistenz.
 //
 // SECRETS-DISZIPLIN (wie admin.ts): `import "server-only"` erzwingt einen Build-Fehler
 // bei versehentlichem Client-Import. VERCEL_API_TOKEN + VERCEL_PROJECT_ID sind
@@ -39,13 +39,14 @@ export type VercelDomainBody = {
  *
  * EMPIRISCH KORRIGIERT (7c-2b-Vorab-Check, echter Doppel-Add): der Owner-Retry auf die
  * EIGENE Projekt-Domain liefert real HTTP 409 mit error.code "domain_already_in_use"
- * (NICHT 400, wie die Doku nahelegte) -> `already_on_project` (Heilungsausloeser). Der
- * 409-Body traegt das aktuelle Domain-Objekt in error.domain mit -> kein Refetch noetig.
+ * (NICHT 400, wie die Doku nahelegte) -> `already_on_project`. Bis Phase 13.7 war das der
+ * Heilungsausloeser; seit der Scheibe K2b (Zuschnitt P13.7-36, (2)) LEHNT der Aufrufer
+ * diesen Fall ab und legt keine Zeile an — deshalb traegt das Ergebnis kein Domain-Objekt mehr.
  */
 export type VercelAddResult =
   | { kind: "ok"; body: VercelDomainBody }
-  // 409 + code "domain_already_in_use" + projectId === UNSER Projekt -> heilen.
-  | { kind: "already_on_project"; domain: VercelDomainBody | null }
+  // 409 + code "domain_already_in_use" + projectId === UNSER Projekt -> der Aufrufer lehnt ab.
+  | { kind: "already_on_project" }
   // jedes andere 409 -> Domain gehoert einem ANDEREN Konto/Projekt.
   | { kind: "conflict_other_account" }
   // 400 -> Vercel haelt die Domain fuer ungueltig (Autoritaet fuer Gueltigkeit).
@@ -58,7 +59,7 @@ export type VercelAddResult =
   | { kind: "error"; status: number };
 
 type VercelErrorBody = {
-  error?: { code?: string; projectId?: string; domain?: VercelDomainBody };
+  error?: { code?: string; projectId?: string };
 };
 
 /**
@@ -105,9 +106,10 @@ export async function addDomainToVercel(
   const err = (body as VercelErrorBody | null)?.error;
 
   if (res.status === 409) {
-    // Diskriminator: eigenes Projekt (heilen) vs. fremdes Konto (Konflikt).
+    // Diskriminator: eigenes Projekt (der Aufrufer lehnt ab, seit K2b) vs. fremdes Konto
+    // (Konflikt).
     if (err?.code === "domain_already_in_use" && err.projectId === projectId) {
-      return { kind: "already_on_project", domain: err.domain ?? null };
+      return { kind: "already_on_project" };
     }
     return { kind: "conflict_other_account" };
   }

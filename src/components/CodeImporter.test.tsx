@@ -137,7 +137,7 @@ vi.mock("@/app/projects/actions", () => ({
 // actions server-only-Code (status/register) — hier mocken, sonst laedt der echte
 // Server-Code beim Import. Leere Liste -> die Domain-UI rendert nur das Add-Formular.
 vi.mock("@/app/projects/domain-actions", () => ({
-  addCustomDomain: vi.fn(async () => ({ ok: true, status: "pending", healed: false })),
+  addCustomDomain: vi.fn(async () => ({ ok: true, status: "pending" })),
   checkDomainStatusAction: vi.fn(async () => ({
     ok: false,
     reason: "not_found",
@@ -2007,6 +2007,38 @@ describe("CodeImporter — safeAction: geworfene Server-Action-Fehler", () => {
     // Fallback waere der Editor faelschlich auf den Leerzustand gefallen).
     expect(screen.getAllByText("Beta").length).toBeGreaterThan(0);
     expect(document.body.textContent).not.toContain("Noch keine gespeicherten Projekte");
+  });
+
+  // Phase 13.7, Scheibe K2b (Zuschnitt P13.7-36, (1)): verweigert der Server das Loeschen,
+  // zeigt die Oberflaeche seine Meldung, und das Projekt bleibt in der Liste. Struktur-
+  // Zusicherung (DOM-Text), keine Sichtbarkeit — die Testumgebung wertet kein CSS aus.
+  it("U1: Löschen VERWEIGERT (Custom-Domain) -> Meldung erscheint, Projekt bleibt, keine Neuliste", async () => {
+    const PROJECTS = [
+      { id: "proj-1", name: "Alpha", updated_at: "2026-07-27T10:00:00.000Z" },
+      { id: "proj-2", name: "Beta", updated_at: "2026-07-27T09:00:00.000Z" },
+    ];
+    deleteProject.mockImplementationOnce((async () => ({
+      ok: false,
+      error: "Bitte entferne zuerst die verbundene Domain.",
+    })) as never);
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialProjects={PROJECTS}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^Projekte/ }));
+    const listCallsBefore = listProjects.mock.calls.length;
+    fireEvent.click(screen.getAllByRole("button", { name: "Loeschen" })[0]);
+
+    await waitFor(() =>
+      expect(document.body.textContent).toContain("Bitte entferne zuerst die verbundene Domain."),
+    );
+    expect(deleteProject).toHaveBeenCalledWith("proj-1");
+    expect(screen.getAllByText("Alpha").length).toBeGreaterThan(0);
+    expect(listProjects.mock.calls.length).toBe(listCallsBefore);
   });
 });
 

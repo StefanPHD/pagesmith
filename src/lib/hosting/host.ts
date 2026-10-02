@@ -219,7 +219,32 @@ export function slugForLabel(name: string | null | undefined): string {
   return slug || "seite";
 }
 
-/** Kurzer, kollisionsarmer Suffix ([a-z0-9], 6 Zeichen) fuer die Label-Vergabe. */
+// Alphabet und Laenge des Label-Suffixes ([a-z0-9], 6 Zeichen) — unveraendert seit vor K2b.
+const LABEL_SUFFIX_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
+const LABEL_SUFFIX_LENGTH = 6;
+// Groesstes Vielfaches von 36 unter 256 (7 * 36): Bytes ab hier werden VERWORFEN, sonst
+// waeren die ersten vier Zeichen des Alphabets haeufiger (256 = 7 * 36 + 4).
+const LABEL_SUFFIX_BYTE_LIMIT = 252;
+
+/**
+ * Kurzer, kollisionsarmer Suffix ([a-z0-9], 6 Zeichen) fuer die Label-Vergabe.
+ *
+ * KRYPTOGRAFISCHER ZUFALL (Phase 13.7, Scheibe K2b, Zuschnitt P13.7-36, (3)): das GLOBALE
+ * crypto.getRandomValues (Web Crypto), gelesen beim AUFRUF, nicht beim Laden des Moduls.
+ * KEIN node:crypto-Import — diese Datei liegt auch im Client-Bundle (CodeImporter ist
+ * "use client"). Gleichverteilt durch Verwerfen: nur Bytes < 252 zaehlen, Zeichen =
+ * Alphabet[Byte % 36].
+ */
 export function randomLabelSuffix(): string {
-  return Math.random().toString(36).slice(2, 8).padEnd(6, "0");
+  let out = "";
+  while (out.length < LABEL_SUFFIX_LENGTH) {
+    const bytes = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(bytes);
+    for (const b of bytes) {
+      if (b >= LABEL_SUFFIX_BYTE_LIMIT) continue;
+      out += LABEL_SUFFIX_ALPHABET[b % LABEL_SUFFIX_ALPHABET.length];
+      if (out.length === LABEL_SUFFIX_LENGTH) break;
+    }
+  }
+  return out;
 }

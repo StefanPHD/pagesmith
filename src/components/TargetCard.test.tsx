@@ -116,7 +116,7 @@ vi.mock("@/app/projects/actions", () => ({
 // DomainManager haengt in der Veroeffentlichen-Flaeche des Containers und zoege sonst
 // server-only-Code (status/register) in die Testumgebung.
 vi.mock("@/app/projects/domain-actions", () => ({
-  addCustomDomain: vi.fn(async () => ({ ok: true, status: "pending", healed: false })),
+  addCustomDomain: vi.fn(async () => ({ ok: true, status: "pending" })),
   checkDomainStatusAction: vi.fn(async () => ({
     ok: false,
     reason: "not_found",

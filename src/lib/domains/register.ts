@@ -36,9 +36,10 @@ export type AddDomainReason =
 
 export type AddDomainResult =
   // status ist IMMER "pending" — nie aus Vercels (unzuverlaessigem) verified-Flag
-  // abgeleitet; der echte Status kommt aus dem Config-Poll (7c-2c). healed=true, wenn
-  // Vercel die Domain bereits auf UNSEREM Projekt hatte und die DB-Zeile nachgeholt wurde.
-  | { ok: true; status: "pending"; healed: boolean }
+  // abgeleitet; der echte Status kommt aus dem Config-Poll (7c-2c). Ein Feld "healed" gibt
+  // es seit K2b nicht mehr: eine Zeile wird nie aus einem 409 mit eigener projectId
+  // nachgeholt (Phase 13.7, Zuschnitt P13.7-36, (2), Entscheidungen D1/D4).
+  | { ok: true; status: "pending" }
   | { ok: false; error: string; reason: AddDomainReason };
 
 /**
@@ -124,7 +125,7 @@ export async function registerCustomDomain(
     if (existing) {
       if (existing.project_id === params.projectId) {
         // Schon auf DIESEM Projekt registriert -> idempotenter Erfolg (kein Vercel-Call).
-        result = { ok: true, status: "pending", healed: false };
+        result = { ok: true, status: "pending" };
         audit = { ...audit, outcome: "already_registered_self" };
         return result;
       }
@@ -175,6 +176,21 @@ export async function registerCustomDomain(
 
     // 7) FEHLER-MAPPING (diskriminiert ueber kind, nie ueber rohe Codes).
     switch (vercel.kind) {
+      case "already_on_project":
+        // KEINE UEBERNAHME (Phase 13.7, Scheibe K2b, Zuschnitt P13.7-36, (2); Entscheidungen
+        // D1/D5): Die Domain haengt schon an UNSEREM Vercel-Projekt, aber keine Zeile deckt
+        // sie (Schritt 3 haette sie gefunden). Wer sie angelegt hat, ist hier nicht
+        // feststellbar — bis K2b wurde die Zeile fuer JEDES anfragende Konto nachgeholt
+        // (Befund B2). Jetzt: kein persistDomainRow, kein weiterer Vercel-Aufruf, genau ein
+        // Audit-Eintrag; eine verwaiste Domain raeumt der Owner von Hand auf
+        // (supabase/checks/verwaiste-domains.sql). Die Meldung behauptet keine Ursache.
+        result = {
+          ok: false,
+          error: "Domain konnte nicht registriert werden.",
+          reason: "vercel_error",
+        };
+        audit = { ...audit, outcome: "rejected_already_on_project" };
+        return result;
       case "conflict_other_account":
         result = {
           ok: false,
@@ -213,12 +229,8 @@ export async function registerCustomDomain(
         return result;
     }
 
-    // vercel.kind === "ok" | "already_on_project" -> beides muendet in Persistenz.
-    // HEILUNG: das aktuelle Domain-Objekt liegt beim 409 bereits im Body (error.domain),
-    // kein Refetch noetig. status bleibt IMMER "pending".
-    const healed = vercel.kind === "already_on_project";
-    const domainBody: VercelDomainBody | null =
-      vercel.kind === "ok" ? vercel.body : vercel.domain;
+    // vercel.kind === "ok" — der einzige Weg in die Persistenz. status bleibt IMMER "pending".
+    const domainBody: VercelDomainBody = vercel.body;
     const verification = domainBody?.verification ?? null;
     // Vercels autoritativer apexName -> spaetere Apex-Erkennung (7c-2c) ohne PSL.
     const apexName = domainBody?.apexName ?? null;
@@ -232,14 +244,14 @@ export async function registerCustomDomain(
     });
     if (persist === "race") {
       // 23505 auf custom_host -> paralleler Add hat bereits geschrieben -> idempotent.
-      result = { ok: true, status: "pending", healed };
-      audit = { ...audit, outcome: healed ? "healed_race" : "success_race" };
+      result = { ok: true, status: "pending" };
+      audit = { ...audit, outcome: "success_race" };
       return result;
     }
     if (persist !== null) throw new Error(persist);
 
-    result = { ok: true, status: "pending", healed };
-    audit = { ...audit, outcome: healed ? "healed" : "success" };
+    result = { ok: true, status: "pending" };
+    audit = { ...audit, outcome: "success" };
     return result;
   } catch (e) {
     result = { ok: false, error: "Interner Fehler.", reason: "internal_error" };

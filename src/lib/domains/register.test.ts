@@ -121,7 +121,7 @@ describe("registerCustomDomain (Scheibe 7c-2b)", () => {
       domainName: "landing.kunde.de",
     });
 
-    expect(result).toEqual({ ok: true, status: "pending", healed: false });
+    expect(result).toEqual({ ok: true, status: "pending" });
     const dom = domainInserts(rec);
     expect(dom).toHaveLength(1);
     expect(dom[0].row).toMatchObject({
@@ -203,7 +203,7 @@ describe("registerCustomDomain (Scheibe 7c-2b)", () => {
       domainName: "landing.kunde.de",
     });
 
-    expect(result).toEqual({ ok: true, status: "pending", healed: false });
+    expect(result).toEqual({ ok: true, status: "pending" });
     expect(addDomainToVercel).not.toHaveBeenCalled();
     expect(domainInserts(rec)).toHaveLength(0);
     expect(auditInserts(rec)[0].row.outcome).toBe("already_registered_self");
@@ -266,27 +266,30 @@ describe("registerCustomDomain (Scheibe 7c-2b)", () => {
     expect(auditInserts(rec)[0].row.outcome).toBe("vercel_invalid_domain");
   });
 
-  it("Vercel 409 eigenes Projekt (domain_already_in_use) -> HEILUNG: Insert aus error.domain, ok+healed, Audit 'healed'", async () => {
+  // Phase 13.7, Scheibe K2b (Zuschnitt P13.7-36, (2); Entscheidungen D1/D5). ERSETZT den Test
+  // "HEILUNG" aus 7c-2b, der den Insert aus error.domain zusicherte. Die Erwartung stammt aus
+  // der Entscheidung (Ablehnung, kein Insert, genau ein Audit), nicht aus dem Code.
+  // EINZIGER Faenger der Mutation "Heil-Pfad wiederhergestellt".
+  it("K2b-R1: Vercel 409 eigenes Projekt (already_on_project) -> ABGELEHNT: kein Insert, ein Vercel-Aufruf, genau 1 Audit 'rejected_already_on_project'", async () => {
     const { rec } = makeAdmin(greenCfg());
-    addDomainToVercel.mockResolvedValue({
-      kind: "already_on_project",
-      domain: { name: "landing.kunde.de", verified: true, verification: [{ type: "TXT", value: "x" }] },
-    });
+    addDomainToVercel.mockResolvedValue({ kind: "already_on_project" });
 
     const result = await registerCustomDomain("user-1", {
       projectId: "proj-1",
       domainName: "landing.kunde.de",
     });
 
-    expect(result).toEqual({ ok: true, status: "pending", healed: true });
-    const dom = domainInserts(rec);
-    expect(dom).toHaveLength(1);
-    expect(dom[0].row).toMatchObject({
-      custom_host: "landing.kunde.de",
-      verification_status: "pending",
-      verification: [{ type: "TXT", value: "x" }],
+    expect(result).toEqual({
+      ok: false,
+      error: "Domain konnte nicht registriert werden.",
+      reason: "vercel_error",
     });
-    expect(auditInserts(rec)[0].row.outcome).toBe("healed");
+    expect(domainInserts(rec)).toHaveLength(0);
+    expect(addDomainToVercel).toHaveBeenCalledTimes(1);
+    const audits = auditInserts(rec);
+    expect(audits).toHaveLength(1);
+    expect(audits[0].row.outcome).toBe("rejected_already_on_project");
+    // Positivkontrolle derselben Fixture: der Normalfall schreibt eine Zeile (Happy-Path oben).
   });
 
   it("Vercel-Timeout -> generischer Fehler, Audit 'vercel_timeout'", async () => {
@@ -321,7 +324,7 @@ describe("registerCustomDomain (Scheibe 7c-2b)", () => {
       domainName: "landing.kunde.de",
     });
 
-    expect(result).toEqual({ ok: true, status: "pending", healed: false });
+    expect(result).toEqual({ ok: true, status: "pending" });
     expect(auditInserts(rec)[0].row.outcome).toBe("success_race");
   });
 
@@ -347,7 +350,7 @@ describe("registerCustomDomain (Scheibe 7c-2b)", () => {
       domainName: "landing.kunde.de",
     });
 
-    expect(result).toEqual({ ok: true, status: "pending", healed: false });
+    expect(result).toEqual({ ok: true, status: "pending" });
     expect(domainInserts(rec)).toHaveLength(2);
     expect(auditInserts(rec)[0].row.outcome).toBe("success");
   });

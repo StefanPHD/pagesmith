@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { errorName } from "@/lib/errors";
 import { META_TARGET } from "@/lib/capi/token";
 import type { Mapping } from "@/lib/mappings";
 import {
@@ -2158,8 +2159,23 @@ export async function publishProject(
   return restored ? { ok: true, url, label, restored } : { ok: true, url, label };
 }
 
+// Neutrale Meldungen von deleteProject (Phase 13.7, Scheibe K2b, Entscheidung D3). Sie
+// behaupten keine Ursache; der Test schreibt den Wortlaut selbst aus.
+const DELETE_FAILED_MESSAGE = "Projekt konnte nicht gelöscht werden.";
+const DELETE_HAS_CUSTOM_DOMAIN_MESSAGE = "Bitte entferne zuerst die verbundene Domain.";
+
 /**
  * Loescht GENAU eine Zeile des Users. user_id-Filter zusaetzlich zur RLS.
+ *
+ * RIEGEL CUSTOM-DOMAIN (Phase 13.7, Scheibe K2b, Zuschnitt P13.7-36, (1); Entscheidungen
+ * D2/D3): Traegt das Projekt eine domains-Zeile mit custom_host, wird NICHT geloescht — die
+ * Kaskade aus 0006 naehme die Zeile mit, und die Domain bliebe bei Vercel verwaist
+ * (Befunde B2, F5). Die Pruefung sitzt nach getUser() und VOR dem Delete, laeuft ueber den
+ * Admin-Client (unter domains_select_own waeren "keine Zeile" und "keine Zeile sichtbar"
+ * nicht zu trennen), filtert auf projects.user_id = Sitzungsnutzer (verraet nichts ueber
+ * fremde Projekte) und liest nur die Anzahl. FAIL-CLOSED: Lesefehler, Wurf oder keine
+ * Anzahl -> keine Loeschung. Die Label-Zeile (custom_host null) haelt das Loeschen nicht auf.
+ * Das Delete selbst bleibt beim Nutzer-Client.
  */
 export async function deleteProject(id: string): Promise<ActionResult> {
   const supabase = await createClient();
@@ -2168,13 +2184,38 @@ export async function deleteProject(id: string): Promise<ActionResult> {
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Nicht eingeloggt." };
 
+  let customDomainCount: number | null = null;
+  try {
+    const admin = createAdminClient();
+    const { count, error: domErr } = await admin
+      .from("domains")
+      .select("label, projects!inner(user_id)", { count: "exact", head: true })
+      .eq("project_id", id)
+      .eq("projects.user_id", user.id)
+      .not("custom_host", "is", null);
+    if (domErr) {
+      console.error("[deleteProject] domain check failed:", errorName(domErr));
+    } else if (typeof count === "number") {
+      customDomainCount = count;
+    }
+  } catch (e) {
+    console.error("[deleteProject] domain check threw:", errorName(e));
+  }
+  if (customDomainCount === null) return { ok: false, error: DELETE_FAILED_MESSAGE };
+  if (customDomainCount > 0) {
+    return { ok: false, error: DELETE_HAS_CUSTOM_DOMAIN_MESSAGE };
+  }
+
   const { error } = await supabase
     .from("projects")
     .delete()
     .eq("id", id)
     .eq("user_id", user.id);
 
-  if (error) return { ok: false, error: error.message };
+  if (error) {
+    console.error("[deleteProject] delete failed:", errorName(error));
+    return { ok: false, error: DELETE_FAILED_MESSAGE };
+  }
   return { ok: true };
 }
 

@@ -214,6 +214,45 @@ describe("slugForLabel / randomLabelSuffix", () => {
   });
 });
 
+// Phase 13.7, Scheibe K2b (Zuschnitt P13.7-36, (3)): kryptografischer Label-Zufall. Die
+// erwarteten Suffixe sind aus der Entscheidung von Hand gerechnet (Alphabet
+// "0123456789abcdefghijklmnopqrstuvwxyz", Zeichen = Alphabet[Byte % 36], Bytes >= 252
+// verworfen), nicht aus dem Code abgelesen.
+describe("randomLabelSuffix — Zufallsquelle (Phase 13.7, K2b)", () => {
+  function feedBytes(seq: number[]) {
+    return vi
+      .spyOn(globalThis.crypto, "getRandomValues")
+      .mockImplementation(<T extends ArrayBufferView | null>(arr: T): T => {
+        const view = arr as unknown as Uint8Array;
+        view.fill(0);
+        view.set(seq.slice(0, view.length));
+        return arr;
+      });
+  }
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  // Faengt die Mutation "zurueck auf Math.random" AN DER QUELLE: Math.random ist auf eine
+  // Konstante gelegt; eine Implementierung darueber lieferte "i00000", nie "01az0z". H2 faellt
+  // unter derselben Mutation ebenfalls (seine Bytes wirken dann nicht), prueft aber das
+  // Verwerfen, nicht die Quelle.
+  it("H1: der Suffix kommt aus crypto.getRandomValues, nicht aus Math.random", () => {
+    const rv = feedBytes([0, 1, 10, 35, 36, 71]);
+    const mr = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    expect(randomLabelSuffix()).toBe("01az0z");
+    expect(rv).toHaveBeenCalled();
+    expect(mr).not.toHaveBeenCalled();
+  });
+
+  // EINZIGER Faenger der Mutation "Modulo ohne Verwerfen": dann ergaebe dieselbe Folge
+  // "03125z" (252, 255, 253, 254 zaehlten als 0, 3, 1, 2).
+  it("H2: Bytes ab 252 werden verworfen (Gleichverteilung), die folgenden zaehlen", () => {
+    feedBytes([252, 255, 253, 254, 5, 251, 0, 200, 100, 36]);
+    expect(randomLabelSuffix()).toBe("5z0ks0");
+  });
+});
+
 // Phase 13.7, Scheibe K2a (Zuschnitt P13.7-31): reservierte Hosts. Die Erwartungen stammen
 // aus den Entscheidungen E1/E2 (Quelle, Label-Grenze, fail-closed), nicht aus dem Code.
 describe("isReservedHost (Phase 13.7, K2a; env=beispiel.net)", () => {

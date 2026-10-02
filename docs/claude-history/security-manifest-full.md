@@ -76,7 +76,7 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   nicht erhoben; heute benutzt niemand ausser dem Owner das Produkt.
   Dieser Absatz ERSETZT den Zusatz vom selben Tag, der die Lücke gemeldet hatte (umgestuft, nicht
   annotiert). Befund und Abschluss: Vermerke P13.6-112 und P13.6-130 der Phase 13.6
-  (docs/aktiver-stand.md).
+  (docs/claude-history/phase-13.6-formular-relay.md).
 - E-MAIL-BESTÄTIGUNG wieder aktiv:
   RISIKO: fürs MVP deaktiviert (sofort eingeloggt) -> offene Registrierung =
   Spam-Accounts, Ressourcen-/Kosten-Missbrauch, Wegwerf-Identitäten.

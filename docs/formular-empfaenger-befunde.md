@@ -2052,14 +2052,14 @@ Doku widerspricht sich zudem an dieser Stelle. (3) Die Daten liegen in den USA, 
 ### Messung 2026-10-01 (Owner, Phase 13.6, Scheibe "Zapier ins Relay", Messkandidaten ZM1–ZM3, ZM6, ZM2b)
 
 **PROVENIENZ:** GEMESSEN, OWNER, live, 2026-10-01, im bezahlten Zapier-Monat. Phase 0 am alten
-Code vor der Aufnahme in die Host-Liste: docs/aktiver-stand.md, Vermerk P13.6-102 der Phase
+Code vor der Aufnahme in die Host-Liste: docs/claude-history/phase-13.6-formular-relay.md, Vermerk P13.6-102 der Phase
 13.6; Phase 1 nach Bau-Commit `93230df`: ebenda, Vermerk P13.6-103. Instrument für (r) bis (u):
 curl 8.14.1, Git Bash, schannel, ein urlencoded-POST wie der des Relays (Rumpf mit
 `interesse=kurs&interesse=beratung`, fremder `Origin`, je ein eigener `probe`-Wert); für (v) und
 (x): Chrome 154 und das Vercel-Dashboard. Webhook-Adressen stehen nur gekürzt in dieser Datei.
 **ZEITANGABEN:** Maßgeblich ist der `Date`-Kopf der Antworten (2026-10-01, 06:30:42 bis 06:30:44
 GMT); Angaben aus Zapiers Oberfläche sind als OBERFLÄCHENANGABE gekennzeichnet (s. (w)).
-**OFFEN:** ZM4, ZM5, ZM7 — docs/aktiver-stand.md, Arbeit P13.6-104 der Phase 13.6. Die Liste
+**OFFEN:** ZM4, ZM5, ZM7 — docs/claude-history/phase-13.6-formular-relay.md, Arbeit P13.6-104 der Phase 13.6. Die Liste
 "Messkandidaten Zapier" oben bleibt als Stand vom 2026-09-30 stehen.
 
 **(q) ZM1 — DIE ADRESSE.** GEMESSEN (Owner, abgelesen im Konto): Die Catch-Hook-Adresse beginnt

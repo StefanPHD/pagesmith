@@ -906,7 +906,7 @@ Zusammenfassung (s. „Doku-Runden" oben). Ein gezielter Vergleich gegen
 
 Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
 
-- **Next.js 16.3.5**, App Router, Turbopack. Die Proxy-Datei macht
+- **Next.js 16.3.8**, App Router, Turbopack. Die Proxy-Datei macht
   Host-Inversion (App-Host vs. Serving-Host). TypeScript durchgehend strict,
   Node v24.16.0 lokal, Tailwind CSS.
 - **Supabase** (Postgres + Auth + RLS): ausschließlich über den

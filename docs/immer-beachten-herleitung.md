@@ -985,13 +985,16 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   - NODE: Eintrag in .next/server/functions-config-manifest.json mit "runtime": "nodejs",
     dazu .next/server/middleware.js im CommonJS-Format (require/module.exports) plus ein
     .nft.json (Node File Trace) — beide gibt es im Edge-Fall nicht.
-  GRENZE: Gilt für Next 16.3.5 und den Turbopack-Build dieses Projekts. Ändert Next die
+  GRENZE: Gilt für Next 16.3.8 und den Turbopack-Build dieses Projekts. Ändert Next die
   Ausgabe oder das Manifest-Schema, ist die Zuordnung neu zu messen — die REGEL bleibt.
-  AM SPRUNG 16.2.12 -> 16.3.5 (Phase 11.10, 2026-09-12) IST DIE ZUORDNUNG ERNEUT ERHOBEN
-  WORDEN UND WAR IDENTISCH: functions-config-manifest.json führt
-  functions["/_middleware"].runtime = "nodejs", das middleware-manifest bleibt leer, und
-  .next/server/edge/ entsteht nicht. DIESER SATZ STEHT HIER, DAMIT DIE NÄCHSTE RUNDE NICHT
-  EIN DRITTES MAL DASSELBE MISST — gemessen wird erst wieder beim nächsten Sprung.
+  AM SPRUNG 16.3.5 -> 16.3.8 (Phase 13.7, Scheibe "Abhängigkeiten", 2026-10-02) IST DIE
+  ZUORDNUNG ERNEUT ERHOBEN WORDEN UND WAR IDENTISCH: functions-config-manifest.json führt
+  functions["/_middleware"].runtime = "nodejs", das Manifest ist vorher und nachher als Ganzes
+  gleich (Matcher eingeschlossen), das middleware-manifest bleibt leer (0/0),
+  .next/server/middleware.js plus .nft.json liegen vor, und .next/server/edge/ entsteht nicht
+  (GEMESSEN, CC, 2026-10-02; Vermerk P13.7-28 der Phase 13.7). Ebenso am Sprung 16.2.12 ->
+  16.3.5 (Phase 11.10, 2026-09-12). DIESER SATZ STEHT HIER, DAMIT DIE NÄCHSTE RUNDE NICHT
+  EIN VIERTES MAL DASSELBE MISST — gemessen wird erst wieder beim nächsten Sprung.
   FOLGE, und sie ist der eigentliche Punkt: Jede künftige Runtime-Frage wird AM MANIFEST
   beantwortet. Nie am Etikett, nie an einem Doku-Zitat. Ein Zitat sagt, was gelten SOLL;
   das Manifest sagt, was der Build TATSÄCHLICH erzeugt hat.

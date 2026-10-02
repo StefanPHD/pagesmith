@@ -573,18 +573,17 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   TRAGENDE KONTROLLE: Dependabot aktiviert — Alerts, Security Updates, Dependency Graph, 1 Regel.
   EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
   BINDET-AN: laufend (aktiv).
-- DEPENDABOT-MELDUNGEN — DIE ACHT VOM 2026-09-12 ERLEDIGT (2026-09-14); SEIT DEM 2026-10-02
-  WIEDER OFFEN: DREI POSITIONEN IN `npm audit`, MELDUNG 45 GESICHTET, BEHEBUNG GESCHNITTEN
-  (Zuschnitt P13.7-27 der Phase 13.7):
+- DEPENDABOT-MELDUNGEN — NULL OFFEN NACH DEM SPRUNG AUF next 16.3.8 (2026-10-02). RUHENDER
+  POSTEN — er sagt, wie gesichtet wird, und ist kein offener:
   RISIKO: Eine bekannte Verwundbarkeit in einer Abhaengigkeit trifft einen erreichbaren
   Produktivpfad, ohne dass es jemand sieht. Am 2026-09-12 standen acht offene Meldungen auf dem
   Default-Branch, davon zwei kritisch.
-  DER ZUSTAND (2026-10-02): `npm audit` meldet DREI Positionen — 1 kritisch (next 16.3.5,
-  GHSA-vcvr-r3jv-pc5j, betroffen `<16.3.6`), 2 hoch (undici 7.29.0; brace-expansion 1.1.18 und
-  5.0.9, beide allein in der Entwicklungs-Kette) — GEMESSEN, CC, 2026-10-02. Dependabot: offen ist
-  mindestens Meldung 45 (undici) — OWNER-ANGABE 2026-10-02; die Gesamtzahl ist NICHT erhoben (gh
-  ist auf dieser Maschine nicht installiert, die Liste liegt nicht im Repo). Sichtung: Vermerk
-  P13.7-26 der Phase 13.7.
+  DER ZUSTAND (2026-10-02): `npm audit` meldet NULL Positionen in jedem Schweregrad — GEMESSEN,
+  CC, 2026-10-02, am installierten Stand des Bau-Commits `5567d14` (next 16.3.8, undici 7.30.0,
+  brace-expansion 1.1.21 und 5.0.12). Dependabot fuehrt NULL offene Meldungen — OWNER-ANGABE
+  2026-10-02, nach dem Push; NICHT von CC gemessen (gh ist auf dieser Maschine nicht installiert,
+  die Liste liegt nicht im Repo). Sichtung und Abschluss: Vermerke P13.7-26 und P13.7-28 der
+  Phase 13.7.
   DAS FRUEHERE BINDET-AN IST EINGELOEST: Es lautete "DEN NEXT-SPRUNG, der als eigene Arbeit vor der
   naechsten Bau-Scheibe entschieden ist". Der Sprung ist gefahren und abgeschlossen —
   docs/roadmap.md, Roadmap-Zeile 11.10, Marker [x], BAU-COMMIT `448fbff`; dort ist auch `npm audit`
@@ -629,15 +628,16 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
     Null hinaus: Bei der naechsten Meldung gehen die zwei Zaehlungen wieder auseinander.
   · VORHER-STAND: SECHZEHN Dependabot-Meldungen vor den Dev-Bumps vom 2026-09-12
     (Commit 9da659c). OWNER-ANGABE.
-  TRAGENDE KONTROLLE: seit dem 2026-10-02 KEINE technische: gegen die installierte Fassung next
-  16.3.5 meldet `npm audit` drei Positionen; fuer Meldung 45 traegt die ERREICHBARKEIT (Vermerk
-  P13.7-26 der Phase 13.7), fuer next ist sie nur angeprobt. Bis zum Sprung trug allein die ERREICHBARKEIT: kein
+  TRAGENDE KONTROLLE: seit dem 2026-10-02 wieder eine TECHNISCHE — die installierte Fassung next
+  16.3.8, gegen die `npm audit` null meldet (Vermerk P13.7-28 der Phase 13.7). Bis zum Sprung auf
+  16.3.5 (Phase 11.10, 2026-09-12) trug allein die ERREICHBARKEIT: kein
   Produktivpfad dieses Projekts rief sharp oder postcss, next/image war nicht in Gebrauch, und die
   Produktion lief nach Owner-Angabe nicht auf Windows. Diese Pruefung bleibt als Begruendung fuer
   jenen Zeitraum und als Verfahren fuer die naechste Meldung.
-  EHRLICHE EINORDNUNG: Die acht Meldungen vom 2026-09-12 sind GESCHLOSSEN; keine der acht war ein
-  Gate. Seit dem 2026-10-02 sind wieder Meldungen offen (DER ZUSTAND oben). Die Dependabot-Zahl ist
-  eine OWNER-ANGABE, `npm audit` eine Messung — zwei Instrumente mit verschiedener Zaehlung.
+  EHRLICHE EINORDNUNG: Die acht Meldungen vom 2026-09-12 und die drei Positionen vom 2026-10-02
+  sind GESCHLOSSEN; keine davon war ein Gate. Tier 2 bleibt. Die Dependabot-Null ist eine
+  OWNER-ANGABE, die Null von `npm audit` eine Messung — zwei Instrumente mit verschiedener
+  Zaehlung (s. oben).
   ZWEI PUNKTE, DIE AM 2026-09-12 OFFEN BLIEBEN, SIND GEGENSTANDSLOS UND GESTRICHEN — je mit dem
   Beleg der Erledigung:
   · "OB /_next/image TROTZ unoptimized ANTWORTET" war bewusst nicht erhoben, weil der Sprung die
@@ -648,8 +648,9 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
     Owner-Beobachtung ohne Erklaerung. Beide Next-Advisories sind mit 16.3.5 behoben; eine Meldung
     dazu waere unter keinem Manifest mehr offen, und die Null hat mit dem Sprung eine gemessene
     Ursache, die an jenem Verschwinden nicht haengt. Die Erklaerung selbst bleibt unerhoben.
-  BINDET-AN: DIE NAECHSTE MELDUNG (ARCHITEKT-VORSCHLAG 2026-09-14). Der Eintrag sagt, wie gesichtet
-  wird (je Meldung auf Erreichbarkeit, beide Zaehlungen nebeneinander). Die Dependabot-Zaehlung ist eine OWNER-ANGABE und das
+  BINDET-AN: DIE NAECHSTE MELDUNG (ARCHITEKT-VORSCHLAG 2026-09-14). Der Eintrag ist ein RUHENDER
+  Posten — er sagt, wie gesichtet wird (je Meldung auf Erreichbarkeit, beide Zaehlungen
+  nebeneinander), und ist kein offener. Die Dependabot-Zaehlung ist eine OWNER-ANGABE und das
   einzige Instrument fuer diese Achse. Bis zur Sichtung am 2026-09-12 waren zwei Meldungen ohne
   erhobene Erklaerung aus der Liste verschwunden, und wann sie verschwanden, ist nicht erhoben; die Erklaerung ist bis heute unerhoben. WER DIE NAECHSTE MELDUNG
   SICHTET, LIEST DIE DEPENDABOT-ZAHL DESHALB NEBEN `npm audit` UND NICHT STATT DESSEN — eine Null

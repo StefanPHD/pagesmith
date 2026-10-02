@@ -484,36 +484,121 @@ BAU-COMMIT: Aufklärung, read-only; CC, 2026-10-02, Code-Stand `7e14e07`.**
   über den Wortanfang "DEPENDABOT-MELDUNGEN" auf, und die Erreichbarkeits-Prüfung je Paket, auf
   die er zeigt, steht seit dem 2026-09-22 in docs/claude-md-herleitung.md und in der Vollfassung.
 
-**Zuschnitt P13.7-27 — SCHEIBE "ABHÄNGIGKEITEN". ARCHITEKTEN-SETZUNG 2026-10-02 (Angabe aus dem
-Auftrag). Stufe 1 (Plan) ausstehend; kein Code.**
-- UMFANG:
-  · undici im Lockfile auf ≥7.29.1, innerhalb des jsdom-Bereichs `^7.25.0` (Kandidat K-a der
-    Sichtung, Vermerk P13.7-26).
-  · brace-expansion auf die behobene Fassung, soweit innerhalb der bestehenden Bereiche.
-    GEMESSEN (Registry, 2026-10-02): 1.1.21 liegt in `^1.1.7`, 5.0.12 in `^5.0.5`.
-  · next von 16.3.5 auf eine behobene Patch-Fassung; die Wahl trifft der Plan.
-- ZIELVERSION next 16.3.8 (ARCHITEKT, 2026-10-02). GRUND: die einzige Fassung, die alle bekannten
-  Advisories schliesst — ein späterer Sprung bräuchte eine zweite Live-Regression. Die sieben
-  Advisories, die erst 16.3.8 schliesst, standen am 2026-10-02 nicht im globalen
-  Advisory-Verzeichnis und nicht in `npm audit`; ob 16.3.5 von ihnen betroffen ist, ist NICHT
-  ENTSCHEIDBAR (GELESEN: Release-Text v16.3.8 über die GitHub-API, 2026-10-02).
-- BINDENDE PRÜFUNGEN (ARCHITEKT, 2026-10-02): die Routen-Tabelle des Builds ist vorher und nachher
-  zeichengleich, alle Routen `ƒ`; live liefern zwei Hosts je ihre eigene Seite.
-  "ALLE ƒ" TRIFFT SCHON VORHER NICHT ZU (GEMESSEN, CC, 2026-10-02, `npm run build` auf
-  `7e14e07`, next 16.3.5): Die Tabelle führt acht Routen `ƒ` (`/`, `/api/capi`, `/api/e`,
-  `/api/f`, die drei `/api/oauth/google/*`, `/app-serve`) und zwei `○` (`/_not-found`, `/login`).
-  Tragend ist "zeichengleich"; die acht `ƒ` bleiben `ƒ`. Die Lesart ist dem Architekten gemeldet.
-- AUSDRÜCKLICH NICHT: jsdom 30 (Kandidat K-c), `overrides` (Kandidat K-b), andere Upgrades.
-- BINDET ÜBER DIE SCHEIBE HINAUS: nichts.
+**Zuschnitt P13.7-27 — SCHEIBE "ABHÄNGIGKEITEN". ABGELAUFEN mit Vermerk P13.7-28 (2026-10-02),
+verdichtet in derselben Runde.**
+- BINDET ÜBER DIE SCHEIBE HINAUS: nichts (ARCHITEKTEN-SETZUNG 2026-10-02).
+- WAS ABGELAUFEN IST, und wo es steht: der UMFANG (undici im jsdom-Bereich, brace-expansion in den
+  bestehenden Bereichen, next auf eine behobene Patch-Fassung) · die ZIELVERSION next 16.3.8 samt
+  Grund · die BINDENDEN PRÜFUNGEN (Routen-Tabelle zeichengleich, zwei Hosts je mit eigener Seite)
+  samt der Lesart zu "alle ƒ" · die AUSSCHLÜSSE (jsdom 30, `overrides`, andere Upgrades). Inhalt
+  und Ergebnis: Vermerk P13.7-28, Punkte (1) bis (3). Der Wortlaut vor der Verdichtung steht unter
+  Commit `f93f1ed`.
+
+**Vermerk P13.7-28 — ABSCHLUSS DER SCHEIBE "ABHÄNGIGKEITEN". Bau-Commit `5567d14`
+(`chore(deps): next 16.3.8, undici 7.30.0, brace-expansion — Advisories geschlossen`),
+2026-10-02.**
+
+(1) GEBAUT, GEGEN DEN ZUSCHNITT P13.7-27 (GEMESSEN AM REPO, CC, 2026-10-02):
+    · undici 7.29.0 → 7.30.0 — `npm update` nimmt die höchste Fassung in `^7.25.0`; der
+      Zuschnitt verlangte ≥7.29.1. brace-expansion 1.1.18 → 1.1.21 und 5.0.9 → 5.0.12.
+    · next 16.3.5 → 16.3.8, exakt gepinnt; `@next/env` und die acht `@next/swc-*` im
+      Gleichlauf. `eslint-config-next` und `@next/eslint-plugin-next` bleiben auf 16.2.9.
+    · ZIELVERSION 16.3.8 (ARCHITEKT, 2026-10-02): die einzige Fassung, die alle bekannten
+      Advisories schliesst — GHSA-vcvr-r3jv-pc5j und sieben weitere laut Release-Text v16.3.8
+      (GELESEN über die GitHub-API, 2026-10-02); ein späterer Sprung bräuchte eine zweite
+      Live-Regression. Die sieben standen am 2026-10-02 nicht im globalen Advisory-Verzeichnis
+      und nicht in `npm audit`; ob 16.3.5 von ihnen betroffen war, ist NICHT ENTSCHEIDBAR.
+      GHSA-vcvr war nach erster Probe nicht erreichbar (`next/og|ImageResponse` 0 Treffer).
+    · NICHT GEBAUT, wie zugeschnitten: jsdom 30, `overrides`, andere Upgrades.
+
+(2) BAU-NACHWEIS (GEMESSEN, CC, 2026-10-02):
+    · Mengennachweis je Schritt — Vergleich je Schlüssel in `packages` und der übrigen obersten
+      Felder des Lockfiles, je Lauf mit einer Köder-Änderung als Positivkontrolle: Schritt 1
+      (`npm update undici brace-expansion`) genau 3 Einträge, Schritt 2
+      (`npm install next@16.3.8 --save-exact`) genau 11 (Root, `next`, `@next/env`, acht
+      `@next/swc-*`), gesamt 14 = Soll. package.json: genau eine Zeile.
+    · `npm audit`: vorher 3 Positionen (1 kritisch, 2 hoch), nachher 0.
+    · Versionsprobe: `next` 16.3.8 in node_modules; Build-Zeile `▲ Next.js 16.3.8 (Turbopack)`.
+    · Routen-Tabelle zeichengleich, sha256 `bf8bc323…e664` vorher und nachher (Gegenprobe mit
+      einer veränderten Kopie: `cmp` meldet den Unterschied): acht `ƒ`, zwei `○` (`/_not-found`,
+      `/login`). "Alle ƒ" traf schon vorher nicht zu; tragend ist "zeichengleich" — LESART
+      BESTÄTIGT (ARCHITEKT, 2026-10-02).
+    · Proxy-Laufzeit: `functions-config-manifest.json`, `/_middleware.runtime` = `nodejs` vorher
+      und nachher, das Manifest als Ganzes gleich; `middleware-manifest.json` 0/0;
+      `middleware.js` plus `.nft.json` vorhanden; kein `server/edge/`.
+    · Gates: `tsc --noEmit` 0 · `lint` 0 Fehler, 1 bekannte Warnung (`consent.test.ts`) ·
+      `vitest run` 102 Dateien / 2797 Tests vorher wie nachher · `build` 0. Byte-Kontrolle:
+      package.json 35 LF, Lockfile 8694 LF, CR = 0, je wie vorher.
+
+(3) LIVE-TEST (OWNER, 2026-10-02 — alle Angaben OWNER-ANGABEN, nicht von CC gemessen):
+    · V1 — A/B aus, kein Einwilligungs-Dialog, kein Fan-Out-Ziel, auf beiden Testprojekten.
+    · V2 — beide Projekte nach Editor-Neuladen neu veröffentlicht, danach nichts geändert.
+    · V3 (vor dem Push) und N2/N3 (nach dem Deploy), je zweimal per
+      `fetch(location.href,{cache:'no-store'})`: Make-Seite 20007 Bytes, sha256
+      `e283fa67a19f336a03290ca7e1132e0b292bbc27975bc6cd5196c3c03cf91500`; Zapier-Seite
+      19999 Bytes, sha256 `824c1bbc0354fc2b795201c8459bc17733d76b28d0742a0039033d4a9016ffa8` —
+      vorher = nachher, die zwei Seiten verschieden. Das ist die bindende Prüfung "zwei Hosts je
+      mit eigener Seite".
+    · N0 — Production-Deployment `5567d14` auf main, Ready (Ablesung Vercel).
+    · N1 — Anmeldung, Editor, Make-Seite wie gewohnt; eine erfundene Subdomain antwortet 404.
+    · N4 — Seitenaufrufe der Make-Seite +1.
+    · N5 — `/api/e`: unbekannter Schlüssel → 204, Rumpf 0; Pflichtfeld fehlt → 400, Rumpf 0.
+    · N6 — Relay auf der Make-Seite: `/api/f` 204, Danke-Seite, Lauf "N6" in Make.
+    · N7 — Speichern und Veröffentlichen ohne Fehler.
+
+(4) BEZUGSWERT-ABGLEICH (GEMESSEN AM REPO, CC, 2026-10-02 — Suche nach den vollen sha256 im
+    Archiv der Phase 13.6, docs/claude-history/phase-13.6-formular-relay.md): BEIDE WERTE SIND
+    DIE DORTIGEN BEZUGSWERTE, Bytes und sha256 zeichengleich.
+    · Make: Vermerk P13.6-89, Punkt (3) (L1, 20007 Bytes, voller sha256), als Bezugspunkt
+      gesetzt in Setzung P13.6-100, (5), und erneut gemessen in Vermerk P13.6-103, Punkte (2)
+      und (3).
+    · Zapier: Vermerk P13.6-103, Punkt (4) (L2, 19999 Bytes, voller sha256).
+    · ABGELEITET: Neu-Veröffentlichen unter 16.3.5 (V2) und Ausliefern unter 16.3.8 (N2/N3)
+      ergeben denselben Text wie beim Phasenende 13.6.
+
+(5) GRENZEN (OWNER): nur Chrome · Cookie `__Host-ps_v` nicht geprüft (kein A/B aktiv) ·
+    Kill-Switch nicht geprüft · Meta-Weiterleitung nicht geprüft (Code unverändert) · Persist
+    nur über den Seitenaufruf-Zähler belegt. DAZU (CC, GEMESSEN AM REPO): `after()` ist in allen
+    Ingest-Tests gemockt (`vi.mock("next/server", …)`); sein Verhalten unter 16.3.8 belegt
+    allein N4. Server Actions belegt allein N7.
+
+(6) DEPENDABOT NACH DEM PUSH: 0 offene Meldungen (OWNER-ABLESUNG 2026-10-02).
+    BEOBACHTUNG (CC, 2026-10-02, Push-Ausgaben): Beim Push von `f93f1ed` und von `5567d14`
+    meldete GitHub je "1 vulnerability … (1 high)" mit Verweis auf `dependabot/45`, während
+    `npm audit` vor dem Bau drei Positionen führte, darunter next kritisch. Dependabot zählte die
+    next- und brace-expansion-Advisories zu diesem Zeitpunkt nicht. URSACHE NICHT ERHOBEN; dass
+    beim Push von `5567d14` der neue Scan noch nicht gelaufen war, ist ABGELEITET. Der Fall
+    belegt die Auflage des Manifest-Items DEPENDABOT-MELDUNGEN, die Dependabot-Zahl NEBEN
+    `npm audit` zu lesen.
+
+(7) NACHGEZOGEN IN DER DOKU-RUNDE DIESES VERMERKS: Manifest-Item DEPENDABOT-MELDUNGEN, beide
+    Fassungen, zurück auf den ruhenden Posten · Regel "DAS ETIKETT IM NEXT-BUILD-OUTPUT …", Kern
+    und Herleitung, auf 16.3.8 · docs/arbeitsweise.md, Abschnitt 4a, auf 16.3.8
+    (Änderungsantrag angenommen, OWNER 2026-10-02). NICHT nachgezogen, weil Zeitdokumente:
+    docs/roadmap.md, Zeile 11.10; docs/claude-md-herleitung.md; der gestrichene Punkt "WARUM DIE
+    ZWEI NEXT-MELDUNGEN …" in der Vollfassung des Manifests; Vermerk P13.7-26 dieser
+    Datei. AUSSERHALB DES REPOS, von CC nicht prüfbar: die Projektanweisung
+    "Next.js 16.3.5" (Roadmap-Zeile 11.10).
+
+(8) DEPLOY-WEG (OWNER-ABLESUNG Vercel, 2026-10-02): Push auf main → Production-Deployment;
+    Dependabot-Branches → Preview-Deployments.
+    · Punkt U4 des Vermerks P13.7-1 ist zur Hälfte beantwortet: der Deploy-Weg. Offen bleibt
+      der Umfang des Vercel-Tokens.
+    · Befund C3: "ob ein Push auf main deployt, ist NICHT ENTSCHEIDBAR" ist beantwortet — er
+      deployt. Offen bleiben der Umfang des Vercel-Tokens und dass die CI kein Merge-Gate ist;
+      Vorrat P13.7-7 bleibt mit diesem Rest stehen.
+    · ABGELEITET, NICHT GELESEN: Ob ein Production-Deployment auf das Ergebnis der CI wartet,
+      ist eine Einstellung bei Vercel bzw. GitHub; ohne sie geht ein Push auf main in Produktion,
+      auch wenn die CI rot ist. Bezug: Kandidat K9, Vorrat P13.7-30.
 
 ---
 
 ## Noch nicht geschnittene Arbeit
 
-Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Geschnitten ist seit
-dem 2026-10-02 die Scheibe "Abhängigkeiten" (Zuschnitt P13.7-27); die Reihenfolge der nächsten
-Arbeit steht in Entscheidung P13.7-25. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der
-Vorrat darunter.
+Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Abgeschlossen ist seit
+dem 2026-10-02 die Scheibe "Abhängigkeiten" (Vermerk P13.7-28); als nächste steht nach
+Entscheidung P13.7-25 "K2a" an, noch ohne Zuschnitt. Die Kandidaten stehen im Vermerk P13.7-1,
+Punkt (4); der Vorrat darunter.
 
 ---
 
@@ -601,3 +686,28 @@ P13.7-1, Befund N21.
 
 **Vorrat P13.7-23 — N23: KEIN WEG EINES SERVER-GEHEIMNISSES INS CLIENT-BUNDLE** (Nicht-Treffer
 mit Positivkontrolle; keine Handlung). Vermerk P13.7-1, Befund N23.
+
+**Vorrat P13.7-29 — ZWEI DEPENDABOT-VERSIONS-PRS FÜR LAUFZEIT-PAKETE STEHEN UNGEMERGT.**
+- BEFUND (OWNER-ABLESUNG in der Vercel-Liste, 2026-10-02): `@supabase/ssr` 0.12.0 → 0.12.7 und
+  `@supabase/supabase-js` 2.108.2 → 2.117.2, je als Preview-Deployment eines Dependabot-Branches;
+  nicht gemergt. Von CC nicht gesehen (die PR-Liste liegt nicht im Repo, `gh` ist nicht
+  installiert).
+- EINORDNUNG: Beide sind Laufzeit-Pakete — Auth und Sitzung, in package.json unter
+  `dependencies` (GELESEN AM CODE). Beide Zielfassungen liegen in den Bereichen von package.json
+  (`^0.12.0`, `^2.108.2`; ABGELEITET). .github/dependabot.yml nimmt sie nicht aus — ausgenommen
+  sind Major-Sprünge und vier exakt gepinnte Pakete (GELESEN AM CODE).
+- AUFLAGE (ARCHITEKT, 2026-10-02): Merge nur als eigene Scheibe mit Live-Regression.
+- TRIGGER: der nächste Zuschnitt nach K2a (Entscheidung P13.7-25), ODER früher, falls Dependabot
+  eine Sicherheitsmeldung zu einem der beiden Pakete erhebt.
+
+**Vorrat P13.7-30 — FRAGE ZU K9: LAUFEN PREVIEW-DEPLOYMENTS MIT DENSELBEN GEHEIMNISSEN UND
+DERSELBEN DATENBANK WIE PRODUCTION?**
+- ANLASS: Vermerk P13.7-28, Punkt (8) — Dependabot-Branches erzeugen Preview-Deployments.
+- STAND: Am Repo NICHT ENTSCHEIDBAR. Welche Umgebungsvariablen Production und Preview tragen,
+  steht in den Vercel-Einstellungen; nötig ist eine OWNER-ABLESUNG dort.
+- WARUM ES ZÄHLT (ABGELEITET): Trägt Preview die Werte der Produktion für
+  `SUPABASE_SERVICE_ROLE_KEY`, `SECRET_ENC_KEYS` oder `VERCEL_API_TOKEN`, läuft der Code jedes
+  Dependabot-Branches — samt fremdem Paket-Code — mit den Geheimnissen der Produktion und gegen
+  ihre Datenbank. Bezug: Befunde C3 und E2 des Vermerks P13.7-1.
+- BEZUG: Kandidat K9 (Vermerk P13.7-1).
+- KEIN TRIGGER GESETZT.

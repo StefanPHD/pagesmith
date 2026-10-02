@@ -434,8 +434,8 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   dazu .next/server/middleware.js im CommonJS-Format plus ein .nft.json.
   Edge = Eintrag in .next/server/middleware-manifest.json, Dateien unter server/edge/.
   Ändert Next die Ausgabe oder das Manifest-Schema, ist die Zuordnung neu zu messen — die
-  Regel bleibt. Beim Sprung auf 16.3.5 war sie unverändert; gemessen wird erst wieder beim
-  nächsten Sprung.
+  Regel bleibt. Beim Sprung auf 16.3.8 (2026-10-02) war sie unverändert; gemessen wird erst
+  wieder beim nächsten Sprung.
 
 - DIE NEXT-KONVENTIONSDATEI IST src/proxy.ts UND LÄUFT IN DER NODE-RUNTIME
   Sie exportiert die Funktion proxy. Die Laufzeit ist dort nicht konfigurierbar — Edge

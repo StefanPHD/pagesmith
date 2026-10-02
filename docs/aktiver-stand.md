@@ -896,6 +896,54 @@ im Chat; übermittelt im Auftrag der Doku-Runde).**
   (iv) trägt das: Die Sperr-Befehle haben zwei Einsetzstellen (Referenz und Ziel); der Umbau auf
   eine Stelle steht mit K3 an — Vorrat P13.7-42.
 
+**Zuschnitt P13.7-43 — SCHEIBE "SUPABASE-PAKETE" (Gegenstand von Vorrat P13.7-29).
+ARCHITEKTEN-ENTSCHEIDUNGEN 2026-10-02 (E1 bis E3, Angabe aus dem Auftrag); Formulierung CC.
+Muster: Scheibe "Abhängigkeiten" (Zuschnitt P13.7-27, Vermerk P13.7-28).**
+- UMFANG: `@supabase/ssr` 0.12.0 → 0.12.7 und `@supabase/supabase-js` 2.108.2 → 2.117.2; mit ziehen
+  die fünf exakt gepinnten Unterpakete (`auth-js`, `functions-js`, `postgrest-js`, `realtime-js`,
+  `storage-js`) 2.108.2 → 2.117.2 und `@supabase/phoenix` 0.4.2 → 0.4.5. Unverändert bleiben
+  `cookie` 1.1.1, `iceberg-js` 0.8.1 und `tslib` 2.8.1 (je die höchste bzw. einzige Fassung im
+  Bereich; GEMESSEN, `npm view`, CC, 2026-10-02).
+- ZIELVERSIONEN 0.12.7 und 2.117.2: die Fassungen der Dependabot-PRs (#22 bzw. #26), zugleich die
+  höchsten im Bereich und das dist-tag `latest` (GEMESSEN, `npm view`, CC, 2026-10-02).
+- (E1) LOKAL STATT GITHUB-MERGE, weil (a) die PRs #22 und #26 sich in denselben Lockfile-Einträgen
+  überschneiden — `@supabase/ssr` 0.12.7 verlangt als Peer `@supabase/supabase-js` `^2.114.0`, schon
+  #22 allein zieht supabase-js samt Unterpaketen auf 2.117.2 — und (b) nur lokal Mengennachweis und
+  vier Gates vor dem Push laufen (die CI ist kein Merge-Gate). Die PRs werden danach geschlossen bzw.
+  schliessen sich selbst.
+  RICHTIGGESTELLT (ARCHITEKT, 2026-10-02): Die frühere Begründung "gebaut auf einem Stand vor
+  5567d14, Lockfile veraltet" war falsch. GEMESSEN (CC, 2026-10-02, `git ls-remote`, `git fetch` der
+  zwei Commits, `git log`): `c5ca072` (#22, ssr) hat den Elternteil `5567d14` (08:30:17 UTC, 2,5
+  Minuten nach `5567d14`); `daef240` (#26, supabase-js) hat den Elternteil `2a69571`;
+  `git log 5567d14..HEAD -- package.json package-lock.json` liefert 0 Commits. Beide PR-Lockfiles
+  bauen auf dem heutigen auf.
+- (E2) VARIANTE R: Untergrenzen in package.json auf `^0.12.7` und `^2.117.2`. SOLL: package.json
+  genau 2 Zeilen, Lockfile genau 9 Einträge (Root-Eintrag, ssr, supabase-js, fünf Unterpakete,
+  phoenix). ZUSATZKONTROLLE: unser Lockfile gegen `c5ca072:package-lock.json` — genau 1 Unterschied,
+  der Root-Eintrag (dort `^2.108.2` für supabase-js). Grund für R: der Peer `^2.114.0` von ssr 0.12.7
+  und der Node-Boden (unten) stehen an der Untergrenze, statt dass der Bereich eine Kombination
+  zulässt, die beides verletzt.
+- (E3) PFLICHT-STOPP VOR DEM PUSH DES BAU-COMMITS: Die Node.js-Fassung in Vercel ist ≥ 22
+  (OWNER-ABLESUNG ausstehend). GRUND: supabase-js und alle fünf Unterpakete verlangen ab 2.110.0
+  `node >=22.0.0`, vorher `>=20.0.0` (GEMESSEN, `npm view … engines`; GELESEN, Release v2.110.0
+  "drop Node.js 20 support", #2482). Lokal v24.16.0, CI `node-version: '24'`; package.json trägt kein
+  `engines`-Feld, npm warnt nur. Die Fassung bei Vercel ist am Repo NICHT ENTSCHEIDBAR.
+  RÜCKFALL-VARIANTE FÜR NODE 20: `@supabase/ssr` bleibt 0.12.0, `@supabase/supabase-js` höchstens
+  2.109.0 — schon ssr 0.12.1 verlangt supabase-js `^2.110.3` (GEMESSEN, `npm view`).
+- LESUNG (2026-10-02, CC): GitHub-Releases supabase/supabase-js v2.109.0 bis v2.117.2 und
+  supabase/ssr v0.12.1 bis v0.12.7, dazu die PR-Beschreibungen ssr #246, #275, #283, #294 und
+  supabase-js #2504, #2580, #2587, #2698; supabase.com/docs/reference/javascript/select und
+  guides/auth/server-side/creating-a-client (Next.js). Ergebnis: keine Laufzeitänderung an count/head,
+  `!inner`, `.select` nach `update` und der Form `{ data, error }`; Laufzeitänderungen allein in auth
+  (`signOut` löscht die lokale Sitzung auch bei Fehlschlag, 5xx trägt die Server-Meldung, verlorene
+  Erneuerung gegen einen anderen Tab liefert die gespeicherte Sitzung) und `maybeSingle` mit
+  `throwOnError` (in src/ 0 Treffer). Kein Test fährt echten Supabase-Code (19 Testdateien mocken ihn;
+  GEMESSEN AM REPO) — für das Verhalten der Pakete tragen allein `tsc`, `build` und der Live-Test.
+- AUSDRÜCKLICH NICHT: next, react, andere Pakete, Code-Änderungen.
+- BINDET ÜBER DIE SCHEIBE HINAUS: nichts.
+- RUNBOOK: Die Scheibe schafft keine Betriebs-Handlung — das sagt der Abschluss-Vermerk in einem
+  Satz.
+
 ---
 
 ## Noch nicht geschnittene Arbeit
@@ -903,7 +951,7 @@ im Chat; übermittelt im Auftrag der Doku-Runde).**
 Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Abgeschlossen sind seit
 dem 2026-10-02 die Scheiben "Abhängigkeiten" (Vermerk P13.7-28), "K2a" (Vermerk P13.7-33) und
 "K2b" (Vermerk P13.7-39). Als Nächstes die Scheibe zu Vorrat P13.7-29 (die zwei
-Supabase-Versions-PRs), danach Kandidat K1 (ARCHITEKT, 2026-10-02, Auftrag der Doku-Runde zu
+Supabase-Versions-PRs), geschnitten als Zuschnitt P13.7-43, danach Kandidat K1 (ARCHITEKT, 2026-10-02, Auftrag der Doku-Runde zu
 Vermerk P13.7-39). Der Grabstein (Vorrat P13.7-37) und der Serve-Riegel (Vorrat P13.7-32) gehen an
 die Hebung am Phasenende 13.7. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der Vorrat
 darunter.
@@ -1008,6 +1056,9 @@ mit Positivkontrolle; keine Handlung). Vermerk P13.7-1, Befund N23.
   Vorher: "der nächste Zuschnitt nach K2a (Entscheidung P13.7-25)".
 - → 2026-10-02: TRIGGER EINGETRETEN mit dem Abschluss von K2b (Vermerk P13.7-39); als nächste
   Scheibe gesetzt ("Noch nicht geschnittene Arbeit").
+- → 2026-10-02: GESCHNITTEN als Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43). Die PRs sind #22
+  (ssr) und #26 (supabase-js); die Begründung "gebaut auf einem Stand vor 5567d14" ist dort
+  richtiggestellt.
 
 **Vorrat P13.7-30 — FRAGE ZU K9: LAUFEN PREVIEW-DEPLOYMENTS MIT DENSELBEN GEHEIMNISSEN UND
 DERSELBEN DATENBANK WIE PRODUCTION?**
@@ -1111,3 +1162,46 @@ ERSCHEINT IM NÄCHSTEN PROJEKT.**
   deckungsgleich, wo der Status berührt ist.
 - TRIGGER: der Zuschnitt K3 (Sperre je Konto; Kandidat K3 des Vermerks P13.7-1 — dort steht
   "das Runbook ergänzen").
+
+**Vorrat P13.7-44 — `count ?? 0` IN DER CAP-ABFRAGE UND IN `countRecentAttempts` IST FAIL-OPEN.**
+- BEFUND (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `24516f2`): Die Cap-Abfrage in
+  `registerCustomDomain` (src/lib/domains/register.ts, Schritt 5) vergleicht `(count ?? 0) >=
+  CAP_PER_USER`; `countRecentAttempts` (src/lib/domains/audit.ts) gibt `count ?? 0` zurück, und
+  daran hängt das Rate-Limit beim Hinzufügen und Entfernen. Liefert die Abfrage ohne Fehler kein
+  `count`, wären Obergrenze und Rate-Limit ohne Signal aufgehoben (ABGELEITET). `deleteProject`
+  (src/app/projects/actions.ts) ist in derselben Lage fail-closed: ohne Zahl verweigert es.
+- HERKUNFT: Plan der Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43), Nebenbefund NB-4.
+- TRIGGER (ARCHITEKT, 2026-10-02): der nächste Eingriff in src/lib/domains/register.ts oder
+  src/lib/domains/audit.ts, spätestens der Zuschnitt K1.
+
+**Vorrat P13.7-45 — `setAll` VERWIRFT DIE CACHE-HEADER, DIE DER SUPABASE-LEITFADEN VERLANGT.**
+- BEFUND (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `24516f2`): `updateSession`
+  (src/lib/supabase/middleware.ts) und `createClient` (src/lib/supabase/server.ts) deklarieren
+  `setAll(cookiesToSet)` ohne den zweiten Parameter und übernehmen die Cache-Header nicht.
+- GELESEN (2026-10-02, supabase.com/docs/guides/auth/server-side/creating-a-client, Next.js,
+  Abschnitt "Hook up proxy"): `setAll(cookiesToSet, headers)`; wer eine andere Antwort zurückgibt,
+  kopiert Cookies und die Header `cache-control`, `expires`, `pragma`. Die Typen von `@supabase/ssr`
+  0.12.0 tragen den Parameter bereits (node_modules, `types.d.ts`); die Scheibe ändert daran nichts.
+- BEZUG: Dauerregel "SET-COOKIE UND EINE ALS ÖFFENTLICH/CACHEBAR MARKIERTE ANTWORT VERTRAGEN SICH
+  NICHT" (docs/immer-beachten.md). Ob eine Antwort mit Sitzungs-Cookie heute zwischengespeichert
+  wird, ist NICHT GEMESSEN.
+- HERKUNFT: Plan der Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43), Nebenbefund NB-2.
+- TRIGGER (ARCHITEKT, 2026-10-02): die Bewertung vor dem Wiedereinschalten der Registrierung
+  (Vermerk P13.7-24); spätestens der nächste Zuschnitt nach der Scheibe "Supabase-Pakete".
+
+**Vorrat P13.7-46 — DER LEITFADEN EMPFIEHLT IM PROXY `getClaims()` STATT `getUser()`.**
+- GELESEN (2026-10-02, supabase.com/docs/guides/auth/server-side/creating-a-client, Next.js): Der
+  Proxy erneuert das Auth-Token über `supabase.auth.getClaims()`. `updateSession`
+  (src/lib/supabase/middleware.ts) ruft `getUser()` (GELESEN AM CODE, Code-Stand `24516f2`).
+- BEZUG: Befund N12 des Vermerks P13.7-1, Vorrat P13.7-14 der Phase 13.7.
+- HERKUNFT: Plan der Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43), Nebenbefund NB-3.
+- TRIGGER (ARCHITEKT, 2026-10-02): derselbe wie bei Vorrat P13.7-14 — dort steht keiner gesetzt;
+  der Eintrag geht mit jenem.
+
+**Vorrat P13.7-47 — VIER OFFENE DEPENDABOT-PRS FÜR ENTWICKLUNGS-PAKETE.**
+- BEFUND (GEMESSEN, CC, 2026-10-02, `git ls-remote origin`): Branches und `merge`-Refs für #9
+  (`@tailwindcss/postcss` 4.3.3), #11 (`tailwindcss` 4.3.3), #16 (`@testing-library/react` 16.3.3)
+  und #23 (`@testing-library/dom` 10.4.2). Dass die vier offen sind, ist aus den `merge`-Refs
+  ABGELEITET; die PR-Liste selbst ist nicht gelesen (`gh` nicht installiert).
+- HERKUNFT: Plan der Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43), Nebenbefund NB-1.
+- TRIGGER (ARCHITEKT, 2026-10-02): die Hebung am Phasenende 13.7.

@@ -803,17 +803,45 @@ aufeinander; sie liegen alle hier und finden einander.
   Zapier-Adresse der Form `zapier.com/hooks/…` bleibt browser-direkt; der Hinweis in der
   Oberfläche nennt die Form `https://hooks.zapier.com` (Owner-Entscheidung P13.6-99 der Phase
   13.6, die dazu Betreiber-Dokumentation beim Phasenende verlangt).
-  (10) NACH DEM AUSSCHALTEN ODER LÖSCHEN EINES ZAPS MELDET DAS RELAY BIS ZU MEHREREN STUNDEN
-  "ZUGESTELLT" — ERGÄNZT AM 2026-10-01 (Phasenende 13.6, aus Vorrat P13.6-92 der Phase 13.6).
-  Zapier antwortet laut Doku nach dem Ausschalten oder Löschen eines Zaps bis zu mehreren
-  Stunden weiter mit 200 ("there is a system update delay of up to several hours before the 404
-  response takes effect", docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", Befund (f);
-  GELESEN, die Doku widerspricht sich dort selbst). `forward` (src/lib/relay/relay.ts) wertet
-  allein den Status; der Besucher sieht die Danke-Seite. Ob eine Anfrage aus diesem Zeitfenster
-  später verarbeitet wird, steht auf keiner gelesenen Seite; die Messung ist ZM4 (offener Punkt
-  "ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM GEBUCHTEN ZAPIER-MONAT FAHRBAR"). Was
-  still kaputtgeht: Leads aus diesem Fenster verschwinden, obwohl Seite und Relay "zugestellt"
-  sagen. KEINE EMPFEHLUNG, wie der Satz lautet. Der Trigger ist der des Postens.
+  (10) NACH DEM AUSSCHALTEN ODER LÖSCHEN EINES ZAPS — UND BEI EINER FALSCH ABGESCHRIEBENEN
+  ADRESSE — MELDET DAS RELAY EINE BEGRENZTE ZEIT "ZUGESTELLT", DER BROWSER-DIREKTE WEG DAUERHAFT,
+  UND DER LEAD IST VERLOREN — ERGÄNZT AM 2026-10-01 (Phasenende 13.6, aus Vorrat P13.6-92 der
+  Phase 13.6), NEU GEFASST AM 2026-10-02 nach der Messung ZM4 und einer Zusatz-Messung zum
+  browser-direkten Weg (docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", "Messung
+  2026-10-01 bis 2026-10-02", Befunde (y) bis (ad); GEMESSEN, OWNER). Die Fassung vom 2026-10-01,
+  gestützt allein auf die Doku (Befund (f)), steht unter Commit `650bc17`.
+  · DIE FENSTER: Nach dem Ausschalten oder Löschen eines Zaps antwortet seine Adresse weiter mit
+    200 "success", eine um ein Zeichen falsch abgeschriebene Kennung zunächst ebenso; danach
+    404. Obergrenzen, stündlich abgetastet: ausgeschaltet ≤ ~63 min, gelöscht ≤ ~2 h 25 min,
+    falsch abgeschrieben ≤ ~2 h 30 min ab der ersten Anfrage; der genaue Umschaltpunkt ist
+    ungemessen (Befund (ac)). Ein NIE eingeschalteter Zap antwortete noch nach 12 h 55 min mit
+    200; ein Ende ist dort nicht gemessen (Befund (z)). Eine frei erfundene Adresse antwortet
+    sofort 404 (Befund (ab)).
+  · NICHTS WIRD NACHGEHOLT: Anfragen aus dem Fenster erscheinen auch nach dem Wiedereinschalten
+    nicht als Lauf. Ein Relay-Formular im Fenster bekam 204 und die Danke-Seite, und der Lead ist
+    verloren (Befund (z)). Bei Make liegt eine solche Anfrage dagegen in der Queue (ebenda,
+    Abschnitt "Make", Befund (z)).
+  · RELAY: `forward` (src/lib/relay/relay.ts) wertet allein den Status — im Fenster
+    "zugestellt", danach korrekt "nicht zugestellt", der Besucher sieht die Meldung statt der
+    Danke-Seite (GEMESSEN, Befund (z)). Die Antwort trägt im Fenster kein Merkmal, an dem unser
+    Code den Fall erkennen könnte (Befund (y)).
+  · BROWSER-DIREKT (Datensparmodus, Adresse ausserhalb der Host-Liste, Export): DAUERHAFT
+    "erreicht" und die Danke-Seite — Erfolg ist allein eine Antwort vom Typ `opaque`, und eine
+    404 im Modus `no-cors` löst `opaque` auf (Befund (ad); dort auch, was gemessen und was
+    gefolgert ist). Den Fall trägt der Posten "IM BROWSER-DIREKTEN WEG ERSCHEINT BEI FALSCHER
+    ODER GELÖSCHTER ZIELADRESSE DIE DANKE-SEITE …".
+  · ZWEI HANDLUNGSREGELN FÜR DEN BETREIBER, die die Hilfe tragen muss (VORGABE ARCHITEKT, Auftrag
+    der Doku-Runde 2026-10-02): (a) Das Formular-Ziel auf die neue Adresse umstellen, BEVOR der
+    alte Zap ausgeschaltet oder gelöscht wird — umgestellt ist es erst mit dem
+    Neu-Veröffentlichen, weil das Relay die Adresse allein aus der veröffentlichten Fassung nimmt
+    (Dauerregel "EIN ÖFFENTLICHER ENDPUNKT, DER AN EINE ADRESSE DES BETREIBERS WEITERLEITET …",
+    docs/immer-beachten.md). (b) Nach dem Einrichten einen Test-Lead über die veröffentlichte
+    Seite senden und die ANKUNFT im Zap-Verlauf von Zapier prüfen — weder die Danke-Seite noch
+    ein "zugestellt" belegen sie, denn eine falsch abgeschriebene Adresse antwortet zunächst mit
+    200 (Befund (ab)).
+  Was still kaputtgeht: Leads verschwinden, obwohl die Seite "zugestellt" bzw. die Danke-Seite
+  zeigt — im Relay-Weg für die Dauer des Fensters, im browser-direkten Weg ohne Ende. KEINE
+  EMPFEHLUNG, wie der Satz lautet. Der Trigger ist der des Postens.
   (11) ZAPIER SPEICHERT NUR IN DEN USA, OHNE EU-OPTION — ERGÄNZT AM 2026-10-01 (Phasenende 13.6,
   aus Vorrat P13.6-93 der Phase 13.6). GELESEN (ebenda, Befund (l)): "Zapier hosts data in AWS
   servers located in the United States …" und "Is there an option to have my data stored only
@@ -4479,6 +4507,27 @@ ergibt, liegt in docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 13 
   Doku bis zu mehreren Stunden mit 200 — dann meldet auch das Relay "zugestellt" (Vorrat
   P13.6-92 der Phase 13.6; Messkandidat ZM4, Arbeit P13.6-104 derselben Phase). Titel, Trigger
   und Stub bleiben.
+  ERGÄNZT AM 2026-10-02 (Messung ZM4 und Zusatz-Messung, docs/formular-empfaenger-befunde.md,
+  Abschnitt "Zapier", Befunde (y) bis (ad)) — DER ZAPIER-STAND IST GEMESSEN. Der Text darüber
+  bleibt wörtlich; Titel, Trigger und Stub bleiben.
+  · BROWSER-DIREKT (GEMESSEN, OWNER, 2026-10-02, Chrome): `fetch` im Modus `no-cors` an eine
+    erfundene Zapier-Adresse — Chrome protokolliert 404, das Promise wird erfüllt, Typ
+    `opaque`; mit uBlock Origin Lite ("Vollständig") wie ohne Filterung. Am Code ist `opaque`
+    das einzige Erfolgsmerkmal (`buildFormTargetRuntime`, src/lib/form-target.ts) — die
+    Danke-Seite erscheint. Anders als bei Make (Befund (ac) im Abschnitt "Make") ist hier der
+    TYP gemessen; die "GRENZEN DER MESSUNG" oben (ein Empfänger, nur die 410) sind damit um
+    Zapier und die 404 erweitert, weiter für einen Browser.
+  · DER SATZ "Ein ausgeschaltetes Szenario verliert dagegen nichts" gilt Make. Bei Zapier
+    verliert auch ein AUSGESCHALTETER Zap den Lead: Im Fenster antwortet die Adresse mit 200,
+    danach mit 404, und nichts davon wird nachgeholt (Befunde (z), (ac)) — im browser-direkten
+    Weg in beiden Fällen "erreicht". Der Titel nennt "falsche oder gelöschte Zieladresse"; den
+    ausgeschalteten Zap deckt er dem Wortlaut nach nicht. Er bleibt, weil er zitiert wird.
+  · RELAY: Die GRENZE der Ergänzung vom 2026-10-01 ("laut Doku bis zu mehreren Stunden") ist
+    gemessen — für einen ausgeschalteten Zap höchstens rund 63 min, danach 502 und die Meldung
+    (Befund (z)); für den gelöschten Zap und die falsch abgeschriebene Kennung sind die Fenster
+    per curl gemessen, über das Relay nicht. "NICHT gemessen: eine falsche oder gelöschte
+    Zapier-Adresse über das Relay" gilt deshalb weiter. Für den Betreiber: Punkt (10) am
+    Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE".
 
 **AUS DEM PHASENENDE 13.6 GEHOBEN (2026-10-01) — ZWEI POSTEN.** Aus der Standdatei der Phase
 13.6 (Formular-Relay). DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still
@@ -4523,29 +4572,34 @@ an den Roadmap-Zeilen 13.7, 13.8 und 14.
   PROVENIENZ: Entscheidung OWNER 2026-09-29; Befund am Code und Einordnung CC, Phasenende 13.6
   (2026-10-01). Der Stub in CLAUDE.md, "## Offene Punkte", Block "AUS DEM PHASENENDE 13.6
   GEHOBEN (2026-10-01)", trägt Titel und Trigger im SELBEN Zug.
-- ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM GEBUCHTEN ZAPIER-MONAT FAHRBAR
-  (Trigger: das Ende des gebuchten Zapier-Monats — Buchung am 2026-10-01 nach Angabe des
-  Architekten, im Bestand nicht belegt; daraus ABGELEITET um den 2026-10-31):
-  DIE MESSUNGEN (docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", "Messkandidaten
-  Zapier"; Live-Entwurf in Vermerk P13.6-98, Punkt (9), L6 bis L8, der Phase 13.6):
-  · ZM4 — Zap aus bzw. gelöscht: der Status sofort und nach mehreren Stunden (laut Doku erst
-    200, dann 404), eine erfundene Kennung auf `hooks.zapier.com`, ein 3xx irgendwo, der
-    Verbleib einer Anfrage aus dem Zeitfenster; Mitläufer ein laufender Zap (Soll 200). Er
-    misst den Fall von Punkt (10) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE": Im
-    Zeitfenster meldet das Relay "zugestellt".
-  · ZM5 — gehaltene Läufe: Status und Verbleib bei erschöpftem Kontingent bzw. ohne Premium.
-    Der Teil "nach dem Ende des Test-Monats bzw. im Free-Konto" ist erst MIT oder NACH dem
-    Ablauf messbar; vor Ablauf allein das erschöpfte Kontingent (ABGELEITET, CC, am Wortlaut
-    des Messkandidaten).
-  · ZM7 — ein Adblocker gegen den Direktweg (Datensparmodus) an `hooks.zapier.com`; Aufbau wie
-    N3 in Vermerk P13-22 der Phase 13, Positivkontrolle die doubleclick-Probe.
-  GEMESSEN SIND ZM1 bis ZM3 und ZM6 (Vermerke P13.6-102 und P13.6-103 der Phase 13.6).
-  WAS STILL KAPUTTGEHT: Verstreicht der Monat, sind ZM4 und ZM7 ohne neue Buchung nicht mehr
-  fahrbar, und nichts im Repo und keine Anzeige meldet das Näherrücken — allein dieser Posten
-  trägt die Frist. Ungemessen bleibt dann vor allem ZM4, und damit, ob Leads aus dem
-  Zeitfenster nach dem Ausschalten eines Zaps verloren gehen, während Seite und Relay
-  "zugestellt" sagen.
-  HERKUNFT: Arbeit P13.6-104 der Phase 13.6 (ARCHITEKT 2026-10-01).
-  PROVENIENZ: Frist und Zuordnung ARCHITEKT 2026-10-01; das Buchungsdatum ANGABE DES AUFTRAGS
-  der Abschluss-Runde "Zapier ins Relay"; das Monatsende ABGELEITET, nicht aus einer Rechnung
-  oder dem Konto abgelesen. Der Stub in CLAUDE.md trägt Titel und Trigger im SELBEN Zug.
+- ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM GEBUCHTEN ZAPIER-MONAT FAHRBAR —
+  GESTRICHEN AM 2026-10-02, DER GEGENSTAND IST ERLEDIGT. Der Punkt hielt die Frist fest, bis zu
+  der ZM4, ZM5 und ZM7 im gebuchten Zapier-Monat zu fahren waren (Trigger: das Ende jenes
+  Monats, ABGELEITET um den 2026-10-31); er kam aus Arbeit P13.6-104 der Phase 13.6.
+  BELEG DER ERLEDIGUNG (docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", "Messung
+  2026-10-01 bis 2026-10-02"):
+  · ZM4 ist GEMESSEN (OWNER, 2026-10-02): Zap aus, gelöscht, falsch abgeschriebene und erfundene
+    Adresse, Fenster, Verbleib, kein 3xx — Befunde (y) bis (ad). Die Folgen stehen in Punkt (10)
+    am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" und in der Ergänzung vom 2026-10-02
+    am Posten "IM BROWSER-DIREKTEN WEG ERSCHEINT …".
+  · ZM7 ist GEMESSEN (OWNER, 2026-10-01, mit Zusatz vom 2026-10-02), für einen Blocker — Befund
+    (ae).
+  · ZM5 ist GELESEN, NICHT GEMESSEN (OWNER, Downgrade-Dialog im Zapier-Konto, 2026-10-02) —
+    Befund (af): Der Downgrade pausiert Zaps mit Premium-Funktionen ("pause automatically on
+    November 1, 2026"); das ergibt die Lage von ZM4, keine gehaltenen Läufe. Das Datum deckt sich
+    mit dem abgeleiteten Monatsende.
+  WARUM DER REST NICHT HIER BLEIBT (Entscheidung CC nach dem zweiteiligen Kriterium dieser
+  Datei — benennbarer Trigger UND "geht sonst still kaputt"; dem Architekten vorgelegt im
+  Bericht der Doku-Runde 2026-10-02): Was der Punkt still kaputtgehen sah, war die Fahrbarkeit
+  von ZM4 und ZM7 bis zum Monatsende — sie ist mit beiden Messungen gegenstandslos. Der Rest
+  hängt nicht an dieser Frist: (i) ein Messbefehl an einen von Zapier pausierten Zap ist erst
+  NACH dem 2026-11-01 möglich, setzt einen ausgeführten Downgrade voraus und ist optional — das
+  Monatsende ist seine Voraussetzung, nicht sein Ende; (ii) gehaltene Läufe bei erschöpftem
+  Kontingent sind in jedem bezahlten Monat messbar, mit oder ohne diese Buchung. Keiner der
+  beiden geht mit dem Monatsende still kaputt. Beide stehen als offene Messkandidaten dort, wo
+  Messkandidaten stehen: docs/formular-empfaenger-befunde.md, Abschnitt "Zapier", "MESSKANDIDATEN
+  NACH DIESER MESSUNG", ZM5-Rest. Der BETREIBER-Fall gehaltener Läufe (das Relay meldet
+  "zugestellt", der Lauf liegt gehalten beim Betreiber) steht als FOLGERUNG in Befund (g)
+  derselben Datei; einen offenen Punkt dafür gibt es nicht.
+  · Die Stub-Zeile in CLAUDE.md, "## Offene Punkte", ist im selben Zug gestrichen.
+  · Der gestrichene Volltext steht unter Commit `650bc17`.

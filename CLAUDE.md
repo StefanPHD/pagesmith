@@ -402,13 +402,12 @@ eigene Zeile: Es steht als PUNKT (6) am Posten "BETREIBER-DOKUMENTATION FEHLT �
 Ergänzung an bestehenden Posten und haben keine eigene Zeile: Punkte (10) bis (12) an
 "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE", je eine datierte Ergänzung an "NICHTS ZEIGT AN,
 DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST" und an "DIE VERWAHRUNG DES
-CHIFFRIER-SCHLÜSSELS IST UNGEREGELT".
+CHIFFRIER-SCHLÜSSELS IST UNGEREGELT". Einer der zwei Posten ist am 2026-10-02 geschlossen und
+hier entfernt ("ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 …"); der Beleg steht am Posten in
+docs/offene-punkte.md.
 - DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM CODE KEINEN
   RIEGEL (Trigger: das erste fremde Nutzerkonto, das ein Formular-Ziel mit einer Adresse der
   Host-Liste veröffentlicht — spätestens vor einem Beta-Launch mit fremden Nutzern)
-- ZAPIER: DIE MESSKANDIDATEN ZM4, ZM5 UND ZM7 SIND NUR IM GEBUCHTEN ZAPIER-MONAT FAHRBAR
-  (Trigger: das Ende des gebuchten Zapier-Monats — Buchung am 2026-10-01 nach Angabe des
-  Architekten, im Bestand nicht belegt; daraus ABGELEITET um den 2026-10-31)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

@@ -1882,6 +1882,9 @@ Status unter der alten Adresse steht dort nicht.
 FOLGE FÜRS RELAY (FOLGERUNG): 404 ergibt "nicht zugestellt" (502) — der Besucher sieht die
 Meldung statt der Danke-Seite. IM ZEITFENSTER NACH DEM AUSSCHALTEN (bis zu "several hours") meldet
 das Relay "zugestellt", obwohl kein Zap läuft; ob der Lead dann verloren ist, ist offen.
+→ VORBEHALT: GEMESSEN (z) bis (ad), 2026-10-02 — der Widerspruch ist für die gemessenen Fälle
+entschieden (erst 200, dann 404; Fenster in (ac)); die Anfrage im Fenster wird NICHT nachgeholt,
+der Lead ist verloren; die falsch abgeschriebene Kennung: (ab).
 
 **(g) Z5, K4.4 — KONTO OHNE PREMIUM, ERSCHÖPFTES KONTINGENT.** GELESEN, "How to troubleshoot held
 Zap or step runs": ein Lauf wird "held", wenn "the account reached the task limit for its plan or
@@ -1897,6 +1900,8 @@ paid plan."
 FOLGE FÜRS RELAY (FOLGERUNG): Antwortet die Adresse dann weiter mit 200, meldet das Relay
 "zugestellt", und der Lead liegt als gehaltener Lauf beim Betreiber — Verbleib ungelesen. Das
 fällt in den Test-Monat des gebündelten Live-Tests: an dessen Ende ist er zu messen (ZM5).
+→ NACHGETRAGEN 2026-10-02: ZM5 ist GELESEN, nicht gemessen ((af)) — der Downgrade pausiert Zaps
+mit Premium-Funktionen; gehaltene Läufe bei erschöpftem Kontingent bleiben ungemessen.
 
 **(h) Z5, Z6, K4.1 — RATENLIMITS UND ÜBERLAST.** GELESEN, "Webhooks by Zapier rate limits": "You
 will see a 429 status code if you exceed these limits: 20,000 requests every 5 minutes per user.
@@ -1918,6 +1923,7 @@ Antwort von Catch Hook. Reichweite: die voll gelesenen Seiten.
 FOLGE FÜRS RELAY (FOLGERUNG): Die Regel "3xx = zugestellt, nie folgen" (Setzung P13.6-59, Q8)
 stützt sich auf Make (Abschnitt "Make", Befund (e)); für Zapier liefert die Doku keinen Fall, in
 dem sie greift. ERSETZT DIE MESSUNG NICHT (ZM4).
+→ NACHGETRAGEN 2026-10-02: In den Antworten von ZM4 kam KEIN 3xx vor, nur 200 und 404 ((ac)).
 
 **(j) Z6, K1.4 — GRÖSSE.** GELESEN, "Trigger Zap workflows …", "Limitations": "The maximum webhook
 payload size is 10MB for triggers and 2MB for Catch Raw Hook." "Troubleshoot …": "Any payloads
@@ -1994,6 +2000,7 @@ Ausfall von Zapier steht auf keiner gelesenen Seite; "Retry delivery on any step
 have a 200 status code" (h). K4.6: 200 trotz späteren Verlusts — ungültiger Rumpf (d), Zeitfenster
 nach dem Ausschalten (f), gehaltener Lauf (g, Status ungelesen). K7.1: MESSFRAGE (ZM7). Reichweite:
 die voll gelesenen Seiten.
+→ NACHGETRAGEN 2026-10-02: K4.6 — Zeitfenster gemessen ((z) bis (ac)); K7.1 — ZM7 gemessen ((ae)).
 
 **ABGLEICH MIT DEM VORLÄUFIGEN FRAGENKATALOG (Z9)** — je Frage: BEANTWORTET (gelesen, ersetzt die
 Messung nicht) · TEILWEISE · UNBEANTWORTET · NICHT ANWENDBAR.
@@ -2014,6 +2021,8 @@ Messung nicht) · TEILWEISE · UNBEANTWORTET · NICHT ANWENDBAR.
   Löschen im Zap-Verlauf).
 - K6.1 BEANTWORTET (o) · K6.2 BEANTWORTET (o).
 - K7.1 UNBEANTWORTET — MESSFRAGE (ZM7).
+  → NACHGETRAGEN 2026-10-02: K3.4, K4.3, K4.4 und K7.1 — s. "NACHTRAG ZUM KATALOG-ABGLEICH VOM
+  2026-09-30" unter "Messung 2026-10-01 bis 2026-10-02".
 - K8.1 bis K14.3 (Erweiterung für E-Mail-Anbieter) NICHT ANWENDBAR: Zapier ist eine generische
   Webhook-Adresse, kein ESP-Formular-Endpunkt; jede dieser Fragen setzt einen solchen voraus.
 
@@ -2046,7 +2055,10 @@ Region.
 DREI BEFUNDE STEHEN DANEBEN: (1) Zapier rät, die Adresse wie ein Passwort zu behandeln ((c)) —
 BEZUG Setzungen P13-6 der Phase 13 und P13.6-32 der Phase 13.6. (2) Im Zeitfenster nach dem
 Ausschalten eines Zaps antwortet die Adresse bis zu mehreren Stunden weiter mit 200 ((f)); die
-Doku widerspricht sich zudem an dieser Stelle. (3) Die Daten liegen in den USA, ohne EU-Option
+Doku widerspricht sich zudem an dieser Stelle.
+→ VORBEHALT zu (2): GEMESSEN 2026-10-02, (z) bis (ac) — Fenster ≤ ~63 min (aus) bzw. ≤ ~2 h 25 min
+(gelöscht), Anfragen darin werden nicht nachgeholt; der Widerspruch der Doku ist für die
+gemessenen Fälle entschieden. (3) Die Daten liegen in den USA, ohne EU-Option
 ((l)); der DPA gilt zwischen Zapier und dem Betreiber ((m)). Webhooks sind eine Premium-App ((a)).
 
 ### Messung 2026-10-01 (Owner, Phase 13.6, Scheibe "Zapier ins Relay", Messkandidaten ZM1–ZM3, ZM6, ZM2b)
@@ -2061,6 +2073,8 @@ curl 8.14.1, Git Bash, schannel, ein urlencoded-POST wie der des Relays (Rumpf m
 GMT); Angaben aus Zapiers Oberfläche sind als OBERFLÄCHENANGABE gekennzeichnet (s. (w)).
 **OFFEN:** ZM4, ZM5, ZM7 — docs/claude-history/phase-13.6-formular-relay.md, Arbeit P13.6-104 der Phase 13.6. Die Liste
 "Messkandidaten Zapier" oben bleibt als Stand vom 2026-09-30 stehen.
+→ NACHGETRAGEN 2026-10-02: ZM4 und ZM7 sind gemessen, ZM5 ist gelesen — "Messung 2026-10-01 bis
+2026-10-02", (y) bis (af); der Rest von ZM5 steht dort unter "MESSKANDIDATEN NACH DIESER MESSUNG".
 
 **(q) ZM1 — DIE ADRESSE.** GEMESSEN (Owner, abgelesen im Konto): Die Catch-Hook-Adresse beginnt
 mit `https://hooks.zapier.com/hooks/catch/` (Form `…/catch/<Nutzer-ID>/<Kennung>/`). Der Host
@@ -2103,3 +2117,141 @@ Nach dem Neu-Veröffentlichen der Zapier-Testseite: `POST /api/f` → 204, Danke
 Zap mit den Feldern; Function 678 ms in `fra1`, "External APIs" 4 (GET, GET, POST, POST), keine
 `[relay]`-Zeile. GRENZE: Die Ziel-Hosts der ausgehenden Anfragen sind nicht gemeldet; die
 Ankunft belegt der Eingang im Zap.
+
+### Messung 2026-10-01 bis 2026-10-02 (Owner, Messkandidaten ZM4 und ZM7; Lesung zu ZM5)
+
+**PROVENIENZ:** GEMESSEN, OWNER, live, 2026-10-01 und 2026-10-02, im bezahlten Zapier-Monat;
+übermittelt im Auftrag der Doku-Runde vom 2026-10-02, von CC NICHT gemessen. Die Messkandidaten
+stammen aus Arbeit P13.6-104 der Phase 13.6 und standen am offenen Punkt "ZAPIER: DIE
+MESSKANDIDATEN ZM4, ZM5 UND ZM7 …" (docs/offene-punkte.md). Instrumente: curl 8.14.1 in Git
+Bash für die Messbefehle an die Adressen; Chrome für das Relay-Formular, für ZM7 und für die
+Zusatz-Messung (die Chrome-Fassung ist nicht angegeben). ZM5 ist GELESEN, nicht gemessen ((af)).
+Gegenstand sind zwei Zaps des Owner-Kontos, hier "A" und "B"; ihr Auslöser ist in der Angabe
+nicht gesondert genannt. Webhook-Adressen stehen in dieser Datei nicht, auch nicht gekürzt —
+weder Nutzer-Zahl noch Kennung.
+**ZEITANGABEN:** UTC aus dem `Date`-Kopf der Antworten, Datum 2026-10-02, wo nicht anders
+angegeben. Angaben mit "~" und der Zeitpunkt T0 sind OWNER-ANGABEN ohne `Date`-Kopf (Schalt- und
+Löschzeitpunkte). Zapiers Oberfläche zeigte erneut +2 h gegenüber dem `Date`-Kopf, an drei
+Läufen verglichen — die GRENZE von (w) ("an EINEM Lauf") ist damit auf vier Läufe erweitert.
+
+**(y) DIE FORM DER 404 UND DER 200.** GEMESSEN (curl): Die 404 trägt `text/html`, den Rumpf
+"please unsubscribe me!" (22 Bytes), KEINE `x-zapier-*`-Kopfzeile und `X-Cache: Error from
+cloudfront`. Die 200 ist nach Angabe des Owners unverändert wie in (r) — auch innerhalb der
+Zeitfenster aus (z) bis (ab).
+FOLGERUNG: Eine 200 im Zeitfenster trägt kein Merkmal, an dem ein Leser erkennen könnte, dass
+kein Zap läuft — kein Hebel für unseren Code in der Antwort. Die Folgerung reicht so weit, wie
+(r) die Antwort beschreibt; ein Feld, das (r) nicht nennt, ist nicht verglichen.
+
+**(z) ZM4 — ZAP AUS: 200 IM ZEITFENSTER, DANACH 404; NICHTS WIRD NACHGEHOLT.** GEMESSEN (curl,
+Relay-Formular in Chrome, Zap-Verlauf).
+- TEIL 1 — Anfragen an ausgeschaltete Zaps: A 05:43:28 → 200 "success"; B, NIE EINGESCHALTET,
+  2026-10-01 16:49:18 und 2026-10-02 05:44:22 → je 200 "success". Nach dem Einschalten beider
+  Zaps rund 10 min beobachtet: KEIN Lauf nachgeholt.
+- TEIL 2 — A aus um 06:08 (T0). 06:08:54 A → 200 "success"; Mitläufer B 06:09:36 → 200, Lauf im
+  Verlauf. Ein Relay-Formular "ZM4 T0" → `/api/f` 204, Danke-Seite. 07:11:32 A → 404; Mitläufer
+  B 07:12:48 → 200, Lauf; Relay → 502, Meldung, keine Danke-Seite. Bestätigung: 07:26:19 A → 404;
+  B 07:26:57 → 200, Lauf; Relay → 502.
+- TEIL 3 — A wieder ein (~07:30); rund 10 min beobachtet: Weder der Messbefehl von 06:08:54 noch
+  das Formular "ZM4 T0" ist nachgeholt worden. Danach antwortete A wieder mit 200 (07:39:21 und
+  07:42:58, je als Mitläufer in (aa) und (ab)).
+FOLGERUNG (am Code, `forward` in src/lib/relay/relay.ts): Die 204 für "ZM4 T0" heisst, dass
+Zapier mit 2xx oder 3xx geantwortet hat — die Anfrage lag im Fenster. Der Lead ist verloren,
+obwohl Relay und Seite "zugestellt" gemeldet haben. Anders als Make (Abschnitt "Make", Befund
+(z): Szenario aus → 200 und Queue) hält Zapier nichts vor.
+OFFEN AUS TEIL 1: Wie lange A vor 05:43:28 aus war, ist nicht angegeben. B antwortete als nie
+eingeschalteter Zap an zwei Zeitpunkten 12 h 55 min auseinander (GERECHNET) mit 200; ob ein nie
+eingeschalteter Zap je auf 404 umspringt, ist UNGEMESSEN — B wurde danach eingeschaltet. Das
+Fenster für "ausgeschaltet" in (ac) ist an A gemessen, einem Zap, der vorher lief.
+
+**(aa) ZM4 — ZAP GELÖSCHT.** GEMESSEN (curl): B gelöscht (~07:38). 07:38:39 B → 200 "success";
+Mitläufer A 07:39:21 → 200. 10:03:52 B → 404; Mitläufer A 10:04:42 → 200.
+
+**(ab) ZM4 — FALSCH ABGESCHRIEBENE UND ERFUNDENE ADRESSE.** GEMESSEN (curl): Die Kennung von A,
+um EIN Zeichen geändert (das letzte): 07:43:58 → 200 "success" (Mitläufer A 07:42:58 → 200);
+10:14:15 → 404. Eine frei erfundene Adresse — Nutzer-Zahl UND Kennung erfunden — → 404 sofort.
+GRENZE: Die zwei Fälle unterscheiden sich in zwei Merkmalen (echte Nutzer-Zahl; Kennung nahe
+einer vergebenen). Welches die anfängliche 200 trägt, trennt der Lauf nicht.
+FOLGERUNG: Eine Prüfung unmittelbar nach dem Eintragen sieht bei einer falsch abgeschriebenen
+Kennung bis zu rund 2 h 30 min eine 200 "success" — erkennbar ist der Fehler in dieser Zeit
+allein am FEHLENDEN LAUF im Zap-Verlauf.
+
+**(ac) ZM4 — DIE ZEITFENSTER.** GEMESSEN (OWNER, Obergrenzen, stündlich abgetastet):
+ausgeschaltet ≤ ~63 min (T0 06:08 → erste 404 07:11:32) · gelöscht ≤ ~2 h 25 min (~07:38 →
+10:03:52) · falsch abgeschrieben ≤ ~2 h 30 min ab der ersten Anfrage (07:43:58 → 10:14:15).
+Wann genau die Antwort umspringt, ist UNGEMESSEN; die Zwischenproben sind hier nicht einzeln
+angegeben, eine Untergrenze steht deshalb nicht da. Ob das Fenster beim Tippfehler mit der
+ersten Anfrage oder mit etwas anderem beginnt, trennt der Lauf nicht.
+In allen gemeldeten Antworten kamen nur 200 und 404 vor — KEIN 3xx (zur Frage in ZM4 und (i)).
+ZUR DOKU (f): Die Seiten "Trigger Zap workflows from webhooks" ("a system update delay of up to
+several hours before the 404 response takes effect … Once the Zap is turned back on, it will
+resume returning a 200 response") und "Maximize efficiency …" (404 bei Zap aus oder gelöscht)
+stimmen mit der Messung überein. Der Satz auf "How to get started …" ("We always return a
+success message for all webhooks …") trifft für die gemessenen Fälle NICHT zu. Die in (f) offene
+Frage nach dem Verbleib einer Anfrage im Fenster ist beantwortet: Sie wird nicht nachgeholt
+((z), Teile 1 und 3).
+
+**(ad) ZM4 — DIE FOLGEN FÜR RELAY UND BROWSER-DIREKTEN WEG.**
+- RELAY (FOLGERUNG aus (z) bis (ac), am Code `forward`): Das Fenster ist begrenzt — gemessen für
+  ausgeschaltet, gelöscht und falsch abgeschrieben; danach meldet das Relay korrekt "nicht
+  zugestellt" (502, Meldung statt Danke-Seite, GEMESSEN in (z), Teil 2). Für einen nie
+  eingeschalteten Zap ist kein Ende gemessen ((z), "OFFEN AUS TEIL 1").
+- BROWSER-DIREKT (Datensparmodus, Adresse ausserhalb der Host-Liste, Export): Erfolg ist allein
+  `r.type === "opaque"` (GELESEN AM CODE, CC, 2026-10-02, Stand `650bc17`,
+  `buildFormTargetRuntime` in src/lib/form-target.ts; Setzung P13-21 der Phase 13). ZUSATZ-MESSUNG
+  (GEMESSEN, OWNER, 2026-10-02, Chrome): `fetch` im Modus `no-cors` an eine erfundene
+  Zapier-Adresse — Chrome protokolliert 404, das Promise wird ERFÜLLT, Typ `opaque`, mit
+  uBlock Origin Lite im Modus "Vollständig" wie ohne Filterung. Anders als bei Make (Abschnitt
+  "Make", Befund (ac)) ist der Typ hier gemessen. FOLGERUNG: Ein ausgeschalteter, gelöschter oder
+  falsch abgeschriebener Zap ergibt im browser-direkten Weg DAUERHAFT "erreicht" und die
+  Danke-Seite — im Fenster wegen der 200, danach wegen der 404, die im Modus `no-cors` ebenso
+  `opaque` auflöst. Gemessen ist das allein an der erfundenen Adresse; für die 404 eines
+  ausgeschalteten oder gelöschten Zaps folgt es aus derselben Form der 404 ((y)) und ist NICHT
+  eigens gemessen.
+- KEIN CODE-HEBEL IN DER ANTWORT: Im Fenster ist die 200 nicht von der eines laufenden Zaps zu
+  unterscheiden ((y)); was in dieser Zeit ankommt, holt Zapier nicht nach ((z)).
+- KANDIDAT, NICHT ENTSCHIEDEN, KEIN ZUSCHNITT: ein "Verbindung testen" beim Einrichten eines
+  Formular-Ziels. BEZUG: die entfallene Scheibe 13-1b (Setzung P13-18, Entscheidung P13-65 der
+  Phase 13). GRENZE, FOLGERUNG aus (ab): Ein Test, der allein den Status liest, sieht bei einer
+  falsch abgeschriebenen Kennung bis zu rund 2 h 30 min eine 200; nur die Ankunft im Zap trennt
+  sie von einer richtigen.
+
+**(ae) ZM7 — UBLOCK ORIGIN LITE SPERRT `hooks.zapier.com` NICHT.** GEMESSEN (OWNER, Chrome,
+2026-10-01): uBlock Origin Lite, Modus "Vollständig", Standardlisten. Vorgesehen war der Aufbau
+wie N3 in Vermerk P13-22 der Phase 13; die Angabe nennt Blocker, Modus, Listen und Kontrolle.
+- BLOCKER EIN: Kontrolle doubleclick → `basic`, Status 200 (gesperrt); Zapier → `opaque`,
+  Status 0, Lauf `zm7-…T17:02:57.958Z` im Zap-Verlauf.
+- GEGENPROBE OHNE FILTERUNG: doubleclick → `opaque`, Status 0; Zapier → `opaque`, Status 0, Lauf
+  `…T17:03:39.659Z`.
+- ZUSATZ 2026-10-02: die Zusatz-Messung aus (ad) — `opaque` in beiden Modi.
+FOLGERUNG: Die Kontrolle unterscheidet die zwei Modi (`basic` nur mit Blocker), der Zapier-Aufruf
+nicht. Unser Code wertet `basic` als "nicht erreicht" (GELESEN AM CODE, Kopfkommentar zu
+`buildFormTargetRuntime`: "ein Blocker, der umleitet"); bei Zapier tritt dieser Zweig mit diesem
+Blocker nicht ein. Das ist der Zapier-Fall zu (ab) und (ae) im Abschnitt "Make".
+GRENZE: ein Blocker in der Standard-Konfiguration, ein Browser. Andere Blocker, andere Listen und
+die Einstellungen eines Blockers sind nicht erfasst.
+
+**(af) ZM5 — GELESEN, NICHT GEMESSEN: DER DOWNGRADE-DIALOG.** GELESEN (OWNER, Downgrade-Dialog im
+Zapier-Konto, 2026-10-02; übermittelt im Auftrag der Doku-Runde, der Wortlaut nur
+auszugsweise): heutiger Tarif 750 Tasks im Monat; nach dem Downgrade 100, keine Webhooks und keine
+Premium-Apps; Zaps mit Premium-Funktionen "pause automatically on November 1, 2026". Ob der
+Downgrade ausgeführt ist, sagt die Angabe nicht. ERSETZT DIE MESSUNG NICHT.
+Im Einklang mit (g) (Free: 100 Tasks im Monat) und (a) (Webhooks sind Premium).
+FOLGERUNG: Der Downgrade-Weg erzeugt einen PAUSIERTEN Zap — die Lage von ZM4 ((z): Zap aus) —
+und keine gehaltenen Läufe. Ob ein von Zapier pausierter Zap sich an der Adresse verhält wie ein
+vom Nutzer ausgeschalteter, ist UNGEMESSEN. Das Datum "November 1, 2026" deckt sich mit dem am
+offenen Punkt "ZAPIER: DIE MESSKANDIDATEN …" ABGELEITETEN Monatsende um den 2026-10-31.
+UNGEMESSEN BLEIBT: der Status und Verbleib GEHALTENER Läufe bei erschöpftem Kontingent ((g)).
+
+**MESSKANDIDATEN NACH DIESER MESSUNG:**
+- GEMESSEN: ZM4 → (y) bis (ad); ZM7 → (ae), für einen Blocker.
+- GELESEN, NICHT GEMESSEN: ZM5 → (af).
+- OFFEN: ZM5-Rest — (1) gehaltene Läufe bei erschöpftem Kontingent: Status der Adresse und
+  Verbleib ((g)); (2) nach dem 2026-11-01 ein Messbefehl an einen von Zapier pausierten Zap,
+  falls der Downgrade ausgeführt ist (optional). Aus ZM4: der genaue Umschaltzeitpunkt; das
+  Verhalten eines nie eingeschalteten Zaps über 12 h 55 min hinaus.
+- Die Liste "Messkandidaten Zapier" oben bleibt als Stand vom 2026-09-30 stehen.
+
+**NACHTRAG ZUM KATALOG-ABGLEICH VOM 2026-09-30:** K3.4 — die unbekannte bzw. falsch
+abgeschriebene Kennung ist gemessen ((ab)) · K4.3 — der Verbleib ist gemessen: nicht nachgeholt
+((z)) · K4.4 — weiter TEILWEISE; zum Downgrade gelesen ((af)), gehaltene Läufe ungemessen · K7.1 —
+gemessen für einen Blocker ((ae)).

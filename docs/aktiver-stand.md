@@ -731,11 +731,23 @@ vorgeschlagen", Auswahl im Chat); Formulierung CC. KEIN BAU-COMMIT.**
   GRUND (ABGELEITET): Über genau diesen Zweig übernimmt heute jedes Konto eine verwaiste Domain
   (Befund B2; der Zustand ist in Phase 7 gemessen, ebenda). Ohne ihn ist eine verwaiste Domain
   über die App für kein Konto mehr erreichbar, gleich aus welcher Quelle sie stammt.
-  BERÜHRT EINE ENTSCHEIDUNG DER PHASE 7: docs/claude-history/phase-7-hosting.md, Abschnitt
-  "7c-2b — Add-Domain-Mutation: Konzept & Entscheidungen", Punkt "IDEMPOTENZ & HEILUNG" ("…
-  ein erneuter Add-Versuch des rechtmäßigen Owners wird NICHT blockiert"). Das Archiv wird nicht
-  geändert. ALT und NEU liegen dem Architekten mit dem Plan K2b vor (Planrunde 2026-10-02); seine
-  Bestätigung steht mit der Freigabe des Plans aus.
+  KEHRT EINE ENTSCHEIDUNG DER PHASE 7 UM (D1 unten): docs/claude-history/phase-7-hosting.md,
+  Abschnitt "7c-2b — Add-Domain-Mutation: Konzept & Entscheidungen". Das Archiv bleibt als
+  Zeitdokument unverändert; die Umkehr steht HIER.
+  ALT, wörtlich: "IDEMPOTENZ & HEILUNG (eng begrenzt, KEINE allgemeine Sync-Engine): Wenn Vercel
+  den oben korrigierten 409 (error.code "domain_already_in_use" + eigene projectId) meldet, weil
+  die Domain bereits auf UNSEREM Projekt existiert (z.B. nach einer fehlgeschlagenen
+  DB-Transaktion beim vorigen Versuch), holt derselbe Mutations-Aufruf den aktuellen
+  Vercel-Zustand nach und schreibt/heilt die eigene DB-Zeile damit -> ein erneuter Add-Versuch
+  des rechtmäßigen Owners wird NICHT blockiert." Dazu im Punkt "FEHLER-MAPPING" desselben
+  Abschnitts: "409 + error.code === "domain_already_in_use" + die im Body mitgelieferte projectId
+  === unsere VERCEL_PROJECT_ID -> HEILEN."
+  NEU: 409 + `domain_already_in_use` + eigene projectId -> ABLEHNEN: keine `domains`-Zeile, kein
+  weiterer Vercel-Aufruf, genau ein Audit-Eintrag `rejected_already_on_project`, neutrale
+  Meldung. Der Zweig unterscheidet nicht, ob die Domain einem rechtmässigen Besitzer gehört; eine
+  verwaiste Domain räumt der Owner von Hand auf (Vercel-Dashboard). Ein erneuter Add-Versuch nach
+  verlorener Zeile WIRD blockiert. Eine Rückkehr der Selbstheilung ohne Übernahme-Lücke: Vorrat
+  P13.7-38.
 - (3) KRYPTOGRAFISCHER LABEL-ZUFALL. `randomLabelSuffix` (src/lib/hosting/host.ts) bezieht den
   Zufallsteil aus einer kryptografischen Quelle statt aus `Math.random`; Alphabet und Länge
   bleiben ([a-z0-9], 6 Zeichen). Teil von Befund B5.
@@ -747,9 +759,29 @@ vorgeschlagen", Auswahl im Chat); Formulierung CC. KEIN BAU-COMMIT.**
   · DER SERVE-RIEGEL, Vorrat P13.7-32: Seit K2a entsteht keine reservierte Zeile, und gemessen
     existiert keine (Vermerk P13.7-33, Punkt (3), E3 und N6).
   Beide tragen als Trigger die Hebung am Phasenende 13.7, nicht mehr den Zuschnitt K2b.
-- BINDET WEITER: E1 bis E3 und die Live-Auflage des Zuschnitts P13.7-31.
+- BINDET WEITER: E1 bis E3 und die Live-Auflage des Zuschnitts P13.7-31 — mit der einen
+  Ausnahme D6 unten.
 - DANACH: Vorrat P13.7-29 als eigene kleine Scheibe direkt nach K2b, nach dem Muster der Scheibe
   "Abhängigkeiten" (ARCHITEKT, 2026-10-02).
+- ENTSCHEIDUNGEN DER PLANRUNDE (ARCHITEKT, 2026-10-02), verdichtet:
+  · D1 — Die Phase-7-Entscheidung "IDEMPOTENZ & HEILUNG" wird umgekehrt; ALT und NEU oben unter
+    (2), bestätigt wie im Plan vorgelegt.
+  · D2 — Die Prüfung in `deleteProject` läuft über den Admin-Client, gefiltert auf
+    `projects.user_id` = Sitzungsnutzer, nur als Anzahl. Das Delete selbst bleibt beim
+    Nutzer-Client. Grund: Unter `domains_select_own` wären "keine Zeile vorhanden" und "keine
+    Zeile sichtbar" nicht zu trennen; der Filter auf `user_id` verhindert, dass die Prüfung über
+    ein fremdes Projekt etwas verrät.
+  · D3 — Bei einem Lesefehler lautet die Meldung "Projekt konnte nicht gelöscht werden."; derselbe
+    neutrale Text ersetzt beim Delete das rohe `error.message`. Geloggt wird `errorName`.
+  · D4 — Das Feld `healed` entfällt aus dem Ergebnis von `registerCustomDomain`; die Mocks in
+    src/components/CodeImporter.test.tsx und src/components/TargetCard.test.tsx werden
+    angepasst — eine ausgewiesene Änderung bestehender Tests.
+  · D5 — Audit-Ausgang des abgelehnten Zweigs: `rejected_already_on_project`.
+  · D6 — AUSNAHME VON DER LIVE-AUFLAGE, ALLEIN für `k2b-probe.thr-ty.com`, zur Live-Prüfung von
+    (2). Grund: Die Ablehnung hängt an Vercels 409-Form, zuletzt in Phase 7 gemessen.
+  · D7 — (1) wird live über eine per SQL erfundene `domains`-Zeile an einem Wegwerf-Projekt
+    geprüft, NIE als Löschversuch am Projekt von `thr-ty.com` (dort wäre ein Fehlschlag des
+    Riegels die Kaskade auf `project_secrets` und `events`, ohne PITR).
 
 ---
 
@@ -757,8 +789,8 @@ vorgeschlagen", Auswahl im Chat); Formulierung CC. KEIN BAU-COMMIT.**
 
 Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Abgeschlossen sind seit
 dem 2026-10-02 die Scheiben "Abhängigkeiten" (Vermerk P13.7-28) und "K2a" (Vermerk P13.7-33). Als
-nächste steht "K2b" an (ARCHITEKT, 2026-10-02), zugeschnitten mit P13.7-36; ihr Plan liegt in
-der Planrunde vom 2026-10-02 vor. Danach Vorrat P13.7-29 als eigene kleine Scheibe (ARCHITEKT,
+nächste steht "K2b" an (ARCHITEKT, 2026-10-02), zugeschnitten mit P13.7-36; ihr Plan ist mit
+den Entscheidungen D1 bis D7 freigegeben (ARCHITEKT, 2026-10-02). Danach Vorrat P13.7-29 als eigene kleine Scheibe (ARCHITEKT,
 2026-10-02). Der Grabstein (Vorrat P13.7-37) und der Serve-Riegel (Vorrat P13.7-32) gehen an die
 Hebung am Phasenende 13.7. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der Vorrat
 darunter.
@@ -918,3 +950,18 @@ AUSGELIEFERT.**
   sie neu anlegen (`registerCustomDomain`); zeigt der DNS des Vorbesitzers noch auf uns, wird
   das neue Projekt dort ausgeliefert. Ob das zum Grabstein gehört, entscheidet die Hebung.
 - TRIGGER: die Hebung am Phasenende 13.7.
+
+**Vorrat P13.7-38 — WRITE-AHEAD: DIE `domains`-ZEILE VOR DEM VERCEL-AUFRUF ALS "ANGEFRAGT"
+ANLEGEN.**
+- ANLASS: Zuschnitt P13.7-36, (2), mit D1 — seit K2b kann sich ein Betreiber, der seine Zeile
+  durch einen Fehler nach erfolgreichem Vercel-Aufruf verliert, nicht mehr selbst heilen.
+- KANDIDAT (ARCHITEKT, 2026-10-02): `registerCustomDomain` legt die Zeile VOR dem Vercel-Aufruf
+  als "angefragt" an. Dann trägt die Zeile selbst den Nachweis, dass DIESES Projekt die Domain
+  angefragt hat; ein späteres 409 mit eigener projectId kann für genau dieses Projekt wieder
+  heilen, ohne dass ein anderes Konto die Domain übernehmen kann.
+- AM BESTAND (GELESEN AM CODE, CC, 2026-10-02): `verification_status` trägt seit Migration 0009
+  einen CHECK auf `pending`, `verified`, `misconfigured` (oder NULL); ein eigener Wert
+  "angefragt" verlangte eine Migration. Ob stattdessen ein bestehender Wert oder eine eigene
+  Spalte trägt, entscheidet der Zuschnitt.
+- TRIGGER: der erste Support-Fall eines ausgesperrten Betreibers, ODER das Wiedereinschalten der
+  Registrierung (Vermerk P13.7-24).

@@ -134,6 +134,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 13.7 — Sicherheit & Datenintegrität
 - [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out)
 - [ ] Phase 13.9 — 1-Klick-Empfänger (Stufe 2)
+- [ ] Phase 13.10 — Admin-Agent (nur lesend, Vorschläge)
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
 - [ ] Phase 15 — Public-Launch-Restarbeit (Tier 0)
 - [ ] Phase 16 — Analytics-Vertiefung (Uniques, Traffic-Health-Metriken)
@@ -829,7 +830,7 @@ einer unbedingten Pflicht eine bedingte.
 Aktiv und konstant gepflegt — im Unterschied zum Detail-Archiv darunter, das ABGESCHLOSSENE
 Historie trägt.
 
-WOHIN EIN NEUER SATZ GEHÖRT — IM ZWEIFEL RAUS, NICHT IN DIESE DATEI. Acht Wege, die erste
+WOHIN EIN NEUER SATZ GEHÖRT — IM ZWEIFEL RAUS, NICHT IN DIESE DATEI. Neun Wege, die erste
 passende Antwort gewinnt: (1) dauerhaft und projektweit -> docs/immer-beachten.md (KERN),
 HINTEN anfügen; die Begründung in docs/immer-beachten-herleitung.md · (2) laufender
 Phasenschnitt -> docs/aktiver-stand.md · (3) Zustand, der später kippt (TODO mit Trigger) ->
@@ -841,7 +842,9 @@ docs/plattform-befunde.md; Befund über einen FORMULAR-EMPFÄNGER ->
 docs/formular-empfaenger-befunde.md, dort auch sein vorläufiger Fragenkatalog · (6) Schema,
 Policies, Analytics-Lesepfad -> docs/db-stand.md (Zustand) bzw. docs/db-regeln.md (Regeln) ·
 (7) Regel über die ARBEITSWEISE selbst -> docs/arbeitsweise.md, als ÄNDERUNGSANTRAG · (8)
-keins davon -> NACHFRAGEN.
+HANDLUNG DES OWNERS IM BETRIEB (erkennen, prüfen, handeln, kontrollieren) ->
+docs/ADMIN_RUNBOOK.md, nach den Konventionen in ihrem Kopf · (9) keins davon -> NACHFRAGEN.
+Bis zum 2026-10-02 war "keins davon" Weg 8; ein älterer Zeiger auf "Weg 8" meint Weg 9.
 KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG — VERBOT, keine Empfehlung; genau eine Ausnahme ist
 die Standdatei, die nach Verfahren entsteht. Weg 1 führt aus DIESER Datei heraus, NICHT aus
 dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
@@ -898,6 +901,16 @@ dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   Live-Test-Anleitung eines Formular-Empfängers — dann diese Datei zuerst. Keiner Phase
   zugehörig, wird NICHT archiviert. Angelegt am 2026-09-28 (OWNER-ENTSCHEIDUNG, Entscheidung
   P13-15 der Phase 13). Auch sie führt Buchstaben je Empfänger.
+- docs/ADMIN_RUNBOOK.md — die HANDLUNGEN DES OWNERS IM BETRIEB, je Szenario sieben Felder
+  (Woran erkennen · Diagnose · Entscheidung · Handlung · Kontrolle · Antwort an den Kunden ·
+  Was festgehalten wird), je Handlung GEÜBT oder UNGEÜBT. REGEL 1 im Kopf: jeder Befehl
+  vollständig, höchstens EINE markierte Einsetzstelle. Ihre SPERRZEILE: publayer.net,
+  *.publayer.net und pagesmith-delta.vercel.app werden NIE bei Vercel entfernt. AUSLÖSER: der
+  Abschluss einer Scheibe, die eine Betriebs-Handlung schafft oder ändert, und jede
+  Live-Anleitung, die einen Befehl aus dem Runbook verwendet. Angelegt am 2026-10-02
+  (OWNER-ENTSCHEIDUNG, Entscheidung P13.7-41 der Phase 13.7). Keiner Phase zugehörig, wird
+  NICHT archiviert. Die Kill-Switch-Befehle stehen NICHT dort, sondern in dieser Datei,
+  Manifest Tier 0 ("KILL-SWITCH — SQL-RUNBOOK").
 
 ## Detail-Archiv (bei Bedarf lesen — NICHT automatisch geladen)
 Abgeschlossene Phasen-Historie + Vollbegründungen, ausgelagert, damit CLAUDE.md unter dem

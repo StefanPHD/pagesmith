@@ -194,7 +194,8 @@ Migration (falls vorhanden) im SQL-Editor VOR dem Deploy  ← fail-closed
    ↓
 Push → Deploy → Deployment verifizieren (Vercel „Ready"!) → LIVE-TEST
    ↓
-docs(claude)-Abschluss-Vermerk + Verdichtung des Zuschnitts, derselbe Commit
+docs(claude)-Abschluss-Vermerk + Verdichtung des Zuschnitts + Runbook-Szenario, derselbe Commit
+   (das Szenario nur, wenn die Scheibe eine Handlung des Owners im Betrieb schafft oder ändert; sonst sagt der Vermerk in einem Satz, warum keins)
 ```
 
 **Der Abschluss-Vermerk wird nie vertagt.** Der Auftrag dazu steht zusammen mit
@@ -495,7 +496,7 @@ muss, nicht ob.
 
 ### Wohin ein neuer Satz gehört
 
-**Im Zweifel raus aus `CLAUDE.md`.** Acht Wege, die erste passende Antwort
+**Im Zweifel raus aus `CLAUDE.md`.** Neun Wege, die erste passende Antwort
 gewinnt:
 
 1. **Dauerhaft und projektweit** → Kern-Eintrag in `docs/immer-beachten.md` (Titel
@@ -518,9 +519,15 @@ gewinnt:
    `docs/db-regeln.md` (Regeln).
 7. **Regel über die Arbeitsweise selbst** → dieses Dokument, als
    Änderungsantrag, an beiden Orten vollzogen.
-8. **Keins davon** → **nachfragen. Keine neue Datei ohne Owner-Entscheidung.**
+8. **Handlung des Owners im Betrieb** (Szenario: erkennen, prüfen, handeln,
+   kontrollieren) → `docs/ADMIN_RUNBOOK.md`, nach den Konventionen in ihrem Kopf.
+9. **Keins davon** → **nachfragen. Keine neue Datei ohne Owner-Entscheidung.**
    Ein Verbot, keine Empfehlung. Genau eine Ausnahme: die Standdatei, die nach
    Verfahren entsteht.
+
+**Bis zum 2026-10-02 war „Keins davon" Weg 8.** Ein älterer Zeiger auf „Weg 8" —
+in den Historien unter `docs/claude-history/`, in `src/lib/foreign-scan.ts` — meint
+den heutigen Weg 9.
 
 Weg 1 führt aus `CLAUDE.md` heraus, aber nicht aus dem Startkontext —
 `docs/immer-beachten.md` lädt unbedingt. Die Liste hält `CLAUDE.md` klein und
@@ -528,7 +535,7 @@ sortiert richtig; sie ist kein Mittel, den Kontext klein zu halten.
 
 ### Wie ein Satz wieder herausgeht
 
-**Die acht Wege oben regeln den Eingang. Dieser regelt den Ausgang.** Ohne ihn
+**Die neun Wege oben regeln den Eingang. Dieser regelt den Ausgang.** Ohne ihn
 wächst die Regelmenge monoton. Gemessen am Repo (2026-08-24, über alle 542
 Commits): kein einziger Rückgang, drei bis sechsundachtzig Regeln, genau eine
 ersatzlose Streichung — und die nur, weil der Gegenstand der Regel im selben
@@ -546,7 +553,7 @@ Regel ohnehin anfasst, prüft im selben Zug, ob ihre Bedingung eingetreten ist.
 
 **EIN ZWEITER AUSGANG, DEN DIESER ABSCHNITT BIS ZUM 2026-09-08 NICHT KANNTE — FÜR ALLES,
 WAS KEINE DAUERREGEL IST** (OWNER-ENTSCHEIDUNG 2026-09-08). Der Ausgang oben greift nur
-bei Dauerregeln; **acht Wege führen hinein und einer hinaus**, und für einen
+bei Dauerregeln; **neun Wege führen hinein und einer hinaus**, und für einen
 Vorrats-Eintrag, einen Hebungs-Kandidaten oder eine bindende Entscheidung gab es gar
 keinen.
 **WAS SEINEN GEGENSTAND VERLOREN HAT, WIRD GESTRICHEN UND NICHT UMGEZOGEN** — **MIT DEM
@@ -610,7 +617,7 @@ ersetzt, deren Herleitung noch gebraucht wird, verliert sie faktisch. Der Test
 ist derselbe: Ist die Herleitung tragend, ist es ein Mechanismuswechsel und wird
 gestempelt; ist sie es nicht, war sie auch im Text keinen Platz wert. **Ein
 dritter Ort für ersetzte Fassungen wird nicht eingeführt** — das wäre eine neue
-Datei und fiele unter Weg 8.
+Datei und fiele unter Weg 9.
 
 **Vollzugsauflage für die Regeln:** Jede Regel steht als Kern in
 `docs/immer-beachten.md` und im Volltext in `docs/immer-beachten-herleitung.md`,
@@ -1175,6 +1182,9 @@ Geheimnis-Speicher, zusammen mit den beiden davor ·
 `docs/formular-empfaenger-befunde.md` bei Zuschnitt, Anbindung, Recherche oder
 Live-Test-Anleitung eines Formular-Empfängers ·
 `docs/claude-history/security-manifest-full.md` bei Manifest-Arbeit ·
+`docs/ADMIN_RUNBOOK.md` beim Abschluss einer Scheibe, die eine Betriebs-Handlung
+schafft oder ändert, und bei jeder Live-Anleitung, die einen Befehl aus dem Runbook
+verwendet ·
 `future-roadmap.md`, wenn eine Entscheidung eine spätere Richtung versperren
 könnte · `docs/claude-history/phase-*.md` für das Warum einer Regel.
 

@@ -2889,6 +2889,22 @@ liegen beide hier und finden einander.
       Punkt "DAS RELAY LÄUFT FÜR JEDEN NUTZER — DIE FREISCHALTUNG ERST MIT KUNDEN-AVV HAT IM
       CODE KEINEN RIEGEL" · das Archiv der Phase 13.6
       (docs/claude-history/phase-13.6-formular-relay.md).
+- [ ] Phase 13.10 — Admin-Agent (nur lesend, Vorschläge): ein Agent, der allein liest und dem
+      Owner Vorschläge macht. ANGELEGT am 2026-10-02; Gegenstand OWNER-ENTSCHEIDUNG 2026-10-02
+      (Auswahl im Chat; Entscheidung P13.7-41 der Phase 13.7).
+      STELLUNG: nach 13.7 (OWNER); sonst NICHT ENTSCHIEDEN. Die Nummer trägt keine Reihenfolge des
+      Baus (Eintrag 11.10, Punkt (d)).
+      VORBEDINGUNGEN (Auftrag der Doku-Runde, 2026-10-02):
+      · ein Eingangskanal für Supportanfragen;
+      · ein Benachrichtigungskanal an den Owner;
+      · eine Datenbank-Rolle allein mit Leserechten;
+      · ein Eintrag im Bedrohungsmodell: Supporttexte sind FREMDER TEXT und steuern den Agenten
+        nie; Schreibendes geschieht nur nach Bestätigung des Owners;
+      · das Runbook (docs/ADMIN_RUNBOOK.md) als Wissensgrundlage.
+      BEZUG (CC): Für Phase 18 (MCP-Server) verlangt das Manifest scoped Tokens und lückenloses
+      Audit-Logging aller KI-induzierten Mutationen (CLAUDE.md, Manifest Tier 2,
+      "MCP-SICHERHEIT"); ob das auch hier greift, entscheidet der Zuschnitt.
+      WAS DIESE ZEILE NICHT TUT: Sie schneidet nichts zu und terminiert nichts.
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in

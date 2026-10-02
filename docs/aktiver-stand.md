@@ -146,6 +146,10 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
       bedient, solange der DNS des Vorbesitzers auf uns zeigt. Im Bestand nicht vermerkt
       gefunden (GEMESSEN AM REPO: Suche in docs/offene-punkte.md,
       docs/claude-history/backlog-polish.md, docs/claude-history/phase-7-hosting.md).
+      GESCHLOSSEN 2026-10-02 mit der Scheibe "K2b", Bau-Commit `2a69571` (Vermerk P13.7-39).
+      Rest: Eine Konto-Löschung im Supabase-Dashboard oder Hand-SQL umgeht den Riegel
+      (supabase/checks/verwaiste-domains.sql, FALLE (4)); eine vom Owner bei Vercel entfernte
+      Domain kann jedes Konto neu anlegen (Vorrat P13.7-37).
     · B3 — SPERREN AUSHEBELN. Vorrat P13.6-121: der Insert-Zweig von `saveProject` prüft keine
       Sperre (`blocked_at` in src/app/projects/actions.ts und src/lib/domains/ allein als
       Kommentar; GEMESSEN AM REPO, die Positivkontrolle trifft den Kommentar in `saveProject`).
@@ -164,6 +168,9 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
     · B5 — GRABSTEIN. Vorrat P13.6-126: `domains.project_id … on delete cascade` (0006);
       `assignDomainLabel` würfelt `slugForLabel` + `randomLabelSuffix` (`Math.random`,
       src/lib/hosting/host.ts) neu. GELESEN AM CODE.
+      TEILWEISE 2026-10-02: Der Zufallsteil kommt seit der Scheibe "K2b" aus
+      `crypto.getRandomValues` (Bau-Commit `2a69571`, Vermerk P13.7-39). Der Grabstein ist
+      nicht gebaut: Vorrat P13.7-37.
     · B6 — FREMDE DATEN: keine IDOR-Lücke in den 26 Exporten der drei "use server"-Dateien
       (src/app/projects/actions.ts, src/app/projects/domain-actions.ts, src/app/auth/actions.ts)
       gefunden; Massstab: Eigentums-Gate je Funktion. Die Übernahme eines `tracking_key` ist seit
@@ -228,6 +235,9 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
     · F5 — `deleteProject` kaskadiert `events`, `project_secrets`, `project_tokens`,
       `relay_rate_counters` und `domains` (on delete cascade in 0005, 0006, 0011, 0021, 0030),
       ohne Rückfrage zu Custom-Domains. GELESEN AM CODE.
+      GESCHLOSSEN 2026-10-02 FÜR CUSTOM-DOMAINS mit der Scheibe "K2b", Bau-Commit `2a69571`
+      (Vermerk P13.7-39): `deleteProject` verweigert, solange eine `custom_host`-Zeile besteht.
+      Die Kaskade auf die übrigen Tabellen bleibt (Vorrat P13.7-10).
     · F6 — Bekannte offene Punkte: "IM BROWSER-DIREKTEN WEG ERSCHEINT …", Punkt (10) an
       "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" (abgeschalteter Zap meldet "zugestellt"),
       "JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL …", dazu der Hobby-Stopp (A1). Zeiger.
@@ -710,17 +720,24 @@ reservierte Hosts abweisen; Domain-Status meldet Update ohne Treffer`), 2026-10-
 
 **Zuschnitt P13.7-36 — SCHEIBE "K2b": LÖSCHEN MIT CUSTOM-DOMAIN, KEINE ÜBERNAHME BEI 409 MIT
 EIGENER projectId, KRYPTOGRAFISCHER LABEL-ZUFALL. OWNER-ENTSCHEIDUNG 2026-10-02 ("so wie
-vorgeschlagen", Auswahl im Chat); Formulierung CC. KEIN BAU-COMMIT.**
-- GEGENSTAND: der Rest von Kandidat K2 (Vermerk P13.7-1) — Befunde B2 und F5, der Heil-Pfad bei
-  409 mit eigener projectId und der Zufallsteil aus Befund B5. Nicht der Grabstein (unten).
+vorgeschlagen", Auswahl im Chat); Formulierung CC. ABGELAUFEN mit Vermerk P13.7-39 (2026-10-02),
+verdichtet in derselben Runde.**
+- BINDET ÜBER DIE SCHEIBE HINAUS (OWNER und ARCHITEKT, 2026-10-02): (1) bis (3) samt D2, D3 und
+  D5 unten; E1 bis E3 und die Live-Auflage des Zuschnitts P13.7-31 gelten weiter. Die Ausnahme
+  D6 von der Live-Auflage (allein `k2b-probe.thr-ty.com`) ist mit L3 des Vermerks P13.7-39
+  verbraucht und gilt nicht weiter.
 - (1) LÖSCHEN NUR OHNE CUSTOM-DOMAIN. `deleteProject` (src/app/projects/actions.ts) verweigert
   serverseitig, solange das Projekt eine `domains`-Zeile mit `custom_host` trägt; ist das nicht
-  lesbar, verweigert es ebenfalls (fail-closed). Die Meldung ist neutral, sinngemäss "Bitte
-  entferne zuerst die verbundene Domain.", und behauptet keine weitere Ursache. Die Label-Zeile
-  (`custom_host` null) hält das Löschen nicht auf.
-  GRUND: Befunde B2 und F5 des Vermerks P13.7-1 — `deleteProject` löscht allein in der
-  Datenbank, die Kaskade aus 0006 nimmt die `domains`-Zeile mit, Vercel wird nicht gerufen; die
-  Domain bleibt dort verwaist (GELESEN AM CODE).
+  lesbar, verweigert es ebenfalls (fail-closed). Die Meldung ist neutral ("Bitte entferne
+  zuerst die verbundene Domain.") und behauptet keine weitere Ursache. Die Label-Zeile
+  (`custom_host` null) hält das Löschen nicht auf. GRUND: Befunde B2 und F5 des Vermerks P13.7-1.
+  · D2 — Die Prüfung läuft über den Admin-Client, gefiltert auf `projects.user_id` =
+    Sitzungsnutzer, nur als Anzahl; das Delete selbst bleibt beim Nutzer-Client. Grund: Unter
+    `domains_select_own` wären "keine Zeile vorhanden" und "keine Zeile sichtbar" nicht zu
+    trennen; der Filter auf `user_id` verhindert, dass die Prüfung über ein fremdes Projekt
+    etwas verrät.
+  · D3 — Bei einem Lesefehler und beim Fehlschlag des Delete lautet die Meldung "Projekt konnte
+    nicht gelöscht werden."; geloggt wird `errorName`, nie das rohe `error.message`.
 - (2) KEINE ÜBERNAHME BEI 409 MIT EIGENER projectId. Antwortet Vercel beim Hinzufügen mit 409
   `domain_already_in_use` und der projectId UNSERES Vercel-Projekts (`already_on_project` in
   `addDomainToVercel`, src/lib/vercel/client.ts), legt `registerCustomDomain`
@@ -728,7 +745,7 @@ vorgeschlagen", Auswahl im Chat); Formulierung CC. KEIN BAU-COMMIT.**
   weiterer Vercel-Aufruf. Verwaiste Domains räumt der Owner von Hand auf.
   PREIS (OWNER, angenommen): Ein Betreiber, der seine eigene Zeile durch einen Fehler verliert,
   kann sich nicht mehr selbst heilen.
-  GRUND (ABGELEITET): Über genau diesen Zweig übernimmt heute jedes Konto eine verwaiste Domain
+  GRUND (ABGELEITET): Über genau diesen Zweig übernahm bis K2b jedes Konto eine verwaiste Domain
   (Befund B2; der Zustand ist in Phase 7 gemessen, ebenda). Ohne ihn ist eine verwaiste Domain
   über die App für kein Konto mehr erreichbar, gleich aus welcher Quelle sie stammt.
   KEHRT EINE ENTSCHEIDUNG DER PHASE 7 UM (D1 unten): docs/claude-history/phase-7-hosting.md,
@@ -748,51 +765,147 @@ vorgeschlagen", Auswahl im Chat); Formulierung CC. KEIN BAU-COMMIT.**
   verwaiste Domain räumt der Owner von Hand auf (Vercel-Dashboard). Ein erneuter Add-Versuch nach
   verlorener Zeile WIRD blockiert. Eine Rückkehr der Selbstheilung ohne Übernahme-Lücke: Vorrat
   P13.7-38.
+  · D1 — die Umkehr oben, bestätigt wie im Plan vorgelegt (ARCHITEKT, 2026-10-02).
+  · D5 — Audit-Ausgang des abgelehnten Zweigs: `rejected_already_on_project`.
 - (3) KRYPTOGRAFISCHER LABEL-ZUFALL. `randomLabelSuffix` (src/lib/hosting/host.ts) bezieht den
   Zufallsteil aus einer kryptografischen Quelle statt aus `Math.random`; Alphabet und Länge
   bleiben ([a-z0-9], 6 Zeichen). Teil von Befund B5.
-- NICHT IN K2b, je mit Grund:
-  · DER GRABSTEIN FÜR LABELS UND DOMAINS (Befund B5 vollständig; Vorrat P13.6-126 der Phase
-    13.6): Der zufällige 6-Zeichen-Teil macht die Wiedervergabe eines Labels praktisch
-    unmöglich (Begründung des Zuschnitts; 36^6 = 2 176 782 336 Werte je Slug, GERECHNET).
-    Vorrat P13.7-37.
-  · DER SERVE-RIEGEL, Vorrat P13.7-32: Seit K2a entsteht keine reservierte Zeile, und gemessen
-    existiert keine (Vermerk P13.7-33, Punkt (3), E3 und N6).
-  Beide tragen als Trigger die Hebung am Phasenende 13.7, nicht mehr den Zuschnitt K2b.
-- BINDET WEITER: E1 bis E3 und die Live-Auflage des Zuschnitts P13.7-31 — mit der einen
-  Ausnahme D6 unten.
-- DANACH: Vorrat P13.7-29 als eigene kleine Scheibe direkt nach K2b, nach dem Muster der Scheibe
-  "Abhängigkeiten" (ARCHITEKT, 2026-10-02).
-- ENTSCHEIDUNGEN DER PLANRUNDE (ARCHITEKT, 2026-10-02), verdichtet:
-  · D1 — Die Phase-7-Entscheidung "IDEMPOTENZ & HEILUNG" wird umgekehrt; ALT und NEU oben unter
-    (2), bestätigt wie im Plan vorgelegt.
-  · D2 — Die Prüfung in `deleteProject` läuft über den Admin-Client, gefiltert auf
-    `projects.user_id` = Sitzungsnutzer, nur als Anzahl. Das Delete selbst bleibt beim
-    Nutzer-Client. Grund: Unter `domains_select_own` wären "keine Zeile vorhanden" und "keine
-    Zeile sichtbar" nicht zu trennen; der Filter auf `user_id` verhindert, dass die Prüfung über
-    ein fremdes Projekt etwas verrät.
-  · D3 — Bei einem Lesefehler lautet die Meldung "Projekt konnte nicht gelöscht werden."; derselbe
-    neutrale Text ersetzt beim Delete das rohe `error.message`. Geloggt wird `errorName`.
-  · D4 — Das Feld `healed` entfällt aus dem Ergebnis von `registerCustomDomain`; die Mocks in
-    src/components/CodeImporter.test.tsx und src/components/TargetCard.test.tsx werden
-    angepasst — eine ausgewiesene Änderung bestehender Tests.
-  · D5 — Audit-Ausgang des abgelehnten Zweigs: `rejected_already_on_project`.
-  · D6 — AUSNAHME VON DER LIVE-AUFLAGE, ALLEIN für `k2b-probe.thr-ty.com`, zur Live-Prüfung von
-    (2). Grund: Die Ablehnung hängt an Vercels 409-Form, zuletzt in Phase 7 gemessen.
-  · D7 — (1) wird live über eine per SQL erfundene `domains`-Zeile an einem Wegwerf-Projekt
-    geprüft, NIE als Löschversuch am Projekt von `thr-ty.com` (dort wäre ein Fehlschlag des
-    Riegels die Kaskade auf `project_secrets` und `events`, ohne PITR).
+- WAS ABGELAUFEN IST, und wo es steht: der Gegenstand (Befunde B2, F5, der Heil-Pfad, der
+  Zufallsteil aus B5) · die Ausschlüsse Grabstein und Serve-Riegel samt Gründen — sie stehen an
+  Vorrat P13.7-37 und P13.7-32, beide mit dem Trigger "Hebung am Phasenende 13.7" · D4 (`healed`
+  entfällt; die Mocks in zwei bestehenden Testdateien angepasst) · D6 und D7 (der Live-Weg) ·
+  "DANACH" (jetzt unter "Noch nicht geschnittene Arbeit"). Inhalt und Ergebnis: Vermerk
+  P13.7-39. Der Wortlaut vor der Verdichtung steht unter Commit `c6d5e5e`.
+
+**Vermerk P13.7-39 — ABSCHLUSS DER SCHEIBE "K2b". Bau-Commit `2a69571` (`feat(domains): Projekt
+mit Custom-Domain nicht löschbar; keine Übernahme verwaister Domains; Label-Zufall
+kryptografisch`), 2026-10-02.**
+
+(1) GEBAUT, GEGEN DEN ZUSCHNITT P13.7-36 (GELESEN AM CODE, CC, 2026-10-02, `git show 2a69571`):
+    · `deleteProject`: Prüfung nach `getUser()`, vor dem Delete, über den Admin-Client (`domains`
+      mit `projects!inner(user_id)`, Filter auf `project_id`, `projects.user_id` und
+      `custom_host` nicht null, nur die Anzahl). Lesefehler, Wurf oder keine Anzahl → "Projekt
+      konnte nicht gelöscht werden."; Anzahl > 0 → "Bitte entferne zuerst die verbundene
+      Domain."; ein Fehlschlag des Delete → derselbe neutrale Text, geloggt `errorName`.
+    · `registerCustomDomain`: Zweig `already_on_project` → "Domain konnte nicht registriert
+      werden.", Audit `rejected_already_on_project`, keine Zeile, kein weiterer Vercel-Aufruf;
+      in die Persistenz führt allein `kind === "ok"`. `healed` entfällt samt den Audit-Ausgängen
+      `healed` und `healed_race`. `addDomainToVercel` (src/lib/vercel/client.ts) liefert für
+      `already_on_project` kein Domain-Objekt mehr.
+    · `randomLabelSuffix`: `globalThis.crypto.getRandomValues`, Bytes ab 252 verworfen
+      (Gleichverteilung), Alphabet und Länge unverändert; kein `node:crypto` (die Datei liegt
+      auch im Client-Bundle).
+    · Tests: neu src/app/projects/delete-project.test.ts; geändert register.test.ts,
+      host.test.ts, CodeImporter.test.tsx, TargetCard.test.tsx. Neu die Probe
+      supabase/checks/verwaiste-domains.sql samt README-Zeile. 11 Dateien (`git show --stat`).
+
+(2) BAU-NACHWEIS: Der Bau-Bericht der Scheibe (Mutationen, Gate-Zahlen) steht NICHT im Bestand.
+    NACHGEMESSEN (CC, 2026-10-02, am Stand `72afa1b`; `git diff --stat 2a69571 72afa1b` nennt
+    allein drei Dateien unter supabase/checks/): `vitest run` 103 Dateien, 2829 Tests, grün
+    (nach K2a: 102 / 2819) · `next build` exit 0.
+
+(3) LIVE-TEST (OWNER, 2026-10-02 — alle Angaben OWNER-ANGABEN, nicht von CC gemessen):
+    · N1 — Bestandsprobe: V0 = 6; V1 leer; V2 drei Namen erfasst, `thr-ty.com` gedeckt.
+    · L1 — Wegwerf-Projekt W1, veröffentlicht als `w1-loschtest-ex1udz.publayer.net`, gelöscht;
+      keine Reste.
+    · L2 — W2 (`d300be7a-…`) mit der per SQL angelegten Probe-Zeile `k2b-delete-probe.invalid`
+      (D7): Löschen → "Bitte entferne zuerst die verbundene Domain.", das Projekt blieb. Zeile
+      per SQL entfernt (Rest 0); danach Löschen erfolgreich. BEOBACHTUNG: Die Meldung bleibt nach
+      dem erfolgreichen Löschen stehen und erscheint im nächsten Projekt, bis neu geladen wird
+      (Vorrat P13.7-40).
+    · L3 — W3 (D6): `k2b-probe.thr-ty.com` hinzugefügt → "Wartet auf DNS"; Vercel fünf Einträge
+      ("Invalid Configuration"); Zeile `k2b-probe-thr-ty-com-80tmfl`. Zeile per SQL gelöscht;
+      erneut hinzugefügt → "Domain konnte nicht registriert werden."; Zählung `k2b-probe` 0,
+      `thr-ty` 1; V1 genau ein Eintrag `rejected_already_on_project`, 13:32:51 UTC; V0 6 → 8.
+      V2 mit fünf Namen: allein `k2b-probe.thr-ty.com` VERWAIST (Positivkontrolle der Probe).
+      Aufgeräumt: `k2b-probe.thr-ty.com` bei Vercel entfernt, wieder vier Einträge, V2 sauber;
+      W3 gelöscht.
+    · VORFALL in L3: Ein Lauf mit dem unersetzten Platzhalter `<SERVING_DOMAIN>` zeigte
+      `publayer.net` und `*.publayer.net` als VERWAIST. Ursache am Abfragetext belegt; nichts
+      war verwaist. Repariert mit Commit `72afa1b` (Punkt (5)).
+    · L4 — App wie gewohnt; die Make-Seite lädt; `thr-ty.com` "Live — DNS korrekt,
+      TLS-Zertifikat aktiv".
+
+(4) WAS DIE BEOBACHTUNGEN TRAGEN (ABGELEITET, CC, 2026-10-02, am Code `2a69571`):
+    · L3 misst Vercels Antwort auf eine bereits an unserem Projekt hängende Domain: weiterhin
+      409 mit eigener projectId wie in Phase 7 (docs/claude-history/phase-7-hosting.md,
+      Live-Beweis 7c-2, Fall (3)). Belegt durch den Audit-Ausgang `rejected_already_on_project`
+      — ihn schreibt allein der Zweig `already_on_project` —, NICHT durch die Meldung: denselben
+      Text "Domain konnte nicht registriert werden." trägt in `registerCustomDomain` ein zweiter
+      Zweig (GEMESSEN AM REPO, zwei Treffer).
+    · Punkt U2 des Vermerks P13.7-1 ("wie Vercel für die eigenen Domains antwortet") bleibt
+      UNGEMESSEN: L3 betrifft eine Kunden-Subdomain, nicht die Plattform-Domains.
+    · L2 belegt den Riegel an einer per SQL erfundenen Zeile, L1 das unveränderte Löschen ohne
+      Custom-Domain. Den fail-closed-Zweig (Lesefehler) belegt allein der Test.
+
+(5) DIE PROBEN SIND REPARIERT — Commit `72afa1b` (`fix(checks): Proben ohne Platzhalter für die
+    Serving-Domain, mit Selbsttest`), 2026-10-02, CC:
+    · supabase/checks/verwaiste-domains.sql und reservierte-hosts.sql tragen `publayer.net` fest;
+      der Kopf nennt die Bindung an `NEXT_PUBLIC_HOSTING_DOMAIN` (Production) und ihre Grenze:
+      in Vercel "Sensitive", eingegrenzt über N1, N2 und N4 des Vermerks P13.7-33, Punkt (4) —
+      ABGELEITET, nicht abgelesen. Der Prompt der Runde nannte allein N2; der Bestand trägt drei.
+    · SELBSTTEST je Block mit Reservierungs-Liste (V2, V3, Q1, Q2, Q4): Erfasst die Liste
+      `publayer.net`, `*.publayer.net` oder `pagesmith-delta.vercel.app` nicht, liefert der Block
+      genau eine Zeile `PROBE DEFEKT …` und keine Datenzeile.
+    · V2 prüft die vier heute bekannten Vercel-Namen als festen Block (`publayer.net`,
+      `*.publayer.net`, `pagesmith-delta.vercel.app`, `thr-ty.com`; die Namen aus dem Auftrag der
+      Runde, die Anzahl vier aus Vermerk P13.7-33, N3); V3 prüft einen weiteren Namen an genau
+      einer markierten Einsetzstelle und meldet einen unersetzten Platzhalter als `PLATZHALTER
+      NICHT ERSETZT`. Q4 nutzt denselben festen Block.
+    · NACHWEIS (GEMESSEN, CC, 2026-10-02): in PGlite 0.5.8 (Postgres 18.3, im Scratchpad, nicht im
+      Repo) gegen Attrappen-Tabellen `domains` und `audit_logs`, je Block einzeln, die Datei
+      unverändert, die Mutation nur im eingelesenen Text. Vorhersage = Ergebnis in allen Läufen:
+      ohne Mutation V2 drei `erfasst` und `thr-ty.com` `gedeckt`, V3 `PLATZHALTER NICHT ERSETZT`,
+      Q1 und Q2 0, Q4 `thr-ty.com` 1, Q3a/Q3b wie im Kopf · M1 (`publayer.net` aus den Listen
+      entfernt), M2 (`<SERVING_DOMAIN>` statt `publayer.net` — der Vorfall) und M3 (`vercel.app`
+      entfernt): V2, V3, Q1, Q2, Q4 je genau eine Zeile `PROBE DEFEKT …`; V0, V1, Q0, Q3a, Q3b
+      unverändert · M4 (M1 und der Riegel `where st.ok` entfernt): V2 zeigt `publayer.net` und
+      `*.publayer.net` als VERWAIST — die Form des Vorfalls, also trägt der Riegel. POSITIV-
+      KONTROLLEN: V3 mit `k2b-probe.thr-ty.com` → VERWAIST, mit `THR-TY.COM.` → gedeckt; eine
+      Attrappen-Zeile `X.Publayer.Net.` erscheint in Q1 und Q2.
+    · GRENZE: Postgres 18.3 in WASM, nicht die Supabase-Datenbank; die Fassung ohne Platzhalter
+      lief noch nie gegen echte Daten (Kopffeld VERIFIZIERT beider Dateien).
+
+(6) GRENZEN (OWNER): Die Zufallsquelle der Labels ist allein im Test belegt (H1 in
+    src/lib/hosting/host.test.ts) · nur Chrome.
+
+(7) RUNBOOK-SZENARIO: Diese Scheibe schafft eine Handlung des Owners im Betrieb — das Aufräumen
+    einer verwaisten Domain. Szenario (i) in docs/ADMIN_RUNBOOK.md, GEÜBT mit L3.
+
+(8) FOLGEN: Befund B2 des Vermerks P13.7-1 ist GESCHLOSSEN, Befund F5 für Custom-Domains; B5 ist
+    zum Teil (Zufallsteil) erledigt. Vorrat P13.7-34 ist zur Hälfte erledigt (src/lib/vercel/
+    client.ts, Kopfkommentar, mit `2a69571`). Neu: Vorrat P13.7-40; aus der Runbook-Anlage dazu
+    Vorrat P13.7-42 (Entscheidung P13.7-41).
+
+**Entscheidung P13.7-41 — ADMIN-RUNBOOK UND ADMIN-AGENT. OWNER-ENTSCHEIDUNGEN 2026-10-02 (Auswahl
+im Chat; übermittelt im Auftrag der Doku-Runde).**
+- RUNBOOK: Es entsteht in der Phase 13.7 als docs/ADMIN_RUNBOOK.md (Name wörtlich vom Owner);
+  jede Scheibe trägt ihre Szenarien ein. Angelegt in der Doku-Runde dieses Eintrags mit vier
+  Szenarien aus Gemessenem. Die Kadenz und die Wege in docs/arbeitsweise.md sind dafür ergänzt
+  (Änderungsantrag ANGENOMMEN, OWNER 2026-10-02); CLAUDE.md spiegelt die Wege.
+- ADMIN-AGENT: eine eigene Phase nach 13.7, nur lesend und mit Vorschlägen — Roadmap-Zeile
+  13.10 (docs/roadmap.md).
+- KEIN UMZUG DER KILL-SWITCH-BEFEHLE (OWNER-ENTSCHEIDUNG 2026-10-02, nach Vorlage durch CC unter
+  Stopp-Bedingung S3): Sie bleiben in CLAUDE.md ("KILL-SWITCH — SQL-RUNBOOK"); die Begründung des
+  Bestands trägt — CLAUDE.md lädt jede Sitzung. Sie steht an drei Stellen: CLAUDE.md, Kopf von
+  "## Security Manifest & Launch Blocker"; der Runbook-Block selbst ("bewusst hier in der
+  Root-Doku statt in separater Datei"); supabase/checks/README.md. Szenario (iv) des Runbooks
+  verweist dorthin.
+- KONVENTION "EINE QUELLE JE BEFEHL" BESTÄTIGT (OWNER, 2026-10-02), mit dem Zusatz: Verweist ein
+  Szenario auf eine Quelle, die REGEL 1 nicht erfüllt, steht das sichtbar am Szenario. Szenario
+  (iv) trägt das: Die Sperr-Befehle haben zwei Einsetzstellen (Referenz und Ziel); der Umbau auf
+  eine Stelle steht mit K3 an — Vorrat P13.7-42.
 
 ---
 
 ## Noch nicht geschnittene Arbeit
 
 Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Abgeschlossen sind seit
-dem 2026-10-02 die Scheiben "Abhängigkeiten" (Vermerk P13.7-28) und "K2a" (Vermerk P13.7-33). Als
-nächste steht "K2b" an (ARCHITEKT, 2026-10-02), zugeschnitten mit P13.7-36; ihr Plan ist mit
-den Entscheidungen D1 bis D7 freigegeben (ARCHITEKT, 2026-10-02). Danach Vorrat P13.7-29 als eigene kleine Scheibe (ARCHITEKT,
-2026-10-02). Der Grabstein (Vorrat P13.7-37) und der Serve-Riegel (Vorrat P13.7-32) gehen an die
-Hebung am Phasenende 13.7. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der Vorrat
+dem 2026-10-02 die Scheiben "Abhängigkeiten" (Vermerk P13.7-28), "K2a" (Vermerk P13.7-33) und
+"K2b" (Vermerk P13.7-39). Als Nächstes die Scheibe zu Vorrat P13.7-29 (die zwei
+Supabase-Versions-PRs), danach Kandidat K1 (ARCHITEKT, 2026-10-02, Auftrag der Doku-Runde zu
+Vermerk P13.7-39). Der Grabstein (Vorrat P13.7-37) und der Serve-Riegel (Vorrat P13.7-32) gehen an
+die Hebung am Phasenende 13.7. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der Vorrat
 darunter.
 
 ---
@@ -837,6 +950,8 @@ Befund D4.
 P13.7-1, Befund F5.
 → 2026-10-02: Für Custom-Domains Gegenstand des Zuschnitts P13.7-36, (1). Die Kaskade auf die
 übrigen Tabellen bleibt.
+→ 2026-10-02: Für Custom-Domains gebaut und live geprüft (Bau-Commit `2a69571`, Vermerk
+P13.7-39, L2). Offen bleibt die Kaskade auf die übrigen Tabellen.
 
 **Vorrat P13.7-11 — F6: BEKANNTE OFFENE PUNKTE DES STILLEN VERLUSTS** (Zeiger). Vermerk P13.7-1,
 Befund F6.
@@ -891,6 +1006,8 @@ mit Positivkontrolle; keine Handlung). Vermerk P13.7-1, Befund N23.
   (Zuschnitt P13.7-36), nach dem Muster der Scheibe "Abhängigkeiten" (Zuschnitt P13.7-27) —
   ODER früher, falls Dependabot eine Sicherheitsmeldung zu einem der beiden Pakete erhebt.
   Vorher: "der nächste Zuschnitt nach K2a (Entscheidung P13.7-25)".
+- → 2026-10-02: TRIGGER EINGETRETEN mit dem Abschluss von K2b (Vermerk P13.7-39); als nächste
+  Scheibe gesetzt ("Noch nicht geschnittene Arbeit").
 
 **Vorrat P13.7-30 — FRAGE ZU K9: LAUFEN PREVIEW-DEPLOYMENTS MIT DENSELBEN GEHEIMNISSEN UND
 DERSELBEN DATENBANK WIE PRODUCTION?**
@@ -930,6 +1047,9 @@ AUSGELIEFERT.**
 - HERKUNFT: Prüfung der Kommentarköpfe unberührter Dateien im Bau der Scheibe "K2a" (Vermerk
   P13.7-33); dort gemeldet, nicht geändert.
 - TRIGGER: der nächste Eingriff in eine der beiden Dateien.
+- → 2026-10-02: ZUR HÄLFTE ERLEDIGT. Der Kopfkommentar von src/lib/vercel/client.ts nennt seit
+  `2a69571` "lib/domains/register, lib/domains/remove, lib/domains/status" (GELESEN AM CODE, CC,
+  `git show 2a69571`). Offen bleibt src/lib/domains/normalize.ts.
 
 **Vorrat P13.7-35 — DIE DOMAIN-VERWALTUNG GIBT BEI `already_registered_self` KEINE RÜCKMELDUNG.**
 - BEFUND: Live N4 der Scheibe "K2a" (OWNER, 2026-10-02): Erneutes Hinzufügen von `thr-ty.com` im
@@ -937,6 +1057,8 @@ AUSGELIEFERT.**
   `registerCustomDomain` liefert `{ ok: true, status: "pending", healed: false }`; `handleAdd`
   (src/components/DomainManager.tsx) leert bei `res.ok` das Feld und lädt die Liste neu, ohne
   Meldung.
+  → 2026-10-02: Seit `2a69571` lautet das Ergebnis `{ ok: true, status: "pending" }` — `healed`
+  entfällt (Zuschnitt P13.7-36, D4). Der Befund bleibt.
 - TRIGGER: das UI-Redesign.
 
 **Vorrat P13.7-37 — B5: DER GRABSTEIN FÜR LABELS UND DOMAINS IST NICHT GEBAUT.**
@@ -965,3 +1087,27 @@ ANLEGEN.**
   Spalte trägt, entscheidet der Zuschnitt.
 - TRIGGER: der erste Support-Fall eines ausgesperrten Betreibers, ODER das Wiedereinschalten der
   Registrierung (Vermerk P13.7-24).
+
+**Vorrat P13.7-40 — DIE FEHLERMELDUNG DES EDITORS BLEIBT NACH ERFOLGREICHEM LÖSCHEN STEHEN UND
+ERSCHEINT IM NÄCHSTEN PROJEKT.**
+- BEFUND: Live L2 der Scheibe "K2b" (OWNER, 2026-10-02): Nach "Bitte entferne zuerst die
+  verbundene Domain." und dem anschliessend erfolgreichen Löschen bleibt die Meldung stehen und
+  erscheint im nächsten Projekt, bis neu geladen wird.
+- AM CODE (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `2a69571`): `handleDelete`
+  (src/components/CodeImporter.tsx) setzt im Fehlerzweig `setSaveError` und `setSaveStatus`; der
+  Erfolgszweig setzt beides nicht zurück. Dass die Meldung daher stammt, ist ABGELEITET.
+- BEZUG: die Dauerregeln "AUFRÄUMEN AM ANFANG EINER SITZUNG, NICHT AN IHREM ENDE" und "ABLEITEN
+  STATT LÖSCHEN" (docs/immer-beachten.md).
+- TRIGGER: der nächste Eingriff in src/components/CodeImporter.tsx oder das UI-Redesign.
+
+**Vorrat P13.7-42 — DIE KILL-SWITCH-BEFEHLE IN CLAUDE.md AUF EINE EINSETZSTELLE UMBAUEN, DANACH
+ÜBEN.**
+- BEFUND (GELESEN, CC, 2026-10-02): Jeder der drei Sperr-Befehle in CLAUDE.md ("KILL-SWITCH —
+  SQL-RUNBOOK") trägt zwei Einsetzstellen — die Referenz (`<ref>` in `blocked_reason`) und das
+  Ziel (`<PROJECT_UUID>`, `<LABEL>` oder `<HOST>`). Damit verstösst er gegen REGEL 1 von
+  docs/ADMIN_RUNBOOK.md (höchstens EINE markierte Stelle); Szenario (iv) weist es aus.
+- AUFTRAG (OWNER, 2026-10-02): auf EINE Einsetzstelle umbauen und danach live üben; die Befehle
+  bleiben in CLAUDE.md (Entscheidung P13.7-41). Beide Fassungen des Manifests bleiben dabei
+  deckungsgleich, wo der Status berührt ist.
+- TRIGGER: der Zuschnitt K3 (Sperre je Konto; Kandidat K3 des Vermerks P13.7-1 — dort steht
+  "das Runbook ergänzen").

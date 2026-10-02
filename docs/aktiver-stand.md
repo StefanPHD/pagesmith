@@ -708,16 +708,60 @@ reservierte Hosts abweisen; Domain-Status meldet Update ohne Treffer`), 2026-10-
     reservierte Zeile wird weiter ausgeliefert — ist Vorrat P13.7-32 (Bestand heute: keine, N6).
     Vorrat P13.7-2 ist ERLEDIGT.
 
+**Zuschnitt P13.7-36 — SCHEIBE "K2b": LÖSCHEN MIT CUSTOM-DOMAIN, KEINE ÜBERNAHME BEI 409 MIT
+EIGENER projectId, KRYPTOGRAFISCHER LABEL-ZUFALL. OWNER-ENTSCHEIDUNG 2026-10-02 ("so wie
+vorgeschlagen", Auswahl im Chat); Formulierung CC. KEIN BAU-COMMIT.**
+- GEGENSTAND: der Rest von Kandidat K2 (Vermerk P13.7-1) — Befunde B2 und F5, der Heil-Pfad bei
+  409 mit eigener projectId und der Zufallsteil aus Befund B5. Nicht der Grabstein (unten).
+- (1) LÖSCHEN NUR OHNE CUSTOM-DOMAIN. `deleteProject` (src/app/projects/actions.ts) verweigert
+  serverseitig, solange das Projekt eine `domains`-Zeile mit `custom_host` trägt; ist das nicht
+  lesbar, verweigert es ebenfalls (fail-closed). Die Meldung ist neutral, sinngemäss "Bitte
+  entferne zuerst die verbundene Domain.", und behauptet keine weitere Ursache. Die Label-Zeile
+  (`custom_host` null) hält das Löschen nicht auf.
+  GRUND: Befunde B2 und F5 des Vermerks P13.7-1 — `deleteProject` löscht allein in der
+  Datenbank, die Kaskade aus 0006 nimmt die `domains`-Zeile mit, Vercel wird nicht gerufen; die
+  Domain bleibt dort verwaist (GELESEN AM CODE).
+- (2) KEINE ÜBERNAHME BEI 409 MIT EIGENER projectId. Antwortet Vercel beim Hinzufügen mit 409
+  `domain_already_in_use` und der projectId UNSERES Vercel-Projekts (`already_on_project` in
+  `addDomainToVercel`, src/lib/vercel/client.ts), legt `registerCustomDomain`
+  (src/lib/domains/register.ts) KEINE Zeile mehr an: Ablehnung, genau ein Audit-Eintrag, kein
+  weiterer Vercel-Aufruf. Verwaiste Domains räumt der Owner von Hand auf.
+  PREIS (OWNER, angenommen): Ein Betreiber, der seine eigene Zeile durch einen Fehler verliert,
+  kann sich nicht mehr selbst heilen.
+  GRUND (ABGELEITET): Über genau diesen Zweig übernimmt heute jedes Konto eine verwaiste Domain
+  (Befund B2; der Zustand ist in Phase 7 gemessen, ebenda). Ohne ihn ist eine verwaiste Domain
+  über die App für kein Konto mehr erreichbar, gleich aus welcher Quelle sie stammt.
+  BERÜHRT EINE ENTSCHEIDUNG DER PHASE 7: docs/claude-history/phase-7-hosting.md, Abschnitt
+  "7c-2b — Add-Domain-Mutation: Konzept & Entscheidungen", Punkt "IDEMPOTENZ & HEILUNG" ("…
+  ein erneuter Add-Versuch des rechtmäßigen Owners wird NICHT blockiert"). Das Archiv wird nicht
+  geändert. ALT und NEU liegen dem Architekten mit dem Plan K2b vor (Planrunde 2026-10-02); seine
+  Bestätigung steht mit der Freigabe des Plans aus.
+- (3) KRYPTOGRAFISCHER LABEL-ZUFALL. `randomLabelSuffix` (src/lib/hosting/host.ts) bezieht den
+  Zufallsteil aus einer kryptografischen Quelle statt aus `Math.random`; Alphabet und Länge
+  bleiben ([a-z0-9], 6 Zeichen). Teil von Befund B5.
+- NICHT IN K2b, je mit Grund:
+  · DER GRABSTEIN FÜR LABELS UND DOMAINS (Befund B5 vollständig; Vorrat P13.6-126 der Phase
+    13.6): Der zufällige 6-Zeichen-Teil macht die Wiedervergabe eines Labels praktisch
+    unmöglich (Begründung des Zuschnitts; 36^6 = 2 176 782 336 Werte je Slug, GERECHNET).
+    Vorrat P13.7-37.
+  · DER SERVE-RIEGEL, Vorrat P13.7-32: Seit K2a entsteht keine reservierte Zeile, und gemessen
+    existiert keine (Vermerk P13.7-33, Punkt (3), E3 und N6).
+  Beide tragen als Trigger die Hebung am Phasenende 13.7, nicht mehr den Zuschnitt K2b.
+- BINDET WEITER: E1 bis E3 und die Live-Auflage des Zuschnitts P13.7-31.
+- DANACH: Vorrat P13.7-29 als eigene kleine Scheibe direkt nach K2b, nach dem Muster der Scheibe
+  "Abhängigkeiten" (ARCHITEKT, 2026-10-02).
+
 ---
 
 ## Noch nicht geschnittene Arbeit
 
 Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Abgeschlossen sind seit
 dem 2026-10-02 die Scheiben "Abhängigkeiten" (Vermerk P13.7-28) und "K2a" (Vermerk P13.7-33). Als
-nächste steht "K2b" an (ARCHITEKT, 2026-10-02), noch ohne Zuschnitt: der Rest von Kandidat K2 —
-Befunde B2, B5, F5 und der Heal-Pfad bei 409 mit eigener projectId; der Trigger von Vorrat
-P13.7-32 ist dieser Zuschnitt. Der Trigger von Vorrat P13.7-29 ("der nächste Zuschnitt nach K2a")
-fällt ebenfalls auf ihn. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der Vorrat darunter.
+nächste steht "K2b" an (ARCHITEKT, 2026-10-02), zugeschnitten mit P13.7-36; ihr Plan liegt in
+der Planrunde vom 2026-10-02 vor. Danach Vorrat P13.7-29 als eigene kleine Scheibe (ARCHITEKT,
+2026-10-02). Der Grabstein (Vorrat P13.7-37) und der Serve-Riegel (Vorrat P13.7-32) gehen an die
+Hebung am Phasenende 13.7. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der Vorrat
+darunter.
 
 ---
 
@@ -759,6 +803,8 @@ Befund D4.
 
 **Vorrat P13.7-10 — F5: `deleteProject` KASKADIERT OHNE RÜCKFRAGE ZU CUSTOM-DOMAINS.** Vermerk
 P13.7-1, Befund F5.
+→ 2026-10-02: Für Custom-Domains Gegenstand des Zuschnitts P13.7-36, (1). Die Kaskade auf die
+übrigen Tabellen bleibt.
 
 **Vorrat P13.7-11 — F6: BEKANNTE OFFENE PUNKTE DES STILLEN VERLUSTS** (Zeiger). Vermerk P13.7-1,
 Befund F6.
@@ -809,8 +855,10 @@ mit Positivkontrolle; keine Handlung). Vermerk P13.7-1, Befund N23.
   (`^0.12.0`, `^2.108.2`; ABGELEITET). .github/dependabot.yml nimmt sie nicht aus — ausgenommen
   sind Major-Sprünge und vier exakt gepinnte Pakete (GELESEN AM CODE).
 - AUFLAGE (ARCHITEKT, 2026-10-02): Merge nur als eigene Scheibe mit Live-Regression.
-- TRIGGER: der nächste Zuschnitt nach K2a (Entscheidung P13.7-25), ODER früher, falls Dependabot
-  eine Sicherheitsmeldung zu einem der beiden Pakete erhebt.
+- TRIGGER (NACHGEZOGEN 2026-10-02, ARCHITEKT): eine eigene kleine Scheibe direkt nach K2b
+  (Zuschnitt P13.7-36), nach dem Muster der Scheibe "Abhängigkeiten" (Zuschnitt P13.7-27) —
+  ODER früher, falls Dependabot eine Sicherheitsmeldung zu einem der beiden Pakete erhebt.
+  Vorher: "der nächste Zuschnitt nach K2a (Entscheidung P13.7-25)".
 
 **Vorrat P13.7-30 — FRAGE ZU K9: LAUFEN PREVIEW-DEPLOYMENTS MIT DENSELBEN GEHEIMNISSEN UND
 DERSELBEN DATENBANK WIE PRODUCTION?**
@@ -835,7 +883,9 @@ AUSGELIEFERT.**
 - HEUTE: Die Bestandsprobe supabase/checks/reservierte-hosts.sql vor dem Deploy (Zuschnitt
   P13.7-31, E3); ein Fund wird per SQL gelöscht, nie über "Entfernen" in der App.
 - KANDIDAT: ein Riegel im Serve-Pfad (und im Relay, das ebenso verzweigt).
-- TRIGGER: der Zuschnitt K2b.
+- TRIGGER (NACHGEZOGEN 2026-10-02, Zuschnitt P13.7-36): die Hebung am Phasenende 13.7. Grund:
+  Seit K2a entsteht keine reservierte Zeile, und gemessen existiert keine (Vermerk P13.7-33).
+  Vorher: "der Zuschnitt K2b".
 
 **Vorrat P13.7-34 — ZWEI KOMMENTARKÖPFE IM DOMAIN-PFAD SIND UNGENAU.**
 - BEFUND (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `ed20fab`), beides schon vor K2a so:
@@ -856,3 +906,15 @@ AUSGELIEFERT.**
   (src/components/DomainManager.tsx) leert bei `res.ok` das Feld und lädt die Liste neu, ohne
   Meldung.
 - TRIGGER: das UI-Redesign.
+
+**Vorrat P13.7-37 — B5: DER GRABSTEIN FÜR LABELS UND DOMAINS IST NICHT GEBAUT.**
+- BEFUND: Vermerk P13.7-1, Befund B5; Vorrat P13.6-126 der Phase 13.6.
+- AUS K2b AUSGENOMMEN (Zuschnitt P13.7-36): Dort kommt nur der Zufallsteil der Labels aus
+  kryptografischem Zufall; die Wiedervergabe eines Labels ist damit praktisch unmöglich
+  (Begründung des Zuschnitts).
+- GRENZE DIESER BEGRÜNDUNG (ABGELEITET, CC, 2026-10-02, am Code `882367b`): Sie trägt für
+  LABELS. Eine Custom-Domain hat keinen Zufallsteil — nach `removeCustomDomain`
+  (src/lib/domains/remove.ts) ist sie weder in `domains` noch bei Vercel, und jedes Konto kann
+  sie neu anlegen (`registerCustomDomain`); zeigt der DNS des Vorbesitzers noch auf uns, wird
+  das neue Projekt dort ausgeliefert. Ob das zum Grabstein gehört, entscheidet die Hebung.
+- TRIGGER: die Hebung am Phasenende 13.7.

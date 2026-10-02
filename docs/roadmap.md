@@ -2654,6 +2654,8 @@ liegen beide hier und finden einander.
       · SPEICHERUNG — ein Lead-Postfach, Export, Rückmeldung "Lead wurde Kunde" (Punkt (7) des
         Fahrplan-Entwurfs); verlangt eine eigene Owner-Entscheidung (Owner-Entscheidung
         P13.6-16).
+        → 2026-10-02: Für das Lead-Postfach steht eine Owner-Absicht samt Kopplungen unter
+        "Bewusst nicht phasiert (Trigger fehlt)" am Ende dieser Datei.
       · ANGRENZEND, seit dem 2026-09-29 an dieser Zeile: "Webhooks auf Performance-Events" aus dem
         Grundtext der Zeile 13 (Setzung P13-9 der Phase 13) und die Lesart (b) der Phase 11.6 —
         ein server-seitiger Empfänger mit kundeneigenem Endpunkt (Grund an der Roadmap-Zeile
@@ -2954,3 +2956,17 @@ liegen beide hier und finden einander.
 - Betreiber-Metriken/SaaS-Tarifgrenzen (Rate-Limiting nach Tarif,
   In-App-Upgrade-Meldungen): kein Preismodell heute — kein Termin, reine
   Notiz.
+- Lead-Postfach (Speicherung von Formularinhalten): OWNER-ABSICHT 2026-10-02 — "Um das
+  Lead-Postfach werden wir nicht herumkommen"; Zeitpunkt offen, keine Phase, kein Zuschnitt.
+  Bisher stand es als "SPEICHERUNG" unter "NICHT GEBAUT — ORT NICHT ENTSCHIEDEN" an der
+  Roadmap-Zeile 13.6. DIE ABSICHT IST NICHT DIE OWNER-ENTSCHEIDUNG, die jene Stelle verlangt
+  (Owner-Entscheidung P13.6-16 der Phase 13.6); bis zu ihr gilt die Transit-Regel unverändert.
+  KOPPLUNGEN (Architekt, 2026-10-02):
+  · Die Dauerregel "FORMULARINHALTE IM RELAY SIND TRANSIT — NIE GESPEICHERT, NIE GELOGGT, NIE AN
+    /api/e, NIE AN EIN TRACKING-ZIEL; SIE STEHEN NUR IM RUMPF" (docs/immer-beachten.md) wird dann
+    über ihre Entfallsbedingung neu gefasst ("sobald eine Owner-Entscheidung Speicherung von
+    Formularinhalten … zulässt").
+  · Die Erkennung eines "nicht zugestellt" ist der natürliche Auslöser einer erneuten
+    Zustellung. Der Auftrag ordnet sie Kandidat K8 zu; Vermerk P13.7-1 der Phase 13.7 führt den
+    Relay-Fall als Befund A5 bei Kandidat K5, K8 trägt dort F2, F3, F4 und F7.
+  · Verschlüsselung, Löschfristen und AVV hängen daran.

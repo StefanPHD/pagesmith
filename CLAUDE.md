@@ -140,7 +140,7 @@ bewusst NICHT angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 17 — Multi-Page-Funnels
 - [ ] Phase 18 — MCP-Server
 
-**Bewusst nicht phasiert (Trigger fehlt):** fünf Einträge ohne Marker — Volltext in
+**Bewusst nicht phasiert (Trigger fehlt):** sechs Einträge ohne Marker — Volltext in
 docs/roadmap.md.
 
 ## Offene Punkte (aktive TODOs mit Trigger — nicht in ein Abschluss-Archiv)
@@ -197,7 +197,8 @@ in docs/claude-md-herleitung.md.
   dem 2026-09-30 einen PUNKT (9) aus der Phase 13.6, welcher Weg zustellt und welcher prüft,
   und seit dem 2026-10-01 die PUNKTE (10) bis (12) aus dem Phasenende 13.6: ein
   abgeschalteter Zap meldet "zugestellt", Zapier speichert nur in den USA, die Adresse steht
-  auch im Relay-Weg öffentlich in der Seite)
+  auch im Relay-Weg öffentlich in der Seite, sowie seit dem 2026-10-02 einen PUNKT (13) aus der
+  Phase 13.7, gehaltene Läufe bei erschöpftem Zapier-Kontingent)
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real — EINGETRETEN mit dem Abschluss der
   Phase 11.5 am 2026-09-16, nachgezogen am 2026-09-25)

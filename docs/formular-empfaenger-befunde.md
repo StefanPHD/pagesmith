@@ -2216,8 +2216,10 @@ Frage nach dem Verbleib einer Anfrage im Fenster ist beantwortet: Sie wird nicht
   sie von einer richtigen.
 
 **(ae) ZM7 — UBLOCK ORIGIN LITE SPERRT `hooks.zapier.com` NICHT.** GEMESSEN (OWNER, Chrome,
-2026-10-01): uBlock Origin Lite, Modus "Vollständig", Standardlisten. Vorgesehen war der Aufbau
-wie N3 in Vermerk P13-22 der Phase 13; die Angabe nennt Blocker, Modus, Listen und Kontrolle.
+2026-10-01): uBlock Origin Lite, Modus "Vollständig", Standardlisten. Der Aufbau entsprach N3 in
+Vermerk P13-22 der Phase 13: uBlock Origin Lite, Modus "Vollständig" gegen "Keine Filterung",
+Chrome, Kontrolle doubleclick (OWNER-ANGABE 2026-10-02; bis dahin stand hier "vorgesehen"). Die
+Chrome-Fassung ist nicht angegeben; in P13-22 heisst die Gegenprobe N4 "Blocker AUS".
 - BLOCKER EIN: Kontrolle doubleclick → `basic`, Status 200 (gesperrt); Zapier → `opaque`,
   Status 0, Lauf `zm7-…T17:02:57.958Z` im Zap-Verlauf.
 - GEGENPROBE OHNE FILTERUNG: doubleclick → `opaque`, Status 0; Zapier → `opaque`, Status 0, Lauf

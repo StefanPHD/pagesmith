@@ -842,6 +842,12 @@ aufeinander; sie liegen alle hier und finden einander.
   Was still kaputtgeht: Leads verschwinden, obwohl die Seite "zugestellt" bzw. die Danke-Seite
   zeigt — im Relay-Weg für die Dauer des Fensters, im browser-direkten Weg ohne Ende. KEINE
   EMPFEHLUNG, wie der Satz lautet. Der Trigger ist der des Postens.
+  ERGÄNZT AM 2026-10-02 (Phase 13.7, Auftrag der Doku-Runde zum Zuschnitt K2b). Der Text darüber
+  bleibt wörtlich. Ein NIE eingeschalteter Zap antwortete noch nach rund 13 h mit 200 (12 h 55 min
+  zwischen zwei Anfragen, GERECHNET, Befund (z)); ein Ende ist nicht gemessen. FOLGE: Eine
+  Fehleranzeige, die auf eine 404 wartet, erkennt diesen Fall nicht — für diesen Fall gibt es kein
+  gemessenes Ende des Fensters. Erkennbar ist er allein über den Test-Lead mit Ankunftsprüfung im
+  Zap-Verlauf von Zapier (Handlungsregel (b) oben).
   (11) ZAPIER SPEICHERT NUR IN DEN USA, OHNE EU-OPTION — ERGÄNZT AM 2026-10-01 (Phasenende 13.6,
   aus Vorrat P13.6-93 der Phase 13.6). GELESEN (ebenda, Befund (l)): "Zapier hosts data in AWS
   servers located in the United States …" und "Is there an option to have my data stored only
@@ -864,6 +870,22 @@ aufeinander; sie liegen alle hier und finden einander.
   ist, dass das Relay daran nichts ändert. Was still kaputtgeht: Ein Betreiber, der das Relay
   für einen Schutz der Adresse hält, rechnet nicht mit Einträgen, die an Pagesmith vorbei
   direkt ankommen. KEINE EMPFEHLUNG, wie der Satz lautet. Der Trigger ist der des Postens.
+  (13) BEI ERSCHÖPFTEM KONTINGENT HÄLT ZAPIER DEN LAUF — DAS RELAY MELDET "ZUGESTELLT", UND DER
+  LEAD BRAUCHT NACH EINEM UPGRADE EIN REPLAY — ERGÄNZT AM 2026-10-02 (Phase 13.7, Auftrag der
+  Doku-Runde zum Zuschnitt K2b). ABGELEITET aus docs/formular-empfaenger-befunde.md, Abschnitt
+  "Zapier", Befund (g); UNGEMESSEN.
+  GELESEN ist dort: Ein Lauf wird "held", wenn "the account reached the task limit for its plan
+  …"; die Abhilfe lautet "Upgrade your Zapier plan, then replay your held Zap run." Welchen
+  Status die Adresse in diesem Fall antwortet, steht auf keiner gelesenen Seite, ebenso wenig,
+  wie lange ein gehaltener Lauf aufbewahrt wird (ebenda).
+  DIE FOLGE GILT UNTER DER ANNAHME, dass die Adresse weiter mit 200 antwortet: Dann meldet das
+  Relay "zugestellt" (`forward`, src/lib/relay/relay.ts, wertet allein den Status), der Besucher
+  sieht die Danke-Seite, und der Lead liegt als gehaltener Lauf im Konto des Betreibers; er
+  erreicht dessen Folgeschritte erst nach einem Upgrade und einem Replay. Messkandidat:
+  "ZM5-Rest (1)" (ebenda, "MESSKANDIDATEN NACH DIESER MESSUNG").
+  Was still kaputtgeht: Der Betreiber sieht keine neuen Leads und keinen Fehler; erst der
+  Zap-Verlauf zeigt die gehaltenen Läufe. KEINE EMPFEHLUNG, wie der Satz lautet. Der Trigger ist
+  der des Postens.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   VERSCHOBEN INS BACKLOG AM 2026-09-25 (Sichtung beim Phasenende 11.7, ARCHITEKTEN-
   ENTSCHEIDUNG). Grund: Die Achse hat keinen realen Konsumenten; was still kaputtginge, setzt

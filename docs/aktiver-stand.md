@@ -591,14 +591,93 @@ verdichtet in derselben Runde.**
       ist eine Einstellung bei Vercel bzw. GitHub; ohne sie geht ein Push auf main in Produktion,
       auch wenn die CI rot ist. Bezug: Kandidat K9, Vorrat P13.7-30.
 
+**Zuschnitt P13.7-31 — SCHEIBE "K2a": RESERVIERTE HOSTS UND `checkDomainStatus`. Doku-Runde,
+2026-10-02, Code-Stand `92ec719`; der Bau folgt in eigener Runde.**
+- GEGENSTAND: Befund B1 des Vermerks P13.7-1 (plattform-eigene Domains als Custom-Domain) und
+  Vorrat P13.7-2 (`checkDomainStatus`). Bezeichnung "K2a": Entscheidung P13.7-25.
+- DAS PRÄDIKAT: EIN reines Prädikat `isReservedHost` in src/lib/hosting/host.ts (reine Datei, kein
+  "use server"). Abgleich an der LABEL-GRENZE: host == Eintrag ODER host endet auf "." + Eintrag.
+  Eigene Normalisierung im Prädikat (Kleinschreibung, Punkte am Ende entfernt), weil remove und
+  status den Host aus der Datenbank lesen, nicht aus `normalizeDomain`.
+- QUELLE (E1, ARCHITEKTEN-ENTSCHEIDUNG 2026-10-02) — RICHTIGGESTELLT gegenüber dem ersten
+  Zuschnitts-Entwurf, der "dieselben Env-abgeleiteten Serving-Suffixe und App-Hosts, die
+  Proxy/Host-Logik schon nutzen — kein drittes Urteil" verlangte:
+  · DER BEFUND, DER ES ERZWANG (GELESEN AM CODE, CC, 2026-10-02): Die App-Hosts des Proxys sind
+    NICHT aus der Env abgeleitet — `APP_HOSTS` (src/lib/hosting/host.ts) ist eine fest codierte
+    Menge (`pagesmith.app` als Platzhalter, `www.pagesmith.app`, `localhost`, `127.0.0.1`);
+    `isAppHost` prüft sie mit EXAKTER Gleichheit plus `endsWith(".vercel.app")`. Aus der Env kommt
+    allein `servingSuffixes()` (`NEXT_PUBLIC_HOSTING_DOMAIN` plus das feste `.lvh.me`; nicht
+    exportiert). Ein ZWEITES, env-abgeleitetes Urteil besteht bereits: `ownFormTargetDomains` mit
+    `isOwnHost` (src/lib/form-target.ts) — der Proxy nutzt es nicht.
+  · DIE ENTSCHEIDUNG: Option (a). `isReservedHost` liest `servingSuffixes()`, `APP_HOSTS` und
+    `PLATFORM_SUFFIXES = ["vercel.app"]`. `isAppHost` wird NICHT wörtlich wiederverwendet — die
+    Label-Grenze reserviert auch Subdomains der App-Hosts, `isAppHost` prüft sie exakt.
+    `ownFormTargetDomains` bleibt unberührt; die Abweichung beider Urteile ist der offene Punkt
+    "isAppHost-PLATZHALTER" (Ergänzung vom 2026-09-28; Vorrat P13-39 der Phase 13).
+  · `vercel.app` gehört dazu, weil unsere Deployment- und Alias-Adressen dort liegen; weitere
+    Plattform-Suffixe (`vercel.dev`, `now.sh`, `vercel-dns.com`) sind weder gelesen noch gemessen
+    und kommen nicht auf Verdacht hinein — an ihre Stelle tritt E3.
+- LEERE ENV (E2, ARCHITEKTEN-ENTSCHEIDUNG 2026-10-02): FAIL-CLOSED. Fehlt
+  `NEXT_PUBLIC_HOSTING_DOMAIN`, gilt JEDER Host als reserviert; der Server loggt das in eigenem
+  Vokabular; der Client sieht den neutralen Ablehnungstext.
+- ANSATZSTELLEN (GELESEN AM CODE, CC, 2026-10-02). Vercel wird im Domain-Pfad an genau drei Stellen
+  gerufen (GEMESSEN AM REPO, Suche nach Importen von `@/lib/vercel/client`): `addDomainToVercel`
+  (register.ts), `removeDomainFromVercel` (remove.ts), `getDomainConfig` (status.ts).
+  · `registerCustomDomain`: Prüfung nach `normalizeDomain`, auf dessen Ergebnis, und VOR dem
+    lokalen Kollisionscheck — sonst meldet eine bestehende reservierte Zeile desselben Projekts
+    `already_registered_self` als Erfolg. Damit vor jedem Vercel-Aufruf.
+  · `removeCustomDomain`: Prüfung nach dem Eigentums-Gate und der `custom_host`-Prüfung, vor
+    Rate-Limit und Vercel-DELETE. Ein reservierter Host wird NIE an Vercel gegeben, auch wenn eine
+    Zeile existiert; die Zeile BLEIBT stehen.
+  · `checkDomainStatus`: Prüfung nach dem Eigentums-Gate, vor der Cache-Bremse; Antwort wie bei
+    einer unbekannten Domain.
+  · Je Aufruf weiter genau EIN Audit-Eintrag; neues Ergebnis `rejected_reserved_host`.
+  · NICHT berührt: `assignDomainLabel` (ruft Vercel nicht, legt nur Label-Zeilen unter dem
+    Serving-Suffix an) und `normalizeDomain` (remove und status laufen nicht durch sie).
+- SERVE-PFAD (GELESEN AM CODE, CC, 2026-10-02): `GET` (src/app/app-serve/route.ts) fragt zuerst
+  `extractLabel`; nur wenn es null liefert, gilt der `custom_host`-Lookup — das LABEL GEWINNT.
+  `resolve-relay.ts` verzweigt ebenso. Der Apex der Serving-Domain und verschachtelte Namen
+  (`a.b.<Serving-Domain>`) liefern bei `extractLabel` null und gehen in den `custom_host`-Pfad.
+  DAHER wird der GANZE TEILBAUM der Serving-Domain reserviert, nicht nur der Apex. Eine
+  `custom_host`-Zeile "<Label eines anderen>.<Serving-Domain>" würde nie ausgeliefert, löste aber
+  Vercel-Aufrufe aus (Vercels Antwort dafür UNGEMESSEN, Punkt U2).
+- `checkDomainStatus` (Vorrat P13.7-2): Update mit `.select("label")`; kein Treffer → Fehler
+  (Dauerregel "EIN SCHREIBWEG ÜBER DEN ADMIN-CLIENT …", Punkt (3)). Kein `error.message` und kein
+  `e.message` an den Client — heute gehen dorthin der Lesefehler, der Update-Fehler und der Wurf
+  im `catch` (GELESEN AM CODE); DomainManager zeigt sie nicht an, die Antwort der Server-Action
+  trägt sie dennoch.
+- SUPABASE-LESUNG (2026-10-02, https://supabase.com/docs/reference/javascript/update):
+  · WÖRTLICH: "By default, updated rows are not returned. To return it, chain the call with
+    `.select()` after filters."
+  · NUR IN DER ZUSAMMENFASSUNG DES ABRUFWERKZEUGS, NICHT WÖRTLICH: Ohne Treffer endet der Aufruf
+    ohne Fehler, `data` ist leer; zum Zurückgeben braucht es eine RLS-SELECT-Policy.
+  · FOLGE: Prüfung auf leeres `data`. Der Policy-Hinweis greift beim Admin-Client nicht, weil
+    service_role RLS umgeht (ABGELEITET). Vorbild im Repo: `refreshAccessToken`
+    (src/lib/oauth/token-refresh.ts), `.update(…).select("secret_version")`.
+- MELDUNGSTEXT der Ablehnung: neutral, behauptet weder Ursache noch Ergebnis über Vercel.
+- BEDINGUNG VOR DEM DEPLOY (E3, ARCHITEKTEN-ENTSCHEIDUNG 2026-10-02): Jede Domain am
+  Vercel-Projekt ist ENTWEDER vom Prädikat erfasst ODER durch genau eine `domains`-Zeile
+  (`custom_host`) gedeckt. OWNER-ABLESUNG Vercel, 2026-10-02: `thr-ty.com`, `*.publayer.net`,
+  `publayer.net`, `pagesmith-delta.vercel.app`. `thr-ty.com` ist vom Prädikat NICHT erfasst;
+  seine Deckung durch eine Zeile misst der Owner (Stand dieses Eintrags: ausstehend). Dass die
+  beiden publayer-Einträge erfasst sind, setzt `NEXT_PUBLIC_HOSTING_DOMAIN = publayer.net` in
+  Production voraus — von CC nicht gemessen. Dazu die Bestandsprobe
+  supabase/checks/reservierte-hosts.sql: kein reservierter `custom_host` in `domains` (Vorrat
+  P13.7-32).
+- NICHT IN DIESER SCHEIBE (K2b): B2, B5, F5 und der Heal-Pfad bei 409 mit eigener projectId.
+- BINDENDE LIVE-AUFLAGE: Live NIE mit dem Apex der Serving-Domain, einem App-Host oder einer am
+  Vercel-Projekt hängenden Domain testen. Probe nur mit einer nicht vergebenen Subdomain unter der
+  Serving-Domain. Entsteht trotzdem eine `domains`-Zeile: per SQL löschen, NIE über "Entfernen" in
+  der App.
+
 ---
 
 ## Noch nicht geschnittene Arbeit
 
 Der Zuschnitt der übrigen Phase steht aus; ihn entscheidet der Architekt. Abgeschlossen ist seit
 dem 2026-10-02 die Scheibe "Abhängigkeiten" (Vermerk P13.7-28); als nächste steht nach
-Entscheidung P13.7-25 "K2a" an, noch ohne Zuschnitt. Die Kandidaten stehen im Vermerk P13.7-1,
-Punkt (4); der Vorrat darunter.
+Entscheidung P13.7-25 "K2a" an, zugeschnitten in Zuschnitt P13.7-31. Die Kandidaten stehen im
+Vermerk P13.7-1, Punkt (4); der Vorrat darunter.
 
 ---
 
@@ -711,3 +790,16 @@ DERSELBEN DATENBANK WIE PRODUCTION?**
   ihre Datenbank. Bezug: Befunde C3 und E2 des Vermerks P13.7-1.
 - BEZUG: Kandidat K9 (Vermerk P13.7-1).
 - KEIN TRIGGER GESETZT.
+
+**Vorrat P13.7-32 — EIN RESERVIERTER `custom_host`, DER SCHON IN `domains` STEHT, WIRD WEITER
+AUSGELIEFERT.**
+- BEFUND (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `92ec719`): Das Prädikat `isReservedHost`
+  des Zuschnitts P13.7-31 greift in register, remove und status — nicht im Serve-Pfad. `GET`
+  (src/app/app-serve/route.ts) liefert für einen Host, bei dem `extractLabel` null liefert, über
+  `getPublishedHtmlByCustomHost` aus; der Apex der Serving-Domain fällt in diesen Pfad. Eine vor dem
+  Deploy angelegte Zeile mit reserviertem `custom_host` wirkt damit fort (Befund B1, Folge (1), des
+  Vermerks P13.7-1), wird aber in der App weder entfernbar noch prüfbar.
+- HEUTE: Die Bestandsprobe supabase/checks/reservierte-hosts.sql vor dem Deploy (Zuschnitt
+  P13.7-31, E3); ein Fund wird per SQL gelöscht, nie über "Entfernen" in der App.
+- KANDIDAT: ein Riegel im Serve-Pfad (und im Relay, das ebenso verzweigt).
+- TRIGGER: der Zuschnitt K2b.

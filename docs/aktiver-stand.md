@@ -351,6 +351,9 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
     · U2 — wie Vercel für die eigenen Domains antwortet, und welche Domains am Vercel-Projekt
       hängen.
     · U3 — ob ein 429 der WAF als Funktionsaufruf zählt.
+      → 2026-10-03: Für die Aktion Deny einer Ratenregel GEMESSEN (Owner): Eine abgewiesene
+      Anfrage erreicht die Funktion nicht (Vermerk P13.7-59). Offen bleiben die Aktion 429
+      selbst und ob eine abgewiesene Anfrage im Kontingent zählt.
     · U4 — der Umfang des Vercel-Tokens und der Deploy-Weg.
     · U5 — ob die RLS bei TRUNCATE greift, und welche Wege ausser PostgREST TRUNCATE auslösen
       können (Supabase- und Postgres-Doku nicht gelesen).
@@ -372,6 +375,8 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
       (40 Ratenregeln, docs/plattform-befunde.md, Vercel, Teil (ag)); seine übrigen Gründe
       (Konfiguration ausserhalb des Repos; ob ein eigener `rateLimitKey` zulässig ist) sind davon
       nicht berührt. Die Backlog-Einträge bleiben unverändert; bereinigt wird beim Zuschnitt K1a.
+      → 2026-10-03: K1a ist im Modus Log angelegt und an einem Punkt gemessen (Vermerk P13.7-59);
+      K1b ist geschnitten (Zuschnitt P13.7-60).
       → 2026-10-03: K1b zieht den Kopfkommentar von `CAP_PER_USER` (src/lib/domains/register.ts)
       mit — er nennt "Hobby-Kontingent" und "Pro-Upgrade VOR echter Skalierung" (GELESEN AM CODE,
       CC, Stand `561a564`). K1b berührt register.ts ohnehin (Entscheidung P13.7-52).
@@ -1028,6 +1033,80 @@ Vermerk P13.7-48 (2026-10-02), verdichtet in derselben Runde.**
 (7) FOLGEN: Vorrat P13.7-29 ist ERLEDIGT. Als Nächstes Kandidat K1 ("Noch nicht geschnittene
     Arbeit").
 
+**Vermerk P13.7-59 — K1a: RATENREGELN IM MODUS LOG ANGELEGT, EINE MESSUNG ZUR AKTION DENY. KEIN
+BAU-COMMIT: reine Konfiguration bei Vercel, keine Zeile Code.** Alle Angaben dieses Vermerks sind
+OWNER-ANGABEN bzw. OWNER-MESSUNGEN vom 2026-10-03, NICHT von CC gemessen; Code-Stand der
+Doku-Runde `e90e4e2`.
+- ANGELEGT (Vercel-Firewall, Ratenregeln, Modus Log, Schlüssel IP, Fenster 60 s): R1 Pfad
+  `/api/e`, Grenze 60 · R2 `/api/capi`, 60 · R3 `/api/f`, 30 · R4 alle Anfragen, 600.
+- DIE WERTE SIND SCHÄTZUNG (ARCHITEKT); keiner ist an Verkehr gemessen. NEUKALIBRIERUNG vor dem
+  ersten fremden Nutzer — derselbe Trigger wie Entscheidung P13.7-55 (Wiedereinschalten der
+  Registrierung, Vermerk P13.7-24).
+- ABWEICHUNG GEGEN DIE RICHTUNG, GEMELDET (CC): Setzung P13.7-51, K1a, nennt als vierten Pfad
+  "Seitenaufrufe"; R4 gilt allen Anfragen und zählt `/api/e`, `/api/capi` und `/api/f` mit. Im
+  Modus Log ohne Wirkung. Mit Deny träfe R4 auch Beacons; Entscheidung P13.7-50 verlangt für die
+  NOTBREMSE einen Weg, der Beacons gehosteter und exportierter Seiten nicht trifft. R4 ist nicht
+  die Notbremse; die Frage gehört in den Schritt "Deny".
+- MESSUNG: R1 vorübergehend auf Grenze 10, Aktion Deny. Aus der Konsole von
+  `meta-test-5nlm3e.publayer.net` 30 Beacons mit dem Rumpf `{}` an `/api/e`. Statuscodes
+  `{"400":10,"403":20}`; in den Vercel-Logs genau 10 Zeilen `/api/e` mit 400.
+  · GEMESSEN: Eine von einer Ratenregel mit Deny abgewiesene Anfrage erreicht die Funktion nicht.
+  · POSITIVKONTROLLE: Die 10 durchgelassenen erscheinen in den Logs als 400 — die
+    Pflichtfeld-Prüfung von `handleIngest` (src/lib/capi/ingest.ts) weist einen Rumpf ohne
+    Pflichtfelder so ab (GELESEN AM CODE, CC). Die 20 abgewiesenen erscheinen nicht.
+  · NICHT GEMESSEN: ob eine abgewiesene Anfrage im Kontingent zählt; die Aktion 429 (die
+    Vorgabe-Aktion einer Ratenregel).
+  · DANACH zurückgestellt auf Grenze 60, Modus Log.
+- WAS DIE MESSUNG AN DEN BEFUNDEN TRÄGT (ABGELEITET, CC): docs/plattform-befunde.md, Vercel,
+  Teil (ag), führt die Antwort für Deny als FOLGERUNG aus der Aktion Deny (#38, "A 403 Forbidden
+  response is returned. The request does not reach your application."); Teil (al), Punkt 5, führt
+  sie als offene Messung. Die Messung bestätigt die Folgerung für Deny; für 429 bleibt Teil (aa),
+  Punkt 1, offen. In docs/plattform-befunde.md ist sie NICHT eingetragen — der Auftrag der Runde
+  nennt die Standdatei; Weg 5 von CLAUDE.md wäre die Datei der Plattform-Befunde. Gemeldet.
+- OFFEN (ARCHITEKT): Schritt 3 — einige Tage Log-Beobachtung an der eigenen Arbeit; danach Deny,
+  die Notbremse (Setzung P13.7-51, K1a) und das Runbook-Szenario "Flut" in docs/ADMIN_RUNBOOK.md.
+- BEZUG: Setzung P13.7-51 · Punkt U3 des Vermerks P13.7-1 (Nachsatz dort) · Entscheidungen
+  P13.7-50 und P13.7-55.
+
+**Zuschnitt P13.7-60 — SCHEIBE "K1b": EINGANGSGRENZEN UND WEITERLEITUNGS-ZÄHLER JE PROJEKT IM
+INGEST; ENTSCHEIDUNG P13.7-52 ALS EIGENER FIX. ARCHITEKT 2026-10-03 (Befund und Grenze aus dem
+Auftrag der Runde; Formulierung CC). STAND: Plan (Stufe 1) ausstehend, kein Bau.**
+- GEGENSTAND: Befunde A1 bis A3 des Vermerks P13.7-1 auf der Code-Seite; Vorräte P13.7-17 (N15)
+  und P13.7-44; Richtung: Setzung P13.7-51, K1b.
+- (a) EINGANGSGRENZEN in `handleIngest` (src/lib/capi/ingest.ts) VOR JEDEM DATENBANK-ZUGRIFF —
+  also vor `getCapiConfigByTrackingKey`: eine Grenze der Rumpfgrösse und Grenzen der
+  Feldlängen. Ein Verstoss gilt als strukturell kaputter Beacon und wird mit 400 abgewiesen,
+  auf derselben Achse wie die Pflichtfeld-Prüfung. Grenzwerte samt Einheit, der Ort der
+  Grössenprüfung beim Lesen und die Frage, ob die Dauerregel "INGEST-204-CONTAINMENT" im Wortlaut
+  nachzuziehen ist: Plan.
+- (b) ZÄHLER JE PROJEKT, ALLEIN FÜR EREIGNISSE, DIE TATSÄCHLICH WEITERGELEITET WÜRDEN: kein
+  Bestätigungs-Beacon, `isForwardable`, nach der Einwilligung (`allowedTargets`), mindestens ein
+  Ziel. Er entscheidet AUSSCHLIESSLICH über den Forward. Der Persist bleibt unverändert — er ist
+  vom Forward entkoppelt und wird vorher eingeplant (`schedulePersist`) — ARCHITEKT, revidierbar.
+  · ÜBER DER SCHWELLE: kein Forward, Antwort leere 204. Der Zähler zählt weiter, damit der
+    Überlauf als Zahl ablesbar bleibt. Höchstens EINE Logzeile je Fenster und Projekt, beim
+    ersten Überschreiten.
+  · Der Schlüssel ist die Projekt-Kennung aus der Auflösung, nie ein Wert der Anfrage; der Zähler
+    steht hinter dem Kill-Switch.
+- (c) EIGENE TABELLE UND RPC nach dem Muster von Migration 0030 — nicht `relay_rate_counters`.
+- (d) ZÄHLER-AUSFALL — Fehler, Wurf, Zeitlimit oder `null` ohne Fehler —: der Forward läuft, und
+  es wird geloggt (fail-open; Vorlage `countRelayHit`, src/lib/relay/rate-limit.ts).
+- (e) ENTSCHEIDUNG P13.7-52 ALS EIGENER fix-COMMIT: `count` `null` ohne Fehler wird ein Fehler
+  (fail-closed) in der Cap-Abfrage von `registerCustomDomain` (src/lib/domains/register.ts) und in
+  `countRecentAttempts` (src/lib/domains/audit.ts); dazu der Kopfkommentar von `CAP_PER_USER` auf
+  den Pro-Stand (Kandidat K1 des Vermerks P13.7-1, Nachsatz vom 2026-10-03).
+- GRENZE: Setzung P13.7-51, "GRENZE, AUSDRÜCKLICH" — das Limit begrenzt gefälschte Conversions,
+  es verhindert sie nicht. EINSCHRÄNKUNG (CC, ABGELEITET aus (b)): Den SPEICHER, den jene Grenze
+  neben Menge und Kosten nennt, begrenzt dieser Zuschnitt nicht — der Persist bleibt unverändert,
+  Befund A3 bleibt in diesem Punkt offen. Gemeldet, nicht entschieden.
+- SCOPE (aus dem Auftrag, im Plan zu bestätigen): geändert src/lib/capi/ingest.ts, ein neues
+  Modul für den Zähler, eine neue Migration, Tests, src/lib/domains/register.ts,
+  src/lib/domains/audit.ts. UNBERÜHRT: src/proxy.ts, src/lib/supabase/middleware.ts,
+  src/lib/relay/*, Migration 0030, src/lib/capi/token.ts, src/lib/analytics/persist.ts, die
+  Erzeuger des ausgelieferten Textes.
+- BEZUG, GEMELDET, NICHT GEÄNDERT: Manifest Tier 1 "PER-TENANT-RATE-LIMITING" und Roadmap-Zeile
+  14 (s. Setzung P13.7-51, BEZUG).
+
 ---
 
 ## Noch nicht geschnittene Arbeit
@@ -1046,6 +1125,9 @@ P13.7-50), die Richtung (Setzung P13.7-51) und die Bewertungen der Vorräte P13.
 → 2026-10-03: Der Wechsel auf Pro ist vollzogen (Vermerk P13.7-54); die Pause bei Erreichen des
 Deckels bleibt vorerst an (Entscheidung P13.7-55). Neu nach K1 bis K9 und vor dem Öffnen der
 Registrierung: Kandidat P13.7-58 (Einstellungs-Durchgang Supabase und Vercel).
+→ 2026-10-03: K1a ist im Modus Log angelegt und zur Aktion Deny gemessen (Vermerk P13.7-59); K1b
+ist geschnitten (Zuschnitt P13.7-60). Beide stehen im Abschnitt "Vermerke, Entscheidungen und
+Zuschnitte ab dem 2026-10-02".
 
 **Entscheidung P13.7-49 — VERCEL WECHSELT JETZT AUF PRO, ZUSAMMEN MIT K1. OWNER-ENTSCHEIDUNG
 2026-10-03 (übermittelt im Auftrag der Doku-Runde).**
@@ -1297,6 +1379,7 @@ Befund N14.
 
 **Vorrat P13.7-17 — N15: DER INGEST TRÄGT IM CODE KEINE GRÖSSENGRENZE.** Vermerk P13.7-1,
 Befund N15.
+→ 2026-10-03: Gegenstand von Zuschnitt P13.7-60, (a).
 
 **Vorrat P13.7-18 — N16: `/api/f` AUF DEM APP-HOST LEITET AUF `/login` UM** (Zeiger auf den
 offenen Punkt). Vermerk P13.7-1, Befund N16.
@@ -1462,6 +1545,7 @@ ERSCHEINT IM NÄCHSTEN PROJEKT.**
   src/lib/domains/audit.ts, spätestens der Zuschnitt K1.
 - → 2026-10-03: BEWERTET (Entscheidung P13.7-52): Behebung in K1b als eigener fix-Commit; "count
   null ohne Fehler" wird ein Fehler (fail-closed, wie `deleteProject`).
+- → 2026-10-03: Gegenstand von Zuschnitt P13.7-60, (e).
 
 **Vorrat P13.7-45 — `setAll` VERWIRFT DIE CACHE-HEADER, DIE DER SUPABASE-LEITFADEN VERLANGT.**
 - BEFUND (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `24516f2`): `updateSession`

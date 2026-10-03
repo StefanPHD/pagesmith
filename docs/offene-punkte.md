@@ -3331,6 +3331,20 @@ aufeinander; sie liegen alle hier und finden einander.
       tat, trennt die Beobachtung nicht.
     · NAHELIEGENDE URSACHE (ABGELEITET, nicht geprüft): die Sieben-Tage-Frist im Status
       "Testing" — Punkt "DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN PRODUKTION"".
+    · → 2026-10-03, DIE FRAGE "NICHT ABGELESEN" IST BEANTWORTET — OWNER-ABLESUNG 2026-10-03, NICHT
+      von CC gemessen: Die Ziel-Karte zeigte für `thr-ty.com` "Zugang abgelaufen am 11.9.2026,
+      07:09:11 — bitte neu autorisieren".
+      LAUT CODE (GELESEN AM CODE, CC, 2026-10-03, Stand `e90e4e2`): Den Text erzeugt der Zustand
+      `dead` (`TargetCard.tsx`); sein Zeitpunkt ist die Uhr des Erneuerungs-Tokens
+      (`credentialStateFrom`, src/lib/tracking/credential-state.ts), formatiert mit
+      `toLocaleString("de-DE")` ohne Zeitzone — 07:09:11 ist also Ortszeit des Browsers.
+      ABGELEITET, NICHT GEMESSEN: Die Karte hat den Ausfall angezeigt, wie die Scheibe 11.2b es
+      vorsieht; bemerkt wurde er erst über die Logzeile. Seit dem 11.9.2026 ist keine
+      Google-Conversion dieses Projekts weitergeleitet worden. Der 11.9. liegt sieben Tage nach
+      dem 4.9., dem zweiten Tag des Live-Nachweises der Scheibe 11.2b ("2026-09-03/04", Vermerk
+      vom 2026-09-04 darüber) —
+      das stützt die naheliegende Ursache; dass an jenem Tag zuletzt autorisiert wurde, ist nicht
+      abgelesen.
 
 - DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT (Trigger: die nächste Arbeit am Schreibpfad der Callback-Route):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 53, im Rahmen

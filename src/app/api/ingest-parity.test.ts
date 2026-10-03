@@ -4,6 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 // Referenz-Identitaets-Test brauchen wir keine echte Supabase/Config-Umgebung —
 // die Handler werden NICHT ausgefuehrt, nur ihre Funktionsreferenz verglichen.
 vi.mock("server-only", () => ({}));
+// DER WEITERLEITUNGS-ZAEHLER (Phase 13.7, Scheibe K1b; Entscheidung D8 zum Plan) urteilt hier
+// "allowed". Ohne den Mock fiele er in der Testumgebung aus und der Forward liefe ueber den
+// fail-open-Zweig — gruen aus dem FALSCHEN Grund. Die Einsatzstelle pruefen
+// ingest.forward-limit.test.ts und forward-limit.test.ts.
+vi.mock("@/lib/capi/forward-limit", () => ({
+  countForwardHit: vi.fn(async () => ({ kind: "allowed" })),
+}));
 vi.mock("@/lib/capi/token", () => ({
   getCapiConfigByTrackingKey: vi.fn(async () => null),
 }));

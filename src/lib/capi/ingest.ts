@@ -58,6 +58,9 @@ import {
 // Serve-Route. Zwei Zuweisungs-Autoritaeten koennten divergieren.
 import { parseVariantCookie, type Variant } from "@/lib/hosting/variant";
 import { errorName } from "@/lib/errors";
+// DER WEITERLEITUNGS-ZAEHLER JE PROJEKT (Phase 13.7, Scheibe K1b). Er entscheidet allein ueber
+// den Forward; s. den Zweig vor der Rettung im Handler.
+import { countForwardHit } from "@/lib/capi/forward-limit";
 
 /**
  * GETEILTE Ingest-Handler-Logik (Phase 7 Scheibe 7b).
@@ -84,6 +87,10 @@ import { errorName } from "@/lib/errors";
  * Key-Gueltigkeit ist bewusst NICHT beobachtbar: unbekannter/tokenloser Key -> 204
  * (wie ein erfolgreicher Forward), nur ein MALFORMED Client-Request -> 400. So
  * leakt die Route keinen Config-Zustand an einen anonymen Aufrufer.
+ * SEIT DER SCHEIBE K1b (Phase 13.7) zaehlt zu "malformed" auch ein Rumpf ueber
+ * INGEST_MAX_BODY_BYTES und ein Feld ueber seiner Grenze in INGEST_FIELD_MAX_LENGTH —
+ * beides geprueft VOR jedem Datenbank-Zugriff und allein an der Anfrage, nie an einem
+ * gespeicherten Zustand.
  *
  * Der Client-Beacon (2b-ii) MUSS ein text/plain-Blob sein (sendBeacon), NIEMALS
  * application/json — application/json macht daraus einen preflight-pflichtigen Request,
@@ -121,6 +128,96 @@ const CORS_HEADERS: Record<string, string> = {
 // duerfen die Response nie erreichen.
 function status(code: number): Response {
   return new Response(null, { status: code, headers: CORS_HEADERS });
+}
+
+/**
+ * DIE RUMPFGRENZE (Phase 13.7, Scheibe K1b; Zuschnitt P13.7-60, (a); Entscheidung D1 zum Plan).
+ * EINHEIT: BYTES des Rumpfs.
+ *
+ * DER WERT IST KEINE SCHAETZUNG, SONDERN DIE HOECHSTMENGE DES TRANSPORTS: Jeder Beacon-Weg an
+ * /api/e laeuft ueber sendBeacon oder fetch mit keepalive (tracking/meta.ts,
+ * analytics/pageview-emitter.ts — GELESEN AM CODE, 2026-10-03), und fuer beide gilt
+ * dieselbe Grenze. GELESEN 2026-10-03, fetch.spec.whatwg.org, Abschnitt 4.6
+ * "HTTP-network-or-cache fetch": "If the sum of contentLength and inflightKeepaliveBytes is
+ * greater than 64 kibibytes, then return a network error."; w3c.github.io/beacon (Editor's
+ * Draft, 11 March 2026), Abschnitt 3 "Processing Model": "All requests with this flag set share
+ * the same in-flight quota restrictions that is enforced within the Fetch API."
+ * Ein legitimer Beacon unserer Erzeuger ist damit hoechstens 65 536 Bytes gross; was darueber
+ * liegt, hat kein Browser ueber diese Wege geschickt. Die Grenze gilt der SPEZIFIKATION — ob
+ * jeder Browser sie genau so umsetzt, ist nicht gemessen.
+ */
+export const INGEST_MAX_BODY_BYTES = 65_536;
+
+/**
+ * DIE FELDGRENZEN (Phase 13.7, Scheibe K1b; Entscheidung D1 zum Plan). EINHEIT: UTF-16-
+ * Codeeinheiten (JavaScript-`length`) des ROHEN Feldwerts, vor dem Trimmen. Geprueft wird nur
+ * ein Wert, der eine Zeichenkette ist; alles andere ist heute schon kein gueltiger Wert und
+ * wird von asString zu "" (Pflichtfeld -> 400) bzw. vom Adapter verworfen.
+ * Die groessten heutigen Werte (OWNER, SQL-Editor, 2026-10-03): tracking_key 36, event_id 36,
+ * Ereignisnamen 16 Zeichen, Waehrung 3.
+ * eventSourceUrl TRAEGT BEWUSST KEINE FELDGRENZE (D1): Die Adresse wird nicht gespeichert und
+ * kostet nur ueber den Rumpf; `location.href` ist am Erzeuger nicht gekappt, jede Feldgrenze
+ * darunter wiese einen legitimen Beacon ab.
+ */
+export const INGEST_FIELD_MAX_LENGTH = {
+  trackingKey: 64,
+  eventID: 128,
+  event: 256,
+  currency: 16,
+  _fbp: 256,
+  obs: 64,
+} as const;
+
+/**
+ * Liest den Rumpf als Text, hoechstens INGEST_MAX_BODY_BYTES. Liefert null, wenn er groesser ist
+ * ODER das Lesen scheitert — beides ist fuer den Handler dieselbe 400 wie bisher ein
+ * gescheitertes request.text(). WIRFT NIE (204-Containment: auch das Lesegeruest darf nicht
+ * nach aussen werfen).
+ * Die Laenge wird BEIM LESEN gezaehlt, nicht allein am Content-Length abgelesen — der kann
+ * fehlen oder luegen. Ein angekuendigter Content-Length ueber der Grenze bricht vor dem Lesen ab.
+ * NACHGEBAUT NACH readBodyCapped in src/lib/relay/relay.ts, NICHT geteilt (Entscheidung D9 zum
+ * Plan): relay/* bleibt unberuehrt. Zwei Implementierungen derselben Bauform; es wird nichts rot,
+ * wenn sie auseinanderlaufen.
+ * Dekodiert wird wie bisher von request.text(): UTF-8, nicht streng, ein BOM wird entfernt.
+ */
+async function readBodyCapped(request: Request): Promise<string | null> {
+  try {
+    const declared = request.headers.get("content-length");
+    if (declared !== null && Number(declared) > INGEST_MAX_BODY_BYTES) return null;
+    if (!request.body) return "";
+    const reader = request.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > INGEST_MAX_BODY_BYTES) {
+        await reader.cancel().catch(() => {});
+        return null;
+      }
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    return new TextDecoder().decode(bytes);
+  } catch {
+    return null;
+  }
+}
+
+/** Ob ein Feld, das eine Zeichenkette ist, seine Grenze aus INGEST_FIELD_MAX_LENGTH ueberschreitet. */
+function exceedsFieldLimit(body: CapiRequestBody): boolean {
+  const record = body as Record<string, unknown>;
+  for (const [field, max] of Object.entries(INGEST_FIELD_MAX_LENGTH)) {
+    const value = record[field];
+    if (typeof value === "string" && value.length > max) return true;
+  }
+  return false;
 }
 
 /**
@@ -652,9 +749,13 @@ export async function handleIngestOptions(): Promise<Response> {
 
 export async function handleIngest(request: Request): Promise<Response> {
   // --- Client-Body defensiv parsen: malformed -> 400 (nie Throw/500) ---
+  // SEIT K1b (Phase 13.7) mit Rumpfgrenze, gezaehlt beim Lesen (readBodyCapped). Zu gross und
+  // Lesefehler sind dieselbe 400 wie zuvor ein gescheitertes request.text().
+  const raw = await readBodyCapped(request);
+  if (raw === null) return status(400);
   let body: CapiRequestBody;
   try {
-    body = JSON.parse(await request.text()) as CapiRequestBody;
+    body = JSON.parse(raw) as CapiRequestBody;
   } catch {
     return status(400);
   }
@@ -665,6 +766,10 @@ export async function handleIngest(request: Request): Promise<Response> {
   const event = asString(body.event);
   // Pflichtfelder fehlen -> malformer Client-Request -> 400.
   if (!trackingKey || !eventID || !event) return status(400);
+  // FELDGRENZEN (K1b, Phase 13.7) — dieselbe Achse wie die Pflichtfelder: ein strukturell
+  // kaputter Beacon, abgewiesen VOR dem ersten Datenbank-Zugriff (getCapiConfigByTrackingKey
+  // darunter). Das Urteil haengt allein an der Anfrage und verraet keinen Schluesselzustand.
+  if (exceedsFieldLimit(body)) return status(400);
 
   // BROWSER-BESTAETIGUNG (Scheibe A): CLIENT-UNTRUSTED. Der Client sendet nur diesen eng
   // begrenzten Marker in einem eigenen Feld, NIE den source-Wert selbst — sonst koennte
@@ -924,6 +1029,42 @@ export async function handleIngest(request: Request): Promise<Response> {
     // Anbieter fuer ein Ziel, an das anschliessend garantiert nichts hinausgeht.
     const allowedRettbar = allowedTargets(rettbar, body);
     if (allowed.length === 0 && allowedRettbar.length === 0) return status(204);
+
+    // --- DER WEITERLEITUNGS-ZAEHLER JE PROJEKT (Phase 13.7, Scheibe K1b) — EIGENER ZWEIG ---
+    //
+    // WAS GEZAEHLT WIRD, folgt aus der STELLE und aus keiner eigenen Bedingung: Bis hierher
+    // kommt nur ein Ereignis, das keine Bestaetigung ist (frueher Ausgang oben), dessen Projekt
+    // nicht gesperrt ist (Kill-Switch oben), das forwardbar ist (isForwardable im if-Kopf) und
+    // fuer das nach der Einwilligung mindestens ein Ziel bleibt (Ausgang darueber). Seitenaufruf,
+    // Bestaetigung, Projekt ohne Ziel und Besucher ohne Einwilligung kosten KEINE Rundreise.
+    //
+    // ER ENTSCHEIDET ALLEIN UEBER DEN FORWARD. Der Persist ist oben schon eingeplant und bleibt
+    // unberuehrt (Zuschnitt P13.7-60, (b)) — ein Ereignis ueber der Schwelle steht in events,
+    // ist aber nicht weitergeleitet.
+    //
+    // WARUM VOR DER RETTUNG (Entscheidung D2 zum Plan, Kandidat A): Ueber der Schwelle startet
+    // auch keine Inline-Erneuerung — eine Flut auf ein rettbares Ziel loeste sonst je Beacon
+    // einen Netzruf an den Anbieter aus (Befund A7 des Vermerks P13.7-1).
+    //
+    // DER SCHLUESSEL IST resolution.projectId — aus der Aufloesung, nie aus der Anfrage. Das ist
+    // KEINE Projekt-Kennung je Beacon in einer Logzeile (Invariante I-4 an usableTokenFromRow):
+    // Beide Zeilen hier tragen festes Vokabular und sonst nichts.
+    //
+    // UEBER DER SCHWELLE: kein Forward, leere 204 — nach aussen nicht von den anderen
+    // Ausgaengen unterscheidbar (204-Containment). Eine Logzeile entsteht nur beim ERSTEN
+    // Ueberlauf im Fenster (Wert GRENZE + 1, Entscheidung D4), nicht je Beacon.
+    // AUSFALL: weiterleiten wie ohne Zaehler, dazu eine eigene Zeile (fail-open, Zuschnitt (d)).
+    // countForwardHit wirft nie (forward-limit.ts).
+    const quota = await countForwardHit(resolution.projectId);
+    if (quota.kind === "limited") {
+      if (quota.first) {
+        console.warn("[capi/ingest] forward limited: first over limit in window");
+      }
+      return status(204);
+    }
+    if (quota.kind === "failed") {
+      console.warn("[capi/ingest] fail-open: forward-counter-failed");
+    }
 
     // --- DIE RETTUNG (Scheibe 1b-2a) — IM ANFRAGE-WEG, VOR DEM FAN-OUT ---
     //

@@ -3,6 +3,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
+// DER WEITERLEITUNGS-ZAEHLER (Phase 13.7, Scheibe K1b; Entscheidung D8 zum Plan) urteilt hier
+// "allowed". Ohne den Mock fiele er in der Testumgebung aus und der Forward liefe ueber den
+// fail-open-Zweig — gruen aus dem FALSCHEN Grund. Die Einsatzstelle pruefen
+// ingest.forward-limit.test.ts und forward-limit.test.ts.
+vi.mock("@/lib/capi/forward-limit", () => ({
+  countForwardHit: vi.fn(async () => ({ kind: "allowed" })),
+}));
+
 const { getCapiConfigByTrackingKey } = vi.hoisted(() => ({
   getCapiConfigByTrackingKey: vi.fn(),
 }));

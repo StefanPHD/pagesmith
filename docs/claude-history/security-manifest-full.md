@@ -156,7 +156,21 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   BINDET-AN: bevor echter Ad-Traffic auf gehostete Seiten trifft.
   ZUSATZ 2026-09-30 — DER STATUS BLEIBT, BINDET-AN BLEIBT: /api/f (Formular-Relay) ist seit
   der Scheibe 13.6-5 je Projekt begrenzt (120 je 60 s, SCHÄTZUNG; Zähler-Ausfall fail-open) —
-  Vermerk P13.6-81 der Phase 13.6. /api/e und /api/capi bleiben OHNE Begrenzung.
+  Vermerk P13.6-81 der Phase 13.6. /api/e und /api/capi waren an diesem Tag OHNE Begrenzung —
+  RICHTIGGESTELLT 2026-10-03, s. den Zusatz darunter.
+  ZUSATZ 2026-10-03 — KEIN AUSDRÜCKLICHER STATUS, WIE BISHER; BINDET-AN BLEIBT: /api/e und
+  /api/capi (geteilter Handler) zählen seit der Scheibe K1b (Bau-Commit `d67dfcf`, Vermerk
+  P13.7-61 der Phase 13.7) je Projekt die weiterleitbaren Ereignisse mit mindestens einem
+  erlaubten Ziel; über 600 je 60 s (SCHÄTZUNG) wird nicht weitergeleitet, die Antwort bleibt
+  die leere 204; Zähler-Ausfall fail-open. Dazu Eingangsgrenzen vor jedem DB-Zugriff (Rumpf
+  65 536 Bytes, Feldlängen) mit 400. DIE GRENZE: Begrenzt sind die FORWARDS — nicht die
+  Anfragen, nicht der Persist (events wächst weiter), nicht Seitenaufrufe und Bestätigungen;
+  gefälschte Conversions werden begrenzt, nicht verhindert (Setzung P13.7-51). NEUKALIBRIERUNG
+  vor dem ersten fremden Nutzer (ARCHITEKT 2026-10-03). Auf Plattform-Ebene laufen dazu
+  WAF-Ratenregeln je IP im Modus Log (Vermerk P13.7-59 der Phase 13.7).
+  TRAGENDE KONTROLLE UND EHRLICHE EINORDNUNG OBEN BLEIBEN WÖRTLICH: Das Limit ist je Projekt
+  auf Missbrauch kalibriert (600 je 60 s, SCHÄTZUNG); ob es echte Conversions abschneidet, ist
+  unter echtem Verkehr nicht gemessen.
 - LOGIN-BRUTE-FORCE:
   RISIKO: unbegrenzte Login-Versuche -> Credential-Stuffing/Brute-Force auf Owner-
   Accounts.

@@ -70,6 +70,7 @@ Quelle), ABGELEITET, OWNER-ANGABE.
 | (iii) | Kunde: "Leads kommen nicht an" | UNGEÜBT als Ablauf |
 | (iv) | Kill-Switch: Projekt sperren / entsperren | Sperren und Entsperren GEÜBT 2026-10-01 · Auflisten UNGEÜBT · Befehle verstossen gegen REGEL 1 |
 | (v) | Ausgabendeckel erreicht — alle Projekte pausiert | UNGEÜBT |
+| (vi) | Projekt gedrosselt — forward limited | Zählerzeile löschen GEÜBT 2026-10-03 · Rest UNGEÜBT |
 
 ---
 
@@ -345,3 +346,76 @@ dann neu festzulegen.
 und der 503, die Grösse, die den Verbrauch trug, Flut oder echter Verkehr samt Grund, die
 ergriffene Massnahme, die Liste der fortgesetzten Projekte, das Ergebnis der Kontrolle. Keine
 IP-Adressen, keine Projekt- oder Nutzer-Kennungen. Läuft keine Phase: nachfragen.
+
+---
+
+## (vi) Projekt gedrosselt — forward limited
+
+**Stand: Zählerzeile löschen GEÜBT 2026-10-03** (Vermerk P13.7-61 der Phase 13.7, Punkt (4), S7:
+eine Zeile per SQL gelöscht, die nächste Conversion wurde wieder weitergeleitet, hits 1). **Alles
+übrige UNGEÜBT** — erkannt und gedrosselt wurde bisher nur mit einem von Hand gesetzten Zähler
+(S6), nie unter echtem Verkehr.
+
+**Worum es geht** (GELESEN AM CODE, `handleIngest`, src/lib/capi/ingest.ts, und
+src/lib/capi/forward-limit.ts, Stand `d67dfcf`): Der Ingest zählt je Projekt die weiterleitbaren
+Ereignisse mit mindestens einem erlaubten Ziel, in festen Fenstern von 60 s (volle Minute, UTC).
+Über 600 je Fenster (SCHÄTZUNG) wird NICHT weitergeleitet; die Antwort an den Besucher bleibt die
+leere 204, und das Ereignis steht trotzdem in `events` (der Persist bleibt). Mit dem nächsten
+Fenster beginnt der Zähler von selbst wieder bei 1.
+
+**Woran erkennen.**
+- In den Vercel-Logs die Zeile `[capi/ingest] forward limited: first over limit in window` — genau
+  eine je Fenster und Projekt, beim ersten Überschreiten (GEMESSEN live mit gesetztem Zähler, S6).
+  Sie trägt KEINE Projekt-Kennung. Welches Projekt betroffen ist, zeigt der Host der Anfrage, zu
+  der die Zeile gehört (ABGELEITET, nicht geübt). Laufzeit-Logs hält Vercel Pro einen Tag
+  (docs/plattform-befunde.md, Vercel, Teil (o)).
+- Ein Betreiber meldet, dass Conversions beim Werbenetzwerk fehlen, während das Dashboard sie
+  zählt (der Persist läuft weiter). Dann zusätzlich Szenario (iii) prüfen.
+
+**Diagnose.** Im Supabase-SQL-Editor, Datei `supabase/checks/ingest-forward-counters.sql`:
+1. **LESEND** — Block (12) (keine Einsetzstelle): alle Zähler, neueste zuerst. `ueber_grenze_600`
+   und `laufendes_fenster` lesen. FALLE: Der Überlauf ist nur im LAUFENDEN Fenster ablesbar; eine
+   Minute später steht der Zähler wieder niedrig. Ein `false` in `laufendes_fenster` heisst: die
+   Zahl gehört einem vergangenen Fenster.
+2. **LESEND** — Block (11); einzige Einsetzstelle `<PROJEKT_UUID>` in der Zeile direkt unter dem
+   Kommentar "Die EINZIGE Einsetzstelle dieser Datei steht in der naechsten Zeile". Selbsttest:
+   unersetzt liefert der Block `PLATZHALTER NICHT ERSETZT` und keine Zahlen.
+3. Vercel: wie viele Zeilen `forward limited` je Stunde, und ob die Anfragen aus wenigen Quellen
+   kommen (Firewall-Übersicht, Ratenregeln im Modus Log aus K1a, Vermerk P13.7-59). OFFEN: welche
+   Ansicht die Quellen je Projekt zeigt — nicht gelesen.
+
+**Entscheidung.** Flut oder echter Verkehr?
+- FLUT (wenige Quellen, kein Gegenstück in eigenen Tests oder Kampagnen, plötzlich): Der Zähler
+  tut, wofür er gebaut ist — NICHTS löschen. Die Quelle über die WAF abstellen. OFFEN: Deny-Regel
+  und Notbremse sind Gegenstand von K1a und noch nicht eingerichtet (Setzung P13.7-51 der Phase
+  13.7); Attack Mode ist NICHT die Notbremse (Entscheidung P13.7-50).
+- ECHTER VERKEHR (eine Kampagne erzeugt mehr als 600 weiterleitbare Ereignisse je Minute): Die
+  Schwelle ist zu niedrig. Abhilfe ist eine Code-Änderung an `INGEST_FORWARD_LIMIT` mit Deploy,
+  keine Handlung hier. Das Löschen der Zählerzeile hilft nur für den Rest der laufenden Minute.
+- TESTFOLGE (ein von Hand gesetzter Zähler, etwa ein Fenster in der Zukunft wie in S6): löschen.
+- OFFEN: Ein Schwellenwert, der Flut von echtem Verkehr trennt, ist nicht festgelegt.
+
+**Handlung.** **SCHREIBEND** — nur nach der Entscheidung "Testfolge" oder, bewusst, für die
+laufende Minute bei echtem Verkehr. Einzige Einsetzstelle `<PROJEKT_UUID>`:
+```sql
+delete from public.ingest_forward_counters where project_id = '<PROJEKT_UUID>';
+```
+Selbsttest: Bleibt der Platzhalter unersetzt, bricht die Anweisung mit "invalid input syntax for
+type uuid" ab und löscht nichts (GEMESSEN an PGlite 0.5.8, Postgres 18.3, 2026-10-03 — nicht an
+der Supabase-Datenbank). GEÜBT 2026-10-03 (S7): "1 Zeile".
+
+**Kontrolle.**
+- Der SQL-Editor meldet genau eine gelöschte Zeile (S7).
+- **LESEND** — Block (11) mit derselben Kennung: `keine Zeile`.
+- Die nächste Conversion: in den Vercel-Logs `[capi] <Ziel> forward accepted`, und Block (11)
+  zeigt `Zeile` mit hits 1 und `laufendes_fenster` true (S7: hits 1, window_start
+  2026-10-03 10:39:00+00).
+
+**Antwort an den Kunden.** Entfällt heute: Es gibt keine fremden Kunden (CLAUDE.md, "## Modus").
+Mit dem ersten fremden Nutzer ist die Schwelle neu kalibriert (ARCHITEKT 2026-10-03); ein Text ist
+dann neu festzulegen.
+
+**Was festgehalten wird.** In der Standdatei der laufenden Phase: Datum und Uhrzeit der Zeile
+`forward limited`, die abgelesenen Werte aus (11) oder (12), Flut, echter Verkehr oder Testfolge
+samt Grund, die Handlung und das Ergebnis der Kontrolle. Keine IP-Adressen, keine Projekt- oder
+Nutzer-Kennungen. Läuft keine Phase: nachfragen.

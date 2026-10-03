@@ -2811,6 +2811,12 @@ liegen beide hier und finden einander.
         2026-10-01).
         → 2026-10-03: VOLLZOGEN — Vercel ist auf Pro, in-place (Entscheidung P13.7-49, Vermerk
         P13.7-54 der Phase 13.7). Die Hobby-Beschränkung trifft dieses Projekt nicht mehr.
+      → 2026-10-03, STAND KANDIDAT K1 (Vermerk P13.7-1 der Phase 13.7): Die Scheibe "K1b" ist
+      ABGESCHLOSSEN — Eingangsgrenzen und Weiterleitungs-Zähler je Projekt im Ingest, Bau-Commits
+      `a8cb19a` und `d67dfcf`, live verifiziert (Vermerk P13.7-61 der Phase 13.7). OFFEN bleibt
+      K1a: Log-Beobachtung der WAF-Ratenregeln, Deny, Notbremse, Runbook-Szenario "Flut" (Vermerk
+      P13.7-59 der Phase 13.7). BERÜHRUNG, GEMELDET, NICHT GEÄNDERT (CC): K1b baut einen Teil des
+      Per-Tenant-Rate-Limitings, das die Roadmap-Zeile 14 führt; jene Zeile ist nicht angefasst.
 - [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out): Aus einem Formular, das über das Relay
       der Phase 13.6 zugestellt wird, erzeugt der Server das Lead-Ereignis für die
       Fan-Out-Ziele — etwa mit einer gehashten E-Mail als Match-Feld. ANGELEGT am 2026-10-01.

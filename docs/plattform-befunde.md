@@ -94,6 +94,8 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
     bis (bk)
   · Vermerk 2026-10-01 (Messungen zu den offenen Punkten aus Teil (bk), Scheibe
     "Spaltenrechte") — der Teil (bl)
+  · Erneute Lesung 2026-10-03 (Funktionsrechte, Changelog 45329, installiertes postgrest-js
+    2.117.2; Scheibe K1b) — der Teil (bm)
 · Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
   · Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-
     Grenzen, Absicherung) — die Teile (a) bis (g)
@@ -111,6 +113,8 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
     die Teile (ab) bis (al)
   · Vermerk 2026-10-03 (DNS-Empfehlung nach dem Wechsel auf Pro, Owner-Ablesung; Befund am
     Code) — der Teil (am)
+  · Messung und Vermerk 2026-10-03 (Ratenregel mit Deny; Verbindungsadresse von thr-ty.com) —
+    die Teile (an) und (ao)
 
 ## DIE HERKUNFT DIESER DATEI
 
@@ -1907,6 +1911,57 @@ der Wert steht.
 **PROVENIENZ DES TEILS (bl):** übertragen von CC am 2026-10-01 aus Vermerk P13.6-130 der Phase
 13.6; die Messungen selbst sind des Owners. KEINE Lesung, KEINE eigene Messung von CC.
 
+### Erneute Lesung 2026-10-03 (Funktionsrechte, Changelog 45329, installiertes postgrest-js 2.117.2; Scheibe K1b) — der Teil (bm)
+
+**HERKUNFT: GELESEN 2026-10-03 (CC), Instrument Browser-Werkzeug (Playwright-MCP), gezielte
+Suche im `textContent` des Inhalts-Elements mit benannter Achse; dazu GELESEN AM CODE das
+installierte Paket `@supabase/postgrest-js` 2.117.2 (`node_modules/@supabase/postgrest-js/
+dist/index.mjs`).** Anlass: die Anbieter-Lesung vor der Migration 0032 der Scheibe K1b
+(docs/db-regeln.md, vierte Regel; Zuschnitt P13.7-60 der Phase 13.7). **KEINE MESSUNG** an einer
+Supabase-Schnittstelle oder an dieser Datenbank. Keine Seite verlangte eine Anmeldung; fremde
+Anweisungen auf den Seiten (`revoke …`, `alter default privileges …`) sind nicht ausgeführt.
+
+**(bm) DIE LESUNGEN DER LÄUFE 4 UND 5 TRAGEN AM 2026-10-03 UNVERÄNDERT; DER WORTLAUT DER
+FUNKTIONS-SEITE HAT SICH VERSCHOBEN, DIE AUSSAGE NICHT.** **NEU.**
+· #3, supabase.com/docs/guides/database/functions, gezielt (Achse `Security definer vs
+  invoker|Function privileges|By default, database functions|search_path|revoke`, 11 043 Zeichen
+  samt Navigation): *"Prefer security invoker, which is also the default. When you use security
+  definer, you must set the search_path. With an empty search path, search_path = '', name the
+  schema for every relation in the function body"* · Abschnitt "Function privileges": *"By
+  default, any role can run a database function."* · *"Revoke execute for the functions you want
+  to protect, from both public and the role you're restricting"*. Teil (ax) zitierte am
+  2026-09-30 *"By default, database functions can be executed by any role."* und *"Execution
+  needs to be revoked for both public and the role you're restricting"* — anderer Wortlaut,
+  dieselbe Aussage (GEMESSEN am eigenen Lauf: der alte Satzanfang "By default, database
+  functions" trifft 0-mal, der neue steht im selben Abschnitt; nach dem zweiten alten Satz ist
+  nicht eigens gesucht worden).
+· #15, Changelog 45329, gezielt (Achse `October 30|2026-10-30|service_role|Existing
+  tables|functions|explicit grant`, 12 213 Zeichen — dieselbe Zahl wie am 2026-09-30, Teil
+  (av)): *"On October 30, 2026 the setting will be applied it to all existing projects."* · die
+  Tabelle "Before → After" mit *"grant to anon / authenticated / service_role — Implicit, via
+  default privileges → Required, explicit grant statement"* · *"Existing tables are not affected
+  in your project, they keep their current grants and stay reachable."* Teil (ay) ist damit am
+  2026-10-03 bestätigt, nicht erweitert.
+· postgrest-js 2.117.2, GELESEN AM CODE (CC, 2026-10-03): `RETRYABLE_METHODS = ["GET", "HEAD",
+  "OPTIONS"]`, `RETRYABLE_STATUS_CODES = [520, 503]`, `DEFAULT_MAX_RETRIES = 3` — unverändert
+  gegenüber 2.108.2 (Teil (az)). `rpc(fn, args, { head, get, count })` wählt `POST`, ausser bei
+  `get: true` (`GET`) oder `head: true` (`HEAD`); ein Abbruch kommt als zurückgegebenes `error`
+  mit `hint` "Request was aborted (timeout or manual cancellation)", nicht als Wurf.
+  FOLGERUNG, NICHT GEMESSEN: Eine zählende RPC über `rpc()` ohne `get`/`head` wird vom
+  installierten Client nicht wiederholt — die Bedingung, unter der ein Zähler je Aufruf genau
+  einmal erhöht.
+· `urlLengthLimit` (Vorgabe 8000) ist in 2.117.2 allein ein Hinweistext an einer Abbruch-Meldung,
+  keine Kappung (GELESEN AM CODE, CC, 2026-10-03).
+FOLGE FÜR DEN BAU (EINORDNUNG; die Entscheidung steht in der Standdatei der Phase 13.7):
+Migration 0032 folgt dem Muster 0030 ohne Abweichung — `revoke execute` je Funktion von public,
+anon und authenticated, ausdrückliche Grants an `service_role` auf Tabelle und Funktion.
+
+**PROVENIENZ DES TEILS (bm):** GELESEN am 2026-10-03 (CC) an #3 und #15, `textContent`; der
+Client am installierten Paket. Wo "GEMESSEN" steht, betrifft es ausschliesslich das eigene
+Vorgehen (Zeichenzahlen, Wortlaut-Vergleich). KEINE Messung an einer Supabase-Schnittstelle und
+KEINE an dieser Datenbank. Nicht erneut gelesen: #2 (RLS, zuletzt 2026-10-01), #10 und #34–#36
+(zuletzt 2026-09-30).
+
 ## Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
 
 ### Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-Grenzen, Absicherung) — die Teile (a) bis (g)
@@ -3113,3 +3168,36 @@ P13.7-54 der Phase 13.7), NICHT von CC gemessen; dazu GELESEN AM CODE (CC, 2026-
     `216.150.1.1` ist, ist UNGEMESSEN; die Test-Fixture (src/lib/domains/config.test.ts) trägt
     einen Stand mit `76.76.21.21` als rank 2.
 ERSETZT DIE MESSUNG NICHT: die Schnittstellen-Antwort für `thr-ty.com` nach dem Upgrade.
+
+### Messung und Vermerk 2026-10-03 (Ratenregel mit Deny; Verbindungsadresse von thr-ty.com) — die Teile (an) und (ao)
+
+**HERKUNFT: OWNER-MESSUNG bzw. OWNER-BEOBACHTUNG vom 2026-10-03, NICHT von CC gemessen.**
+Erhoben in der Phase 13.7 — die Messung in K1a (Vermerk P13.7-59), die Beobachtung im
+Live-Test der Scheibe K1b (Vermerk P13.7-61, Punkt (4), S0). Keine Doku-Lesung.
+
+**(an) EINE VON EINER RATENREGEL MIT DER AKTION DENY ABGEWIESENE ANFRAGE ERREICHT DIE FUNKTION
+NICHT — GEMESSEN.** **NEU.**
+· DIE MESSUNG (OWNER, 2026-10-03; Vermerk P13.7-59 der Phase 13.7): Ratenregel auf Pfad
+  `/api/e`, Schlüssel IP, Fenster 60 s, vorübergehend Grenze 10 und Aktion Deny. 30 Anfragen mit
+  dem Rumpf `{}` aus der Konsole einer gehosteten Seite an `/api/e`. Statuscodes
+  `{"400":10,"403":20}`; in den Vercel-Logs genau 10 Zeilen `/api/e` mit 400.
+· POSITIVKONTROLLE: Die 10 durchgelassenen Anfragen erscheinen in den Logs als 400 — die
+  Pflichtfeld-Prüfung der Funktion. Die 20 abgewiesenen erscheinen nicht.
+· WAS ES AN DEN TEILEN DARÜBER ÄNDERT: Teil (ag) führt die Antwort für Deny als FOLGERUNG aus
+  der Aktion Deny (#38, *"A 403 Forbidden response is returned. The request does not reach your
+  application."*); Teil (al), Punkt 5, als offene Messung. Für Deny ist sie jetzt GEMESSEN und
+  bestätigt die Folgerung; der Status 403 stimmt mit #38 überein. Teil (ag) und (al) bleiben
+  stehen — sie beschreiben die Lesung.
+· NICHT GEMESSEN: ob eine abgewiesene Anfrage in einem Kontingent zählt; die Vorgabe-Aktion 429
+  einer Ratenregel (Teil (aa), Punkt 1, bleibt OFFEN).
+
+**(ao) DIE VERBINDUNG ZU `thr-ty.com` LIEF AM 2026-10-03 ÜBER 216.198.79.1 — WEDER DER ALTE NOCH
+DER EMPFOHLENE A-EINTRAG AUS TEIL (am).** **NEU.**
+· DIE BEOBACHTUNG (OWNER, 2026-10-03, Browser-Entwicklerwerkzeuge, "Remote Address" einer
+  Anfrage an `thr-ty.com`): `216.198.79.1`. Der DNS-Eintrag selbst ist NICHT abgelesen.
+· ZUR EINORDNUNG: Teil (am) nennt als bisherigen Eintrag `76.76.21.21` und als empfohlenen
+  `216.150.1.1`; die beobachtete Adresse ist keine der beiden.
+· NICHT ENTSCHEIDBAR an dieser Beobachtung: welcher A-Eintrag für `thr-ty.com` gesetzt ist, und
+  ob die Verbindungsadresse der Eintrag selbst ist oder eine Adresse, an die Vercel weiterreicht.
+  Keine Folgerung.
+ERSETZT DIE MESSUNG NICHT: eine Abfrage des DNS-Eintrags von `thr-ty.com`.

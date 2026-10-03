@@ -377,6 +377,8 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
       nicht berührt. Die Backlog-Einträge bleiben unverändert; bereinigt wird beim Zuschnitt K1a.
       → 2026-10-03: K1a ist im Modus Log angelegt und an einem Punkt gemessen (Vermerk P13.7-59);
       K1b ist geschnitten (Zuschnitt P13.7-60).
+      → 2026-10-03: K1b ist ERLEDIGT, gebaut und live verifiziert (Vermerk P13.7-61). Offen bleibt
+      K1a: Log-Beobachtung, Deny, Notbremse, Runbook-Szenario "Flut".
       → 2026-10-03: K1b zieht den Kopfkommentar von `CAP_PER_USER` (src/lib/domains/register.ts)
       mit — er nennt "Hobby-Kontingent" und "Pro-Upgrade VOR echter Skalierung" (GELESEN AM CODE,
       CC, Stand `561a564`). K1b berührt register.ts ohnehin (Entscheidung P13.7-52).
@@ -1069,43 +1071,175 @@ Doku-Runde `e90e4e2`.
   P13.7-50 und P13.7-55.
 
 **Zuschnitt P13.7-60 — SCHEIBE "K1b": EINGANGSGRENZEN UND WEITERLEITUNGS-ZÄHLER JE PROJEKT IM
-INGEST; ENTSCHEIDUNG P13.7-52 ALS EIGENER FIX. ARCHITEKT 2026-10-03 (Befund und Grenze aus dem
-Auftrag der Runde; Formulierung CC). STAND: Plan (Stufe 1) ausstehend, kein Bau.**
-- GEGENSTAND: Befunde A1 bis A3 des Vermerks P13.7-1 auf der Code-Seite; Vorräte P13.7-17 (N15)
-  und P13.7-44; Richtung: Setzung P13.7-51, K1b.
-- (a) EINGANGSGRENZEN in `handleIngest` (src/lib/capi/ingest.ts) VOR JEDEM DATENBANK-ZUGRIFF —
-  also vor `getCapiConfigByTrackingKey`: eine Grenze der Rumpfgrösse und Grenzen der
-  Feldlängen. Ein Verstoss gilt als strukturell kaputter Beacon und wird mit 400 abgewiesen,
-  auf derselben Achse wie die Pflichtfeld-Prüfung. Grenzwerte samt Einheit, der Ort der
-  Grössenprüfung beim Lesen und die Frage, ob die Dauerregel "INGEST-204-CONTAINMENT" im Wortlaut
-  nachzuziehen ist: Plan.
-- (b) ZÄHLER JE PROJEKT, ALLEIN FÜR EREIGNISSE, DIE TATSÄCHLICH WEITERGELEITET WÜRDEN: kein
-  Bestätigungs-Beacon, `isForwardable`, nach der Einwilligung (`allowedTargets`), mindestens ein
-  Ziel. Er entscheidet AUSSCHLIESSLICH über den Forward. Der Persist bleibt unverändert — er ist
-  vom Forward entkoppelt und wird vorher eingeplant (`schedulePersist`) — ARCHITEKT, revidierbar.
-  · ÜBER DER SCHWELLE: kein Forward, Antwort leere 204. Der Zähler zählt weiter, damit der
-    Überlauf als Zahl ablesbar bleibt. Höchstens EINE Logzeile je Fenster und Projekt, beim
-    ersten Überschreiten.
-  · Der Schlüssel ist die Projekt-Kennung aus der Auflösung, nie ein Wert der Anfrage; der Zähler
-    steht hinter dem Kill-Switch.
-- (c) EIGENE TABELLE UND RPC nach dem Muster von Migration 0030 — nicht `relay_rate_counters`.
-- (d) ZÄHLER-AUSFALL — Fehler, Wurf, Zeitlimit oder `null` ohne Fehler —: der Forward läuft, und
-  es wird geloggt (fail-open; Vorlage `countRelayHit`, src/lib/relay/rate-limit.ts).
-- (e) ENTSCHEIDUNG P13.7-52 ALS EIGENER fix-COMMIT: `count` `null` ohne Fehler wird ein Fehler
-  (fail-closed) in der Cap-Abfrage von `registerCustomDomain` (src/lib/domains/register.ts) und in
-  `countRecentAttempts` (src/lib/domains/audit.ts); dazu der Kopfkommentar von `CAP_PER_USER` auf
-  den Pro-Stand (Kandidat K1 des Vermerks P13.7-1, Nachsatz vom 2026-10-03).
-- GRENZE: Setzung P13.7-51, "GRENZE, AUSDRÜCKLICH" — das Limit begrenzt gefälschte Conversions,
-  es verhindert sie nicht. EINSCHRÄNKUNG (CC, ABGELEITET aus (b)): Den SPEICHER, den jene Grenze
-  neben Menge und Kosten nennt, begrenzt dieser Zuschnitt nicht — der Persist bleibt unverändert,
-  Befund A3 bleibt in diesem Punkt offen. Gemeldet, nicht entschieden.
-- SCOPE (aus dem Auftrag, im Plan zu bestätigen): geändert src/lib/capi/ingest.ts, ein neues
-  Modul für den Zähler, eine neue Migration, Tests, src/lib/domains/register.ts,
-  src/lib/domains/audit.ts. UNBERÜHRT: src/proxy.ts, src/lib/supabase/middleware.ts,
-  src/lib/relay/*, Migration 0030, src/lib/capi/token.ts, src/lib/analytics/persist.ts, die
-  Erzeuger des ausgelieferten Textes.
-- BEZUG, GEMELDET, NICHT GEÄNDERT: Manifest Tier 1 "PER-TENANT-RATE-LIMITING" und Roadmap-Zeile
-  14 (s. Setzung P13.7-51, BEZUG).
+INGEST; ENTSCHEIDUNG P13.7-52 ALS EIGENER FIX. ARCHITEKT 2026-10-03. ABGELAUFEN mit Vermerk
+P13.7-61 (2026-10-03), verdichtet in derselben Runde.**
+- BINDET ÜBER DIE SCHEIBE HINAUS (ARCHITEKT 2026-10-03, revidierbar; die Entscheidungen D1 bis D9
+  stammen aus dem Bau-Auftrag der Scheibe und stehen erstmals hier):
+  · DER ZÄHLER ENTSCHEIDET ALLEIN ÜBER DEN FORWARD; DER PERSIST BLEIBT UNVERÄNDERT. Gezählt wird
+    nur, was weitergeleitet würde — kein Bestätigungs-Beacon, `isForwardable`, nach der
+    Einwilligung, mindestens ein Ziel. Der Schlüssel ist die Projekt-Kennung aus der Auflösung,
+    nie ein Wert der Anfrage; der Zähler steht hinter dem Kill-Switch und (D2) VOR der
+    Inline-Rettung. Ausfall: fail-open, geloggt.
+  · D1 — Die Rumpfgrenze ist die HÖCHSTMENGE DES TRANSPORTS (keepalive/sendBeacon, 65 536 Bytes,
+    gelesen), keine Schätzung. eventSourceUrl trägt KEINE Feldgrenze (wird nicht gespeichert,
+    kostet nur über den Rumpf). Feldgrenzen trackingKey 64 · eventID 128 · event 256 · currency
+    16 · _fbp 256 · obs 64 (UTF-16-Codeeinheiten) → 400 vor jedem DB-Zugriff.
+  · D3 — 600 weiterleitbare Ereignisse je 60 s je Projekt (SCHÄTZUNG), Zeitlimit 1000 ms
+    (SETZUNG). NEUKALIBRIERUNG vor dem ersten fremden Nutzer (ARCHITEKT 2026-10-03, Auftrag der
+    Doku-Runde des Vermerks P13.7-61).
+  · D4 — Sichtbar ist der Überlauf über EINE Logzeile ohne Projekt-Kennung, beim Wert GRENZE + 1.
+    VERWORFEN: dauerhafte Überlauf-Spalten (Variante K-ü3) — Naht-Hygiene, ihr Konsument wäre
+    Kandidat K8, ohne Spec.
+  · D9 — Zähler und Rumpf-Lesen sind nach relay/* NACHGEBAUT, nicht geteilt (Vorrat P13.7-62).
+  · GRENZE: Setzung P13.7-51 — das Limit begrenzt gefälschte Conversions, es verhindert sie nicht.
+    Den SPEICHER begrenzt es nicht; Befund A3 des Vermerks P13.7-1 bleibt in diesem Punkt offen.
+- WAS ABGELAUFEN IST, und wo es steht: Gegenstand und Scope · (c) die eigene Tabelle (Migration
+  0032) · (e) Entscheidung P13.7-52 als eigener fix-Commit · D5 (Variante K-ü1) · D6 (Wortlaut der
+  Dauerregel erst nach dem Live-Test — vollzogen in der Doku-Runde des Vermerks P13.7-61) · D7
+  (fix-Commit zuerst) · D8 (Mocks in den 12 Testdateien, die `@/lib/capi/token` mocken). Inhalt
+  und Ergebnis: Vermerk P13.7-61. Der Wortlaut vor der Verdichtung steht unter Commit `23e960f`.
+
+**Vermerk P13.7-61 — ABSCHLUSS DER SCHEIBE "K1b". Bau-Commits `a8cb19a` (`fix(domains): fehlende
+Zählung bricht ab, statt als null zu gelten`) und `d67dfcf` (`feat(capi): Eingangsgrenzen und
+Weiterleitungs-Zähler je Projekt (K1b)`), 2026-10-03.** Production-Deployment `d67dfcf` "Ready"
+(OWNER-ABLESUNG; `d67dfcf` ist der feat-Commit, GEMESSEN AM REPO, `git log`).
+
+(1) GEBAUT, GEGEN ZUSCHNITT P13.7-60 (GELESEN AM CODE, CC, 2026-10-03, `git show`):
+    · `handleIngest` (src/lib/capi/ingest.ts): `readBodyCapped` liest höchstens
+      `INGEST_MAX_BODY_BYTES` (65 536), mit Content-Length-Vorprüfung und Zählung beim Lesen;
+      zu gross oder Lesefehler → 400. `exceedsFieldLimit` gegen `INGEST_FIELD_MAX_LENGTH`
+      (Werte s. D1; nur Zeichenketten, roher Wert) → 400. Beides vor
+      `getCapiConfigByTrackingKey`.
+    · Zähler-Zweig nach dem Ausgang "allowed und allowedRettbar leer", vor der Rettung:
+      `countForwardHit(resolution.projectId)`. `limited` → leere 204, Logzeile
+      `[capi/ingest] forward limited: first over limit in window` nur bei `first`; `failed` →
+      `[capi/ingest] fail-open: forward-counter-failed`, der Forward läuft.
+    · src/lib/capi/forward-limit.ts: `INGEST_FORWARD_LIMIT` 600, `INGEST_FORWARD_WINDOW_SECONDS`
+      60, `INGEST_FORWARD_TIMEOUT_MS` 1000, RPC `ingest_forward_hit`; Urteil `allowed`,
+      `limited` (`first` beim Wert 601) oder `failed` (error, Wurf, Zeitlimit, keine ganze Zahl).
+    · Migration 0032 (Variante K-ü1): Tabelle `ingest_forward_counters` (project_id
+      Primärschlüssel und Fremdschlüssel mit Kaskade, window_start, hits ≥ 1), RLS ohne Policy,
+      `revoke all` für anon und authenticated, `grant select, insert, update` für service_role;
+      RPC SECURITY INVOKER, `search_path ''`, EXECUTE allein service_role; Protokoll '0032'.
+    · Probe supabase/checks/ingest-forward-counters.sql (OWNER-FREIGABE 2026-10-03), Bauform 1,
+      eine Einsetzstelle mit Selbsttest; Zeile in supabase/checks/README.md.
+    · `a8cb19a`: Cap-Abfrage in `registerCustomDomain` und `countRecentAttempts` werfen bei
+      `count` ohne Zahl (fail-closed); Kopfkommentar von `CAP_PER_USER` auf den Pro-Stand.
+    · Zähler-Mock "allowed" in den 12 Testdateien, die `@/lib/capi/token` mocken.
+
+(2) LESUNGEN 2026-10-03 (CC, Playwright, `textContent`):
+    · fetch.spec.whatwg.org ("Last Updated 21 September 2026"), Abschnitt 4.6
+      "HTTP-network-or-cache fetch": "If the sum of contentLength and inflightKeepaliveBytes is
+      greater than 64 kibibytes, then return a network error."
+    · w3c.github.io/beacon (Editor's Draft, 11 March 2026), Abschnitt 2.1.4: sendBeacon gibt
+      false zurück, wenn die Menge "exceeds the user agent limit (as defined in
+      HTTP-network-or-cache fetch)"; Abschnitt 3: "All requests with this flag set share the
+      same in-flight quota restrictions that is enforced within the Fetch API."
+    · Am Code (GELESEN AM CODE, CC): Jeder Beacon-Weg an /api/e läuft über sendBeacon oder fetch
+      mit keepalive — Klick-Beacon allein sendBeacon (`buildCapiBeaconStatement`), Bestätigung
+      und Seitenaufruf mit keepalive-Ersatz, der Formular-Track über denselben Klick-Beacon.
+    · Supabase-Funktionsseite, Changelog 45329 und postgrest-js 2.117.2 am installierten Paket:
+      docs/plattform-befunde.md, Supabase, Teil (bm).
+
+(3) BAU-NACHWEIS (GEMESSEN, CC, 2026-10-03):
+    · Tests vorher 103 Dateien / 2829, nachher 106 / 2886 (+57: G7 3, forward-limit.test.ts 26,
+      ingest.limits.test.ts 16, ingest.forward-limit.test.ts 12). `tsc --noEmit` 0 · `lint` 0
+      Fehler, 1 bekannte Warnung · `build` 0, Routen-Tabelle unverändert.
+    · Mutationen, je Vorhersage = Ergebnis: M1 Grössenprüfung entfernt → L1, L1b, L1c · M2
+      Zählerprüfung entfernt → Z3, Z4, Z13 · M3 Grenze um eins (`>=` statt `>`) → V-EDGE · M4a
+      Seitenaufruf gezählt → Z5 · M4b Bestätigung gezählt → Z6 · M5 fail-closed → Z10 · M6 429
+      statt leerer 204 → Z3, Z4, Z13 · M7 Feldprüfung hinter den DB-Zugriff → L2 sechsmal · M8
+      P13.7-52 zurückgedreht → die drei G7-Tests. Rücknahme per Byte-Kopie, `cmp` identisch.
+    · PGlite 0.5.8 (Postgres 18.3, WASM, im Scratchpad, nicht im Repo): Migration zweimal
+      fehlerfrei; Probe (1) bis (12) lauffähig; RPC 1, 2, 3; nach hits 600 im Zukunftsfenster 601
+      und 602; anon und authenticated bei EXECUTE und SELECT abgewiesen; Selbsttest von (11)
+      trägt; ein DELETE mit unersetztem Platzhalter bricht ab ("invalid input syntax for type
+      uuid"). Befund: Postgres 18 führt NOT NULL als contype 'n' — Probe (4) filtert deshalb auf
+      p/f/c. GRENZE: nicht die Supabase-Datenbank (17.6).
+    · Dekodierung: `Request.text()` und `TextDecoder` liefern für BOM, ungültiges UTF-8 und "ä"
+      dasselbe (Node v24.16.0, lokal).
+    · Byte-Kontrolle der sechs neuen Dateien am committeten Objekt: CR 0, NUL 0, LF = Zeilen.
+
+(4) LIVE-TEST (OWNER, 2026-10-03 — alle Angaben OWNER-ANGABEN, nicht von CC gemessen):
+    · S0 — `thr-ty.com`: Meta (Pixel und Token) neu hinterlegt und neu veröffentlicht, vorher nur
+      Google. Klick "Purchase", value 9, EUR, cns {meta:true, google:true} → POST /api/e 204,
+      "[capi] Meta forward accepted: HTTP 200". Vorher (nur Google): "[capi] Google forward
+      skipped: no_click_id" auf Stufe [error]. Remote Address der Verbindung 216.198.79.1 (der
+      DNS-Eintrag selbst nicht abgelesen).
+    · S1 — Migration 0032 im SQL-Editor: "Success. No rows returned".
+    · S2 — Prüfabfrage: rls_aktiv true · policies 0 · anon_select false · auth_insert false ·
+      anon_exec false · auth_exec false · service_exec true · protokoll 0032 · zeilen 0.
+    · S3 — Push, Deployment "Ready", Production, `d67dfcf`.
+    · S4 — Seitenaufruf ohne Klick → keine Zählerzeile. Klick → Meta forward accepted, hits 1,
+      window_start 2026-10-03 10:33:00+00 (Bestätigung nicht mitgezählt).
+    · S5 — Konsole, erfundener Schlüssel, `fetch` ohne keepalive: {"rumpf_65537":400,
+      "rumpf_65536":204,"event_257":400,"event_256":204,"url_20000":204}.
+    · S6 — Zähler per SQL auf 600 (Fenster +1 h). Klick 1 → "[capi/ingest] forward limited:
+      first over limit in window", kein accepted, hits 601. Klick 2 → keine weitere Zeile, kein
+      accepted, hits 602.
+    · S7 — Zeile per SQL gelöscht (1 Zeile). Klick 3 → Meta forward accepted, hits 1,
+      window_start 2026-10-03 10:39:00+00.
+
+(5) WAS DIE BEOBACHTUNGEN TRAGEN (ABGELEITET, CC, am Code `d67dfcf`):
+    · S4 zeigt live, dass ein Seitenaufruf nicht zählt; dass die Bestätigung nicht zählt, ist die
+      Angabe des Owners (hits 1 nach einem Klick), belegt am Code durch Z6.
+    · S5: Die 400 bei 65 537 Bytes kann der Content-Length-Zweig oder die Zählung beim Lesen
+      erzeugt haben — `fetch` mit Zeichenkette sendet einen Content-Length; S5 trennt die beiden
+      nicht. Den gestreamten Rumpf ohne Content-Length belegen allein L1 und L1c. Dass die 400
+      vor jedem DB-Zugriff fällt, belegen allein L2, L5 und M7.
+    · S6: Die Logzeile entsteht genau beim ersten Überlauf und kein zweites Mal; über der
+      Schwelle wird nicht weitergeleitet. Ob das Ereignis über der Schwelle persistiert wurde,
+      ist NICHT abgelesen — belegt allein durch Z3.
+    · S7: Das Löschen setzt den Zähler zurück, und window_start 10:39:00 ist die volle Minute —
+      die Fensterlogik der RPC unter echter Zeit, nicht nur im gesetzten Zukunftsfenster.
+    · S2: Ob die Prüfabfrage die Probe-Datei war, ist nicht angegeben; das Kopffeld VERIFIZIERT
+      der Probe bleibt auf "noch nie gegen echte Daten gefahren".
+
+(6) NICHT GEZEIGT, und wo es allein belegt ist: das 60-s-Fenster unter Last und zwei
+    gleichzeitige Aufrufe (nirgends) · fail-open live (Z10, V-FAIL) · Persist über der Schwelle
+    live (Z3) · Commit `a8cb19a` live — der Weg ist ohne Vercel-Aufruf nicht erreichbar, die
+    Live-Auflage der Domain-Scheiben verbietet ihn (die drei G7-Tests und M8).
+
+(7) ABWEICHUNGEN DES BAUBERICHTS: (4) die fail-open-Zeile entsteht je betroffenem Beacon, weil
+    es keinen Zustand je Fenster gibt, und (5) die 400er tragen keine eigene Logzeile — beide
+    ANGENOMMEN (ARCHITEKT, 2026-10-03). Berichtet und mit dem Bau übernommen: das Urteil als Objekt
+    mit `first`; Z2 und Z11 als V-EDGE und V-TIME im Modultest; die Teilung von M4; der Filter
+    p/f/c in Probe (4). Die README-Zeile und die Korrektur des Migrations-Kommentars sind vor dem
+    Commit nachgezogen (Auftrag K1/K2 derselben Runde).
+
+(8) RUNBOOK: Die Scheibe schafft eine Handlung des Owners — Szenario (vi) "Projekt gedrosselt —
+    forward limited" in docs/ADMIN_RUNBOOK.md; das Löschen der Zählerzeile GEÜBT mit S7, der Rest
+    UNGEÜBT.
+
+(9) FOLGEN:
+    · Vorrat P13.7-17 (N15) und P13.7-44 sind ERLEDIGT.
+    · Kandidat K1 des Vermerks P13.7-1: K1b erledigt; offen bleibt K1a (Log-Beobachtung, Deny,
+      Notbremse, Runbook-Szenario "Flut"; Vermerk P13.7-59). Befund A1 bis A3: A2 und A3 begrenzt,
+      nicht behoben (s. GRENZE am Zuschnitt P13.7-60).
+    · Nachgezogen in derselben Runde: Dauerregel "INGEST-204-CONTAINMENT", Kern und Herleitung
+      (OWNER-FREIGABE 2026-10-03) · CLAUDE.md, "/API/E-SCHLANKHEIT", IST-ZUSTAND · Manifest-Item
+      PER-TENANT-RATE-LIMITING in beiden Fassungen · docs/plattform-befunde.md, Supabase Teil (bm),
+      Vercel Teile (an) und (ao) · Roadmap-Zeile 13.7.
+    · NICHT NACHGEZOGEN, gemeldet: docs/db-stand.md (Tabelle `ingest_forward_counters`, Funktion
+      `ingest_forward_hit`, Migrationsstand 0032) — nicht Teil des Auftrags; S1 und S2 sind die
+      Messung, aus der es fortgeschrieben werden kann. Roadmap-Zeile 14 ("Per-Tenant-Rate-Limiting
+      auf /api/e + /api/capi") ist nicht angefasst.
+    · Neu: Vorrat P13.7-62, P13.7-63 und P13.7-64; Hebungs-Kandidat P13.7-65.
+
+(10) WAS BEWUSST NICHT DOKUMENTIERT WIRD (docs/arbeitsweise.md, Abschnitt 2b): die einzelnen
+    Testfälle über ihre Kennungen hinaus und die Mutations- und PGlite-Skripte aus dem Scratchpad —
+    die Wächter stehen benannt in ihren Testdateien, Vorhersage und Ergebnis jeder Mutation stehen
+    in Punkt (3), und der Wortlaut der Skripte ändert kein Verhalten.
+
+**Hebungs-Kandidat P13.7-65 — EINE EINGANGSGRENZE, DIE KEINEN LEGITIMEN FALL ABWEISEN DARF, WIRD
+AN DIE HÖCHSTMENGE DES TRANSPORTS GELEGT (GELESEN, MIT FUNDSTELLE), NICHT GESCHÄTZT.** ARCHITEKT
+2026-10-03.
+- BELEG: Scheibe K1b (Vermerk P13.7-61, Punkt (2)): Die Rumpfgrenze von /api/e ist die
+  keepalive-Grenze von 64 KiB (Fetch-Standard, Abschnitt 4.6) — kein legitimer Beacon kann sie
+  überschreiten. Das Gegenstück aus dem Plan derselben Scheibe: Eine geschätzte Feldgrenze auf
+  `eventSourceUrl` (`location.href`, am Erzeuger ungekappt) hätte legitime Beacons abgewiesen;
+  sie ist deshalb nicht gebaut (Zuschnitt P13.7-60, D1).
+- NUR KANDIDAT. Entschieden wird bei der Hebung am Phasenende 13.7.
 
 ---
 
@@ -1128,6 +1262,7 @@ Registrierung: Kandidat P13.7-58 (Einstellungs-Durchgang Supabase und Vercel).
 → 2026-10-03: K1a ist im Modus Log angelegt und zur Aktion Deny gemessen (Vermerk P13.7-59); K1b
 ist geschnitten (Zuschnitt P13.7-60). Beide stehen im Abschnitt "Vermerke, Entscheidungen und
 Zuschnitte ab dem 2026-10-02".
+→ 2026-10-03: Die Scheibe "K1b" ist abgeschlossen (Vermerk P13.7-61). In K1 offen bleibt K1a.
 
 **Entscheidung P13.7-49 — VERCEL WECHSELT JETZT AUF PRO, ZUSAMMEN MIT K1. OWNER-ENTSCHEIDUNG
 2026-10-03 (übermittelt im Auftrag der Doku-Runde).**
@@ -1380,6 +1515,7 @@ Befund N14.
 **Vorrat P13.7-17 — N15: DER INGEST TRÄGT IM CODE KEINE GRÖSSENGRENZE.** Vermerk P13.7-1,
 Befund N15.
 → 2026-10-03: Gegenstand von Zuschnitt P13.7-60, (a).
+→ 2026-10-03: ERLEDIGT mit Bau-Commit `d67dfcf`, live verifiziert (Vermerk P13.7-61, S5).
 
 **Vorrat P13.7-18 — N16: `/api/f` AUF DEM APP-HOST LEITET AUF `/login` UM** (Zeiger auf den
 offenen Punkt). Vermerk P13.7-1, Befund N16.
@@ -1546,6 +1682,8 @@ ERSCHEINT IM NÄCHSTEN PROJEKT.**
 - → 2026-10-03: BEWERTET (Entscheidung P13.7-52): Behebung in K1b als eigener fix-Commit; "count
   null ohne Fehler" wird ein Fehler (fail-closed, wie `deleteProject`).
 - → 2026-10-03: Gegenstand von Zuschnitt P13.7-60, (e).
+- → 2026-10-03: ERLEDIGT mit Bau-Commit `a8cb19a` — live nicht erreichbar, belegt durch drei Tests
+  und Mutation M8 (Vermerk P13.7-61, Punkte (3) und (6)).
 
 **Vorrat P13.7-45 — `setAll` VERWIRFT DIE CACHE-HEADER, DIE DER SUPABASE-LEITFADEN VERLANGT.**
 - BEFUND (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `24516f2`): `updateSession`
@@ -1619,3 +1757,36 @@ PLATTFORM-LIMIT "Hobby 10s", DAS DER GELESENE BESTAND NICHT TRÄGT.**
   NICHT GELESEN. Seit dem 2026-10-03 läuft das Projekt auf Pro (Vermerk P13.7-54).
 - WIRKUNG: keine — `TIMEOUT_MS` (8000) ist ein eigenes Zeitlimit und hängt nicht am Kommentar.
 - TRIGGER: die nächste Arbeit an src/lib/vercel/client.ts.
+
+**Vorrat P13.7-62 — ZWEI IMPLEMENTIERUNGEN DERSELBEN BAUFORM IN relay/* UND capi/*.**
+- BEFUND (GELESEN AM CODE, CC, 2026-10-03, Stand `d67dfcf`): `countForwardHit`
+  (src/lib/capi/forward-limit.ts) ist nach `countRelayHit` (src/lib/relay/rate-limit.ts)
+  nachgebaut, `readBodyCapped` in src/lib/capi/ingest.ts nach dem gleichnamigen in
+  src/lib/relay/relay.ts; ebenso Migration 0032 nach 0030 und die Probe nach
+  supabase/checks/relay-rate-counters.sql. Kein Test hält die Paare gleich; die Kopfkommentare
+  in forward-limit.ts und an `readBodyCapped` (ingest.ts) sagen es.
+- HERKUNFT: Entscheidung D9 (Zuschnitt P13.7-60, verdichtet) — relay/* war für K1b unberührt.
+- TRIGGER: ein dritter Fall derselben Bauform, ODER eine Änderung an einer der beiden.
+
+**Vorrat P13.7-63 — "[capi] Google forward skipped: no_click_id" STEHT AUF STUFE error, OBWOHL EIN
+KLICK OHNE gclid DER NORMALFALL IST.**
+- BEFUND: OWNER-ABLESUNG 2026-10-03 (Vermerk P13.7-61, S0, Vorher-Zustand von `thr-ty.com`): die
+  Zeile auf Stufe [error]. Am Code (GELESEN AM CODE, CC, 2026-10-03): `forwardToGoogle`
+  (src/lib/capi/google-forward.ts) schreibt `skipped: ${built.reason}` über `console.error`;
+  ebenso die übrigen skipped-Zeilen von google und linkedin.
+- ZEIGER: docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.7 gehoben (2026-09-25)
+  …", Teil A, Posten "Mitnahme aus S10c — DIE HERABSTUFUNG DER ZEILE `access_token_expired` IN
+  `usableTokenFromRow` …". Er trägt KEINE Nummer und gilt der Resolver-Zeile, nicht no_click_id
+  (GEMESSEN AM REPO, CC: Suche `herabstuf|logstufe|auf Stufe` im Backlog). Verwandt Eintrag 48
+  desselben Backlogs ("DIE FEHLERZEILE IST MEHRDEUTIG GEWORDEN …").
+- TRIGGER: die nächste Arbeit an der Logstufe der Adapter.
+
+**Vorrat P13.7-64 — `thr-ty.com` TRÄGT SEIT DEM 2026-10-03 META — BEZUGSPROJEKT FÜR KÜNFTIGE
+INGEST-LIVE-TESTS.**
+- OWNER-ANGABE 2026-10-03 (Vermerk P13.7-61, S0): Pixel und Token hinterlegt, neu veröffentlicht;
+  vorher allein Google, dort ist das Zugangsdatum tot (docs/offene-punkte.md, Posten "STIRBT DAS
+  ERNEUERUNGS-TOKEN …", Ergänzung vom 2026-10-03). Seit dem 2026-10-03 schreibt die Seite
+  "[capi] Meta forward accepted: HTTP 200" (S0, S4, S7).
+- DIE PROJEKT-KENNUNG STEHT HIER NICHT: Der Auftrag der Doku-Runde nannte sie als "aus S7"; die
+  übermittelten Messwerte von S7 tragen keine.
+- KEIN TRIGGER — ein Bezugspunkt, keine offene Arbeit.

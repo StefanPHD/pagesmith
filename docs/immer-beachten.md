@@ -297,9 +297,11 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   Fehler-Gerüst selbst (Timeout-Scaffolding, Body-Reads) darf nie nach aussen werfen.
   Grund: ein 500 oder ein Body würde den Gültigkeitszustand des trackingKeys leaken,
   204-für-alles macht die Key-Existenz unbeobachtbar (Enumeration-Schutz).
-  Ausnahme auf ANDERER Achse, kein Widerspruch: ein strukturell kaputter Beacon (fehlende
-  Pflichtfelder trackingKey/eventID/event) wird bewusst mit 400 vor jedem DB-Zugriff
-  abgewiesen — das ist ein Client-Fehler, kein Zustands-Leak.
+  Ausnahme auf ANDERER Achse, kein Widerspruch: ein strukturell kaputter Beacon wird bewusst
+  mit 400 vor jedem DB-Zugriff abgewiesen — das ist ein Client-Fehler, kein Zustands-Leak.
+  Strukturell kaputt heisst: kein lesbares JSON-Objekt, ein fehlendes Pflichtfeld
+  (trackingKey/eventID/event), ein Rumpf über der Grössengrenze oder ein Feld über seiner
+  Längengrenze. Das Urteil hängt allein an der Anfrage, nie an gespeichertem Zustand.
 
 - TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL
   source beschreibt, WO ein Event beobachtet wurde (server vs. browser), nicht an welches

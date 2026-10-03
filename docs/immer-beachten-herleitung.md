@@ -819,6 +819,31 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   ist ein CLIENT-Fehler, kein Zustands-Leak. Das 204-Containment schützt vor dem
   Key-Existenz-Leak bei GÜLTIGER Struktur; der 400-Guard ist die andere Achse. Herleitung:
   docs/claude-history/phase-8-analytics.md.
+  ERGÄNZT 2026-10-03 (Phase 13.7, Scheibe K1b; Zuschnitt P13.7-60 der Phase 13.7, Abschluss
+  Vermerk P13.7-61) — "STRUKTURELL KAPUTT" IST AUSGEWEITET, DER KERN IST NEU GEFASST
+  (OWNER-FREIGABE 2026-10-03, Wortlaut aus dem Plan der Scheibe). Der Text darüber bleibt als
+  Stand davor stehen. Seine Klammer "(fehlende Pflichtfelder {trackingKey,eventID,event})"
+  war als abschliessende Aufzählung schon vor K1b zu eng: `handleIngest` (src/lib/capi/
+  ingest.ts) wies auch einen Rumpf ohne lesbares JSON-Objekt mit 400 ab (GELESEN AM CODE, CC,
+  2026-10-02, Plan K1b, G4). Seit K1b (Bau-Commit `d67dfcf`) kommen zwei Fälle hinzu, beide
+  VOR jedem DB-Zugriff: ein Rumpf über INGEST_MAX_BODY_BYTES (65 536 Bytes, beim Lesen
+  gezählt) und ein Feld über seiner Grenze in INGEST_FIELD_MAX_LENGTH.
+  DIE RUMPFGRENZE IST KEINE SCHÄTZUNG, SONDERN DIE HÖCHSTMENGE DES TRANSPORTS: Jeder
+  Beacon-Weg an /api/e läuft über sendBeacon oder fetch mit keepalive (GELESEN AM CODE, CC,
+  2026-10-03), und dafür gilt GELESEN 2026-10-03, fetch.spec.whatwg.org, Abschnitt 4.6
+  "HTTP-network-or-cache fetch": "If the sum of contentLength and inflightKeepaliveBytes is
+  greater than 64 kibibytes, then return a network error." (sendBeacon verweist darauf,
+  w3c.github.io/beacon, Abschnitte 2.1.4 und 3). Ein legitimer Beacon kann sie nicht
+  überschreiten; ob jeder Browser sie genau so umsetzt, ist nicht gemessen.
+  WARUM DIE 400 HIER KEIN LECK IST, und das ist die Bedingung, unter der die Ausweitung trägt:
+  Das Urteil hängt allein an der Anfrage — Grösse und Feldlängen —, nie am Schlüssel oder an
+  einem gespeicherten Zustand. Ein Grenzwert, der von der Datenbank abhinge, machte die 400
+  selbst zum Gültigkeits-Orakel.
+  EIN NEUER 204-AUSGANG IST DAZUGEKOMMEN UND ÄNDERT DIE REGEL NICHT: Über der Schwelle des
+  Weiterleitungs-Zählers je Projekt antwortet der Handler mit derselben leeren 204, ohne
+  Forward. Live gemessen am 2026-10-03 (OWNER): 400 bei 65 537 Bytes und bei einem
+  Ereignisnamen von 257 Zeichen, 204 bei 65 536 Bytes und 256 Zeichen (Vermerk P13.7-61,
+  Punkt (4), S5).
 - TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL: der source-Wert in events beschreibt, WO ein
   Event beobachtet wurde (server vs. browser), NICHT an welches Werbe-Netzwerk es ging.
   'server' heißt server-beobachtet — egal ob der Forward zu Meta/CAPI oder später zu

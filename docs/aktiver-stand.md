@@ -1026,6 +1026,108 @@ ist Vorrat P13.7-45 (Cache-Header beim Setzen von Sitzungs-Cookies) nach seinem 
 bewerten; spätestens dort fällig ist auch Vorrat P13.7-44 (`count ?? 0` fail-open). Der Grabstein (Vorrat P13.7-37) und der Serve-Riegel (Vorrat P13.7-32) gehen an
 die Hebung am Phasenende 13.7. Die Kandidaten stehen im Vermerk P13.7-1, Punkt (4); der Vorrat
 darunter.
+→ 2026-10-03: Zu K1 stehen darunter der Tarif (Entscheidung P13.7-49), Attack Mode (Entscheidung
+P13.7-50), die Richtung (Setzung P13.7-51) und die Bewertungen der Vorräte P13.7-44 und P13.7-45
+(Entscheidungen P13.7-52 und P13.7-53). Ein Zuschnitt K1 steht weiter aus.
+
+**Entscheidung P13.7-49 — VERCEL WECHSELT JETZT AUF PRO, ZUSAMMEN MIT K1. OWNER-ENTSCHEIDUNG
+2026-10-03 (übermittelt im Auftrag der Doku-Runde).**
+- INHALT: Vercel wechselt JETZT auf Pro, zusammen mit K1 — nicht erst beim ersten fremden Nutzer.
+- VORBEHALT: Der Wechsel selbst wartet auf die Lesung von Upgrade-Weg und Ausgabendeckel
+  (docs/plattform-befunde.md, Vercel-Abschnitt, LAUF 4 vom 2026-10-03).
+- BEZUG: Owner-Angabe P13.6-2 der Phase 13.6 (Pro freigegeben; Vermerk P13.7-1, Punkt (1)) ·
+  docs/plattform-befunde.md, Vercel, Teil (g) (Hobby nur nicht-kommerziell; dort die
+  OWNER-ENTSCHEIDUNG 2026-09-02 "Der Wechsel auf Pro steht ohnehin an") · Befund A1 des Vermerks
+  P13.7-1 (Hobby-Stopp bis 30 Tage).
+- GEMELDET, NICHT GEÄNDERT (Auflage der Doku-Runde; der Wechsel ist noch nicht vollzogen): Mit dem
+  Wechsel werden sachlich falsch bzw. verlieren ihre Grundlage — CLAUDE.md, "## Tech-Stack"
+  ("Vercel-Plan: HOBBY") · das Manifest-Item KOSTEN-CIRCUIT-BREAKER in beiden Fassungen (ruht auf
+  "VERCEL bleibt HOBBY"; WIEDERVORLAGE "sobald Vercel auf Pro geht, wird der Cap dort SOFORT
+  fällig") · CLAUDE.md, "## Modus" ("der KOSTEN-CIRCUIT-BREAKER ruht auf dem Vercel-HOBBY-Plan") ·
+  der offene Punkt "HOBBY-50-DOMAIN-DECKE" · Vorrat P13.6-79 der Phase 13.6 (Begründung "die EINE
+  Regel des Tarifs"). Die Dauerregel "MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN …" bleibt
+  in Kraft: Sie nennt "Ein Wechsel auf Pro allein erfüllt das nicht"; ihr erster Grund (der harte
+  Hobby-Stopp) entfällt, der zweite (Fair Use) nicht.
+
+**Entscheidung P13.7-50 — ATTACK MODE IST NICHT DIE NOTBREMSE BEI EINER FLUT. OWNER-ENTSCHEIDUNG
+2026-10-03.**
+- INHALT: Attack Mode ist NICHT die Notbremse bei einer Flut. Gesucht ist ein Weg, der Beacons
+  gehosteter UND exportierter Seiten nicht trifft.
+- GRUND (OWNER): Solange Attack Mode an ist, verlieren exportierte Seiten ihr Tracking — sie
+  beaconen von fremder Domain an den App-Host, ohne Challenge-Sitzung.
+- PROVENIENZ DES GRUNDES: ABGELEITET, NICHT GEMESSEN. docs/plattform-befunde.md, Vercel, Teil (z),
+  trägt die Prämisse ("API routes that are protected by a challenge rule can only be accessed
+  within a valid challenge session", Seite #38), nennt exportierte Seiten aber NICHT. Dass
+  exportierte Seiten absolut an `NEXT_PUBLIC_APP_URL` senden, steht am Code (`getCapiProxyUrl`,
+  src/lib/capi/proxy.ts; GELESEN AM CODE, CC, 2026-10-03) und in Teil (h); dass dieser Wert in
+  Production der App-Host ist, ist am Repo nicht belegt (Teil (h)). Alt-Exporte an `/api/capi`
+  liegen in derselben Lage (ABGELEITET). Ob Attack Mode je Domain oder je Pfad schaltbar ist:
+  Frage P5 des LAUFS 4.
+- BEZUG: Kandidat K1 des Vermerks P13.7-1 ("WAF-Ratenregel bzw. Attack Mode") · Vorrat P13.6-80
+  der Phase 13.6 (docs/claude-history/backlog-polish.md, "ATTACK MODE ALS NOTFALL-HEBEL BEI
+  EINER FLUT", KEIN TRIGGER) — gemeldet, nicht geändert.
+
+**Setzung P13.7-51 — RICHTUNG FÜR K1. ARCHITEKT 2026-10-03, revidierbar. KEIN ZUSCHNITT.**
+- K1a — OWNER-KONFIGURATION AUF PRO: Ratenregeln je IP mit Aktion Deny je Pfad (`/api/e`,
+  `/api/capi`, `/api/f`, Seitenaufrufe), zuerst im Modus Log zur Kalibrierung. Als Notbremse eine
+  vorbereitete Challenge-Regel NUR auf Seitenaufrufe der Serving-Hosts; `/api/*` und der App-Host
+  sind ausgenommen.
+- K1b — CODE:
+  (a) Eingangsgrenzen in `handleIngest` vor jedem DB-Zugriff (Rumpfgrösse, Feldlängen;
+      400-Zweig).
+  (b) Zähler je Projekt NUR für weiterleitbare Ereignisse, hinter `isForwardable` und der
+      Einwilligung, vor dem Forward; über der Schwelle kein Forward, Antwort leere 204, der
+      Überlauf bleibt als Zahl sichtbar.
+  (c) Eigene Tabelle nach dem Muster von Migration 0030, nicht `relay_rate_counters`.
+  (d) Zähler-Ausfall fail-open und geloggt; `null` ohne Fehler gilt als Ausfall (Vorlage:
+      `countRelayHit`, src/lib/relay/rate-limit.ts).
+- GRENZE, AUSDRÜCKLICH: Das Limit je Projekt BEGRENZT gefälschte Conversions (Menge, Kosten,
+  Speicher), es VERHINDERT sie nicht — der `trackingKey` ist öffentlich. Echte Abwehr gegen Befund
+  A2 des Vermerks P13.7-1 wäre eine Bindung des Beacons an eine ausgelieferte Seite: ein eigener
+  Kandidat, nicht K1.
+- AM BESTAND, FÜR DEN ZUSCHNITT (GELESEN AM CODE, CC, 2026-10-03, Stand `ef6986c`; Befund, keine
+  Auswahl):
+  · zu (a): Der erste DB-Zugriff in `handleIngest` ist `getCapiConfigByTrackingKey`
+    (src/lib/capi/token.ts), nach der Pflichtfeld-Prüfung; der Rumpf wird mit
+    `await request.text()` ohne Grenze gelesen (Befund N15 des Vermerks P13.7-1, Vorrat P13.7-17).
+  · zu (b): Zwischen dem Einwilligungs-Ausgang (`allowedTargets`, leere Menge → 204) und
+    `await Promise.allSettled` liegt die Inline-Rettung (`runRefresh`, Befund A7, Vorrat P13.7-3).
+    Die Auflösung liest die Projekt-Kennung erst in ihrer ersten Abfrage.
+  · zu (c): Eine neue Tabelle in `public` ab dem 30.10.2026 fällt unter den offenen Punkt "DIE
+    GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026"; 0030 trägt das GRANT an service_role bereits
+    ausdrücklich.
+  · zu (d): `countRelayHit` wertet einen Rückgabewert ohne die Form einer ganzen Zahl als
+    `"failed"` — `null` ohne `error` eingeschlossen.
+- BEZUG, GEMELDET, NICHT ENTSCHIEDEN: Manifest Tier 1 "PER-TENANT-RATE-LIMITING" und Roadmap-Zeile
+  14 ("Per-Tenant-Rate-Limiting auf /api/e + /api/capi … kein Grund zum Vorziehen") — K1b(b) zieht
+  einen Teil davon in die Phase 13.7. Vorrat P13.6-78 der Phase 13.6 (Ratenregel je IP; offen dort
+  "das Verhältnis zur Festlegung "je Projekt, nicht je IP" (Setzung P13.6-23 …)"). Die IP zählt in
+  K1a die Plattform; ob das den offenen Punkt "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"
+  berührt, ist eine Auslegung (docs/plattform-befunde.md, Vercel, Teil (w), GRENZE). CLAUDE.md,
+  Regel A "/API/E-SCHLANKHEIT": K1b(b) ist ein zusätzlicher synchroner Aufruf je weiterleitbarem
+  Beacon.
+
+**Entscheidung P13.7-52 — BEWERTUNG VON VORRAT P13.7-44 (`count ?? 0`). ARCHITEKT 2026-10-03.**
+- Wird in K1b behoben, als EIGENER fix-Commit: "count null ohne Fehler" wird ein Fehler —
+  fail-closed, wie `deleteProject` (Vermerk P13.7-39, Punkt (1)).
+- ZWEI PFADE, ZWEI RICHTUNGEN (GELESEN, CC, 2026-10-03): Beim Domain-Pfad wird `null` ohne Fehler
+  zum Fehler (fail-closed); beim Zähler des Ingest gilt `null` ohne Fehler als Ausfall, und der
+  Ausfall ist fail-open (Setzung P13.7-51, K1b(d)).
+
+**Entscheidung P13.7-53 — BEWERTUNG VON VORRAT P13.7-45 (`setAll` ohne Cache-Header). ARCHITEKT
+2026-10-03.**
+- NICHT IN K1. GRUND (ARCHITEKT): `/api/e` läuft auf den Serving-Hosts ohne `updateSession`.
+- EIGENE KLEINE SCHEIBE vor dem Wiedereinschalten der Registrierung (Vermerk P13.7-24); MESSUNG
+  ZUERST: Trägt eine Antwort der App mit Set-Cookie cachebare Header? Der Trigger des Vorrats
+  P13.7-45 bleibt.
+- DER GRUND AM CODE (GELESEN AM CODE, CC, 2026-10-03, Stand `ef6986c`): `proxy` (src/proxy.ts)
+  lässt `/api/e`, `/api/capi` und `RELAY_PATH` auf einem Serving-Host per `NextResponse.next()`
+  durch, ohne `updateSession`. Auf dem App-Host läuft jede Anfrage durch `updateSession`, auch
+  `/api/e` und `/api/capi` aus exportierten Seiten (Befund N12 des Vermerks P13.7-1); dort kann
+  `setAll` ein Set-Cookie auf die Antwort setzen, wenn die Anfrage Sitzungs-Cookies trägt
+  (ABGELEITET). Der Grund trägt damit für die Serving-Hosts; den App-Host nennt er nicht.
+  Die Angabe stand bis hierher allein im Bericht der read-only-Aufklärung zu K1 (2026-10-03,
+  Auftrag 3 (d)), der nicht im Bestand liegt; sie steht deshalb hier mit eigener Provenienz.
 
 ---
 
@@ -1246,6 +1348,8 @@ ERSCHEINT IM NÄCHSTEN PROJEKT.**
 - HERKUNFT: Plan der Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43), Nebenbefund NB-4.
 - TRIGGER (ARCHITEKT, 2026-10-02): der nächste Eingriff in src/lib/domains/register.ts oder
   src/lib/domains/audit.ts, spätestens der Zuschnitt K1.
+- → 2026-10-03: BEWERTET (Entscheidung P13.7-52): Behebung in K1b als eigener fix-Commit; "count
+  null ohne Fehler" wird ein Fehler (fail-closed, wie `deleteProject`).
 
 **Vorrat P13.7-45 — `setAll` VERWIRFT DIE CACHE-HEADER, DIE DER SUPABASE-LEITFADEN VERLANGT.**
 - BEFUND (GELESEN AM CODE, CC, 2026-10-02, Code-Stand `24516f2`): `updateSession`
@@ -1261,6 +1365,8 @@ ERSCHEINT IM NÄCHSTEN PROJEKT.**
 - HERKUNFT: Plan der Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43), Nebenbefund NB-2.
 - TRIGGER (ARCHITEKT, 2026-10-02): die Bewertung vor dem Wiedereinschalten der Registrierung
   (Vermerk P13.7-24); spätestens der nächste Zuschnitt nach der Scheibe "Supabase-Pakete".
+- → 2026-10-03: BEWERTET (Entscheidung P13.7-53): nicht in K1; eine eigene kleine Scheibe vor dem
+  Wiedereinschalten der Registrierung, Messung zuerst. Der Trigger bleibt.
 
 **Vorrat P13.7-46 — DER LEITFADEN EMPFIEHLT IM PROXY `getClaims()` STATT `getUser()`.**
 - GELESEN (2026-10-02, supabase.com/docs/guides/auth/server-side/creating-a-client, Next.js): Der

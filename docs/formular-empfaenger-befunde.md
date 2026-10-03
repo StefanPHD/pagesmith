@@ -2257,3 +2257,21 @@ UNGEMESSEN BLEIBT: der Status und Verbleib GEHALTENER Läufe bei erschöpftem Ko
 abgeschriebene Kennung ist gemessen ((ab)) · K4.3 — der Verbleib ist gemessen: nicht nachgeholt
 ((z)) · K4.4 — weiter TEILWEISE; zum Downgrade gelesen ((af)), gehaltene Läufe ungemessen · K7.1 —
 gemessen für einen Blocker ((ae)).
+
+### Owner-Angabe 2026-10-03 (Downgrade ausgeführt; Phase 13.7)
+
+**PROVENIENZ:** OWNER-ANGABE 2026-10-03, übermittelt im Auftrag der Doku-Runde K1 der Phase 13.7;
+von CC NICHT gesehen und NICHT gemessen. Keine Doku-Lesung.
+
+**(ag) DER DOWNGRADE IST BESTÄTIGT; DIE PREMIUM-ZAPS PAUSIEREN AM 2026-11-01.** OWNER-ANGABE: Der
+Downgrade ist bestätigt; Zaps mit Premium-Funktionen pausieren am 2026-11-01. Damit ist die offene
+Stelle aus (af) beantwortet ("Ob der Downgrade ausgeführt ist, sagt die Angabe nicht") — als
+Angabe, nicht als Messung; ob die Pause am 2026-11-01 tatsächlich eintritt, ist UNGEMESSEN.
+- MESSKANDIDAT ZM5-Rest (2), OPTIONAL (OWNER-ABSICHT): nach dem 2026-11-01 eine Messung am
+  pausierten Zap A; danach wird Zap A gelöscht (OWNER-ANGABE). Ohne diese Messung bleibt offen, ob
+  ein von Zapier pausierter Zap sich an der Adresse verhält wie ein vom Nutzer ausgeschalteter
+  ((af), FOLGERUNG dort).
+- ZM5-Rest (1) — GEHALTENE LÄUFE BEI ERSCHÖPFTEM KONTINGENT — BLEIBT UNGEMESSEN (OWNER-ANGABE).
+  Der Stand dazu ist (g) (GELESEN) und (af).
+- Die Liste "MESSKANDIDATEN NACH DIESER MESSUNG" unter (af) bleibt als Stand vom 2026-10-02
+  stehen.

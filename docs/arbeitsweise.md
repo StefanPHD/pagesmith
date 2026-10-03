@@ -929,7 +929,7 @@ Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
   `enable row level security` ist sofort für `anon` offen — und der anon-Key
   steckt im Client-Bundle jeder Seite.
 - **Vercel:** Hosting + Deploy via `push → main`, Team-Slug `stefan-phd`, Plan
-  Hobby.
+  Pro (seit 2026-10-03; Spend Management mit Pause, Vermerk P13.7-54).
 - **Serving-Domain `publayer.net`** (Apex + Wildcard) — dort laufen die
   Kundenseiten, dort ist `/api/e` first-party. Die App selbst läuft auf
   `*.vercel.app`; eine Brand-Domain steht aus (`pagesmith.app` ist Platzhalter).

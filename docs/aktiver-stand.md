@@ -372,6 +372,9 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
       (40 Ratenregeln, docs/plattform-befunde.md, Vercel, Teil (ag)); seine übrigen Gründe
       (Konfiguration ausserhalb des Repos; ob ein eigener `rateLimitKey` zulässig ist) sind davon
       nicht berührt. Die Backlog-Einträge bleiben unverändert; bereinigt wird beim Zuschnitt K1a.
+      → 2026-10-03: K1b zieht den Kopfkommentar von `CAP_PER_USER` (src/lib/domains/register.ts)
+      mit — er nennt "Hobby-Kontingent" und "Pro-Upgrade VOR echter Skalierung" (GELESEN AM CODE,
+      CC, Stand `561a564`). K1b berührt register.ts ohnehin (Entscheidung P13.7-52).
     · K2 — DOMAIN-LEBENSZYKLUS: plattform-eigene Domains als Custom-Domain abweisen;
       `deleteProject` mit Custom-Domain; Grabstein (Vorrat P13.6-126); Label-Vergabe ins Audit
       (offener Punkt "LABEL-VERGABE IST UNPROTOKOLLIERT"); berührt Vorrat P13.7-2. Trägt B1, B2,
@@ -1041,7 +1044,8 @@ darunter.
 P13.7-50), die Richtung (Setzung P13.7-51) und die Bewertungen der Vorräte P13.7-44 und P13.7-45
 (Entscheidungen P13.7-52 und P13.7-53). Ein Zuschnitt K1 steht weiter aus.
 → 2026-10-03: Der Wechsel auf Pro ist vollzogen (Vermerk P13.7-54); die Pause bei Erreichen des
-Deckels bleibt vorerst an (Entscheidung P13.7-55).
+Deckels bleibt vorerst an (Entscheidung P13.7-55). Neu nach K1 bis K9 und vor dem Öffnen der
+Registrierung: Kandidat P13.7-58 (Einstellungs-Durchgang Supabase und Vercel).
 
 **Entscheidung P13.7-49 — VERCEL WECHSELT JETZT AUF PRO, ZUSAMMEN MIT K1. OWNER-ENTSCHEIDUNG
 2026-10-03 (übermittelt im Auftrag der Doku-Runde).**
@@ -1062,6 +1066,17 @@ Deckels bleibt vorerst an (Entscheidung P13.7-55).
   in Kraft: Sie nennt "Ein Wechsel auf Pro allein erfüllt das nicht"; ihr erster Grund (der harte
   Hobby-Stopp) entfällt, der zweite (Fair Use) nicht.
 - → 2026-10-03: VOLLZOGEN, in-place (Vermerk P13.7-54).
+- → 2026-10-03, ZUR LISTE "GEMELDET, NICHT GEÄNDERT" (Fortsetzung der Doku-Runde zum
+  Pro-Wechsel, Commit "Pro-Wechsel nachgezogen"): ERLEDIGT in diesem Commit — CLAUDE.md,
+  "## Tech-Stack" (Plan PRO seit 2026-10-03) · Manifest-Item KOSTEN-CIRCUIT-BREAKER, beide
+  Fassungen ("VERCEL TEILWEISE 2026-10-03") · CLAUDE.md, "## Modus" (Satz auf die
+  Ausgabendeckel umgestellt, Ausnahme Entscheidung P13.7-55 benannt) · offener Punkt
+  "HOBBY-50-DOMAIN-DECKE" (gestrichen mit Beleg in docs/offene-punkte.md; Stub und Nennung in
+  "## Modus" gestrichen) · Dauerregel "MEDIENBYTES LAUFEN NIE …" (Kern: "jeder trägt die Regel
+  für sich", Grund 1 auf Pro gebracht; Herleitung: datierte Ergänzung; Titel und Bedingung des
+  Entfallens unverändert). WOANDERS HIN GEGANGEN: Vorrat P13.6-79 der Phase 13.6 — nicht
+  geändert; der Vermerk steht bei Kandidat K1 (Vermerk P13.7-1, Punkt (4)), bereinigt wird beim
+  Zuschnitt K1a.
 
 **Entscheidung P13.7-50 — ATTACK MODE IST NICHT DIE NOTBREMSE BEI EINER FLUT. OWNER-ENTSCHEIDUNG
 2026-10-03.**
@@ -1195,6 +1210,27 @@ ALLEIN TESTET. OWNER-ENTSCHEIDUNG 2026-10-03.**
   Benachrichtigung oder ein höheres Budget — entscheidet dann der Owner.
 - BEZUG: Runbook-Szenario (v) in docs/ADMIN_RUNBOOK.md ("Ausgabendeckel erreicht — alle Projekte
   pausiert") · Szenario (ii) dort (Registrierung öffnen).
+
+**Kandidat P13.7-58 — EINSTELLUNGS-DURCHGANG SUPABASE UND VERCEL VOR DEM ÖFFNEN DER
+REGISTRIERUNG. OWNER-ABSICHT 2026-10-03 (übermittelt im Auftrag der Doku-Runde).**
+- GEGENSTAND: je Schalter bei Supabase und Vercel — die Anbieter-Doku abschnittsweise lesen,
+  den Ist-Wert per Owner-Ablesung erheben, eine Entscheidung mit Grund treffen (Sicherheit ·
+  Ladegeschwindigkeit · Kosten).
+- REIHENFOLGE: nach den Kandidaten K1 bis K9 (Vermerk P13.7-1, Punkt (4)), vor dem Öffnen der
+  Registrierung (Vermerk P13.7-24).
+- ZEIGER AUF BESTANDSPOSTEN, die dorthin gehören (nur Nummer und Titel):
+  · Bot Protection — docs/plattform-befunde.md, Vercel, Teil (ai) (LAUF 4); LAUF 3 trägt dazu
+    allein Attack Mode, Teil (z).
+  · Vorrat P13.7-30 — "FRAGE ZU K9: LAUFEN PREVIEW-DEPLOYMENTS MIT DENSELBEN GEHEIMNISSEN UND
+    DERSELBEN DATENBANK WIE PRODUCTION?"
+  · Vorrat P13.7-56 — "IN DER LAUFZEITUMGEBUNG LIEGEN GEHEIMNISSE DER SUPABASE-INTEGRATION, DIE
+    DER CODE NICHT LIEST."
+  · Kandidat K4 des Vermerks P13.7-1 — "REGISTRIERUNG UND KONTO".
+  · Vorrat P13.7-45 — "`setAll` VERWIRFT DIE CACHE-HEADER, DIE DER SUPABASE-LEITFADEN VERLANGT."
+  · Entscheidung P13.7-55 — "DIE PAUSE BEI ERREICHEN DES AUSGABENDECKELS BLEIBT AN, SOLANGE DER
+    OWNER ALLEIN TESTET."
+- KEIN ZUSCHNITT; die Nummer folgt der durchlaufenden Reihe der Standdatei (die Kennungen K1 bis
+  K10 sind lokal zu Vermerk P13.7-1).
 
 ---
 
@@ -1486,3 +1522,16 @@ CODE NICHT LIEST.**
   `SUPABASE_JWT_SECRET` öffnen die Datenbank am Supabase-JS-Client vorbei.
 - BEZUG: Kandidaten K6 und K9 (Vermerk P13.7-1); Befund C3.
 - TRIGGER: der Zuschnitt K6 oder K9.
+
+**Vorrat P13.7-57 — DER KOPFKOMMENTAR VON `TIMEOUT_MS` IN src/lib/vercel/client.ts NENNT EIN
+PLATTFORM-LIMIT "Hobby 10s", DAS DER GELESENE BESTAND NICHT TRÄGT.**
+- BEFUND (GELESEN AM CODE, CC, 2026-10-03, Stand `561a564`): "ein haengender Drittanbieter darf
+  die Serverless-Funktion nicht bis ans Plattform-Limit (Hobby 10s) blockieren -> wir brechen
+  bei 8s selbst kontrolliert ab". Gemeint ist die Höchstlaufzeit einer Funktion. Der Kommentar
+  stammt aus Commit `56f01d1` (2026-07-15, Phase 7, 7c-2b) (GEMESSEN AM REPO, `git log -S`).
+- GELESEN (docs/plattform-befunde.md, Vercel, Teil (d), 2026-09-02): "Maximum duration — Hobby:
+  300s default and maximum. Pro and Enterprise: 300s default, 800s maximum". Die Zahl 10 s war
+  damit schon unter Hobby nicht der gelesene Stand; ob sie zur Zeit des Kommentars galt, ist
+  NICHT GELESEN. Seit dem 2026-10-03 läuft das Projekt auf Pro (Vermerk P13.7-54).
+- WIRKUNG: keine — `TIMEOUT_MS` (8000) ist ein eigenes Zeitlimit und hängt nicht am Kommentar.
+- TRIGGER: die nächste Arbeit an src/lib/vercel/client.ts.

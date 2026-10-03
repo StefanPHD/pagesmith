@@ -2809,6 +2809,8 @@ liegen beide hier und finden einander.
         Punkt, keine
         Roadmap-Zeile und kein Manifest-Item sagt das bisher (GEMESSEN AM REPO, CC,
         2026-10-01).
+        → 2026-10-03: VOLLZOGEN — Vercel ist auf Pro, in-place (Entscheidung P13.7-49, Vermerk
+        P13.7-54 der Phase 13.7). Die Hobby-Beschränkung trifft dieses Projekt nicht mehr.
 - [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out): Aus einem Formular, das über das Relay
       der Phase 13.6 zugestellt wird, erzeugt der Server das Lead-Ereignis für die
       Fan-Out-Ziele — etwa mit einer gehashten E-Mail als Match-Feld. ANGELEGT am 2026-10-01.

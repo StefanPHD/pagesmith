@@ -1327,10 +1327,12 @@ Provenienz-Zusatz: bestehende Verweise zitieren den Titel, der Zusatz gehört do
   Serve-Route, nicht über einen Route-Handler oder den Proxy, nicht als statische Datei des
   Deployments. Wohin stattdessen, entscheidet der Zuschnitt, der sie braucht — nach einer
   Anbieter-Lesung.
-  Zwei Gründe, beide nötig: Der Hobby-Tarif stoppt bei einer überschrittenen Grenze hart
-  statt zu berechnen, und zwar für ALLE Kundenseiten zugleich, weil alle Serving-Hosts
-  durch dieselbe Anwendung laufen. Und die Fair-Use-Seite des Anbieters führt "Media
-  hosting for hot-linking" unter "Never fair use".
+  Zwei Gründe, jeder trägt die Regel für sich: Datei-Bytes treiben den Verbrauch, und eine
+  Überschreitung trifft ALLE Kundenseiten zugleich, weil alle Serving-Hosts durch dieselbe
+  Anwendung laufen — auf Vercel Pro mit eingeschalteter Pause stehen dann alle Projekte mit
+  503, bis sie einzeln von Hand fortgesetzt werden; ohne Pause wird sie zur Rechnung. Und
+  die Fair-Use-Seite des Anbieters führt "Media hosting for hot-linking" unter "Never fair
+  use".
   Nicht erfasst: das HTML der Seite über die Serve-Route und die eigenen Build-Dateien der
   Anwendung.
   Entfällt, sobald der Hosting-Plan UND seine Fair-Use-Bedingungen Medien-Hosting

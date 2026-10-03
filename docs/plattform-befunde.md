@@ -1923,6 +1923,11 @@ PROTOKOLLE EINES ANBIETERS FORT UND BEGINNEN NIE NEU" — sie laufen je ANBIETER
 dateiweit. **EIN VERWEIS VON AUSSEN NENNT DESHALB DATEI, ABSCHNITT UND BUCHSTABEN**; "Teil (a)"
 allein trifft in dieser Datei ab heute zwei Stellen.
 
+**→ 2026-10-03: SEIT DIESEM TAG LÄUFT DAS PROJEKT AUF PRO** (Vermerk P13.7-54 der Phase 13.7,
+OWNER-ANGABE). Die Befunde vor LAUF 4 (Teile (a) bis (aa)) sind unter dem Hobby-Tarif erhoben;
+wo sie Tarif-Angaben tragen, gelten diese für Hobby, und sie bleiben als solche stehen. Der Satz
+zum Tarif darunter ist der Stand von LAUF 1.
+
 **DER TARIF, AUF DEN SICH ALLES HOBBY-BEZOGENE BEZIEHT:** Vercel-Plan **HOBBY** (OWNER-ANGABE;
 s. CLAUDE.md, "## Tech-Stack"). **In diesem Lauf ist der Plan NICHT am Dashboard nachgesehen
 worden.**

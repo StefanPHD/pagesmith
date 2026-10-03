@@ -3376,8 +3376,10 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   Rumpf gelesen wird, bei pinterest, wenn die Bedingung auf das bestehende Urteil fehlt oder
   verengt ist. DREIUNDDREISSIG Proben, alle wie vorhergesagt.
   DIE GRENZE — WAS DIE ZEILE NICHT LEISTET, und sie ist der Grund für die Bedingung des
-  Entfallens: Sie ist nur für den Owner sichtbar; die Logs halten auf dem Hobby-Plan eine
-  Stunde (docs/plattform-befunde.md, Vercel-Abschnitt, GELESEN); sie belegt an keinem Ziel
+  Entfallens: Sie ist nur für den Owner sichtbar; die Logs halten auf dem Pro-Plan einen Tag
+  (seit 2026-10-03 Pro, Vermerk P13.7-54 der Phase 13.7; RICHTIGGESTELLT 2026-10-03, hier
+  stand "auf dem Hobby-Plan eine Stunde"; docs/plattform-befunde.md, Vercel-Abschnitt, Teil
+  (d), GELESEN, NICHT gemessen); sie belegt an keinem Ziel
   die Verarbeitung; und die stillen Ausgänge VOR dem Adapter bleiben still. Den Betreiber
   erreicht sie nicht — das ist K4, geführt in docs/offene-punkte.md, "EIN ZIEL KANN
   KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN", Ursache (3).
@@ -3462,6 +3464,25 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   Mit einem Wechsel auf Pro ersetzte eine Rechnung den harten Stopp; ob die Zeile "Never
   fair use" für Pro anders gilt, ist NICHT gelesen. Deshalb erfüllt ein Tarifwechsel allein
   die Bedingung des Entfallens nicht.
+  ERGÄNZT 2026-10-03 (Phase 13.7, Doku-Runde zum Pro-Wechsel) — DER ERSTE GRUND TRÄGT NICHT
+  MEHR WÖRTLICH, DIE REGEL BLEIBT: Vercel ist seit dem 2026-10-03 auf Pro (Vermerk P13.7-54
+  der Phase 13.7). Der erste Beleg oben ("Vercel bleibt HOBBY") und der Hobby-Stopp aus Teil
+  (d) beschreiben den Stand bis dahin. An ihre Stelle tritt, GELESEN (docs/plattform-
+  befunde.md, Vercel, Teil (ae)): Ohne Spend Management berechnet Pro statt zu stoppen (#45);
+  mit eingeschalteter Pause stehen bei Erreichen des Budgets ALLE Production-Deployments des
+  Teams mit "503 DEPLOYMENT_PAUSED", bis sie je Projekt von Hand fortgesetzt werden (#44). Die
+  Pause ist AN (Entscheidung P13.7-55 der Phase 13.7). Damit besteht "trifft alle zugleich"
+  fort, mit anderem Mechanismus; der Satz "Mit einem Wechsel auf Pro ersetzte eine Rechnung
+  den harten Stopp" trifft erst nach der Umstellung der Pause zu, die P13.7-55 vor dem ersten
+  fremden Nutzer verlangt. Der zweite Grund ist unberührt: Die Fair-Use-Seite ist in LAUF 4
+  (Teile (ab) bis (al)) nicht geöffnet worden; ob "Never fair use" für Pro anders gilt, bleibt
+  NICHT GELESEN.
+  "BEIDE NÖTIG" IM KERN WAR ZWEIDEUTIG: Es meinte im Sinn von "WARUM ZWEI GRÜNDE UND NICHT
+  EINER", dass die Regel erst entfällt, wenn BEIDE Gründe entfallen. Gelesen als "die Regel
+  braucht beide" hätte es sie mit dem Hobby-Stopp fallen lassen. Der Kern sagt seit diesem
+  Tag "jeder trägt die Regel für sich". Die Bedingung des Entfallens bleibt wörtlich.
+  PROVENIENZ DER ERGÄNZUNG: Wortlaut CC, 2026-10-03, vorgelegt in der Doku-Runde zum
+  Pro-Wechsel; die Fundstellen GELESEN wie genannt.
   DER ZUSTAND, AN DEM DIE REGEL HEUTE NICHTS ÄNDERT — GEMESSEN am Repo (CC, 2026-09-25,
   Vermerk P12.5-8, Punkte (8) und (9), der Phase 12.5): Supabase Storage ist ungenutzt; der
   einzige Upload-Pfad ist der HTML-Import im Browser (`validateUploadFile`,

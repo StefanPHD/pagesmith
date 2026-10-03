@@ -185,8 +185,9 @@ ankommen — oder ein Besucher meldet eine Fehlermeldung statt der Danke-Seite.
      oder 3xx geantwortet (GELESEN AM CODE, `forward` in src/lib/relay/relay.ts).
    - Relay, Meldung statt Danke-Seite: 502 "nicht zugestellt". Die Ursache sagt die Antwort
      nicht; sie steht höchstens in der Logzeile `[relay] not delivered: <Grund>` (etwa
-     `upstream-status 404`, `rate-limited`) im Laufzeit-Log von Vercel — auf Hobby rund eine
-     Stunde lang (GELESEN, docs/plattform-befunde.md, Vercel, Teil (d)).
+     `upstream-status 404`, `rate-limited`) im Laufzeit-Log von Vercel — auf Pro einen Tag
+     lang (seit 2026-10-03 Pro, Vermerk P13.7-54 der Phase 13.7; vorher auf Hobby eine
+     Stunde; GELESEN, docs/plattform-befunde.md, Vercel, Teil (d), NICHT gemessen).
    - Browser-direkt: die Danke-Seite erscheint auch dann, wenn nichts ankommt (unten).
 4. Die bekannten Lagen, je mit Beleg:
    - ZAPIER, Zap AUS, GELÖSCHT oder Adresse FALSCH ABGESCHRIEBEN: Zapier antwortet zuerst

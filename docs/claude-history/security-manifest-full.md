@@ -84,7 +84,7 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   EHRLICHE EINORDNUNG: reiner Dashboard-Toggle, kein Code; bewusste MVP-Abkürzung
   (3.1), die vor Öffentlichkeit zurückgenommen werden MUSS.
   BINDET-AN: öffentlicher Launch. (Ersetzt den Polish-Listen-Eintrag.)
-- KOSTEN-CIRCUIT-BREAKER (SUPABASE ERLEDIGT 2026-07-29 / VERCEL strukturell gedeckelt):
+- KOSTEN-CIRCUIT-BREAKER (SUPABASE ERLEDIGT 2026-07-29 / VERCEL TEILWEISE 2026-10-03):
   RISIKO: Runaway-Loop/Abuse (KI-Agent in Schleife, Ad-getriebener Traffic-Spike)
   erzeugt eine katastrophale Vercel-/Supabase-Rechnung — Financial-DoS.
   TRAGENDE KONTROLLE: harter Spend-Cap + Alarm auf beiden Plattformen (Plattform-
@@ -92,16 +92,36 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   EHRLICHE EINORDNUNG: das ist der grobe Pre-Launch-FLOOR; das feingranulare
   Per-Tenant-Rate-Limiting (Tier 1) ist die präzise Ebene darüber. Beides nötig,
   aber der Cap fängt die Katastrophe ab, bevor Rate-Limits kalibriert sind.
-  STAND 2026-07-29 — GETRENNT NACH PLATTFORM, weil der Trigger nur auf EINER eingetreten ist:
-  SUPABASE: Pro gebucht -> der abrechenbare Eskalationsweg existiert jetzt -> Spend Cap $25
-  HART gesetzt, Alarm bei 80 %. Damit ist die tragende Kontrolle dort vollzogen.
-  VERCEL: bleibt HOBBY. Die strukturelle Deckelung gilt unverändert — kein Überverbrauch,
-  kein abrechenbarer Eskalationsweg, der Schaden wäre ein harter Stopp statt einer Rechnung.
-  Ein Cap ist dort heute nicht setzbar und wäre auch wirkungslos.
+  STAND — GETRENNT NACH PLATTFORM, weil der Trigger auf beiden zu verschiedenen Zeiten
+  eingetreten ist:
+  SUPABASE (2026-07-29): Pro gebucht -> der abrechenbare Eskalationsweg existiert jetzt ->
+  Spend Cap $25 HART gesetzt, Alarm bei 80 %. Damit ist die tragende Kontrolle dort vollzogen.
+  VERCEL (2026-10-03): Pro gebucht, in-place (OWNER-ANGABE, Vermerk P13.7-54 der Phase 13.7).
+  Damit ist die Wiedervorlage eingetreten: Die strukturelle Deckelung des Hobby-Tarifs
+  entfällt — auf Pro stoppt Vercel ohne Spend Management nicht, sondern berechnet ("when you
+  reach 100% usage your deployments are not automatically stopped. Rather, Vercel enables you
+  to incur on-demand usage", GELESEN, docs/plattform-befunde.md, Vercel, Teil (ae), #45).
+  Gesetzt ist Spend Management (OWNER-ABLESUNG 2026-10-03, ebenda): Budget 20 $ — gezählt wird
+  nur Verbrauch ÜBER dem Monatsguthaben von 20 $ —, Alarme bei 50/75/100 %, Webhook aus, PAUSE
+  AN. Die Pause hält ALLE Production-Deployments des Teams mit "503 DEPLOYMENT_PAUSED" an;
+  fortgesetzt wird je Projekt von Hand, ein höheres Budget hebt sie nicht auf (Teil (ae),
+  #44). Sie bleibt an, solange der Owner allein testet (Entscheidung P13.7-55 der Phase 13.7).
+  Runbook: docs/ADMIN_RUNBOOK.md, Szenario (v).
+  WARUM TEILWEISE UND NICHT ERLEDIGT:
+  (1) Ob ein Wechsel der Flat-Rate-CDN-Stufe unter das Budget fällt, steht in keiner gelesenen
+      Seite (NICHT IN DER DOKU, Reichweite LAUF 4; Vermerk P13.7-54). Die Stufe wechselt laut
+      Doku "at the start of the next cycle" (Teil (af), #52); dass die Pause das nicht
+      verhindert, ist ABGELEITET, nicht gelesen.
+  (2) Die Prüfung läuft "every few minutes" (Teil (ae)); Kosten über dem Budget sind möglich.
+  (3) Das Greifen der Pause ist UNGEÜBT (Vermerk P13.7-54).
+  (4) Die Pause ist selbst ein Ausfall aller Kundenseiten. Vor dem ersten fremden Nutzer wird
+      sie umgestellt; danach deckelt der Vercel-Teil nur noch, wenn die gewählte Form es tut
+      (Entscheidung P13.7-55: etwa nur Benachrichtigung oder ein höheres Budget).
   KEIN pauschales "erledigt" über beide Plattformen: die Begründung des Items war immer
   plan-abhängig, und genau diese Abhängigkeit macht die Trennung nötig.
-  BINDET-AN: für Vercel weiterhin PRO-UPGRADE — geht Vercel je auf Pro, wird der Cap dort
-  SOFORT fällig, weil dann die strukturelle Deckelung entfällt, die ihn heute ersetzt.
+  BINDET-AN: für Vercel die Umstellung der Pause vor dem Wiedereinschalten der Registrierung
+  (Entscheidung P13.7-55 der Phase 13.7). Bis zum 2026-10-03 band der Vercel-Teil an das
+  PRO-UPGRADE; diese Bindung ist eingetreten.
   Kopplung zum Backup-Bedarf (Tier 2) ist mit dem Supabase-Wechsel eingelöst.
 - ABUSE-KANAL + security.txt auf publayer.net UND Haupt-App:
   RISIKO: kein Melde-Weg für Security-Forscher/Abuse-Meldungen -> Schwachstellen/

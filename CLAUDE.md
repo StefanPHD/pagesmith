@@ -41,15 +41,16 @@ Text geprüft, 2026-08-20):
 · "JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN" ("## Offene Punkte")
 · "Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)"
 · "Phase 15 — Public-Launch-Restarbeit (Tier 0)"
-· "HOBBY-50-DOMAIN-DECKE (Trigger: echte Skalierung)"
 · Sicherheits-Manifest Tier 1: "SAFE-BROWSING" · "SHARED-REPUTATION publayer.net"
 · Sicherheits-Manifest Tier 2: "BACKUPS + Restore-Drill"
 · ERGÄNZT 2026-10-01, am Text geprüft: "Phase 13.7 — Sicherheit & Datenintegrität" — dort "VOR
   DEM ERSTEN FREMDEN NUTZER BZW. VOR DEM LAUNCH" (docs/roadmap.md)
 AUSDRÜCKLICH NICHT AUFGEFÜHRT, obwohl es danach aussieht: "DATA-RETENTION" (Tier 2) ruht
-darauf, dass heute KEINE IP/UA persistiert werden; der "KOSTEN-CIRCUIT-BREAKER" ruht auf dem
-Vercel-HOBBY-Plan, nicht auf der Kundenzahl. Wer sie mitzählt, hängt sie an den falschen
-Trigger.
+darauf, dass heute KEINE IP/UA persistiert werden; der "KOSTEN-CIRCUIT-BREAKER" ruht auf den
+Ausgabendeckeln der Plattformen (Vercel seit 2026-10-03 PRO mit Spend Management), nicht auf
+der Kundenzahl. Wer sie mitzählt, hängt sie an den falschen Trigger. EINE AUSNAHME, BENANNT:
+Dass die Pause bei Erreichen des Vercel-Deckels AN bleibt, hängt am Wiedereinschalten der
+Registrierung, also am ersten fremden Nutzer (Entscheidung P13.7-55 der Phase 13.7).
 
 EINE FOLGE, DIE HINEINGEHÖRT — VIER AUSSAGEN; Herleitung, Provenienz und Belegstellen
 stehen in docs/claude-md-herleitung.md:
@@ -73,7 +74,8 @@ stehen in docs/claude-md-herleitung.md:
   HTML-PARSING".
 - Persistenz & Auth: Supabase (Postgres, RLS) — ab Phase 3, seit 2026-07-29 auf PRO
 - Hosting/Deploy-Orchestrierung: Vercel-API (Domains) — seit Phase 7 live. Vercel-Plan:
-  HOBBY. Netlify stand hier als Alternative und wurde NIE eingesetzt.
+  PRO seit 2026-10-03 (vorher HOBBY; Vermerk P13.7-54 der Phase 13.7). Netlify stand hier als
+  Alternative und wurde NIE eingesetzt.
 
 ## Roadmap & aktueller Stand
 DIE MARKER: [x] abgeschlossen · [ ] offen · [~] TEILS ERLEDIGT · [-] VERWORFEN.
@@ -164,7 +166,6 @@ die Messungen je Phasenende (wie viele Vorrats-Einträge das Kriterium getrennt 
 in docs/claude-md-herleitung.md.
 
 - isAppHost-PLATZHALTER (Trigger: Brand-Domain-Kauf)
-- HOBBY-50-DOMAIN-DECKE (Trigger: echte Skalierung)
 - rls_auto_enable-CREATE FEHLT IN DEN MIGRATIONEN (Trigger: DB-Neuaufbau / Staging
   REIN AUS DEN MIGRATIONSDATEIEN — der Restore-Drill-Fall ist GEMESSEN geklärt,
   das ist aber KEIN Freibrief für diese beiden anderen Fälle)
@@ -660,11 +661,16 @@ einen setzen will, setzt ihn in BEIDEN Fassungen im selben Commit.
 - E-MAIL-BESTÄTIGUNG wieder aktiv: Double-Opt-in in Supabase Auth (Dashboard-Toggle).
   BINDET-AN: öffentlicher Launch.
 - KOSTEN-CIRCUIT-BREAKER: SUPABASE ERLEDIGT (2026-07-29, mit dem Pro-Wechsel: Spend Cap $25
-  HART, Alarm bei 80 %). VERCEL bleibt HOBBY und deckelt damit weiterhin STRUKTURELL — kein
-  Überverbrauch, kein abrechenbarer Eskalationsweg, der Schaden wäre ein harter Stopp statt
-  einer Rechnung. KEIN pauschales "erledigt" über beide Plattformen. WIEDERVORLAGE: sobald
-  Vercel auf Pro geht, wird der Cap dort SOFORT fällig — dann kippt die strukturelle
-  Deckelung, die ihn heute ersetzt.
+  HART, Alarm bei 80 %). VERCEL TEILWEISE (2026-10-03): Die Wiedervorlage ist eingetreten —
+  Vercel ist auf PRO, die strukturelle Deckelung des Hobby-Tarifs entfällt. Gesetzt ist Spend
+  Management: Budget 20 $ über dem Monatsguthaben, Alarme bei 50/75/100 %, PAUSE AN — bei
+  Erreichen stehen ALLE Projekte mit 503, fortgesetzt wird je Projekt von Hand (Vermerk
+  P13.7-54, Entscheidung P13.7-55 der Phase 13.7; docs/plattform-befunde.md, Vercel, Teil
+  (ae)). TEILWEISE, nicht erledigt: Dass ein Wechsel der Flat-Rate-CDN-Stufe unter das Budget
+  fällt, ist nicht belegt (NICHT IN DER DOKU, Vermerk P13.7-54); die Prüfung läuft "every few
+  minutes"; die Pause greift ungeübt und ist selbst ein Ausfall aller Kundenseiten — sie wird
+  vor dem ersten fremden Nutzer umgestellt (Entscheidung P13.7-55). KEIN pauschales "erledigt"
+  über beide Plattformen.
 - ABUSE-KANAL + security.txt: /.well-known/security.txt (RFC 9116) auf beiden Origins +
   überwachtes Abuse-Postfach. BINDET-AN: Go-Live der Hosting-Schicht.
 - SUBPROZESSOR-DPAs + Kunden-DPA: Vercel/Supabase-DPAs signiert + signierbarer Kunden-DPA

@@ -45,10 +45,22 @@ aufeinander; sie liegen alle hier und finden einander.
     nicht einen anderen eigenen Host.
   - Beim Brand-Domain-Schritt deshalb beide Stellen prüfen; die doppelte Lesung ist Vorrat
     P13-39 der Phase 13.
-- HOBBY-50-DOMAIN-DECKE (Trigger: echte Skalierung): Vercel Hobby deckelt bei 50 Custom-
-  Domains PRO PROJEKT — geteilt über ALLE Kunden, also eine Multi-Tenant-Decke, nicht ein
-  Per-Kunde-Limit. Der Per-User-Cap (Richtwert 3/User) schützt sie doppelt (Abuse + geteilte
-  Decke). Pro-Upgrade VOR echter Skalierung einplanen.
+- HOBBY-50-DOMAIN-DECKE — GESTRICHEN AM 2026-10-03, DER GEGENSTAND IST ERLEDIGT. Der Punkt
+  hielt fest (Trigger: echte Skalierung): Vercel Hobby deckelt bei 50 Custom-Domains PRO
+  PROJEKT — geteilt über ALLE Kunden, also eine Multi-Tenant-Decke, nicht ein Per-Kunde-Limit.
+  Der Per-User-Cap (Richtwert 3/User) schützt sie doppelt (Abuse + geteilte Decke). Pro-Upgrade
+  VOR echter Skalierung einplanen.
+  BELEG DER ERLEDIGUNG:
+  · Das Pro-Upgrade ist vollzogen, in-place am bestehenden Team — OWNER-ANGABE 2026-10-03,
+    Vermerk P13.7-54 der Phase 13.7 (NICHT von CC gemessen).
+  · Auf Pro sind die Domains je Projekt unbegrenzt, mit einer weichen Grenze: "Unlimited*" und
+    "soft limits of 100,000 domains per project for the Pro plan" — GELESEN 2026-10-03,
+    docs/plattform-befunde.md, Vercel, Teil (ad) (#5, #6).
+  · NICHT BERÜHRT: Der Per-User-Cap (`CAP_PER_USER`, src/lib/domains/register.ts) bleibt als
+    Abuse-Schutz; sein Kopfkommentar nennt weiter "Hobby-Kontingent" und "Pro-Upgrade VOR echter
+    Skalierung" (GELESEN AM CODE, CC, 2026-10-03, gemeldet, nicht geändert).
+  · Die Stub-Zeile in CLAUDE.md, "## Offene Punkte", und die Nennung in CLAUDE.md, "## Modus",
+    sind im selben Zug gestrichen.
 - rls_auto_enable-CREATE FEHLT IN DEN MIGRATIONEN (Trigger: DB-Neuaufbau / Staging
   REIN AUS DEN MIGRATIONSDATEIEN — der Restore-Drill-Fall ist unten GEMESSEN geklärt,
   das ist aber KEIN Freibrief für diese beiden anderen Fälle): Die Event-Trigger-FUNKTION
@@ -3298,6 +3310,27 @@ aufeinander; sie liegen alle hier und finden einander.
     **GEMESSEN 2026-09-03/04 (OWNER)**, s. VERMERK 13, Abschnitt (b). Dass (I-4)
     eingehalten ist, ist **GEMESSEN am Diff** (`src/lib/capi/**` liegt nicht darin), keine
     Zusage.
+
+    **ERGÄNZT 2026-10-03 (Phase 13.7, Doku-Runde zum Pro-Wechsel) — EIN LIVE-FALL. TITEL UND
+    TRIGGER UNVERÄNDERT; DER TEXT DARÜBER BLEIBT STEHEN.**
+    · BEOBACHTUNG (OWNER-ANGABE 2026-10-03, Vercel-Logs, NICHT von CC gemessen): Auf
+      `thr-ty.com` erscheint `[capi/resolve] secret unusable { target: 'google', reason:
+      'refresh_token_expired' }`, vor und nach dem Wechsel auf Vercel Pro, bei jedem Laden nach
+      längerer Pause.
+    · LAUT CODE (GELESEN AM CODE, CC, 2026-10-03, Stand `561a564`): `usableTokenFromRow`
+      (src/lib/capi/token.ts) schreibt diesen Grund nur, wenn das Zugangsdatum abgelaufen UND das
+      Erneuerungs-Token tot ist (`hasLiveRefreshToken` false); das Ergebnis ist `unusable` — kein
+      Google-Forward, keine Erneuerung, weder im Hintergrund noch im Request. Die Lage mit
+      Erneuerung schreibt `access_token_expired` (`renewable`).
+    · DIE VERWECHSLUNG: Der Owner hielt die Zeile für den Normalfall mit Erneuerung im
+      Hintergrund. Das ist die "Gewöhnung an die mehrdeutige Fehlerzeile", die dieser Eintrag
+      in seiner Abgrenzung zu Eintrag 48 nennt — hier an einem echten Projekt, mit still
+      verlorenen Google-Conversions.
+    · NICHT ABGELESEN: was die Ziel-Karte für dieses Projekt am 2026-10-03 zeigte. Seit der
+      Scheibe 11.2b soll sie den Ausfall anzeigen (Vermerk vom 2026-09-04 darüber); ob sie es
+      tat, trennt die Beobachtung nicht.
+    · NAHELIEGENDE URSACHE (ABGELEITET, nicht geprüft): die Sieben-Tage-Frist im Status
+      "Testing" — Punkt "DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN PRODUKTION"".
 
 - DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT (Trigger: die nächste Arbeit am Schreibpfad der Callback-Route):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 53, im Rahmen

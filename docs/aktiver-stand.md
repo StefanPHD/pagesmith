@@ -92,6 +92,10 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
       (Limits fehlen) · GELESEN (docs/plattform-befunde.md, Vercel, Teil (d)) · Folge ABGELEITET.
       Auf Hobby frei: eine WAF-Ratenregel je Projekt und Attack Mode — GELESEN (Vercel, Teile
       (w), (z)); ob ein 429 als Funktionsaufruf zählt, ist offen (Teil (x); Punkt U3).
+      → 2026-10-03: Seit diesem Tag läuft das Projekt auf Pro (Vermerk P13.7-54). An die Stelle
+      von "bis zu 30 Tage" tritt die Pause aller Projekte bei Erreichen des Ausgabendeckels
+      (Entscheidung P13.7-55; 503 und Fortsetzen je Projekt von Hand, docs/plattform-befunde.md,
+      Vercel, Teil (ae)). Der Befund bleibt als Stand vom 2026-10-02 stehen.
     · A2 — GEFÄLSCHTE CONVERSIONS VON JEDERMANN. Der `trackingKey` ist öffentlich;
       `handleIngest` übernimmt `event`, `value`, `currency`, `eventSourceUrl`, `_fbp` aus dem
       Rumpf und leitet mit den Zugangsdaten des Betreibers weiter; kein Origin-Check
@@ -361,6 +365,13 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
       (Konfiguration, kein Code), ein Limit je Mandant auf `/api/e`; berührt die Roadmap-Zeile 14.
       Trägt A1, A2, A3. Live: ob ein WAF-429 als Aufruf zählt (U3); die Wirkung auf echtem
       Traffic.
+      → 2026-10-03 (Auftrag der Doku-Runde zum Pro-Wechsel): K1a (Setzung P13.7-51) nimmt die
+      Vorräte P13.6-78, -79 und -80 der Phase 13.6 auf (docs/claude-history/backlog-polish.md).
+      P13.6-80 ("ATTACK MODE ALS NOTFALL-HEBEL") ist durch Entscheidung P13.7-50 überholt.
+      P13.6-79 ist es zum Teil: Sein Grund "die EINE Regel des Tarifs" trägt auf Pro nicht mehr
+      (40 Ratenregeln, docs/plattform-befunde.md, Vercel, Teil (ag)); seine übrigen Gründe
+      (Konfiguration ausserhalb des Repos; ob ein eigener `rateLimitKey` zulässig ist) sind davon
+      nicht berührt. Die Backlog-Einträge bleiben unverändert; bereinigt wird beim Zuschnitt K1a.
     · K2 — DOMAIN-LEBENSZYKLUS: plattform-eigene Domains als Custom-Domain abweisen;
       `deleteProject` mit Custom-Domain; Grabstein (Vorrat P13.6-126); Label-Vergabe ins Audit
       (offener Punkt "LABEL-VERGABE IST UNPROTOKOLLIERT"); berührt Vorrat P13.7-2. Trägt B1, B2,
@@ -1029,6 +1040,8 @@ darunter.
 → 2026-10-03: Zu K1 stehen darunter der Tarif (Entscheidung P13.7-49), Attack Mode (Entscheidung
 P13.7-50), die Richtung (Setzung P13.7-51) und die Bewertungen der Vorräte P13.7-44 und P13.7-45
 (Entscheidungen P13.7-52 und P13.7-53). Ein Zuschnitt K1 steht weiter aus.
+→ 2026-10-03: Der Wechsel auf Pro ist vollzogen (Vermerk P13.7-54); die Pause bei Erreichen des
+Deckels bleibt vorerst an (Entscheidung P13.7-55).
 
 **Entscheidung P13.7-49 — VERCEL WECHSELT JETZT AUF PRO, ZUSAMMEN MIT K1. OWNER-ENTSCHEIDUNG
 2026-10-03 (übermittelt im Auftrag der Doku-Runde).**
@@ -1048,6 +1061,7 @@ P13.7-50), die Richtung (Setzung P13.7-51) und die Bewertungen der Vorräte P13.
   Regel des Tarifs"). Die Dauerregel "MEDIENBYTES LAUFEN NIE ÜBER UNSERE VERCEL-ROUTEN …" bleibt
   in Kraft: Sie nennt "Ein Wechsel auf Pro allein erfüllt das nicht"; ihr erster Grund (der harte
   Hobby-Stopp) entfällt, der zweite (Fair Use) nicht.
+- → 2026-10-03: VOLLZOGEN, in-place (Vermerk P13.7-54).
 
 **Entscheidung P13.7-50 — ATTACK MODE IST NICHT DIE NOTBREMSE BEI EINER FLUT. OWNER-ENTSCHEIDUNG
 2026-10-03.**
@@ -1128,6 +1142,59 @@ P13.7-50), die Richtung (Setzung P13.7-51) und die Bewertungen der Vorräte P13.
   (ABGELEITET). Der Grund trägt damit für die Serving-Hosts; den App-Host nennt er nicht.
   Die Angabe stand bis hierher allein im Bericht der read-only-Aufklärung zu K1 (2026-10-03,
   Auftrag 3 (d)), der nicht im Bestand liegt; sie steht deshalb hier mit eigener Provenienz.
+
+**Vermerk P13.7-54 — DER WECHSEL AUF VERCEL PRO IST VOLLZOGEN (OWNER, 2026-10-03). KEIN
+BAU-COMMIT: reine Konfiguration bei Vercel, keine Zeile Code.** Alle Angaben dieses Vermerks sind
+OWNER-ANGABEN bzw. OWNER-ABLESUNGEN vom 2026-10-03, NICHT von CC gemessen; Code-Stand der
+Doku-Runde `561a564`.
+- DER WEG: Upgrade in-place am bestehenden Team — kein neues Team, kein Projekt-Umzug. Belastet
+  wurden 24 $; die Aufschlüsselung ist nicht abgelesen.
+- VORHER/NACHHER (Browser und Vercel-Logs): beide Seiten — `meta-test-5nlm3e.publayer.net` und
+  `thr-ty.com` — antworten auf GET mit 200; `/api/e` antwortet auf `thr-ty.com` mit 204 auf POST.
+  `meta-test-5nlm3e.publayer.net` erzeugt vorher wie nachher keine `/api/e`-Zeile. Ob das für
+  diese Seite das Soll ist, ist von CC nicht geprüft.
+- NACH DEM WECHSEL: Region `fra1`; die Supabase-Integration ist vorhanden; vier Domains am
+  Projekt. `thr-ty.com` zeigt im Dashboard "DNS Change Recommended" — vorher "Valid
+  Configuration". Wortlaut der Empfehlung und Befund am Code: docs/plattform-befunde.md,
+  Vercel, Teil (am).
+- SPEND MANAGEMENT: Budget 20 $, Pause AN, Webhook AUS, Alarme bei 50/75/100 %.
+- FLAT RATE CDN: Stufe "Included" (1 Mio. CDN Requests, 1 TB); wählbar sind Stufen zu 20, 100
+  und 300 $ im Monat. Oberflächentext, wörtlich: "Exceeding capacity may move you to the next
+  tier at the start of your next billing cycle". Projekte sind ausschliessbar ("Flex CDN",
+  verlangt Vercel DNS) — "Flex CDN" steht in keiner Seite des LAUFS 4 (NICHT GELESEN).
+- NICHT GEÜBT: dass die Pause greift. Das verlangte echte Mehrkosten.
+- WAS DIE ABLESUNGEN AN DEN OFFENEN PUNKTEN DES LAUFS 4 TRAGEN (docs/plattform-befunde.md,
+  Vercel, Teil (al); ABGELEITET, CC):
+  · Punkt 1 (in-place oder nicht): dieses Team ist in-place auf Pro gegangen. Was "eligible"
+    allgemein heisst, bleibt offen.
+  · Punkt 3, erste Hälfte (Flat Rate CDN nach dem Upgrade): die Stufe "Included" ist angezeigt.
+    Die Kosten der Funktionsaufrufe bleiben offen.
+  · Punkt 7 (Pause nach dem Upgrade): sie steht heute AN; ob sie nach dem Upgrade AN oder AUS
+    stand, bevor der Owner sie einstellte, ist nicht abgelesen. "Every few minutes" bleibt offen.
+  · DAS BUDGET LIEGT ÜBER DEM GUTHABEN: Spend Management zählt "metered usage that goes beyond
+    your Pro plan monthly credit" (Teil (ae), #44). Die Pause greift also frühestens nach dem
+    Verbrauch des Monatsguthabens von 20 $ (Teil (af)) PLUS 20 $ Mehrverbrauch, und laut #44
+    "several minutes" danach.
+  · OB EIN WECHSEL DER FLAT-RATE-STUFE UNTER DAS BUDGET FÄLLT: NICHT IN DER DOKU (Reichweite:
+    LAUF 4). #44 nimmt "seats, integrations (such as Marketplace), or separate add-ons" aus; ob
+    eine CDN-Stufe ein solches Add-on ist, sagt keine gelesene Seite. Der Stufenwechsel geschieht
+    laut #52 erst "at the start of the next cycle" und laut Oberflächentext oben ("may move").
+- BEZUG: Entscheidung P13.7-49 (der VORBEHALT ist erfüllt: LAUF 4 lag vor dem Wechsel vor) ·
+  Befund A1 des Vermerks P13.7-1 (Nachsatz dort) · Entscheidung P13.7-55.
+
+**Entscheidung P13.7-55 — DIE PAUSE BEI ERREICHEN DES AUSGABENDECKELS BLEIBT AN, SOLANGE DER OWNER
+ALLEIN TESTET. OWNER-ENTSCHEIDUNG 2026-10-03.**
+- INHALT: Spend Management pausiert bei Erreichen des Budgets die Production-Deployments
+  (Vermerk P13.7-54); das bleibt so, solange der Owner allein testet.
+- GRUND: Die Pause trifft ALLE Projekte des Teams mit "503 DEPLOYMENT_PAUSED" und hebt sich nur
+  von Hand und je Projekt auf ("Projects need to be resumed on an individual basis"; "Projects
+  won't automatically unpause if you increase the spend amount") — GELESEN, docs/plattform-
+  befunde.md, Vercel, Teil (ae), #44. Ohne fremde Seiten trifft sie allein den Owner.
+- TRIGGER: vor dem Wiedereinschalten der Registrierung (erster fremder Nutzer; Vermerk P13.7-24,
+  ZUORDNUNG). Dann wird umgestellt, damit Kundenseiten weiterlaufen; die FORM — etwa nur
+  Benachrichtigung oder ein höheres Budget — entscheidet dann der Owner.
+- BEZUG: Runbook-Szenario (v) in docs/ADMIN_RUNBOOK.md ("Ausgabendeckel erreicht — alle Projekte
+  pausiert") · Szenario (ii) dort (Registrierung öffnen).
 
 ---
 
@@ -1246,6 +1313,15 @@ DERSELBEN DATENBANK WIE PRODUCTION?**
   ihre Datenbank. Bezug: Befunde C3 und E2 des Vermerks P13.7-1.
 - BEZUG: Kandidat K9 (Vermerk P13.7-1).
 - KEIN TRIGGER GESETZT.
+- → 2026-10-03, OWNER-ABLESUNG in den Vercel-Einstellungen (NICHT von CC gemessen):
+  `SUPABASE_SERVICE_ROLE_KEY` und `VERCEL_API_TOKEN` gelten für Production UND Preview; die
+  übrigen Supabase-Variablen nur für Production. GRENZEN (CC): Welche Namen "die übrigen
+  Supabase-Variablen" umfassen, nennt die Ablesung nicht — insbesondere nicht, ob
+  `NEXT_PUBLIC_SUPABASE_URL` darunter fällt, ohne den der Admin-Client nicht startet
+  (`createAdminClient`, src/lib/supabase/admin.ts; GELESEN AM CODE). Ob der Preview-Wert dem
+  Production-Wert gleicht, ist nicht abgelesen; `SECRET_ENC_KEYS` ist nicht genannt. Damit ist
+  die Frage des Eintrags für zwei Geheimnisse dem Scope nach beantwortet (Preview trägt sie),
+  dem Wert nach nicht. Bezug K9; Vorrat P13.7-56.
 
 **Vorrat P13.7-32 — EIN RESERVIERTER `custom_host`, DER SCHON IN `domains` STEHT, WIRD WEITER
 AUSGELIEFERT.**
@@ -1384,3 +1460,29 @@ ERSCHEINT IM NÄCHSTEN PROJEKT.**
   ABGELEITET; die PR-Liste selbst ist nicht gelesen (`gh` nicht installiert).
 - HERKUNFT: Plan der Scheibe "Supabase-Pakete" (Zuschnitt P13.7-43), Nebenbefund NB-1.
 - TRIGGER (ARCHITEKT, 2026-10-02): die Hebung am Phasenende 13.7.
+
+**Vorrat P13.7-56 — IN DER LAUFZEITUMGEBUNG LIEGEN GEHEIMNISSE DER SUPABASE-INTEGRATION, DIE DER
+CODE NICHT LIEST.**
+- DERSELBE GEGENSTAND WIE Vorrat P13.6-15 der Phase 13.6 (Archiv
+  docs/claude-history/phase-13.6-formular-relay.md; Backlog docs/claude-history/backlog-polish.md,
+  "IM DEPLOYMENT LIEGEN GEHEIMNISSE, DIE DER CODE NICHT LIEST …", dort KEIN TRIGGER). Dieser
+  Eintrag ersetzt jenen nicht; er trägt den Stand vom 2026-10-03 und die Zuordnung zur Phase 13.7.
+- NICHT GELESEN (GEMESSEN AM REPO, CC, 2026-10-03, Stand `561a564`): `grep -rnw` über src/,
+  next.config.ts, vitest.config.ts — 0 Treffer, Testdateien ausgenommen, für `POSTGRES_URL`,
+  `POSTGRES_PRISMA_URL`, `POSTGRES_URL_NON_POOLING`, `POSTGRES_USER`, `POSTGRES_HOST`,
+  `POSTGRES_PASSWORD`, `POSTGRES_DATABASE`, `SUPABASE_URL`, `SUPABASE_JWT_SECRET`,
+  `SUPABASE_ANON_KEY`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`,
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Im Arbeitsverzeichnis (ohne node_modules, .next, .git,
+  .playwright-mcp) standen sie vor diesem Eintrag allein in docs/claude-history/. `-w`, weil `SUPABASE_URL` und `SUPABASE_ANON_KEY` Teil gelesener
+  Namen sind. Dynamische Zugriffe (`process.env[…]`) lesen allein `GOOGLE_OAUTH_*` und
+  `SECRET_ENC_KEYS` (Konstanten in src/lib/oauth/ und src/lib/secrets/cipher.ts).
+  POSITIVKONTROLLE: dieselbe Suche trifft `NEXT_PUBLIC_SUPABASE_URL` (4 Leser),
+  `SUPABASE_SERVICE_ROLE_KEY` (1), `VERCEL_API_TOKEN` (3).
+- SCOPE (OWNER-ABLESUNG 2026-10-03, Vorrat P13.7-30): die übrigen Supabase-Variablen gelten nur
+  für Production. Dass die Integration sie anlegt, ist ABGELEITET (Vorrat P13.6-15, nach dem
+  Muster der Namen), nicht gelesen.
+- WARUM ES ZÄHLT (ABGELEITET): Ein Geheimnis, das niemand liest, nützt nichts und vergrössert
+  den Schaden eines Lecks der Laufzeitumgebung; `POSTGRES_PASSWORD`, `POSTGRES_URL*` und
+  `SUPABASE_JWT_SECRET` öffnen die Datenbank am Supabase-JS-Client vorbei.
+- BEZUG: Kandidaten K6 und K9 (Vermerk P13.7-1); Befund C3.
+- TRIGGER: der Zuschnitt K6 oder K9.

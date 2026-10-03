@@ -106,6 +106,11 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
     Teil (u)
   · Abschnitts-Lesung 2026-09-30 der Vercel-Dokumentation, LAUF 3 (Firewall: Rate Limiting,
     Attack Mode, Preise) — die Teile (v) bis (aa)
+  · Abschnitts-Lesung 2026-10-03 der Vercel-Dokumentation, LAUF 4 (Pro-Tarif, Upgrade-Weg,
+    Spend Management, Preise, WAF auf Pro, Attack Mode, Bot-Verwaltung, Benachrichtigungen) —
+    die Teile (ab) bis (al)
+  · Vermerk 2026-10-03 (DNS-Empfehlung nach dem Wechsel auf Pro, Owner-Ablesung; Befund am
+    Code) — der Teil (am)
 
 ## DIE HERKUNFT DIESER DATEI
 
@@ -3062,3 +3067,44 @@ Seiten, Instrument Browser-Werkzeug, `textContent`. Wo "GEMESSEN" steht, betriff
 ausschliesslich das eigene Vorgehen (Zeichenzahlen, Doku-Stand, Weiterleitungen, der Fehlversuch
 404, die Suche im Bot-Verzeichnis, `git status`). **KEINE Messung an einer Vercel-Schnittstelle und
 KEINE am eigenen Dashboard.**
+
+### Vermerk 2026-10-03 (DNS-Empfehlung nach dem Wechsel auf Pro, Owner-Ablesung; Befund am Code) — der Teil (am)
+
+**HERKUNFT: OWNER-ABLESUNG im Vercel-Dashboard am 2026-10-03, nach dem Wechsel auf Pro (Vermerk
+P13.7-54 der Phase 13.7), NICHT von CC gemessen; dazu GELESEN AM CODE (CC, 2026-10-03, Stand
+`561a564`).** Keine Doku-Lesung.
+
+**(am) VERCEL EMPFIEHLT FÜR EINE BESTEHENDE APEX-DOMAIN EINEN NEUEN A-EINTRAG; DIE ALTEN EINTRÄGE
+"WILL CONTINUE TO WORK". DIE APP KENNT KEINEN ZUSTAND "EMPFEHLUNG".** **NEU.**
+· DIE ABLESUNG (OWNER): Für `thr-ty.com` zeigt das Dashboard nach dem Upgrade "DNS Change
+  Recommended" — vorher "Valid Configuration". Empfohlen ist ein A-Eintrag auf `216.150.1.1`.
+  Wortlaut, wie abgelesen: *"We're expanding our IP range … The legacy records
+  cname.vercel-dns.com and 76.76.21.21 will continue to work."* Die Auslassung "…" stammt aus der
+  Ablesung. Die Empfehlung erschien nach dem Upgrade; ob das Upgrade sie auslöste oder sie
+  zeitlich zusammenfiel, ist nicht abgelesen.
+· AM CODE — WOHER DIE ANGEZEIGTEN DNS-WERTE KOMMEN: aus der Vercel-Antwort, nicht fest
+  hinterlegt. `getDomainConfig` (src/lib/vercel/client.ts) ruft
+  `GET /v6/domains/{domain}/config`; `pickDnsRecords` (src/lib/domains/config.ts) nimmt für eine
+  Apex-Domain ALLE Werte des rank-1-Eintrags von `recommendedIPv4`, für eine Subdomain den
+  rank-1-Wert von `recommendedCNAME`; fehlt die Empfehlung, zeigt die Oberfläche keinen Wert
+  ("Noch keine DNS-Empfehlung von Vercel verfügbar", `DnsInstructions`,
+  src/components/DomainManager.tsx). In src/ steht keiner der Werte `76.76.21.21`,
+  `cname.vercel-dns.com`, `216.150.1.1` ausserhalb von Testdateien (GEMESSEN AM REPO; die
+  Testdateien tragen sie als Fixture — Positivkontrolle derselben Suche).
+· AM CODE — WIE `checkDomainStatus` EINE "EMPFEHLUNG" BEHANDELT: gar nicht als eigenen Zustand.
+  `checkDomainStatus` (src/lib/domains/status.ts) speichert die Antwort roh in `dns_config` und
+  leitet zwei Zustände ab, allein aus `misconfigured` und `configuredBy`: `deriveGrobStatus` und
+  `deriveFineState` (src/lib/domains/config.ts) — `misconfigured === false` ergibt `verified`
+  bzw. `live`, "gewinnt IMMER". Im Zustand `live` zeigt die Oberfläche "Live — DNS korrekt,
+  TLS-Zertifikat aktiv. Nichts weiter zu tun." und KEINE DNS-Anweisungen
+  (`status.fineState !== "live" && <DnsInstructions …>`). Ein Feld für eine Empfehlung liest
+  der Typ `VercelDomainConfig` nicht.
+· WAS DARAUS FOLGT — ABGELEITET, NICHT GEMESSEN:
+  - Liefert die Schnittstelle für `thr-ty.com` weiter `misconfigured: false`, meldet die App
+    "Live", während das Dashboard eine Änderung empfiehlt. Ob sie das tut, ist UNGEMESSEN; die
+    letzte belegte App-Meldung "Live" stammt vom 2026-10-02, vor dem Upgrade (Vermerk P13.7-48,
+    N7, der Phase 13.7).
+  - Einer NEUEN Apex-Domain zeigt die App, was Vercel als rank 1 empfiehlt. Ob das heute
+    `216.150.1.1` ist, ist UNGEMESSEN; die Test-Fixture (src/lib/domains/config.test.ts) trägt
+    einen Stand mit `76.76.21.21` als rank 2.
+ERSETZT DIE MESSUNG NICHT: die Schnittstellen-Antwort für `thr-ty.com` nach dem Upgrade.

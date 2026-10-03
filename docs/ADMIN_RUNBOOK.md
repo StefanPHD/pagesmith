@@ -69,6 +69,7 @@ Quelle), ABGELEITET, OWNER-ANGABE.
 | (ii) | Registrierung schliessen / öffnen | Schliessen GEÜBT 2026-10-02 · Öffnen UNGEÜBT |
 | (iii) | Kunde: "Leads kommen nicht an" | UNGEÜBT als Ablauf |
 | (iv) | Kill-Switch: Projekt sperren / entsperren | Sperren und Entsperren GEÜBT 2026-10-01 · Auflisten UNGEÜBT · Befehle verstossen gegen REGEL 1 |
+| (v) | Ausgabendeckel erreicht — alle Projekte pausiert | UNGEÜBT |
 
 ---
 
@@ -274,3 +275,72 @@ ist gesperrt." An den gesperrten Betreiber: nicht festgelegt.
 
 **Was festgehalten wird.** Datum, Grund (der Wert in `blocked_reason` trägt einen Verweis,
 keine Personendaten), Variante, Ergebnis beider Kontrollen.
+
+---
+
+## (v) Ausgabendeckel erreicht — alle Projekte pausiert
+
+**Stand: UNGEÜBT.** Das Greifen der Pause ist nie ausgelöst worden; es verlangte echte
+Mehrkosten (Vermerk P13.7-54 der Phase 13.7). Alles unten ist GELESEN (docs/plattform-befunde.md,
+Vercel, Teile (ae) und (aj)) oder OWNER-ABLESUNG der Einstellung vom 2026-10-03, nicht
+beobachtet.
+
+**Die Einstellung, auf der das Szenario steht** (OWNER-ABLESUNG 2026-10-03, Vermerk P13.7-54):
+Vercel Pro, Spend Management mit Budget 20 $, Pause AN, Webhook AUS, Alarme bei 50/75/100 %. Die
+Pause bleibt an, solange der Owner allein testet (Entscheidung P13.7-55 der Phase 13.7); vor dem
+Wiedereinschalten der Registrierung wird umgestellt. Gezählt wird nur Verbrauch ÜBER dem
+Monatsguthaben von 20 $ (Teil (ae), #44).
+
+**Woran erkennen.**
+- Alarm von Spend Management bei 50, 75 und 100 % des Budgets: Web und E-Mail; SMS nur bei 100 %
+  und nur, wenn für den eigenen Nutzer eingestellt (Teil (ae)).
+- Jede Production-Seite — App, Seiten unter `publayer.net`, Custom-Domains — antwortet mit
+  "503 DEPLOYMENT_PAUSED" (Teil (ae), #44). Die Pause trifft ALLE Projekte des Teams und greift
+  laut Doku "several minutes" nach dem Überschreiten.
+- OFFEN: Wie die Pause im Dashboard angezeigt wird, ist nicht gelesen und nicht gesehen.
+
+**Diagnose.** Im Vercel-Dashboard, Usage des laufenden Abrechnungszeitraums: WELCHE Grösse den
+Verbrauch trägt (CDN Requests, Funktionsaufrufe, Active CPU, Fast Data Transfer, …) und WANN sie
+gestiegen ist; dazu Firewall-Übersicht und Logs der Pfade `/api/e`, `/api/capi`, `/api/f` und der
+Seitenaufrufe. Kein Befehl.
+- OFFEN: Welche Ansicht die Grösse je Pfad oder je Host zeigt, ist nicht gelesen. Ein DDoS-Alarm
+  entsteht erst ab 100 000 Anfragen in 10 Minuten (Teil (aj), #20); eine Flut darunter meldet
+  allein der Nutzungs-Alarm. Anomalie-Alarme verlangen Observability Plus (Teil (aj)); ob es
+  gebucht ist, nennt die Ablesung vom 2026-10-03 nicht.
+
+**Entscheidung.** Flut oder echter Verkehr?
+- FLUT (Verkehr ohne Gegenstück in eigenen Tests, ein Pfad oder wenige Quellen, plötzlicher
+  Anstieg): zuerst die Ursache abstellen, ERST DANN fortsetzen — sonst verbraucht dieselbe Flut
+  das neue Budget.
+- ECHTER VERKEHR (heute nur der Owner selbst, CLAUDE.md, "## Modus"): Budget erhöhen oder die
+  Pause ausschalten, dann fortsetzen.
+- OFFEN: Ein Schwellenwert, der Flut von echtem Verkehr trennt, ist nicht festgelegt.
+
+**Handlung.**
+1. **SCHREIBEND** — Ursache abstellen, falls Flut. OFFEN: die Mittel (Ratenregel, Deny-Regel,
+   IP-Sperre) sind GELESEN (Teil (ag)), aber nicht eingerichtet — das ist Gegenstand von K1a
+   (Setzung P13.7-51 der Phase 13.7). Attack Mode ist NICHT die Notbremse (Entscheidung P13.7-50
+   der Phase 13.7).
+2. **SCHREIBEND** — Spend Management: Budget erhöhen oder die Pause ausschalten. Das allein
+   setzt NICHTS fort: *"Projects won't automatically unpause if you increase the spend amount"*
+   (#44).
+3. **SCHREIBEND** — JEDES PROJEKT EINZELN fortsetzen, im Dashboard oder über die REST-API:
+   *"Projects need to be resumed on an individual basis"* (#44). OFFEN: wo genau der Knopf
+   liegt; der API-Aufruf steht hier bewusst nicht, weil ungeübt und ungelesen im Wortlaut.
+
+**Kontrolle.**
+- Je Projekt: die App lädt, eine Seite unter `publayer.net` und `thr-ty.com` antworten mit 200
+  statt 503.
+- `/api/e`: unbekannter Schlüssel → 204, Rumpf 0 (Form der Kontrolle aus Vermerk P13.7-28, N5,
+  der Phase 13.7).
+- Im Dashboard: die Usage steigt nach dem Fortsetzen nicht wieder so an wie vor der Pause.
+- OFFEN: ob nach dem Fortsetzen ein neuer Deploy nötig ist — nicht gelesen.
+
+**Antwort an den Kunden.** Entfällt heute: Es gibt keine fremden Kunden (CLAUDE.md, "## Modus").
+Mit dem ersten fremden Nutzer ist die Pause umgestellt (Entscheidung P13.7-55); ein Text ist
+dann neu festzulegen.
+
+**Was festgehalten wird.** In der Standdatei der laufenden Phase: Datum und Uhrzeit des Alarms
+und der 503, die Grösse, die den Verbrauch trug, Flut oder echter Verkehr samt Grund, die
+ergriffene Massnahme, die Liste der fortgesetzten Projekte, das Ergebnis der Kontrolle. Keine
+IP-Adressen, keine Projekt- oder Nutzer-Kennungen. Läuft keine Phase: nachfragen.

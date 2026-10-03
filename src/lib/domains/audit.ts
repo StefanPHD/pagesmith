@@ -48,6 +48,8 @@ export async function writeAuditLog(
  * WIRFT bei DB-Fehler (fail-closed fuer DIESEN Request): lieber einen sauberen Fehler +
  * Audit-Eintrag als eine still umgangene Abuse-Schranke. Der User kann erneut versuchen;
  * es entsteht keine dauerhafte Sperre.
+ * WIRFT EBENSO, wenn die Abfrage ohne Fehler KEINE Zahl liefert (Entscheidung P13.7-52 der
+ * Phase 13.7): `count ?? 0` hob das Rate-Limit dort ohne Signal auf.
  */
 export async function countRecentAttempts(
   admin: SupabaseClient,
@@ -63,5 +65,6 @@ export async function countRecentAttempts(
     .eq("action", action)
     .gte("created_at", since);
   if (error) throw new Error(`audit count failed: ${error.message}`);
-  return count ?? 0;
+  if (typeof count !== "number") throw new Error("audit count missing");
+  return count;
 }

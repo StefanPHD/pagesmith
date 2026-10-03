@@ -238,6 +238,43 @@ describe("registerCustomDomain (Scheibe 7c-2b)", () => {
     expect(audit[0].row.outcome).toBe("rejected_rate_limited");
   });
 
+  // ENTSCHEIDUNG P13.7-52 DER PHASE 13.7 — "keine Zahl ohne Fehler" ist ein FEHLER, nicht 0.
+  // Bis dahin machte `count ?? 0` daraus eine freie Obergrenze bzw. ein freies Rate-Limit.
+  // Rot, wenn `?? 0` zurueckkehrt: dann laeuft der Aufruf bis zu Vercel weiter.
+  it("P13.7-52: Cap-Abfrage liefert count null OHNE Fehler -> internal_error, kein Vercel-Call, genau 1 Audit 'internal_error'", async () => {
+    const { rec } = makeAdmin(greenCfg({ "domains.count": { count: null, error: null } }));
+    addDomainToVercel.mockResolvedValue({ kind: "ok", body: { name: "landing.kunde.de" } });
+
+    const result = await registerCustomDomain("user-1", {
+      projectId: "proj-1",
+      domainName: "landing.kunde.de",
+    });
+
+    expect(result).toMatchObject({ ok: false, reason: "internal_error" });
+    expect(addDomainToVercel).not.toHaveBeenCalled();
+    expect(domainInserts(rec)).toHaveLength(0);
+    const audit = auditInserts(rec);
+    expect(audit).toHaveLength(1);
+    expect(audit[0].row).toMatchObject({ outcome: "internal_error", detail: "cap count missing" });
+  });
+
+  it("P13.7-52: Rate-Limit-Abfrage liefert count null OHNE Fehler -> internal_error, kein Vercel-Call, genau 1 Audit 'internal_error'", async () => {
+    const { rec } = makeAdmin(greenCfg({ "audit_logs.count": { count: null, error: null } }));
+    addDomainToVercel.mockResolvedValue({ kind: "ok", body: { name: "landing.kunde.de" } });
+
+    const result = await registerCustomDomain("user-1", {
+      projectId: "proj-1",
+      domainName: "landing.kunde.de",
+    });
+
+    expect(result).toMatchObject({ ok: false, reason: "internal_error" });
+    expect(addDomainToVercel).not.toHaveBeenCalled();
+    expect(domainInserts(rec)).toHaveLength(0);
+    const audit = auditInserts(rec);
+    expect(audit).toHaveLength(1);
+    expect(audit[0].row).toMatchObject({ outcome: "internal_error", detail: "audit count missing" });
+  });
+
   it("Vercel 409 fremdes Konto -> Konflikt-Meldung, NICHT geheilt, kein Insert", async () => {
     const { rec } = makeAdmin(greenCfg());
     addDomainToVercel.mockResolvedValue({ kind: "conflict_other_account" });

@@ -12,8 +12,9 @@ import { writeAuditLog, countRecentAttempts, type AuditRecord } from "@/lib/doma
 // verifizierte userId aus der Session herein; MCP haengt sich mit EIGENER
 // Autorisierung an denselben Eingang.
 
-// Per-User-Hard-Cap (Hobby-Kontingent + Abuse-Schutz, 7c-2-Grundkonzept). Niedriger
-// MVP-Richtwert; Pro-Upgrade VOR echter Skalierung.
+// Per-User-Hard-Cap (Abuse-Schutz, 7c-2-Grundkonzept). Niedriger MVP-Richtwert, eine
+// Setzung. Seit 2026-10-03 laeuft Vercel auf Pro (Vermerk P13.7-54 der Phase 13.7); ein
+// Tarif-Deckel fuer Domains ist dort nicht gelesen.
 const CAP_PER_USER = 3;
 // Rate-Limit: max. Registrierungsversuche pro Stunde/User (auf Abuse kalibriert, zaehlt
 // AUCH abgelehnte Versuche). Erstes Rate-Limiting im Projekt.
@@ -161,7 +162,10 @@ export async function registerCustomDomain(
       .not("custom_host", "is", null)
       .eq("projects.user_id", userId);
     if (capErr) throw capErr;
-    if ((count ?? 0) >= CAP_PER_USER) {
+    // KEINE ZAHL OHNE FEHLER IST EIN FEHLER, NICHT NULL (Entscheidung P13.7-52 der Phase
+    // 13.7): `?? 0` hob die Obergrenze ohne Signal auf. Fail-closed wie deleteProject.
+    if (typeof count !== "number") throw new Error("cap count missing");
+    if (count >= CAP_PER_USER) {
       result = {
         ok: false,
         error: `Domain-Limit erreicht (max. ${CAP_PER_USER}).`,

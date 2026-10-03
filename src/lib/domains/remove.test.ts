@@ -16,8 +16,9 @@ import { removeCustomDomain } from "./remove";
 type Cfg = {
   // Ownership-Read (domains.select(...).eq("label").maybeSingle()).
   row?: { data?: unknown; error?: unknown };
-  // Rate-Limit-Count je action (audit_logs count). Default 0.
-  counts?: Record<string, number>;
+  // Rate-Limit-Count je action (audit_logs count). Default 0. `null` steht fuer "keine Zahl
+  // ohne Fehler" (Entscheidung P13.7-52) und wird DURCHGEREICHT, nicht zu 0 gemacht.
+  counts?: Record<string, number | null>;
   // Fehler des DB-DELETE.
   deleteError?: unknown;
 };
@@ -64,7 +65,8 @@ function makeAdmin(cfg: Cfg = {}) {
       cfg.row ?? { data: null, error: null };
     b.then = (onF: (v: unknown) => unknown) => {
       if (isCount) {
-        return onF({ count: cfg.counts?.[countAction] ?? 0, error: null });
+        const counts = cfg.counts ?? {};
+        return onF({ count: countAction in counts ? counts[countAction] : 0, error: null });
       }
       if (isDelete) return onF({ error: cfg.deleteError ?? null });
       return onF({ error: null });
@@ -188,6 +190,21 @@ describe("removeCustomDomain (7c-2c Domain entfernen)", () => {
     // Die Zaehl-Query filterte auf action='domain_remove' (nicht global/nicht add).
     expect(rec.countActions).toEqual(["domain_remove"]);
     expect(auditOutcomes(rec)).toEqual(["rejected_rate_limited"]);
+  });
+
+  // ENTSCHEIDUNG P13.7-52 DER PHASE 13.7 — rot, wenn `count ?? 0` in countRecentAttempts
+  // zurueckkehrt: dann laeuft Remove bis zu Vercel und loescht.
+  it("P13.7-52: Rate-Limit-Abfrage liefert count null OHNE Fehler -> internal_error, kein Vercel-Call, kein .delete(), genau 1 Audit", async () => {
+    const { rec } = makeAdmin({ row: owned(), counts: { domain_remove: null } });
+    removeDomainFromVercel.mockResolvedValue({ kind: "ok" });
+
+    const res = await removeCustomDomain("user-1", { domainLabel: "kunde-de-abc" });
+
+    expect(res).toMatchObject({ ok: false, reason: "internal_error" });
+    expect(removeDomainFromVercel).not.toHaveBeenCalled();
+    expect(rec.deleteCalls).toBe(0);
+    expect(rec.audits).toHaveLength(1);
+    expect(rec.audits[0]).toMatchObject({ outcome: "internal_error", detail: "audit count missing" });
   });
 
   it("Gegenprobe Budget-Trennung: hohes domain_add_attempt-Budget lastet NICHT auf Remove -> Remove laeuft durch", async () => {

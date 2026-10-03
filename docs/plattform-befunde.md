@@ -2682,3 +2682,383 @@ requests" für die Ratenbegrenzung hier — zwei verschiedene Grössen) und Teil
 Seiten, Instrument Browser-Werkzeug, `textContent`. Wo "GEMESSEN" steht, betrifft es
 ausschliesslich das eigene Vorgehen (Zeichenzahlen, Doku-Stand, vorausgewählte Region). **KEINE
 Messung an einer Vercel-Schnittstelle und KEINE am eigenen Dashboard.**
+
+### Abschnitts-Lesung 2026-10-03 der Vercel-Dokumentation, LAUF 4 (Pro-Tarif, Upgrade-Weg, Spend Management, Preise, WAF auf Pro, Attack Mode, Bot-Verwaltung, Benachrichtigungen) — die Teile (ab) bis (al)
+
+**HERKUNFT DIESES LAUFS: GELESEN 2026-10-03 (CC), 39 Seiten (28 neu, 11 erneut), Instrument
+Browser-Werkzeug (Playwright-MCP), `textContent` des `<main>`-Elements, Doku-Stand aus
+`dateModified` im JSON-LD.** **KEINE MESSUNG** — weder an einer Vercel-Schnittstelle noch am
+eigenen Projekt-Dashboard. Anlass: Entscheidung P13.7-49 der Phase 13.7 (Vercel wechselt auf Pro;
+der Wechsel wartet auf diese Lesung) und die Richtung K1 (Setzung P13.7-51 der Phase 13.7), Fragen
+P1 bis P7 der Doku-Runde K1 vom 2026-10-03. Der Lauf gehört keiner Phase und wird nicht archiviert.
+`.playwright-mcp/` steht in `.gitignore`; keine Auszugsdatei geschrieben; `git status` nach dem
+Lauf ohne neue Datei (GEMESSEN, CC).
+**GELESEN HEISST HIER:** der Artikel einer Seite vom Titel bis "Last updated"; die angehängte
+Verweis-Karte ("Related Vercel documentation", ein Linkverzeichnis des Anbieters) ist NICHT Teil
+der Lesung.
+**EINE DOKU-AUSSAGE ZU EINER FRAGE, DIE EINE MESSUNG VERLANGT, IST HIER ABGELEGT UND ERSETZT DIE
+MESSUNG NICHT.** Die Fragen dieses Laufs sind als FRAGEN gestellt worden; keine ist als
+Behauptung übernommen.
+
+**(ab) DER GELESENE UMFANG — 39 SEITEN.** **NEU.** Die Nummerierung setzt (e), (i) und (v) fort;
+eine Seite mit Nummer bekommt keine zweite. Zeichenzahl = `textContent` des ganzen `<main>` samt
+Navigation und Verweis-Karte (GEMESSEN am eigenen Lauf). Doku-Stand = `dateModified`; bei KB-Seiten
+dazu das Veröffentlichungsdatum.
+
+| # | URL (vercel.com) | Titel | Doku-Stand | Umfang |
+|---|---|---|---|---|
+| 43 | /docs/plans/pro-plan (angesteuert über /docs/plans/pro, Weiterleitung) | Vercel Pro Plan | 2026-09-15 | VOLLTEXT (19 399) |
+| 44 | /docs/spend-management | Spend Management | 2026-09-18 | VOLLTEXT (16 944) |
+| 45 | /docs/plans | Account Plans on Vercel | 2026-09-18 | VOLLTEXT (10 829) |
+| 46 | /docs/plans/pro-plan/trials | Understanding Vercel's Pro Plan Trial | 2026-09-14 | VOLLTEXT (12 035) |
+| 47 | /docs/accounts | Account Management | 2026-09-21 | VOLLTEXT (26 446); Reiter s. (ac) |
+| 48 | /docs/projects/transferring-projects | Transferring a project | 2026-09-08 | VOLLTEXT (14 327) |
+| 49 | /docs/plans/pro-plan/billing | Billing FAQ for Pro Plan | 2026-09-17 | VOLLTEXT (14 653) |
+| 50 | /docs/pricing | Pricing on Vercel | 2026-09-14 | VOLLTEXT (20 089); Regions-Wähler s. (ac) |
+| 51 | /docs/pricing/regional-pricing/fra1 | Frankfurt, Germany (fra1) pricing | 2026-09-14 | VOLLTEXT (9 158) |
+| 52 | /docs/pricing/flat-rate-cdn | Flat Rate CDN | 2026-09-14 | VOLLTEXT (10 112) |
+| 53 | /docs/pricing/legacy | Legacy Metrics | 2026-06-16 | VOLLTEXT (7 274) |
+| 54 | /docs/manage-cdn-usage | CDN pricing and usage | 2026-09-14 | VOLLTEXT (20 159); Regions-Wähler s. (ac) |
+| 55 | /docs/functions/usage-and-pricing | Fluid compute pricing | 2026-06-16 | VOLLTEXT (18 537) |
+| 56 | /docs/cdn | Vercel CDN overview | 2026-09-14 | gezielt: `Edge Request\|Edge Network\|formerly\|renamed\|CDN Request\|service tier\|Flex`. NICHT vollständig (24 831) |
+| 57 | /docs/bot-management | Bot Management | 2026-09-10 | VOLLTEXT (40 853) samt Verzeichnis der verifizierten Bots |
+| 58 | /kb/guide/suspicious-traffic-in-specific-countries (angesteuert über /kb/guide/deny-non-browser-traffic-or-blocklisted-asns, Weiterleitung) | Protect Sensitive Routes with Vercel WAF: Challenge and Deny Rule Recipes | 2026-09-03, publ. 2025-11-03 | VOLLTEXT (23 221) — **KNOWLEDGE BASE, keine Doku-Seite** |
+| 59 | /kb/guide/limit-abuse-with-rate-limiting | Limit Abuse with Rate Limiting | 2025-11-11, publ. 2025-11-03 | VOLLTEXT (4 231) — **KNOWLEDGE BASE** |
+| 60 | /docs/notifications | Notifications | 2026-09-14 | VOLLTEXT (16 421); Symbol-Spalte s. (aj) |
+| 61 | /docs/alerts | Alerts | 2026-09-09 | VOLLTEXT (9 643) |
+| 62 | /kb/guide/why-is-my-account-deployment-blocked | Why has my account or deployment been paused? | 2026-10-02, publ. 2025-11-03 | VOLLTEXT (9 092) — **KNOWLEDGE BASE** |
+| 63 | /docs/domains/working-with-domains/transfer-your-domain | Transferring Domains to Another Team or Project | 2026-09-08 | VOLLTEXT (16 961) |
+| 64 | /docs/environment-variables/sensitive-environment-variables | Sensitive environment variables | 2026-08-28 | VOLLTEXT (12 837); Reiter s. (ac) |
+| 65 | /docs/pricing/manage-and-optimize-usage | Manage and optimize usage | 2026-09-18 | VOLLTEXT (18 013) |
+| 66 | /changelog/2024-01-account-changes | Easier transitions between hobby and pro | 11 Jan 2024 | Eintrag vollständig; **Zeitdokument** |
+| 67 | /docs/alerts/configure-alerts | Configure alerts | 2026-09-16 | VOLLTEXT (10 340) |
+| 68 | /docs/pricing/how-does-vercel-calculate-usage-of-resources | Calculating usage of resources | 2026-09-16 | VOLLTEXT (13 648) |
+| 69 | /docs/vercel-firewall/vercel-waf/managed-rulesets | WAF Managed Rulesets | 2026-09-10 | VOLLTEXT (12 452) |
+| 70 | /docs/vercel-firewall/vercel-waf/system-bypass-rules | WAF System Bypass Rules | 2026-08-11 | VOLLTEXT (7 077) |
+| 5 | /docs/limits | Limits | **2026-09-16** (LAUF 1: 2026-08-25) | ERNEUT, gezielt: `Edge Request\|CDN Request\|Function Invocation\|Active CPU\|Fast Data Transfer\|Firewall\|WAF\|Rate\|paused\|Domains per\|Custom Rules\|notification`, dazu die Überschriften. NICHT vollständig (54 405) |
+| 6 | /docs/plans/hobby | Vercel Hobby Plan | 2026-09-14 | ERNEUT, VOLLTEXT (13 906) |
+| 20 | /docs/vercel-firewall/firewall-observability | Firewall Observability | 2026-09-10 | ERNEUT, VOLLTEXT (9 602) |
+| 21 | /docs/vercel-firewall/vercel-waf/rule-configuration | Rule Configuration Reference | 2025-04-21 | ERNEUT, VOLLTEXT (10 863) |
+| 31 | /docs/vercel-firewall | Vercel Firewall | 2026-09-10 | ERNEUT, gezielt: `transfer\|domain\|hostname\|notif\|alert\|per project\|project level\|Attack`. NICHT vollständig (15 036) |
+| 32 | /docs/vercel-firewall/vercel-waf/rate-limiting | WAF Rate Limiting | 2026-08-28 | ERNEUT, VOLLTEXT (9 887) |
+| 34 | /docs/vercel-firewall/attack-mode | Attack Mode | 2026-08-11 | ERNEUT, VOLLTEXT (10 333) |
+| 35 | /docs/vercel-firewall/vercel-waf/custom-rules | WAF Custom Rules | 2026-09-10 | ERNEUT, VOLLTEXT (18 784) |
+| 37 | /docs/vercel-firewall/vercel-waf | Vercel WAF | 2026-07-29 | ERNEUT, VOLLTEXT (10 644) |
+| 38 | /docs/vercel-firewall/firewall-concepts | Firewall concepts | 2026-08-11 | ERNEUT, VOLLTEXT (18 626) |
+| 40 | /docs/vercel-firewall/vercel-waf/examples | WAF Examples | 2026-08-11 | ERNEUT, VOLLTEXT (7 059); eine Liste von Vorlagen |
+
+Dazu ein Fehlversuch: /kb/guide/why-is-my-account-deployment-paused → HTTP 404 (eine geratene
+Adresse); die Seite #62 ist danach über den Verweis auf #43 angesteuert worden. Bei den erneut
+gelesenen Seiten #20, #21, #32, #34, #35, #37, #38, #40 ist der Doku-Stand derselbe wie in LAUF 2
+bzw. LAUF 3.
+
+**(ac) GESEHEN, NICHT GEÖFFNET — UND DIE MELDEPUNKTE.** **NEU.**
+Die Ausschlussliste ist vor dem Abschluss gegen P1 bis P7 gehalten worden; #68, #69 und #70 sind
+deshalb nachträglich geöffnet worden (P3, P6), ebenso #66 und #67 (P1, P7).
+· "Spend limits for Vercel" (Verweis auf #44) — ein VIDEO (youtu.be), keine Doku-Seite; nicht als
+  Text lesbar. Trägt nach Titel P2; die Lücke bleibt benannt.
+· KB "How do I transfer ownership of a Vercel team?" — Besitzerwechsel eines Teams, nicht Upgrade
+  oder Projekt-Umzug (P1).
+· "Free Domain with Pro", "Billing & Invoices", "Understanding my invoice", "Taxes" — Rechnung und
+  Angebote, keine der Fragen.
+· /docs/vercel-firewall/vercel-waf/ip-blocking — die Mengen je Tarif stehen in #37 und #58; trägt
+  nach Titel keine offene Frage.
+· /docs/vercel-firewall/vercel-waf/usage-and-pricing (#33) und /docs/vercel-firewall/vercel-waf/
+  rate-limiting-sdk (#36) — in LAUF 3 gelesen, hier nicht erneut.
+· DEPLOYMENT_PAUSED-Fehlerseite, REST-Endpunkt "unpause a project", Webhooks-API ("Alerts
+  triggered", "Attack Detected Firewall Event") — die Fragen P2 und P7 sind auf #44, #61, #67 und
+  #20 beantwortet; die Nutzlasten sind nicht erfragt.
+· Changelog "Attack Challenge Mode now allows verified bots and Vercel cron jobs" (s. (e)) —
+  Zeitdokument; P6 ist an #34 und #57 beantwortet.
+MELDEPUNKTE: (1) #58 trägt Route-Handler-Code mit `VERCEL_TOKEN`, der die Firewall per `PATCH`
+umkonfiguriert; #35 trägt Beispiel-Eingaben für die Regel-Erzeugung in natürlicher Sprache; #47 und
+#64 tragen `curl`- und SDK-Beispiele. Leitfäden, nichts ausgeführt. (2) Reiter: #47 und #64 tragen
+die Reiter "Dashboard" (vorausgewählt), "cURL", "SDK"; `textContent` enthält alle drei Fassungen,
+gelesen sind alle. (3) Regions-Wähler auf #50 und #54 stehen auf `iad1`; NICHT umgestellt — die
+Preise für Frankfurt sind über die eigene Seite #51 gelesen (Navigation, keine Eingabe). (4) Die
+Seite #66 trägt in ihrem Quelltext eine Token-artige Zeichenkette des Anbieters; sie ist hier NICHT
+abgeschrieben. (5) Keine Seite verlangte Anmeldung oder Eingabe.
+
+**(ad) P1 · DER UPGRADE-WEG — IN-PLACE IST BESCHRIEBEN, ABER AN EINE NICHT DEFINIERTE
+"ELIGIBILITY" GEBUNDEN; DER UMZUG IST DETAILLIERT BESCHRIEBEN.** **NEU.**
+· IN-PLACE (#6, 2026-09-14), wörtlich: *"Under Plan, if your team is eligible for an upgrade, you
+  can click the Upgrade button. Or, you may need to create or select a team to upgrade. In that
+  case, you can click Create a Team or Upgrade a Team"*. Was "eligible" heisst, definiert KEINE
+  gelesene Seite — NICHT IN DER DOKU (Reichweite: #6, #43, #45, #46, #47, #49, #66).
+· ZEITDOKUMENT (#66, 11.01.2024): Persönliche Konten wurden zu einem freien Team; *"Upgrading and
+  downgrading will now be easier, as they will no longer require transferring projects."* Ein
+  Changelog, keine Doku-Aussage über heute.
+· EIN HOBBY-TEAM JE KONTO (#43): *"Each account is limited to one team on the Hobby plan."*
+· DER PRO-TRIAL (#46) ist ein NEUES Team ("From the bottom of the list select Create Team … Select
+  the Pro Trial option"), einmal je Nutzerkonto, 14 Tage, $20 Guthaben. Im Trial NICHT verfügbar:
+  *"Drains · Account webhooks · Free first-year domain with Pro · Sandbox failover regions"*.
+  *"Once your usage of Active CPU, Provisioned Memory, or Function Invocations exceeds or reaches
+  100% of the Pro trial usage, your trial will be paused."* Trial-Grenzen: Function Invocations
+  1 000 000/Monat, Domains per Project 50.
+· DER UMZUG EINES PROJEKTS (#48, 2026-09-08), wörtlich: *"You can transfer projects between your
+  Vercel teams with zero downtime and no workflow interruptions."* Ablauf: Owner des
+  Ausgangs-Teams, Mitglied des Ziel-Teams; *"If the target Vercel team does not have a valid
+  payment method, you must add one before transferring your project to avoid any interruption in
+  service."* Dauer *"between 10 seconds and 10 minutes"*; während des Umzugs keine neuen
+  Deployments, keine Einstellungen.
+  - ÜBERTRAGEN (wörtlich die Liste): *"Deployments · Environment variables are copied to the target
+    team, except for those defined in the env and build.env configurations of vercel.json · The
+    project's configuration details · Domains and Aliases · Administrators · Project name · Builds ·
+    Git repository link · Security settings · Cron Jobs · Preview Comments · Web Analytics · Speed
+    Insights · Function Region · Directory listing setting"*.
+  - NICHT ÜBERTRAGEN (Auszug, wörtlich): *"Integrations … must be added again"* · *"Usage is reset on
+    transfer"* · *"Monitoring data is not transferred"* · *"Log data (Runtime + build time)"* ·
+    *"Custom Log Drains are not transferred"* · Blob, Global Config mit eigenem Mechanismus · Secure
+    Compute und Static IPs.
+  - DOMAINS (#48): *"if your project uses the domain example.com, the domain will be moved to the
+    target team."* · *"If your project uses the domain blog.example.com, the domain blog.example.com
+    will be delegated to the target team, but the root domain example.com will remain on the origin
+    Vercel scope."* · *"If your project uses a Wildcard domain like *.example.com, the Wildcard
+    domain will be delegated to the target team, but the root domain example.com will remain on the
+    origin Vercel scope."*
+· WAS DIE SEITEN NICHT SAGEN — NICHT IN DER DOKU, je mit Reichweite:
+  - ob die FIREWALL-KONFIGURATION (Regeln, IP-Sperren, Attack Mode) unter "Security settings" fällt
+    — #48 nennt nur das Wort; #31 gezielt "transfer" 0 Treffer, #35, #37, #38 im Volltext ohne
+    Aussage;
+  - ob "Sensitive"/Secret-Variablen beim Umzug mitgehen — #48 nennt keine Ausnahme ausser
+    `vercel.json`; #64 erwähnt den Umzug nicht. Dass sie mitkopiert werden, ist eine FOLGERUNG aus
+    dem Fehlen einer Ausnahme, keine Aussage;
+  - ob eine Domain nach dem Umzug neu VERIFIZIERT werden muss — #48, #63 ohne Aussage; #63 sagt nur
+    für das Verschieben ohne Projekt: *"The domain's DNS records are preserved"*;
+  - ob ein In-place-Upgrade irgendetwas am Projekt ändert (Domains, Variablen, Firewall) — keine
+    gelesene Seite beschreibt es.
+· DOWNGRADE (#43): *"When you downgrade a Pro team, all active members except for the original owner
+  are removed."* · *"Pro teams will need to manually transfer any connected Stores and/or Domains to
+  a new destination before proceeding with downgrade."*
+· DOMAINS JE PROJEKT (#5, #6): Hobby 50, Pro *"Unlimited*"* mit *"soft limits of 100,000 domains per
+  project for the Pro plan"*.
+ERSETZT DIE MESSUNG NICHT: "zero downtime" ist eine Zusage des Anbieters, keine Beobachtung an
+diesem Projekt.
+
+**(ae) P2 · SPEND MANAGEMENT — EIN BETRAG JE ABRECHNUNGSZEITRAUM, PRÜFUNG "EVERY FEW MINUTES",
+PAUSE NUR AUF AUSDRÜCKLICHEN SCHALTER, ENTPAUSEN JE PROJEKT VON HAND.** **NEU.**
+· VERFÜGBARKEIT (#44): *"Spend Management is available on Enterprise and Pro plans"*, *"at no
+  additional cost to Pro teams"*; Rollen owner und billing. Hobby: *"Spend Management N/A"* (#6).
+· WAS GEZÄHLT WIRD (#44): *"Pro: metered usage that goes beyond your Pro plan monthly credit"* ·
+  *"It does not include seats, integrations (such as Marketplace), or separate add-ons"*. Der
+  Betrag heisst im Dashboard *"On-Demand Budget"* und gilt *"per billing cycle"*.
+· DIE AKTIONEN (#44): *"Receive a notification · Trigger a webhook · Pause the production deployment
+  of all your projects"*. Und: *"Setting a spend amount does not stop usage on its own. To stop
+  incurring costs above your spend amount, turn on Pause Production Deployments"*.
+· DIE PAUSE (#44): *"While paused, your production deployments stop serving traffic: your websites,
+  APIs, and functions are unavailable to visitors until you resume each project."* · *"When
+  visitors access your production deployment while it is paused, they will see a 503
+  DEPLOYMENT_PAUSED error."* · *"Pausing only affects production deployments."* · Die Pause trifft
+  *"all projects on your team"*.
+· DIE RÜCKNAHME (#44): *"Projects need to be resumed on an individual basis, either through the
+  dashboard or the Vercel REST API."* · *"Projects won't automatically unpause if you increase the
+  spend amount, you must resume each project manually."* Ebenso #62.
+· DIE VERZÖGERUNG (#44): *"This check happens every few minutes."* · *"notifications, webhooks, and
+  project pausing can trigger several minutes after you cross your spend amount … consider setting
+  your spend amount below the absolute maximum you are willing to spend."* Eine Zahl für "few"
+  nennt keine Seite.
+· SCHWELLEN UND KANÄLE (#44): Web und E-Mail bei 50 %, 75 % und 100 %; SMS nur bei 100 %, je
+  Mitglied mit Rolle owner/billing einzeln; Webhook (HTTPS POST, signiert über
+  `x-vercel-signature`) bei 50/75/100 % — *"For budgets created before September 2025, this is only
+  sent at 100%."* Nutzlast: `budgetAmount`, `currentSpend`, `teamId`, `thresholdPercent`.
+· DER VORGABEZUSTAND (#43), wörtlich: *"By default, Vercel enables spend management notifications
+  for new customers at a spend amount of $200 per billing cycle."* Ob dabei die Pause
+  eingeschaltet ist, sagt die Seite nicht; #44 verlangt sie ausdrücklich ("turn on") — dass sie
+  nach dem Upgrade AUS steht, ist eine FOLGERUNG, keine Aussage.
+· OHNE SPEND MANAGEMENT (#45): *"For Pro and Enterprise teams, when you reach 100% usage your
+  deployments are not automatically stopped. Rather, Vercel enables you to incur on-demand
+  usage"*. Hobby dagegen: *"Hobby plans will be paused when they exceed the included free tier
+  usage"*. Rechnung (#49): *"if your accrued usage crosses a billing threshold, you may receive a
+  partial invoice before the cycle ends."*
+· DIE KLAMMER ZUM KILL-SWITCH, BENANNT, NICHT AUFGELÖST: Die Pause trifft ALLE Projekte des Teams
+  und antwortet 503 — dieser Abschnitt trägt keine Entscheidung (s. Kopf der Datei).
+ERSETZT DIE MESSUNG NICHT: die Verzögerung "every few minutes" und das Verhalten der Pause.
+
+**(af) P3 · PRO: $20 GUTHABEN IM MONAT, DANACH NACH VERBRAUCH; CDN ÜBER "FLAT RATE CDN" MIT
+1 MIO. REQUESTS UND 1 TB INKLUSIVE; FUNKTIONSAUFRUFE MIT WIDERSPRÜCHLICHER ANGABE.** **NEU.**
+· GUTHABEN (#43): *"Every Pro plan has $20 in monthly credit."* · *"Once you have used your monthly
+  credit, Vercel bills additional usage on-demand."* · *"You will receive automatic notifications
+  when your usage has reached 75% of your monthly credit."* Plattform-Gebühr $20/Monat mit einem
+  Sitz.
+· CDN (#43, #52): *"Flat Rate CDN: Pro includes the lowest capacity tier at no extra cost, with a
+  capacity of 1 million CDN requests and 1 TB of data transfer each month."* Stufen (#52): 1M/1 TB
+  inklusive · $20/Monat 10M/50 TB · $100/Monat 50M/50 TB · $300/Monat 150M/50 TB. Wörtlich: *"If
+  your total usage for a billing cycle exceeds your monthly capacity, Vercel moves you to a higher
+  tier at the start of the next cycle. A one-day spike doesn't trigger an upgrade. Vercel will
+  transition you to on-demand pricing if you exceed the highest tier."* Gedeckt sind CDN Requests,
+  Fast Data Transfer, Blob und Sandbox Data Transfer. Ob Flat Rate CDN nach dem Upgrade schon AN
+  ist: #52 beschreibt das Einschalten per Schalter ("turn on the toggle"), #43 nennt die Stufe
+  "included" — NICHT ENTSCHEIDBAR an der Doku.
+· PREISE FRANKFURT (#51, *"available only to Pro plan users"*), wörtlich: *"Fast Data Transfer
+  $0.15 per 1 GB · CDN Requests $2.60 per 1,000,000 Requests · … CDN Requests - Additional CPU
+  Duration $0.39 per 1 Hour · Fluid Active CPU $0.184 per Hour · Fluid Provisioned Memory $0.0152
+  per GB-hr · … Firewall Rate Limit Requests $0.65 per 1,000,000 Allowed Requests"*. Gleich #55
+  für Active CPU und Provisioned Memory in `fra1`.
+· FUNKTIONSAUFRUFE — ZWEI ANGABEN AUF DERSELBEN SEITE (#55): Die Tabelle führt für Pro
+  *"Invocations … N/A · On-demand Invocations … N/A"*; der Text darunter: *"Vercel bills Pro
+  invocations on demand"* und *"If your function receives 1.5 million requests on a Pro plan,
+  Vercel bills those invocations at $0.60 per million"*. #50 zeigt dieselbe Tabelle; #51 führt
+  KEINE Zeile für Funktionsaufrufe. Gemeldet, nicht aufgelöst.
+· "EDGE REQUESTS" UND "CDN REQUESTS" — NICHT IN DER DOKU als Gleichsetzung (Reichweite: #5 gezielt,
+  #6, #43, #50 bis #56, #65, #68). BEOBACHTUNGEN, keine Aussage: (1) Die Hobby-Tabelle auf #6 führte
+  am 2026-08-11 "Edge Requests up to 1 000 000" (Teil (d)); am 2026-09-14 steht an derselben Stelle
+  "CDN Requests First 1,000,000". (2) #68 nennt in Schritt 3 "Edge requests: Network request
+  charges", in allen anderen Schritten "CDN Requests" für dieselbe Rolle. (3) #5 führt die
+  Nutzungstabelle aus LAUF 1 nicht mehr ("Edge Request" 0 Treffer; Positivkontrolle "Domains per"
+  2 Treffer). FOLGERUNG, NICHT GELESEN: eine Umbenennung.
+· HOBBY ZUM VERGLEICH (#6, 2026-09-14): CDN Requests 1 000 000 · Function Invocations 1 000 000 ·
+  Active CPU 4 CPU-hrs · Provisioned Memory 360 GB-hrs · Fast Data Transfer 100 GB.
+
+**(ag) P4 · WAF AUF PRO — 40 CUSTOM RULES, 40 RATENREGELN, SCHLÜSSEL IP ODER JA4, REGELN
+ABSCHALTBAR, BEDINGUNGEN KOMBINIERBAR, REIHENFOLGE STELLBAR.** **NEU.**
+· MENGEN (#37): Custom Rules *"Up to 40"*, Project level IP Blocking *"Up to 100"* (Pro); ebenso #6
+  und die FAQ auf #58. Ratenregeln (#32): *"Number of rules … 40 per project"* (Pro). OB DIE 40
+  RATENREGELN IN DEN 40 CUSTOM RULES ENTHALTEN SIND: NICHT IN DER DOKU — für Hobby sagt #32
+  *"Hobby projects can have up to 3 total custom firewall rules"*, für Pro fehlt der Satz.
+· SCHLÜSSEL UND FENSTER (#32, Doku-Stand 2026-08-28 wie in LAUF 3): Pro *"IP, JA4 Digest"*, festes
+  Fenster 10 s bis 10 min, Vorgabe 60 s / 100 Anfragen. WIDERSPRUCH: #59 (KB, 2025-11-11) rät zu
+  einer zweiten Regel mit *"User agent as the key"*; #32 führt den User Agent als Schlüssel allein
+  für Enterprise.
+· AKTIONEN (#32, #35): Ratenregel *"Default (429) … Log, Deny and Challenge"*; Custom Rule *"log ·
+  deny · challenge · bypass · redirect"*. PERSISTENT ACTIONS (#35, *"available on Enterprise and Pro
+  plans"*): eine Zeitsperre auf die IP des Auslösers bei Challenge, Deny oder Rate Limit; *"none of
+  the requests blocked by persistent actions count towards your CDN and traffic usage."*
+· ABSCHALTEN OHNE LÖSCHEN (#35): *"You can save, delete, or disable a rule at any time and these
+  actions have immediate effect."* Die API-Beispiele auf #58 tragen das Feld `active` (*"Whether
+  this rule is enabled"*). Rückkehr zu einer früheren Konfiguration (#37): "View Audit Log" →
+  "Restore".
+· KOMBINATION (#21, #35): Bedingungen je Regel mit AND oder OR; Parameter u. a. *"Request Path"*,
+  *"Method"*, *"Hostname"* (*"This applies to projects with multiple domains such as platforms that
+  assign a domain to each user of the platform"*). Für Ratenregeln (#32): *"All conditions must be
+  true for the action to happen."*
+· WANN DIE REGEL LÄUFT (#21): Request Header — *"the rule runs before middleware is invoked"*; Route
+  und Server Action Name — *"the custom rule will run after middleware. If the rule blocks a
+  request, middleware charges could be incurred"*.
+· REIHENFOLGE (#35, #21, #69, #38): *"You also have the ability to re-order the precedence of each
+  custom rule."* Deny: *"Blocks the request and no further rules are evaluated."* Log: Auswertung
+  läuft weiter. Challenge gelöst: *"remaining rules (if any) are evaluated"*. Bypass: *"bypasses
+  any remaining custom rules"*. Zwischen den Arten (#69): *"Custom rules set up in the project ·
+  WAF Managed Rulesets configured in the project"*. Schichten (#38): Plattform-Firewall →
+  Deployment Protection → WAF → Deployment.
+· ERREICHT EINE PER RATENREGEL MIT DENY ABGEWIESENE ANFRAGE DIE FUNKTION? Die Aktion Deny (#38):
+  *"The request does not reach your application. The request does not incur CDN Requests or Fast
+  Data Transfer."* Dass dieselbe Wirkung für Deny als Folge-Aktion einer Ratenregel gilt, ist eine
+  FOLGERUNG — keine Seite sagt es für diesen Fall. Für die Vorgabe-Aktion 429 bleibt Teil (aa),
+  Punkt 1, OFFEN. ERSETZT DIE MESSUNG NICHT.
+· WIRKUNG DER VERÖFFENTLICHUNG (#32, #35): *"Select Publish to apply the changes to your production
+  deployment"*; ohne Redeploy (Teil (y)).
+
+**(ah) P5 · ATTACK MODE — JE PROJEKT; EIN SCHALTER JE DOMAIN ODER JE PFAD IST NICHT
+BESCHRIEBEN.** **NEU.**
+· WO GESCHALTET (#34): *"Select your project from the Dashboard. Open Firewall in the sidebar. Click
+  Bot Management. Under Attack Mode, select Enable."* Eine Auswahl von Domains oder Pfaden nennt
+  keine gelesene Seite — NICHT IN DER DOKU (Reichweite: #34, #38, #57, #69 im Volltext, #31 gezielt).
+· AUSNAHMEN (#34): bekannte Bots (*"Attack Mode automatically recognizes and allows these bots to
+  pass through"*) und *"requests from your own Functions and Cron Jobs"*; *"Only requests from
+  outside your account will be challenged"*. Statt Ausnahmen verweist die Seite auf Custom Rules:
+  *"If you need more control over what traffic is challenged, consider using Custom Rules with the
+  Vercel WAF."*
+· OB EINE BYPASS-REGEL ATTACK MODE AUFHEBT: NICHT IN DER DOKU. #38 sagt für Bypass: *"For custom
+  rule bypasses, the request is allowed through any custom or managed rules."* Attack Mode steht
+  unter Bot Management und ist dort weder Custom noch Managed Rule.
+· DIE SITZUNG (#38): *"Challenge sessions are tied to the browser that completed the challenge"* ·
+  *"If a user hasn't completed a challenge session through your website first, they cannot access
+  challenged API routes."*
+· BEZUG, KEINE ENTSCHEIDUNG: Entscheidung P13.7-50 der Phase 13.7.
+
+**(ai) P6 · VERIFIZIERTE BOTS SIND BEI ATTACK MODE UND BEIM BOT-PROTECTION-RULESET AUSGENOMMEN —
+BEI EINER EIGENEN CHALLENGE-REGEL NICHT.** **NEU.**
+· WO DIE AUSNAHME GILT (#57): *"Attack Mode and bot protection automatically recognize and allow
+  these bots to pass through without being challenged."* Das Bot-Protection-Ruleset *"automatically
+  excludes verified bots, such as Google's crawler, from evaluation"*.
+· EIGENE CHALLENGE-REGEL: Eine automatische Ausnahme verifizierter Bots nennt keine gelesene Seite;
+  ein Parameter "verifizierter Bot" steht nicht unter den Regel-Parametern (#21, Doku-Stand
+  2025-04-21). #58 (KB) zu einer breiten Regel, wörtlich: *"A condition this broad also matches
+  uptime monitors, CI jobs, your own API clients, and search crawlers. … If your goal is bot
+  traffic rather than a specific network, the Bot Protection managed ruleset excludes verified
+  bots such as Google's crawler automatically."* FOLGERUNG: Eine eigene Challenge-Regel trifft
+  verifizierte Bots, solange keine Bypass-Regel sie ausnimmt. Die Mittel dafür (#57, #69): Custom
+  Rule mit Bypass auf *"User Agent"* oder den *"Signature-Agent header"*; Bypass-Regel VOR der
+  blockierenden Regel einordnen.
+· TARIF: Bot Protection Managed Ruleset *"available on all plans"* (#57, #69); #69: allein *"OWASP
+  core ruleset is available on Enterprise plans"*. WIDERSPRUCH zu #37 (Tabelle "WAF Managed
+  Rulesets N/A" für Hobby und Pro) und #58 (*"Managed rulesets require an Enterprise plan"*) — die
+  Fachseite #69 trennt die Rulesets, die beiden anderen nicht.
+· WERBE-PRÜF-CRAWLER IM VERZEICHNIS (#57, Volltext der Tabelle): u. a. `meta-externalads`
+  (advertising), `facebookexternalhit` (preview), `facebook-webhooks` (webhook), `google-adsbot`,
+  `google-adwords-instant`, `google-display-ads-bot` (advertising), `adidxbot` (Bing Ads),
+  `pinterest-bot`, `linkedinbot`. KEIN Eintrag für TikTok: GEMESSEN am eigenen Lauf (Suche
+  `tiktok|bytedance|bytespider` 0 Treffer; Positivkontrolle `meta-` 6, `pinterest` 2).
+  Verifikationsmethoden (#57): IP-Bereiche, Reverse DNS, kryptografische Signaturen; welche
+  Methode je Bot gilt, steht nicht in der Tabelle.
+ERSETZT DIE MESSUNG NICHT: ob ein Werbe-Prüf-Crawler eine Challenge-Regel tatsächlich passiert oder
+nicht.
+
+**(aj) P7 · BENACHRICHTIGUNGEN — ALLE TARIFE: E-MAIL UND DASHBOARD BEI NUTZUNG, DDOS-ALARM AB
+100 000 ANFRAGEN IN 10 MINUTEN; PRO: SCHWELLEN EINSTELLBAR, SPEND MANAGEMENT, ANOMALIE-ALARME NUR
+MIT OBSERVABILITY PLUS.** **NEU.**
+· KANÄLE (#60): Web, E-Mail, Push; *"SMS notifications can only be configured on a per-user basis for
+  Spend Management notifications."* Einstellungen wirken nur für den eigenen Nutzer.
+· NUTZUNG, ALLE TARIFE (#45): *"All plans receive notifications by email and on the dashboard when
+  they are approaching and exceed their usage limits."* #60, Gruppe "Usage": *"Usage increased"*,
+  *"Usage limit reached"*.
+· SYMBOL-SPALTE "Critical notification?" auf #60 — gemeldet, nicht leer gewertet: ein Haken-Symbol
+  (`data-glyph="circular"`, Farbe success) steht bei "Team members added automatically", "Team join
+  requests", "Integration configuration disabled", "Integration scope changed", "Usage
+  increased", "Usage limit reached"; bei allen übrigen Zeilen steht kein Symbol. Kritische
+  Benachrichtigungen lassen sich nicht auf allen Kanälen zugleich abschalten (#60).
+· PRO (#43, #60, #65): Benachrichtigung bei 75 % des Monatsguthabens; danach *"daily and weekly
+  summary emails"*; *"Team owners on the Pro plan can customize which usage categories they want to
+  receive notifications for based on percentage thresholds or absolute dollar values."* Dazu
+  Spend Management (Teil (ae)).
+· ANOMALIE-ALARME (#61, #67): *"Alerts are available on Enterprise and Pro plans with Observability
+  Plus"*. Usage Anomaly: *"Fires when your 5-minute usage is more than 4 standard deviations above
+  your 24-hour average and crosses Vercel's minimum activity threshold"*; Metriken u. a. Function
+  invocations, Fast Data Transfer, CDN Requests. Ziele: Team-Owner, Slack, eigene Push-/E-Mail-
+  Abos, Webhook. Observability Plus kostet laut #43 *"$1.20 per 1 million events"*.
+· FIREWALL-ALARM, ALLE TARIFE (#20): *"When Vercel's DDoS Mitigation detects malicious traffic on
+  your site that exceeds 100,000 requests over a 10-minute period, an alert is generated."*
+  Zustellung über einen Webhook mit dem Ereignis "Attack Detected Firewall Event" oder die
+  Vercel-App für Slack. GRENZE: Im Pro-Trial sind Account-Webhooks nicht verfügbar (#46).
+· FLUTEN UNTER DER DDOS-SCHWELLE: Eine Benachrichtigung für eine Flut, die die Abwehr nicht als
+  DDoS erkennt, nennt keine Seite ausser den Nutzungs- und Anomalie-Wegen oben.
+  Die Billing-FAQ (#49): *"Usage will also be incurred for requests that are not recognized as a
+  DDoS event, which may include bot and crawler traffic."*
+
+**(ak) ABGLEICH MIT DEN BESTEHENDEN TEILEN.** **NEU.**
+· Teil (aa), Punkt 3 (Preis der Ratenbegrenzung für Frankfurt): BEANTWORTET — *"Firewall Rate Limit
+  Requests $0.65 per 1,000,000 Allowed Requests"* (#51).
+· Teil (aa), Punkte 1 und 4 (429 als Funktionsaufruf; was "Allowed Requests" zählt): weiter OFFEN.
+· Teil (d): Die Hobby-Grössen auf #6 heissen seit dem Doku-Stand 2026-09-14 "CDN Requests" statt
+  "Edge Requests"; die Mengen sind gleich (s. (af)). Teil (d) bleibt als Stand vom 2026-09-02
+  stehen.
+· Teil (x): bestätigt durch #49 (*"Vercel does not charge customers for traffic that gets blocked by
+  the Firewall"*) und #34 (*"there are zero costs associated with traffic blocked by Attack
+  Mode"*); neu: Persistent Actions zählen nicht gegen CDN und Traffic (#35, s. (ag)).
+· Teil (z): bestätigt; neu ist die Bindung der Sitzung an den Browser (#38, s. (ah)).
+· Teil (g): bestätigt — #62 (KB, 2026-10-02) nennt *"commercial use on a Hobby plan"* als
+  häufigen Grund einer Pause durch Vercel.
+· KEIN BEFUND DIESES LAUFS WIDERSPRICHT EINEM BESTEHENDEN TEIL; die Widersprüche stehen ZWISCHEN
+  Seiten des Anbieters (s. (af), (ag), (ai)).
+
+**(al) WAS NACH DIESEM LAUF OFFEN IST.** **NEU.**
+1. Was "eligible for an upgrade" heisst, also ob dieses Hobby-Team in-place auf Pro geht (P1) — an
+   der Doku nicht entscheidbar; abzulesen im Dashboard unter Settings → Billing.
+2. Ob die Firewall-Konfiguration und Secret-Variablen bei einem Projekt-Umzug mitgehen, und ob eine
+   Domain neu verifiziert werden muss (P1).
+3. Ob Flat Rate CDN nach dem Upgrade eingeschaltet ist (P3); was Funktionsaufrufe auf Pro kosten —
+   N/A oder $0.60 je Million (P3).
+4. Ob "Edge Requests" und "CDN Requests" dieselbe Grösse sind (P3) — eine Umbenennung ist
+   gefolgert, nicht gelesen.
+5. Ob die 40 Ratenregeln in den 40 Custom Rules enthalten sind (P4); ob eine Ratenregel mit Deny
+   bzw. mit 429 eine Funktion auslöst (P4, Teil (aa) 1) — eine Messung.
+6. Ob Attack Mode je Domain schaltbar ist und ob eine Bypass-Regel ihn aufhebt (P5).
+7. Ob die Pause durch Spend Management nach dem Upgrade ausgeschaltet ist, und wie lang "every few
+   minutes" ist (P2).
+8. Ob ein Werbe-Prüf-Crawler eine eigene Challenge-Regel passiert (P6) — eine Messung.
+
+**PROVENIENZ DES GANZEN LAUFS 4:** GELESEN am 2026-10-03 (CC) an den 39 unter (ab) genannten
+Seiten, Instrument Browser-Werkzeug, `textContent`. Wo "GEMESSEN" steht, betrifft es
+ausschliesslich das eigene Vorgehen (Zeichenzahlen, Doku-Stand, Weiterleitungen, der Fehlversuch
+404, die Suche im Bot-Verzeichnis, `git status`). **KEINE Messung an einer Vercel-Schnittstelle und
+KEINE am eigenen Dashboard.**

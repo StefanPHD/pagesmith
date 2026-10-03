@@ -2817,6 +2817,9 @@ liegen beide hier und finden einander.
       K1a: Log-Beobachtung der WAF-Ratenregeln, Deny, Notbremse, Runbook-Szenario "Flut" (Vermerk
       P13.7-59 der Phase 13.7). BERÜHRUNG, GEMELDET, NICHT GEÄNDERT (CC): K1b baut einen Teil des
       Per-Tenant-Rate-Limitings, das die Roadmap-Zeile 14 führt; jene Zeile ist nicht angefasst.
+      → 2026-10-03: K1a — die WAF-Ratenregeln stehen auf Deny, die Log-Beobachtung entfällt
+      (OWNER-ENTSCHEIDUNG; Vermerk P13.7-66 der Phase 13.7). Von K1a offen bleiben die Notbremse
+      und das Runbook-Szenario "Flut".
 - [ ] Phase 13.8 — Lead-Ereignis vom Server (Fan-Out): Aus einem Formular, das über das Relay
       der Phase 13.6 zugestellt wird, erzeugt der Server das Lead-Ereignis für die
       Fan-Out-Ziele — etwa mit einer gehashten E-Mail als Match-Feld. ANGELEGT am 2026-10-01.

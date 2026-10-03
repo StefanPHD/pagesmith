@@ -115,6 +115,7 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
     Code) — der Teil (am)
   · Messung und Vermerk 2026-10-03 (Ratenregel mit Deny; Verbindungsadresse von thr-ty.com) —
     die Teile (an) und (ao)
+  · Messung 2026-10-03 (Ratenregel mit Deny an der Produktionsgrenze) — der Teil (ap)
 
 ## DIE HERKUNFT DIESER DATEI
 
@@ -3201,3 +3202,20 @@ DER EMPFOHLENE A-EINTRAG AUS TEIL (am).** **NEU.**
   ob die Verbindungsadresse der Eintrag selbst ist oder eine Adresse, an die Vercel weiterreicht.
   Keine Folgerung.
 ERSETZT DIE MESSUNG NICHT: eine Abfrage des DNS-Eintrags von `thr-ty.com`.
+
+### Messung 2026-10-03 (Ratenregel mit Deny an der Produktionsgrenze) — der Teil (ap)
+
+**HERKUNFT: OWNER-MESSUNG vom 2026-10-03, NICHT von CC gemessen.** Erhoben nach der Umstellung der
+Ratenregeln R1 bis R4 auf Deny in der Phase 13.7 (Vermerk P13.7-66). Keine Doku-Lesung.
+
+**(ap) DIE RATENREGEL AUF `/api/e` WEIST AN IHRER EINGESTELLTEN GRENZE AB DER 61. ANFRAGE JE IP UND
+MINUTE AB — GEMESSEN.** **NEU.**
+· DIE MESSUNG (OWNER, 2026-10-03): Ratenregel R1, Pfad `/api/e`, Schlüssel IP, Fenster 60 s,
+  Grenze 60, Aktion Deny. 70 Anfragen mit dem Rumpf `{}` aus der Konsole einer gehosteten Seite an
+  `/api/e`. Statuscodes `{"400":60,"403":10}`.
+· WAS SIE ZEIGT: Die Grenze wirkt in Production wie eingestellt — 60 Anfragen erreichen die
+  Funktion (dort 400, Pflichtfeld-Prüfung), die übrigen 10 bekommen 403. Teil (an) hat dieselbe
+  Aktion an einer vorübergehenden Grenze von 10 gemessen; dieser Teil misst die eingestellte.
+· NICHT GEMESSEN: die übrigen Ratenregeln einzeln (R2 `/api/capi`, R3 `/api/f`, R4 alle Anfragen);
+  ob eine abgewiesene Anfrage in einem Kontingent zählt; die Vorgabe-Aktion 429 (Teil (aa), Punkt
+  1, bleibt OFFEN). Die Vercel-Logs dieses Laufs sind nicht übermittelt.

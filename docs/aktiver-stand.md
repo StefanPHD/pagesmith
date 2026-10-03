@@ -379,6 +379,8 @@ KEIN BEFUND DIESES VERMERKS IST LIVE GEMESSEN.
       K1b ist geschnitten (Zuschnitt P13.7-60).
       → 2026-10-03: K1b ist ERLEDIGT, gebaut und live verifiziert (Vermerk P13.7-61). Offen bleibt
       K1a: Log-Beobachtung, Deny, Notbremse, Runbook-Szenario "Flut".
+      → 2026-10-03: K1a — R1 bis R4 stehen auf Deny, die Log-Beobachtung entfällt (Vermerk
+      P13.7-66). Von K1a offen: die Notbremse und das Runbook-Szenario "Flut".
       → 2026-10-03: K1b zieht den Kopfkommentar von `CAP_PER_USER` (src/lib/domains/register.ts)
       mit — er nennt "Hobby-Kontingent" und "Pro-Upgrade VOR echter Skalierung" (GELESEN AM CODE,
       CC, Stand `561a564`). K1b berührt register.ts ohnehin (Entscheidung P13.7-52).
@@ -1049,6 +1051,8 @@ Doku-Runde `e90e4e2`.
   Modus Log ohne Wirkung. Mit Deny träfe R4 auch Beacons; Entscheidung P13.7-50 verlangt für die
   NOTBREMSE einen Weg, der Beacons gehosteter und exportierter Seiten nicht trifft. R4 ist nicht
   die Notbremse; die Frage gehört in den Schritt "Deny".
+  → 2026-10-03: BEANTWORTET (ARCHITEKT, Vermerk P13.7-66): R4 gilt bewusst allen Anfragen; bei
+  600 je IP und Minute trifft sie keinen echten Beacon. Setzung P13.7-51 ist berichtigt.
 - MESSUNG: R1 vorübergehend auf Grenze 10, Aktion Deny. Aus der Konsole von
   `meta-test-5nlm3e.publayer.net` 30 Beacons mit dem Rumpf `{}` an `/api/e`. Statuscodes
   `{"400":10,"403":20}`; in den Vercel-Logs genau 10 Zeilen `/api/e` mit 400.
@@ -1067,6 +1071,8 @@ Doku-Runde `e90e4e2`.
   nennt die Standdatei; Weg 5 von CLAUDE.md wäre die Datei der Plattform-Befunde. Gemeldet.
 - OFFEN (ARCHITEKT): Schritt 3 — einige Tage Log-Beobachtung an der eigenen Arbeit; danach Deny,
   die Notbremse (Setzung P13.7-51, K1a) und das Runbook-Szenario "Flut" in docs/ADMIN_RUNBOOK.md.
+  → 2026-10-03: ÜBERHOLT (Vermerk P13.7-66). Die Log-Beobachtung entfällt (OWNER-ENTSCHEIDUNG),
+  R1 bis R4 stehen auf Deny. Offen bleiben die Notbremse und das Runbook-Szenario "Flut".
 - BEZUG: Setzung P13.7-51 · Punkt U3 des Vermerks P13.7-1 (Nachsatz dort) · Entscheidungen
   P13.7-50 und P13.7-55.
 
@@ -1241,6 +1247,35 @@ AN DIE HÖCHSTMENGE DES TRANSPORTS GELEGT (GELESEN, MIT FUNDSTELLE), NICHT GESCH
   sie ist deshalb nicht gebaut (Zuschnitt P13.7-60, D1).
 - NUR KANDIDAT. Entschieden wird bei der Hebung am Phasenende 13.7.
 
+**Vermerk P13.7-66 — K1a: RATENREGELN AUF DENY UMGESTELLT, DIE LOG-BEOBACHTUNG ENTFÄLLT; EINE
+MESSUNG AN DER PRODUKTIONSGRENZE; EINE BUG-BEOBACHTUNG AM TESTFELD. KEIN BAU-COMMIT: Konfiguration
+bei Vercel, keine Zeile Code.** Alle Angaben dieses Vermerks sind OWNER-ANGABEN bzw.
+OWNER-MESSUNGEN vom 2026-10-03, NICHT von CC gemessen; Code-Stand der Doku-Runde `f0eb6dc`.
+- OWNER-ENTSCHEIDUNG 2026-10-03: Die mehrtägige Log-Beobachtung (Vermerk P13.7-59, "OFFEN",
+  Schritt 3) ENTFÄLLT. GRUND (OWNER): Der eigene Verkehr ist zu gering, um etwas zu zeigen. AN IHRE
+  STELLE TRITT (ARCHITEKT 2026-10-03) die Alltagskontrolle: Sieht der Owner eine 403 oder einen
+  hängenden Editor, wird die betroffene Regel angehoben.
+- UMGESTELLT: R1 bis R4 auf Aktion Deny; Grenzen und Fenster unverändert (R1 `/api/e` 60 · R2
+  `/api/capi` 60 · R3 `/api/f` 30 · R4 alle Anfragen 600; Schlüssel IP, 60 s; Vermerk P13.7-59).
+- REGRESSION: Editor neu geladen, Projekt geöffnet — normal; `thr-ty.com`, Klick → "[capi] Meta
+  forward accepted: HTTP 200".
+- MESSUNG AN DER PRODUKTIONSGRENZE: 70 Beacons mit dem Rumpf `{}` aus der Konsole von
+  `meta-test-5nlm3e.publayer.net` an `/api/e` → `{"400":60,"403":10}`.
+  · GEMESSEN: R1 weist ab der 61. Anfrage je IP und Minute ab. Die 60 durchgelassenen weist die
+    Pflichtfeld-Prüfung von `handleIngest` mit 400 ab (GELESEN AM CODE, CC).
+  · NICHT GEMESSEN: R2 bis R4 einzeln; die Zählung im Kontingent. Die Vercel-Logs dieses Laufs
+    sind nicht übermittelt. Dass eine per Deny abgewiesene Anfrage die Funktion nicht erreicht,
+    ist seit Vermerk P13.7-59 gemessen (an der vorübergehenden Grenze 10).
+- BUG-BEOBACHTUNG (live, `thr-ty.com`): Nach dem Speichern von Meta-Pixel-ID und Token erschien
+  das Testfeld (test_event_code) nicht; es erschien erst nach einem Wechsel in ein anderes Projekt
+  und zurück. OWNER-VORGABE 2026-10-03: Das Testfeld für Meta, TikTok und Pinterest ist entweder
+  immer sichtbar oder sofort nach dem Speichern. Einordnung samt Beleg am Code: docs/offene-
+  punkte.md, Punkt "DER TESTZUSTAND WIRD NACH DEM SPEICHERN NICHT NEU GEHOLT — UND ER ÜBERLEBT DEN
+  PROJEKTWECHSEL", Ergänzung vom 2026-10-03.
+- FOLGEN: Vermerk P13.7-59, "OFFEN", ist überholt (Nachsatz dort). Setzung P13.7-51: R4
+  berichtigt. Von K1a offen: die Notbremse (Setzung P13.7-51, K1a) und das Runbook-Szenario
+  "Flut". docs/plattform-befunde.md, Vercel, Teil (ap).
+
 ---
 
 ## Noch nicht geschnittene Arbeit
@@ -1263,6 +1298,8 @@ Registrierung: Kandidat P13.7-58 (Einstellungs-Durchgang Supabase und Vercel).
 ist geschnitten (Zuschnitt P13.7-60). Beide stehen im Abschnitt "Vermerke, Entscheidungen und
 Zuschnitte ab dem 2026-10-02".
 → 2026-10-03: Die Scheibe "K1b" ist abgeschlossen (Vermerk P13.7-61). In K1 offen bleibt K1a.
+→ 2026-10-03: K1a auf Deny umgestellt (Vermerk P13.7-66); offen sind die Notbremse und das
+Runbook-Szenario "Flut".
 
 **Entscheidung P13.7-49 — VERCEL WECHSELT JETZT AUF PRO, ZUSAMMEN MIT K1. OWNER-ENTSCHEIDUNG
 2026-10-03 (übermittelt im Auftrag der Doku-Runde).**
@@ -1315,7 +1352,11 @@ Zuschnitte ab dem 2026-10-02".
 
 **Setzung P13.7-51 — RICHTUNG FÜR K1. ARCHITEKT 2026-10-03, revidierbar. KEIN ZUSCHNITT.**
 - K1a — OWNER-KONFIGURATION AUF PRO: Ratenregeln je IP mit Aktion Deny je Pfad (`/api/e`,
-  `/api/capi`, `/api/f`, Seitenaufrufe), zuerst im Modus Log zur Kalibrierung. Als Notbremse eine
+  `/api/capi`, `/api/f`) und eine für ALLE Anfragen, zuerst im Modus Log zur Kalibrierung.
+  BERICHTIGT 2026-10-03 (ARCHITEKT; Vermerk P13.7-66): Hier stand als vierter Pfad
+  "Seitenaufrufe"; die angelegte Regel R4 gilt allen Anfragen (Vermerk P13.7-59). Bei 600 je IP
+  und Minute trifft sie keinen echten Beacon, auch keinen Export-Beacon — kein Widerspruch zu
+  Entscheidung P13.7-50 (ARCHITEKT 2026-10-03; nicht gemessen). Als Notbremse eine
   vorbereitete Challenge-Regel NUR auf Seitenaufrufe der Serving-Hosts; `/api/*` und der App-Host
   sind ausgenommen.
 - K1b — CODE:

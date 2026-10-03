@@ -3862,6 +3862,28 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   2026-09-14, Stand `7516bce` — seither kein Commit unter `src/`); die Folge unter (c) eine
   ABLEITUNG, nicht gelaufen; der Nachbar GELESEN; die Beobachtung OWNER-ANGABE; Trigger,
   Einordnung und Begründung unter (d) und (e) ARCHITEKT-ANGABE (2026-09-14).
+  **ERGÄNZT 2026-10-03 (Phase 13.7, Vermerk P13.7-66) — EINE ZWEITE OWNER-BEOBACHTUNG UND EINE
+  OWNER-VORGABE. TITEL UND TRIGGER UNVERÄNDERT; DER TEXT DARÜBER BLEIBT STEHEN.**
+  · BEOBACHTUNG (OWNER, live, `thr-ty.com`, 2026-10-03; NICHT von CC gemessen): Nach dem
+    Speichern von Meta-Pixel-ID und Token erschien das Testfeld (test_event_code) nicht; es
+    erschien erst nach einem Wechsel in ein anderes Projekt und zurück.
+  · EINORDNUNG (CC): Das ist die FOLGE aus (b), wörtlich "der Test-Abschnitt bleibt aus — bis
+    das Projekt wechselt oder die Seite neu lädt", und zwar an ZWEI ihrer drei Speicherpfade:
+    "NACH DEM SPEICHERN VON ZUGANGSDATEN" (das Token) und "NACH DEM SPEICHERN EINER KENNUNG" (die
+    Pixel-ID). Welcher der beiden das Erscheinen allein aufgehalten hat, trennt die Beobachtung
+    nicht — gespeichert wurde beides, und nach (a) verlangt der Abschnitt Kennung UND Zeile.
+    Anders als die Beobachtung unter (h) widerspricht diese dem Code nicht: Nach dem Speichern
+    bestand eine meta-Zeile.
+  · DER BELEG VON (b) TRÄGT AM HEUTIGEN CODE (GELESEN AM CODE, CC, 2026-10-03, Stand
+    `f0eb6dc`): `handleCredentialsSaved` (src/components/CodeImporter.tsx) setzt
+    `configuredTargets`, `credentialStates`, `connectOutcome`, `trackingKey` und die
+    Einstellungen, ruft aber weder `listTestModeStates` noch `setTestModes`; neu geholt wird der
+    Testzustand weiterhin nur im Lade-Effekt und in `handleTestModeChanged`.
+  · OWNER-VORGABE 2026-10-03: Das Testfeld für Meta, TikTok und Pinterest ist entweder IMMER
+    SICHTBAR oder SOFORT NACH DEM SPEICHERN. Die zweite Form entspricht den Kandidaten (K1) und
+    (K4) bzw. (K2) unter (g); "immer sichtbar" ist dort KEIN Kandidat — es änderte die
+    Sichtbarkeits-Bedingung aus (a). Welche Form gebaut wird, ist NICHT ENTSCHIEDEN.
+  · DIE TRIGGER sind nicht eingetreten: Der Beobachter ist der Owner selbst.
 
 **AUS DEM PHASENENDE 11.5 GEHOBEN (2026-09-16) — SIEBEN POSTEN.** Aus dem Vorrat der
 Standdatei der Phase 11.5 (Einwilligungs-Dialog). **DIE URSPRUNGS-NUMMERN STEHEN JE AM
